@@ -51,7 +51,7 @@ runner:
     volumeHandle: fs-032240e3968a5fa76
   ## Setup
   setup:
-    enabled: true
+    enabled: false
     # schedule: "*/1 * * * *"
     schedule: "0 0 1 * *"
     nodeSelector:
@@ -62,7 +62,8 @@ runner:
   update:
     enabled: true
     # schedule: "*/1 * * * *"
-    schedule: "0 */4 * * *"
+    # every day at 00:30
+    schedule: "30 0 * * *"
     nodeSelector:
       enabled: true
       label_key: nodegroup_type
