@@ -26,7 +26,7 @@ gitea:
     DISABLE_REGISTRATION: true
   persistenceDisk:
     enabled: true
-    AWS_ElasticBlockStore_volumeID: vol-0ddf4fe991beaa360
+    AWS_ElasticBlockStore_volumeID: vol-07a086a53566163da
     AWS_ElasticBlockStore_size: 50Gi
   nodeSelector:
     enabled: true
@@ -48,7 +48,7 @@ runner:
     GITEA_USER: runner
     GITEA_EMAIL: runner@osmforcities.org
   efs:
-    volumeHandle: fs-032240e3968a5fa76
+    volumeHandle: fs-0e28a9656b94d1f7a
   ## Setup
   setup:
     enabled: true
@@ -57,7 +57,7 @@ runner:
     nodeSelector:
       enabled: true
       label_key: nodegroup_type
-      label_value: data_processing
+      label_value: job
   ## Update
   update:
     enabled: true
@@ -66,4 +66,4 @@ runner:
     nodeSelector:
       enabled: true
       label_key: nodegroup_type
-      label_value: data_processing
+      label_value: job_spot

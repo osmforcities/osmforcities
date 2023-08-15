@@ -17,12 +17,15 @@ spec:
   accessModes:
     - ReadWriteMany
   mountOptions:
-    - tls
+    - iam
   persistentVolumeReclaimPolicy: Retain
   storageClassName: efs-sc
   csi:
     driver: efs.csi.aws.com
     volumeHandle: {{ .Values.runner.efs.volumeHandle }}
+    volumeAttributes:
+      path: "/"
+      encryptInTransit: "true" 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
