@@ -52,7 +52,6 @@ runner:
   ## Setup
   setup:
     enabled: false
-    # schedule: "*/1 * * * *"
     schedule: "0 0 * * 0"
     nodeSelector:
       enabled: true
@@ -62,8 +61,6 @@ runner:
   update:
     enabled: true
     schedule: "0 */4 * * *"
-    # every 10 am 
-    # schedule: "0 10 * * *"
     nodeSelector:
       enabled: true
       label_key: nodegroup_type
