@@ -52,7 +52,6 @@ runner:
   ## Setup
   setup:
     enabled: true
-    # schedule: "*/1 * * * *"
     schedule: "0 0 1 * *"
     nodeSelector:
       enabled: true
@@ -61,7 +60,6 @@ runner:
   ## Update
   update:
     enabled: true
-    # schedule: "*/1 * * * *"
     schedule: "0 */4 * * *"
     nodeSelector:
       enabled: true

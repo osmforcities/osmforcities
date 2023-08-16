@@ -51,8 +51,7 @@ runner:
     volumeHandle: fs-0e28a9656b94d1f7a
   ## Setup
   setup:
-    enabled: true
-    # schedule: "*/1 * * * *"
+    enabled: false
     schedule: "0 0 * * 0"
     nodeSelector:
       enabled: true
@@ -61,7 +60,6 @@ runner:
   ## Update
   update:
     enabled: true
-    # schedule: "*/1 * * * *"
     schedule: "0 */4 * * *"
     nodeSelector:
       enabled: true
