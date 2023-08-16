@@ -8,7 +8,7 @@ environment: staging
 cloudProvider: aws
 
 AWS_SSL_ARN: false
-serviceType: NodePort
+serviceType: LoadBalancer
 
 # Domain
 domain: staging.osmforcities.org

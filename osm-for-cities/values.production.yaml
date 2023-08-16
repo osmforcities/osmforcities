@@ -8,7 +8,7 @@ environment: production
 cloudProvider: aws
 
 AWS_SSL_ARN: false
-serviceType: NodePort
+serviceType: LoadBalancer
 
 # Domain
 domain: osmforcities.org
