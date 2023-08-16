@@ -1,5 +1,5 @@
 ## Namespace
-namespace: production
+namespace: default
 
 ## Enviroment, value for NODE_ENV
 environment: production
