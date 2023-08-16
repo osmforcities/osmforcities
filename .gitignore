@@ -49,3 +49,5 @@ package-lock.json
 
 # Gitea files
 gitea/custom/conf/app.ini
+
+*.local.yaml
