@@ -1,4 +1,4 @@
-import { execaToStdout } from "./execa.js";
+import exec from "./exec.js";
 
 /**
  *
@@ -19,5 +19,5 @@ export async function curlDownload(
   ]
 ) {
   // Download latest history file to local volume with curl
-  await execaToStdout("curl", [...options, destination, url]);
+  await exec("curl", [...options, destination, url]);
 }

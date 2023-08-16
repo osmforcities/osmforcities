@@ -1,7 +1,7 @@
 import "dotenv/config";
 import fs from "fs-extra";
 import { program } from "commander";
-import logger from "./helpers/logger.js";
+import { logger } from "./helpers/logger.js";
 import { fetchFullHistory } from "./fetch-full-history.js";
 import { updatePresetsHistory } from "./update-presets-history.js";
 
@@ -85,9 +85,22 @@ program
     await context.default(options);
   });
 
-// Handle errors
+/**
+ * Handle unhandled rejections
+ */
 process.on("unhandledRejection", function (error) {
-  logger(error);
+  // Convert error to object, copying its properties
+  const errorOutput = {
+    ...error,
+  };
+
+  // If error is an instance of Error, add stack and name to output
+  if (error instanceof Error) {
+    errorOutput.stack = error.stack;
+    errorOutput.name = error.name;
+  }
+
+  logger.error(JSON.stringify(errorOutput, null, 2));
 });
 
 // Parse the arguments

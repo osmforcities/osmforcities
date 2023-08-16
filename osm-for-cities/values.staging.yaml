@@ -8,7 +8,7 @@ environment: staging
 cloudProvider: aws
 
 AWS_SSL_ARN: false
-serviceType: NodePort
+serviceType: LoadBalancer
 
 # Domain
 domain: staging.osmforcities.org
@@ -26,7 +26,7 @@ gitea:
     GITEA_CUSTOM: /data/gitea-custom
   persistenceDisk:
     enabled: true
-    AWS_ElasticBlockStore_volumeID: vol-0317ba85c09bebe62
+    AWS_ElasticBlockStore_volumeID: vol-0cfa96cb4cf7850e6
     AWS_ElasticBlockStore_size: 20Gi
   nodeSelector:
     enabled: true
@@ -48,22 +48,20 @@ runner:
     GITEA_USER: runner
     GITEA_EMAIL: runner@osmforcities.org
   efs:
-    volumeHandle: fs-032240e3968a5fa76
+    volumeHandle: fs-0e28a9656b94d1f7a
   ## Setup
   setup:
-    enabled: true
-    # schedule: "*/1 * * * *"
+    enabled: false
     schedule: "0 0 * * 0"
     nodeSelector:
       enabled: true
       label_key: nodegroup_type
-      label_value: data_processing
+      label_value: job
   ## Update
   update:
     enabled: true
-    # schedule: "*/1 * * * *"
     schedule: "0 */4 * * *"
     nodeSelector:
       enabled: true
       label_key: nodegroup_type
-      label_value: data_processing
+      label_value: job_spot

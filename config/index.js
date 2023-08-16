@@ -12,6 +12,14 @@ const basePath = path.resolve();
 export const CLI_APP_DIR = path.join(basePath, "cli");
 
 /**
+ * LOGS DIRECTORY
+ */
+export const LOGS_DIR = path.join(
+  process.env.LOGS_DIR || path.join(basePath, "app-data", "logs"),
+  NODE_ENV
+);
+
+/**
  * Path to the data directory used by the CLI to store data
  * (e.g. downloaded files, local git repository, etc)
  *
@@ -29,16 +37,19 @@ const CLI_DATA_DIR = path.join(
 
 /**
  * The default date for the start of the git history, which can be set via
- * environment variable. If not set, the default value depends on the
- * environment:
- *   - In development: The default value is set to "2010-01-01Z".
- *   - In production: The default value is set to 30 days from the current date.
+ * environment variable.
  */
 export const GIT_HISTORY_START_DATE =
   process.env.GIT_HISTORY_START_DATE ||
   (NODE_ENV === "development"
-    ? "2010-01-01Z"
+    ? "2015-02-25Z"
     : format(subDays(new Date(), 10), "yyyy-MM-dd") + "Z");
+
+export const GIT_HISTORY_END_DATE =
+  process.env.GIT_HISTORY_END_DATE ||
+  (NODE_ENV === "development"
+    ? "2015-03-05Z"
+    : format(new Date(), "yyyy-MM-dd") + "Z");
 
 /**
  * GITEA SERVER
@@ -52,10 +63,15 @@ export const GITEA_HOST_URL =
 
 /**
  * HISTORY PBF URL
+ *
+ * The sample was generate with the following commands:
+ *
+ * osmium time-filter -o ofc-sample.osh.pbf presets-history.osh.pbf 2015-05-01T00:00:00Z 2015-05-05T00:00:00Z
+ * osmium extract --bbox -77,-34,-28,9 -H ofc-sample.osh.pbf -o sao-paulo-2015-05-01-2015-05-05.osh.pbf
  */
 export const FULL_HISTORY_FILE_URL =
   NODE_ENV === "development"
-    ? "https://www.dropbox.com/s/j6c71o5jll8f067/brazil-history-2010-01.osh.pbf?dl=0"
+    ? "https://www.dropbox.com/s/piqs9gjsre1gg6b/sao-paulo-2015-05-01-2015-05-05.osh.pbf?dl=0"
     : "https://planet.osm.org/pbf/full-history/history-latest.osm.pbf";
 
 /**
@@ -95,3 +111,4 @@ export const PRESETS_HISTORY_PBF_FILE = path.join(
   HISTORY_PBF_PATH,
   "presets-history.osh.pbf"
 );
+export const PRESETS_HISTORY_META_JSON = `${PRESETS_HISTORY_PBF_FILE}.json`;

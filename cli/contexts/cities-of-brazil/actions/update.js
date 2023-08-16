@@ -1,13 +1,21 @@
 import * as path from "path";
 import fs from "fs-extra";
 import cliProgress from "cli-progress";
-import { addDays, parseISO } from "date-fns";
+import {
+  addDays,
+  endOfDay,
+  isAfter,
+  isBefore,
+  parseISO,
+  startOfDay,
+  subDays,
+} from "date-fns";
 import simpleGit from "simple-git";
 import pLimit from "p-limit";
 import execa from "execa";
 
 // Helpers
-import logger from "../../../helpers/logger.js";
+import { logger } from "../../../helpers/logger.js";
 import {
   extractPoly,
   tagsFilter,
@@ -23,6 +31,7 @@ import {
   GIT_HISTORY_START_DATE,
   PRESETS_HISTORY_PBF_FILE,
   getPresets,
+  PRESETS_HISTORY_META_JSON,
 } from "../../../../config/index.js";
 
 // Context config
@@ -51,48 +60,78 @@ export const update = async (options) => {
   await fs.ensureDir(CURRENT_DAY_DIR);
 
   // Initialize current date pointer
-  let currentDay = parseISO(GIT_HISTORY_START_DATE);
+  let firstHistoryTimestamp;
+  let lastHistoryTimestamp;
+  let defaultStartDate = parseISO(GIT_HISTORY_START_DATE);
+  let lastDailyUpdate;
 
-  // Create git client
-  const git = await simpleGit({ baseDir: CLI_GIT_DIR });
-
-  // If git history folder exists, get latest date
-  if (await fs.pathExists(path.join(CLI_GIT_DIR, ".git"))) {
-    // Get last commit date
-    try {
-      const lastCommitTimestamp = await git.show(["-s", "--format=%ci"]);
-
-      // Convert ISO string to date
-      currentDay = new Date(lastCommitTimestamp);
-
-      // Increment pointer
-      currentDay = addDays(currentDay, 1);
-    } catch (error) {
-      logger(
-        `Could not find last commit date, using ${GIT_HISTORY_START_DATE}.`
-      );
-    }
-  } else {
-    // Or just initialize git repository
-    await git.raw("-c", "init.defaultbranch=main", "init");
-
-    // Add remote origin
-    await git.addRemote("origin", `${GIT_REPOSITORY_URL}`);
+  // Check the latest date available in the presets history file
+  if (!(await fs.pathExists(PRESETS_HISTORY_PBF_FILE))) {
+    throw new Error(
+      `Could not find presets history file, please run update-presets-history task.`
+    );
+  } else if (!(await fs.pathExists(PRESETS_HISTORY_META_JSON))) {
+    throw new Error(
+      `Could not find metadata for presets history file, please run update-presets-history task.`
+    );
   }
 
-  // Get current day timestamp
-  const currentDayISO = currentDay.toISOString().replace(".000Z", "Z");
+  const presetsHistoryMeta = await fs.readJson(PRESETS_HISTORY_META_JSON);
+  firstHistoryTimestamp = new Date(presetsHistoryMeta.elements.firstTimestamp);
+  lastHistoryTimestamp = new Date(presetsHistoryMeta.elements.lastTimestamp);
 
-  // Extract OSM data from history file at the current date
-  logger(`Filtering: ${currentDayISO}`);
-  await timeFilter(PRESETS_HISTORY_PBF_FILE, currentDayISO, CURRENT_DAY_FILE);
+  const git = await simpleGit({ baseDir: CLI_GIT_DIR });
 
-  if (await pbfIsEmpty(CURRENT_DAY_FILE)) {
-    logger(`No data found, skipping ${currentDayISO}`);
+  // Reset local git directory
+  await fs.emptyDir(CLI_GIT_DIR);
+  await git.raw("-c", "init.defaultbranch=main", "init");
+  await git.addRemote("origin", `${GIT_REPOSITORY_URL}`);
+
+  // Get last daily update
+  const remoteHeads = await git.listRemote(["--heads", "origin"]);
+  if (remoteHeads?.indexOf("main") > -1) {
+    await git.pull("origin", "main", "--depth=1");
+
+    lastDailyUpdate = parseISO(
+      (await fs.readJSON(path.join(CLI_GIT_DIR, "package.json")))
+        .lastDailyUpdate
+    );
+  } else {
+    // If not commits are available, set the last day update to the day before
+    // the default start date
+    lastDailyUpdate = endOfDay(subDays(defaultStartDate, 1));
+  }
+
+  // Set current daily update to the next after the last daily update
+  let currentDailyUpdate = addDays(lastDailyUpdate, 1);
+
+  if (isBefore(currentDailyUpdate, startOfDay(firstHistoryTimestamp))) {
+    // If the repository was updated before the first history timestamp, use
+    // the first history timestamp as start date
+    currentDailyUpdate = endOfDay(firstHistoryTimestamp);
+  } else if (isAfter(currentDailyUpdate, endOfDay(lastHistoryTimestamp))) {
+    logger.info(
+      `The history file doesn't include ${currentDailyUpdate.toISOString()}, nothing to update.`
+    );
     return;
   }
 
-  logger(`Extracting country from current day file...`);
+  // Get current day timestamp
+  const currentDayISO = currentDailyUpdate
+    .toISOString()
+    .slice(0, 19)
+    .concat("Z");
+
+  // Extract OSM data from history file at the current date
+  logger.info(`Filtering: ${currentDayISO}`);
+  await timeFilter(PRESETS_HISTORY_PBF_FILE, currentDayISO, CURRENT_DAY_FILE);
+
+  if (await pbfIsEmpty(CURRENT_DAY_FILE)) {
+    logger.info(`No data found, skipping ${currentDayISO}`);
+    return;
+  }
+
+  logger.info(`Extracting country from current day file...`);
   await extractPoly(
     path.join(POLYFILES_LEVEL_0_DIR, "brazil.poly"),
     CURRENT_DAY_FILE,
@@ -100,7 +139,7 @@ export const update = async (options) => {
   );
 
   // Extract level 1 data
-  logger(`Extracting level 1 data...`);
+  logger.info(`Extracting level 1 data...`);
   await fs.remove(CURRENT_DAY_LEVEL_1_DIR);
   await fs.ensureDir(CURRENT_DAY_LEVEL_1_DIR);
 
@@ -111,7 +150,7 @@ export const update = async (options) => {
   for (let i = 0; i < level1Polyfiles.length; i++) {
     const polyfileName = level1Polyfiles[i];
     const level1AreaId = polyfileName.split(".")[0];
-    logger(`Extracting level 1 area with id: ${level1AreaId}...`);
+    logger.info(`Extracting level 1 area with id: ${level1AreaId}...`);
     await extractPoly(
       path.join(POLYFILES_LEVEL_1_DIR, polyfileName),
       CURRENT_DAY_COUNTRY_FILE,
@@ -120,7 +159,7 @@ export const update = async (options) => {
   }
 
   // Extract level 2 data
-  logger(`Extracting level 2 data...`);
+  logger.info(`Extracting level 2 data...`);
   await fs.remove(CURRENT_DAY_LEVEL_2_DIR);
   await fs.ensureDir(CURRENT_DAY_LEVEL_2_DIR);
 
@@ -145,10 +184,10 @@ export const update = async (options) => {
 
     if (await pbfIsEmpty(level1FilePath)) {
       // Bypass if file is empty
-      logger(`No data found for level 1 area with id: ${level1AreaId}`);
+      logger.verbose(`No data found for level 1 area with id: ${level1AreaId}`);
     } else {
       // Extract level 2 area
-      logger(`Extracting level 2 area with id: ${level2AreaId}...`);
+      logger.verbose(`Extracting level 2 area with id: ${level2AreaId}...`);
       await extractPoly(
         path.join(POLYFILES_LEVEL_2_DIR, polyfileName),
         level1FilePath,
@@ -158,7 +197,7 @@ export const update = async (options) => {
   }
 
   // Extract level 3 data
-  logger(`Extracting level 3 data...`);
+  logger.info(`Extracting level 3 data...`);
   await fs.remove(CURRENT_DAY_LEVEL_3_DIR);
   await fs.ensureDir(CURRENT_DAY_LEVEL_3_DIR);
 
@@ -193,9 +232,9 @@ export const update = async (options) => {
       (await pbfIsEmpty(level2FilePath))
     ) {
       // Bypass if file is empty
-      logger(`No data found for level 2 area with id: ${level2AreaId}`);
+      logger.verbose(`No data found for level 2 area with id: ${level2AreaId}`);
     } else {
-      logger(`Extracting level 3 area with id: ${level3AreaId}...`);
+      logger.verbose(`Extracting level 3 area with id: ${level3AreaId}...`);
       await extractPoly(
         path.join(POLYFILES_LEVEL_3_DIR, polyfileName),
         level2FilePath,
@@ -204,7 +243,7 @@ export const update = async (options) => {
     }
   }
 
-  logger(`Updating GeoJSON files...`);
+  logger.info(`Updating GeoJSON files...`);
   // Clear OSM datasets
   await fs.emptyDir(CURRENT_DAY_PRESETS_DIR);
 
@@ -300,9 +339,15 @@ export const update = async (options) => {
 
   geojsonProgressBar.stop();
 
-  await fs.writeJSON(path.join(CLI_GIT_DIR, "package.json"), {
-    updatedAt: currentDay,
-  });
+  await fs.writeJSON(
+    path.join(CLI_GIT_DIR, "package.json"),
+    {
+      firstHistoryTimestamp,
+      lastHistoryTimestamp,
+      lastDailyUpdate: currentDayISO,
+    },
+    { spaces: 2 }
+  );
 
   // Commit
   await git.add(".");
@@ -313,7 +358,7 @@ export const update = async (options) => {
     .env({
       GIT_COMMITTER_DATE: currentDayISO,
     })
-    .commit(`Status of ${currentDayISO}`);
+    .commit(`${currentDayISO}`);
 
   await git.push("origin", "main", { "--set-upstream": null });
 

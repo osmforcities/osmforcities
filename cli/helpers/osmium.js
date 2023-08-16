@@ -1,5 +1,4 @@
-import execa from "execa";
-import { execaToStdout } from "./execa.js";
+import exec from "./exec.js";
 
 /**
  * Filters a history file by a date.
@@ -9,7 +8,7 @@ import { execaToStdout } from "./execa.js";
  * @param {string} destinationFile File path to destination file
  */
 export async function timeFilter(historyFile, dateIso, destinationFile) {
-  await execaToStdout("osmium", [
+  await exec("osmium", [
     "time-filter",
     historyFile,
     dateIso,
@@ -26,7 +25,7 @@ export async function timeFilter(historyFile, dateIso, destinationFile) {
  * @param {string} currentDayFile File path to current day file
  */
 export async function extract(configFile, currentDayFile) {
-  await execaToStdout(`osmium`, [
+  await exec(`osmium`, [
     `extract`,
     `-v`,
     `-c`,
@@ -43,7 +42,7 @@ export async function extract(configFile, currentDayFile) {
  * @param {string} currentDayFile File path to current day file
  */
 export async function extractPoly(polyfilePath, source, target) {
-  await execaToStdout(`osmium`, [
+  await exec(`osmium`, [
     `extract`,
     `-p`,
     polyfilePath,
@@ -62,7 +61,7 @@ export async function extractPoly(polyfilePath, source, target) {
  * @param {string} outputFile File path to output file
  */
 export async function tagsFilter(inputFile, filters, outputFile) {
-  await execa(`osmium`, [
+  await exec(`osmium`, [
     "tags-filter",
     inputFile,
     "-v",
@@ -72,3 +71,10 @@ export async function tagsFilter(inputFile, filters, outputFile) {
     outputFile,
   ]);
 }
+
+export default {
+  timeFilter,
+  extract,
+  extractPoly,
+  tagsFilter,
+};

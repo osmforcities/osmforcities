@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A platform for distributing OpenStreetMap data presets for cities",
   "scripts": {
-    "cli": "node cli/index.js",
+    "cli": "TZ=UTC node cli/index.js",
     "lint": "eslint cli"
   },
   "author": "Vitor George <vitor.george@gmail.com>",
@@ -15,8 +15,8 @@
     "knex": "^2.4.2",
     "osmtogeojson": "^3.0.0-beta.4",
     "pg": "^8.7.3",
-    "pino": "^8.14.1",
-    "pino-pretty": "^10.0.0"
+    "winston": "^3.9.0",
+    "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
     "@fast-csv/parse": "^4.3.6",

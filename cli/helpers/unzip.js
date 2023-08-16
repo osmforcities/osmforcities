@@ -1,5 +1,5 @@
-import { execaToStdout } from "./execa.js";
+import exec from "./exec.js";
 
 export async function unzip(file, destination) {
-  await execaToStdout("unzip", ["-o", file, "-d", destination]);
+  await exec("unzip", ["-o", file, "-d", destination]);
 }

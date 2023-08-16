@@ -20,7 +20,7 @@ export const GIT_REPOSITORY_NAME = "brazil";
 const repositoryUrl = new URL(GITEA_HOST_URL);
 repositoryUrl.username = GITEA_USER;
 repositoryUrl.password = GITEA_ACCESS_TOKEN;
-repositoryUrl.pathname = `/${GIT_ORGANIZATION}/${GIT_REPOSITORY_NAME}`;
+repositoryUrl.pathname = `/${GIT_ORGANIZATION}/${GIT_REPOSITORY_NAME}.git`;
 export const GIT_REPOSITORY_URL = repositoryUrl.toString();
 
 // CLI directories
