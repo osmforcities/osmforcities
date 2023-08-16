@@ -13,8 +13,8 @@ metadata:
 spec:
   schedule: {{ quote .Values.runner.update.schedule }}
   startingDeadlineSeconds: 10
-  successfulJobsHistoryLimit: 2
-  failedJobsHistoryLimit: 2
+  successfulJobsHistoryLimit: 10
+  failedJobsHistoryLimit: 10
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
