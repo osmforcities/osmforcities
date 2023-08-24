@@ -63,7 +63,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        aws-region: us-west-1
 
     - name: Setup Kubectl and Helm Dependencies
       if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
@@ -79,12 +79,12 @@ jobs:
 
     - name: Update kube-config dev/staging
       if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
-      run: aws eks --region us-east-1 update-kubeconfig --name dev-ofc-cluster
+      run: aws eks --region us-west-1 update-kubeconfig --name ofc-production
 
     - name: Staging - helm deploy
       if: github.ref == 'refs/heads/develop'
-      run: helm upgrade staging --wait ./osm-for-cities -f ./osm-for-cities/values.staging.deploy.yaml
+      run: helm upgrade --install staging --wait ./osm-for-cities -f ./osm-for-cities/values.staging.deploy.yaml
 
     - name: Production - helm deploy
       if: github.ref == 'refs/heads/main'
-      run: helm upgrade prod ./osm-for-cities -f ./osm-for-cities/values.production.deploy.yaml --namespace production
+      run: helm upgrade --install production ./osm-for-cities -f ./osm-for-cities/values.production.deploy.yaml
