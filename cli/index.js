@@ -60,14 +60,9 @@ program
   })
   .argument(
     "<action>",
-    "Action type, must be 'setup' , 'update' , 'reset-git-local' or 'reset-git-remote'",
+    "Action type, must be 'setup', 'update' or 'reset-git-remote'",
     (actionType) => {
-      const allowedActions = [
-        "setup",
-        "update",
-        "reset-git-local",
-        "reset-git-remote",
-      ];
+      const allowedActions = ["setup", "update", "reset-git-remote"];
       // Check if action is valid
       if (!allowedActions.includes(actionType)) {
         program.error(

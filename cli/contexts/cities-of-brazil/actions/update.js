@@ -296,7 +296,7 @@ export const update = async (options) => {
               `${municipalityId}-${preset.id}.osm.pbf`
             );
 
-            await tagsFilter(level3File, preset.osmium_filter, presetFile);
+            await tagsFilter(level3File, preset.osmium_filter.split(','), presetFile);
 
             if (!(await pbfIsEmpty(presetFile))) {
               const geojsonFile = path.join(
