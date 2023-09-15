@@ -1,5 +1,5 @@
 import * as path from "path";
-import fs from "fs-extra";
+import fs, { ensureDir } from "fs-extra";
 import cliProgress from "cli-progress";
 import {
   addDays,
@@ -32,6 +32,7 @@ import {
   PRESETS_HISTORY_PBF_FILE,
   getPresets,
   PRESETS_HISTORY_META_JSON,
+  HISTORY_PBF_PATH,
 } from "../../../../config/index.js";
 
 // Context config
@@ -50,6 +51,7 @@ import {
   POLYFILES_LEVEL_2_DIR,
   POLYFILES_LEVEL_3_DIR,
 } from "../config.js";
+import s3 from "../../../helpers/s3.js";
 
 // Set concurrency limit
 const limit = pLimit(20);
@@ -64,6 +66,21 @@ export const update = async (options) => {
   let lastHistoryTimestamp;
   let defaultStartDate = parseISO(GIT_HISTORY_START_DATE);
   let lastDailyUpdate;
+
+  /**
+   * Download latest history file from S3 bucket if option `s3` is enabled. The
+   * option `skipS3Download` is used on recursive calls to avoid downloading the
+   * file again.
+   */
+  if (options?.s3 && !options?.skipS3Download) {
+    logger.info("Downloading from s3...");
+    await ensureDir(HISTORY_PBF_PATH);
+    await s3.download("presets-history.osh.pbf", PRESETS_HISTORY_PBF_FILE);
+    await s3.download(
+      "presets-history.osh.pbf.json",
+      PRESETS_HISTORY_META_JSON
+    );
+  }
 
   // Check the latest date available in the presets history file
   if (!(await fs.pathExists(PRESETS_HISTORY_PBF_FILE))) {
@@ -364,7 +381,7 @@ export const update = async (options) => {
 
   // Run update again if it was called recursively
   if (options && options.recursive) {
-    update(options);
+    update({ ...options, skipS3Download: true });
   }
 };
 
