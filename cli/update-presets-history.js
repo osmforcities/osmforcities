@@ -9,13 +9,17 @@ import {
 } from "date-fns";
 import { logger, time, timeEnd } from "./helpers/logger.js";
 import {
+  HISTORY_PBF_PATH,
   PRESETS_HISTORY_META_JSON,
   PRESETS_HISTORY_PBF_FILE,
   TMP_DIR,
+  getPresets,
 } from "../config/index.js";
 import exec from "./helpers/exec.js";
 import { curlDownload } from "./helpers/curl-download.js";
 import execa from "execa";
+import s3 from "./helpers/s3.js";
+import osmium from "./helpers/osmium.js";
 
 const TMP_HISTORY_DIR = path.join(TMP_DIR, "history");
 
@@ -71,6 +75,21 @@ export async function updatePresetsHistoryMetafile(extraMeta = {}) {
 export async function updatePresetsHistory(options) {
   // Create tmp dir for history files
   await ensureDir(TMP_HISTORY_DIR);
+
+  /**
+   * Download latest history file from S3 bucket if option `s3` is enabled. The
+   * option `skipS3Download` is used on recursive calls to avoid downloading the
+   * file again.
+   */
+  if (options?.s3 && !options?.skipS3Download) {
+    logger.info("Downloading from s3...");
+    await ensureDir(HISTORY_PBF_PATH);
+    await s3.download("presets-history.osh.pbf", PRESETS_HISTORY_PBF_FILE);
+    await s3.download(
+      "presets-history.osh.pbf.json",
+      PRESETS_HISTORY_META_JSON
+    );
+  }
 
   time("Daily update total duration");
   if (!(await fs.pathExists(PRESETS_HISTORY_PBF_FILE))) {
@@ -158,13 +177,24 @@ export async function updatePresetsHistory(options) {
   ]);
   timeEnd("Duration of daily change apply operation");
 
-  logger.info(`Replacing current file...`);
-  await fs.move(UPDATED_PRESETS_HISTORY_FILE, PRESETS_HISTORY_PBF_FILE, {
-    overwrite: true,
-  });
+  // Filter presets from history file
+  const presets = await getPresets();
+  const osmiumFilters = presets.map((p) => p.osmium_filter);
+
+  logger.info("Filtering presets from history file...");
+  await osmium.tagsFilter(
+    UPDATED_PRESETS_HISTORY_FILE,
+    osmiumFilters,
+    PRESETS_HISTORY_PBF_FILE
+  );
 
   await updatePresetsHistoryMetafile();
   logger.info(`Finished!`);
+
+  if (options.s3) {
+    await s3.upload(PRESETS_HISTORY_PBF_FILE, "presets-history.osh.pbf");
+    await s3.upload(PRESETS_HISTORY_META_JSON, "presets-history.osh.pbf.json");
+  }
 
   await fs.remove(dailyChangeFile);
 
@@ -172,6 +202,6 @@ export async function updatePresetsHistory(options) {
 
   if (options && options.recursive) {
     logger.info("Replicating history file...");
-    await updatePresetsHistory(options);
+    await updatePresetsHistory({ ...options, skipS3Download: true });
   }
 }

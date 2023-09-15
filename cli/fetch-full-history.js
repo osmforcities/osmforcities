@@ -12,8 +12,8 @@ import * as path from "path";
 import { curlDownload } from "./helpers/curl-download.js";
 import { updatePresetsHistoryMetafile } from "./update-presets-history.js";
 import { logger } from "./helpers/logger.js";
-
 import osmium from "./helpers/osmium.js";
+import s3 from "./helpers/s3.js";
 
 // Local constants
 
@@ -29,7 +29,7 @@ const PRESET_HISTORY_PBF_TMP_FILE = path.join(
  * history file, filter using Osmium tag filters from configuration files, and
  * then save it to the preset history PBF file.
  */
-export async function fetchFullHistory() {
+export async function fetchFullHistory(options) {
   await ensureDir(TMP_DIR);
   await ensureDir(HISTORY_PBF_PATH);
 
@@ -52,7 +52,12 @@ export async function fetchFullHistory() {
   logger.info("Moving history file to presets directory...");
   await exec("mv", [PRESET_HISTORY_PBF_TMP_FILE, PRESETS_HISTORY_PBF_FILE]);
 
+  // Reset meta JSON file
   await remove(PRESETS_HISTORY_META_JSON);
-
   await updatePresetsHistoryMetafile();
+
+  if (options.s3) {
+    await s3.upload(PRESETS_HISTORY_PBF_FILE, "presets-history.osh.pbf");
+    await s3.upload(PRESETS_HISTORY_META_JSON, "presets-history.osh.pbf.json");
+  }
 }

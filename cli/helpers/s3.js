@@ -36,3 +36,8 @@ export async function upload(filePath, key) {
     })
   );
 }
+
+export default {
+  download,
+  upload,
+};

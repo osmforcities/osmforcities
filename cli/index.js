@@ -20,6 +20,7 @@ program
 
 program
   .command("fetch-full-history")
+  .option("-s, --s3", "Persist files to AWS S3 bucket", false)
   .description(
     "Download latest history file and filter it by Osmium tag filters"
   )
@@ -27,6 +28,7 @@ program
 
 program
   .command("update-presets-history")
+  .option("-s, --s3", "Persist files to AWS S3 bucket", false)
   .description(
     "Apply daily diffs to presets history file and update it to present day"
   )
