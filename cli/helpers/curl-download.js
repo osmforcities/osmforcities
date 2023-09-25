@@ -15,6 +15,8 @@ export async function curlDownload(
     "-C", // Continue download if interrupted
     "-", // Continue download if interrupted
     "-L", // Follow redirects
+    "--retry",
+    "5", // Retry 5 times
     "-o",
   ]
 ) {
