@@ -9,6 +9,7 @@ import {
 } from "date-fns";
 import { logger, time, timeEnd } from "./helpers/logger.js";
 import {
+  FULL_HISTORY_FILE_URL,
   PRESETS_HISTORY_META_JSON,
   PRESETS_HISTORY_PBF_FILE,
   TMP_DIR,
@@ -138,6 +139,7 @@ export async function updatePresetsHistory(options) {
     );
     timeEnd("Duration of daily changefile download");
   } catch (error) {
+    logger.error(error);
     logger.info("Changefile is not available.");
     return;
   }
@@ -158,10 +160,22 @@ export async function updatePresetsHistory(options) {
   ]);
   timeEnd("Duration of daily change apply operation");
 
-  logger.info(`Replacing current file...`);
-  await fs.move(UPDATED_PRESETS_HISTORY_FILE, PRESETS_HISTORY_PBF_FILE, {
-    overwrite: true,
-  });
+  logger.info("getting all elements version");
+  await execa("osmium", [
+    "getid",
+    "--id-osm-file",
+    "/Users/vgeorge/dev/osm-for-cities/app-data/full-history-cache/history-230918.osm.pbf",
+    "--with-history",
+    UPDATED_PRESETS_HISTORY_FILE,
+    "--overwrite",
+    "-o",
+    PRESETS_HISTORY_PBF_FILE,
+  ]);
+
+  // logger.info(`Replacing current file...`);
+  // await fs.move(UPDATED_PRESETS_HISTORY_FILE, PRESETS_HISTORY_PBF_FILE, {
+  //   overwrite: true,
+  // });
 
   await updatePresetsHistoryMetafile();
   logger.info(`Finished!`);

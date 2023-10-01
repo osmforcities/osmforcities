@@ -36,15 +36,16 @@ export async function fetchFullHistory() {
   await remove(FULL_HISTORY_TMP_FILE);
 
   // Download latest history file to local volume with curl
-  logger.info("Downloading latest history file...");
-  await curlDownload(FULL_HISTORY_FILE_URL, FULL_HISTORY_TMP_FILE);
+  // logger.info("Downloading latest history file...");
+  // await curlDownload(FULL_HISTORY_FILE_URL, FULL_HISTORY_TMP_FILE);
 
   const presets = await getPresets();
   const osmiumFilters = presets.map((p) => p.osmium_filter);
 
   logger.info("Filtering presets from history file...");
   await osmium.tagsFilter(
-    FULL_HISTORY_TMP_FILE,
+    // FULL_HISTORY_TMP_FILE,
+    "/Users/vgeorge/dev/osm-for-cities/app-data/full-history-cache/history-230918.osm.pbf",
     osmiumFilters,
     PRESET_HISTORY_PBF_TMP_FILE
   );
