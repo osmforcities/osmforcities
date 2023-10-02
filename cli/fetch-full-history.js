@@ -33,7 +33,7 @@ export async function fetchFullHistory() {
   await ensureDir(TMP_DIR);
   await ensureDir(HISTORY_PBF_PATH);
 
-  await remove(FULL_HISTORY_TMP_FILE);
+  // await remove(FULL_HISTORY_TMP_FILE);
 
   // Download latest history file to local volume with curl
   // logger.info("Downloading latest history file...");
@@ -43,12 +43,17 @@ export async function fetchFullHistory() {
   const osmiumFilters = presets.map((p) => p.osmium_filter);
 
   logger.info("Filtering presets from history file...");
-  await osmium.tagsFilter(
+  await exec(`osmium`, [
+    "tags-filter",
     // FULL_HISTORY_TMP_FILE,
     "/Users/vgeorge/dev/osm-for-cities/app-data/full-history-cache/history-230918.osm.pbf",
-    osmiumFilters,
-    PRESET_HISTORY_PBF_TMP_FILE
-  );
+    "-v",
+    "--omit-referenced",
+    "--overwrite",
+    ...osmiumFilters,
+    "-o",
+    PRESET_HISTORY_PBF_TMP_FILE,
+  ]);
 
   logger.info("Moving history file to presets directory...");
   await exec("mv", [PRESET_HISTORY_PBF_TMP_FILE, PRESETS_HISTORY_PBF_FILE]);

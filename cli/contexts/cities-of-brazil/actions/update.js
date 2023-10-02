@@ -273,6 +273,7 @@ export const update = async (options) => {
 
         // Bypass if municipality is empty
         if (
+          municipalityId !== "2304400" ||
           !(await fs.pathExists(level3File)) ||
           (await pbfIsEmpty(level3File))
         ) {
