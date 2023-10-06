@@ -2,8 +2,7 @@ import exec from "./helpers/exec.js";
 import {
   TMP_DIR,
   HISTORY_PBF_PATH,
-  FULL_HISTORY_FILE_URL,
-  getPresets,
+  CONFIG_PATH,
   PRESETS_HISTORY_PBF_FILE,
   PRESETS_HISTORY_META_JSON,
 } from "../config/index.js";
@@ -12,8 +11,6 @@ import * as path from "path";
 import { curlDownload } from "./helpers/curl-download.js";
 import { updatePresetsHistoryMetafile } from "./update-presets-history.js";
 import { logger } from "./helpers/logger.js";
-
-import osmium from "./helpers/osmium.js";
 
 // Local constants
 
@@ -25,39 +22,41 @@ const PRESET_HISTORY_PBF_TMP_FILE = path.join(
 );
 
 /**
- * Refreshes the presets history PBF file. This task will download the latest
- * history file, filter using Osmium tag filters from configuration files, and
- * then save it to the preset history PBF file.
+ * Fetches the latest history file and filters it by Osmium tag filters.
+ *
+ * @param {Object} options Options
+ * @param {string} options.local Use local history file
  */
-export async function fetchFullHistory() {
+export async function fetchFullHistory({ local }) {
   await ensureDir(TMP_DIR);
   await ensureDir(HISTORY_PBF_PATH);
 
   // await remove(FULL_HISTORY_TMP_FILE);
 
-  // Download latest history file to local volume with curl
-  // logger.info("Downloading latest history file...");
-  // await curlDownload(FULL_HISTORY_FILE_URL, FULL_HISTORY_TMP_FILE);
+  let historyFile;
+  if (typeof local === "undefined") {
+    // Download latest history file to local volume with curl
+    // logger.info("Downloading latest history file...");
+    // await curlDownload(FULL_HISTORY_FILE_URL, FULL_HISTORY_TMP_FILE);
+    historyFile = FULL_HISTORY_TMP_FILE;
+  } else {
+    historyFile = local;
+  }
 
-  const presets = await getPresets();
-  const osmiumFilters = presets.map((p) => p.osmium_filter);
+  logger.info("Extract the history of the area covered by osmforcities...");
 
-  logger.info("Filtering presets from history file...");
   await exec(`osmium`, [
-    "tags-filter",
-    // FULL_HISTORY_TMP_FILE,
-    "/Users/vgeorge/dev/osm-for-cities/app-data/full-history-cache/history-230918.osm.pbf",
-    "-v",
-    "--omit-referenced",
-    "--overwrite",
-    ...osmiumFilters,
-    "-o",
-    PRESET_HISTORY_PBF_TMP_FILE,
+    `extract`,
+    `--with-history`,
+    `-p`,
+    path.join(CONFIG_PATH, "coverage.poly"),
+    historyFile,
+    `-o`,
+    PRESETS_HISTORY_PBF_FILE,
+    `--overwrite`,
   ]);
 
-  logger.info("Moving history file to presets directory...");
-  await exec("mv", [PRESET_HISTORY_PBF_TMP_FILE, PRESETS_HISTORY_PBF_FILE]);
-
+  // Reset json metafile if exists
   await remove(PRESETS_HISTORY_META_JSON);
 
   await updatePresetsHistoryMetafile();

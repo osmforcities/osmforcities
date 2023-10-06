@@ -20,6 +20,7 @@ program
 
 program
   .command("fetch-full-history")
+  .option("-l, --local <local_history_path>", "Use local history file")
   .description(
     "Download latest history file and filter it by Osmium tag filters"
   )
