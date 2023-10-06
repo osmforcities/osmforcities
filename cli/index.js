@@ -2,7 +2,7 @@ import "dotenv/config";
 import fs from "fs-extra";
 import { program } from "commander";
 import { logger } from "./helpers/logger.js";
-import { fetchFullHistory } from "./fetch-full-history.js";
+import { initHistory } from "./tasks/history/init.js";
 import { updatePresetsHistory } from "./update-presets-history.js";
 
 const pkg = await fs.readJson("./package.json");
@@ -19,12 +19,12 @@ program
   });
 
 program
-  .command("fetch-full-history")
+  .command("init-history")
   .option("-l, --local <local_history_path>", "Use local history file")
   .description(
-    "Download latest history file and filter it by Osmium tag filters"
+    "Extract the history of the area covered by osmforcities, from remote planet full history or a local file."
   )
-  .action(fetchFullHistory);
+  .action(initHistory);
 
 program
   .command("update-presets-history")
