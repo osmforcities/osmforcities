@@ -4,7 +4,7 @@ import {
   HISTORY_PBF_PATH,
   CONFIG_PATH,
   HISTORY_PBF_FILE,
-  PRESETS_HISTORY_META_JSON,
+  HISTORY_META_JSON,
   FULL_HISTORY_FILE_URL,
 } from "../../../config/index.js";
 import { ensureDir, remove } from "fs-extra";
@@ -51,7 +51,7 @@ export async function initHistory({ local }) {
   ]);
 
   // Reset json metafile if exists
-  await remove(PRESETS_HISTORY_META_JSON);
+  await remove(HISTORY_META_JSON);
 
   await updateHistoryMetafile();
 }

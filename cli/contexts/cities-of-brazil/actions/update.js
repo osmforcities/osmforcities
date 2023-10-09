@@ -31,7 +31,7 @@ import {
   GIT_HISTORY_START_DATE,
   HISTORY_PBF_FILE,
   getPresets,
-  PRESETS_HISTORY_META_JSON,
+  HISTORY_META_JSON,
 } from "../../../../config/index.js";
 
 // Context config
@@ -40,6 +40,7 @@ import {
   CURRENT_DAY_COUNTRY_FILE,
   CURRENT_DAY_DIR,
   CURRENT_DAY_FILE,
+  CURRENT_DAY_ALL_TAGS_FILE,
   CURRENT_DAY_LEVEL_1_DIR,
   CURRENT_DAY_LEVEL_2_DIR,
   CURRENT_DAY_LEVEL_3_DIR,
@@ -70,13 +71,13 @@ export const update = async (options) => {
     throw new Error(
       `Could not find presets history file, please run update-presets-history task.`
     );
-  } else if (!(await fs.pathExists(PRESETS_HISTORY_META_JSON))) {
+  } else if (!(await fs.pathExists(HISTORY_META_JSON))) {
     throw new Error(
       `Could not find metadata for presets history file, please run update-presets-history task.`
     );
   }
 
-  const presetsHistoryMeta = await fs.readJson(PRESETS_HISTORY_META_JSON);
+  const presetsHistoryMeta = await fs.readJson(HISTORY_META_JSON);
   firstHistoryTimestamp = new Date(presetsHistoryMeta.elements.firstTimestamp);
   lastHistoryTimestamp = new Date(presetsHistoryMeta.elements.lastTimestamp);
 
@@ -281,7 +282,6 @@ export const update = async (options) => {
 
         // Bypass if municipality is empty
         if (
-          municipalityId !== "2304400" ||
           !(await fs.pathExists(level3File)) ||
           (await pbfIsEmpty(level3File))
         ) {

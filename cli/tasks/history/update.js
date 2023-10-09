@@ -10,7 +10,7 @@ import {
 import { logger, time, timeEnd } from "../../helpers/logger.js";
 import {
   FULL_HISTORY_FILE_URL,
-  PRESETS_HISTORY_META_JSON,
+  HISTORY_META_JSON,
   HISTORY_PBF_FILE,
   TMP_DIR,
 } from "../../../config/index.js";
@@ -29,8 +29,8 @@ export async function updateHistoryMetafile(extraMeta = {}) {
   let historyMeta = {};
 
   // Load meta JSON file if it exists
-  if (await fs.pathExists(PRESETS_HISTORY_META_JSON)) {
-    historyMeta = await fs.readJson(PRESETS_HISTORY_META_JSON);
+  if (await fs.pathExists(HISTORY_META_JSON)) {
+    historyMeta = await fs.readJson(HISTORY_META_JSON);
   }
 
   time("Duration of timestamp update");
@@ -54,7 +54,7 @@ export async function updateHistoryMetafile(extraMeta = {}) {
 
   // Write timestamp to meta JSON file
   await fs.writeJSON(
-    PRESETS_HISTORY_META_JSON,
+    HISTORY_META_JSON,
     {
       ...historyMeta,
       elements: {
@@ -79,11 +79,11 @@ export async function updateHistory(options) {
   }
 
   // Get timestamp from history file and update meta
-  if (!(await fs.pathExists(PRESETS_HISTORY_META_JSON))) {
+  if (!(await fs.pathExists(HISTORY_META_JSON))) {
     await updateHistoryMetafile();
   }
 
-  const historyFileMeta = await fs.readJSON(PRESETS_HISTORY_META_JSON);
+  const historyFileMeta = await fs.readJSON(HISTORY_META_JSON);
 
   let lastDailyUpdate = endOfDay(
     parseISO(`${historyFileMeta.elements.lastTimestamp.slice(0, 10)}Z`)

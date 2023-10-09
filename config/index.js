@@ -106,4 +106,4 @@ export const HISTORY_PBF_PATH =
   process.env.HISTORY_PBF_PATH || path.join(CLI_DATA_DIR, "history-pbf");
 
 export const HISTORY_PBF_FILE = path.join(HISTORY_PBF_PATH, "history.osh.pbf");
-export const PRESETS_HISTORY_META_JSON = `${HISTORY_PBF_FILE}.json`;
+export const HISTORY_META_JSON = `${HISTORY_PBF_FILE}.json`;

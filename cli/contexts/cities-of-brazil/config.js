@@ -40,6 +40,10 @@ export const POLYFILES_LEVEL_3_DIR = path.join(POLYFILES_DIR, "municipalities");
 
 // Day extract file
 export const CURRENT_DAY_DIR = path.join(CLI_TMP_DIR, "current-day");
+export const CURRENT_DAY_ALL_TAGS_FILE = path.join(
+  CURRENT_DAY_DIR,
+  "current-day-all-tags.osm.pbf"
+);
 export const CURRENT_DAY_FILE = path.join(
   CURRENT_DAY_DIR,
   "current-day.osm.pbf"
