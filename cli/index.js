@@ -3,7 +3,7 @@ import fs from "fs-extra";
 import { program } from "commander";
 import { logger } from "./helpers/logger.js";
 import { initHistory } from "./tasks/history/init.js";
-import { updatePresetsHistory } from "./update-presets-history.js";
+import { updateHistory } from "./tasks/history/update.js";
 
 const pkg = await fs.readJson("./package.json");
 const contexts = await fs.readdir("./cli/contexts");
@@ -27,12 +27,12 @@ program
   .action(initHistory);
 
 program
-  .command("update-presets-history")
+  .command("update-history")
   .description(
     "Apply daily diffs to presets history file and update it to present day"
   )
   .option("-r, --recursive", "Repeat updates to present day", false)
-  .action(updatePresetsHistory);
+  .action(updateHistory);
 
 program
   .command("list-contexts")

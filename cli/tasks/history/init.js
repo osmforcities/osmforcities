@@ -3,14 +3,14 @@ import {
   TMP_DIR,
   HISTORY_PBF_PATH,
   CONFIG_PATH,
-  PRESETS_HISTORY_PBF_FILE,
+  HISTORY_PBF_FILE,
   PRESETS_HISTORY_META_JSON,
   FULL_HISTORY_FILE_URL,
 } from "../../../config/index.js";
 import { ensureDir, remove } from "fs-extra";
 import * as path from "path";
 import { curlDownload } from "../../helpers/curl-download.js";
-import { updatePresetsHistoryMetafile } from "../../update-presets-history.js";
+import { updateHistoryMetafile } from "./update.js";
 import { logger } from "../../helpers/logger.js";
 
 // Local constants
@@ -46,12 +46,12 @@ export async function initHistory({ local }) {
     path.join(CONFIG_PATH, "coverage.poly"),
     historyFile,
     `-o`,
-    PRESETS_HISTORY_PBF_FILE,
+    HISTORY_PBF_FILE,
     `--overwrite`,
   ]);
 
   // Reset json metafile if exists
   await remove(PRESETS_HISTORY_META_JSON);
 
-  await updatePresetsHistoryMetafile();
+  await updateHistoryMetafile();
 }
