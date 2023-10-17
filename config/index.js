@@ -6,9 +6,7 @@ const NODE_ENV = process.env.NODE_ENV || "development";
 
 const basePath = path.resolve();
 
-/**
- * Path to the runner app
- */
+export const CONFIG_PATH = path.join(basePath, "config");
 export const CLI_APP_DIR = path.join(basePath, "cli");
 
 /**
@@ -66,7 +64,7 @@ export const GITEA_HOST_URL =
  *
  * The sample was generate with the following commands:
  *
- * osmium time-filter -o ofc-sample.osh.pbf presets-history.osh.pbf 2015-05-01T00:00:00Z 2015-05-05T00:00:00Z
+ * osmium time-filter -o ofc-sample.osh.pbf history.osh.pbf 2015-05-01T00:00:00Z 2015-05-05T00:00:00Z
  * osmium extract --bbox -77,-34,-28,9 -H ofc-sample.osh.pbf -o sao-paulo-2015-05-01-2015-05-05.osh.pbf
  */
 export const FULL_HISTORY_FILE_URL =
@@ -107,8 +105,5 @@ export const CONTEXTS_DATA_PATH = path.join(CLI_DATA_DIR, "contexts");
 export const HISTORY_PBF_PATH =
   process.env.HISTORY_PBF_PATH || path.join(CLI_DATA_DIR, "history-pbf");
 
-export const PRESETS_HISTORY_PBF_FILE = path.join(
-  HISTORY_PBF_PATH,
-  "presets-history.osh.pbf"
-);
-export const PRESETS_HISTORY_META_JSON = `${PRESETS_HISTORY_PBF_FILE}.json`;
+export const HISTORY_PBF_FILE = path.join(HISTORY_PBF_PATH, "history.osh.pbf");
+export const HISTORY_META_JSON = `${HISTORY_PBF_FILE}.json`;
