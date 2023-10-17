@@ -31,7 +31,7 @@ This command will start a Gitea server and mount data volumes to the directory `
 
 3. Copy token to `GITEA_ACCESS_TOKEN` environment variable in `.env` file
 
-### Setup command line runner (for development)
+### Setup command line runner
 
 Activate required Node version, if nvm is installed:
 
@@ -45,13 +45,33 @@ Install Node modules:
 yarn
 ```
 
-Fetch history file:
+Initialize history file:
 
 ```sh
-yarn runner fetch-full-history
+yarn cli init-history
 ```
 
-By default this command will download a reduced version of planet file for development purposes. Please check ["Deploy to production"](#deploy-to-production) section for working with the full history file.
+This command will download the full planet history and perform a geographic extract for the area covered by osmforcities defined in [config/coverage.poly](config/coverage.poly).
+
+Initialize remote git repository:
+
+```sh
+yarn cli context cities-of-brazil setup
+```
+
+### Generate data
+
+The following command will apply all the daily diff files available at [Planet OSM](https://planet.osm.org/replication/day/). This is necessary because the full history file is always outdated by some days.
+
+```sh
+yarn cli update-history --recursive
+```
+
+At this point you should have the full history available locally for processing. Now run the following to extract and publish data to the git repository:
+
+```sh
+yarn cli context cities-of-brazil update --recursive
+```
 
 ## License
 
