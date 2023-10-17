@@ -2,8 +2,8 @@ import "dotenv/config";
 import fs from "fs-extra";
 import { program } from "commander";
 import { logger } from "./helpers/logger.js";
-import { fetchFullHistory } from "./fetch-full-history.js";
-import { updatePresetsHistory } from "./update-presets-history.js";
+import { initHistory } from "./tasks/history/init.js";
+import { updateHistory } from "./tasks/history/update.js";
 
 const pkg = await fs.readJson("./package.json");
 const contexts = await fs.readdir("./cli/contexts");
@@ -19,19 +19,20 @@ program
   });
 
 program
-  .command("fetch-full-history")
+  .command("init-history")
+  .option("-l, --local <local_history_path>", "Use local history file")
   .description(
-    "Download latest history file and filter it by Osmium tag filters"
+    "Extract the history of the area covered by osmforcities, from remote planet full history or a local file."
   )
-  .action(fetchFullHistory);
+  .action(initHistory);
 
 program
-  .command("update-presets-history")
+  .command("update-history")
   .description(
     "Apply daily diffs to presets history file and update it to present day"
   )
   .option("-r, --recursive", "Repeat updates to present day", false)
-  .action(updatePresetsHistory);
+  .action(updateHistory);
 
 program
   .command("list-contexts")
