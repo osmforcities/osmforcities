@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 interface City {
   name: string;
   state: string;
-  normalized: string; // For the normalized name
+  normalized: string;
   slug: string;
 }
 
