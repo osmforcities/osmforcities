@@ -1,55 +1,40 @@
 "use client";
-import React, { useEffect, useState } from "react";
-
-interface City {
-  name: string;
-  state: string;
-  normalized: string;
-  slug: string;
-}
+import React, { useState, useEffect } from "react";
+import { City } from "../types/global";
 
 export const SearchInput = () => {
   const [cities, setCities] = useState<City[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [timeoutId, setTimeoutId] = useState<ReturnType<
+    typeof setTimeout
+  > | null>(null);
 
   useEffect(() => {
-    const loadCities = async () => {
-      const response = await fetch("/cities.csv");
-      const csvData = await response.text();
-      const rows = csvData.split("\n").slice(1); // Skip header row
-      const parsedCities = rows.map((row) => {
-        const columns = row.split(",");
-        return {
-          name: columns[3],
-          state: columns[2],
-          normalized: columns[14],
-          slug: columns[15],
-        };
-      });
-      setCities(parsedCities);
-    };
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
 
-    loadCities();
-  }, []);
+    if (searchTerm) {
+      const fetchCities = async () => {
+        try {
+          const response = await fetch(`/api/search?q=${searchTerm}`);
+          const { results } = await response.json();
+          setCities(results);
+        } catch (error) {
+          alert("An error occurred while performing the search.");
+        }
+      };
 
-  // Utility function to remove accents from user input
-  const normalizeInput = (str: string) => {
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  };
-
-  const filteredCities = cities
-    .filter((city) =>
-      city.normalized
-        .toLowerCase()
-        .includes(normalizeInput(searchTerm).toLowerCase())
-    )
-    .slice(0, 10);
+      const id = setTimeout(fetchCities, 500);
+      setTimeoutId(id);
+    }
+  }, [searchTerm]);
 
   return (
     <div className="h-screen w-full flex justify-center items-center">
       <div>
         <label htmlFor="citySearch" className="block mb-2">
-          Search:
+          Search a city:
         </label>
         <input
           id="citySearch"
@@ -61,7 +46,7 @@ export const SearchInput = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <datalist id="cities">
-          {filteredCities.map((city, index) => (
+          {cities.map((city, index) => (
             <option key={index} value={`${city.name} (${city.state})`} />
           ))}
         </datalist>
