@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { City } from "../types/global";
+import ReactSelect, { DropdownIndicatorProps } from "react-select";
+import { MagnifierRight } from "./icons";
 
 export const SearchInput = () => {
   const [cities, setCities] = useState<City[]>([]);
@@ -34,22 +36,32 @@ export const SearchInput = () => {
     <div className="h-screen w-full flex justify-center items-center">
       <div>
         <label htmlFor="citySearch" className="block mb-2">
-          Search a city:
+          Find a city:
         </label>
-        <input
+        <ReactSelect
           id="citySearch"
-          type="text"
+          autoFocus={true}
           placeholder="Type a city name"
-          className="border p-2 rounded"
-          list="cities"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          options={cities as City[]}
+          onInputChange={(value) => setSearchTerm(value)}
+          getOptionLabel={(city: City) => `${city.name} (${city.state})`}
+          getOptionValue={(city: City) => city.normalized}
+          isSearchable={true}
+          styles={{
+            control: (baseStyles) => ({
+              ...baseStyles,
+              width: "400px",
+            }),
+          }}
+          components={{
+            NoOptionsMessage: () => null,
+            DropdownIndicator: () => (
+              <div className="px-2">
+                <MagnifierRight />
+              </div>
+            ),
+          }}
         />
-        <datalist id="cities">
-          {cities.map((city, index) => (
-            <option key={index} value={`${city.name} (${city.state})`} />
-          ))}
-        </datalist>
       </div>
     </div>
   );
