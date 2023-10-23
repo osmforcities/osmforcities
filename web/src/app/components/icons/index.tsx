@@ -1,23 +1,12 @@
 import React from "react";
-import Image from "next/image";
+import { Icon, IconProps } from "./icon";
+
+// This project uses Collecticons, available at https://collecticons.io/. To add
+// a new icon, download the SVG file from the Collecticons website and add it to
+// the ./icons directory. Then, import the svg file and add a new component
+// extending the Icon component.
+
 import MagnifierRightSvg from "./magnifier-right.svg";
-
-interface IconProps {
-  width?: number;
-  height?: number;
-  src: string;
-  alt: string;
-}
-
-export const Icon: React.FC<IconProps> = ({
-  width = 20,
-  height = 20,
-  src,
-  alt,
-}) => {
-  return <Image src={src} alt={alt} width={width} height={height} />;
-};
-
 export const MagnifierRight: React.FC<Omit<IconProps, "src" | "alt">> = (
   props
 ) => {
