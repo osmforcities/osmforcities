@@ -1,0 +1,28 @@
+country_code,code,type,name,name_normalized,osm_relation_id,wikidata_id
+BR,AC,state,Acre,Acre,326266,Q40780
+BR,AL,state,Alagoas,Alagoas,303781,Q40885
+BR,AM,state,Amazonas,Amazonas,332476,Q40040
+BR,AP,state,Amapá,Amapa,331463,Q40130
+BR,BA,state,Bahia,Bahia,362413,Q40430
+BR,CE,state,Ceará,Ceara,302635,Q40123
+BR,DF,state,Distrito Federal,Distrito Federal,421151,Q119158
+BR,ES,state,Espírito Santo,Espirito Santo,54882,Q43233
+BR,GO,state,Goiás,Goias,334443,Q41587
+BR,MA,state,Maranhão,Maranhao,332924,Q42362
+BR,MG,state,Minas Gerais,Minas Gerais,315173,Q39109
+BR,MS,state,Mato Grosso do Sul,Mato Grosso do Sul,334051,Q43319
+BR,MT,state,Mato Grosso,Mato Grosso,333597,Q42824
+BR,PA,state,Pará,Para,185579,Q39517
+BR,PB,state,Paraíba,Paraiba,301464,Q38088
+BR,PE,state,Pernambuco,Pernambuco,303702,Q40942
+BR,PI,state,Piauí,Piaui,302819,Q42722
+BR,PR,state,Paraná,Parana,297640,Q15499
+BR,RJ,state,Rio de Janeiro,Rio de Janeiro,57963,Q41428
+BR,RN,state,Rio Grande do Norte,Rio Grande do Norte,301079,Q43255
+BR,RO,state,Rondônia,Rondonia,325866,Q43235
+BR,RR,state,Roraima,Roraima,326287,Q42508
+BR,RS,state,Rio Grande do Sul,Rio Grande do Sul,242620,Q40030
+BR,SC,state,Santa Catarina,Santa Catarina,296584,Q41115
+BR,SE,state,Sergipe,Sergipe,303940,Q43783
+BR,SP,state,São Paulo,Sao Paulo,298204,Q175
+BR,TO,state,Tocantins,Tocantins,336819,Q43695

@@ -42,7 +42,6 @@ terraform.rc
 .terraform.lock.hcl
 .terraform
 example-yaml
-data
 package-lock.json
 !variables.prod.tfvars
 !variables.dev.tfvars
@@ -51,3 +50,4 @@ package-lock.json
 gitea/custom/conf/app.ini
 
 *.local.yaml
+*.sqlite3
