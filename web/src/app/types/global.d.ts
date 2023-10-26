@@ -1,7 +1,7 @@
 export interface City {
   name: string;
-  state: string;
-  normalized: string;
-  slug: string;
-  isCapital: boolean;
+  name_normalized: string;
+  name_slug: string;
+  region_code: string;
+  is_capital: boolean;
 }

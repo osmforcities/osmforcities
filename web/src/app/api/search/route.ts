@@ -1,5 +1,12 @@
 import { type NextRequest } from "next/server";
-import DbAdapter from "../../db";
+
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+const normalizeInput = (str: string) => {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+};
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -9,10 +16,19 @@ export async function GET(request: NextRequest) {
     return Response.json({ results: [] });
   }
 
-  const db = new DbAdapter();
-  await db.connect();
+  const normalizedQuery = normalizeInput(q.toLowerCase());
 
-  const results = await db.search(q as string);
+  const results = await prisma.cities.findMany({
+    where: {
+      name_normalized: {
+        contains: normalizedQuery,
+      },
+    },
+    orderBy: {
+      is_capital: "desc",
+    },
+    take: 10,
+  });
 
   return Response.json({ results });
 }

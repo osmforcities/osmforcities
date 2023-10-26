@@ -44,8 +44,8 @@ export const SearchInput = () => {
           placeholder="Type a city name"
           options={cities as City[]}
           onInputChange={(value) => setSearchTerm(value)}
-          getOptionLabel={(city: City) => `${city.name} (${city.state})`}
-          getOptionValue={(city: City) => city.normalized}
+          getOptionLabel={(city: City) => `${city.name} (${city.region_code})`}
+          getOptionValue={(city: City) => city.name_normalized}
           isSearchable={true}
           styles={{
             control: (baseStyles) => ({
