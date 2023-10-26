@@ -1,8 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { City } from "../types/global";
-import ReactSelect, { DropdownIndicatorProps } from "react-select";
+import ReactSelect from "react-select";
+import { useRouter } from "next/navigation";
 import { MagnifierRight } from "./icons";
+
+import { City } from "../types/global";
+
+const cityRoute = (city: City) =>
+  `/cities/${city.country_code.toLowerCase()}/${city.region_code.toLowerCase()}/${city.name_slug.toLowerCase()}`;
 
 export const SearchInput = () => {
   const [cities, setCities] = useState<City[]>([]);
@@ -10,6 +15,7 @@ export const SearchInput = () => {
   const [timeoutId, setTimeoutId] = useState<ReturnType<
     typeof setTimeout
   > | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (timeoutId) {
@@ -44,6 +50,11 @@ export const SearchInput = () => {
           placeholder="Type a city name"
           options={cities as City[]}
           onInputChange={(value) => setSearchTerm(value)}
+          onChange={(city) => {
+            if (city) {
+              router.push(cityRoute(city));
+            }
+          }}
           getOptionLabel={(city: City) => `${city.name} (${city.region_code})`}
           getOptionValue={(city: City) => city.name_normalized}
           isSearchable={true}
