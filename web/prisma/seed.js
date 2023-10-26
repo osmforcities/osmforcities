@@ -8,9 +8,9 @@ const prisma = new PrismaClient();
 
 async function seed() {
   // Deletes ALL existing entries
-  await prisma.cities.deleteMany();
-  await prisma.regions.deleteMany();
-  await prisma.countries.deleteMany();
+  await prisma.city.deleteMany();
+  await prisma.region.deleteMany();
+  await prisma.country.deleteMany();
 
   /**
    * Countries
@@ -26,7 +26,7 @@ async function seed() {
   });
 
   for (let country of countries) {
-    await prisma.countries.create({ data: country });
+    await prisma.country.create({ data: country });
   }
 
   /**
@@ -43,14 +43,14 @@ async function seed() {
   });
 
   for (let region of regions) {
-    const country = await prisma.countries.findFirst({
+    const country = await prisma.country.findFirst({
       where: { code: region.country_code },
     });
 
     if (country) {
-      await prisma.regions.create({
+      await prisma.region.create({
         data: {
-          country_id: country.id,
+          countryId: country.id,
           name: region.name,
           code: region.code,
         },
@@ -74,24 +74,17 @@ async function seed() {
   });
 
   for (let city of cities) {
-    const region = await prisma.regions.findFirst({
+    const region = await prisma.region.findFirst({
       where: { code: city.region_code },
     });
 
-    city.is_capital = city.is_capital === "TRUE";
+    city.is_capital = city.is_capital !== "";
 
     if (region) {
-      await prisma.cities.create({
+      await prisma.city.create({
         data: {
-          region_id: region.id,
-          ...pick(city, [
-            "country_code",
-            "region_code",
-            "name_slug",
-            "name",
-            "name_normalized",
-            "is_capital",
-          ]),
+          regionId: region.id,
+          ...pick(city, ["name_slug", "name", "name_normalized", "is_capital"]),
         },
       });
     } else {
