@@ -3,14 +3,10 @@ import React, { useState, useEffect } from "react";
 import ReactSelect from "react-select";
 import { useRouter } from "next/navigation";
 import { MagnifierRight } from "./icons";
-
-import { City } from "../types/global";
-
-const cityRoute = (city: City) =>
-  `/cities/${city.country_code.toLowerCase()}/${city.region_code.toLowerCase()}/${city.name_slug.toLowerCase()}`;
+import { SearchResult } from "../api/search/route";
 
 export const SearchInput = () => {
-  const [cities, setCities] = useState<City[]>([]);
+  const [results, setCities] = useState<SearchResult[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [timeoutId, setTimeoutId] = useState<ReturnType<
     typeof setTimeout
@@ -41,22 +37,19 @@ export const SearchInput = () => {
   return (
     <div className="h-screen w-full flex justify-center items-center">
       <div>
-        <label htmlFor="citySearch" className="block mb-2">
-          Find a city:
-        </label>
         <ReactSelect
           id="citySearch"
           autoFocus={true}
-          placeholder="Type a city name"
-          options={cities as City[]}
+          placeholder="Search a city..."
+          options={results as SearchResult[]}
           onInputChange={(value) => setSearchTerm(value)}
-          onChange={(city) => {
-            if (city) {
-              router.push(cityRoute(city));
+          onChange={(result) => {
+            if (result) {
+              router.push(result.urlPath);
             }
           }}
-          getOptionLabel={(city: City) => `${city.name} (${city.region_code})`}
-          getOptionValue={(city: City) => city.name_normalized}
+          getOptionLabel={(result: SearchResult) => result.label}
+          getOptionValue={(result: SearchResult) => result.name_normalized}
           isSearchable={true}
           styles={{
             control: (baseStyles) => ({
