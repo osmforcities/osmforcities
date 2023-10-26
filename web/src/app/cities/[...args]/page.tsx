@@ -1,4 +1,5 @@
 import React from "react";
+import { notFound } from "next/navigation";
 import { fetchCityFromPath } from "./fetch";
 
 const Breadcrumb = ({
@@ -26,13 +27,13 @@ const CityPage = async (props: CityPageProps) => {
   const [countryCode, regionCode, cityCode] = props.params.args;
 
   if (!countryCode || !regionCode || !cityCode) {
-    return <div>Invalid city path</div>;
+    return notFound();
   }
 
   const city = await fetchCityFromPath([countryCode, regionCode, cityCode]);
 
   if (!city) {
-    return <div>City not found</div>;
+    return notFound();
   }
 
   return (
