@@ -20,6 +20,7 @@ model City {
 model Region {
   id        Int     @id @default(autoincrement())
   name      String
+  name_slug String
   code      String
   countryId Int
   cities    City[]
@@ -27,8 +28,9 @@ model Region {
 }
 
 model Country {
-  id      Int      @id @default(autoincrement())
-  name    String
-  code    String   @unique
-  regions Region[]
+  id        Int      @id @default(autoincrement())
+  name      String
+  name_slug String
+  code      String   @unique
+  regions   Region[]
 }

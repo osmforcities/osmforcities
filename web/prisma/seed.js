@@ -52,6 +52,7 @@ async function seed() {
         data: {
           countryId: country.id,
           name: region.name,
+          name_slug: region.name_slug,
           code: region.code,
         },
       });
