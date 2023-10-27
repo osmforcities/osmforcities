@@ -9,7 +9,6 @@ import {
 } from "date-fns";
 import { logger, time, timeEnd } from "../../helpers/logger.js";
 import {
-  FULL_HISTORY_FILE_URL,
   HISTORY_META_JSON,
   HISTORY_PBF_FILE,
   TMP_DIR,
