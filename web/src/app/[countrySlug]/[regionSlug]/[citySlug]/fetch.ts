@@ -8,25 +8,31 @@ export interface City {
   name: string;
   country: {
     name: string;
-    urlPath: string;
+    url: string;
   };
   region: {
     name: string;
-    urlPath: string;
+    url: string;
   };
 }
 
-export const fetchCityFromPath = cache(
-  async (args: [string, string, string]): Promise<City | null> => {
-    const [countryCode, regionCode, nameSlug] = args;
-
+export const fetchCity = cache(
+  async ({
+    countrySlug,
+    regionSlug,
+    citySlug,
+  }: {
+    countrySlug: string;
+    regionSlug: string;
+    citySlug: string;
+  }): Promise<City | null> => {
     const city = await prisma.city.findFirst({
       where: {
-        name_slug: nameSlug,
+        name_slug: citySlug,
         region: {
-          code: regionCode,
+          name_slug: regionSlug,
           country: {
-            code: countryCode,
+            name_slug: countrySlug,
           },
         },
       },
@@ -47,11 +53,11 @@ export const fetchCityFromPath = cache(
       name: city.name,
       country: {
         name: city.region.country.name,
-        urlPath: `/cities/${city.region.country.code}`,
+        url: `/${city.region.country.name_slug}`,
       },
       region: {
         name: city.region.name,
-        urlPath: `/cities/${city.region.country.code}/${city.region.code}`,
+        url: `/${city.region.country.name_slug}/${city.region.name_slug}`,
       },
     };
   }

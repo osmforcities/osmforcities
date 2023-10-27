@@ -45,7 +45,7 @@ export const SearchInput = () => {
           onInputChange={(value) => setSearchTerm(value)}
           onChange={(result) => {
             if (result) {
-              router.push(result.urlPath);
+              router.push(result.url);
             }
           }}
           getOptionLabel={(result: SearchResult) => result.label}

@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 export interface SearchResult {
   type: "city" | "region" | "country";
   label: string;
-  urlPath: string;
+  url: string;
   name: string;
   name_normalized: string;
   name_slug: string;
@@ -42,9 +42,10 @@ export async function GET(request: NextRequest) {
       region: {
         select: {
           code: true,
+          name_slug: true,
           country: {
             select: {
-              code: true,
+              name_slug: true,
               name: true,
             },
           },
@@ -61,7 +62,7 @@ export async function GET(request: NextRequest) {
     ({ name, name_normalized, name_slug, region }) => ({
       type: "city",
       label: `${name} (${region.code.toUpperCase()}), ${region.country.name}`,
-      urlPath: `/cities/${region.country.code}/${region.code}/${name_slug}`,
+      url: `/${region.country.name_slug}/${region.name_slug}/${name_slug}`,
       name,
       name_normalized,
       name_slug,
