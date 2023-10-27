@@ -100,7 +100,7 @@ export const update = async (options) => {
   } else {
     // If not commits are available, set the last day update to the day before
     // the default start date
-    lastDailyUpdate = endOfDay(subDays(defaultStartDate, 1));
+    lastDailyUpdate = startOfDay(subDays(defaultStartDate, 1));
   }
 
   // Set current daily update to the next after the last daily update
@@ -109,8 +109,8 @@ export const update = async (options) => {
   if (isBefore(currentDailyUpdate, startOfDay(firstHistoryTimestamp))) {
     // If the repository was updated before the first history timestamp, use
     // the first history timestamp as start date
-    currentDailyUpdate = endOfDay(firstHistoryTimestamp);
-  } else if (isAfter(currentDailyUpdate, endOfDay(lastHistoryTimestamp))) {
+    currentDailyUpdate = startOfDay(addDays(firstHistoryTimestamp, 1));
+  } else if (isAfter(currentDailyUpdate, lastHistoryTimestamp)) {
     logger.info(
       `The history file doesn't include ${currentDailyUpdate.toISOString()}, nothing to update.`
     );
