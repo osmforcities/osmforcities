@@ -6,6 +6,10 @@ export const revalidate = 3600;
 
 export interface Country {
   name: string;
+  regions: {
+    name: string;
+    url: string;
+  }[];
 }
 
 export const fetchCountry = cache(
@@ -13,6 +17,14 @@ export const fetchCountry = cache(
     const country = await prisma.country.findFirst({
       where: {
         name_slug: countrySlug,
+      },
+      include: {
+        regions: {
+          select: {
+            name: true,
+            name_slug: true,
+          },
+        },
       },
     });
 
@@ -22,6 +34,10 @@ export const fetchCountry = cache(
 
     return {
       name: country.name,
+      regions: country.regions.map((region) => ({
+        name: region.name,
+        url: `/${country.name_slug}/${region.name_slug}`,
+      })),
     };
   }
 );

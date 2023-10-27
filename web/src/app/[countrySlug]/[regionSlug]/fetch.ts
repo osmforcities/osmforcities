@@ -10,6 +10,10 @@ export interface Region {
     name: string;
     url: string;
   };
+  cities: {
+    name: string;
+    url: string;
+  }[];
 }
 
 export const fetchRegion = cache(
@@ -29,6 +33,12 @@ export const fetchRegion = cache(
       },
       include: {
         country: true,
+        cities: {
+          select: {
+            name: true,
+            name_slug: true,
+          },
+        },
       },
     });
 
@@ -42,6 +52,10 @@ export const fetchRegion = cache(
         name: region.country.name,
         url: `/${region.country.name_slug}`,
       },
+      cities: region.cities.map((city) => ({
+        name: city.name,
+        url: `/${region.country.name_slug}/${region.name_slug}/${city.name_slug}`,
+      })),
     };
   }
 );

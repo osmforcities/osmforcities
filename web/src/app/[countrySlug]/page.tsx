@@ -9,6 +9,22 @@ type CountryPageProps = {
   };
 };
 
+const RegionList = ({
+  regions,
+}: {
+  regions: { name: string; url: string }[];
+}) => {
+  return (
+    <ul>
+      {regions.map(({ name, url }) => (
+        <li>
+          <a href={url}>{name}</a>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
 const CountryPage = async (props: CountryPageProps) => {
   const { countrySlug } = props.params;
 
@@ -25,6 +41,11 @@ const CountryPage = async (props: CountryPageProps) => {
         <Breadcrumb label={country.name} isLast />
       </nav>
       <h1>{country.name}</h1>
+      {country.regions.length > 0 ? (
+        <RegionList regions={country.regions} />
+      ) : (
+        <div>No regions found</div>
+      )}
     </div>
   );
 };

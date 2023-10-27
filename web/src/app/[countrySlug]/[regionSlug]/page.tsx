@@ -30,6 +30,13 @@ const RegionPage = async (props: RegionPageProps) => {
         <Breadcrumb label={region.name} isLast />
       </nav>
       <h1>{region.name}</h1>
+      <ul>
+        {region.cities.map(({ name, url }) => (
+          <li>
+            <a href={url}>{name}</a>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
