@@ -1,0 +1,250 @@
+code,name,name_slug
+af,Afghanistan,afghanistan
+ax,Åland Islands,aland-islands
+al,Albania,albania
+dz,Algeria,algeria
+as,American Samoa,american-samoa
+ad,Andorra,andorra
+ao,Angola,angola
+ai,Anguilla,anguilla
+aq,Antarctica,antarctica
+ag,Antigua & Barbuda,antigua-barbuda
+ar,Argentina,argentina
+am,Armenia,armenia
+aw,Aruba,aruba
+au,Australia,australia
+at,Austria,austria
+az,Azerbaijan,azerbaijan
+bs,Bahamas,bahamas
+bh,Bahrain,bahrain
+bd,Bangladesh,bangladesh
+bb,Barbados,barbados
+by,Belarus,belarus
+be,Belgium,belgium
+bz,Belize,belize
+bj,Benin,benin
+bm,Bermuda,bermuda
+bt,Bhutan,bhutan
+bo,Bolivia,bolivia
+ba,Bosnia & Herzegovina,bosnia-herzegovina
+bw,Botswana,botswana
+bv,Bouvet Island,bouvet-island
+br,Brazil,brazil
+io,British Indian Ocean Territory,british-indian-ocean-territory
+vg,British Virgin Islands,british-virgin-islands
+bn,Brunei,brunei
+bg,Bulgaria,bulgaria
+bf,Burkina Faso,burkina-faso
+bi,Burundi,burundi
+kh,Cambodia,cambodia
+cm,Cameroon,cameroon
+ca,Canada,canada
+cv,Cape Verde,cape-verde
+bq,Caribbean Netherlands,caribbean-netherlands
+ky,Cayman Islands,cayman-islands
+cf,Central African Republic,central-african-republic
+td,Chad,chad
+cl,Chile,chile
+cn,China,china
+cx,Christmas Island,christmas-island
+cc,Cocos (Keeling) Islands,cocos-keeling-islands
+co,Colombia,colombia
+km,Comoros,comoros
+cg,Congo - Brazzaville,congo-brazzaville
+cd,Congo - Kinshasa,congo-kinshasa
+ck,Cook Islands,cook-islands
+cr,Costa Rica,costa-rica
+ci,Côte d’Ivoire,cote-divoire
+hr,Croatia,croatia
+cu,Cuba,cuba
+cw,Curaçao,curacao
+cy,Cyprus,cyprus
+cz,Czechia,czechia
+dk,Denmark,denmark
+dj,Djibouti,djibouti
+dm,Dominica,dominica
+do,Dominican Republic,dominican-republic
+ec,Ecuador,ecuador
+eg,Egypt,egypt
+sv,El Salvador,el-salvador
+gq,Equatorial Guinea,equatorial-guinea
+er,Eritrea,eritrea
+ee,Estonia,estonia
+sz,Eswatini,eswatini
+et,Ethiopia,ethiopia
+fk,Falkland Islands,falkland-islands
+fo,Faroe Islands,faroe-islands
+fj,Fiji,fiji
+fi,Finland,finland
+fr,France,france
+gf,French Guiana,french-guiana
+pf,French Polynesia,french-polynesia
+tf,French Southern Territories,french-southern-territories
+ga,Gabon,gabon
+gm,Gambia,gambia
+ge,Georgia,georgia
+de,Germany,germany
+gh,Ghana,ghana
+gi,Gibraltar,gibraltar
+gr,Greece,greece
+gl,Greenland,greenland
+gd,Grenada,grenada
+gp,Guadeloupe,guadeloupe
+gu,Guam,guam
+gt,Guatemala,guatemala
+gg,Guernsey,guernsey
+gn,Guinea,guinea
+gw,Guinea-Bissau,guinea-bissau
+gy,Guyana,guyana
+ht,Haiti,haiti
+hm,Heard & McDonald Islands,heard-mcdonald-islands
+hn,Honduras,honduras
+hk,Hong Kong SAR China,hong-kong-sar-china
+hu,Hungary,hungary
+is,Iceland,iceland
+in,India,india
+id,Indonesia,indonesia
+ir,Iran,iran
+iq,Iraq,iraq
+ie,Ireland,ireland
+im,Isle of Man,isle-of-man
+il,Israel,israel
+it,Italy,italy
+jm,Jamaica,jamaica
+jp,Japan,japan
+je,Jersey,jersey
+jo,Jordan,jordan
+kz,Kazakhstan,kazakhstan
+ke,Kenya,kenya
+ki,Kiribati,kiribati
+kw,Kuwait,kuwait
+kg,Kyrgyzstan,kyrgyzstan
+la,Laos,laos
+lv,Latvia,latvia
+lb,Lebanon,lebanon
+ls,Lesotho,lesotho
+lr,Liberia,liberia
+ly,Libya,libya
+li,Liechtenstein,liechtenstein
+lt,Lithuania,lithuania
+lu,Luxembourg,luxembourg
+mo,Macao SAR China,macao-sar-china
+mg,Madagascar,madagascar
+mw,Malawi,malawi
+my,Malaysia,malaysia
+mv,Maldives,maldives
+ml,Mali,mali
+mt,Malta,malta
+mh,Marshall Islands,marshall-islands
+mq,Martinique,martinique
+mr,Mauritania,mauritania
+mu,Mauritius,mauritius
+yt,Mayotte,mayotte
+mx,Mexico,mexico
+fm,Micronesia,micronesia
+md,Moldova,moldova
+mc,Monaco,monaco
+mn,Mongolia,mongolia
+me,Montenegro,montenegro
+ms,Montserrat,montserrat
+ma,Morocco,morocco
+mz,Mozambique,mozambique
+mm,Myanmar (Burma),myanmar-burma
+na,Namibia,namibia
+nr,Nauru,nauru
+np,Nepal,nepal
+nl,Netherlands,netherlands
+nc,New Caledonia,new-caledonia
+nz,New Zealand,new-zealand
+ni,Nicaragua,nicaragua
+ne,Niger,niger
+ng,Nigeria,nigeria
+nu,Niue,niue
+nf,Norfolk Island,norfolk-island
+kp,North Korea,north-korea
+mk,North Macedonia,north-macedonia
+mp,Northern Mariana Islands,northern-mariana-islands
+no,Norway,norway
+om,Oman,oman
+pk,Pakistan,pakistan
+pw,Palau,palau
+ps,Palestinian Territories,palestinian-territories
+pa,Panama,panama
+pg,Papua New Guinea,papua-new-guinea
+py,Paraguay,paraguay
+pe,Peru,peru
+ph,Philippines,philippines
+pn,Pitcairn Islands,pitcairn-islands
+pl,Poland,poland
+pt,Portugal,portugal
+pr,Puerto Rico,puerto-rico
+qa,Qatar,qatar
+re,Réunion,reunion
+ro,Romania,romania
+ru,Russia,russia
+rw,Rwanda,rwanda
+ws,Samoa,samoa
+sm,San Marino,san-marino
+st,São Tomé & Príncipe,sao-tome-principe
+sa,Saudi Arabia,saudi-arabia
+sn,Senegal,senegal
+rs,Serbia,serbia
+sc,Seychelles,seychelles
+sl,Sierra Leone,sierra-leone
+sg,Singapore,singapore
+sx,Sint Maarten,sint-maarten
+sk,Slovakia,slovakia
+si,Slovenia,slovenia
+sb,Solomon Islands,solomon-islands
+so,Somalia,somalia
+za,South Africa,south-africa
+gs,South Georgia & South Sandwich Islands,south-georgia-south-sandwich-islands
+kr,South Korea,south-korea
+ss,South Sudan,south-sudan
+es,Spain,spain
+lk,Sri Lanka,sri-lanka
+bl,St. Barthélemy,st-barthelemy
+sh,St. Helena,st-helena
+kn,St. Kitts & Nevis,st-kitts-nevis
+lc,St. Lucia,st-lucia
+mf,St. Martin,st-martin
+pm,St. Pierre & Miquelon,st-pierre-miquelon
+vc,St. Vincent & Grenadines,st-vincent-grenadines
+sd,Sudan,sudan
+sr,Suriname,suriname
+sj,Svalbard & Jan Mayen,svalbard-jan-mayen
+se,Sweden,sweden
+ch,Switzerland,switzerland
+sy,Syria,syria
+tw,Taiwan,taiwan
+tj,Tajikistan,tajikistan
+tz,Tanzania,tanzania
+th,Thailand,thailand
+tl,Timor-Leste,timor-leste
+tg,Togo,togo
+tk,Tokelau,tokelau
+to,Tonga,tonga
+tt,Trinidad & Tobago,trinidad-tobago
+tn,Tunisia,tunisia
+tr,Turkey,turkey
+tm,Turkmenistan,turkmenistan
+tc,Turks & Caicos Islands,turks-caicos-islands
+tv,Tuvalu,tuvalu
+um,U.S. Outlying Islands,us-outlying-islands
+vi,U.S. Virgin Islands,us-virgin-islands
+ug,Uganda,uganda
+ua,Ukraine,ukraine
+ae,United Arab Emirates,united-arab-emirates
+gb,United Kingdom,united-kingdom
+us,United States,united-states
+uy,Uruguay,uruguay
+uz,Uzbekistan,uzbekistan
+vu,Vanuatu,vanuatu
+va,Vatican City,vatican-city
+ve,Venezuela,venezuela
+vn,Vietnam,vietnam
+wf,Wallis & Futuna,wallis-futuna
+eh,Western Sahara,western-sahara
+ye,Yemen,yemen
+zm,Zambia,zambia
+zw,Zimbabwe,zimbabwe
