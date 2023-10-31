@@ -1,13 +1,16 @@
-const fs = require("fs");
-const path = require("path");
-const { parse } = require("csv-parse/sync");
-const { PrismaClient } = require("@prisma/client");
-const pick = require("lodash.pick");
+import fs from "fs";
+import path from "path";
+import { parse } from "csv-parse/sync";
+import { PrismaClient } from "@prisma/client";
+import pick from "lodash.pick";
 
 const prisma = new PrismaClient();
 
+const DATA_DIR = path.join(process.cwd(), ".", "data");
+
 async function seed() {
   // Deletes ALL existing entries
+  await prisma.preset.deleteMany();
   await prisma.city.deleteMany();
   await prisma.region.deleteMany();
   await prisma.country.deleteMany();
@@ -16,7 +19,7 @@ async function seed() {
    * Countries
    */
   const countriesCsv = fs.readFileSync(
-    path.join("..", "data", "countries.csv"),
+    path.join(DATA_DIR, "countries.csv"),
     "utf8"
   );
 
@@ -33,7 +36,7 @@ async function seed() {
    * Regions
    */
   const regionsCsv = fs.readFileSync(
-    path.join("..", "data", "regions.csv"),
+    path.join(DATA_DIR, "regions.csv"),
     "utf8"
   );
 
@@ -64,10 +67,7 @@ async function seed() {
   /**
    * Cities
    */
-  const citiesCsv = fs.readFileSync(
-    path.join("..", "data", "cities.csv"),
-    "utf8"
-  );
+  const citiesCsv = fs.readFileSync(path.join(DATA_DIR, "cities.csv"), "utf8");
 
   const cities = parse(citiesCsv, {
     columns: true,
@@ -91,6 +91,26 @@ async function seed() {
     } else {
       throw new Error(`No matching region found for city: ${city.name}`);
     }
+  }
+
+  /**
+   * Presets
+   */
+
+  const presetsCsv = fs.readFileSync(
+    path.join(DATA_DIR, "presets.csv"),
+    "utf8"
+  );
+
+  const presets = parse(presetsCsv, {
+    columns: true,
+    skip_empty_lines: true,
+  });
+
+  for (let preset of presets) {
+    await prisma.preset.create({
+      data: preset,
+    });
   }
 }
 

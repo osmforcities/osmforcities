@@ -6,8 +6,16 @@
   "author": "Vitor George <vitor.george@gmail.com>",
   "license": "MIT",
   "type": "module",
-  "dependencies": {},
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "@prisma/client": "5.5.2",
+    "prisma": "^5.5.2"
+  },
   "devDependencies": {
-    "date-fns": "^2.30.0"
+    "csv-parse": "^5.5.2",
+    "date-fns": "^2.30.0",
+    "lodash.pick": "^4.4.0"
   }
 }

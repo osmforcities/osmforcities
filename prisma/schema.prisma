@@ -34,3 +34,13 @@ model Country {
   code      String   @unique
   regions   Region[]
 }
+
+model Preset {
+  id               Int    @id @default(autoincrement())
+  name             String
+  name_slug        String
+  category         String
+  osmium_filter    String @unique
+  required_tags    String
+  recommended_tags String
+}
