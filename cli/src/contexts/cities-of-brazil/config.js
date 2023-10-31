@@ -8,7 +8,7 @@ import {
   CLI_APP_DIR,
   CONTEXTS_DATA_PATH,
   TMP_DIR,
-} from "../../../config/index.js";
+} from "../../../../config/index.js";
 
 const CONTEXT_NAME = "cities-of-brazil";
 

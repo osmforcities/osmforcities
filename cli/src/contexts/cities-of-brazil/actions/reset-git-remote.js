@@ -2,7 +2,7 @@ import { logger } from "../../../helpers/logger.js";
 import GiteaClient from "../../../helpers/gitea-client.js";
 
 // Context config
-import { GIT_ORGANIZATION, GIT_REPOSITORY_NAME } from "../config.js";
+import { GIT_ORGANIZATION, GIT_REPOSITORY_NAME } from "../../config.js";
 import { initRemoteGit } from "./setup.js";
 
 // Create Gitea client

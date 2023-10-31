@@ -6,7 +6,7 @@ import {
   HISTORY_PBF_FILE,
   HISTORY_META_JSON,
   FULL_HISTORY_FILE_URL,
-} from "../../../config/index.js";
+} from "../../../../config/index.js";
 import { ensureDir, remove } from "fs-extra";
 import * as path from "path";
 import { curlDownload } from "../../helpers/curl-download.js";

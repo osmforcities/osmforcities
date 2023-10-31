@@ -50,7 +50,7 @@ import {
   POLYFILES_LEVEL_1_DIR,
   POLYFILES_LEVEL_2_DIR,
   POLYFILES_LEVEL_3_DIR,
-} from "../config.js";
+} from "../../config.js";
 
 // Set concurrency limit
 const limit = pLimit(20);

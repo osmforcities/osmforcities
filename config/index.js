@@ -1,5 +1,5 @@
 import * as path from "path";
-import loadCsv from "../cli/helpers/load-csv.js";
+import loadCsv from "../cli/src/helpers/load-csv.js";
 import { format, subDays } from "date-fns";
 
 const NODE_ENV = process.env.NODE_ENV || "development";

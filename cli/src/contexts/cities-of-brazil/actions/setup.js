@@ -15,7 +15,7 @@ import {
   GIT_REPOSITORY_NAME,
   POLYFILES_DIR,
   POLYFILES_URL,
-} from "../config.js";
+} from "../../config.js";
 
 // Create Gitea client
 const giteaClient = new GiteaClient();

@@ -1,12 +1,15 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import fs from "fs-extra";
 import { program } from "commander";
 import { logger } from "./helpers/logger.js";
 import { initHistory } from "./tasks/history/init.js";
 import { updateHistory } from "./tasks/history/update.js";
 
+// Load environment variables from monorepo root
+dotenv.config({ path: "../.env" });
+
 const pkg = await fs.readJson("./package.json");
-const contexts = await fs.readdir("./cli/contexts");
+const contexts = await fs.readdir("./src/contexts");
 
 // disable no-console rule in this file
 /* eslint-disable no-console */
@@ -38,7 +41,7 @@ program
   .command("list-contexts")
   .description("List available contexts")
   .action(async () => {
-    const contexts = await fs.readdir("./cli/contexts");
+    const contexts = await fs.readdir("./src/contexts");
 
     // Print available contexts
     console.log("Available contexts: ");
@@ -51,7 +54,7 @@ program
   .command("context")
   .option("-r, --recursive", "Repeat updates to present day", false)
   .argument("<name>", "Context name", (contextName) => {
-    // Check if context exists, it should be a folder in ./cli/contexts
+    // Check if context exists, it should be a folder in ./src/contexts
     if (!contexts.includes(contextName)) {
       program.error(
         `Context not found, run 'list-contexts' command to see available contexts.`
