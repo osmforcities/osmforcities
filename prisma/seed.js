@@ -81,11 +81,17 @@ async function seed() {
 
     city.is_capital = city.is_capital !== "";
 
+    const { name_slug, name, name_normalized, is_capital, ...metadata } = city;
+
     if (region) {
       await prisma.city.create({
         data: {
           regionId: region.id,
-          ...pick(city, ["name_slug", "name", "name_normalized", "is_capital"]),
+          name_slug,
+          name,
+          name_normalized,
+          is_capital,
+          metadata,
         },
       });
     } else {

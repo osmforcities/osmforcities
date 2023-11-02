@@ -75,12 +75,6 @@ export const FULL_HISTORY_FILE_URL =
     : "https://planet.osm.org/pbf/full-history/history-latest.osm.pbf";
 
 /**
- * OSM PRESETS
- */
-export const getPresets = async () =>
-  await loadCsv(path.join(basePath, "config", "presets.csv"));
-
-/**
  * TEMPORARY DIRECTORY
  *
  * Used to store temporary files during the execution of

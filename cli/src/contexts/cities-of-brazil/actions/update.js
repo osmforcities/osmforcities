@@ -1,6 +1,9 @@
 import * as path from "path";
 import fs from "fs-extra";
 import cliProgress from "cli-progress";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
+
 import {
   addDays,
   isAfter,
@@ -21,7 +24,6 @@ import {
   timeFilter,
 } from "../../../helpers/osmium.js";
 import pbfIsEmpty from "../../../helpers/pbf-is-empty.js";
-import { getCities } from "../helpers.js";
 
 // CLI config
 import {
@@ -29,7 +31,6 @@ import {
   GITEA_EMAIL,
   GIT_HISTORY_START_DATE,
   HISTORY_PBF_FILE,
-  getPresets,
   HISTORY_META_JSON,
 } from "../../../../config/index.js";
 
@@ -58,6 +59,18 @@ export const update = async (options) => {
   // Init repository path, if it doesn't exist
   await fs.ensureDir(CLI_GIT_DIR);
   await fs.ensureDir(CURRENT_DAY_DIR);
+
+  const presets = (
+    await prisma.preset.findMany({
+      select: {
+        id: true,
+        osmium_filter: true,
+        name_slug: true,
+      },
+    })
+  ).map((p) => {
+    return { ...p, osmium_filter: p.osmium_filter.split(",") };
+  });
 
   // Initialize current date pointer
   let firstHistoryTimestamp;
@@ -130,7 +143,7 @@ export const update = async (options) => {
   logger.info(`Filtering presets from current day file...`);
   await tagsFilter(
     CURRENT_DAY_ALL_TAGS_FILE,
-    (await getPresets()).map((preset) => preset.osmium_filter.split(",")),
+    presets.map((preset) => preset.osmium_filter),
     CURRENT_DAY_FILE
   );
 
@@ -158,6 +171,12 @@ export const update = async (options) => {
   for (let i = 0; i < level1Polyfiles.length; i++) {
     const polyfileName = level1Polyfiles[i];
     const level1AreaId = polyfileName.split(".")[0];
+
+    // Restrict updates to Sergipe state when not in production
+    if (process.env.NODE_ENV !== "production" && level1AreaId !== "28") {
+      continue;
+    }
+
     logger.info(`Extracting level 1 area with id: ${level1AreaId}...`);
     await extractPoly(
       path.join(POLYFILES_LEVEL_1_DIR, polyfileName),
@@ -213,9 +232,26 @@ export const update = async (options) => {
   const level3Polyfiles = await fs.readdir(POLYFILES_LEVEL_3_DIR);
 
   // Map level 3 areas to level 2 areas
-  const cities = await getCities();
+  const cities = await prisma.city.findMany({
+    include: {
+      region: {
+        select: {
+          code: true,
+        },
+      },
+    },
+  });
+
   const level3ToLevel2 = cities.reduce((acc, city) => {
-    acc[city.municipio] = city.microregion;
+    const { ibge_microregion_id, ibge_municipality_id } = city.metadata;
+
+    if (!ibge_microregion_id || !ibge_municipality_id) {
+      throw new Error(
+        `Could not find ibge_microregion_id or ibge_municipality_id for city: ${city.name}`
+      );
+    }
+
+    acc[ibge_municipality_id] = ibge_microregion_id;
     return acc;
   }, {});
 
@@ -256,23 +292,20 @@ export const update = async (options) => {
   await fs.emptyDir(CURRENT_DAY_PRESETS_DIR);
 
   // Update GeoJSON files
-  const citiesArray = await getCities();
-
-  const presets = await getPresets();
 
   const geojsonProgressBar = new cliProgress.SingleBar(
     {},
     cliProgress.Presets.shades_classic
   );
-  geojsonProgressBar.start(citiesArray.length, 0);
+  geojsonProgressBar.start(cities.length, 0);
   await Promise.all(
-    citiesArray.map(async (m) =>
+    cities.map(async (city) =>
       limit(async () => {
         const {
-          ref: municipalityId,
-          uf_code: municipalityUfCode,
-          slug_name: municipalitySlug,
-        } = m;
+          name_slug: municipalitySlug,
+          region: { code: municipalityUfCode },
+          metadata: { ibge_municipality_id: municipalityId },
+        } = city;
 
         const level3File = path.join(
           CURRENT_DAY_LEVEL_3_DIR,
@@ -301,19 +334,15 @@ export const update = async (options) => {
           presets.map(async (preset) => {
             const presetFile = path.join(
               CURRENT_DAY_PRESETS_DIR,
-              `${municipalityId}-${preset.id}.osm.pbf`
+              `${municipalityId}-${preset.name_slug}.osm.pbf`
             );
 
-            await tagsFilter(
-              level3File,
-              preset.osmium_filter.split(","),
-              presetFile
-            );
+            await tagsFilter(level3File, preset.osmium_filter, presetFile);
 
             if (!(await pbfIsEmpty(presetFile))) {
               const geojsonFile = path.join(
                 geojsonPath,
-                `${preset.id}.geojson`
+                `${preset.name_slug}.geojson`
               );
 
               const { stdout: geojsonString } = await execa(

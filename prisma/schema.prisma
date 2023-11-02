@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:../dev.sqlite3"
+  provider = "postgresql"
+  url      = "postgres://postgres:docker@localhost:5433/postgres"
 }
 
 model City {
@@ -15,6 +15,7 @@ model City {
   is_capital      Boolean? @default(false)
   regionId        Int
   region          Region   @relation(fields: [regionId], references: [id])
+  metadata        Json?
 }
 
 model Region {
