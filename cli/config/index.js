@@ -18,11 +18,6 @@ export const LOGS_DIR = path.join(
   NODE_ENV
 );
 
-export const STATS_DIR = path.join(
-  process.env.STATS_DIR || path.join(basePath, "app-data", "stats"),
-  NODE_ENV
-);
-
 /**
  * Path to the data directory used by the CLI to store data
  * (e.g. downloaded files, local git repository, etc)

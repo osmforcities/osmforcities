@@ -52,8 +52,6 @@ import {
   POLYFILES_LEVEL_3_DIR,
 } from "../config.js";
 
-import CountryStatsCollector from "../../../helpers/country-stats-collector.js";
-
 const COUNTRY_SLUG = "brazil";
 
 // Set concurrency limit
@@ -137,9 +135,16 @@ export const update = async (options) => {
     .slice(0, 19)
     .concat("Z");
 
-  const statsCollector = new CountryStatsCollector(
-    COUNTRY_SLUG,
-    currentDayISO.slice(0, 10)
+  // Extract OSM data from history file at the current date
+  logger.info(`Filtering: ${currentDayISO}`);
+  await timeFilter(HISTORY_PBF_FILE, currentDayISO, CURRENT_DAY_ALL_TAGS_FILE);
+
+  // Filter presets from current day file
+  logger.info(`Filtering presets from current day file...`);
+  await tagsFilter(
+    CURRENT_DAY_ALL_TAGS_FILE,
+    presets.map((preset) => preset.osmium_filter),
+    CURRENT_DAY_FILE
   );
 
   if (await pbfIsEmpty(CURRENT_DAY_FILE)) {
@@ -283,7 +288,7 @@ export const update = async (options) => {
   }
 
   logger.info(`Updating GeoJSON files...`);
-  // Clear OSM datasets
+  // Clear OSM presets
   await fs.emptyDir(CURRENT_DAY_PRESETS_DIR);
 
   // Update GeoJSON files
@@ -291,6 +296,8 @@ export const update = async (options) => {
     {},
     cliProgress.Presets.shades_classic
   );
+
+  const stats = [];
 
   geojsonProgressBar.start(cities.length, 0);
   await Promise.all(
@@ -303,7 +310,7 @@ export const update = async (options) => {
         } = city;
 
         const cityStats = {
-          datasets: [],
+          presets: [],
         };
 
         const level3File = path.join(
@@ -328,7 +335,7 @@ export const update = async (options) => {
         );
         await fs.ensureDir(geojsonPath);
 
-        // Extract datasets
+        // Extract presets
         await Promise.all(
           presets.map(async (preset) => {
             const presetFile = path.join(
@@ -339,9 +346,9 @@ export const update = async (options) => {
             await tagsFilter(level3File, preset.osmium_filter, presetFile);
 
             if (!(await pbfIsEmpty(presetFile))) {
-              cityStats.datasetCount++;
+              cityStats.presetCount++;
 
-              const datasetStats = {
+              const presetStats = {
                 requiredTags: 0,
                 totalRequiredTags: preset.required_tags.length,
                 recommendedTags: 0,
@@ -373,14 +380,14 @@ export const update = async (options) => {
                     // Count required tags
                     preset.required_tags.forEach((t) => {
                       if (clearedProperties[t]) {
-                        datasetStats.requiredTags++;
+                        presetStats.requiredTags++;
                       }
                     });
 
                     // Count recommended tags
                     preset.recommended_tags.forEach((t) => {
                       if (clearedProperties[t]) {
-                        datasetStats.recommendedTags++;
+                        presetStats.recommendedTags++;
                       }
                     });
 
@@ -393,35 +400,31 @@ export const update = async (options) => {
                 { spaces: 2 }
               );
 
-              cityStats.datasets.push(datasetStats);
+              cityStats.presets.push(presetStats);
             }
           })
         );
 
-        statsCollector.logger.info({
+        stats.push({
           cityId: city.id,
-          meta: {
-            ...cityStats,
-            datasetCount: cityStats.datasets.length,
-            datasetCoverage: cityStats.datasets.length / presets.length,
-            requiredTagsCoverage:
-              cityStats.datasets.reduce(
-                (acc, dataset) =>
-                  dataset.totalRequiredTags > 0
-                    ? acc + dataset.requiredTags / dataset.totalRequiredTags
-                    : acc,
-                0
-              ) / cityStats.datasets.length,
-            recommendedTagsCoverage:
-              cityStats.datasets.reduce(
-                (acc, dataset) =>
-                  dataset.totalRecommendedTags > 0
-                    ? acc +
-                      dataset.recommendedTags / dataset.totalRecommendedTags
-                    : acc,
-                0
-              ) / cityStats.datasets.length,
-          },
+          date: currentDayISO,
+          presetsCoverage: cityStats.presets.length / presets.length,
+          requiredTagsCoverage:
+            cityStats.presets.reduce(
+              (acc, preset) =>
+                preset.totalRequiredTags > 0
+                  ? acc + preset.requiredTags / preset.totalRequiredTags
+                  : acc,
+              0
+            ) / cityStats.presets.length,
+          recommendedTagsCoverage:
+            cityStats.presets.reduce(
+              (acc, preset) =>
+                preset.totalRecommendedTags > 0
+                  ? acc + preset.recommendedTags / preset.totalRecommendedTags
+                  : acc,
+              0
+            ) / cityStats.presets.length,
         });
 
         geojsonProgressBar.increment();
@@ -430,6 +433,28 @@ export const update = async (options) => {
   );
 
   geojsonProgressBar.stop();
+
+  logger.info(`Ingesting stats into database...`);
+  await prisma.$transaction([
+    prisma.cityStats.deleteMany({
+      where: {
+        date: currentDayISO,
+        city: {
+          region: {
+            country: {
+              name_slug: COUNTRY_SLUG,
+            },
+          },
+        },
+      },
+    }),
+
+    prisma.cityStats.createMany({
+      data: stats,
+    }),
+  ]);
+
+  logger.info(`Updating git repository...`);
 
   await fs.writeJSON(
     path.join(CLI_GIT_DIR, "package.json"),

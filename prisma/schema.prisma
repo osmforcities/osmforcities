@@ -8,14 +8,26 @@ datasource db {
 }
 
 model City {
-  id              Int      @id @default(autoincrement())
+  id              Int         @id @default(autoincrement())
   name            String
   name_normalized String
   name_slug       String
-  is_capital      Boolean? @default(false)
+  is_capital      Boolean?    @default(false)
   regionId        Int
-  region          Region   @relation(fields: [regionId], references: [id])
+  region          Region      @relation(fields: [regionId], references: [id])
   metadata        Json?
+  CityStats       CityStats[]
+}
+
+model CityStats {
+  cityId                  Int
+  city                    City     @relation(fields: [cityId], references: [id])
+  presetsCoverage         Float
+  recommendedTagsCoverage Float
+  requiredTagsCoverage    Float
+  date                    DateTime @db.Date
+
+  @@unique([cityId, date])
 }
 
 model Region {
