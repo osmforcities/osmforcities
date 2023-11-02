@@ -37,11 +37,11 @@ model Country {
 }
 
 model Preset {
-  id               Int    @id @default(autoincrement())
+  id               Int      @id @default(autoincrement())
   name             String
   name_slug        String
   category         String
-  osmium_filter    String @unique
-  required_tags    String
-  recommended_tags String
+  osmium_filter    String[]
+  required_tags    String[]
+  recommended_tags String[]
 }

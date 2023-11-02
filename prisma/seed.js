@@ -115,7 +115,21 @@ async function seed() {
 
   for (let preset of presets) {
     await prisma.preset.create({
-      data: preset,
+      data: {
+        ...preset,
+        osmium_filter:
+          preset.osmium_filter.length > 0
+            ? preset.osmium_filter.split(",")
+            : [],
+        required_tags:
+          preset.required_tags.length > 0
+            ? preset.required_tags.split(",")
+            : [],
+        recommended_tags:
+          preset.recommended_tags_filter.length > 0
+            ? preset.recommended_tags.split(",")
+            : [],
+      },
     });
   }
 }

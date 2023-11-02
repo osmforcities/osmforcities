@@ -1,7 +1,6 @@
 import "dotenv/config";
 
 import * as path from "path";
-import loadCsv from "../src/helpers/load-csv.js";
 import { format, subDays } from "date-fns";
 
 const NODE_ENV = process.env.NODE_ENV || "development";
@@ -16,6 +15,11 @@ export const CLI_APP_DIR = path.join(basePath, "cli", "src");
  */
 export const LOGS_DIR = path.join(
   process.env.LOGS_DIR || path.join(basePath, "app-data", "logs"),
+  NODE_ENV
+);
+
+export const STATS_DIR = path.join(
+  process.env.STATS_DIR || path.join(basePath, "app-data", "stats"),
   NODE_ENV
 );
 

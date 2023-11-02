@@ -51,6 +51,14 @@ import {
   POLYFILES_LEVEL_2_DIR,
   POLYFILES_LEVEL_3_DIR,
 } from "../config.js";
+import {
+  countryStatsCollector,
+  resetDailyStatsFile,
+} from "../../../helpers/country-stats-collector.js";
+
+const COUNTRY_SLUG = "brazil";
+
+const statsCollector = countryStatsCollector(COUNTRY_SLUG);
 
 // Set concurrency limit
 const limit = pLimit(20);
@@ -60,16 +68,14 @@ export const update = async (options) => {
   await fs.ensureDir(CLI_GIT_DIR);
   await fs.ensureDir(CURRENT_DAY_DIR);
 
-  const presets = (
-    await prisma.preset.findMany({
-      select: {
-        id: true,
-        osmium_filter: true,
-        name_slug: true,
-      },
-    })
-  ).map((p) => {
-    return { ...p, osmium_filter: p.osmium_filter.split(",") };
+  const presets = await prisma.preset.findMany({
+    select: {
+      id: true,
+      osmium_filter: true,
+      name_slug: true,
+      required_tags: true,
+      recommended_tags: true,
+    },
   });
 
   // Initialize current date pointer
@@ -134,6 +140,8 @@ export const update = async (options) => {
     .toISOString()
     .slice(0, 19)
     .concat("Z");
+
+  await resetDailyStatsFile(COUNTRY_SLUG, currentDayISO);
 
   // Extract OSM data from history file at the current date
   logger.info(`Filtering: ${currentDayISO}`);
@@ -292,11 +300,11 @@ export const update = async (options) => {
   await fs.emptyDir(CURRENT_DAY_PRESETS_DIR);
 
   // Update GeoJSON files
-
   const geojsonProgressBar = new cliProgress.SingleBar(
     {},
     cliProgress.Presets.shades_classic
   );
+
   geojsonProgressBar.start(cities.length, 0);
   await Promise.all(
     cities.map(async (city) =>
@@ -304,12 +312,16 @@ export const update = async (options) => {
         const {
           name_slug: municipalitySlug,
           region: { code: municipalityUfCode },
-          metadata: { ibge_municipality_id: municipalityId },
+          metadata: { ibge_municipality_id: ibgeMunicipalityId },
         } = city;
+
+        const cityStats = {
+          datasets: [],
+        };
 
         const level3File = path.join(
           CURRENT_DAY_LEVEL_3_DIR,
-          `${municipalityId}.osm.pbf`
+          `${ibgeMunicipalityId}.osm.pbf`
         );
 
         // Bypass if municipality is empty
@@ -334,12 +346,21 @@ export const update = async (options) => {
           presets.map(async (preset) => {
             const presetFile = path.join(
               CURRENT_DAY_PRESETS_DIR,
-              `${municipalityId}-${preset.name_slug}.osm.pbf`
+              `${ibgeMunicipalityId}-${preset.name_slug}.osm.pbf`
             );
 
             await tagsFilter(level3File, preset.osmium_filter, presetFile);
 
             if (!(await pbfIsEmpty(presetFile))) {
+              cityStats.datasetCount++;
+
+              const datasetStats = {
+                requiredTags: 0,
+                totalRequiredTags: preset.required_tags.length,
+                recommendedTags: 0,
+                totalRecommendedTags: preset.recommended_tags.length,
+              };
+
               const geojsonFile = path.join(
                 geojsonPath,
                 `${preset.name_slug}.geojson`
@@ -361,6 +382,21 @@ export const update = async (options) => {
                     // Strip user data
                     // eslint-disable-next-line
                     const { user, uid, ...clearedProperties } = f.properties;
+
+                    // Count required tags
+                    preset.required_tags.forEach((t) => {
+                      if (clearedProperties[t]) {
+                        datasetStats.requiredTags++;
+                      }
+                    });
+
+                    // Count recommended tags
+                    preset.recommended_tags.forEach((t) => {
+                      if (clearedProperties[t]) {
+                        datasetStats.recommendedTags++;
+                      }
+                    });
+
                     return {
                       ...f,
                       properties: clearedProperties,
@@ -369,9 +405,37 @@ export const update = async (options) => {
                 },
                 { spaces: 2 }
               );
+
+              cityStats.datasets.push(datasetStats);
             }
           })
         );
+
+        statsCollector.info({
+          cityId: city.id,
+          meta: {
+            ...cityStats,
+            datasetCount: cityStats.datasets.length,
+            datasetCoverage: cityStats.datasets.length / presets.length,
+            requiredTagsCoverage:
+              cityStats.datasets.reduce(
+                (acc, dataset) =>
+                  dataset.totalRequiredTags > 0
+                    ? acc + dataset.requiredTags / dataset.totalRequiredTags
+                    : acc,
+                0
+              ) / cityStats.datasets.length,
+            recommendedTagsCoverage:
+              cityStats.datasets.reduce(
+                (acc, dataset) =>
+                  dataset.totalRecommendedTags > 0
+                    ? acc +
+                      dataset.recommendedTags / dataset.totalRecommendedTags
+                    : acc,
+                0
+              ) / cityStats.datasets.length,
+          },
+        });
 
         geojsonProgressBar.increment();
       })
