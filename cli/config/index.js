@@ -1,13 +1,17 @@
+import "dotenv/config";
+
 import * as path from "path";
-import loadCsv from "../cli/src/helpers/load-csv.js";
+import loadCsv from "../src/helpers/load-csv.js";
 import { format, subDays } from "date-fns";
 
 const NODE_ENV = process.env.NODE_ENV || "development";
 
 const basePath = path.resolve();
 
+console.log("basePath", basePath);
+
 export const CONFIG_PATH = path.join(basePath, "config");
-export const CLI_APP_DIR = path.join(basePath, "cli");
+export const CLI_APP_DIR = path.join(basePath, "cli", "src");
 
 /**
  * LOGS DIRECTORY

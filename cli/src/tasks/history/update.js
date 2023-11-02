@@ -12,7 +12,7 @@ import {
   HISTORY_META_JSON,
   HISTORY_PBF_FILE,
   TMP_DIR,
-} from "../../../../config/index.js";
+} from "../../../config/index.js";
 import exec from "../../helpers/exec.js";
 import { curlDownload } from "../../helpers/curl-download.js";
 import execa from "execa";

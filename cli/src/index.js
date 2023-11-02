@@ -1,4 +1,3 @@
-import dotenv from "dotenv";
 import fs from "fs-extra";
 import { program } from "commander";
 import { logger } from "./helpers/logger.js";
@@ -6,7 +5,6 @@ import { initHistory } from "./tasks/history/init.js";
 import { updateHistory } from "./tasks/history/update.js";
 
 // Load environment variables from monorepo root
-dotenv.config({ path: "../.env" });
 
 const pkg = await fs.readJson("./package.json");
 const contexts = await fs.readdir("./src/contexts");

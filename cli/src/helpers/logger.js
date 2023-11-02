@@ -1,6 +1,6 @@
 import winston from "winston";
 import "winston-daily-rotate-file";
-import { LOGS_DIR } from "../../../config/index.js";
+import { LOGS_DIR } from "../../config/index.js";
 
 const { simple, json, timestamp, combine } = winston.format;
 
