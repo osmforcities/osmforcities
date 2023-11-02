@@ -8,8 +8,6 @@ const NODE_ENV = process.env.NODE_ENV || "development";
 
 const basePath = path.resolve();
 
-console.log("basePath", basePath);
-
 export const CONFIG_PATH = path.join(basePath, "config");
 export const CLI_APP_DIR = path.join(basePath, "cli", "src");
 
