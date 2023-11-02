@@ -22,9 +22,9 @@ model City {
 model CityStats {
   cityId                  Int
   city                    City     @relation(fields: [cityId], references: [id])
-  presetsCoverage         Float
-  recommendedTagsCoverage Float
+  presetsCount            Int
   requiredTagsCoverage    Float
+  recommendedTagsCoverage Float
   date                    DateTime @db.Date
 
   @@unique([cityId, date])

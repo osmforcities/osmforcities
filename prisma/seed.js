@@ -126,7 +126,7 @@ async function seed() {
             ? preset.required_tags.split(",")
             : [],
         recommended_tags:
-          preset.recommended_tags_filter.length > 0
+          preset.recommended_tags.length > 0
             ? preset.recommended_tags.split(",")
             : [],
       },

@@ -346,8 +346,6 @@ export const update = async (options) => {
             await tagsFilter(level3File, preset.osmium_filter, presetFile);
 
             if (!(await pbfIsEmpty(presetFile))) {
-              cityStats.presetCount++;
-
               const presetStats = {
                 requiredTags: 0,
                 totalRequiredTags: preset.required_tags.length,
@@ -408,7 +406,7 @@ export const update = async (options) => {
         stats.push({
           cityId: city.id,
           date: currentDayISO,
-          presetsCoverage: cityStats.presets.length / presets.length,
+          presetsCount: cityStats.presets.length,
           requiredTagsCoverage:
             cityStats.presets.reduce(
               (acc, preset) =>
@@ -435,6 +433,7 @@ export const update = async (options) => {
   geojsonProgressBar.stop();
 
   logger.info(`Ingesting stats into database...`);
+
   await prisma.$transaction([
     prisma.cityStats.deleteMany({
       where: {
