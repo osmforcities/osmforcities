@@ -51,14 +51,10 @@ import {
   POLYFILES_LEVEL_2_DIR,
   POLYFILES_LEVEL_3_DIR,
 } from "../config.js";
-import {
-  countryStatsCollector,
-  resetDailyStatsFile,
-} from "../../../helpers/country-stats-collector.js";
+
+import CountryStatsCollector from "../../../helpers/country-stats-collector.js";
 
 const COUNTRY_SLUG = "brazil";
-
-const statsCollector = countryStatsCollector(COUNTRY_SLUG);
 
 // Set concurrency limit
 const limit = pLimit(20);
@@ -141,18 +137,9 @@ export const update = async (options) => {
     .slice(0, 19)
     .concat("Z");
 
-  await resetDailyStatsFile(COUNTRY_SLUG, currentDayISO);
-
-  // Extract OSM data from history file at the current date
-  logger.info(`Filtering: ${currentDayISO}`);
-  await timeFilter(HISTORY_PBF_FILE, currentDayISO, CURRENT_DAY_ALL_TAGS_FILE);
-
-  // Filter presets from current day file
-  logger.info(`Filtering presets from current day file...`);
-  await tagsFilter(
-    CURRENT_DAY_ALL_TAGS_FILE,
-    presets.map((preset) => preset.osmium_filter),
-    CURRENT_DAY_FILE
+  const statsCollector = new CountryStatsCollector(
+    COUNTRY_SLUG,
+    currentDayISO.slice(0, 10)
   );
 
   if (await pbfIsEmpty(CURRENT_DAY_FILE)) {
@@ -411,7 +398,7 @@ export const update = async (options) => {
           })
         );
 
-        statsCollector.info({
+        statsCollector.logger.info({
           cityId: city.id,
           meta: {
             ...cityStats,
