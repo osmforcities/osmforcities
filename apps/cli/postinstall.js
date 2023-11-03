@@ -1,9 +1,5 @@
 import fs from "fs-extra";
 
-// Prisma doesn't handle well when the schema file is not present in the same
-// sub-tree of package.json. So we copy the schema file from apps/next/prisma
-// to apps/cli/prisma after the installation.
-
 /**
  * Prisma doesn't handle well when the schema file is not present in the same
  *  sub-tree of package.json. So we copy the schema file from apps/next/prisma
