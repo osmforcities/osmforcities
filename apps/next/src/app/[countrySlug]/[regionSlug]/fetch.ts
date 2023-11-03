@@ -1,6 +1,7 @@
 import { cache } from "react";
-import { CityStats, PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { CityStats } from "@prisma/client";
+
+import prisma from "@/app/db";
 
 export const revalidate = 3600;
 

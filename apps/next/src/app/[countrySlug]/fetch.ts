@@ -1,7 +1,5 @@
 import { cache } from "react";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
-
+import prisma from "@/app/db";
 export const revalidate = 3600;
 
 export interface Country {
