@@ -8,12 +8,12 @@ const prisma = new PrismaClient();
 const DATA_DIR = path.join(process.cwd(), "..", "..", "data");
 
 async function seed() {
-  // Deletes ALL existing entries
-  await prisma.cityStats.deleteMany();
-  await prisma.preset.deleteMany();
-  await prisma.city.deleteMany();
-  await prisma.region.deleteMany();
-  await prisma.country.deleteMany();
+  // Discard all data
+  await prisma.$executeRaw`TRUNCATE TABLE "CityStats" RESTART IDENTITY CASCADE`;
+  await prisma.$executeRaw`TRUNCATE TABLE "Preset" RESTART IDENTITY CASCADE`;
+  await prisma.$executeRaw`TRUNCATE TABLE "City" RESTART IDENTITY CASCADE`;
+  await prisma.$executeRaw`TRUNCATE TABLE "Region" RESTART IDENTITY CASCADE`;
+  await prisma.$executeRaw`TRUNCATE TABLE "Country" RESTART IDENTITY CASCADE`;
 
   /**
    * Countries
