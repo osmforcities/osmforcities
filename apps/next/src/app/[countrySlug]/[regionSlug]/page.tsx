@@ -1,7 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import { fetchRegion } from "./fetch";
-import Breadcrumb from "../../components/breadcrumbs";
+import Breadcrumbs from "../../components/breadcrumbs";
 
 type RegionPageProps = {
   params: {
@@ -41,12 +41,14 @@ const RegionPage = async (props: RegionPageProps) => {
   });
 
   return (
-    <div role="main" className="max-w-2xl mx-auto p-4">
-      <nav aria-label="breadcrumb" className="flex mb-4">
-        <Breadcrumb label="Home" url="/" />
-        <Breadcrumb label={region.country.name} url={region.country.url} />
-        <Breadcrumb label={region.name} isLast />
-      </nav>
+    <>
+      <Breadcrumbs
+        breadcrumbs={[
+          { label: "Home", url: "/" },
+          { label: region.country.name, url: region.country.url },
+          { label: region.name, isLast: true },
+        ]}
+      />
       <h1 className="text-center text-2xl font-bold mb-6">
         Cities of {region.name}, {region.country.name}
       </h1>
@@ -84,7 +86,7 @@ const RegionPage = async (props: RegionPageProps) => {
           </tbody>
         </table>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -1,14 +1,12 @@
 import React from "react";
 
-const Breadcrumb = ({
-  label,
-  url,
-  isLast = false,
-}: {
+type BreadcrumbProps = {
   label: string;
   url?: string;
   isLast?: boolean;
-}) => (
+};
+
+const Breadcrumb = ({ label, url, isLast = false }: BreadcrumbProps) => (
   <>
     {isLast ? (
       <span className="text-gray-500 font-semibold">{label}</span>
@@ -21,4 +19,18 @@ const Breadcrumb = ({
   </>
 );
 
-export default Breadcrumb;
+interface BreadcrumbsProps {
+  breadcrumbs: BreadcrumbProps[];
+}
+
+const Breadcrumbs = ({ breadcrumbs }: BreadcrumbsProps) => {
+  return (
+    <nav aria-label="breadcrumb" className="flex mb-4">
+      {breadcrumbs.map(({ label, url, isLast }) => (
+        <Breadcrumb key={label} label={label} url={url} isLast={isLast} />
+      ))}
+    </nav>
+  );
+};
+
+export default Breadcrumbs;

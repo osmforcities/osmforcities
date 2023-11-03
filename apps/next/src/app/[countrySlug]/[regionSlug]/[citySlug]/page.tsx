@@ -1,7 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import { fetchCity } from "./fetch";
-import Breadcrumb from "@/app/components/breadcrumbs";
+import Breadcrumbs from "@/app/components/breadcrumbs";
 
 type CityPageProps = {
   params: {
@@ -26,12 +26,14 @@ const CityPage = async (props: CityPageProps) => {
 
   return (
     <div role="main">
-      <nav aria-label="breadcrumb">
-        <Breadcrumb label="Home" url="/" />
-        <Breadcrumb label={city.country.name} url={city.country.url} />
-        <Breadcrumb label={city.region.name} url={city.region.url} />
-        <Breadcrumb label={city.name} isLast={true} />
-      </nav>
+      <Breadcrumbs
+        breadcrumbs={[
+          { label: "Home", url: "/" },
+          { label: city.country.name, url: city.country.url },
+          { label: city.region.name, url: city.region.url },
+          { label: city.name, isLast: true },
+        ]}
+      />
       <h1>{city.name}</h1>
     </div>
   );

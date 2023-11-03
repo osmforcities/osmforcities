@@ -2,6 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { fetchCountry } from "./fetch";
 import Breadcrumb from "../components/breadcrumbs";
+import Breadcrumbs from "../components/breadcrumbs";
 
 type CountryPageProps = {
   params: {
@@ -36,10 +37,12 @@ const CountryPage = async (props: CountryPageProps) => {
 
   return (
     <div role="main">
-      <nav aria-label="breadcrumb">
-        <Breadcrumb label="Home" url="/" />
-        <Breadcrumb label={country.name} isLast />
-      </nav>
+      <Breadcrumbs
+        breadcrumbs={[
+          { label: "Home", url: "/" },
+          { label: country.name, isLast: true },
+        ]}
+      />
       <h1>{country.name}</h1>
       {country.regions.length > 0 ? (
         <RegionList regions={country.regions} />
