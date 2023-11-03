@@ -4,7 +4,11 @@
   "description": "The command line interface for OSM for Cities",
   "scripts": {
     "cli": "TZ=UTC node src/index.js",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "postinstall": "node ./postinstall.js && prisma generate"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
   },
   "author": "Vitor George <vitor.george@gmail.com>",
   "license": "MIT",
@@ -20,6 +24,7 @@
   },
   "devDependencies": {
     "@fast-csv/parse": "^4.3.6",
+    "@prisma/client": "^5.5.2",
     "date-fns": "^2.30.0",
     "dotenv": "^10.0.0",
     "eslint": "^8.22.0",
