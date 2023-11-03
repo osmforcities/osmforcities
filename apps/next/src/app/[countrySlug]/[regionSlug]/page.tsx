@@ -2,6 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { fetchRegion } from "./fetch";
 import Breadcrumbs from "../../components/breadcrumbs";
+import Table, { Column } from "@/app/components/table";
 
 type RegionPageProps = {
   params: {
@@ -40,6 +41,37 @@ const RegionPage = async (props: RegionPageProps) => {
     return a.stats.presetsCount > b.stats.presetsCount ? -1 : 1;
   });
 
+  type CityType = (typeof cities)[0];
+
+  // Define the columns for the cities table
+  const columns: Column<CityType>[] = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      render: (value, record) => (
+        <a href={record.url} className="text-blue-600 hover:text-blue-800">
+          {value}
+        </a>
+      ),
+      align: "left",
+    },
+    {
+      title: "# of presets",
+      dataIndex: "stats",
+      render: (value) => value?.presetsCount || "-",
+      align: "center",
+    },
+    {
+      title: "coverage (%)",
+      dataIndex: "stats",
+      render: (value) =>
+        value?.requiredTagsCoverage
+          ? formatToPercent(value.requiredTagsCoverage)
+          : "-",
+      align: "center",
+    },
+  ];
+
   return (
     <>
       <Breadcrumbs
@@ -52,40 +84,7 @@ const RegionPage = async (props: RegionPageProps) => {
       <h1 className="text-center text-2xl font-bold mb-6">
         Cities of {region.name}, {region.country.name}
       </h1>
-      <div className="overflow-x-auto">
-        <table className="w-full table-fixed border-collapse border border-gray-200">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 px-4 py-2 text-left">
-                Name
-              </th>
-              <th className="border border-gray-300 px-4 py-2 text-center">
-                # of presets
-              </th>
-              <th className="border border-gray-300 px-4 py-2 text-center">
-                coverage (%)
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {cities.map(({ name, url, stats }) => (
-              <tr key={name} className="hover:bg-gray-50">
-                <td className="border border-gray-300 px-4 py-2">
-                  <a href={url} className="text-blue-600 hover:text-blue-800">
-                    {name}
-                  </a>
-                </td>
-                <td className="border border-gray-300 px-4 py-2 text-center">
-                  {stats ? stats.presetsCount : "-"}
-                </td>
-                <td className="border border-gray-300 px-4 py-2 text-center">
-                  {stats ? formatToPercent(stats.requiredTagsCoverage) : "-"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table columns={columns} data={cities} />
     </>
   );
 };
