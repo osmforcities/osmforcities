@@ -2,14 +2,14 @@ import fs from "fs";
 import path from "path";
 import { parse } from "csv-parse/sync";
 import { PrismaClient } from "@prisma/client";
-import pick from "lodash.pick";
 
 const prisma = new PrismaClient();
 
-const DATA_DIR = path.join(process.cwd(), ".", "data");
+const DATA_DIR = path.join(process.cwd(), "..", "..", "data");
 
 async function seed() {
   // Deletes ALL existing entries
+  await prisma.cityStats.deleteMany();
   await prisma.preset.deleteMany();
   await prisma.city.deleteMany();
   await prisma.region.deleteMany();
