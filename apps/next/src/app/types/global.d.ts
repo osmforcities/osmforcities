@@ -6,3 +6,11 @@ export interface City {
   region_code: string;
   is_capital: boolean;
 }
+
+export interface CityStats {
+  cityId: number;
+  presetsCount: number;
+  requiredTagsCoverage: number;
+  recommendedTagsCoverage: number;
+  date: Date;
+}

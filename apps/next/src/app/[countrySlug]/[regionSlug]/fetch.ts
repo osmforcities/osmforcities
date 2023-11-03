@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { PrismaClient } from "@prisma/client";
+import { CityStats, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const revalidate = 3600;
@@ -13,6 +13,7 @@ export interface Region {
   cities: {
     name: string;
     url: string;
+    stats?: CityStats;
   }[];
 }
 
@@ -37,6 +38,12 @@ export const fetchRegion = cache(
           select: {
             name: true,
             name_slug: true,
+            CityStats: {
+              take: 1,
+              orderBy: {
+                date: "desc",
+              },
+            },
           },
         },
       },
@@ -55,6 +62,7 @@ export const fetchRegion = cache(
       cities: region.cities.map((city) => ({
         name: city.name,
         url: `/${region.country.name_slug}/${region.name_slug}/${city.name_slug}`,
+        stats: city.CityStats[0],
       })),
     };
   }

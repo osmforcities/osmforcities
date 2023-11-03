@@ -14,6 +14,7 @@ export interface City {
     name: string;
     url: string;
   };
+  stats: any[];
 }
 
 export const fetchCity = cache(
@@ -42,6 +43,7 @@ export const fetchCity = cache(
             country: true,
           },
         },
+        CityStats: true,
       },
     });
 
@@ -59,6 +61,7 @@ export const fetchCity = cache(
         name: city.region.name,
         url: `/${city.region.country.name_slug}/${city.region.name_slug}`,
       },
+      stats: city.CityStats,
     };
   }
 );

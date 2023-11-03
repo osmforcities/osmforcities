@@ -10,6 +10,18 @@ type RegionPageProps = {
   };
 };
 
+const formatToPercent = (value: number) => {
+  const percentage = value * 100;
+  // Check if the percentage is an integer
+  if (percentage % 1 === 0) {
+    // If it is an integer, return without decimals
+    return `${percentage}%`;
+  } else {
+    // If it is not an integer, return with two decimal places
+    return `${percentage.toFixed(1)}%`;
+  }
+};
+
 const RegionPage = async (props: RegionPageProps) => {
   const { regionSlug, countrySlug } = props.params;
 
@@ -22,21 +34,56 @@ const RegionPage = async (props: RegionPageProps) => {
     return notFound();
   }
 
+  const cities = region.cities.sort((a, b) => {
+    if (!a.stats || !b.stats) return 0;
+
+    return a.stats.presetsCount > b.stats.presetsCount ? -1 : 1;
+  });
+
   return (
-    <div role="main">
-      <nav aria-label="breadcrumb">
+    <div role="main" className="max-w-2xl mx-auto p-4">
+      <nav aria-label="breadcrumb" className="flex mb-4">
         <Breadcrumb label="Home" url="/" />
         <Breadcrumb label={region.country.name} url={region.country.url} />
         <Breadcrumb label={region.name} isLast />
       </nav>
-      <h1>{region.name}</h1>
-      <ul>
-        {region.cities.map(({ name, url }) => (
-          <li>
-            <a href={url}>{name}</a>
-          </li>
-        ))}
-      </ul>
+      <h1 className="text-center text-2xl font-bold mb-6">
+        Cities of {region.name}, {region.country.name}
+      </h1>
+      <div className="overflow-x-auto">
+        <table className="w-full table-fixed border-collapse border border-gray-200">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Name
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-center">
+                # of presets
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-center">
+                coverage (%)
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {cities.map(({ name, url, stats }) => (
+              <tr key={name} className="hover:bg-gray-50">
+                <td className="border border-gray-300 px-4 py-2">
+                  <a href={url} className="text-blue-600 hover:text-blue-800">
+                    {name}
+                  </a>
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {stats ? stats.presetsCount : "-"}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {stats ? formatToPercent(stats.requiredTagsCoverage) : "-"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
