@@ -1,5 +1,5 @@
 import { type NextRequest } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/app/db";
 
 export interface SearchResult {
   type: "city" | "region" | "country";
@@ -27,7 +27,6 @@ export async function GET(request: NextRequest) {
   }
 
   const normalizedQuery = normalizeInput(q.toLowerCase());
-  const prisma = new PrismaClient();
 
   const cities = await prisma.city.findMany({
     where: {
