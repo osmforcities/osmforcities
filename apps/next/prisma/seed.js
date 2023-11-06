@@ -89,7 +89,7 @@ async function seed() {
           regionId: region.id,
           name_slug,
           name,
-          name_normalized,
+          name_normalized: name_normalized.toLowerCase(),
           is_capital,
           metadata,
         },
