@@ -23,6 +23,8 @@ import {
   tagsFilter,
   timeFilter,
 } from "../../../helpers/osmium.js";
+import { average } from "../../../helpers/math.js";
+
 import pbfIsEmpty from "../../../helpers/pbf-is-empty.js";
 
 // CLI config
@@ -346,13 +348,6 @@ export const update = async (options) => {
             await tagsFilter(level3File, preset.osmium_filter, presetFile);
 
             if (!(await pbfIsEmpty(presetFile))) {
-              const presetStats = {
-                requiredTags: 0,
-                totalRequiredTags: preset.required_tags.length,
-                recommendedTags: 0,
-                totalRecommendedTags: preset.recommended_tags.length,
-              };
-
               const geojsonFile = path.join(
                 geojsonPath,
                 `${preset.name_slug}.geojson`
@@ -364,6 +359,15 @@ export const update = async (options) => {
               );
 
               const geojson = JSON.parse(geojsonString);
+
+              const featureCount = geojson.features.length;
+
+              let requiredTags = 0;
+              let recommendedTags = 0;
+              const totalRequiredTags =
+                preset.required_tags.length * featureCount;
+              const totalRecommendedTags =
+                preset.recommended_tags.length * featureCount;
 
               // Write GeoJSON file
               await fs.writeJSON(
@@ -378,14 +382,14 @@ export const update = async (options) => {
                     // Count required tags
                     preset.required_tags.forEach((t) => {
                       if (clearedProperties[t]) {
-                        presetStats.requiredTags++;
+                        requiredTags++;
                       }
                     });
 
                     // Count recommended tags
                     preset.recommended_tags.forEach((t) => {
                       if (clearedProperties[t]) {
-                        presetStats.recommendedTags++;
+                        recommendedTags++;
                       }
                     });
 
@@ -398,31 +402,36 @@ export const update = async (options) => {
                 { spaces: 2 }
               );
 
-              cityStats.presets.push(presetStats);
+              const requiredTagsCoverage =
+                featureCount > 0 && totalRequiredTags > 0
+                  ? requiredTags / totalRequiredTags
+                  : 1;
+              const recommendedTagsCoverage =
+                featureCount > 0 && totalRecommendedTags > 0
+                  ? recommendedTags / totalRecommendedTags
+                  : 1;
+
+              cityStats.presets.push({
+                presetId: preset.id,
+                requiredTagsCoverage,
+                recommendedTagsCoverage,
+              });
             }
           })
         );
 
+        const presetsCount = cityStats.presets.length;
+
         stats.push({
           cityId: city.id,
           date: currentDayISO,
-          presetsCount: cityStats.presets.length,
-          requiredTagsCoverage:
-            cityStats.presets.reduce(
-              (acc, preset) =>
-                preset.totalRequiredTags > 0
-                  ? acc + preset.requiredTags / preset.totalRequiredTags
-                  : acc,
-              0
-            ) / cityStats.presets.length,
-          recommendedTagsCoverage:
-            cityStats.presets.reduce(
-              (acc, preset) =>
-                preset.totalRecommendedTags > 0
-                  ? acc + preset.recommendedTags / preset.totalRecommendedTags
-                  : acc,
-              0
-            ) / cityStats.presets.length,
+          presetsCount,
+          requiredTagsCoverage: average(
+            cityStats.presets.map((p) => p.requiredTagsCoverage)
+          ),
+          recommendedTagsCoverage: average(
+            cityStats.presets.map((p) => p.recommendedTagsCoverage)
+          ),
         });
 
         geojsonProgressBar.increment();
