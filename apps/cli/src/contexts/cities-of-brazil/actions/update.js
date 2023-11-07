@@ -299,7 +299,8 @@ export const update = async (options) => {
     cliProgress.Presets.shades_classic
   );
 
-  const stats = [];
+  const allCityStats = [];
+  const cityPresetStats = [];
 
   geojsonProgressBar.start(cities.length, 0);
   await Promise.all(
@@ -360,14 +361,16 @@ export const update = async (options) => {
 
               const geojson = JSON.parse(geojsonString);
 
-              const featureCount = geojson.features.length;
+              const totalFeatures = geojson.features.length;
+              const totalRequiredTags =
+                preset.required_tags.length * totalFeatures;
+              const totalRecommendedTags =
+                preset.recommended_tags.length * totalFeatures;
 
               let requiredTags = 0;
               let recommendedTags = 0;
-              const totalRequiredTags =
-                preset.required_tags.length * featureCount;
-              const totalRecommendedTags =
-                preset.recommended_tags.length * featureCount;
+              let updatedAt;
+              let changesets = new Set();
 
               // Write GeoJSON file
               await fs.writeJSON(
@@ -393,6 +396,20 @@ export const update = async (options) => {
                       }
                     });
 
+                    // Set updated at
+                    const { timestamp } = f.properties;
+                    if (timestamp) {
+                      if (!updatedAt || timestamp > updatedAt) {
+                        updatedAt = timestamp;
+                      }
+                    }
+
+                    // Set changesets
+                    const { changeset } = f.properties;
+                    if (changeset) {
+                      changesets.add(changeset);
+                    }
+
                     return {
                       ...f,
                       properties: clearedProperties,
@@ -403,18 +420,27 @@ export const update = async (options) => {
               );
 
               const requiredTagsCoverage =
-                featureCount > 0 && totalRequiredTags > 0
+                totalFeatures > 0 && totalRequiredTags > 0
                   ? requiredTags / totalRequiredTags
                   : 1;
               const recommendedTagsCoverage =
-                featureCount > 0 && totalRecommendedTags > 0
+                totalFeatures > 0 && totalRecommendedTags > 0
                   ? recommendedTags / totalRecommendedTags
                   : 1;
 
               cityStats.presets.push({
-                presetId: preset.id,
                 requiredTagsCoverage,
                 recommendedTagsCoverage,
+              });
+
+              cityPresetStats.push({
+                cityId: city.id,
+                presetId: preset.id,
+                updatedAt,
+                requiredTagsCoverage,
+                recommendedTagsCoverage,
+                totalFeatures,
+                totalChangesets: changesets.size,
               });
             }
           })
@@ -422,7 +448,7 @@ export const update = async (options) => {
 
         const presetsCount = cityStats.presets.length;
 
-        stats.push({
+        allCityStats.push({
           cityId: city.id,
           date: currentDayISO,
           presetsCount,
@@ -456,9 +482,19 @@ export const update = async (options) => {
         },
       },
     }),
-
+    // Only keep the last day of stats for each city
+    prisma.cityPresetStats.deleteMany({
+      where: {
+        cityId: {
+          in: cities.map((c) => c.id),
+        },
+      },
+    }),
     prisma.cityStats.createMany({
-      data: stats,
+      data: allCityStats,
+    }),
+    prisma.cityPresetStats.createMany({
+      data: cityPresetStats,
     }),
   ]);
 

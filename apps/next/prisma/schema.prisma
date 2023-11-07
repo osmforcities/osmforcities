@@ -8,15 +8,16 @@ datasource db {
 }
 
 model City {
-  id              Int         @id @default(autoincrement())
+  id              Int               @id @default(autoincrement())
   name            String
   name_normalized String
   name_slug       String
-  is_capital      Boolean?    @default(false)
+  is_capital      Boolean?          @default(false)
   regionId        Int
-  region          Region      @relation(fields: [regionId], references: [id])
+  region          Region            @relation(fields: [regionId], references: [id])
   metadata        Json?
-  CityStats       CityStats[]
+  stats           CityStats[]
+  presetsStats    CityPresetStats[]
 }
 
 model CityStats {
@@ -49,11 +50,26 @@ model Country {
 }
 
 model Preset {
-  id               Int      @id @default(autoincrement())
+  id               Int               @id @default(autoincrement())
   name             String
   name_slug        String
   category         String
   osmium_filter    String[]
   required_tags    String[]
   recommended_tags String[]
+  CityPresetStats  CityPresetStats[]
+}
+
+model CityPresetStats {
+  presetId                Int
+  preset                  Preset   @relation(fields: [presetId], references: [id])
+  cityId                  Int
+  city                    City     @relation(fields: [cityId], references: [id])
+  totalFeatures           Int
+  totalChangesets         Int
+  requiredTagsCoverage    Float
+  recommendedTagsCoverage Float
+  updatedAt               DateTime @db.Date
+
+  @@unique([presetId, cityId, updatedAt])
 }
