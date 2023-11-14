@@ -51,3 +51,4 @@ gitea/custom/conf/app.ini
 
 *.local.yaml
 *.sqlite3
+postgis-data
