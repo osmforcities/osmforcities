@@ -17,7 +17,7 @@ const RegionList = ({
   return (
     <ul>
       {regions.map(({ name, url }) => (
-        <li>
+        <li key={name}>
           <a href={url}>{name}</a>
         </li>
       ))}

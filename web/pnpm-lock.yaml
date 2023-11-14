@@ -38,6 +38,9 @@ dependencies:
   postcss:
     specifier: 8.4.27
     version: 8.4.27
+  prisma:
+    specifier: ^5.5.2
+    version: 5.5.2
   react:
     specifier: 18.2.0
     version: 18.2.0
@@ -58,9 +61,6 @@ devDependencies:
   better-sqlite3:
     specifier: ^9.0.0
     version: 9.1.1
-  prisma:
-    specifier: ^5.5.2
-    version: 5.5.2
 
 packages:
 
@@ -450,6 +450,7 @@ packages:
   /@prisma/engines@5.5.2:
     resolution: {integrity: sha512-Be5hoNF8k+lkB3uEMiCHbhbfF6aj1GnrTBnn5iYFT7GEr3TsOEp1soviEcBR0tYCgHbxjcIxJMhdbvxALJhAqg==}
     requiresBuild: true
+    dev: false
 
   /@rushstack/eslint-patch@1.5.1:
     resolution: {integrity: sha512-6i/8UoL0P5y4leBIGzvkZdS85RDMG9y1ihZzmTZQ5LdHUYmZ7pKFoj8X0236s3lusPs1Fa5HTQUpwI+UfTcmeA==}
@@ -2505,6 +2506,7 @@ packages:
     requiresBuild: true
     dependencies:
       '@prisma/engines': 5.5.2
+    dev: false
 
   /prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}

@@ -32,7 +32,7 @@ const RegionPage = async (props: RegionPageProps) => {
       <h1>{region.name}</h1>
       <ul>
         {region.cities.map(({ name, url }) => (
-          <li>
+          <li key={name}>
             <a href={url}>{name}</a>
           </li>
         ))}
