@@ -1,34 +1,38 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# OSM for Cities - Website
 
-## Getting Started
+This website is a part of the OSM for Cities monorepo, which contains the full stack of the OSM for Cities project.
 
-First, run the development server:
+## Development
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
+### Prerequisites
+
+- [Node.js](https://nodejs.org) (see [.nvmrc](./.nvmrc) for the required version). To manage multiple Node versions, we recommend using [nvm](https://github.com/creationix/nvm).
+- [pnpm](https://pnpm.io) for efficient and fast package management.
+
+### Install Dependencies
+
+If you are using [`nvm`](https://github.com/creationix/nvm), activate the desired Node version:
+
+```sh
+nvm install
+```
+
+Then, install the Node.js modules:
+
+```sh
+pnpm install
+```
+
+### Getting Started
+
+To start the development server, run:
+
+```sh
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+After starting the server, open [http://localhost:3000](http://localhost:3000) in your browser to view the website.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## License
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This project and its contents are licensed under the terms specified in the [LICENSE](../LICENSE) file located in the parent directory of this monorepo.
