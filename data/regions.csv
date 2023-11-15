@@ -1,0 +1,28 @@
+country_code,code,type,name,name_normalized,name_slug,osm_relation_id,wikidata_id
+br,ac,state,Acre,Acre,acre,326266,Q40780
+br,al,state,Alagoas,Alagoas,alagoas,303781,Q40885
+br,am,state,Amazonas,Amazonas,amazonas,332476,Q40040
+br,ap,state,Amapá,Amapa,amapa,331463,Q40130
+br,ba,state,Bahia,Bahia,bahia,362413,Q40430
+br,ce,state,Ceará,Ceara,ceara,302635,Q40123
+br,df,state,Distrito Federal,Distrito Federal,distrito-federal,421151,Q119158
+br,es,state,Espírito Santo,Espirito Santo,espirito-santo,54882,Q43233
+br,go,state,Goiás,Goias,goias,334443,Q41587
+br,ma,state,Maranhão,Maranhao,maranhao,332924,Q42362
+br,mg,state,Minas Gerais,Minas Gerais,minas-gerais,315173,Q39109
+br,ms,state,Mato Grosso do Sul,Mato Grosso do Sul,mato-grosso-do-sul,334051,Q43319
+br,mt,state,Mato Grosso,Mato Grosso,mato-grosso,333597,Q42824
+br,pa,state,Pará,Para,para,185579,Q39517
+br,pb,state,Paraíba,Paraiba,paraiba,301464,Q38088
+br,pe,state,Pernambuco,Pernambuco,pernambuco,303702,Q40942
+br,pi,state,Piauí,Piaui,piaui,302819,Q42722
+br,pr,state,Paraná,Parana,parana,297640,Q15499
+br,rj,state,Rio de Janeiro,Rio de Janeiro,rio-de-janeiro,57963,Q41428
+br,rn,state,Rio Grande do Norte,Rio Grande do Norte,rio-grande-do-norte,301079,Q43255
+br,ro,state,Rondônia,Rondonia,rondonia,325866,Q43235
+br,rr,state,Roraima,Roraima,roraima,326287,Q42508
+br,rs,state,Rio Grande do Sul,Rio Grande do Sul,rio-grande-do-sul,242620,Q40030
+br,sc,state,Santa Catarina,Santa Catarina,santa-catarina,296584,Q41115
+br,se,state,Sergipe,Sergipe,sergipe,303940,Q43783
+br,sp,state,São Paulo,Sao Paulo,sao-paulo,298204,Q175
+br,to,state,Tocantins,Tocantins,tocantins,336819,Q43695

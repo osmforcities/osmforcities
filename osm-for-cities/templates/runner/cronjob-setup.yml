@@ -30,7 +30,6 @@ spec:
                 - |
                   echo 'Start setting up...';
                   yarn cli fetch-full-history
-                  yarn cli context cities-of-brazil reset-git-local
                   yarn cli context cities-of-brazil reset-git-remote
                   yarn cli context cities-of-brazil setup
               env:

@@ -66,7 +66,7 @@ export async function tagsFilter(inputFile, filters, outputFile) {
     inputFile,
     "-v",
     "--overwrite",
-    filters,
+    ...filters,
     "-o",
     outputFile,
   ]);

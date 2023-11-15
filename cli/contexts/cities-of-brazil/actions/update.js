@@ -29,9 +29,9 @@ import {
   GITEA_USER,
   GITEA_EMAIL,
   GIT_HISTORY_START_DATE,
-  PRESETS_HISTORY_PBF_FILE,
+  HISTORY_PBF_FILE,
   getPresets,
-  PRESETS_HISTORY_META_JSON,
+  HISTORY_META_JSON,
 } from "../../../../config/index.js";
 
 // Context config
@@ -40,6 +40,7 @@ import {
   CURRENT_DAY_COUNTRY_FILE,
   CURRENT_DAY_DIR,
   CURRENT_DAY_FILE,
+  CURRENT_DAY_ALL_TAGS_FILE,
   CURRENT_DAY_LEVEL_1_DIR,
   CURRENT_DAY_LEVEL_2_DIR,
   CURRENT_DAY_LEVEL_3_DIR,
@@ -66,17 +67,17 @@ export const update = async (options) => {
   let lastDailyUpdate;
 
   // Check the latest date available in the presets history file
-  if (!(await fs.pathExists(PRESETS_HISTORY_PBF_FILE))) {
+  if (!(await fs.pathExists(HISTORY_PBF_FILE))) {
     throw new Error(
       `Could not find presets history file, please run update-presets-history task.`
     );
-  } else if (!(await fs.pathExists(PRESETS_HISTORY_META_JSON))) {
+  } else if (!(await fs.pathExists(HISTORY_META_JSON))) {
     throw new Error(
       `Could not find metadata for presets history file, please run update-presets-history task.`
     );
   }
 
-  const presetsHistoryMeta = await fs.readJson(PRESETS_HISTORY_META_JSON);
+  const presetsHistoryMeta = await fs.readJson(HISTORY_META_JSON);
   firstHistoryTimestamp = new Date(presetsHistoryMeta.elements.firstTimestamp);
   lastHistoryTimestamp = new Date(presetsHistoryMeta.elements.lastTimestamp);
 
@@ -99,7 +100,7 @@ export const update = async (options) => {
   } else {
     // If not commits are available, set the last day update to the day before
     // the default start date
-    lastDailyUpdate = endOfDay(subDays(defaultStartDate, 1));
+    lastDailyUpdate = startOfDay(subDays(defaultStartDate, 1));
   }
 
   // Set current daily update to the next after the last daily update
@@ -108,8 +109,8 @@ export const update = async (options) => {
   if (isBefore(currentDailyUpdate, startOfDay(firstHistoryTimestamp))) {
     // If the repository was updated before the first history timestamp, use
     // the first history timestamp as start date
-    currentDailyUpdate = endOfDay(firstHistoryTimestamp);
-  } else if (isAfter(currentDailyUpdate, endOfDay(lastHistoryTimestamp))) {
+    currentDailyUpdate = startOfDay(addDays(firstHistoryTimestamp, 1));
+  } else if (isAfter(currentDailyUpdate, lastHistoryTimestamp)) {
     logger.info(
       `The history file doesn't include ${currentDailyUpdate.toISOString()}, nothing to update.`
     );
@@ -124,7 +125,15 @@ export const update = async (options) => {
 
   // Extract OSM data from history file at the current date
   logger.info(`Filtering: ${currentDayISO}`);
-  await timeFilter(PRESETS_HISTORY_PBF_FILE, currentDayISO, CURRENT_DAY_FILE);
+  await timeFilter(HISTORY_PBF_FILE, currentDayISO, CURRENT_DAY_ALL_TAGS_FILE);
+
+  // Filter presets from current day file
+  logger.info(`Filtering presets from current day file...`);
+  await tagsFilter(
+    CURRENT_DAY_ALL_TAGS_FILE,
+    (await getPresets()).map((preset) => preset.osmium_filter.split(",")),
+    CURRENT_DAY_FILE
+  );
 
   if (await pbfIsEmpty(CURRENT_DAY_FILE)) {
     logger.info(`No data found, skipping ${currentDayISO}`);
@@ -296,7 +305,11 @@ export const update = async (options) => {
               `${municipalityId}-${preset.id}.osm.pbf`
             );
 
-            await tagsFilter(level3File, preset.osmium_filter, presetFile);
+            await tagsFilter(
+              level3File,
+              preset.osmium_filter.split(","),
+              presetFile
+            );
 
             if (!(await pbfIsEmpty(presetFile))) {
               const geojsonFile = path.join(
