@@ -1,7 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import { fetchRegion } from "./fetch";
-import Breadcrumb from "../../components/breadcrumbs";
+import Breadcrumb from "../../../components/breadcrumbs";
 
 type RegionPageProps = {
   params: {

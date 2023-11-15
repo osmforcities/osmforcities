@@ -1,7 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import { fetchCity } from "./fetch";
-import Breadcrumb from "@/app/components/breadcrumbs";
+import Breadcrumb from "@/components/breadcrumbs";
 
 type CityPageProps = {
   params: {

@@ -1,5 +1,5 @@
 import React from "react";
-import { SearchInput } from "./components/search";
+import { SearchInput } from "../components/search";
 
 const HomePage = () => {
   if (process.env.MAINTENANCE_MODE === "true") {
