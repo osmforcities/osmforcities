@@ -7,10 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "prisma:generate": "dotenv -e .env prisma generate",
+    "prisma:migrate": "dotenv -e .env prisma migrate dev",
+    "prisma:seed": "dotenv -e .env prisma db seed",
+    "prisma:studio": "dotenv -e .env prisma studio",
+    "postinstall": "test -f .env || echo 'POSTGRES_URL=\"postgres://postgres:docker@localhost:5433/postgres\"' > .env"
   },
   "prisma": {
-    "seed": "node prisma/seed.js"
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.5.2",
@@ -18,7 +22,6 @@
     "@types/react": "18.2.18",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.14",
-    "better-sqlite3": "^9.0.0",
     "csv-parse": "^5.5.2",
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.13",
@@ -32,6 +35,8 @@
     "typescript": "5.1.6"
   },
   "devDependencies": {
-    "prisma": "^5.5.2"
+    "dotenv-cli": "^7.3.0",
+    "prisma": "^5.5.2",
+    "ts-node": "^10.9.1"
   }
 }
