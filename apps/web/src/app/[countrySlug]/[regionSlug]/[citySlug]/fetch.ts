@@ -42,7 +42,12 @@ export const fetchCity = cache(
             country: true,
           },
         },
-        CityStats: true,
+        stats: {
+          take: 10,
+          orderBy: {
+            date: "desc", // Sorting stats by 'date' in descending order
+          },
+        },
       },
     });
 
@@ -60,7 +65,7 @@ export const fetchCity = cache(
         name: city.region.name,
         url: `/${city.region.country.name_slug}/${city.region.name_slug}`,
       },
-      stats: city.CityStats,
+      stats: city.stats,
     };
   }
 );
