@@ -16,5 +16,5 @@ import fs from "fs-extra";
   await fs.remove("./prisma");
 
   // copy prisma folder from apps/next/prisma
-  await fs.copy("../next/prisma", "./prisma");
+  await fs.copy("../web/prisma", "./prisma");
 })();

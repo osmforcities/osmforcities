@@ -11,7 +11,7 @@
     "prisma:migrate": "dotenv -e .env prisma migrate dev",
     "prisma:seed": "dotenv -e .env prisma db seed",
     "prisma:studio": "dotenv -e .env prisma studio",
-    "postinstall": "test -f .env || echo 'POSTGRES_URL=\"postgres://postgres:docker@localhost:5433/postgres\"' > .env"
+    "postinstall": "node ../../setup-env.js"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

@@ -5,7 +5,11 @@
   "scripts": {
     "cli": "TZ=UTC node src/index.js",
     "lint": "eslint src",
-    "postinstall": "node ./postinstall.js && prisma generate"
+    "prisma:generate": "dotenv -e .env prisma generate",
+    "prisma:migrate": "dotenv -e .env prisma migrate dev",
+    "prisma:seed": "dotenv -e .env prisma db seed",
+    "prisma:studio": "dotenv -e .env prisma studio",
+    "postinstall": "node ../../setup-env.js && node ./postinstall.js && prisma generate"
   },
   "prisma": {
     "schema": "prisma/schema.prisma"
@@ -27,6 +31,7 @@
     "@prisma/client": "^5.5.2",
     "date-fns": "^2.30.0",
     "dotenv": "^10.0.0",
+    "dotenv-cli": "^7.3.0",
     "eslint": "^8.22.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
