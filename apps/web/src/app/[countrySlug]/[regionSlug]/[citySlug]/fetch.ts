@@ -14,6 +14,7 @@ export interface City {
     url: string;
   };
   stats: any[];
+  presets: any[];
 }
 
 export const fetchCity = cache(
@@ -55,6 +56,26 @@ export const fetchCity = cache(
       return null;
     }
 
+    const presets = await prisma.preset.findMany({
+      where: {
+        CityPresetStats: {
+          some: {
+            city: {
+              id: city.id,
+            },
+          },
+        },
+      },
+      include: {
+        CityPresetStats: {
+          take: 1,
+          orderBy: {
+            updatedAt: "desc",
+          },
+        },
+      },
+    });
+
     return {
       name: city.name,
       country: {
@@ -66,6 +87,11 @@ export const fetchCity = cache(
         url: `/${city.region.country.name_slug}/${city.region.name_slug}`,
       },
       stats: city.stats,
+      presets: presets.map((preset) => ({
+        name: preset.name,
+        url: `/${city.region.country.name_slug}/${city.region.name_slug}/${city.name_slug}/${preset.name_slug}`,
+        ...preset.CityPresetStats[0],
+      })),
     };
   }
 );

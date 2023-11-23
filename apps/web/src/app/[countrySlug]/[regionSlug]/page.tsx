@@ -11,7 +11,7 @@ type RegionPageProps = {
   };
 };
 
-const formatToPercent = (value: number) => {
+export const formatToPercent = (value: number) => {
   const percentage = value * 100;
   // Check if the percentage is an integer
   if (percentage % 1 === 0) {
