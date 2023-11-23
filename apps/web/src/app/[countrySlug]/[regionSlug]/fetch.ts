@@ -36,10 +36,15 @@ export const fetchRegion = cache(
       include: {
         country: true,
         cities: {
+          where: {
+            stats: {
+              some: {}, // This ensures that only cities with at least one stat are included
+            },
+          },
           select: {
             name: true,
             name_slug: true,
-            CityStats: {
+            stats: {
               take: 1,
               orderBy: {
                 date: "desc",
@@ -63,7 +68,7 @@ export const fetchRegion = cache(
       cities: region.cities.map((city) => ({
         name: city.name,
         url: `/${region.country.name_slug}/${region.name_slug}/${city.name_slug}`,
-        stats: city.CityStats[0],
+        stats: city.stats[0],
       })),
     };
   }
