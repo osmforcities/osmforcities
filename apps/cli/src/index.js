@@ -51,6 +51,11 @@ program
 program
   .command("context")
   .option("-r, --recursive", "Repeat updates to present day", false)
+  .option(
+    "-O, --overwrite",
+    "Overwrite history from remote repository, if exists",
+    false
+  )
   .argument("<name>", "Context name", (contextName) => {
     // Check if context exists, it should be a folder in ./src/contexts
     if (!contexts.includes(contextName)) {

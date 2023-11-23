@@ -29,8 +29,8 @@ import pbfIsEmpty from "../../../helpers/pbf-is-empty.js";
 
 // CLI config
 import {
-  GITEA_USER,
-  GITEA_EMAIL,
+  GIT_USER,
+  GIT_EMAIL,
   GIT_HISTORY_START_DATE,
   HISTORY_PBF_FILE,
   HISTORY_META_JSON,
@@ -104,7 +104,7 @@ export const update = async (options) => {
 
   // Get last daily update
   const remoteHeads = await git.listRemote(["--heads", "origin"]);
-  if (remoteHeads?.indexOf("main") > -1) {
+  if (!options?.overwrite && remoteHeads?.indexOf("main") > -1) {
     await git.pull("origin", "main", "--depth=1");
 
     lastDailyUpdate = parseISO(
@@ -512,8 +512,8 @@ export const update = async (options) => {
 
   // Commit
   await git.add(".");
-  await git.addConfig("user.name", GITEA_USER);
-  await git.addConfig("user.email", GITEA_EMAIL);
+  await git.addConfig("user.name", GIT_USER);
+  await git.addConfig("user.email", GIT_EMAIL);
   await git.listConfig();
   await git
     .env({
@@ -521,7 +521,10 @@ export const update = async (options) => {
     })
     .commit(`${currentDayISO}`);
 
-  await git.push("origin", "main", { "--set-upstream": null });
+  await git.push("origin", "main", {
+    "--set-upstream": null,
+    "--force": options?.overwrite,
+  });
 
   // Run update again if it was called recursively
   if (options && options.recursive) {

@@ -54,8 +54,8 @@ export const GIT_HISTORY_END_DATE =
  * GITEA SERVER
  */
 
-export const GITEA_USER = process.env.GITEA_USER || "runner";
-export const GITEA_EMAIL = process.env.GITEA_EMAIL || "runner@osmforcities@org";
+export const GIT_USER = process.env.GIT_USER || "osmforcities";
+export const GIT_EMAIL = process.env.GIT_EMAIL || "no-reply@osmforcities@org";
 export const GITEA_ACCESS_TOKEN = process.env.GITEA_ACCESS_TOKEN;
 export const GITEA_HOST_URL =
   process.env.GITEA_HOST_URL || `http://localhost:3000`;

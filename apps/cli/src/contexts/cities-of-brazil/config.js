@@ -2,9 +2,6 @@ import * as path from "path";
 
 // CLI Config
 import {
-  GITEA_ACCESS_TOKEN,
-  GITEA_HOST_URL,
-  GITEA_USER,
   CLI_APP_DIR,
   CONTEXTS_DATA_PATH,
   TMP_DIR,
@@ -13,15 +10,11 @@ import {
 const CONTEXT_NAME = "cities-of-brazil";
 
 // Target organization and repository
-export const GIT_ORGANIZATION = "cities-of";
-export const GIT_REPOSITORY_NAME = "brazil";
+export const GIT_ORGANIZATION = "osmforcities" || process.env.GIT_ORGANIZATION;
+export const GIT_REPOSITORY_NAME = "brazil" || process.env.GIT_REPOSITORY_NAME;
+const GIT_HOST = "git@github.com" || process.env.GIT_HOST;
 
-// Build repository URL
-const repositoryUrl = new URL(GITEA_HOST_URL);
-repositoryUrl.username = GITEA_USER;
-repositoryUrl.password = GITEA_ACCESS_TOKEN;
-repositoryUrl.pathname = `/${GIT_ORGANIZATION}/${GIT_REPOSITORY_NAME}.git`;
-export const GIT_REPOSITORY_URL = repositoryUrl.toString();
+export const GIT_REPOSITORY_URL = `${GIT_HOST}:${GIT_ORGANIZATION}/${GIT_REPOSITORY_NAME}.git`;
 
 // CLI directories
 export const CONTEXT_APP_DIR = path.join(CLI_APP_DIR, "contexts", CONTEXT_NAME);
