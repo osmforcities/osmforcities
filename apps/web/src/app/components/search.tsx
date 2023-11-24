@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import ReactSelect from "react-select";
 import { useRouter } from "next/navigation";
-import { MagnifierRight } from "./icons";
+import { MagnifierRight } from "../../components/icons";
 import { SearchResult } from "../api/search/route";
 
 export const SearchInput = () => {
