@@ -43,7 +43,7 @@ const HomePage = () => {
         </div>
         <div className="text-center text-lg pb-5">
           <a href="/about" className="text-blue-500 hover:text-blue-700">
-            Please visit the about page to learn more about the project.
+            Please visit the about page to learn more.
           </a>
         </div>
       </div>
