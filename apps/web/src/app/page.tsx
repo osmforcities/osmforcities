@@ -23,24 +23,28 @@ const HomePage = () => {
           </li>
         </ul>
       </nav>
-      <div className="flex flex-col mx-auto max-w-xl">
+      <div className="flex flex-col mx-auto max-w-lg">
         <h1 className="text-center text-6xl mt-20 mb-10">
-          Open data about your city.
+          Open maps of your city.
         </h1>
         <div className="text-center text-2xl pb-10">
           Download, inspect and track data from OpenStreetMap, the open map for
           the world.
         </div>
-        <div className="text-center text-2xl pb-5">Find your city now:</div>
+        <div className="text-center text-2xl pb-5">
+          Start by finding your city:
+        </div>
         <div className="w-full flex justify-center pb-10">
           <SearchInput />
         </div>
-        <div className="text-center text-2xl pb-5">
-          ... or{" "}
+        <div className="text-center text-xl pb-5">
+          This platform is in early development and the coverage it restricted
+          to Brazil.
+        </div>
+        <div className="text-center text-lg pb-5">
           <a href="/about" className="text-blue-500 hover:text-blue-700">
-            read more
-          </a>{" "}
-          about this project.
+            Please visit the about page to learn more about the project.
+          </a>
         </div>
       </div>
     </div>

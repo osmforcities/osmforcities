@@ -39,7 +39,7 @@ export const SearchInput = () => {
       <ReactSelect
         id="citySearch"
         autoFocus={true}
-        placeholder="e.g. Rio de Janeiro, São Paulo, Curitiba..."
+        placeholder="e.g. Rio de Janeiro, Aracaju, Curitiba..."
         options={results as SearchResult[]}
         onInputChange={(value) => setSearchTerm(value)}
         onChange={(result) => {
@@ -53,7 +53,7 @@ export const SearchInput = () => {
         styles={{
           control: (baseStyles) => ({
             ...baseStyles,
-            width: "400px",
+            width: "w-lg",
           }),
         }}
         components={{
