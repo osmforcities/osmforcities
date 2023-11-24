@@ -79,6 +79,7 @@ const CityPage = async (props: CityPageProps) => {
           href={`${city.gitUrl}/${record.name_slug}.geojson`}
           target="_blank"
           rel="noopener noreferrer"
+          className="text-blue-500 hover:text-blue-700"
         >
           {value}
         </a>
