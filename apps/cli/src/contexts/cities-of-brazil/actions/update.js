@@ -1,6 +1,7 @@
 import * as path from "path";
 import fs from "fs-extra";
 import cliProgress from "cli-progress";
+import readline from "readline";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -59,7 +60,40 @@ const COUNTRY_SLUG = "brazil";
 // Set concurrency limit
 const limit = pLimit(20);
 
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+const askConfirmation = (question) => {
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      resolve(answer.trim().toLowerCase());
+    });
+  });
+};
+
 export const update = async (options) => {
+  try {
+    if (options?.overwrite && options?.recursive) {
+      throw new Error(
+        `Cannot run update with both --overwrite and --recursive options.`
+      );
+    } else if (options?.overwrite) {
+      const confirmation =
+        (await askConfirmation(
+          `Are you sure you want to reset the repository at ${GIT_REPOSITORY_URL}? [y/N]: `
+        )) || "n";
+      if (confirmation !== "y") {
+        logger.info("Reset operation cancelled.");
+        return;
+      }
+    }
+  } finally {
+    // Close readline interface
+    rl.close();
+  }
+
   // Init repository path, if it doesn't exist
   await fs.ensureDir(CLI_GIT_DIR);
   await fs.ensureDir(CURRENT_DAY_DIR);
