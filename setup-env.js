@@ -12,11 +12,22 @@ if (!fs.existsSync(envPath)) {
   );
 }
 
-// Create symlinks to .env file in all packages
-const packages = ["cli", "web"];
-packages.forEach((pkg) => {
-  const pkgPath = path.join(__dirname, `./apps/${pkg}/.env`);
-  if (!fs.existsSync(pkgPath)) {
-    fs.symlinkSync(envPath, pkgPath);
+// Create symlinks to .env file in all apps
+const apps = ["cli", "web"];
+apps.forEach((app) => {
+  const appPath = path.join(__dirname, `./apps/${app}/.env`);
+  try {
+    const stats = fs.lstatSync(appPath);
+    if (!stats.isSymbolicLink()) {
+      console.log(`Creating .env symlink for ${app} app.`);
+      fs.symlinkSync(envPath, appPath);
+    }
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      console.log(`Creating .env symlink for ${app} app.`);
+      fs.symlinkSync(envPath, appPath);
+    } else {
+      throw error; // Rethrow if the error is not related to the absence of the file
+    }
   }
 });
