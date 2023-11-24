@@ -1,0 +1,34 @@
+name,name_slug,category,osmium_filter,required_tags,recommended_tags
+Bicycle Rentals,bicycle-rental,cycling,nrw/amenity=bicycle_rental,"name,network,operator","ref,capacity"
+Bicycle Parking,bicycle-parking,cycling,nrw/amenity=bicycle_parking,"capacity,covered,access,operator,bicycle_parking,fee,surveillance","name,operator,rooms,beds,addr:housenumber,addr:street,phone"
+Bicycle Shops,bicycle-shop,cycling,nrw/shop=bicycle,"name,addr:housenumber,addr:street,phone,opening_hours",website
+Clinics,clinic,health,nrw/amenity=clinic,"name,addr:housenumber,addr:street,phone,opening_hours",
+Toilets,toilets,health,nrw/amenity=toilets,,
+Drinking Water,drinking-water,health,nrw/amenity=drinking_water,,
+Doctors,doctors,health,nrw/amenity=doctors,"name,addr:housenumber,addr:street,phone,opening_hours",
+Dentists,dentist,health,nrw/amenity=dentist,"name,addr:housenumber,addr:street,phone,opening_hours",
+Health Posts,health-post,health,nrw/amenity=health_post,"name,addr:housenumber,addr:street,phone,opening_hours",
+Hospitals,hospital,health,nrw/amenity=hospital,"name,addr:housenumber,addr:street,phone,opening_hours",
+Nursing Homes,nursing-home,health,nrw/amenity=nursing_home,"name,addr:housenumber,addr:street,phone,opening_hours",
+Pharmacies,pharmacy,health,nrw/amenity=pharmacy,"name,addr:housenumber,addr:street,phone,opening_hours",
+Veterinaries,veterinary,health,nrw/amenity=veterinary,"name,addr:housenumber,addr:street,phone,opening_hours",
+Social Facilities,social-facility,social,nrw/amenity=social_facility,"name,addr:housenumber,addr:street,phone,opening_hours",
+Community Centres,community-centre,social,nrw/amenity=community_centre,"name,addr:housenumber,addr:street,phone,opening_hours",
+Kindergartens,kindergarten,education,nrw/amenity=kindergarten,"name,addr:housenumber,addr:street,phone,opening_hours",
+Schools,school,education,nrw/amenity=school,"name,addr:housenumber,addr:street,phone,opening_hours",
+Universities,university,education,nrw/amenity=university,"name,addr:housenumber,addr:street,phone,opening_hours",
+Colleges,college,education,nrw/amenity=college,"name,addr:housenumber,addr:street,phone,opening_hours",
+Libraries,library,education,nrw/amenity=library,"name,addr:housenumber,addr:street,phone,opening_hours",
+Arts Centres,arts-centre,culture,nrw/amenity=arts_centre,"name,addr:housenumber,addr:street,phone,opening_hours",
+Galleries,gallery,culture,nrw/tourism=gallery,"name,addr:housenumber,addr:street,phone,opening_hours",
+Monuments,monument,culture,nrw/historic=monument,"name,addr:housenumber,addr:street",
+Memorials,memorials,culture,nrw/historic=memorial,"name,addr:housenumber,addr:street",
+Heritage,heritage,culture,nrw/heritage,"name,addr:housenumber,addr:street",
+Cinemas,cinema,culture,nrw/amenity=cinema,"name,addr:housenumber,addr:street,phone,opening_hours",
+Government Offices,government-office,government,nrw/office=government,"name,addr:housenumber,addr:street,phone,opening_hours",
+Waterfalls,waterfall,environment,nrw/waterway=waterfall,,
+Tailings Ponds,tailings-pond,environment,nrw/man_made=tailings_pond,,
+Dams,dam,environment,nrw/waterway=dam,,
+Guest Houses,guest-house,tourism,nrw/tourism=guest_house,"name,addr:housenumber,addr:street,phone","name,operator,rooms,beds,addr:housenumber,addr:street,phone"
+Hotels,hotel,tourism,nrw/tourism=hotel,"name,addr:housenumber,addr:street,phone","name,operator,rooms,beds,addr:housenumber,addr:street,website,phone"
+Sports,sport,leisure,nrw/sport,,

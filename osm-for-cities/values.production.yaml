@@ -45,8 +45,8 @@ runner:
     GITEA_ACCESS_TOKEN: "{{GITEA_ACCESS_TOKEN}}"
     GITEA_HOST_URL: https://osmforcities.org
     TMP_DIR: /home/runner/app/app-data/tmp
-    GITEA_USER: runner
-    GITEA_EMAIL: runner@osmforcities.org
+    GIT_USER: runner
+    GIT_EMAIL: runner@osmforcities.org
   efs:
     volumeHandle: fs-0e28a9656b94d1f7a
   ## Setup
