@@ -1,17 +1,20 @@
 import { cache } from "react";
 import prisma from "@/app/db";
+import { Country, Region } from "@prisma/client";
 export const revalidate = 3600;
 
-export interface Country {
-  name: string;
-  regions: {
-    name: string;
-    url: string;
-  }[];
+export interface RegionWithCounts extends Region {
+  _count: {
+    cities: number;
+  };
+}
+
+export interface CountryWithCounts extends Country {
+  regions: RegionWithCounts[];
 }
 
 export const fetchCountry = cache(
-  async (countrySlug: string): Promise<Country | null> => {
+  async (countrySlug: string): Promise<CountryWithCounts | null> => {
     const country = await prisma.country.findFirst({
       where: {
         name_slug: countrySlug,
@@ -21,6 +24,9 @@ export const fetchCountry = cache(
           select: {
             name: true,
             name_slug: true,
+            _count: {
+              select: { cities: true },
+            },
           },
         },
       },
@@ -30,12 +36,6 @@ export const fetchCountry = cache(
       return null;
     }
 
-    return {
-      name: country.name,
-      regions: country.regions.map((region) => ({
-        name: region.name,
-        url: `/${country.name_slug}/${region.name_slug}`,
-      })),
-    };
+    return country as CountryWithCounts;
   }
 );

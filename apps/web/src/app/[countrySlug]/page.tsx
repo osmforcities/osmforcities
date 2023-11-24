@@ -1,28 +1,13 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { fetchCountry } from "./fetch";
+import { RegionWithCounts, fetchCountry } from "./fetch";
 import Breadcrumbs from "../components/breadcrumbs";
+import Table, { Column } from "../components/table";
 
 type CountryPageProps = {
   params: {
     countrySlug: string;
   };
-};
-
-const RegionList = ({
-  regions,
-}: {
-  regions: { name: string; url: string }[];
-}) => {
-  return (
-    <ul>
-      {regions.map(({ name, url }) => (
-        <li key={name}>
-          <a href={url}>{name}</a>
-        </li>
-      ))}
-    </ul>
-  );
 };
 
 const CountryPage = async (props: CountryPageProps) => {
@@ -34,6 +19,29 @@ const CountryPage = async (props: CountryPageProps) => {
     return notFound();
   }
 
+  const columns: Column<RegionWithCounts>[] = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      render: (value: string, record: RegionWithCounts) => (
+        <a
+          href={`/${country.name_slug}/${record.name_slug}`}
+          className="text-blue-600 hover:text-blue-800"
+        >
+          {value}
+        </a>
+      ),
+      align: "left",
+    },
+
+    {
+      title: "# of cities",
+      dataIndex: "_count",
+      render: (value: RegionWithCounts["_count"]) => value.cities || "-",
+      align: "center",
+    },
+  ];
+
   return (
     <div role="main">
       <Breadcrumbs
@@ -42,9 +50,8 @@ const CountryPage = async (props: CountryPageProps) => {
           { label: country.name, isLast: true },
         ]}
       />
-      <h1>{country.name}</h1>
       {country.regions.length > 0 ? (
-        <RegionList regions={country.regions} />
+        <Table columns={columns} data={country.regions} />
       ) : (
         <div>No regions found</div>
       )}
