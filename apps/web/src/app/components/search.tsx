@@ -35,38 +35,36 @@ export const SearchInput = () => {
   }, [searchTerm]);
 
   return (
-    <div className="h-screen w-full flex justify-center items-center">
-      <div>
-        <ReactSelect
-          id="citySearch"
-          autoFocus={true}
-          placeholder="Search a city..."
-          options={results as SearchResult[]}
-          onInputChange={(value) => setSearchTerm(value)}
-          onChange={(result) => {
-            if (result) {
-              router.push(result.url);
-            }
-          }}
-          getOptionLabel={(result: SearchResult) => result.label}
-          getOptionValue={(result: SearchResult) => result.name_normalized}
-          isSearchable={true}
-          styles={{
-            control: (baseStyles) => ({
-              ...baseStyles,
-              width: "400px",
-            }),
-          }}
-          components={{
-            NoOptionsMessage: () => null,
-            DropdownIndicator: () => (
-              <div className="px-2">
-                <MagnifierRight />
-              </div>
-            ),
-          }}
-        />
-      </div>
+    <div>
+      <ReactSelect
+        id="citySearch"
+        autoFocus={true}
+        placeholder="e.g. Rio de Janeiro, São Paulo, Curitiba..."
+        options={results as SearchResult[]}
+        onInputChange={(value) => setSearchTerm(value)}
+        onChange={(result) => {
+          if (result) {
+            router.push(result.url);
+          }
+        }}
+        getOptionLabel={(result: SearchResult) => result.label}
+        getOptionValue={(result: SearchResult) => result.name_normalized}
+        isSearchable={true}
+        styles={{
+          control: (baseStyles) => ({
+            ...baseStyles,
+            width: "400px",
+          }),
+        }}
+        components={{
+          NoOptionsMessage: () => null,
+          DropdownIndicator: () => (
+            <div className="px-2">
+              <MagnifierRight />
+            </div>
+          ),
+        }}
+      />
     </div>
   );
 };
