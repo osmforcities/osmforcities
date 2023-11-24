@@ -53,7 +53,8 @@ export const SearchInput = () => {
         styles={{
           control: (baseStyles) => ({
             ...baseStyles,
-            width: "w-lg",
+            width: "400px",
+            minWidth: "400px",
           }),
         }}
         components={{
