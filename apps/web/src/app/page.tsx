@@ -4,25 +4,6 @@ import { SearchInput } from "./components/search";
 const HomePage = () => {
   return (
     <div role="main" aria-label="home" className="p-4">
-      <nav>
-        <ul className="flex justify-between items-center">
-          <li className="mr-auto">
-            <a href="/" className="text-blue-500 hover:text-blue-700">
-              osmforcities.org
-            </a>
-          </li>
-          <li className="mr-4">
-            <a href="/" className="text-blue-500 hover:text-blue-700">
-              Home
-            </a>
-          </li>
-          <li className="mr-4">
-            <a href="/about" className="text-blue-500 hover:text-blue-700">
-              About
-            </a>
-          </li>
-        </ul>
-      </nav>
       <div className="flex flex-col mx-auto max-w-lg">
         <h1 className="text-center text-6xl mt-20 mb-10">
           Open maps of your city.
