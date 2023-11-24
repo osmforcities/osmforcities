@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { fetchRegion } from "./fetch";
 import Breadcrumbs from "../../components/breadcrumbs";
 import Table, { Column } from "@/app/components/table";
+import { CityStats } from "@prisma/client";
 
 type RegionPageProps = {
   params: {
@@ -48,7 +49,7 @@ const RegionPage = async (props: RegionPageProps) => {
     {
       title: "Name",
       dataIndex: "name",
-      render: (value, record) => (
+      render: (value: string, record: CityType) => (
         <a href={record.url} className="text-blue-600 hover:text-blue-800">
           {value}
         </a>
@@ -58,13 +59,13 @@ const RegionPage = async (props: RegionPageProps) => {
     {
       title: "# of presets",
       dataIndex: "stats",
-      render: (value) => value?.presetsCount || "-",
+      render: (value: CityStats) => value?.presetsCount || "-",
       align: "center",
     },
     {
       title: "coverage (%)",
       dataIndex: "stats",
-      render: (value) =>
+      render: (value: CityStats) =>
         value?.requiredTagsCoverage
           ? formatToPercent(value.requiredTagsCoverage)
           : "-",

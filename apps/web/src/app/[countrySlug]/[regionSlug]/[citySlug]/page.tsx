@@ -35,7 +35,7 @@ const CityPage = async (props: CityPageProps) => {
     {
       title: "Date",
       dataIndex: "date",
-      render: (value) => (
+      render: (value: Date) => (
         <>
           {value.toLocaleDateString(undefined, {
             month: "short", // abbreviated month name
@@ -49,20 +49,20 @@ const CityPage = async (props: CityPageProps) => {
     {
       title: "# of presets",
       dataIndex: "presetsCount",
-      render: (value) => <>{value}</>,
+      render: (value: number) => <>{value}</>,
       align: "center",
     },
     {
       title: "required tags (%)",
       dataIndex: "requiredTagsCoverage",
-      render: (requiredTagsCoverage) =>
+      render: ({ requiredTagsCoverage }: { requiredTagsCoverage: number }) =>
         requiredTagsCoverage ? formatToPercent(requiredTagsCoverage) : "-",
       align: "center",
     },
     {
       title: "recommended tags (%)",
       dataIndex: "recommendedTagsCoverage",
-      render: (recommendedTagsCoverage) =>
+      render: (recommendedTagsCoverage: number) =>
         recommendedTagsCoverage
           ? formatToPercent(recommendedTagsCoverage)
           : "-",
@@ -74,24 +74,24 @@ const CityPage = async (props: CityPageProps) => {
     {
       title: "Name",
       dataIndex: "name",
-      render: (value) => <>{value}</>,
+      render: (value: string) => <>{value}</>,
     },
     {
       title: "# of features",
       dataIndex: "CityPresetStats",
-      render: ({ totalFeatures }) => <>{totalFeatures}</>,
+      render: ({ totalFeatures }: CityPresetStats) => <>{totalFeatures}</>,
       align: "center",
     },
     {
       title: "# of changesets",
       dataIndex: "CityPresetStats",
-      render: ({ totalChangesets }) => <>{totalChangesets}</>,
+      render: ({ totalChangesets }: CityPresetStats) => <>{totalChangesets}</>,
       align: "center",
     },
     {
       title: "last update",
       dataIndex: "CityPresetStats",
-      render: ({ updatedAt }) => (
+      render: ({ updatedAt }: CityPresetStats) => (
         <>
           {updatedAt.toLocaleDateString(undefined, {
             month: "short", // abbreviated month name
@@ -106,14 +106,18 @@ const CityPage = async (props: CityPageProps) => {
     {
       title: "required tags (%)",
       dataIndex: "CityPresetStats",
-      render: ({ requiredTagsCoverage }) =>
+      render: ({ requiredTagsCoverage }: { requiredTagsCoverage: number }) =>
         requiredTagsCoverage ? formatToPercent(requiredTagsCoverage) : "-",
       align: "center",
     },
     {
       title: "optional tags (%)",
       dataIndex: "CityPresetStats",
-      render: ({ recommendedTagsCoverage }) =>
+      render: ({
+        recommendedTagsCoverage,
+      }: {
+        recommendedTagsCoverage: number;
+      }) =>
         recommendedTagsCoverage
           ? formatToPercent(recommendedTagsCoverage)
           : "-",

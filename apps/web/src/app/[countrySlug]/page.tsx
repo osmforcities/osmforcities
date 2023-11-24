@@ -1,7 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import { fetchCountry } from "./fetch";
-import Breadcrumb from "../components/breadcrumbs";
 import Breadcrumbs from "../components/breadcrumbs";
 
 type CountryPageProps = {
@@ -18,7 +17,7 @@ const RegionList = ({
   return (
     <ul>
       {regions.map(({ name, url }) => (
-        <li>
+        <li key={name}>
           <a href={url}>{name}</a>
         </li>
       ))}

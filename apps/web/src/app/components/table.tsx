@@ -1,11 +1,12 @@
 import React from "react";
 
-export type Column<T> = {
+export interface Column<T> {
   title: string;
-  dataIndex: keyof T; // Key corresponding to the data point in the data objects
-  render?: (value: any, record: T) => React.ReactNode;
+  dataIndex: keyof T;
+  // TODO - Fix type of render function
+  render?: any;
   align?: "left" | "center" | "right";
-};
+}
 
 type TableProps<T> = {
   columns: Column<T>[];

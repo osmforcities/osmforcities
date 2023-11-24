@@ -1,4 +1,4 @@
-import { type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import prisma from "@/app/db";
 
 export interface SearchResult {
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   const q = searchParams.get("q");
 
   if (!q) {
-    return Response.json({ results: [] } as SearchResults);
+    return NextResponse.json({ results: [] } as SearchResults);
   }
 
   const normalizedQuery = normalizeInput(q.toLowerCase());
@@ -68,5 +68,5 @@ export async function GET(request: NextRequest) {
     })
   );
 
-  return Response.json({ results } as SearchResults);
+  return NextResponse.json({ results } as SearchResults);
 }
