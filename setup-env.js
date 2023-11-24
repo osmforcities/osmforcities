@@ -8,7 +8,7 @@ const envPath = path.join(__dirname, "./.env");
 if (!fs.existsSync(envPath)) {
   fs.writeFileSync(
     envPath,
-    `POSTGRES_URL=\"postgres://postgres:docker@localhost:5433/postgres\"\n`
+    `POSTGRES_PRISMA_URL=\"postgres://postgres:docker@localhost:5433/postgres\"\n`
   );
 }
 
