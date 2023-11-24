@@ -76,6 +76,11 @@ export const fetchCity = cache(
       },
     });
 
+    const presetsWithSingleStats = presets.map((preset) => ({
+      ...preset,
+      CityPresetStats: preset.CityPresetStats[0] || null,
+    }));
+
     return {
       name: city.name,
       country: {
@@ -87,11 +92,7 @@ export const fetchCity = cache(
         url: `/${city.region.country.name_slug}/${city.region.name_slug}`,
       },
       stats: city.stats,
-      presets: presets.map((preset) => ({
-        name: preset.name,
-        url: `/${city.region.country.name_slug}/${city.region.name_slug}/${city.name_slug}/${preset.name_slug}`,
-        ...preset.CityPresetStats[0],
-      })),
+      presets: presetsWithSingleStats,
     };
   }
 );
