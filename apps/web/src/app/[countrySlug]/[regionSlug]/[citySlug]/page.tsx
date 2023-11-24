@@ -74,7 +74,15 @@ const CityPage = async (props: CityPageProps) => {
     {
       title: "Name",
       dataIndex: "name",
-      render: (value: string) => <>{value}</>,
+      render: (value: string, record: PresetWithStats) => (
+        <a
+          href={`${city.gitUrl}/${record.name_slug}.geojson`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {value}
+        </a>
+      ),
     },
     {
       title: "# of features",

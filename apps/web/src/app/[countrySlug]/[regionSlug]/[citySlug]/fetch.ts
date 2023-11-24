@@ -5,6 +5,7 @@ export const revalidate = 3600; // revalidate the data at most every hour
 
 export interface City {
   name: string;
+  gitUrl: string;
   country: {
     name: string;
     url: string;
@@ -83,6 +84,7 @@ export const fetchCity = cache(
 
     return {
       name: city.name,
+      gitUrl: `https://github.com/osmforcities/${process.env.GIT_REPOSITORY_NAME}/blob/main/${city.region.code}/${city.name_slug}`,
       country: {
         name: city.region.country.name,
         url: `/${city.region.country.name_slug}`,
