@@ -10,9 +10,9 @@ import {
 const CONTEXT_NAME = "cities-of-brazil";
 
 // Target organization and repository
-export const GIT_ORGANIZATION = "osmforcities" || process.env.GIT_ORGANIZATION;
-export const GIT_REPOSITORY_NAME = "brazil" || process.env.GIT_REPOSITORY_NAME;
-const GIT_HOST = "git@github.com" || process.env.GIT_HOST;
+export const GIT_ORGANIZATION = process.env.GIT_ORGANIZATION || "osmforcities";
+export const GIT_REPOSITORY_NAME = process.env.GIT_REPOSITORY_NAME || "brazil";
+const GIT_HOST = process.env.GIT_HOST || "git@github.com";
 
 export const GIT_REPOSITORY_URL = `${GIT_HOST}:${GIT_ORGANIZATION}/${GIT_REPOSITORY_NAME}.git`;
 
