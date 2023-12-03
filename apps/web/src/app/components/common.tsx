@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 export const PageTitle = ({ children }: { children: React.ReactNode }) => (
   <h1 className="text-5xl mb-10">{children}</h1>
@@ -12,7 +13,7 @@ export const Paragraph = ({ children }: { children: React.ReactNode }) => (
   <p className="mb-4">{children}</p>
 );
 
-export const Link = ({
+export const ExternalLink = ({
   href,
   children,
 }: {
@@ -27,4 +28,16 @@ export const Link = ({
   >
     {children}
   </a>
+);
+
+export const InternalLink = ({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) => (
+  <Link href={href} className="text-blue-500 hover:text-blue-700">
+    {children}
+  </Link>
 );

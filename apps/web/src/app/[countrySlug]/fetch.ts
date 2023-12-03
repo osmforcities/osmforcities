@@ -1,7 +1,8 @@
 import { cache } from "react";
-import prisma from "@/app/db";
+import prisma from "@/app/utils/db";
 import { Country, Region } from "@prisma/client";
 export const revalidate = 3600;
+import "server-only";
 
 export interface RegionWithCounts extends Region {
   _count: {
@@ -13,7 +14,7 @@ export interface CountryWithCounts extends Country {
   regions: RegionWithCounts[];
 }
 
-export const fetchCountry = cache(
+export const fetchCountryRegions = cache(
   async (countrySlug: string): Promise<CountryWithCounts | null> => {
     const country = await prisma.country.findFirst({
       where: {

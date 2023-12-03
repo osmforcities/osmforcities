@@ -1,5 +1,10 @@
 import React from "react";
-import { Link, PageSubtitle, PageTitle, Paragraph } from "../components/common";
+import {
+  ExternalLink,
+  PageSubtitle,
+  PageTitle,
+  Paragraph,
+} from "../components/common";
 
 const AboutPage = async () => {
   return (
@@ -52,18 +57,24 @@ const AboutPage = async () => {
       <PageSubtitle>About</PageSubtitle>
       <Paragraph>
         This project is part of the Labs program of{" "}
-        <Link href="https://developmentseed.org">Development Seed</Link>.
+        <ExternalLink href="https://developmentseed.org">
+          Development Seed
+        </ExternalLink>
+        .
       </Paragraph>
       <Paragraph>
         The source code for this project is open and{" "}
-        <Link href="https://github.com/osmforcities/osmforcities">
+        <ExternalLink href="https://github.com/osmforcities/osmforcities">
           available at Github
-        </Link>
+        </ExternalLink>
         .
       </Paragraph>
       <Paragraph>
         OSM for Cities was idealized by{" "}
-        <Link href="https://github.com/vgeorge">Vitor George</Link>.
+        <ExternalLink href="https://github.com/vgeorge">
+          Vitor George
+        </ExternalLink>
+        .
       </Paragraph>
     </div>
   );

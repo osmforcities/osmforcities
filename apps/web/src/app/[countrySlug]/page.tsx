@@ -1,6 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { RegionWithCounts, fetchCountry } from "./fetch";
+import { RegionWithCounts, fetchCountryRegions } from "./fetch";
 import Breadcrumbs from "../components/breadcrumbs";
 import Table, { Column } from "../components/table";
 
@@ -13,7 +13,7 @@ type CountryPageProps = {
 const CountryPage = async (props: CountryPageProps) => {
   const { countrySlug } = props.params;
 
-  const country = await fetchCountry(countrySlug);
+  const country = await fetchCountryRegions(countrySlug);
 
   if (!country) {
     return notFound();
