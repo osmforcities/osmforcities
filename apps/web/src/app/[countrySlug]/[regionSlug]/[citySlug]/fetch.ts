@@ -1,5 +1,5 @@
 import { cache } from "react";
-import prisma from "@/app/db";
+import prisma from "@/app/utils/db";
 
 export const revalidate = 3600; // revalidate the data at most every hour
 

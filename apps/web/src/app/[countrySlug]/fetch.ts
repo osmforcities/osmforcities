@@ -1,7 +1,8 @@
 import { cache } from "react";
-import prisma from "@/app/db";
+import prisma from "@/app/utils/db";
 import { Country, Region } from "@prisma/client";
 export const revalidate = 3600;
+import "server-only";
 
 export interface RegionWithCounts extends Region {
   _count: {

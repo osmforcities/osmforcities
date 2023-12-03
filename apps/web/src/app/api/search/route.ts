@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import prisma from "@/app/db";
+import prisma from "@/app/utils/db";
 
 export interface SearchResult {
   type: "city" | "region" | "country";
