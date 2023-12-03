@@ -2,7 +2,6 @@ import React from "react";
 import { SearchInput } from "./components/search";
 import { fetchLatestChanges } from "./fetch";
 import { formatDistanceToNow } from "date-fns";
-import Link from "next/link";
 import { InternalLink } from "./components/common";
 
 const LatestChangesSection = async () => {
