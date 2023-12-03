@@ -2,7 +2,8 @@ import React from "react";
 import { SearchInput } from "./components/search";
 import { fetchLatestChanges } from "./fetch";
 import { formatDistanceToNow } from "date-fns";
-import { Link } from "./components/common";
+import Link from "next/link";
+import { InternalLink } from "./components/common";
 
 const LatestChangesSection = async () => {
   const latestChanges = await fetchLatestChanges();
@@ -29,10 +30,10 @@ const LatestChangesSection = async () => {
                 return (
                   <tr key={presetUrl} className="border-b border-gray-300">
                     <td className="font-bold py-2 px-2">
-                      <Link href={presetUrl}>{presetName}</Link>
+                      <InternalLink href={presetUrl}>{presetName}</InternalLink>
                     </td>
                     <td className="py-2 px-2">
-                      <Link href={cityUrl}>{cityName}</Link>
+                      <InternalLink href={cityUrl}>{cityName}</InternalLink>
                     </td>
                     <td className="font-thin py-2 pl-2 pr-5 text-right">
                       {formatDistanceToNow(updatedAt, {
