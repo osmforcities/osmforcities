@@ -14,7 +14,7 @@ export interface CountryWithCounts extends Country {
   regions: RegionWithCounts[];
 }
 
-export const fetchCountry = cache(
+export const fetchCountryRegions = cache(
   async (countrySlug: string): Promise<CountryWithCounts | null> => {
     const country = await prisma.country.findFirst({
       where: {

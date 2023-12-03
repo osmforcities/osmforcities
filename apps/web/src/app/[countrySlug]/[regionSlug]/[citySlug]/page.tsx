@@ -5,6 +5,7 @@ import Breadcrumbs from "@/app/components/breadcrumbs";
 import Table, { Column } from "@/app/components/table";
 import { CityPresetStats, CityStats, Preset } from "@prisma/client";
 import { formatToPercent } from "../page";
+import { InternalLink } from "@/app/components/common";
 
 type CityPageProps = {
   params: {
@@ -75,14 +76,9 @@ const CityPage = async (props: CityPageProps) => {
       title: "Name",
       dataIndex: "name",
       render: (value: string, record: PresetWithStats) => (
-        <a
-          href={`${city.gitUrl}/${record.name_slug}.geojson`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-500 hover:text-blue-700"
-        >
+        <InternalLink href={`${citySlug}/${record.name_slug}`}>
           {value}
-        </a>
+        </InternalLink>
       ),
     },
     {
