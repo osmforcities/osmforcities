@@ -1,5 +1,6 @@
 import React from "react";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import GlobalNav from "./components/global-nav";
@@ -23,6 +24,7 @@ export default function RootLayout({
           <GlobalNav />
           {children}
         </div>
+        <Analytics />
       </body>
     </html>
   );
