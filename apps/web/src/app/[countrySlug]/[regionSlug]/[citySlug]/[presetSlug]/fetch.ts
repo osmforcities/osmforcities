@@ -18,10 +18,16 @@ export const fetchCityPresetGeojson = cache(
   }): Promise<FeatureCollection | null> => {
     const geojsonUrl = getCityPresetGeojsonGitUrl(region, city, preset);
 
-    const geojson = await fetch(geojsonUrl).then((res) => res.json());
+    let geojson: FeatureCollection | null = null;
 
-    if (!geojson) {
-      return null;
+    try {
+      geojson = await fetch(geojsonUrl).then((res) => res.json());
+    } catch (error) {
+      // eslint-disable-next-line
+      console.log(
+        "An error occurred while fetching geojson for city preset",
+        geojsonUrl
+      );
     }
 
     return geojson;
