@@ -43,10 +43,10 @@ spec:
                   value: {{ .Values.runner.env.GITEA_HOST_URL}}
                 - name: TMP_DIR
                   value: {{ .Values.runner.env.TMP_DIR}}
-                - name: GITEA_USER
-                  value: {{ .Values.runner.env.GITEA_USER}}
-                - name: GITEA_EMAIL
-                  value: {{ .Values.runner.env.GITEA_EMAIL}}
+                - name: GIT_USER
+                  value: {{ .Values.runner.env.GIT_USER}}
+                - name: GIT_EMAIL
+                  value: {{ .Values.runner.env.GIT_EMAIL}}
               volumeMounts:
                 - name: runner-efs-volume
                   mountPath: /home/runner/app/app-data

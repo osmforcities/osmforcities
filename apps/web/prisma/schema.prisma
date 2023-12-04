@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model City {
+  id              Int               @id @default(autoincrement())
+  name            String
+  name_normalized String
+  name_slug       String
+  is_capital      Boolean?          @default(false)
+  regionId        Int
+  region          Region            @relation(fields: [regionId], references: [id])
+  metadata        Json?
+  stats           CityStats[]
+  presetsStats    CityPresetStats[]
+}
+
+model CityStats {
+  cityId                  Int
+  city                    City     @relation(fields: [cityId], references: [id])
+  presetsCount            Int
+  requiredTagsCoverage    Float
+  recommendedTagsCoverage Float
+  date                    DateTime @db.Date
+
+  @@unique([cityId, date])
+}
+
+model Region {
+  id        Int     @id @default(autoincrement())
+  name      String
+  name_slug String
+  code      String
+  countryId Int
+  cities    City[]
+  country   Country @relation(fields: [countryId], references: [id])
+}
+
+model Country {
+  id        Int      @id @default(autoincrement())
+  name      String
+  name_slug String
+  code      String   @unique
+  regions   Region[]
+}
+
+model Preset {
+  id               Int               @id @default(autoincrement())
+  name             String
+  name_slug        String
+  category         String
+  osmium_filter    String[]
+  required_tags    String[]
+  recommended_tags String[]
+  CityPresetStats  CityPresetStats[]
+}
+
+model CityPresetStats {
+  presetId                Int
+  preset                  Preset   @relation(fields: [presetId], references: [id])
+  cityId                  Int
+  city                    City     @relation(fields: [cityId], references: [id])
+  totalFeatures           Int
+  totalChangesets         Int
+  requiredTagsCoverage    Float
+  recommendedTagsCoverage Float
+  updatedAt               DateTime @db.Date
+
+  @@unique([presetId, cityId, updatedAt])
+}
