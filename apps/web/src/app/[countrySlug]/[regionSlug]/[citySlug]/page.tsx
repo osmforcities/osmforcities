@@ -2,7 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/app/components/breadcrumbs";
 import Table, { Column } from "@/app/components/table";
-import { City, CityPresetStats, CityStats, Preset } from "@prisma/client";
+import { City, Preset } from "@prisma/client";
 import { formatToPercent } from "../page";
 import { InternalLink } from "@/app/components/common";
 import { getCity } from "@/app/utils/get-city";
