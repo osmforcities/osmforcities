@@ -2,7 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/app/components/breadcrumbs";
 import Table, { Column } from "@/app/components/table";
-import { CityPresetStats, CityStats, Preset } from "@prisma/client";
+import { City, CityPresetStats, CityStats, Preset } from "@prisma/client";
 import { formatToPercent } from "../page";
 import { InternalLink } from "@/app/components/common";
 import { getCity } from "@/app/utils/get-city";
@@ -16,6 +16,46 @@ type CityPageProps = {
     regionSlug: string;
     citySlug: string;
   };
+};
+
+const HeaderSection = ({
+  city,
+  presetsStats,
+}: {
+  city: City;
+  presetsStats: CityPresetStatsWithPreset[];
+}) => {
+  const totalFeatures = presetsStats.reduce(
+    (acc, preset) => acc + preset.totalFeatures,
+    0
+  );
+
+  const totalChangesets = presetsStats.reduce(
+    (acc, preset) => acc + preset.totalChangesets,
+    0
+  );
+
+  return (
+    <section id="header">
+      <h2 className="text-3xl font-bold text-center pt-5">City Info</h2>
+      <table className="table-auto w-full my-4">
+        <tbody>
+          <tr className="border-b border-gray-300">
+            <td className="font-bold py-2 px-2">Name</td>
+            <td className="py-2 px-2 text-right">{city.name}</td>
+          </tr>
+          <tr className="border-b border-gray-300">
+            <td className="font-bold py-2 px-2">Total Features</td>
+            <td className="py-2 px-2 text-right">{totalFeatures}</td>
+          </tr>
+          <tr className="border-b border-gray-300">
+            <td className="font-bold py-2 px-2">Total changesets</td>
+            <td className="py-2 px-2 text-right">{totalChangesets}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  );
 };
 
 const CityPage = async (props: CityPageProps) => {
@@ -82,7 +122,7 @@ const CityPage = async (props: CityPageProps) => {
     },
 
     {
-      title: "required tags (%)",
+      title: "required tags coverage (%)",
       dataIndex: "requiredTagsCoverage",
       render: (requiredTagsCoverage: number) =>
         requiredTagsCoverage ? formatToPercent(requiredTagsCoverage) : "-",
@@ -104,11 +144,15 @@ const CityPage = async (props: CityPageProps) => {
         ]}
       />
 
+      <HeaderSection city={city} presetsStats={presetsWithStats} />
+
       {presetsWithStats.length > 0 ? (
-        <>
-          <h2 className="text-xl font-bold mb-6">Available presets</h2>
+        <section id="feature-list">
+          <h2 className="text-3xl font-bold text-center pb-10 pt-5">
+            Presets List
+          </h2>
           <Table columns={presetsStatsColumns} data={presetsWithStats} />
-        </>
+        </section>
       ) : (
         <div className="empty-stats-message">
           <p>Currently, there are no available statistics for {city.name}.</p>
