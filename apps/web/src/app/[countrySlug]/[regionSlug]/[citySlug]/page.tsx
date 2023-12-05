@@ -1,11 +1,14 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { fetchCity } from "./fetch";
 import Breadcrumbs from "@/app/components/breadcrumbs";
 import Table, { Column } from "@/app/components/table";
-import { CityPresetStats, CityStats, Preset } from "@prisma/client";
+import { City, Preset } from "@prisma/client";
 import { formatToPercent } from "../page";
 import { InternalLink } from "@/app/components/common";
+import { getCity } from "@/app/utils/get-city";
+import { getCountry } from "@/app/utils/get-country";
+import { getRegion } from "@/app/utils/get-region";
+import { CityPresetStatsWithPreset, fetchCityPresetsStats } from "./fetch";
 
 type CityPageProps = {
   params: {
@@ -15,88 +18,86 @@ type CityPageProps = {
   };
 };
 
-type PresetWithStats = Preset & {
-  CityPresetStats: CityPresetStats;
+const HeaderSection = ({
+  city,
+  presetsStats,
+}: {
+  city: City;
+  presetsStats: CityPresetStatsWithPreset[];
+}) => {
+  const totalFeatures = presetsStats.reduce(
+    (acc, preset) => acc + preset.totalFeatures,
+    0
+  );
+
+  const totalChangesets = presetsStats.reduce(
+    (acc, preset) => acc + preset.totalChangesets,
+    0
+  );
+
+  return (
+    <section id="header">
+      <h2 className="text-3xl font-bold text-center pt-5">City Info</h2>
+      <table className="table-auto w-full my-4">
+        <tbody>
+          <tr className="border-b border-gray-300">
+            <td className="font-bold py-2 px-2">Name</td>
+            <td className="py-2 px-2 text-right">{city.name}</td>
+          </tr>
+          <tr className="border-b border-gray-300">
+            <td className="font-bold py-2 px-2">Total Features</td>
+            <td className="py-2 px-2 text-right">{totalFeatures}</td>
+          </tr>
+          <tr className="border-b border-gray-300">
+            <td className="font-bold py-2 px-2">Total changesets</td>
+            <td className="py-2 px-2 text-right">{totalChangesets}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  );
 };
 
 const CityPage = async (props: CityPageProps) => {
   const { countrySlug, regionSlug, citySlug } = props.params;
 
-  const city = await fetchCity({
-    countrySlug,
-    regionSlug,
-    citySlug,
-  });
+  const [country, region, city] = await Promise.all([
+    getCountry({
+      countrySlug,
+    }),
+    getRegion({
+      countrySlug,
+      regionSlug,
+    }),
+    getCity({
+      countrySlug,
+      regionSlug,
+      citySlug,
+    }),
+  ]);
 
-  if (!city) {
+  if (!country || !region || !city) {
     return notFound();
   }
 
-  const recentHistoryColumns: Column<CityStats>[] = [
-    {
-      title: "Date",
-      dataIndex: "date",
-      render: (value: Date) => (
-        <>
-          {value.toLocaleDateString(undefined, {
-            month: "short", // abbreviated month name
-            day: "numeric", // numeric day of the month
-            year: "numeric", // numeric year
-          })}
-        </>
-      ),
-      align: "center",
-    },
-    {
-      title: "# of presets",
-      dataIndex: "presetsCount",
-      render: (value: number) => <>{value}</>,
-      align: "center",
-    },
-    {
-      title: "required tags (%)",
-      dataIndex: "requiredTagsCoverage",
-      render: ({ requiredTagsCoverage }: { requiredTagsCoverage: number }) =>
-        requiredTagsCoverage ? formatToPercent(requiredTagsCoverage) : "-",
-      align: "center",
-    },
-    {
-      title: "recommended tags (%)",
-      dataIndex: "recommendedTagsCoverage",
-      render: (recommendedTagsCoverage: number) =>
-        recommendedTagsCoverage
-          ? formatToPercent(recommendedTagsCoverage)
-          : "-",
-      align: "center",
-    },
-  ];
+  const presetsWithStats = await fetchCityPresetsStats({
+    city,
+  });
 
-  const presetsStatsColumns: Column<PresetWithStats>[] = [
+  const presetsStatsColumns: Column<CityPresetStatsWithPreset>[] = [
     {
       title: "Name",
-      dataIndex: "name",
-      render: (value: string, record: PresetWithStats) => (
-        <InternalLink href={`${citySlug}/${record.name_slug}`}>
-          {value}
+      dataIndex: "preset",
+      render: (value: Preset) => (
+        <InternalLink href={`${citySlug}/${value.name_slug}`}>
+          {value.name}
         </InternalLink>
       ),
     },
     {
-      title: "# of features",
-      dataIndex: "CityPresetStats",
-      render: ({ totalFeatures }: CityPresetStats) => <>{totalFeatures}</>,
-      align: "center",
-    },
-    {
-      title: "# of changesets",
-      dataIndex: "CityPresetStats",
-      render: ({ totalChangesets }: CityPresetStats) => <>{totalChangesets}</>,
-      align: "center",
-    },
-    {
-      title: "last update",
-      dataIndex: "CityPresetStats",
-      render: ({ updatedAt }: CityPresetStats) => (
+      title: "last edited",
+      dataIndex: "updatedAt",
+      render: (updatedAt: Date) => (
         <>
           {updatedAt.toLocaleDateString(undefined, {
             month: "short", // abbreviated month name
@@ -107,25 +108,24 @@ const CityPage = async (props: CityPageProps) => {
       ),
       align: "center",
     },
-
     {
-      title: "required tags (%)",
-      dataIndex: "CityPresetStats",
-      render: ({ requiredTagsCoverage }: { requiredTagsCoverage: number }) =>
-        requiredTagsCoverage ? formatToPercent(requiredTagsCoverage) : "-",
+      title: "# of features",
+      dataIndex: "totalFeatures",
+      render: (totalFeatures: number) => <>{totalFeatures}</>,
       align: "center",
     },
     {
-      title: "optional tags (%)",
-      dataIndex: "CityPresetStats",
-      render: ({
-        recommendedTagsCoverage,
-      }: {
-        recommendedTagsCoverage: number;
-      }) =>
-        recommendedTagsCoverage
-          ? formatToPercent(recommendedTagsCoverage)
-          : "-",
+      title: "# of changesets",
+      dataIndex: "totalChangesets",
+      render: (totalChangesets: number) => <>{totalChangesets}</>,
+      align: "center",
+    },
+
+    {
+      title: "required tags coverage (%)",
+      dataIndex: "requiredTagsCoverage",
+      render: (requiredTagsCoverage: number) =>
+        requiredTagsCoverage ? formatToPercent(requiredTagsCoverage) : "-",
       align: "center",
     },
   ];
@@ -135,24 +135,29 @@ const CityPage = async (props: CityPageProps) => {
       <Breadcrumbs
         breadcrumbs={[
           { label: "Home", url: "/" },
-          { label: city.country.name, url: city.country.url },
-          { label: city.region.name, url: city.region.url },
+          { label: country.name, url: `/${country.name_slug}` },
+          {
+            label: region.name,
+            url: `/${country.name_slug}/${region.name_slug}`,
+          },
           { label: city.name, isLast: true },
         ]}
       />
 
-      {city.stats.length === 0 || city.presets.length === 0 ? (
+      <HeaderSection city={city} presetsStats={presetsWithStats} />
+
+      {presetsWithStats.length > 0 ? (
+        <section id="feature-list">
+          <h2 className="text-3xl font-bold text-center pb-10 pt-5">
+            Presets List
+          </h2>
+          <Table columns={presetsStatsColumns} data={presetsWithStats} />
+        </section>
+      ) : (
         <div className="empty-stats-message">
           <p>Currently, there are no available statistics for {city.name}.</p>
           <p>This is probably an issue on our side, please check back later.</p>
         </div>
-      ) : (
-        <>
-          <h2 className="text-xl font-bold mb-6">Available presets</h2>
-          <Table columns={presetsStatsColumns} data={city.presets} />
-          <h2 className="text-xl font-bold mb-6">Recent history</h2>
-          <Table columns={recentHistoryColumns} data={city.stats} />
-        </>
       )}
     </div>
   );
