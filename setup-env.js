@@ -29,7 +29,14 @@ function removeSymlinkIfItExists(filePath) {
 // Create symlinks to .env file in all apps
 const apps = ["cli", "web"];
 apps.forEach((app) => {
-  const appEnvPath = path.join(__dirname, `./apps/${app}/.env`);
+  const appDir = path.join(__dirname, `./apps/${app}/`);
+
+  if (!fs.existsSync(appDir)) {
+    console.log(`Creating ${app} app directory`);
+    fs.mkdirSync(appDir);
+  }
+
+  const appEnvPath = path.join(appDir, `.env`);
   removeSymlinkIfItExists(appEnvPath);
   console.log(`Creating .env symlink for ${app} app.`);
   fs.symlinkSync(envPath, appEnvPath);

@@ -1,18 +1,20 @@
-# Use an official Ubuntu minimal image as a parent image
-FROM --platform=linux/amd64 node:16-bullseye-slim
-# FROM node:16-bullseye-slim
+# The main purpose of this Dockerfile is to provide an contained environment
+# for running the OSM4Cities CLI. It is not intended to be used for
+# web development or production.
 
-# Update the package manager and install some packages
+FROM node:18-bullseye-slim
+
 RUN apt-get update && \
   apt-get install -y curl git osmium-tool unzip
 
-ENV HOME=/home/runner
-WORKDIR $HOME
-COPY ./package.json $HOME/app/
+ENV APP_DIR=/osmforcities
 
-WORKDIR $HOME/app
+COPY . $APP_DIR/
+
+WORKDIR $APP_DIR/apps/cli
+
 RUN yarn install
 
-# Copy specific application files
-COPY cli $HOME/app/cli/
-COPY config  $HOME/app/config/
+VOLUME $APP_DIR/apps/cli/app-data
+
+CMD ["yarn", "cli", "--help"]
