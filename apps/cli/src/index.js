@@ -22,6 +22,12 @@ program
 program
   .command("init-history")
   .option("-l, --local <local_history_path>", "Use local history file")
+  .option("-s, --s3", "Persist files to an AWS S3 bucket", false)
+  .option(
+    "-O, --overwrite",
+    "Overwrite existing history file, if exists",
+    false
+  )
   .description(
     "Extract the history of the area covered by osmforcities, from remote planet full history or a local file."
   )

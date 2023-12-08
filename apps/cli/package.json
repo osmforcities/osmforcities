@@ -28,6 +28,7 @@
     "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.413.0",
     "@fast-csv/parse": "^4.3.6",
     "@prisma/client": "^5.6.0",
     "@types/node": "^20.10.2",
