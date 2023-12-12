@@ -9,6 +9,7 @@ import {
 } from "date-fns";
 import { logger, time, timeEnd } from "../../helpers/logger.js";
 import {
+  CONFIG_PATH,
   HISTORY_META_JSON,
   HISTORY_PBF_FILE,
   TMP_DIR,
@@ -156,10 +157,17 @@ export async function updateHistory(options) {
   ]);
   timeEnd("Duration of daily change apply operation");
 
-  logger.info(`Replacing current file...`);
-  await fs.move(TMP_HISTORY_FILE, HISTORY_PBF_FILE, {
-    overwrite: true,
-  });
+  logger.info(`Filtering output file by coverage area...`);
+  await exec(`osmium`, [
+    `extract`,
+    `--with-history`,
+    `-p`,
+    path.join(CONFIG_PATH, "coverage.poly"),
+    TMP_HISTORY_FILE,
+    `-o`,
+    HISTORY_PBF_FILE,
+    `--overwrite`,
+  ]);
 
   await updateHistoryMetafile();
   logger.info(`Finished!`);
