@@ -11,6 +11,7 @@ import { logger, time, timeEnd } from "../../helpers/logger.js";
 import {
   HISTORY_META_JSON,
   HISTORY_PBF_FILE,
+  HISTORY_PBF_PATH,
   TMP_DIR,
 } from "../../../config/index.js";
 import exec from "../../helpers/exec.js";
@@ -79,6 +80,7 @@ export async function updateHistory(options) {
   // recursive call
   if (options && options.s3 && !isSubsequentUpdate) {
     logger.info("Downloading history file from S3...");
+    await ensureDir(HISTORY_PBF_PATH);
     await s3.download("history.osh.pbf", HISTORY_PBF_FILE);
     await s3.download("history.osh.pbf.json", HISTORY_META_JSON);
     logger.info("History file downloaded.");
