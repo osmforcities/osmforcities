@@ -79,7 +79,7 @@ export const update = async (options) => {
       throw new Error(
         `Cannot run update with both --overwrite and --recursive options.`
       );
-    } else if (options?.overwrite) {
+    } else if (options && options.overwrite && options.force !== true) {
       const confirmation =
         (await askConfirmation(
           `Are you sure you want to reset the repository at ${GIT_REPOSITORY_URL}? [y/N]: `

@@ -63,6 +63,11 @@ program
     "Overwrite history from remote repository, if exists",
     false
   )
+  .option(
+    "-f, --force",
+    "Force the execution of the action, even if it's not safe",
+    false
+  )
   .argument("<name>", "Context name", (contextName) => {
     // Check if context exists, it should be a folder in ./src/contexts
     if (!contexts.includes(contextName)) {
