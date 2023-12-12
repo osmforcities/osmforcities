@@ -1,9 +1,9 @@
 import * as path from "path";
-import fs from "fs-extra";
+import fs, { ensureDir } from "fs-extra";
 import cliProgress from "cli-progress";
 import readline from "readline";
 import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import S3Handler from "../../../helpers/s3-handler.js";
 
 import {
   addDays,
@@ -35,6 +35,7 @@ import {
   GIT_HISTORY_START_DATE,
   HISTORY_PBF_FILE,
   HISTORY_META_JSON,
+  HISTORY_PBF_PATH,
 } from "../../../../config/index.js";
 
 // Context config
@@ -56,6 +57,8 @@ import {
 } from "../config.js";
 
 const COUNTRY_SLUG = "brazil";
+const s3 = new S3Handler();
+const prisma = new PrismaClient();
 
 // Set concurrency limit
 const limit = pLimit(20);
@@ -74,6 +77,18 @@ const askConfirmation = (question) => {
 };
 
 export const update = async (options) => {
+  const isSubsequentUpdate = options?.isSubsequentUpdate || false;
+
+  // Download history file from S3 if it doesn't exist and this is not a
+  // recursive call
+  if (options && options.s3 && !isSubsequentUpdate) {
+    logger.info("Downloading history file from S3...");
+    await ensureDir(HISTORY_PBF_PATH);
+    await s3.download("history.osh.pbf", HISTORY_PBF_FILE);
+    await s3.download("history.osh.pbf.json", HISTORY_META_JSON);
+    logger.info("History file downloaded.");
+  }
+
   try {
     if (options?.overwrite && options?.recursive) {
       throw new Error(
@@ -562,7 +577,7 @@ export const update = async (options) => {
 
   // Run update again if it was called recursively
   if (options && options.recursive) {
-    update(options);
+    update({ ...options, isSubsequentUpdate: true });
   }
 };
 

@@ -57,6 +57,7 @@ program
 
 program
   .command("context")
+  .option("-s, --s3", "Download history from AWS S3 bucket, if exists", false)
   .option("-r, --recursive", "Repeat updates to present day", false)
   .option(
     "-O, --overwrite",
