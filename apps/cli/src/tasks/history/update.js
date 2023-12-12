@@ -16,6 +16,8 @@ import {
 import exec from "../../helpers/exec.js";
 import { curlDownload } from "../../helpers/curl-download.js";
 import execa from "execa";
+import S3Handler from "../../helpers/s3-handler.js";
+const s3 = new S3Handler();
 
 const TMP_HISTORY_DIR = path.join(TMP_DIR, "history");
 
@@ -69,8 +71,18 @@ export async function updateHistoryMetafile(extraMeta = {}) {
 }
 
 export async function updateHistory(options) {
-  // Create tmp dir for history files
   await ensureDir(TMP_HISTORY_DIR);
+
+  const isSubsequentUpdate = options?.isSubsequentUpdate || false;
+
+  // Download history file from S3 if it doesn't exist and this is not a
+  // recursive call
+  if (options && options.s3 && !isSubsequentUpdate) {
+    logger.info("Downloading history file from S3...");
+    await s3.download("history.osh.pbf", HISTORY_PBF_FILE);
+    await s3.download("history.osh.pbf.json", HISTORY_META_JSON);
+    logger.info("History file downloaded.");
+  }
 
   time("Daily update total duration");
   if (!(await fs.pathExists(HISTORY_PBF_FILE))) {
@@ -162,14 +174,23 @@ export async function updateHistory(options) {
   });
 
   await updateHistoryMetafile();
-  logger.info(`Finished!`);
 
+  if (options.s3) {
+    logger.info("Uploading updated history file to S3...");
+    await s3.upload(HISTORY_PBF_FILE, "history.osh.pbf");
+    await s3.upload(HISTORY_META_JSON, "history.osh.pbf.json");
+    logger.info("History file uploaded.");
+  }
+
+  logger.info(`Removing daily changefile...`);
   await fs.remove(dailyChangeFile);
+
+  logger.info(`Finished!`);
 
   timeEnd("Daily update total duration");
 
   if (options && options.recursive) {
     logger.info("Replicating history file...");
-    await updateHistory(options);
+    await updateHistory({ ...options, isSubsequentUpdate: true });
   }
 }

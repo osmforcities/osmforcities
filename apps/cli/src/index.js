@@ -35,6 +35,7 @@ program
 
 program
   .command("update-history")
+  .option("-s, --s3", "Persist files to an AWS S3 bucket", false)
   .description(
     "Apply daily diffs to presets history file and update it to present day"
   )
