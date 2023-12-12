@@ -1,8 +1,8 @@
 # The main purpose of this Dockerfile is to provide an contained environment
-# for running the OSM4Cities CLI. It is not intended to be used for
+# for running the OSM for Cities CLI. It is not intended to be used for
 # web development or production.
 
-FROM --platform=linux/amd64 node:16-bullseye-slim
+FROM --platform=linux/amd64 node:18-bullseye-slim
 
 RUN apt-get update && \
   apt-get install -y curl git osmium-tool unzip
