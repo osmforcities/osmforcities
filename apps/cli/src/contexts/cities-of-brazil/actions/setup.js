@@ -6,80 +6,14 @@ import { ensureDir } from "fs-extra";
 import { logger } from "../../../helpers/logger.js";
 import { curlDownload } from "../../../helpers/curl-download.js";
 import { unzip } from "../../../helpers/unzip.js";
-import GiteaClient from "../../../helpers/gitea-client.js";
 
 // Context Config
-import {
-  CLI_TMP_DIR,
-  GIT_ORGANIZATION,
-  GIT_REPOSITORY_NAME,
-  POLYFILES_DIR,
-  POLYFILES_URL,
-} from "../config.js";
-
-// Create Gitea client
-const giteaClient = new GiteaClient();
-
-export async function initRemoteGit() {
-  // Initialize repository in Gitea
-  try {
-    const { status: repoStatus } = await giteaClient.get(
-      `repos/${GIT_ORGANIZATION}/${GIT_REPOSITORY_NAME}`
-    );
-    // Get repository status
-    if (repoStatus === 404) {
-      const repositoryCreationResponse = await giteaClient.post(
-        `orgs/${GIT_ORGANIZATION}/repos`,
-        {
-          name: GIT_REPOSITORY_NAME,
-          private: false,
-        }
-      );
-
-      if (repositoryCreationResponse.status !== 201) {
-        throw "Could not create repository.";
-      }
-    } else {
-      logger.info(
-        `Repository '${GIT_ORGANIZATION}/${GIT_REPOSITORY_NAME}' exists.`
-      );
-    }
-  } catch (error) {
-    logger.error(error);
-    return;
-  }
-}
+import { CLI_TMP_DIR, POLYFILES_DIR, POLYFILES_URL } from "../config.js";
 
 export const setup = async () => {
   // Initialize directories required by the CLI app
   await ensureDir(CLI_TMP_DIR);
   await ensureDir(POLYFILES_DIR);
-
-  // Initialize organization in Gitea
-  try {
-    const { status: orgStatus } = await giteaClient.get(
-      `orgs/${GIT_ORGANIZATION}`
-    );
-
-    if (orgStatus === 404) {
-      // Create organization if it does not exist
-      const { status: orgCreationStatus } = await giteaClient.post("orgs", {
-        username: GIT_ORGANIZATION,
-        visibility: "public",
-      });
-
-      if (orgCreationStatus !== 201) {
-        throw "Could not create organization.";
-      }
-    } else {
-      logger.info(`Organization '${GIT_ORGANIZATION}' exists.`);
-    }
-  } catch (error) {
-    logger.error(error);
-    return;
-  }
-
-  await initRemoteGit();
 
   // Download boundary polygons
   try {
