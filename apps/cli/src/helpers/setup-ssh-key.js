@@ -10,6 +10,16 @@ export async function setupGithubSSHKey(secretString) {
   await fs.ensureDir(sshDir);
   await fs.writeFile(sshKeyPath, secretString, { mode: 0o600 });
 
+  // Create config file
+  await fs.writeFile(
+    path.join(sshDir, "config"),
+    `
+    Host github.com
+      IdentityFile ${sshKeyPath}
+      IdentitiesOnly yes
+    `
+  );
+
   // Create known_hosts file
   await fs.writeFile(
     path.join(sshDir, "known_hosts"),

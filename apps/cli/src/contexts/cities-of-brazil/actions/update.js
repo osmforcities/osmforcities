@@ -91,7 +91,7 @@ export const update = async (options) => {
       region: process.env.AWS_REGION || "us-east-1",
     });
 
-    // Get secret GIT_SSH_KEY from AWS Secrets Manager
+    logger.info("Retrieving the SSH key from AWS Secrets Manager...");
     const { SecretString: gitSshKey } = await secretsManager.send(
       new GetSecretValueCommand({
         SecretId: "GIT_SSH_PRIVATE_KEY",
@@ -99,6 +99,7 @@ export const update = async (options) => {
     );
 
     await setupGithubSSHKey(gitSshKey);
+    logger.info("SSH key setup completed.");
 
     logger.info("Downloading history file from S3...");
     await ensureDir(HISTORY_PBF_PATH);
@@ -127,10 +128,11 @@ export const update = async (options) => {
     rl.close();
   }
 
-  // Init repository path, if it doesn't exist
+  logger.info("Initializing repository path...");
   await fs.ensureDir(CLI_GIT_DIR);
   await fs.ensureDir(CURRENT_DAY_DIR);
 
+  logger.info("Retrieving presets from database...");
   const presets = await prisma.preset.findMany({
     select: {
       id: true,
@@ -141,13 +143,12 @@ export const update = async (options) => {
     },
   });
 
-  // Initialize current date pointer
+  logger.info("Checking history file and metadata...");
   let firstHistoryTimestamp;
   let lastHistoryTimestamp;
   let defaultStartDate = parseISO(GIT_HISTORY_START_DATE);
   let lastDailyUpdate;
 
-  // Check the latest date available in the presets history file
   if (!(await fs.pathExists(HISTORY_PBF_FILE))) {
     throw new Error(
       `Could not find presets history file, please run update-presets-history task.`
@@ -162,6 +163,7 @@ export const update = async (options) => {
   firstHistoryTimestamp = new Date(presetsHistoryMeta.elements.firstTimestamp);
   lastHistoryTimestamp = new Date(presetsHistoryMeta.elements.lastTimestamp);
 
+  logger.info("Setting up Git...");
   const git = await simpleGit({ baseDir: CLI_GIT_DIR });
 
   // Reset local git directory
@@ -169,7 +171,7 @@ export const update = async (options) => {
   await git.raw("-c", "init.defaultbranch=main", "init");
   await git.addRemote("origin", `${GIT_REPOSITORY_URL}`);
 
-  // Get last daily update
+  logger.info("Checking for latest updates from remote repository...");
   const remoteHeads = await git.listRemote(["--heads", "origin"]);
   if (!options?.overwrite && remoteHeads?.indexOf("main") > -1) {
     await git.pull("origin", "main", "--depth=1");
@@ -184,7 +186,6 @@ export const update = async (options) => {
     lastDailyUpdate = startOfDay(subDays(defaultStartDate, 1));
   }
 
-  // Set current daily update to the next after the last daily update
   let currentDailyUpdate = addDays(lastDailyUpdate, 1);
 
   if (isBefore(currentDailyUpdate, startOfDay(firstHistoryTimestamp))) {
