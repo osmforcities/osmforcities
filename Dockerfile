@@ -26,5 +26,7 @@ COPY . $APP_DIR/
 # Volume to store CLI app data
 VOLUME $APP_DIR/apps/cli/app-data
 
-# Default command
-CMD ["yarn", "cli", "--help"]
+RUN chmod +x $APP_DIR/docker-entrypoint.sh
+
+# Set the entrypoint script
+ENTRYPOINT ["/osmforcities/docker-entrypoint.sh"]

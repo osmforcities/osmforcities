@@ -18,6 +18,7 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.473.0",
     "cli-progress": "^3.11.2",
     "commander": "^9.4.0",
     "knex": "^2.4.2",

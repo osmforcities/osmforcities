@@ -4,6 +4,10 @@ import cliProgress from "cli-progress";
 import readline from "readline";
 import { PrismaClient } from "@prisma/client";
 import S3Handler from "../../../helpers/s3-handler.js";
+import {
+  GetSecretValueCommand,
+  SecretsManagerClient,
+} from "@aws-sdk/client-secrets-manager";
 
 import {
   addDays,
@@ -55,6 +59,7 @@ import {
   POLYFILES_LEVEL_2_DIR,
   POLYFILES_LEVEL_3_DIR,
 } from "../config.js";
+import setupGithubSSHKey from "../../../helpers/setup-ssh-key.js";
 
 const COUNTRY_SLUG = "brazil";
 const s3 = new S3Handler();
@@ -82,6 +87,19 @@ export const update = async (options) => {
   // Download history file from S3 if it doesn't exist and this is not a
   // recursive call
   if (options && options.s3 && !isSubsequentUpdate) {
+    const secretsManager = new SecretsManagerClient({
+      region: process.env.AWS_REGION || "us-east-1",
+    });
+
+    // Get secret GIT_SSH_KEY from AWS Secrets Manager
+    const { SecretString: gitSshKey } = await secretsManager.send(
+      new GetSecretValueCommand({
+        SecretId: "GIT_SSH_PRIVATE_KEY",
+      })
+    );
+
+    await setupGithubSSHKey(gitSshKey);
+
     logger.info("Downloading history file from S3...");
     await ensureDir(HISTORY_PBF_PATH);
     await s3.download("history.osh.pbf", HISTORY_PBF_FILE);
