@@ -4,6 +4,9 @@ import { fetchRegion } from "./fetch";
 import Breadcrumbs from "../../components/breadcrumbs";
 import Table, { Column } from "@/app/components/table";
 import { CityStats } from "@prisma/client";
+import { GLOBAL_REVALIDATION_TIME } from "@/constants";
+
+export const revalidate = GLOBAL_REVALIDATION_TIME;
 
 type RegionPageProps = {
   params: {

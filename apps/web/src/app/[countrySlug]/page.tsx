@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { RegionWithCounts, fetchCountryRegions } from "./fetch";
 import Breadcrumbs from "../components/breadcrumbs";
 import Table, { Column } from "../components/table";
+import { GLOBAL_REVALIDATION_TIME } from "@/constants";
+
+export const revalidate = GLOBAL_REVALIDATION_TIME;
 
 type CountryPageProps = {
   params: {

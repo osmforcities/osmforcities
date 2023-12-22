@@ -9,6 +9,9 @@ import { getCity } from "@/app/utils/get-city";
 import { getCountry } from "@/app/utils/get-country";
 import { getRegion } from "@/app/utils/get-region";
 import { CityPresetStatsWithPreset, fetchCityPresetsStats } from "./fetch";
+import { GLOBAL_REVALIDATION_TIME } from "@/constants";
+
+export const revalidate = GLOBAL_REVALIDATION_TIME;
 
 type CityPageProps = {
   params: {
