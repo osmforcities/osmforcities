@@ -101,7 +101,7 @@ const HeroSection = () => {
 const HomePage = () => {
   return (
     <div role="main" aria-label="home">
-      <div className="flex flex-col mx-auto max-w-2xl">
+      <div className="flex flex-col mx-auto">
         <HeroSection />
         <LatestChangesSection />
         <SearchSection />
