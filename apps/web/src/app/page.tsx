@@ -3,6 +3,9 @@ import { SearchInput } from "./components/search";
 import { fetchLatestChanges } from "./fetch";
 import { formatDistanceToNow } from "date-fns";
 import { InternalLink } from "./components/common";
+import { GLOBAL_REVALIDATION_TIME } from "@/constants";
+
+export const revalidate = GLOBAL_REVALIDATION_TIME;
 
 const LatestChangesSection = async () => {
   const latestChanges = await fetchLatestChanges();
@@ -101,7 +104,7 @@ const HeroSection = () => {
 const HomePage = () => {
   return (
     <div role="main" aria-label="home">
-      <div className="flex flex-col mx-auto max-w-2xl">
+      <div className="flex flex-col mx-auto">
         <HeroSection />
         <LatestChangesSection />
         <SearchSection />
