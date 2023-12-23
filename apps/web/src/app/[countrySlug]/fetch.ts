@@ -1,7 +1,6 @@
 import "server-only";
 import prisma from "@/app/utils/db";
 import { Country, Region } from "@prisma/client";
-import { ONE_HOUR } from "@/constants";
 
 export interface RegionWithCounts extends Region {
   _count: {
@@ -39,5 +38,3 @@ export const fetchCountryRegions = async (
 
   return country as CountryWithCounts;
 };
-
-export const revalidate = ONE_HOUR;

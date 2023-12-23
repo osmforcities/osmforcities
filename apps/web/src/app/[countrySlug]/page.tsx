@@ -5,8 +5,6 @@ import Breadcrumbs from "../components/breadcrumbs";
 import Table, { Column } from "../components/table";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
 
-export const revalidate = GLOBAL_REVALIDATION_TIME;
-
 type CountryPageProps = {
   params: {
     countrySlug: string;
@@ -63,3 +61,5 @@ const CountryPage = async (props: CountryPageProps) => {
 };
 
 export default CountryPage;
+
+export const revalidate = GLOBAL_REVALIDATION_TIME;

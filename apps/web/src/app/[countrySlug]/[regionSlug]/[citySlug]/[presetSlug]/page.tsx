@@ -11,8 +11,6 @@ import { getCityPresetGeojsonGitUrl } from "@/app/utils/git-url";
 import { formatToPercent } from "../../page";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
 
-export const revalidate = GLOBAL_REVALIDATION_TIME;
-
 type CityPagePageProps = {
   params: {
     countrySlug: string;
@@ -246,3 +244,5 @@ const CityPresetPage = async (props: CityPagePageProps) => {
 };
 
 export default CityPresetPage;
+
+export const revalidate = GLOBAL_REVALIDATION_TIME;

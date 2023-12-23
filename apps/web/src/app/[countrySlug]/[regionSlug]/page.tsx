@@ -6,8 +6,6 @@ import Table, { Column } from "@/app/components/table";
 import { CityStats } from "@prisma/client";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
 
-export const revalidate = GLOBAL_REVALIDATION_TIME;
-
 type RegionPageProps = {
   params: {
     countrySlug: string;
@@ -94,3 +92,5 @@ const RegionPage = async (props: RegionPageProps) => {
 };
 
 export default RegionPage;
+
+export const revalidate = GLOBAL_REVALIDATION_TIME;

@@ -3,8 +3,6 @@ import { cache } from "react";
 import prisma from "./db";
 import { Preset } from "@prisma/client";
 
-export const revalidate = 3600;
-
 type GetPresetParams = {
   presetSlug: string;
 };

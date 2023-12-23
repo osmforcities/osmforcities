@@ -3,8 +3,6 @@ import { cache } from "react";
 import prisma from "./db";
 import { Region } from "@prisma/client";
 
-export const revalidate = 3600;
-
 type GetRegionParams = {
   countrySlug: string;
   regionSlug: string;

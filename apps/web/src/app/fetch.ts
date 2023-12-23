@@ -1,6 +1,4 @@
-import { cache } from "react";
 import prisma from "@/app/utils/db";
-export const revalidate = 3600;
 
 interface Change {
   cityName: string;
@@ -10,7 +8,7 @@ interface Change {
   updatedAt: Date;
 }
 
-export const fetchLatestChanges = cache(async (): Promise<Change[]> => {
+export const fetchLatestChanges = async (): Promise<Change[]> => {
   const changes = await prisma.cityPresetStats.findMany({
     orderBy: {
       updatedAt: "desc",
@@ -54,4 +52,4 @@ export const fetchLatestChanges = cache(async (): Promise<Change[]> => {
       updatedAt: c.updatedAt,
     };
   }) as Change[];
-});
+};

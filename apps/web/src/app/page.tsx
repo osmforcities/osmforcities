@@ -3,10 +3,8 @@ import { SearchInput } from "./components/search";
 import { fetchLatestChanges } from "./fetch";
 import { formatDistanceToNow } from "date-fns";
 import { InternalLink } from "./components/common";
-import { GLOBAL_REVALIDATION_TIME } from "@/constants";
 import { Footer } from "./components/footer";
-
-export const revalidate = GLOBAL_REVALIDATION_TIME;
+import { GLOBAL_REVALIDATION_TIME } from "@/constants";
 
 const LatestChangesSection = async () => {
   const latestChanges = await fetchLatestChanges();
@@ -117,3 +115,5 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
+export const revalidate = GLOBAL_REVALIDATION_TIME;
