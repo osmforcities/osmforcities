@@ -1,9 +1,7 @@
 import "server-only";
-import { cache } from "react";
 import prisma from "@/app/utils/db";
 import { Country } from "@prisma/client";
-
-export const revalidate = 3600;
+import { cache } from "react";
 
 type GetCountryParams = {
   countrySlug: string;

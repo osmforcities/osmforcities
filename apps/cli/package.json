@@ -18,17 +18,21 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.473.0",
     "cli-progress": "^3.11.2",
     "commander": "^9.4.0",
     "knex": "^2.4.2",
     "osmtogeojson": "^3.0.0-beta.4",
     "pg": "^8.7.3",
+    "prisma": "^5.6.0",
     "winston": "^3.9.0",
     "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.413.0",
     "@fast-csv/parse": "^4.3.6",
-    "@prisma/client": "^5.5.2",
+    "@prisma/client": "^5.6.0",
+    "@types/node": "^20.10.2",
     "date-fns": "^2.30.0",
     "dotenv": "^10.0.0",
     "dotenv-cli": "^7.3.0",

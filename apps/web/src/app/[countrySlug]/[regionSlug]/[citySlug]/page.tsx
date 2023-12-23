@@ -9,6 +9,8 @@ import { getCity } from "@/app/utils/get-city";
 import { getCountry } from "@/app/utils/get-country";
 import { getRegion } from "@/app/utils/get-region";
 import { CityPresetStatsWithPreset, fetchCityPresetsStats } from "./fetch";
+import { GLOBAL_REVALIDATION_TIME } from "@/constants";
+import { Footer } from "@/app/components/footer";
 
 type CityPageProps = {
   params: {
@@ -159,8 +161,11 @@ const CityPage = async (props: CityPageProps) => {
           <p>This is probably an issue on our side, please check back later.</p>
         </div>
       )}
+      <Footer />
     </div>
   );
 };
 
 export default CityPage;
+
+export const revalidate = GLOBAL_REVALIDATION_TIME;

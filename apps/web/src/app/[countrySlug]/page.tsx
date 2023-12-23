@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { RegionWithCounts, fetchCountryRegions } from "./fetch";
 import Breadcrumbs from "../components/breadcrumbs";
 import Table, { Column } from "../components/table";
+import { GLOBAL_REVALIDATION_TIME } from "@/constants";
+import { Footer } from "../components/footer";
+import FeaturedDatasetsSection from "../components/featured-datasets";
 
 type CountryPageProps = {
   params: {
@@ -50,13 +53,21 @@ const CountryPage = async (props: CountryPageProps) => {
           { label: country.name, isLast: true },
         ]}
       />
+
       {country.regions.length > 0 ? (
-        <Table columns={columns} data={country.regions} />
+        <>
+          <h2 className="text-left text-4xl mb-10 mt-10">All Regions</h2>
+          <Table columns={columns} data={country.regions} />
+        </>
       ) : (
         <div>No regions found</div>
       )}
+      <FeaturedDatasetsSection countrySlug={countrySlug} />
+      <Footer />
     </div>
   );
 };
 
 export default CountryPage;
+
+export const revalidate = GLOBAL_REVALIDATION_TIME;

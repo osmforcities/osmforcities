@@ -22,6 +22,12 @@ program
 program
   .command("init-history")
   .option("-l, --local <local_history_path>", "Use local history file")
+  .option("-s, --s3", "Persist files to an AWS S3 bucket", false)
+  .option(
+    "-O, --overwrite",
+    "Overwrite existing history file, if exists",
+    false
+  )
   .description(
     "Extract the history of the area covered by osmforcities, from remote planet full history or a local file."
   )
@@ -29,6 +35,7 @@ program
 
 program
   .command("update-history")
+  .option("-s, --s3", "Persist files to an AWS S3 bucket", false)
   .description(
     "Apply daily diffs to presets history file and update it to present day"
   )
@@ -50,10 +57,16 @@ program
 
 program
   .command("context")
+  .option("-s, --s3", "Download history from AWS S3 bucket, if exists", false)
   .option("-r, --recursive", "Repeat updates to present day", false)
   .option(
     "-O, --overwrite",
     "Overwrite history from remote repository, if exists",
+    false
+  )
+  .option(
+    "-f, --force",
+    "Force the execution of the action, even if it's not safe",
     false
   )
   .argument("<name>", "Context name", (contextName) => {
