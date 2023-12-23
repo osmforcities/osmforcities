@@ -1,18 +1,32 @@
-# Use an official Ubuntu minimal image as a parent image
-FROM --platform=linux/amd64 node:16-bullseye-slim
-# FROM node:16-bullseye-slim
+# The main purpose of this Dockerfile is to provide an contained environment
+# for running the CLI.
 
-# Update the package manager and install some packages
+FROM --platform=linux/amd64 node:18-bullseye-slim
+
 RUN apt-get update && \
-  apt-get install -y curl git osmium-tool unzip
+  apt-get install -y curl git osmium-tool unzip openssh-client && \
+  rm -rf /var/lib/apt/lists/*
 
-ENV HOME=/home/runner
-WORKDIR $HOME
-COPY ./package.json $HOME/app/
+ENV APP_DIR=/osmforcities
+WORKDIR $APP_DIR
 
-WORKDIR $HOME/app
+# Required files for installing dependencies
+COPY apps/cli/package.json apps/cli/yarn.lock $APP_DIR/apps/cli/
+COPY apps/cli/postinstall.js $APP_DIR/apps/cli/
+COPY apps/web/prisma/. $APP_DIR/apps/web/prisma/
+COPY setup-env.js $APP_DIR/
+
+# Install dependencies
+WORKDIR $APP_DIR/apps/cli
 RUN yarn install
 
-# Copy specific application files
-COPY cli $HOME/app/cli/
-COPY config  $HOME/app/config/
+# Copy the rest of the application code
+COPY . $APP_DIR/
+
+# Volume to store CLI app data
+VOLUME $APP_DIR/apps/cli/app-data
+
+RUN chmod +x $APP_DIR/docker-entrypoint.sh
+
+# Set the entrypoint script
+ENTRYPOINT ["/osmforcities/docker-entrypoint.sh"]

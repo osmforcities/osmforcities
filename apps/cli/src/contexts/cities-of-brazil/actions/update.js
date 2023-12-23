@@ -1,9 +1,13 @@
 import * as path from "path";
-import fs from "fs-extra";
+import fs, { ensureDir } from "fs-extra";
 import cliProgress from "cli-progress";
 import readline from "readline";
 import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import S3Handler from "../../../helpers/s3-handler.js";
+import {
+  GetSecretValueCommand,
+  SecretsManagerClient,
+} from "@aws-sdk/client-secrets-manager";
 
 import {
   addDays,
@@ -35,6 +39,7 @@ import {
   GIT_HISTORY_START_DATE,
   HISTORY_PBF_FILE,
   HISTORY_META_JSON,
+  HISTORY_PBF_PATH,
 } from "../../../../config/index.js";
 
 // Context config
@@ -54,8 +59,11 @@ import {
   POLYFILES_LEVEL_2_DIR,
   POLYFILES_LEVEL_3_DIR,
 } from "../config.js";
+import setupGithubSSHKey from "../../../helpers/setup-ssh-key.js";
 
 const COUNTRY_SLUG = "brazil";
+const s3 = new S3Handler();
+const prisma = new PrismaClient();
 
 // Set concurrency limit
 const limit = pLimit(20);
@@ -74,12 +82,38 @@ const askConfirmation = (question) => {
 };
 
 export const update = async (options) => {
+  const isSubsequentUpdate = options?.isSubsequentUpdate || false;
+
+  // Download history file from S3 if it doesn't exist and this is not a
+  // recursive call
+  if (options && options.s3 && !isSubsequentUpdate) {
+    const secretsManager = new SecretsManagerClient({
+      region: process.env.AWS_REGION || "us-east-1",
+    });
+
+    logger.info("Retrieving the SSH key from AWS Secrets Manager...");
+    const { SecretString: gitSshKey } = await secretsManager.send(
+      new GetSecretValueCommand({
+        SecretId: "GIT_SSH_PRIVATE_KEY",
+      })
+    );
+
+    await setupGithubSSHKey(gitSshKey);
+    logger.info("SSH key setup completed.");
+
+    logger.info("Downloading history file from S3...");
+    await ensureDir(HISTORY_PBF_PATH);
+    await s3.download("history.osh.pbf", HISTORY_PBF_FILE);
+    await s3.download("history.osh.pbf.json", HISTORY_META_JSON);
+    logger.info("History file downloaded.");
+  }
+
   try {
     if (options?.overwrite && options?.recursive) {
       throw new Error(
         `Cannot run update with both --overwrite and --recursive options.`
       );
-    } else if (options?.overwrite) {
+    } else if (options && options.overwrite && options.force !== true) {
       const confirmation =
         (await askConfirmation(
           `Are you sure you want to reset the repository at ${GIT_REPOSITORY_URL}? [y/N]: `
@@ -94,10 +128,11 @@ export const update = async (options) => {
     rl.close();
   }
 
-  // Init repository path, if it doesn't exist
+  logger.info("Initializing repository path...");
   await fs.ensureDir(CLI_GIT_DIR);
   await fs.ensureDir(CURRENT_DAY_DIR);
 
+  logger.info("Retrieving presets from database...");
   const presets = await prisma.preset.findMany({
     select: {
       id: true,
@@ -108,13 +143,12 @@ export const update = async (options) => {
     },
   });
 
-  // Initialize current date pointer
+  logger.info("Checking history file and metadata...");
   let firstHistoryTimestamp;
   let lastHistoryTimestamp;
   let defaultStartDate = parseISO(GIT_HISTORY_START_DATE);
   let lastDailyUpdate;
 
-  // Check the latest date available in the presets history file
   if (!(await fs.pathExists(HISTORY_PBF_FILE))) {
     throw new Error(
       `Could not find presets history file, please run update-presets-history task.`
@@ -129,6 +163,7 @@ export const update = async (options) => {
   firstHistoryTimestamp = new Date(presetsHistoryMeta.elements.firstTimestamp);
   lastHistoryTimestamp = new Date(presetsHistoryMeta.elements.lastTimestamp);
 
+  logger.info("Setting up Git...");
   const git = await simpleGit({ baseDir: CLI_GIT_DIR });
 
   // Reset local git directory
@@ -136,7 +171,7 @@ export const update = async (options) => {
   await git.raw("-c", "init.defaultbranch=main", "init");
   await git.addRemote("origin", `${GIT_REPOSITORY_URL}`);
 
-  // Get last daily update
+  logger.info("Checking for latest updates from remote repository...");
   const remoteHeads = await git.listRemote(["--heads", "origin"]);
   if (!options?.overwrite && remoteHeads?.indexOf("main") > -1) {
     await git.pull("origin", "main", "--depth=1");
@@ -151,7 +186,6 @@ export const update = async (options) => {
     lastDailyUpdate = startOfDay(subDays(defaultStartDate, 1));
   }
 
-  // Set current daily update to the next after the last daily update
   let currentDailyUpdate = addDays(lastDailyUpdate, 1);
 
   if (isBefore(currentDailyUpdate, startOfDay(firstHistoryTimestamp))) {
@@ -562,7 +596,7 @@ export const update = async (options) => {
 
   // Run update again if it was called recursively
   if (options && options.recursive) {
-    update(options);
+    update({ ...options, isSubsequentUpdate: true });
   }
 };
 

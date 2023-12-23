@@ -69,9 +69,8 @@ export const GITEA_HOST_URL =
  * osmium extract --bbox -77,-34,-28,9 -H ofc-sample.osh.pbf -o sao-paulo-2015-05-01-2015-05-05.osh.pbf
  */
 export const FULL_HISTORY_FILE_URL =
-  NODE_ENV === "development"
-    ? "https://www.dropbox.com/s/piqs9gjsre1gg6b/sao-paulo-2015-05-01-2015-05-05.osh.pbf?dl=0"
-    : "https://planet.osm.org/pbf/full-history/history-latest.osm.pbf";
+  process.env.FULL_HISTORY_FILE_URL ||
+  "https://planet.osm.org/pbf/full-history/history-latest.osm.pbf";
 
 /**
  * TEMPORARY DIRECTORY
