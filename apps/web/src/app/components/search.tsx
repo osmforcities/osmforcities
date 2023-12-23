@@ -38,7 +38,6 @@ export const SearchInput = () => {
     <div>
       <ReactSelect
         id="citySearch"
-        autoFocus={true}
         placeholder="e.g. Rio de Janeiro, Aracaju, Curitiba..."
         options={results as SearchResult[]}
         onInputChange={(value) => setSearchTerm(value)}
