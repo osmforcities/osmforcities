@@ -4,6 +4,7 @@ import { RegionWithCounts, fetchCountryRegions } from "./fetch";
 import Breadcrumbs from "../components/breadcrumbs";
 import Table, { Column } from "../components/table";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
+import { Footer } from "../components/footer";
 
 type CountryPageProps = {
   params: {
@@ -56,6 +57,7 @@ const CountryPage = async (props: CountryPageProps) => {
       ) : (
         <div>No regions found</div>
       )}
+      <Footer />
     </div>
   );
 };

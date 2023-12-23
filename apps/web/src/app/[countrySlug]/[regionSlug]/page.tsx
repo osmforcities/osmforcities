@@ -5,6 +5,7 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import Table, { Column } from "@/app/components/table";
 import { CityStats } from "@prisma/client";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
+import { Footer } from "@/app/components/footer";
 
 type RegionPageProps = {
   params: {
@@ -87,6 +88,7 @@ const RegionPage = async (props: RegionPageProps) => {
         Cities of {region.name}, {region.country.name}
       </h1>
       <Table columns={columns} data={cities} />
+      <Footer />
     </>
   );
 };

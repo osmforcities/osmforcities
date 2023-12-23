@@ -1,5 +1,4 @@
 import "server-only";
-import { cache } from "react";
 import prisma from "./db";
 import { City } from "@prisma/client";
 
@@ -9,28 +8,26 @@ type GetCityParams = {
   citySlug: string;
 };
 
-export const getCity = cache(
-  async ({
-    countrySlug,
-    regionSlug,
-    citySlug,
-  }: GetCityParams): Promise<City | null> => {
-    const city = await prisma.city.findFirst({
-      where: {
-        name_slug: citySlug,
-        region: {
-          name_slug: regionSlug,
-          country: {
-            name_slug: countrySlug,
-          },
+export const getCity = async ({
+  countrySlug,
+  regionSlug,
+  citySlug,
+}: GetCityParams): Promise<City | null> => {
+  const city = await prisma.city.findFirst({
+    where: {
+      name_slug: citySlug,
+      region: {
+        name_slug: regionSlug,
+        country: {
+          name_slug: countrySlug,
         },
       },
-    });
+    },
+  });
 
-    if (!city) {
-      return null;
-    }
-
-    return city as City;
+  if (!city) {
+    return null;
   }
-);
+
+  return city as City;
+};

@@ -10,6 +10,7 @@ import { formatDistanceToNow } from "date-fns";
 import { getCityPresetGeojsonGitUrl } from "@/app/utils/git-url";
 import { formatToPercent } from "../../page";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
+import { Footer } from "@/app/components/footer";
 
 type CityPagePageProps = {
   params: {
@@ -239,6 +240,7 @@ const CityPresetPage = async (props: CityPagePageProps) => {
           <p>There is no data for this preset yet.</p>
         </div>
       )}
+      <Footer />
     </div>
   );
 };

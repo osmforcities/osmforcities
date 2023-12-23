@@ -1,7 +1,7 @@
 import "server-only";
-import { cache } from "react";
 import prisma from "@/app/utils/db";
 import { Country } from "@prisma/client";
+import { cache } from "react";
 
 type GetCountryParams = {
   countrySlug: string;
@@ -9,9 +9,6 @@ type GetCountryParams = {
 
 export const getCountry = cache(
   async ({ countrySlug }: GetCountryParams): Promise<Country | null> => {
-    // eslint-disable-next-line no-console
-    console.log("fetching country");
-
     const country = await prisma.country.findFirst({
       where: {
         name_slug: countrySlug,
