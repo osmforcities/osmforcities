@@ -4,6 +4,7 @@ import { fetchLatestChanges } from "./fetch";
 import { formatDistanceToNow } from "date-fns";
 import { InternalLink } from "./components/common";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
+import { Footer } from "./components/footer";
 
 export const revalidate = GLOBAL_REVALIDATION_TIME;
 
@@ -109,6 +110,7 @@ const HomePage = () => {
         <LatestChangesSection />
         <SearchSection />
         <AboutSection />
+        <Footer />
       </div>
     </div>
   );
