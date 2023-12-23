@@ -1,56 +1,8 @@
 import React from "react";
 import { SearchInput } from "./components/search";
-import { fetchLatestChanges } from "./fetch";
-import { formatDistanceToNow } from "date-fns";
-import { InternalLink } from "./components/common";
 import { Footer } from "./components/footer";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
-
-const LatestChangesSection = async () => {
-  const latestChanges = await fetchLatestChanges();
-
-  if (!latestChanges) {
-    return null;
-  }
-
-  return (
-    <section id="latest-changes">
-      <div className="flex flex-col mx-auto mt-10">
-        <h2 className="text-left text-4xl mb-10">Latest changes</h2>
-        <table className="table-auto">
-          <thead className="sr-only">
-            <tr>
-              <th>Preset</th>
-              <th>City</th>
-              <th>Updated At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {latestChanges.map(
-              ({ presetName, presetUrl, cityName, cityUrl, updatedAt }) => {
-                return (
-                  <tr key={presetUrl} className="border-b border-gray-300">
-                    <td className="font-bold py-2 px-2">
-                      <InternalLink href={presetUrl}>{presetName}</InternalLink>
-                    </td>
-                    <td className="py-2 px-2">
-                      <InternalLink href={cityUrl}>{cityName}</InternalLink>
-                    </td>
-                    <td className="font-thin py-2 pl-2 pr-5 text-right">
-                      {formatDistanceToNow(updatedAt, {
-                        addSuffix: true,
-                      })}
-                    </td>
-                  </tr>
-                );
-              }
-            )}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  );
-};
+import FeaturedDatasetsSection from "./components/featured-datasets";
 
 const SearchSection = () => {
   return (
@@ -105,7 +57,7 @@ const HomePage = () => {
     <div role="main" aria-label="home">
       <div className="flex flex-col mx-auto">
         <HeroSection />
-        <LatestChangesSection />
+        <FeaturedDatasetsSection />
         <SearchSection />
         <AboutSection />
         <Footer />

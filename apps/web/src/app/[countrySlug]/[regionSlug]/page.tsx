@@ -6,6 +6,7 @@ import Table, { Column } from "@/app/components/table";
 import { CityStats } from "@prisma/client";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
 import { Footer } from "@/app/components/footer";
+import FeaturedDatasetsSection from "@/app/components/featured-datasets";
 
 type RegionPageProps = {
   params: {
@@ -85,8 +86,13 @@ const RegionPage = async (props: RegionPageProps) => {
         ]}
       />
       <h1 className="text-center text-2xl font-bold mb-6">
-        Cities of {region.name}, {region.country.name}
+        {region.name}, {region.country.name}
       </h1>
+      <FeaturedDatasetsSection
+        countrySlug={countrySlug}
+        regionSlug={regionSlug}
+      />
+      <h2 className="text-center text-4xl mb-6">All Cities</h2>
       <Table columns={columns} data={cities} />
       <Footer />
     </>
