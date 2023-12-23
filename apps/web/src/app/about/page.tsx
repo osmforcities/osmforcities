@@ -54,6 +54,13 @@ const AboutPage = async () => {
         data and make it easier to integrate of OpenStreetMap data into
         workflows.
       </Paragraph>
+      <PageSubtitle>Contact & Feedback</PageSubtitle>
+      <Paragraph>
+        Please share your thoughts with us through{" "}
+        <ExternalLink href="https://forms.gle/RGZdZ1mzo4hZx5g27">
+          our Contact & Feedback form.
+        </ExternalLink>
+      </Paragraph>
       <PageSubtitle>About</PageSubtitle>
       <Paragraph>
         This project is part of the Labs program of{" "}
