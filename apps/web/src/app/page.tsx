@@ -26,7 +26,7 @@ const AboutSection = () => {
           This platform is in early development and the coverage it restricted
           to Brazil.{" "}
           <a href="/about" className="text-blue-500 hover:text-blue-700">
-            Please visit the about page.
+            Please visit the about page to know more.
           </a>
         </div>
       </div>
@@ -57,9 +57,9 @@ const HomePage = () => {
     <div role="main" aria-label="home">
       <div className="flex flex-col mx-auto">
         <HeroSection />
-        <FeaturedDatasetsSection />
         <SearchSection />
         <AboutSection />
+        <FeaturedDatasetsSection />
         <Footer />
       </div>
     </div>
