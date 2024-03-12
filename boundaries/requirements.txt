@@ -1,0 +1,9 @@
+click
+geojson
+geopandas
+joblib
+numpy
+pandas
+requests
+shapely
+tqdm
