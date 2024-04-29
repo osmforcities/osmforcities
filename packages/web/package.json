@@ -10,8 +10,7 @@
     "prisma:generate": "dotenv -e .env prisma generate",
     "prisma:migrate": "dotenv -e .env prisma migrate dev",
     "prisma:seed": "dotenv -e .env prisma db seed",
-    "prisma:studio": "dotenv -e .env prisma studio",
-    "postinstall": "node ../../setup-env.js"
+    "prisma:studio": "dotenv -e .env prisma studio"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

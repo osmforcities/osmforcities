@@ -4,12 +4,7 @@
   "description": "The command line interface for OSM for Cities",
   "scripts": {
     "cli": "TZ=UTC node src/index.js",
-    "lint": "eslint src",
-    "prisma:generate": "dotenv -e .env prisma generate",
-    "prisma:migrate": "dotenv -e .env prisma migrate dev",
-    "prisma:seed": "dotenv -e .env prisma db seed",
-    "prisma:studio": "dotenv -e .env prisma studio",
-    "postinstall": "node ../../setup-env.js && node ./postinstall.js && prisma generate"
+    "lint": "eslint src"
   },
   "prisma": {
     "schema": "prisma/schema.prisma"

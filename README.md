@@ -6,10 +6,70 @@ A platform for distributing OpenStreetMap data presets for cities.
 
 - [Osmium Tool](https://osmcode.org/osmium-tool/) (v1.14.0)
 - [Node](http://nodejs.org/) (see [.nvmrc](./.nvmrc)) (To manage multiple node versions we recommend [nvm](https://github.com/creationix/nvm))
-- [Yarn](https://yarnpkg.com/) package manager
-- [Docker](https://www.docker.com/)
+- [pnpm](https://pnpm.io/) package manager
+- [Docker](https://www.docker.com/) (Optional, for development)
 
 ## Getting started
+
+Essential steps to run the platform locally for development purposes
+
+### Initialize .env
+
+When running the platform for the first time, create a `.env` based on [.env.example](.env.example):
+
+```sh
+cp .env.example .env
+```
+
+### PostgreSQL database
+
+Start the `db` docker instance in background:
+
+```sh
+docker-compose up db -d
+```
+
+To inspect the target data folder, PostgreSQL version and other settings, please check the [docker-compose.yml] file.
+
+### Node.js version
+
+Ensure the platform is running on the correct Node.js version:
+
+```sh
+nvm i
+```
+
+This will install and select the version included in [.nvmrc](.nvmrc) file.
+
+### Install npm modules
+
+This project uses a monorepo approach. To install module dependencies for the packages, run:
+
+```sh
+pnpm i
+```
+
+### Initialize Prisma
+
+Generate [Prisma](https://www.prisma.io/) client:
+
+```sh
+pnpm prisma:generate
+```
+
+### Migrate the database
+
+```sh
+pnpm prisma:migrate
+```
+
+### Initialize data files
+
+The following command will download and expand the required data files:
+
+```sh
+pnpm init:data
+```
 
 ### Init `.env` file
 

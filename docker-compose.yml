@@ -1,7 +1,5 @@
-version: '3'
-
 services:
-  dev_db:
+  db:
     image: postgres:16-alpine
     restart: always
     ports:
@@ -10,14 +8,4 @@ services:
       - POSTGRES_PASSWORD=docker
       - PGDATA=/opt/postgres/data
     volumes:
-      - ./docker-data/db-dev:/opt/postgres/data
-  cli:
-    image: osmforcities-cli
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      - POSTGRES_PRISMA_URL=postgresql://postgres:docker@dev_db:5432/postgres
-      - POSTGRES_URL_NON_POOLING=postgresql://postgres:docker@dev_db:5432/postgres
-    volumes:
-      - ./docker-data/cli:/osmforcities/apps/cli/app-data
+      - ./docker-data/db:/opt/postgres/data

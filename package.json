@@ -2,7 +2,11 @@
   "name": "osmforcities",
   "version": "0.3.1",
   "description": "",
-  "scripts": {},
+  "scripts": {
+    "prisma:generate": "pnpm -r run prisma:generate",
+    "prisma:migrate": "pnpm -C packages/prisma run prisma:migrate",
+    "cli:init-history": "pnpm -C packages/cli run cli -- init-history"
+  },
   "keywords": [],
   "author": "",
   "license": "MIT"

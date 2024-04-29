@@ -1,0 +1,21 @@
+{
+  "name": "db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prisma:generate": "dotenv -e ../../.env prisma generate",
+    "prisma:migrate": "dotenv -e  ../../.env prisma migrate dev",
+    "prisma:studio": "dotenv -e .env prisma studio",
+    "prisma:seed": "dotenv -e .env prisma db seed --preview-feature"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "5.12.1",
+    "dotenv": "^10.0.0",
+    "dotenv-cli": "^7.3.0",
+    "prisma": "^5.6.0"
+  }
+}
