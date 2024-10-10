@@ -2,8 +2,8 @@ import React from "react";
 
 const GlobalNav = () => {
   return (
-    <nav className="my-5">
-      <ul className="flex justify-between items-center">
+    <nav className="sticky top-0 w-full bg-white z-10 shadow-md">
+      <ul className="flex justify-between items-center p-4">
         <li className="mr-auto">
           <a href="/" className="text-blue-500 hover:text-blue-700">
             osmforcities.org
