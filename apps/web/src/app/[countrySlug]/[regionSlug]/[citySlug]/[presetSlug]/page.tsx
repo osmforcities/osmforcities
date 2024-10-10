@@ -133,7 +133,7 @@ const CityPresetPage = async (props: CityPagePageProps) => {
           </div>
         )}
       </Panel>
-      <Map />
+      <Map geojson={geojson} />
     </div>
   );
 };
