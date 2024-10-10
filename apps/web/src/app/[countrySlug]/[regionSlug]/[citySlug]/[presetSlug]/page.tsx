@@ -11,6 +11,7 @@ import { getCityPresetGeojsonGitUrl } from "@/app/utils/git-url";
 import { formatToPercent } from "../../page";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
 import { Footer } from "@/app/components/footer";
+import PageLayout from "@/app/components/page-layout";
 
 type CityPagePageProps = {
   params: {
@@ -60,7 +61,7 @@ const CityPresetPage = async (props: CityPagePageProps) => {
     ) || 0;
 
   return (
-    <div role="main">
+    <PageLayout>
       <Breadcrumbs
         breadcrumbs={[
           { label: "Home", url: "/" },
@@ -241,7 +242,7 @@ const CityPresetPage = async (props: CityPagePageProps) => {
         </div>
       )}
       <Footer />
-    </div>
+    </PageLayout>
   );
 };
 
