@@ -4,8 +4,14 @@ import { getCountry } from "@/app/utils/get-country";
 import { getPreset } from "@/app/utils/get-preset";
 import { getRegion } from "@/app/utils/get-region";
 import { notFound } from "next/navigation";
+import dynamic from "next/dynamic";
 import { fetchCityPresetGeojson, fetchLatestCityPresetStatus } from "./fetch";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
+
+const Map = dynamic(() => import("@/app/components/map"), {
+  ssr: false,
+});
+
 import React from "react";
 import PresetInfoTable from "./info-table";
 import FeatureList from "./feature-table";
@@ -23,14 +29,6 @@ const Panel = ({ id, children }: { id: string; children: React.ReactNode }) => {
   return (
     <section id={id} className="w-64 py-5 px-3">
       {children}
-    </section>
-  );
-};
-
-const Map = () => {
-  return (
-    <section id="map" className="w-full">
-      A Map
     </section>
   );
 };
