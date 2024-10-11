@@ -23,13 +23,13 @@ const Map = ({ geojson }: { geojson: FeatureCollection | null }) => {
 
     //zoom to geojson bounds
     map.current.on("load", () => {
-      if (geojson) {
-        map?.current?.addSource("geojson", {
+      if (map.current && geojson) {
+        map.current.addSource("geojson", {
           type: "geojson",
           data: geojson,
         });
 
-        map?.current?.addLayer({
+        map.current.addLayer({
           id: "geojson-fill",
           type: "fill",
           source: "geojson",
@@ -40,7 +40,7 @@ const Map = ({ geojson }: { geojson: FeatureCollection | null }) => {
           filter: ["==", "$type", "Polygon"],
         });
 
-        map?.current?.addLayer({
+        map.current.addLayer({
           id: "geojson-point",
           type: "circle",
           source: "geojson",
@@ -53,7 +53,7 @@ const Map = ({ geojson }: { geojson: FeatureCollection | null }) => {
 
         const bounds = bbox(geojson);
 
-        map.current?.fitBounds(
+        map.current.fitBounds(
           new maplibregl.LngLatBounds(
             new maplibregl.LngLat(bounds[0], bounds[1]),
             new maplibregl.LngLat(bounds[2], bounds[3])
