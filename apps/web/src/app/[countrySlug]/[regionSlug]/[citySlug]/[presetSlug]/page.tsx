@@ -4,13 +4,9 @@ import { getCountry } from "@/app/utils/get-country";
 import { getPreset } from "@/app/utils/get-preset";
 import { getRegion } from "@/app/utils/get-region";
 import { notFound } from "next/navigation";
-import dynamic from "next/dynamic";
+import Map from "@/app/components/map";
 import { fetchCityPresetGeojson, fetchLatestCityPresetStatus } from "./fetch";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
-
-const Map = dynamic(() => import("@/app/components/map"), {
-  ssr: false,
-});
 
 import React from "react";
 import PresetInfoTable from "./info-table";
