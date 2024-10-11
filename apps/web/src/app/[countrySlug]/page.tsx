@@ -6,6 +6,7 @@ import Table, { Column } from "../components/table";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
 import { Footer } from "../components/footer";
 import FeaturedDatasetsSection from "../components/featured-datasets";
+import PageLayout from "../components/page-layout";
 
 type CountryPageProps = {
   params: {
@@ -46,7 +47,7 @@ const CountryPage = async (props: CountryPageProps) => {
   ];
 
   return (
-    <div role="main">
+    <PageLayout>
       <Breadcrumbs
         breadcrumbs={[
           { label: "Home", url: "/" },
@@ -64,7 +65,7 @@ const CountryPage = async (props: CountryPageProps) => {
       )}
       <FeaturedDatasetsSection countrySlug={countrySlug} />
       <Footer />
-    </div>
+    </PageLayout>
   );
 };
 

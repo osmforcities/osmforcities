@@ -11,7 +11,7 @@ const Breadcrumb = ({ label, url, isLast = false }: BreadcrumbProps) => (
     {isLast ? (
       <span className="text-gray-500 font-semibold">{label}</span>
     ) : (
-      <a href={url} className="text-blue-600 hover:text-blue-800 font-medium">
+      <a href={url} className="text-blue-600 hover:text-blue-800">
         {label}
       </a>
     )}
@@ -25,7 +25,10 @@ interface BreadcrumbsProps {
 
 const Breadcrumbs = ({ breadcrumbs }: BreadcrumbsProps) => {
   return (
-    <nav aria-label="breadcrumb" className="flex mb-4">
+    <nav
+      aria-label="breadcrumb"
+      className="flex flex-wrap mb-4 text-xs overflow-hidden break-words"
+    >
       {breadcrumbs.map(({ label, url, isLast }) => (
         <Breadcrumb key={label} label={label} url={url} isLast={isLast} />
       ))}

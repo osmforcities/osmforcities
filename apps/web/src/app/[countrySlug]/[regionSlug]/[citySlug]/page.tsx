@@ -11,6 +11,7 @@ import { getRegion } from "@/app/utils/get-region";
 import { CityPresetStatsWithPreset, fetchCityPresetsStats } from "./fetch";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
 import { Footer } from "@/app/components/footer";
+import PageLayout from "@/app/components/page-layout";
 
 type CityPageProps = {
   params: {
@@ -133,7 +134,7 @@ const CityPage = async (props: CityPageProps) => {
   ];
 
   return (
-    <div role="main">
+    <PageLayout>
       <Breadcrumbs
         breadcrumbs={[
           { label: "Home", url: "/" },
@@ -162,7 +163,7 @@ const CityPage = async (props: CityPageProps) => {
         </div>
       )}
       <Footer />
-    </div>
+    </PageLayout>
   );
 };
 

@@ -3,6 +3,7 @@ import { SearchInput } from "./components/search";
 import { Footer } from "./components/footer";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
 import FeaturedDatasetsSection from "./components/featured-datasets";
+import PageLayout from "./components/page-layout";
 
 const SearchSection = () => {
   return (
@@ -54,7 +55,7 @@ const HeroSection = () => {
 
 const HomePage = () => {
   return (
-    <div role="main" aria-label="home">
+    <PageLayout aria-label="home">
       <div className="flex flex-col mx-auto">
         <HeroSection />
         <SearchSection />
@@ -62,7 +63,7 @@ const HomePage = () => {
         <FeaturedDatasetsSection />
         <Footer />
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

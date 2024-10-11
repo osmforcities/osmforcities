@@ -7,6 +7,7 @@ import { CityStats } from "@prisma/client";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
 import { Footer } from "@/app/components/footer";
 import FeaturedDatasetsSection from "@/app/components/featured-datasets";
+import PageLayout from "@/app/components/page-layout";
 
 type RegionPageProps = {
   params: {
@@ -77,7 +78,7 @@ const RegionPage = async (props: RegionPageProps) => {
   ];
 
   return (
-    <>
+    <PageLayout>
       <Breadcrumbs
         breadcrumbs={[
           { label: "Home", url: "/" },
@@ -95,7 +96,7 @@ const RegionPage = async (props: RegionPageProps) => {
       <h2 className="text-center text-4xl mb-6">All Cities</h2>
       <Table columns={columns} data={cities} />
       <Footer />
-    </>
+    </PageLayout>
   );
 };
 
