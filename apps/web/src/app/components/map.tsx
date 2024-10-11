@@ -64,7 +64,14 @@ const Map = ({ geojson }: { geojson: FeatureCollection | null }) => {
     });
   }, [geojson]);
 
-  return <div id="map" ref={mapContainer} className="w-full"></div>;
+  return (
+    <div
+      id="map"
+      ref={mapContainer}
+      className="w-full overflow-hidden"
+      style={{ height: "calc(100vh - var(--nav-height))" }}
+    ></div>
+  );
 };
 
 export default Map;

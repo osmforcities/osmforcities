@@ -2,7 +2,11 @@ import React from "react";
 
 const GlobalNav = () => {
   return (
-    <nav className="sticky top-0 w-full bg-white z-10 shadow-md">
+    <nav
+      id="global-nav"
+      className="sticky top-0 w-full bg-white z-10 shadow-md"
+      style={{ height: "var(--nav-height)" }}
+    >
       <ul className="flex justify-between items-center p-4">
         <li className="mr-auto">
           <a href="/" className="text-blue-500 hover:text-blue-700">

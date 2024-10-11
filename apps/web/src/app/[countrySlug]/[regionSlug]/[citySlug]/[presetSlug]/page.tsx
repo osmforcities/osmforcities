@@ -23,7 +23,11 @@ type CityPagePageProps = {
 
 const Panel = ({ id, children }: { id: string; children: React.ReactNode }) => {
   return (
-    <section id={id} className="w-64 py-5 px-3">
+    <section
+      id={id}
+      className="w-64 py-5 px-3 overflow-y-auto overflow-x-hidden"
+      style={{ height: "calc(100vh - var(--nav-height))" }}
+    >
       {children}
     </section>
   );
@@ -38,7 +42,7 @@ const Indicators = ({
   };
 }) => {
   return (
-    <div className="flex py-2 justify-between items-center">
+    <div className="panel flex py-2 justify-between items-center">
       <div className="text-center">
         <div>{latestStatus?.totalFeatures || "-"}</div>
         <div>Features</div>
