@@ -16,8 +16,8 @@ const TableRow = ({
   value: React.ReactNode;
 }) => {
   return (
-    <tr className="border-b border-gray-300">
-      <td className="font-bold py-2 px-2">{label}</td>
+    <tr className="">
+      <td className="uppercase py-2 px-2">{label}</td>
       <td className="py-2 px-2 text-right">{value}</td>
     </tr>
   );
@@ -27,8 +27,6 @@ const PresetInfoTable = ({
   preset,
   latestStatus,
   totalChanges,
-  region,
-  city,
 }: {
   preset: Preset;
   latestStatus: CityPresetStats | null;
@@ -50,55 +48,7 @@ const PresetInfoTable = ({
             }
           />
         )}
-        <TableRow
-          label="Recommended Tags"
-          value={
-            preset.recommended_tags.length > 0
-              ? preset.recommended_tags.join(", ")
-              : "-"
-          }
-        />
-        {preset.recommended_tags.length > 0 && (
-          <TableRow
-            label="Recommended Tags Coverage"
-            value={
-              latestStatus?.recommendedTagsCoverage
-                ? formatToPercent(latestStatus.recommendedTagsCoverage)
-                : "-"
-            }
-          />
-        )}
-        <TableRow label="Osmium Filter" value={preset.osmium_filter} />
         <TableRow label="Feature Versions" value={totalChanges} />
-        <TableRow
-          label="GeoJSON file"
-          value={
-            <>
-              <ExternalLink
-                href={getCityPresetGeojsonGitUrl(region, city, preset, "blob")}
-              >
-                preview
-              </ExternalLink>
-              ,{" "}
-              <ExternalLink
-                href={getCityPresetGeojsonGitUrl(
-                  region,
-                  city,
-                  preset,
-                  "history"
-                )}
-              >
-                history
-              </ExternalLink>
-              ,{" "}
-              <ExternalLink
-                href={getCityPresetGeojsonGitUrl(region, city, preset)}
-              >
-                download
-              </ExternalLink>
-            </>
-          }
-        />
       </tbody>
     </Table>
   );
