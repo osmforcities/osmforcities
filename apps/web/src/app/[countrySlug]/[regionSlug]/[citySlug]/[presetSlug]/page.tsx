@@ -25,7 +25,7 @@ const Panel = ({ id, children }: { id: string; children: React.ReactNode }) => {
   return (
     <section
       id={id}
-      className="w-64 py-5 px-3 overflow-y-auto overflow-x-hidden"
+      className="w-96 pt-8 pb-10 px-9 overflow-y-auto overflow-x-hidden"
       style={{ height: "calc(100vh - var(--nav-height))" }}
     >
       {children}
