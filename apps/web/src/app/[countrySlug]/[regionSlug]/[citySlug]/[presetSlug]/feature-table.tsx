@@ -37,11 +37,11 @@ const FeatureList = ({ geojson }: FeatureListProps) => {
         Feature List
       </Heading>
       <table className="table-auto w-full">
-        <thead>
-          <tr>
-            <th>Name/id</th>
-            <th>version</th>
-            <th className="text-right pr-2">timestamp</th>
+        <thead className="w-full">
+          <tr className="text-xs uppercase">
+            <th className="text-left font-thin">Name/OSM ID</th>
+            <th className="font-thin">version</th>
+            <th className="text-right pr-2 font-thin">timestamp</th>
           </tr>
         </thead>
         <tbody>
