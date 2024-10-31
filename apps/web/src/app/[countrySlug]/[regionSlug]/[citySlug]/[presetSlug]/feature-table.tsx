@@ -9,23 +9,30 @@ type FeatureListProps = {
 };
 
 const FeatureTableRow = ({ id, properties }: Feature) => {
-  // const { version, name, timestamp } = properties;
+  if (!properties) {
+    return null;
+  }
+
+  const { name, timestamp, version } = properties;
 
   return (
     <tr key={id}>
-      <td>{properties.name || properties.id}</td>
-      {/* <td className="font-bold py-2 px-2">
-        <ExternalLink href={`https://www.openstreetmap.org/${id}`}>
-          {id}
-        </ExternalLink>
+      <td className="text-xs py-1">
+        <ul>
+          <li className="font-semibold">{name}</li>
+          <li>
+            <ExternalLink href={`https://www.openstreetmap.org/${id}`}>
+              {id}
+            </ExternalLink>
+          </li>
+        </ul>
       </td>
-      <td className="py-2 px-2">{name}</td>
-      <td className="py-2 px-2 text-center">{version}</td>
-      <td className="font-thin py-2 pl-2 pr-2 text-right">
+      <td className="text-center text-xs">{version}</td>
+      <td className="text-center text-xs">
         {formatDistanceToNow(new Date(timestamp), {
           addSuffix: true,
         })}
-      </td> */}
+      </td>
     </tr>
   );
 };
