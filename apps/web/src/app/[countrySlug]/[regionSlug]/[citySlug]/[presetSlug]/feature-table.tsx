@@ -2,6 +2,7 @@ import React from "react";
 import { formatDistanceToNow } from "date-fns";
 import { ExternalLink } from "@/app/components/common";
 import type { Feature, FeatureCollection } from "geojson";
+import Heading from "@/app/components/headings";
 
 type FeatureListProps = {
   geojson: FeatureCollection;
@@ -32,9 +33,9 @@ const FeatureTableRow = ({ id, properties }: Feature) => {
 const FeatureList = ({ geojson }: FeatureListProps) => {
   return (
     <section id="feature-list">
-      <h2 className="text-3xl font-bold text-center pb-10 pt-5">
+      <Heading level={3} size="small">
         Feature List
-      </h2>
+      </Heading>
       <table className="table-auto w-full">
         <thead>
           <tr>

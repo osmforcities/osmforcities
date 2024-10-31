@@ -11,6 +11,8 @@ import { GLOBAL_REVALIDATION_TIME } from "@/constants";
 import React from "react";
 import PresetInfoTable from "./info-table";
 import FeatureList from "./feature-table";
+import Heading from "@/app/components/headings";
+import { Separator } from "@/app/components/common";
 
 type CityPagePageProps = {
   params: {
@@ -43,13 +45,17 @@ const Indicators = ({
 }) => {
   return (
     <div className="panel flex py-2 justify-between items-center">
-      <div className="text-center">
-        <div>{latestStatus?.totalFeatures || "-"}</div>
-        <div>Features</div>
+      <div className="text-right">
+        <div className="text-4xl font-semibold">
+          {latestStatus?.totalFeatures || "-"}
+        </div>
+        <div className="uppercase text-xs">Features</div>
       </div>
-      <div className="text-center">
-        <div>{latestStatus?.totalChangesets || "-"}</div>
-        <div>Changesets</div>
+      <div className="text-right">
+        <div className="text-4xl font-semibold">
+          {latestStatus?.totalChangesets || "-"}
+        </div>
+        <div className="uppercase text-xs">Changesets</div>
       </div>
     </div>
   );
@@ -111,7 +117,11 @@ const CityPresetPage = async (props: CityPagePageProps) => {
           ]}
         />
 
-        <h1>{preset.name}</h1>
+        <Heading level={2} size="medium">
+          {preset.name}
+        </Heading>
+
+        <Separator />
 
         {latestStatus && <Indicators latestStatus={latestStatus} />}
 
@@ -122,6 +132,8 @@ const CityPresetPage = async (props: CityPagePageProps) => {
           region={region}
           city={city}
         />
+
+        <Separator />
 
         {geojson ? (
           <FeatureList geojson={geojson} />
