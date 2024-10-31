@@ -106,13 +106,12 @@ const CityPresetPage = async (props: CityPagePageProps) => {
             {
               label: city.name,
               url: `/${country.name_slug}/${region.name_slug}/${city.name_slug}`,
+              isLast: true,
             },
-            { label: preset.name, isLast: true },
           ]}
         />
 
-        <div>{city.name}</div>
-        <div>{preset.name}</div>
+        <h1>{preset.name}</h1>
 
         {latestStatus && <Indicators latestStatus={latestStatus} />}
 
