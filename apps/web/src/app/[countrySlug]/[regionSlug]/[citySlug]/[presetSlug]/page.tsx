@@ -13,6 +13,8 @@ import PresetInfoTable from "./info-table";
 import FeatureList from "./feature-table";
 import Heading from "@/app/components/headings";
 import { Separator } from "@/app/components/common";
+import { Button } from "@/app/components/button";
+import { getCityPresetGeojsonGitUrl } from "@/app/utils/git-url";
 
 type CityPagePageProps = {
   params: {
@@ -27,10 +29,12 @@ const Panel = ({ id, children }: { id: string; children: React.ReactNode }) => {
   return (
     <section
       id={id}
-      className="w-96 pt-8 pb-10 px-9 overflow-y-auto overflow-x-hidden"
+      className="w-[32rem] flex flex-col"
       style={{ height: "calc(100vh - var(--nav-height))" }}
     >
-      {children}
+      <div className="flex-1 overflow-hidden flex flex-col px-9">
+        {children}
+      </div>
     </section>
   );
 };
@@ -102,47 +106,60 @@ const CityPresetPage = async (props: CityPagePageProps) => {
   return (
     <div className="flex">
       <Panel id="right-panel">
-        <Breadcrumbs
-          breadcrumbs={[
-            { label: country.name, url: `/${country.name_slug}` },
-            {
-              label: region.name,
-              url: `/${country.name_slug}/${region.name_slug}`,
-            },
-            {
-              label: city.name,
-              url: `/${country.name_slug}/${region.name_slug}/${city.name_slug}`,
-              isLast: true,
-            },
-          ]}
-        />
+        <div className="pt-8">
+          <Breadcrumbs
+            breadcrumbs={[
+              { label: country.name, url: `/${country.name_slug}` },
+              {
+                label: region.name,
+                url: `/${country.name_slug}/${region.name_slug}`,
+              },
+              {
+                label: city.name,
+                url: `/${country.name_slug}/${region.name_slug}/${city.name_slug}`,
+                isLast: true,
+              },
+            ]}
+          />
 
-        <Heading level={2} size="medium">
-          {preset.name}
-        </Heading>
+          <Heading level={2} size="medium">
+            {preset.name}
+          </Heading>
 
-        <Separator />
+          <Separator />
 
-        {latestStatus && <Indicators latestStatus={latestStatus} />}
+          {latestStatus && <Indicators latestStatus={latestStatus} />}
 
-        <PresetInfoTable
-          preset={preset}
-          latestStatus={latestStatus}
-          totalChanges={totalChanges}
-          region={region}
-          city={city}
-        />
+          <PresetInfoTable
+            preset={preset}
+            latestStatus={latestStatus}
+            totalChanges={totalChanges}
+            region={region}
+            city={city}
+          />
 
-        <Separator />
+          <Separator />
+        </div>
 
-        {geojson ? (
-          <FeatureList geojson={geojson} />
-        ) : (
-          <div>
-            <h1>{preset.name}</h1>
-            <p>There is no data for this preset yet.</p>
+        <div className="flex-1 overflow-y-auto min-h-0 pr-1">
+          {geojson ? (
+            <FeatureList geojson={geojson} />
+          ) : (
+            <div>
+              <h1>{preset.name}</h1>
+              <p>There is no data for this preset yet.</p>
+            </div>
+          )}
+        </div>
+
+        <div className="pb-8">
+          <Separator />
+          <div className="mt-4 flex justify-center">
+            <Button href={getCityPresetGeojsonGitUrl(region, city, preset)}>
+              Download
+            </Button>
           </div>
-        )}
+        </div>
       </Panel>
       <Map geojson={geojson} />
     </div>

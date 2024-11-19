@@ -1,14 +1,23 @@
 import React from "react";
-import { formatDistanceToNow } from "date-fns";
 import { ExternalLink } from "@/app/components/common";
-import type { Feature, FeatureCollection } from "geojson";
+import type { FeatureCollection } from "geojson";
 import Heading from "@/app/components/headings";
+import { getAge } from "@/app/utils/date";
 
 type FeatureListProps = {
   geojson: FeatureCollection;
 };
 
-const FeatureTableRow = ({ id, properties }: Feature) => {
+interface FeatureTableRowProps {
+  id: string;
+  properties: {
+    name: string;
+    timestamp: string;
+    version: string;
+  };
+}
+
+const FeatureTableRow = ({ id, properties }: FeatureTableRowProps) => {
   if (!properties) {
     return null;
   }
@@ -19,7 +28,11 @@ const FeatureTableRow = ({ id, properties }: Feature) => {
     <tr key={id}>
       <td className="text-xs py-1">
         <ul>
-          <li className="font-semibold">{name}</li>
+          {name ? (
+            <li className="font-semibold">{name}</li>
+          ) : (
+            <li className="font-thin">Unnamed</li>
+          )}
           <li>
             <ExternalLink href={`https://www.openstreetmap.org/${id}`}>
               {id}
@@ -27,12 +40,8 @@ const FeatureTableRow = ({ id, properties }: Feature) => {
           </li>
         </ul>
       </td>
-      <td className="text-center text-xs">{version}</td>
-      <td className="text-center text-xs">
-        {formatDistanceToNow(new Date(timestamp), {
-          addSuffix: true,
-        })}
-      </td>
+      <td className="text-center text-xs w-12">{version}</td>
+      <td className="text-center text-xs w-12">{getAge(timestamp)}</td>
     </tr>
   );
 };
@@ -48,7 +57,7 @@ const FeatureList = ({ geojson }: FeatureListProps) => {
           <tr className="text-xs uppercase">
             <th className="text-left font-thin">Name/OSM ID</th>
             <th className="font-thin">version</th>
-            <th className="text-right pr-2 font-thin">timestamp</th>
+            <th className="text-right pr-2 font-thin">age</th>
           </tr>
         </thead>
         <tbody>
@@ -57,12 +66,22 @@ const FeatureList = ({ geojson }: FeatureListProps) => {
               b.properties?.timestamp.localeCompare(a.properties?.timestamp)
             )
             .map(({ id, properties }) => {
-              if (!properties) {
+              if (typeof id !== "string") {
                 return null;
               }
 
               return (
-                <FeatureTableRow key={id} id={id} properties={properties} />
+                <FeatureTableRow
+                  key={id}
+                  id={id}
+                  properties={
+                    properties as {
+                      name: string;
+                      timestamp: string;
+                      version: string;
+                    }
+                  }
+                />
               );
             })}
         </tbody>
