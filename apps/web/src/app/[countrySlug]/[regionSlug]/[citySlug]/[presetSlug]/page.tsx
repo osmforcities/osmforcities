@@ -39,32 +39,6 @@ const Panel = ({ id, children }: { id: string; children: React.ReactNode }) => {
   );
 };
 
-const Indicators = ({
-  latestStatus,
-}: {
-  latestStatus: {
-    totalFeatures: number;
-    totalChangesets: number;
-  };
-}) => {
-  return (
-    <div className="panel flex py-2 justify-between items-center">
-      <div className="text-right">
-        <div className="text-4xl font-semibold">
-          {latestStatus?.totalFeatures || "-"}
-        </div>
-        <div className="uppercase text-xs">Features</div>
-      </div>
-      <div className="text-right">
-        <div className="text-4xl font-semibold">
-          {latestStatus?.totalChangesets || "-"}
-        </div>
-        <div className="uppercase text-xs">Changesets</div>
-      </div>
-    </div>
-  );
-};
-
 const CityPresetPage = async (props: CityPagePageProps) => {
   const { countrySlug, regionSlug, citySlug, presetSlug } = props.params;
 
@@ -127,8 +101,6 @@ const CityPresetPage = async (props: CityPagePageProps) => {
           </Heading>
 
           <Separator />
-
-          {latestStatus && <Indicators latestStatus={latestStatus} />}
 
           <PresetInfoTable
             preset={preset}

@@ -1,5 +1,4 @@
 import React from "react";
-import { formatToPercent } from "../../page";
 import { City, CityPresetStats, Preset, Region } from "@prisma/client";
 
 const Table = ({ children }: { children: React.ReactNode }) => {
@@ -24,7 +23,6 @@ const TableRow = ({
 const PresetInfoTable = ({
   preset,
   latestStatus,
-  totalChanges,
 }: {
   preset: Preset;
   latestStatus: CityPresetStats | null;
@@ -35,18 +33,8 @@ const PresetInfoTable = ({
   return (
     <Table>
       <tbody>
-        <TableRow label="Category" value={preset.category} />
-        {preset.required_tags.length > 0 && (
-          <TableRow
-            label="Tags Coverage"
-            value={
-              latestStatus?.requiredTagsCoverage
-                ? formatToPercent(latestStatus.requiredTagsCoverage)
-                : "-"
-            }
-          />
-        )}
-        <TableRow label="Feature Versions" value={totalChanges} />
+        <TableRow label="category" value={preset.category} />
+        <TableRow label="feature count" value={latestStatus?.totalFeatures} />
       </tbody>
     </Table>
   );

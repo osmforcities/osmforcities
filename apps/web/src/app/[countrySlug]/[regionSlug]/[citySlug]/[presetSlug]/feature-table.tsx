@@ -1,7 +1,6 @@
 import React from "react";
 import { ExternalLink } from "@/app/components/common";
 import type { FeatureCollection } from "geojson";
-import Heading from "@/app/components/headings";
 import { getAge } from "@/app/utils/date";
 
 type FeatureListProps = {
@@ -49,9 +48,6 @@ const FeatureTableRow = ({ id, properties }: FeatureTableRowProps) => {
 const FeatureList = ({ geojson }: FeatureListProps) => {
   return (
     <section id="feature-list">
-      <Heading level={3} size="small">
-        Feature List
-      </Heading>
       <table className="table-auto w-full">
         <thead className="w-full">
           <tr className="text-xs uppercase">
