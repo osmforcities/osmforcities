@@ -6,22 +6,25 @@ import { useRef, useEffect } from "react";
 import type { FeatureCollection } from "geojson";
 import bbox from "@turf/bbox";
 
-// react component
 const Map = ({ geojson }: { geojson: FeatureCollection | null }) => {
   const mapContainer = useRef(null);
   const map = useRef<maplibregl.Map | null>(null);
 
   useEffect(() => {
-    if (map.current || !mapContainer.current) return; // stops map from initializing more than once and ensures mapContainer is not null
+    if (map.current || !mapContainer.current || !geojson) return;
+
+    const bounds = bbox(geojson);
 
     map.current = new maplibregl.Map({
       container: mapContainer.current,
       style: "https://tiles.openfreemap.org/styles/bright", // style URL
-      zoom: 0,
-      center: [0, 0],
+      bounds: new maplibregl.LngLatBounds(
+        new maplibregl.LngLat(bounds[0], bounds[1]),
+        new maplibregl.LngLat(bounds[2], bounds[3])
+      ),
+      fitBoundsOptions: { padding: 20 }, // Add padding to fit bounds
     });
 
-    //zoom to geojson bounds
     map.current.on("load", () => {
       if (map.current && geojson) {
         map.current.addSource("geojson", {
@@ -50,16 +53,6 @@ const Map = ({ geojson }: { geojson: FeatureCollection | null }) => {
           },
           filter: ["==", "$type", "Point"],
         });
-
-        const bounds = bbox(geojson);
-
-        map.current.fitBounds(
-          new maplibregl.LngLatBounds(
-            new maplibregl.LngLat(bounds[0], bounds[1]),
-            new maplibregl.LngLat(bounds[2], bounds[3])
-          ),
-          { padding: 20 }
-        );
       }
     });
   }, [geojson]);
