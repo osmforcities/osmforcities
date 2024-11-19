@@ -41,3 +41,5 @@ export const InternalLink = ({
     {children}
   </Link>
 );
+
+export const Separator = () => <hr className="border-t border-gray-300 my-4" />;
