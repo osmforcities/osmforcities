@@ -1,4 +1,10 @@
+"use client";
 import React from "react";
+
+import {
+  BreadcrumbItem,
+  Breadcrumbs as NextUIBreadcrumbs,
+} from "@nextui-org/react";
 
 type BreadcrumbProps = {
   label: string;
@@ -6,33 +12,19 @@ type BreadcrumbProps = {
   isLast?: boolean;
 };
 
-const Breadcrumb = ({ label, url, isLast = false }: BreadcrumbProps) => (
-  <>
-    {isLast ? (
-      <span className="text-gray-500 font-semibold">{label}</span>
-    ) : (
-      <a href={url} className="text-blue-600 hover:text-blue-800">
-        {label}
-      </a>
-    )}
-    {!isLast && <span className="text-gray-400 mx-2">{">"}</span>}
-  </>
-);
-
 interface BreadcrumbsProps {
   breadcrumbs: BreadcrumbProps[];
 }
 
 const Breadcrumbs = ({ breadcrumbs }: BreadcrumbsProps) => {
   return (
-    <nav
-      aria-label="breadcrumb"
-      className="flex flex-wrap mb-4 text-xs overflow-hidden break-words"
-    >
+    <NextUIBreadcrumbs className="my-4">
       {breadcrumbs.map(({ label, url, isLast }) => (
-        <Breadcrumb key={label} label={label} url={url} isLast={isLast} />
+        <BreadcrumbItem key={label} href={url} isLast={isLast}>
+          {label}
+        </BreadcrumbItem>
       ))}
-    </nav>
+    </NextUIBreadcrumbs>
   );
 };
 
