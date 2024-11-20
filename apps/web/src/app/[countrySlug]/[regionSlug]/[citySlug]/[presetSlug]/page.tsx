@@ -1,4 +1,3 @@
-import Breadcrumbs from "@/app/components/breadcrumbs";
 import { getCity } from "@/app/utils/get-city";
 import { getCountry } from "@/app/utils/get-country";
 import { getPreset } from "@/app/utils/get-preset";
@@ -15,6 +14,7 @@ import Heading from "@/app/components/headings";
 import { Separator } from "@/app/components/common";
 import { Button } from "@/app/components/button";
 import { getCityPresetGeojsonGitUrl } from "@/app/utils/git-url";
+import { BackLink } from "@/app/components/link";
 
 type CityPagePageProps = {
   params: {
@@ -81,23 +81,14 @@ const CityPresetPage = async (props: CityPagePageProps) => {
     <div className="flex">
       <Panel id="right-panel">
         <div className="pt-8">
-          <Breadcrumbs
-            breadcrumbs={[
-              { label: country.name, url: `/${country.name_slug}` },
-              {
-                label: region.name,
-                url: `/${country.name_slug}/${region.name_slug}`,
-              },
-              {
-                label: city.name,
-                url: `/${country.name_slug}/${region.name_slug}/${city.name_slug}`,
-                isLast: true,
-              },
-            ]}
-          />
+          <BackLink
+            href={`/${country.name_slug}/${region.name_slug}/${city.name_slug}`}
+          >
+            all city datasets
+          </BackLink>
 
           <Heading level={2} size="medium">
-            {preset.name}
+            {preset.name} in {city.name}
           </Heading>
 
           <Separator />
