@@ -80,7 +80,7 @@ const CityPresetPage = async (props: CityPagePageProps) => {
   return (
     <div className="flex">
       <Panel id="right-panel">
-        <div className="pt-8">
+        <div>
           <BackLink
             href={`/${country.name_slug}/${region.name_slug}/${city.name_slug}`}
           >
