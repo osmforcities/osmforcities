@@ -7,7 +7,7 @@ import { SearchInput } from "./search";
 
 const GlobalNav = () => {
   return (
-    <Navbar>
+    <Navbar maxWidth="full">
       <NavbarBrand>
         <Link href="/">
           <Heading level={1}>OSM for Cities</Heading>
