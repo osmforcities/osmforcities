@@ -3,23 +3,7 @@ import { Footer } from "./components/footer";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
 import FeaturedDatasetsSection from "./components/featured-datasets";
 import PageLayout from "./components/page-layout";
-
-const AboutSection = () => {
-  return (
-    <section id="about">
-      <div className="flex flex-col mx-auto mt-10">
-        <h2 className="text-left text-4xl mb-10">About</h2>
-        <div className=" text-lg pb-10">
-          This platform is in early development and the coverage it restricted
-          to Brazil.{" "}
-          <a href="/about" className="text-blue-500 hover:text-blue-700">
-            Please visit the about page to know more.
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-};
+import AboutToast from "./components/home/about-toast";
 
 const HeroSection = () => {
   return (
@@ -44,7 +28,7 @@ const HomePage = () => {
     <PageLayout aria-label="home">
       <div className="flex flex-col mx-auto">
         <HeroSection />
-        <AboutSection />
+        <AboutToast />
         <FeaturedDatasetsSection />
         <Footer />
       </div>
