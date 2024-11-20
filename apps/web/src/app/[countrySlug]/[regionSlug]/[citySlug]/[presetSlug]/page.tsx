@@ -32,7 +32,7 @@ const Panel = ({ id, children }: { id: string; children: React.ReactNode }) => {
       className="w-[32rem] flex flex-col"
       style={{ height: "calc(100vh - var(--nav-height))" }}
     >
-      <div className="flex-1 overflow-hidden flex flex-col px-9">
+      <div className="flex-1 overflow-hidden flex flex-col pl-6 pr-3">
         {children}
       </div>
     </section>
