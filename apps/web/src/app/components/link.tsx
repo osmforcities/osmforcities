@@ -1,11 +1,15 @@
 "use client";
-
+import React from "react";
 import { CollecticonArrowLeft } from "@devseed-ui/collecticons-react";
-import { Link as NextUILink } from "@nextui-org/react";
+import { Link as NextUILink, LinkProps } from "@nextui-org/react";
 
 const Link = NextUILink;
 
-export const BackLink = ({ children, ...props }) => {
+interface BackLinkProps extends LinkProps {
+  children: React.ReactNode;
+}
+
+export const BackLink = ({ children, ...props }: BackLinkProps) => {
   return (
     <Link {...props} size="sm">
       <span className="flex items-center mb-2">
