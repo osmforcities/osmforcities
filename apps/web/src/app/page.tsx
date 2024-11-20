@@ -1,22 +1,8 @@
 import React from "react";
-import { SearchInput } from "./components/search";
 import { Footer } from "./components/footer";
 import { GLOBAL_REVALIDATION_TIME } from "@/constants";
 import FeaturedDatasetsSection from "./components/featured-datasets";
 import PageLayout from "./components/page-layout";
-
-const SearchSection = () => {
-  return (
-    <section id="search">
-      <div className="flex flex-col mx-auto mt-10">
-        <h2 className="text-left text-4xl mb-10">Find a city</h2>
-        <div className="w-full flex">
-          <SearchInput />
-        </div>
-      </div>
-    </section>
-  );
-};
 
 const AboutSection = () => {
   return (
@@ -58,7 +44,6 @@ const HomePage = () => {
     <PageLayout aria-label="home">
       <div className="flex flex-col mx-auto">
         <HeroSection />
-        <SearchSection />
         <AboutSection />
         <FeaturedDatasetsSection />
         <Footer />

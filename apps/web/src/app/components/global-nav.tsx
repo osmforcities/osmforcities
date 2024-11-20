@@ -3,6 +3,7 @@ import React from "react";
 import { Navbar, NavbarBrand, NavbarContent } from "@nextui-org/react";
 import Link from "./link";
 import Heading from "./headings";
+import { SearchInput } from "./search";
 
 const GlobalNav = () => {
   return (
@@ -12,6 +13,9 @@ const GlobalNav = () => {
           <Heading level={1}>OSM for Cities</Heading>
         </Link>
       </NavbarBrand>
+      <NavbarContent justify="end">
+        <SearchInput />
+      </NavbarContent>
       <NavbarContent justify="end">
         <Link
           href="https://github.com/osmforcities/osmforcities"
