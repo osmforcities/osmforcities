@@ -5,10 +5,11 @@ import {
   PageTitle,
   Paragraph,
 } from "../components/common";
+import PageLayout from "../components/page-layout";
 
 const AboutPage = async () => {
   return (
-    <div role="main" className="pt-10">
+    <PageLayout aria-label="about">
       <PageTitle>Daily updated datasets from OpenStreetMap</PageTitle>
       <Paragraph>
         OSM for Cities is a platform to provide easy access to city-level
@@ -83,7 +84,7 @@ const AboutPage = async () => {
         </ExternalLink>
         .
       </Paragraph>
-    </div>
+    </PageLayout>
   );
 };
 
