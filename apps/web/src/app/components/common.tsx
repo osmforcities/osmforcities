@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 
 export const PageTitle = ({ children }: { children: React.ReactNode }) => (
-  <h1 className="text-5xl mb-10">{children}</h1>
+  <h1 className="text-5xl my-10">{children}</h1>
 );
 
 export const PageSubtitle = ({ children }: { children: React.ReactNode }) => (
@@ -41,3 +41,5 @@ export const InternalLink = ({
     {children}
   </Link>
 );
+
+export const Separator = () => <hr className="border-t border-gray-300 my-4" />;

@@ -2,10 +2,11 @@ import React from "react";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Figtree } from "next/font/google";
 import GlobalNav from "./components/global-nav";
+import Providers from "./providers";
 
-const inter = Inter({ subsets: ["latin"] });
+const font = Figtree({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "OSM for Cities",
@@ -19,12 +20,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <div role="main" className="max-w-4xl mx-auto p-4">
-          <GlobalNav />
-          {children}
-        </div>
-        <Analytics />
+      <body className={font.className}>
+        <Providers>
+          <div role="main" className="flex flex-col">
+            <GlobalNav />
+            {children}
+          </div>
+          <Analytics />
+        </Providers>
       </body>
     </html>
   );

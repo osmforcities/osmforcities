@@ -1,6 +1,6 @@
 {
   "name": "osmforcities-web",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -17,7 +17,10 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
+    "@devseed-ui/collecticons-react": "^3.0.3",
+    "@nextui-org/react": "^2.4.8",
     "@prisma/client": "^5.6.0",
+    "@turf/bbox": "^7.1.0",
     "@types/geojson": "^7946.0.13",
     "@types/node": "^20.8.7",
     "@types/react": "18.2.18",
@@ -28,13 +31,16 @@
     "date-fns": "2.16.1",
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.13",
+    "framer-motion": "^11.11.17",
     "lodash.pick": "^4.4.0",
+    "maplibre-gl": "^4.7.1",
     "next": "13.4.13",
     "postcss": "8.4.27",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hot-toast": "^2.4.1",
     "react-select": "^5.7.7",
-    "tailwindcss": "3.3.3",
+    "tailwindcss": "3.4.14",
     "typescript": "5.1.6"
   },
   "devDependencies": {
