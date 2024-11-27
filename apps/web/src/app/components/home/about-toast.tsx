@@ -44,6 +44,7 @@ const AboutToast = () => {
           </div>
         ),
         {
+          id: "disclaimer-toast",
           duration: 10000,
           position: "bottom-right",
           style: {
