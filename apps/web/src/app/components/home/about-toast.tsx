@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { Button } from "@nextui-org/react";
+import Link from "next/link";
 
 const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000; // One week in milliseconds
 
@@ -23,7 +24,9 @@ const AboutToast = () => {
               platform&apos;s features for better accessibility and usability.
             </div>
             <div className="flex justify-end space-x-2">
-              <Button color="primary">Learn More</Button>
+              <Button color="primary" as={Link} href="/about">
+                Learn More
+              </Button>
               <Button
                 onClick={() => {
                   toast.dismiss(t.id);
