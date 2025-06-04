@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   description: "Monitor OpenStreetMap datasets across cities worldwide",
 };
 
+// Main home page component
 export default function Home() {
   return (
     <div className="min-h-screen bg-white dark:bg-black">
