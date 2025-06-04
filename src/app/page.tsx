@@ -3,7 +3,7 @@ import Link from "next/link";
 import PublicMonitorsFeed from "./components/public-monitors-feed";
 
 export const metadata: Metadata = {
-  title: "Esteva - Monitor OpenStreetMap Datasets",
+  title: "OSM for Cities - Monitor OpenStreetMap Datasets",
   description: "Monitor OpenStreetMap datasets across cities worldwide",
 };
 

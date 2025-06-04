@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import AuthForm from "../auth-form";
 
 export const metadata: Metadata = {
-  title: "Sign In - Esteva",
+  title: "Sign In - OSM for Cities",
   description: "Sign in to monitor OpenStreetMap datasets",
 };
 

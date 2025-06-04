@@ -37,7 +37,7 @@ export default async function NavBar() {
               href="/"
               className="flex items-center space-x-2 text-xl font-bold transition-colors hover:text-foreground/80"
             >
-              <span>Esteva</span>
+              <span>OSM for Cities</span>
             </Link>
           </div>
 

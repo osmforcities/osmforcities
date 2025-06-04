@@ -1,6 +1,6 @@
-# Esteva
+# OSM for Cities
 
-A web platform to monitor OpenStreetMap datasets.
+A web platform to monitor OpenStreetMap datasets at the city level.
 
 ## Requirements
 
@@ -16,7 +16,7 @@ Create a `.env.local` file in the project root:
 
 ```env
 # Database Connection (PostgreSQL on port 5432)
-DATABASE_URL="postgresql://username:password@localhost:5432/esteva?schema=public"
+DATABASE_URL="postgresql://username:password@localhost:5432/osmforcities?schema=public"
 
 # Authentication
 NEXTAUTH_SECRET="your-secret-key-change-this-in-production"
