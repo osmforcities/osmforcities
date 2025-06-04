@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions           Session[]
+  verificationTokens VerificationToken[]
+  cityMonitors       CityMonitor[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  email     String
+  userId    String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  used      Boolean  @default(false)
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("verification_tokens")
+}
+
+model DataTemplate {
+  id            String   @id @default(cuid())
+  name          String // e.g., "Bicycle Parking", "Bus Stops", "ATMs"
+  description   String?
+  overpassQuery String // The Overpass API query template
+  category      String // e.g., "transportation", "amenities", "health"
+  tags          String[] // OpenStreetMap tags for filtering
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  cityMonitors CityMonitor[]
+
+  @@map("data_templates")
+}
+
+model CityMonitor {
+  id          String    @id @default(cuid())
+  userId      String
+  templateId  String
+  cityName    String // e.g., "New York", "London"
+  cityBounds  String? // Bounding box or geometry for the city
+  countryCode String? // ISO country code
+  isActive    Boolean   @default(true)
+  isPublic    Boolean   @default(false) // Allow others to see this monitor
+  lastChecked DateTime?
+  dataCount   Int       @default(0) // Last count of matching features
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template DataTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, templateId, cityName])
+  @@map("city_monitors")
+}
