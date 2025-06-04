@@ -1,0 +1,41 @@
+version: 1
+backend:
+  phases:
+    build:
+      commands:
+        - echo "No backend build required - using external RDS"
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - echo "Installing pnpm globally..."
+        - npm install -g pnpm@latest
+        - echo "Verifying pnpm installation..."
+        - pnpm --version
+        - echo "Installing dependencies with pnpm..."
+        - pnpm install --frozen-lockfile
+        - echo "Setting up Prisma..."
+        - npx prisma generate
+        - echo "Running database migrations..."
+        - npx prisma migrate deploy
+    build:
+      commands:
+        - echo "Building Next.js application..."
+        - pnpm run build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - "**/*"
+  cache:
+    paths:
+      - node_modules/**/*
+      - .pnpm-store/**/*
+      - .next/cache/**/*
+  environment:
+    variables:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: 1
+      # Database connection will be set via Amplify environment variables
+      # DATABASE_URL: will be set in Amplify console
+      # NEXTAUTH_URL: will be set in Amplify console
+      # NEXTAUTH_SECRET: will be set in Amplify console
