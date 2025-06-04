@@ -50,7 +50,7 @@ async function getMonitor(id: string): Promise<Monitor | null> {
 export default async function MonitorPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
   const monitor = await getMonitor(id);

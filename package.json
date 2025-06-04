@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
     "db:seed": "tsx prisma/seed.ts",
     "prepare": "husky"
   },
@@ -41,6 +42,9 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix"
+    ],
+    "*.{ts,tsx}": [
+      "npm run type-check"
     ]
   }
 }
