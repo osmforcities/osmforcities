@@ -14,10 +14,8 @@ frontend:
         - pnpm --version
         - echo "Installing dependencies with pnpm..."
         - pnpm install --frozen-lockfile
-        - echo "Setting up Prisma..."
+        - echo "Generating Prisma client..."
         - npx prisma generate
-        - echo "Running database migrations..."
-        - npx prisma migrate deploy
     build:
       commands:
         - echo "Building Next.js application..."
