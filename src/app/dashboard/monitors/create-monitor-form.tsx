@@ -16,7 +16,6 @@ type CreateMonitorFormProps = {
 
 export default function CreateMonitorForm({
   templates,
-  userId,
 }: CreateMonitorFormProps) {
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [cityName, setCityName] = useState("");

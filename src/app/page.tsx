@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import Link from "next/link";
 import PublicMonitorsFeed from "./components/public-monitors-feed";
 
 export const metadata: Metadata = {

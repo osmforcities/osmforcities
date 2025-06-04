@@ -19,7 +19,7 @@ async function getUser() {
     }
 
     return session.user;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
