@@ -4,6 +4,7 @@ import {
   createUser,
   createVerificationToken,
 } from "@/lib/auth";
+import { sendEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,11 +28,16 @@ export async function POST(request: NextRequest) {
       process.env.NEXTAUTH_URL || "http://localhost:3000"
     }/api/auth/verify?token=${verificationToken.token}`;
 
-    console.log("Magic link for", email, ":", magicLink);
+    await sendEmail({
+      to: email,
+      subject: "Your Magic Link",
+      html: `<p>Click <a href=\"${magicLink}\">here</a> to sign in.</p>`,
+      text: `Visit this link to sign in: ${magicLink}`,
+    });
 
     return NextResponse.json({
       message: "Magic link sent successfully",
-      // Remove this in production - only for development
+      // Only include magic link in development for easier testing
       ...(process.env.NODE_ENV === "development" && { magicLink }),
     });
   } catch (error) {

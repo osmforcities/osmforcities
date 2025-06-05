@@ -12,18 +12,23 @@ A web platform to monitor OpenStreetMap datasets at the city level.
 
 ### Environment Setup
 
-Create a `.env.local` file in the project root:
+1. Copy `.env.example` to `.env.local`:
 
-```env
-# Database Connection (PostgreSQL on port 5432)
-DATABASE_URL="postgresql://username:password@localhost:5432/osmforcities?schema=public"
-
-# Authentication
-NEXTAUTH_SECRET="your-secret-key-change-this-in-production"
-NEXTAUTH_URL="http://localhost:3000"
+```bash
+cp .env.example .env.local
 ```
 
-Replace `username` and `password` with your PostgreSQL credentials.
+2. Update the following required settings in `.env.local`:
+
+- `DATABASE_URL`: Your PostgreSQL connection string
+- `NEXTAUTH_SECRET`: A secure random string for session encryption
+- `NEXTAUTH_URL`: Your application URL (use `http://localhost:3000` for local development)
+
+Optional settings for email functionality:
+
+- AWS SES credentials (`EMAIL_SES_*`) for production email sending
+- `EMAIL_FORCE_REAL=true` to send real emails in development
+- `EMAIL_DISABLE=true` to disable all email sending
 
 ### Installation
 

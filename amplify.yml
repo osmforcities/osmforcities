@@ -4,6 +4,10 @@ env:
     DATABASE_URL: ${DATABASE_URL}
     NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
     NEXTAUTH_URL: ${NEXTAUTH_URL}
+    EMAIL_SES_REGION: ${EMAIL_SES_REGION}
+    EMAIL_SES_ACCESS_KEY_ID: ${EMAIL_SES_ACCESS_KEY_ID}
+    EMAIL_SES_SECRET_ACCESS_KEY: ${EMAIL_SES_SECRET_ACCESS_KEY}
+    EMAIL_SES_FROM_EMAIL: ${EMAIL_SES_FROM_EMAIL}
 frontend:
   phases:
     preBuild:
@@ -19,8 +23,8 @@ frontend:
     build:
       commands:
         - env | grep -e DATABASE_URL >> .env.production
-        - env | grep -e NEXTAUTH_SECRET >> .env.production
-        - env | grep -e NEXTAUTH_URL >> .env.production
+        - env | grep -e NEXTAUTH_ >> .env.production
+        - env | grep -e EMAIL_SES_ >> .env.production
         - echo "Building Next.js application..."
         - pnpm run build
   artifacts:
