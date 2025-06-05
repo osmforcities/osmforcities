@@ -4,7 +4,7 @@ env:
     DATABASE_URL: ${DATABASE_URL}
     NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
     NEXTAUTH_URL: ${NEXTAUTH_URL}
-web:
+frontend:
   phases:
     preBuild:
       commands:
