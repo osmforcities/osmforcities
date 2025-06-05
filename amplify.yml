@@ -33,7 +33,8 @@ frontend:
     variables:
       NODE_ENV: production
       NEXT_TELEMETRY_DISABLED: 1
-      # Database connection will be set via Amplify environment variables
-      # DATABASE_URL: will be set in Amplify console
-      # NEXTAUTH_URL: will be set in Amplify console
-      # NEXTAUTH_SECRET: will be set in Amplify console
+      # Environment variables are set in Amplify Console under "Environment variables"
+      # Required variables:
+      # - DATABASE_URL: PostgreSQL connection string
+      # - NEXTAUTH_SECRET: JWT signing secret
+      # - NEXTAUTH_URL: Your Amplify app domain
