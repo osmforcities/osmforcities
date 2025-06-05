@@ -1,14 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken, createSession } from "@/lib/auth";
 import { cookies } from "next/headers";
-
-function getBaseUrl(request: NextRequest) {
-  if (process.env.NODE_ENV === "production" && process.env.NEXTAUTH_URL) {
-    return process.env.NEXTAUTH_URL.replace(/\/$/, "");
-  }
-  const url = new URL(request.url);
-  return url.origin;
-}
+import { getBaseUrl } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {
   const baseUrl = getBaseUrl(request);

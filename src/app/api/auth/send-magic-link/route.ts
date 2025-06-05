@@ -5,6 +5,7 @@ import {
   createVerificationToken,
 } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
+import { getBaseUrl } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,9 +25,8 @@ export async function POST(request: NextRequest) {
 
     const verificationToken = await createVerificationToken(email, user.id);
 
-    const magicLink = `${
-      process.env.NEXTAUTH_URL || "http://localhost:3000"
-    }/api/auth/verify?token=${verificationToken.token}`;
+    const baseUrl = getBaseUrl(request);
+    const magicLink = `${baseUrl}/api/auth/verify?token=${verificationToken.token}`;
 
     await sendEmail({
       to: email,
