@@ -5,12 +5,15 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import AreaSelector from "./area-selector";
 import TemplateSelector from "./template-selector";
+import QueryTester from "./query-tester";
 
 type Template = {
   id: string;
   name: string;
   description: string | null;
   category: string;
+  overpassQuery: string;
+  tags: string[];
 };
 
 type Area = {
@@ -123,6 +126,19 @@ export default function CreateMonitorWizard({
           >
             3
           </div>
+          <span className="text-sm font-medium">Test Query</span>
+        </div>
+        <div className="h-0.5 bg-gray-200 flex-grow mx-4 mt-4"></div>
+        <div className="flex items-center space-x-2">
+          <div
+            className={`w-8 h-8 rounded-full flex items-center justify-center ${
+              currentStep >= 4
+                ? "bg-black text-white"
+                : "bg-gray-200 text-gray-500"
+            }`}
+          >
+            4
+          </div>
           <span className="text-sm font-medium">Confirm</span>
         </div>
       </div>
@@ -133,7 +149,8 @@ export default function CreateMonitorWizard({
           <h2 className="text-xl font-semibold">Select an Area</h2>
           <p className="text-gray-600">
             Type an area name and select from the suggestions. This can be a
-            city, town, neighborhood, or any defined area in OpenStreetMap.
+            city, town, neighborhood, or any administrative area in
+            OpenStreetMap.
           </p>
 
           <AreaSelector
@@ -193,14 +210,45 @@ export default function CreateMonitorWizard({
               disabled={!selectedTemplate}
               className="bg-black text-white py-2 px-4 border-2 border-black hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
+              Next: Test Query
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Step 3: Query Testing */}
+      {currentStep === 3 && (
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Test Your Query</h2>
+          <p className="text-gray-600">
+            Test the selected template query against your chosen area to see
+            what data will be monitored.
+          </p>
+
+          <QueryTester
+            selectedArea={selectedArea}
+            selectedTemplate={templates.find((t) => t.id === selectedTemplate)}
+          />
+
+          <div className="flex justify-between mt-6">
+            <Button
+              onClick={handlePrevStep}
+              className="bg-white text-black py-2 px-4 border-2 border-black hover:bg-gray-100 transition-colors"
+            >
+              Back
+            </Button>
+            <Button
+              onClick={handleNextStep}
+              className="bg-black text-white py-2 px-4 border-2 border-black hover:bg-white hover:text-black transition-colors"
+            >
               Next: Confirm
             </Button>
           </div>
         </div>
       )}
 
-      {/* Step 3: Confirmation */}
-      {currentStep === 3 && (
+      {/* Step 4: Confirmation */}
+      {currentStep === 4 && (
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Confirm Monitor Creation</h2>
           <p className="text-gray-600">

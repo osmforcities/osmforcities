@@ -109,7 +109,7 @@ export default function AreaSelector({
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
           term
-        )}&format=json&addressdetails=1&limit=10&polygon_geojson=1`,
+        )}&format=json&addressdetails=1&limit=10&polygon_geojson=1&osm_type=relation`,
         {
           headers: {
             "Accept-Language": "en",
@@ -124,8 +124,9 @@ export default function AreaSelector({
 
       const data: NominatimResult[] = await response.json();
 
+      // Only include relations (administrative boundaries, cities, etc.)
       const filteredData = data.filter(
-        (result) => result.osm_type === "relation" || result.osm_type === "way"
+        (result) => result.osm_type === "relation"
       );
 
       setSearchResults(filteredData);
@@ -194,8 +195,8 @@ export default function AreaSelector({
           )}
 
           <p className="text-gray-500 text-xs mt-1">
-            Only areas (administrative boundaries, cities, neighborhoods) will
-            be shown in results
+            Only administrative areas (cities, towns, neighborhoods) will be
+            shown in results
           </p>
 
           {searchResults.length > 0 && (

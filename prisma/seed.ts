@@ -7,7 +7,8 @@ const templates = [
     name: "Bicycle Parking",
     description: "All bicycle parking spots and facilities",
     overpassQuery: `[out:json][timeout:25];
-area[name="{CITY_NAME}"][admin_level~"^[4-8]$"]->.searchArea;
+rel({OSM_RELATION_ID});
+map_to_area -> .searchArea;
 (
   node["amenity"="bicycle_parking"](area.searchArea);
   way["amenity"="bicycle_parking"](area.searchArea);
@@ -21,7 +22,8 @@ out geom;`,
     name: "Bus Stops",
     description: "Public transport bus stops",
     overpassQuery: `[out:json][timeout:25];
-area[name="{CITY_NAME}"][admin_level~"^[4-8]$"]->.searchArea;
+rel({OSM_RELATION_ID});
+map_to_area -> .searchArea;
 (
   node["highway"="bus_stop"](area.searchArea);
   node["public_transport"="stop_position"]["bus"="yes"](area.searchArea);
@@ -34,7 +36,8 @@ out geom;`,
     name: "ATMs",
     description: "Automated Teller Machines",
     overpassQuery: `[out:json][timeout:25];
-area[name="{CITY_NAME}"][admin_level~"^[4-8]$"]->.searchArea;
+rel({OSM_RELATION_ID});
+map_to_area -> .searchArea;
 (
   node["amenity"="atm"](area.searchArea);
   way["amenity"="atm"](area.searchArea);
@@ -47,7 +50,8 @@ out geom;`,
     name: "Public Toilets",
     description: "Public restroom facilities",
     overpassQuery: `[out:json][timeout:25];
-area[name="{CITY_NAME}"][admin_level~"^[4-8]$"]->.searchArea;
+rel({OSM_RELATION_ID});
+map_to_area -> .searchArea;
 (
   node["amenity"="toilets"](area.searchArea);
   way["amenity"="toilets"](area.searchArea);
@@ -58,9 +62,10 @@ out geom;`,
   },
   {
     name: "Electric Vehicle Charging",
-    description: "Electric vehicle charging stations",
+    description: "Electric vehicle charging stations (EVCS)",
     overpassQuery: `[out:json][timeout:25];
-area[name="{CITY_NAME}"][admin_level~"^[4-8]$"]->.searchArea;
+rel({OSM_RELATION_ID});
+map_to_area -> .searchArea;
 (
   node["amenity"="charging_station"](area.searchArea);
   way["amenity"="charging_station"](area.searchArea);
@@ -73,7 +78,8 @@ out geom;`,
     name: "Hospitals",
     description: "Hospital facilities",
     overpassQuery: `[out:json][timeout:25];
-area[name="{CITY_NAME}"][admin_level~"^[4-8]$"]->.searchArea;
+rel({OSM_RELATION_ID});
+map_to_area -> .searchArea;
 (
   node["amenity"="hospital"](area.searchArea);
   way["amenity"="hospital"](area.searchArea);
@@ -87,6 +93,9 @@ out geom;`,
 
 async function main() {
   console.log("Start seeding...");
+
+  // Clear existing templates
+  await prisma.dataTemplate.deleteMany();
 
   for (const template of templates) {
     await prisma.dataTemplate.create({
