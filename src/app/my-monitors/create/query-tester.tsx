@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import Map, { Source, Layer, AttributionControl } from "react-map-gl/maplibre";
+import type { MapRef } from "react-map-gl/maplibre";
+import "maplibre-gl/dist/maplibre-gl.css";
 import { Button } from "@/components/ui/button";
 
 type Area = {
@@ -42,6 +45,28 @@ export default function QueryTester({
   selectedArea,
   selectedTemplate,
 }: QueryTesterProps) {
+  const mapRef = useRef<MapRef | null>(null);
+
+  const updateMapBounds = useCallback(() => {
+    if (selectedArea && mapRef.current) {
+      mapRef.current.fitBounds(
+        [
+          selectedArea.boundingBox[1], // minLon
+          selectedArea.boundingBox[0], // minLat
+          selectedArea.boundingBox[3], // maxLon
+          selectedArea.boundingBox[2], // maxLat
+        ],
+        { padding: 50, animate: false }
+      );
+    }
+  }, [selectedArea]);
+
+  // Handle initial load and area changes
+  useEffect(() => {
+    if (mapRef.current) {
+      updateMapBounds();
+    }
+  }, [updateMapBounds]);
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<OverpassResult[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -142,15 +167,64 @@ export default function QueryTester({
       )}
 
       {!isLoading && !error && results.length > 0 && (
-        <div className="border border-gray-200 p-4 rounded-md">
-          <h3 className="font-medium mb-2">
-            Results ({results.length} features found)
-          </h3>
-          <div className="bg-gray-100 p-3 rounded text-sm font-mono overflow-x-auto max-h-96 overflow-y-auto">
-            <pre className="whitespace-pre-wrap">
-              {JSON.stringify(results, null, 2)}
-            </pre>
-          </div>
+        <div
+          className="border border-gray-200 rounded-md overflow-hidden"
+          style={{ height: 500 }}
+        >
+          <Map
+            ref={mapRef}
+            onLoad={updateMapBounds}
+            mapStyle={{
+              version: 8,
+              sources: {
+                osm: {
+                  type: "raster",
+                  tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+                  tileSize: 256,
+                  attribution: "© OpenStreetMap Contributors",
+                  maxzoom: 19,
+                },
+              },
+              layers: [
+                {
+                  id: "osm-layer",
+                  type: "raster",
+                  source: "osm",
+                },
+              ],
+            }}
+          >
+            <AttributionControl position="bottom-right" />
+            <Source
+              id="query-results"
+              type="geojson"
+              data={{
+                type: "FeatureCollection",
+                features: results
+                  .filter((f) => f.lat !== undefined && f.lon !== undefined)
+                  .map((feature) => ({
+                    type: "Feature" as const,
+                    geometry: {
+                      type: "Point" as const,
+                      coordinates: [feature.lon!, feature.lat!],
+                    },
+                    properties: feature.tags || {},
+                  })),
+              }}
+            >
+              <Layer
+                id="result-points"
+                type="circle"
+                paint={{
+                  "circle-radius": 8,
+                  "circle-color": "#007cbf",
+                  "circle-opacity": 0.8,
+                  "circle-stroke-width": 2,
+                  "circle-stroke-color": "#ffffff",
+                }}
+              />
+            </Source>
+          </Map>
         </div>
       )}
 
