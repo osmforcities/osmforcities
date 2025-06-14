@@ -66,9 +66,9 @@ export default async function MonitorPage({
           {/* Header with back button */}
           <div className="flex items-center gap-4 mb-8">
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/" className="flex items-center gap-2">
+              <Link href="/my-monitors" className="flex items-center gap-2">
                 <ArrowLeft className="h-4 w-4" />
-                Back
+                Back to My Monitors
               </Link>
             </Button>
           </div>

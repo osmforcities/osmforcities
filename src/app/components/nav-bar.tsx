@@ -31,7 +31,6 @@ export default async function NavBar() {
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          {/* App Title */}
           <div className="flex items-center">
             <Link
               href="/"
@@ -41,12 +40,11 @@ export default async function NavBar() {
             </Link>
           </div>
 
-          {/* User Section */}
           <div className="flex items-center gap-4">
             {user ? (
               <>
                 <Button variant="ghost" asChild>
-                  <Link href="/dashboard">Dashboard</Link>
+                  <Link href="/my-monitors">My Monitors</Link>
                 </Button>
                 <Button type="submit" variant="outline" size="sm" asChild>
                   <form
