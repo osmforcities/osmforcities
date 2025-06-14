@@ -3,7 +3,7 @@ import { findSessionByToken } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { PrismaClient } from "@prisma/client";
-import MonitorsList from "@/app/my-monitors/monitors/monitors-list";
+import MonitorsList from "@/app/my-monitors/monitors-list";
 
 const prisma = new PrismaClient();
 
@@ -69,7 +69,7 @@ export default async function MyMonitors() {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">Your Monitors</h2>
               <Link
-                href="/my-monitors/monitors"
+                href="/my-monitors/create"
                 className="inline-block bg-black dark:bg-white text-white dark:text-black px-4 py-2 text-sm border-2 border-black dark:border-white hover:bg-white dark:hover:bg-black hover:text-black dark:hover:text-white transition-colors"
               >
                 Create New Monitor

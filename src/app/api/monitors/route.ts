@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Session expired" }, { status: 401 });
     }
 
-    const { templateId, cityName, countryCode, isPublic } =
+    const { templateId, cityName, cityBounds, countryCode, isPublic } =
       await request.json();
 
     if (!templateId || !cityName) {
@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
         userId: session.user.id,
         templateId,
         cityName: cityName.trim(),
+        cityBounds: cityBounds || null,
         countryCode: countryCode?.trim() || null,
         isPublic: isPublic || false,
       },
