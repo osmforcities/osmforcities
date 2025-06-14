@@ -5,6 +5,7 @@ import Map, { Source, Layer, AttributionControl } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Button } from "@/components/ui/button";
+import { useOverpassQuery } from "@/app/hooks/useOverpassQuery";
 
 type Area = {
   name: string;
@@ -27,18 +28,6 @@ type Template = {
 type QueryTesterProps = {
   selectedArea: Area | null;
   selectedTemplate: Template | undefined;
-};
-
-type OverpassResult = {
-  type: string;
-  id: number;
-  lat?: number;
-  lon?: number;
-  tags?: Record<string, string>;
-  geometry?: Array<{
-    lat: number;
-    lon: number;
-  }>;
 };
 
 export default function QueryTester({
@@ -67,10 +56,8 @@ export default function QueryTester({
       updateMapBounds();
     }
   }, [updateMapBounds]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [results, setResults] = useState<OverpassResult[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const [queryString, setQueryString] = useState<string>("");
+  const [hasExecutedQuery, setHasExecutedQuery] = useState(false);
 
   useEffect(() => {
     if (selectedArea && selectedTemplate) {
@@ -83,39 +70,20 @@ export default function QueryTester({
     }
   }, [selectedArea, selectedTemplate]);
 
-  const testQuery = async () => {
+  const {
+    data: results = [],
+    isFetching,
+    error,
+    refetch,
+  } = useOverpassQuery({
+    queryString,
+    enabled: false,
+  });
+
+  const testQuery = () => {
     if (!selectedArea || !selectedTemplate) return;
-
-    setIsLoading(true);
-    setError(null);
-    setResults([]);
-
-    try {
-      const response = await fetch("https://overpass-api.de/api/interpreter", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: `data=${encodeURIComponent(queryString)}`,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Overpass API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.elements) {
-        setResults(data.elements);
-      } else {
-        setResults([]);
-      }
-    } catch (err) {
-      console.error("Error testing query:", err);
-      setError(err instanceof Error ? err.message : "Failed to test query");
-    } finally {
-      setIsLoading(false);
-    }
+    setHasExecutedQuery(true);
+    refetch({ cancelRefetch: false });
   };
 
   if (!selectedArea || !selectedTemplate) {
@@ -142,15 +110,15 @@ export default function QueryTester({
       <div className="flex justify-center">
         <Button
           onClick={testQuery}
-          disabled={isLoading}
+          disabled={isFetching}
           className="bg-blue-600 text-white py-2 px-6 border-2 border-blue-600 hover:bg-white hover:text-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? "Testing Query..." : "Test Query"}
+          {isFetching ? "Testing Query..." : "Test Query"}
         </Button>
       </div>
 
       {/* Results */}
-      {isLoading && (
+      {isFetching && (
         <div className="border border-gray-200 p-4 rounded-md">
           <div className="flex items-center justify-center space-x-2">
             <div className="animate-spin h-5 w-5 border-2 border-blue-600 border-t-transparent rounded-full"></div>
@@ -162,11 +130,11 @@ export default function QueryTester({
       {error && (
         <div className="border border-red-200 p-4 rounded-md bg-red-50">
           <h3 className="font-medium text-red-800 mb-2">Error</h3>
-          <p className="text-red-700 text-sm">{error}</p>
+          <p className="text-red-700 text-sm">{(error as Error).message}</p>
         </div>
       )}
 
-      {!isLoading && !error && results.length > 0 && (
+      {!isFetching && !error && results.length > 0 && (
         <div
           className="border border-gray-200 rounded-md overflow-hidden"
           style={{ height: 500 }}
@@ -228,7 +196,7 @@ export default function QueryTester({
         </div>
       )}
 
-      {!isLoading && !error && results.length === 0 && (
+      {!isFetching && !error && hasExecutedQuery && results.length === 0 && (
         <div className="border border-gray-200 p-4 rounded-md bg-yellow-50">
           <h3 className="font-medium text-yellow-800 mb-2">No Results</h3>
           <p className="text-yellow-700 text-sm">
