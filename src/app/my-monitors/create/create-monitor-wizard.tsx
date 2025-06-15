@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import AreaSelector from "./area-selector";
 import TemplateSelector from "./template-selector";
 import QueryTester from "./query-tester";
+import { Area } from "@/types/area";
 
 type Template = {
   id: string;
@@ -14,15 +15,6 @@ type Template = {
   category: string;
   overpassQuery: string;
   tags: string[];
-};
-
-type Area = {
-  name: string;
-  displayName: string;
-  osmId: string;
-  osmType: string;
-  boundingBox: [number, number, number, number]; // [minLat, minLon, maxLat, maxLon]
-  countryCode?: string;
 };
 
 type CreateMonitorWizardProps = {
@@ -56,23 +48,15 @@ export default function CreateMonitorWizard({
     try {
       const response = await fetch("/api/monitors", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           templateId: selectedTemplate,
-          cityName: selectedArea.name,
-          displayName: selectedArea.displayName,
-          osmId: selectedArea.osmId,
-          osmType: selectedArea.osmType,
-          cityBounds: selectedArea.boundingBox.join(","),
-          countryCode: selectedArea.countryCode || null,
+          osmRelationId: selectedArea.id,
           isPublic,
         }),
       });
 
       if (response.ok) {
-        // Redirect to monitors page
         router.push("/my-monitors");
       } else {
         const data = await response.json();
@@ -90,57 +74,29 @@ export default function CreateMonitorWizard({
     <div className="space-y-6">
       {/* Progress indicator */}
       <div className="flex justify-between mb-8">
-        <div className="flex items-center space-x-2">
-          <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center ${
-              currentStep >= 1
-                ? "bg-black text-white"
-                : "bg-gray-200 text-gray-500"
-            }`}
-          >
-            1
+        {[1, 2, 3, 4].map((step) => (
+          <div key={step} className="flex items-center space-x-2">
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                currentStep >= step
+                  ? "bg-black text-white"
+                  : "bg-gray-200 text-gray-500"
+              }`}
+            >
+              {step}
+            </div>
+            <span className="text-sm font-medium">
+              {
+                ["Select Area", "Select Template", "Test Query", "Confirm"][
+                  step - 1
+                ]
+              }
+            </span>
+            {step < 4 && (
+              <div className="h-0.5 bg-gray-200 flex-grow mx-4 mt-4"></div>
+            )}
           </div>
-          <span className="text-sm font-medium">Select Area</span>
-        </div>
-        <div className="h-0.5 bg-gray-200 flex-grow mx-4 mt-4"></div>
-        <div className="flex items-center space-x-2">
-          <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center ${
-              currentStep >= 2
-                ? "bg-black text-white"
-                : "bg-gray-200 text-gray-500"
-            }`}
-          >
-            2
-          </div>
-          <span className="text-sm font-medium">Select Template</span>
-        </div>
-        <div className="h-0.5 bg-gray-200 flex-grow mx-4 mt-4"></div>
-        <div className="flex items-center space-x-2">
-          <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center ${
-              currentStep >= 3
-                ? "bg-black text-white"
-                : "bg-gray-200 text-gray-500"
-            }`}
-          >
-            3
-          </div>
-          <span className="text-sm font-medium">Test Query</span>
-        </div>
-        <div className="h-0.5 bg-gray-200 flex-grow mx-4 mt-4"></div>
-        <div className="flex items-center space-x-2">
-          <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center ${
-              currentStep >= 4
-                ? "bg-black text-white"
-                : "bg-gray-200 text-gray-500"
-            }`}
-          >
-            4
-          </div>
-          <span className="text-sm font-medium">Confirm</span>
-        </div>
+        ))}
       </div>
 
       {/* Step 1: Area Selection */}

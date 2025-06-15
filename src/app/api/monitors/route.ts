@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { findSessionByToken } from "@/lib/auth";
-import { prisma } from "@/lib/db"; // shared Prisma instance
+import { prisma } from "@/lib/db";
 import { CreateMonitorSchema } from "@/schemas/monitor";
 import { Prisma } from "@prisma/client";
+import { fetchOsmRelationData } from "@/lib/osm";
 
 export async function POST(req: NextRequest) {
   const cookieStore = await cookies();
@@ -26,8 +27,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { templateId, cityName, cityBounds, countryCode, isPublic } =
-    parsed.data;
+  const { templateId, osmRelationId, isPublic } = parsed.data;
 
   const template = await prisma.dataTemplate.findUnique({
     where: { id: templateId },
@@ -35,14 +35,44 @@ export async function POST(req: NextRequest) {
   if (!template)
     return NextResponse.json({ error: "Template not found" }, { status: 404 });
 
+  let osmRelation = await prisma.osmRelation.findUnique({
+    where: { id: osmRelationId },
+  });
+
+  if (!osmRelation) {
+    try {
+      const fetched = await fetchOsmRelationData(osmRelationId);
+      if (!fetched)
+        return NextResponse.json(
+          { error: "Failed to fetch OSM relation" },
+          { status: 400 }
+        );
+
+      osmRelation = await prisma.osmRelation.create({
+        data: {
+          id: osmRelationId,
+          name: fetched.name,
+          bounds: fetched.bounds,
+          countryCode: fetched.countryCode,
+          geojson: fetched.geojson,
+        },
+      });
+    } catch (err) {
+      console.error("Failed to fetch/create OSM relation", err);
+      return NextResponse.json(
+        { error: "Failed to fetch OSM relation" },
+        { status: 500 }
+      );
+    }
+  }
+
   try {
     const monitor = await prisma.monitor.create({
       data: {
         userId: session.user.id,
         templateId,
-        cityName: cityName.trim(),
-        cityBounds: cityBounds ?? null,
-        countryCode: countryCode?.trim() ?? null,
+        osmRelationId: osmRelation.id,
+        cityName: osmRelation.name,
         isPublic: isPublic ?? false,
       },
       include: { template: true },

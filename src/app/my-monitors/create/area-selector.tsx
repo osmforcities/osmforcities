@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { Area } from "@/types/area";
 
 type NominatimResult = {
   place_id: number;
@@ -16,15 +17,6 @@ type NominatimResult = {
     country_code?: string;
     [key: string]: string | undefined;
   };
-};
-
-type Area = {
-  name: string;
-  displayName: string;
-  osmId: string;
-  osmType: string;
-  boundingBox: [number, number, number, number]; // [minLat, minLon, maxLat, maxLon]
-  countryCode?: string;
 };
 
 type AreaSelectorProps = {
@@ -43,20 +35,16 @@ export default function AreaSelector({
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Use a MutationObserver to keep focus on the input
   useEffect(() => {
     if (!selectedArea && inputRef.current) {
-      // Focus initially
       inputRef.current.focus();
 
-      // Create a MutationObserver to watch for DOM changes
       const observer = new MutationObserver(() => {
         if (document.activeElement !== inputRef.current && inputRef.current) {
           inputRef.current.focus();
         }
       });
 
-      // Start observing the parent element for changes
       const parentElement = inputRef.current.parentElement?.parentElement;
       if (parentElement) {
         observer.observe(parentElement, {
@@ -73,14 +61,12 @@ export default function AreaSelector({
     }
   }, [selectedArea]);
 
-  // Clear search results when search term is cleared
   useEffect(() => {
     if (!searchTerm) {
       setSearchResults([]);
     }
   }, [searchTerm]);
 
-  // Handle search with debounce
   useEffect(() => {
     if (searchTerm.length < 3) return;
 
@@ -118,13 +104,10 @@ export default function AreaSelector({
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to search for areas");
-      }
+      if (!response.ok) throw new Error("Failed to search for areas");
 
       const data: NominatimResult[] = await response.json();
 
-      // Only include relations (administrative boundaries, cities, etc.)
       const filteredData = data.filter(
         (result) => result.osm_type === "relation"
       );
@@ -140,15 +123,15 @@ export default function AreaSelector({
 
   const handleSelectArea = (result: NominatimResult) => {
     const area: Area = {
+      id: result.osm_id,
       name: result.name || result.display_name.split(",")[0].trim(),
       displayName: result.display_name,
-      osmId: result.osm_id.toString(),
       osmType: result.osm_type,
       boundingBox: [
-        parseFloat(result.boundingbox[0]), // minLat
-        parseFloat(result.boundingbox[2]), // minLon
-        parseFloat(result.boundingbox[1]), // maxLat
-        parseFloat(result.boundingbox[3]), // maxLon
+        parseFloat(result.boundingbox[0]),
+        parseFloat(result.boundingbox[2]),
+        parseFloat(result.boundingbox[1]),
+        parseFloat(result.boundingbox[3]),
       ],
       countryCode: result.address.country_code,
     };
@@ -171,9 +154,7 @@ export default function AreaSelector({
               ref={inputRef}
               type="text"
               value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Type an area name (city, town, neighborhood, etc.)"
               className="w-full p-2 border border-black focus:outline-none focus:ring-2 focus:ring-black"
               disabled={isSearching}
@@ -244,13 +225,13 @@ export default function AreaSelector({
               <p className="text-xs text-gray-500 mt-1">
                 {selectedArea.osmType.charAt(0).toUpperCase() +
                   selectedArea.osmType.slice(1)}{" "}
-                ID: {selectedArea.osmId}
+                ID: {selectedArea.id}
               </p>
               <p className="text-xs text-gray-500">
                 Bounding Box: [{selectedArea.boundingBox.join(", ")}]
               </p>
               <a
-                href={`https://www.openstreetmap.org/${selectedArea.osmType}/${selectedArea.osmId}`}
+                href={`https://www.openstreetmap.org/${selectedArea.osmType}/${selectedArea.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs text-blue-600 hover:text-blue-800 mt-2 inline-block"

@@ -3,22 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-
-type Monitor = {
-  id: string;
-  cityName: string;
-  countryCode: string | null;
-  isActive: boolean;
-  isPublic: boolean;
-  lastChecked: Date | null;
-  dataCount: number;
-  createdAt: Date;
-  template: {
-    id: string;
-    name: string;
-    category: string;
-  };
-};
+import { Monitor } from "@prisma/client";
 
 type MonitorsListProps = {
   monitors: Monitor[];

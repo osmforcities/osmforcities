@@ -135,10 +135,6 @@ export async function GET(
       return NextResponse.json({ error: "Monitor not found" }, { status: 404 });
     }
 
-    // Only return public monitors or monitors owned by the current user
-    // For now, we'll allow viewing all monitors since we don't have user context here
-    // In a real app, you'd want to check authentication and ownership
-
     return NextResponse.json(monitor);
   } catch (error) {
     console.error("Error fetching monitor:", error);

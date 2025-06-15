@@ -64,24 +64,38 @@ model DataTemplate {
   @@map("data_templates")
 }
 
-model Monitor {
-  id          String    @id @default(cuid())
-  userId      String
-  templateId  String
-  cityName    String
-  cityBounds  String?
+model OsmRelation {
+  id          Int      @id
+  name        String
   countryCode String?
-  isActive    Boolean   @default(true)
-  isPublic    Boolean   @default(false)
-  lastChecked DateTime?
-  dataCount   Int       @default(0)
+  bounds      String?
   geojson     Json?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  monitors Monitor[]
+
+  @@map("osm_relations")
+}
+
+model Monitor {
+  id            String    @id @default(cuid())
+  userId        String
+  templateId    String
+  osmRelationId Int
+  cityName      String
+  isActive      Boolean   @default(true)
+  isPublic      Boolean   @default(false)
+  lastChecked   DateTime?
+  dataCount     Int       @default(0)
+  geojson       Json?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   template DataTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  relation OsmRelation  @relation(fields: [osmRelationId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, templateId, cityName])
+  @@unique([userId, templateId, osmRelationId])
   @@map("monitors")
 }

@@ -6,15 +6,7 @@ import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Button } from "@/components/ui/button";
 import { useOverpassQuery } from "@/hooks/useOverpassQuery";
-
-type Area = {
-  name: string;
-  displayName: string;
-  osmId: string;
-  osmType: string;
-  boundingBox: [number, number, number, number]; // [minLat, minLon, maxLat, maxLon]
-  countryCode?: string;
-};
+import { Area } from "@/types/area";
 
 type Template = {
   id: string;
@@ -64,7 +56,7 @@ export default function QueryTester({
       // Replace {OSM_RELATION_ID} placeholder with the area's OSM ID
       const modifiedQuery = selectedTemplate.overpassQuery.replace(
         /\{OSM_RELATION_ID\}/g,
-        selectedArea.osmId
+        selectedArea.id.toString()
       );
       setQueryString(modifiedQuery);
     }
