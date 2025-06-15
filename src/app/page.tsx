@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import PublicMonitorsFeed from "./components/public-monitors-feed";
+import PublicMonitorsFeed from "../components/public-monitors-feed";
 
 export const metadata: Metadata = {
   title: "OSM for Cities - Monitor OpenStreetMap Datasets",

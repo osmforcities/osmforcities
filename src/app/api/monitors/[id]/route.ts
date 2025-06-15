@@ -44,7 +44,7 @@ export async function PATCH(
     }
 
     // Update the monitor (only if it belongs to the user)
-    const monitor = await prisma.cityMonitor.updateMany({
+    const monitor = await prisma.monitor.updateMany({
       where: {
         id: monitorId,
         userId: session.user.id,
@@ -87,7 +87,7 @@ export async function DELETE(
     const { id: monitorId } = await params;
 
     // Delete the monitor (only if it belongs to the user)
-    const monitor = await prisma.cityMonitor.deleteMany({
+    const monitor = await prisma.monitor.deleteMany({
       where: {
         id: monitorId,
         userId: session.user.id,
@@ -115,7 +115,7 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const monitor = await prisma.cityMonitor.findUnique({
+    const monitor = await prisma.monitor.findUnique({
       where: {
         id: id,
       },

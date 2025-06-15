@@ -5,7 +5,7 @@ import Map, { Source, Layer, AttributionControl } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Button } from "@/components/ui/button";
-import { useOverpassQuery } from "@/app/hooks/useOverpassQuery";
+import { useOverpassQuery } from "@/hooks/useOverpassQuery";
 
 type Area = {
   name: string;

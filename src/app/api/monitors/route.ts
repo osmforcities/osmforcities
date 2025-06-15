@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the monitor
-    const monitor = await prisma.cityMonitor.create({
+    const monitor = await prisma.monitor.create({
       data: {
         userId: session.user.id,
         templateId,

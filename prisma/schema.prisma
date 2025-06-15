@@ -17,7 +17,7 @@ model User {
 
   sessions           Session[]
   verificationTokens VerificationToken[]
-  cityMonitors       CityMonitor[]
+  monitors           Monitor[]
 
   @@map("users")
 }
@@ -59,12 +59,12 @@ model DataTemplate {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  cityMonitors CityMonitor[]
+  monitors Monitor[]
 
   @@map("data_templates")
 }
 
-model CityMonitor {
+model Monitor {
   id          String    @id @default(cuid())
   userId      String
   templateId  String
@@ -82,5 +82,5 @@ model CityMonitor {
   template DataTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
   @@unique([userId, templateId, cityName])
-  @@map("city_monitors")
+  @@map("monitors")
 }

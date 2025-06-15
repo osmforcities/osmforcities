@@ -1,64 +1,24 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 
-type PublicMonitor = {
-  id: string;
-  cityName: string;
-  countryCode: string | null;
-  dataCount: number;
-  createdAt: string;
-  lastChecked: string | null;
-  template: {
-    id: string;
-    name: string;
-    category: string;
-    description: string | null;
-  };
-  user: {
-    id: string;
-    name: string | null;
-    email: string;
-  };
-};
-
-export default function PublicMonitorsFeed() {
-  const [monitors, setMonitors] = useState<PublicMonitor[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/monitors/public")
-      .then((res) => res.json())
-      .then((data) => {
-        setMonitors(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching public monitors:", error);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="w-full max-w-4xl mx-auto p-4">
-        <div className="border border-black p-4 text-center">
-          <p>Loading public monitors...</p>
-        </div>
-      </div>
-    );
-  }
+export default async function PublicMonitorsFeed() {
+  const monitors = await prisma.monitor.findMany({
+    where: { isPublic: true },
+    include: {
+      template: true,
+      user: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
   if (monitors.length === 0) {
     return (
       <div className="w-full max-w-4xl mx-auto p-4">
         <div className="border border-black p-4 text-center">
           <p className="text-gray-600">No public monitors yet.</p>
-          <p className="text-sm mt-2">
-            Sign in to create and share your city data monitors!
-          </p>
         </div>
       </div>
     );

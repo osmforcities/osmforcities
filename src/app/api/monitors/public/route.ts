@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    const publicMonitors = await prisma.cityMonitor.findMany({
+    const publicMonitors = await prisma.monitor.findMany({
       where: {
         isPublic: true,
         isActive: true,

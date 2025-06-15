@@ -1,13 +1,11 @@
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { findSessionByToken } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import Link from "next/link";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/db";
 import MonitorsList from "@/app/my-monitors/monitors-list";
+import { redirect } from "next/navigation";
 
-const prisma = new PrismaClient();
-
-async function getMyMonitorsData() {
+export default async function MyMonitors() {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get("session")?.value;
 
@@ -21,18 +19,13 @@ async function getMyMonitorsData() {
     redirect("/");
   }
 
-  // Get user's existing monitors
-  const monitors = await prisma.cityMonitor.findMany({
-    where: { userId: session.user.id },
+  const user = session.user;
+
+  const monitors = await prisma.monitor.findMany({
+    where: { userId: user.id },
     include: { template: true },
     orderBy: { createdAt: "desc" },
   });
-
-  return { user: session.user, monitors };
-}
-
-export default async function MyMonitors() {
-  const { user, monitors } = await getMyMonitorsData();
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
@@ -46,7 +39,6 @@ export default async function MyMonitors() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* User Info */}
           <div className="border border-black dark:border-white p-6">
             <h2 className="text-xl font-semibold mb-4">Account Info</h2>
             <div className="space-y-2">
