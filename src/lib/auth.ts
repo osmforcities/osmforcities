@@ -1,5 +1,6 @@
 import { prisma } from "./db";
 import { randomBytes } from "crypto";
+import { cookies } from "next/headers";
 
 export async function createUser(email: string, name?: string) {
   return await prisma.user.create({
@@ -76,4 +77,21 @@ export async function deleteSession(token: string) {
   await prisma.session.delete({
     where: { token },
   });
+}
+
+export async function getUserFromCookie() {
+  try {
+    const cookieStore = await cookies();
+    const sessionToken = cookieStore.get("session")?.value;
+
+    if (!sessionToken) return null;
+
+    const session = await findSessionByToken(sessionToken);
+
+    if (!session || session.expiresAt < new Date()) return null;
+
+    return session.user;
+  } catch {
+    return null;
+  }
 }
