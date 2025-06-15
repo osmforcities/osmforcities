@@ -68,13 +68,14 @@ model Monitor {
   id          String    @id @default(cuid())
   userId      String
   templateId  String
-  cityName    String // e.g., "New York", "London"
-  cityBounds  String? // Bounding box or geometry for the city
-  countryCode String? // ISO country code
+  cityName    String
+  cityBounds  String?
+  countryCode String?
   isActive    Boolean   @default(true)
-  isPublic    Boolean   @default(false) // Allow others to see this monitor
+  isPublic    Boolean   @default(false)
   lastChecked DateTime?
-  dataCount   Int       @default(0) // Last count of matching features
+  dataCount   Int       @default(0)
+  geojson     Json?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
