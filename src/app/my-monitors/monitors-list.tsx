@@ -1,91 +1,24 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Monitor } from "@prisma/client";
+import { useMonitorActions } from "@/hooks/useMonitorsActions";
+
+import { Monitor, DataTemplate, Area } from "@prisma/client";
+
+type MonitorWithTemplateAndArea = Monitor & {
+  template: DataTemplate;
+  area: Area;
+};
 
 type MonitorsListProps = {
-  monitors: Monitor[];
+  monitors: MonitorWithTemplateAndArea[];
 };
 
 export default function MonitorsList({ monitors }: MonitorsListProps) {
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const { deletingId, handleDelete, toggleActive, togglePublic } =
+    useMonitorActions();
   const neverText = "Never";
-
-  const handleDelete = async (monitorId: string) => {
-    if (!confirm("Are you sure you want to delete this monitor?")) {
-      return;
-    }
-
-    setDeletingId(monitorId);
-
-    try {
-      const response = await fetch(`/api/monitors/${monitorId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        // Refresh the page to show updated list
-        window.location.reload();
-      } else {
-        alert("Failed to delete monitor");
-      }
-    } catch (error) {
-      console.error("Error deleting monitor:", error);
-      alert("Failed to delete monitor");
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
-  const toggleActive = async (monitorId: string, currentActive: boolean) => {
-    try {
-      const response = await fetch(`/api/monitors/${monitorId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          isActive: !currentActive,
-        }),
-      });
-
-      if (response.ok) {
-        // Refresh the page to show updated status
-        window.location.reload();
-      } else {
-        alert("Failed to update monitor");
-      }
-    } catch (error) {
-      console.error("Error updating monitor:", error);
-      alert("Failed to update monitor");
-    }
-  };
-
-  const togglePublic = async (monitorId: string, currentPublic: boolean) => {
-    try {
-      const response = await fetch(`/api/monitors/${monitorId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          isPublic: !currentPublic,
-        }),
-      });
-
-      if (response.ok) {
-        // Refresh the page to show updated status
-        window.location.reload();
-      } else {
-        alert("Failed to update monitor");
-      }
-    } catch (error) {
-      console.error("Error updating monitor:", error);
-      alert("Failed to update monitor");
-    }
-  };
 
   if (monitors.length === 0) {
     return (
@@ -106,7 +39,7 @@ export default function MonitorsList({ monitors }: MonitorsListProps) {
             <div>
               <h3 className="font-semibold">
                 {monitor.template.name} in {monitor.cityName}
-                {monitor.countryCode && ` (${monitor.countryCode})`}
+                {monitor.area.countryCode && ` (${monitor.area.countryCode})`}
               </h3>
               <p className="text-sm text-gray-600 capitalize">
                 Category: {monitor.template.category}

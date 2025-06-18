@@ -50,11 +50,11 @@ model VerificationToken {
 
 model DataTemplate {
   id            String   @id @default(cuid())
-  name          String // e.g., "Bicycle Parking", "Bus Stops", "ATMs"
+  name          String
   description   String?
-  overpassQuery String // The Overpass API query template
-  category      String // e.g., "transportation", "amenities", "health"
-  tags          String[] // OpenStreetMap tags for filtering
+  overpassQuery String
+  category      String
+  tags          String[]
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -64,7 +64,7 @@ model DataTemplate {
   @@map("data_templates")
 }
 
-model OsmRelation {
+model Area {
   id          Int      @id
   name        String
   countryCode String?
@@ -75,27 +75,27 @@ model OsmRelation {
 
   monitors Monitor[]
 
-  @@map("osm_relations")
+  @@map("areas")
 }
 
 model Monitor {
-  id            String    @id @default(cuid())
-  userId        String
-  templateId    String
-  osmRelationId Int
-  cityName      String
-  isActive      Boolean   @default(true)
-  isPublic      Boolean   @default(false)
-  lastChecked   DateTime?
-  dataCount     Int       @default(0)
-  geojson       Json?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id          String    @id @default(cuid())
+  userId      String
+  templateId  String
+  areaId      Int
+  cityName    String
+  isActive    Boolean   @default(true)
+  isPublic    Boolean   @default(false)
+  lastChecked DateTime?
+  dataCount   Int       @default(0)
+  geojson     Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   template DataTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  relation OsmRelation  @relation(fields: [osmRelationId], references: [id], onDelete: Cascade)
+  area     Area         @relation(fields: [areaId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, templateId, osmRelationId])
+  @@unique([userId, templateId, areaId])
   @@map("monitors")
 }

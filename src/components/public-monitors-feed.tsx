@@ -8,6 +8,7 @@ export default async function PublicMonitorsFeed() {
     include: {
       template: true,
       user: true,
+      area: true,
     },
     orderBy: {
       createdAt: "desc",
@@ -41,7 +42,8 @@ export default async function PublicMonitorsFeed() {
                 <div>
                   <h3 className="font-semibold">
                     {monitor.template.name} in {monitor.cityName}
-                    {monitor.countryCode && ` (${monitor.countryCode})`}
+                    {monitor.area.countryCode &&
+                      ` (${monitor.area.countryCode})`}
                   </h3>
                   <p className="text-sm text-gray-600">
                     {monitor.template.description}

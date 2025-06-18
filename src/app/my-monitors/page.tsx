@@ -23,7 +23,7 @@ export default async function MyMonitors() {
 
   const monitors = await prisma.monitor.findMany({
     where: { userId: user.id },
-    include: { template: true },
+    include: { template: true, area: true },
     orderBy: { createdAt: "desc" },
   });
 

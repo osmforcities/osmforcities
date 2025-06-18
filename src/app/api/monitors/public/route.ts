@@ -26,6 +26,13 @@ export async function GET() {
             email: true,
           },
         },
+        area: {
+          select: {
+            id: true,
+            name: true,
+            countryCode: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",

@@ -35,11 +35,11 @@ export async function POST(req: NextRequest) {
   if (!template)
     return NextResponse.json({ error: "Template not found" }, { status: 404 });
 
-  let osmRelation = await prisma.osmRelation.findUnique({
+  let area = await prisma.area.findUnique({
     where: { id: osmRelationId },
   });
 
-  if (!osmRelation) {
+  if (!area) {
     try {
       const fetched = await fetchOsmRelationData(osmRelationId);
       if (!fetched)
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
 
-      osmRelation = await prisma.osmRelation.create({
+      area = await prisma.area.create({
         data: {
           id: osmRelationId,
           name: fetched.name,
@@ -71,8 +71,8 @@ export async function POST(req: NextRequest) {
       data: {
         userId: session.user.id,
         templateId,
-        osmRelationId: osmRelation.id,
-        cityName: osmRelation.name,
+        areaId: area.id,
+        cityName: area.name,
         isPublic: isPublic ?? false,
       },
       include: { template: true },
