@@ -1,7 +1,11 @@
+"use client";
+
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import MonitorRefreshButton from "@/components/monitor-refresh-button";
+import { useState, useEffect } from "react";
 
 type Monitor = {
   id: string;
@@ -47,13 +51,42 @@ async function getMonitor(id: string): Promise<Monitor | null> {
   }
 }
 
-export default async function MonitorPage({
+export default function MonitorPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-  const monitor = await getMonitor(id);
+  const [monitor, setMonitor] = useState<Monitor | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMonitor = async () => {
+      const { id } = await params;
+      const monitorData = await getMonitor(id);
+      setMonitor(monitorData);
+      setLoading(false);
+    };
+
+    fetchMonitor();
+  }, [params]);
+
+  const handleRefresh = (newDataCount: number) => {
+    if (monitor) {
+      setMonitor({
+        ...monitor,
+        dataCount: newDataCount,
+        lastChecked: new Date(),
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin h-8 w-8 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
 
   if (!monitor) {
     notFound();
@@ -63,7 +96,6 @@ export default async function MonitorPage({
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          {/* Header with back button */}
           <div className="flex items-center gap-4 mb-8">
             <Button variant="ghost" size="sm" asChild>
               <Link href="/my-monitors" className="flex items-center gap-2">
@@ -73,7 +105,6 @@ export default async function MonitorPage({
             </Button>
           </div>
 
-          {/* Monitor Details */}
           <div className="space-y-6">
             <div className="border rounded-lg p-6">
               <div className="flex justify-between items-start mb-4">
@@ -144,9 +175,16 @@ export default async function MonitorPage({
                   </p>
                 </div>
               </div>
+
+              <div className="mt-6 flex justify-center">
+                <MonitorRefreshButton
+                  monitorId={monitor.id}
+                  isActive={monitor.isActive}
+                  onRefresh={handleRefresh}
+                />
+              </div>
             </div>
 
-            {/* Monitor Info */}
             <div className="border rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4">
                 Monitor Information
@@ -171,7 +209,6 @@ export default async function MonitorPage({
               </div>
             </div>
 
-            {/* Placeholder for future features */}
             <div className="border rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4">Data Visualization</h2>
               <div className="bg-muted/30 border-2 border-dashed border-muted rounded-lg p-8 text-center">

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
+import { executeOverpassQuery } from "@/lib/osm";
 
 export const OverpassFeatureSchema = z.object({
   type: z.string(),
@@ -49,23 +50,9 @@ export function useOverpassQuery({
         return [];
       }
 
-      const response = await fetch("https://overpass-api.de/api/interpreter", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: `data=${encodeURIComponent(queryString)}`,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Overpass API error: ${response.status}`);
-      }
-
-      const rawData = await response.json();
-
       try {
-        const validatedData = OverpassResponseSchema.parse(rawData);
-        return validatedData.elements;
+        const { elements } = await executeOverpassQuery(queryString);
+        return elements;
       } catch (error) {
         console.error("Invalid Overpass API response:", error);
         throw new Error("Invalid response format from Overpass API");
