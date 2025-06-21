@@ -26,4 +26,19 @@ export const GeoJSONFeatureCollectionSchema = z.object({
   features: z.array(FeatureSchema),
 }) as z.ZodType<FeatureCollection>;
 
+export const BboxSchema = z
+  .array(z.number())
+  .length(4)
+  .refine(
+    (bbox) => {
+      const [minLng, minLat, maxLng, maxLat] = bbox;
+      return minLng <= maxLng && minLat <= maxLat;
+    },
+    {
+      message:
+        "Invalid bbox: minLng <= maxLng and minLat <= maxLat must be true",
+    }
+  );
+
 export type GeoJSONFeatureCollection = FeatureCollection;
+export type Bbox = z.infer<typeof BboxSchema>;

@@ -89,6 +89,7 @@ model Monitor {
   lastChecked DateTime?
   dataCount   Int       @default(0)
   geojson     Json?
+  bbox        Json?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 

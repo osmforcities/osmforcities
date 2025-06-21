@@ -6,22 +6,23 @@ import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { FeatureCollection, Feature } from "geojson";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
+import type { Monitor } from "@/schemas/monitor";
 
 type MonitorMapProps = {
-  monitor: {
-    geojson: FeatureCollection; // Since we use osmtogeojson, this is always valid GeoJSON
-    area: {
-      bounds: string | null;
-      geojson: FeatureCollection | null;
-    };
-  };
+  monitor: Monitor;
 };
 
 export default function MonitorMap({ monitor }: MonitorMapProps) {
   const mapRef = useRef<MapRef | null>(null);
+  const bbox = monitor.bbox;
 
   const updateMapBounds = useCallback(() => {
-    if (monitor?.area?.bounds && mapRef.current) {
+    if (bbox && bbox.length === 4 && mapRef.current) {
+      mapRef.current.fitBounds([bbox[0], bbox[1], bbox[2], bbox[3]], {
+        padding: 50,
+        animate: false,
+      });
+    } else if (monitor?.area?.bounds && mapRef.current) {
       const bounds = monitor.area.bounds.split(",").map(Number);
       mapRef.current.fitBounds(
         [
@@ -33,14 +34,14 @@ export default function MonitorMap({ monitor }: MonitorMapProps) {
         { padding: 50, animate: false }
       );
     }
-  }, [monitor]);
+  }, [bbox, monitor]);
 
   // Handle map bounds when monitor data loads
   useEffect(() => {
-    if (mapRef.current && monitor) {
+    if (mapRef.current && (bbox || monitor)) {
       updateMapBounds();
     }
-  }, [monitor, updateMapBounds]);
+  }, [monitor, bbox, updateMapBounds]);
 
   if (!monitor.geojson) {
     return (
@@ -96,24 +97,6 @@ export default function MonitorMap({ monitor }: MonitorMapProps) {
         </div>
       </div>
 
-      <div className="bg-muted/30 border-2 border-dashed border-muted rounded-lg p-8 text-center">
-        <p className="text-muted-foreground mb-4">
-          Interactive map visualization is available below.
-        </p>
-        <p className="text-sm text-muted-foreground">
-          The map shows the geographic data from your monitor results.
-        </p>
-      </div>
-
-      {monitor.area.bounds && (
-        <div className="bg-muted/50 p-4 rounded-lg">
-          <h3 className="font-semibold text-sm uppercase tracking-wide mb-2">
-            Area Bounds
-          </h3>
-          <p className="text-sm font-mono">{monitor.area.bounds}</p>
-        </div>
-      )}
-
       <div
         className="border rounded-lg overflow-hidden"
         style={{ height: 500 }}
@@ -123,7 +106,12 @@ export default function MonitorMap({ monitor }: MonitorMapProps) {
           onLoad={updateMapBounds}
           mapStyle="https://tiles.openfreemap.org/styles/positron"
           initialViewState={
-            monitor.area.bounds
+            bbox && bbox.length === 4
+              ? {
+                  bounds: [bbox[0], bbox[1], bbox[2], bbox[3]],
+                  fitBoundsOptions: { padding: 20 },
+                }
+              : monitor.area.bounds
               ? {
                   bounds: (() => {
                     const bounds = monitor.area.bounds.split(",").map(Number);

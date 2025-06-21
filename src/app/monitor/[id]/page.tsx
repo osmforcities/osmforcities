@@ -1,102 +1,54 @@
-"use client";
-
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import MonitorRefreshButton from "@/components/monitor-refresh-button";
 import MonitorMap from "@/components/monitor-map";
-import { useState, useEffect } from "react";
-import { FeatureCollection } from "geojson";
-
-type Monitor = {
-  id: string;
-  cityName: string;
-  countryCode: string | null;
-  isActive: boolean;
-  isPublic: boolean;
-  lastChecked: Date | null;
-  dataCount: number;
-  createdAt: Date;
-  geojson: FeatureCollection;
-  template: {
-    id: string;
-    name: string;
-    category: string;
-    description: string | null;
-  };
-  user: {
-    id: string;
-    name: string | null;
-    email: string;
-  };
-  area: {
-    id: number;
-    name: string;
-    countryCode: string | null;
-    bounds: string | null;
-    geojson: FeatureCollection | null;
-  };
-};
+import { prisma } from "@/lib/db";
+import { MonitorSchema, type Monitor } from "@/schemas/monitor";
+import type { FeatureCollection } from "geojson";
 
 async function getMonitor(id: string): Promise<Monitor | null> {
   try {
-    const response = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-      }/api/monitors/${id}`,
-      {
-        cache: "no-store",
-      }
-    );
+    const rawMonitor = await prisma.monitor.findUnique({
+      where: { id },
+      include: {
+        template: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        area: true,
+      },
+    });
 
-    if (!response.ok) {
-      return null;
-    }
+    if (!rawMonitor) return null;
 
-    return await response.json();
+    return MonitorSchema.parse({
+      ...rawMonitor,
+      geojson: rawMonitor.geojson as FeatureCollection | null,
+      bbox: rawMonitor.bbox as number[] | null,
+      area: {
+        ...rawMonitor.area,
+        geojson: rawMonitor.area.geojson as FeatureCollection | null,
+      },
+    });
   } catch (error) {
     console.error("Error fetching monitor:", error);
     return null;
   }
 }
 
-export default function MonitorPage({
+export default async function MonitorPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const [monitor, setMonitor] = useState<Monitor | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchMonitor = async () => {
-      const { id } = await params;
-      const monitorData = await getMonitor(id);
-      setMonitor(monitorData);
-      setLoading(false);
-    };
-
-    fetchMonitor();
-  }, [params]);
-
-  const handleRefresh = (newDataCount: number) => {
-    if (monitor) {
-      setMonitor({
-        ...monitor,
-        dataCount: newDataCount,
-        lastChecked: new Date(),
-      });
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin h-8 w-8 border-2 border-blue-600 border-t-transparent rounded-full"></div>
-      </div>
-    );
-  }
+  const { id } = await params;
+  const monitor = await getMonitor(id);
 
   if (!monitor) {
     notFound();
@@ -124,7 +76,8 @@ export default function MonitorPage({
                   </h1>
                   <p className="text-xl text-muted-foreground mt-2">
                     {monitor.cityName}
-                    {monitor.countryCode && ` (${monitor.countryCode})`}
+                    {monitor.area.countryCode &&
+                      ` (${monitor.area.countryCode})`}
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -190,7 +143,6 @@ export default function MonitorPage({
                 <MonitorRefreshButton
                   monitorId={monitor.id}
                   isActive={monitor.isActive}
-                  onRefresh={handleRefresh}
                 />
               </div>
             </div>

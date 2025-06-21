@@ -17,6 +17,7 @@
     "@prisma/client": "^6.9.0",
     "@radix-ui/react-slot": "^1.2.3",
     "@tanstack/react-query": "^5.80.7",
+    "@turf/bbox": "^7.2.0",
     "@types/geojson": "^7946.0.16",
     "@types/osmtogeojson": "^2.2.34",
     "class-variance-authority": "^0.7.1",

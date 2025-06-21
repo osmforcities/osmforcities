@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { findSessionByToken } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { executeOverpassQuery, convertOverpassToGeoJSON } from "@/lib/osm";
+import { calculateBbox } from "@/lib/utils";
 
 export async function POST(
   request: NextRequest,
@@ -56,6 +57,8 @@ export async function POST(
     // Convert Overpass data to GeoJSON using osmtogeojson
     const geojsonData = convertOverpassToGeoJSON(overpassData);
 
+    const bbox = calculateBbox(geojsonData);
+
     const updatedMonitor = await prisma.monitor.update({
       where: {
         id: monitorId,
@@ -64,6 +67,7 @@ export async function POST(
         dataCount: overpassData.elements.length,
         lastChecked: new Date(),
         geojson: JSON.parse(JSON.stringify(geojsonData)),
+        bbox: bbox ? JSON.parse(JSON.stringify(bbox)) : null,
         updatedAt: new Date(),
       },
       include: {
