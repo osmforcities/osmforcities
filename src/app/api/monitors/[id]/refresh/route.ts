@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { findSessionByToken } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { executeOverpassQuery } from "@/lib/osm";
+import { executeOverpassQuery, convertOverpassToGeoJSON } from "@/lib/osm";
 
 export async function POST(
   request: NextRequest,
@@ -51,16 +51,19 @@ export async function POST(
       monitor.areaId.toString()
     );
 
-    const { elements, rawData } = await executeOverpassQuery(queryString);
+    const overpassData = await executeOverpassQuery(queryString);
+
+    // Convert Overpass data to GeoJSON using osmtogeojson
+    const geojsonData = convertOverpassToGeoJSON(overpassData);
 
     const updatedMonitor = await prisma.monitor.update({
       where: {
         id: monitorId,
       },
       data: {
-        dataCount: elements.length,
+        dataCount: overpassData.elements.length,
         lastChecked: new Date(),
-        geojson: rawData,
+        geojson: JSON.parse(JSON.stringify(geojsonData)),
         updatedAt: new Date(),
       },
       include: {
@@ -78,7 +81,7 @@ export async function POST(
     return NextResponse.json({
       success: true,
       monitor: updatedMonitor,
-      dataCount: elements.length,
+      dataCount: overpassData.elements.length,
     });
   } catch (error) {
     console.error("Error refreshing monitor:", error);

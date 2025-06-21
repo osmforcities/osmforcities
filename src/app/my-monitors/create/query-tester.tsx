@@ -134,25 +134,20 @@ export default function QueryTester({
           <Map
             ref={mapRef}
             onLoad={updateMapBounds}
-            mapStyle={{
-              version: 8,
-              sources: {
-                osm: {
-                  type: "raster",
-                  tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-                  tileSize: 256,
-                  attribution: "© OpenStreetMap Contributors",
-                  maxzoom: 19,
-                },
-              },
-              layers: [
-                {
-                  id: "osm-layer",
-                  type: "raster",
-                  source: "osm",
-                },
-              ],
-            }}
+            mapStyle="https://tiles.openfreemap.org/styles/positron"
+            initialViewState={
+              selectedArea
+                ? {
+                    bounds: [
+                      selectedArea.boundingBox[1], // minLon
+                      selectedArea.boundingBox[0], // minLat
+                      selectedArea.boundingBox[3], // maxLon
+                      selectedArea.boundingBox[2], // maxLat
+                    ],
+                    fitBoundsOptions: { padding: 20 },
+                  }
+                : undefined
+            }
           >
             <AttributionControl position="bottom-right" />
             <Source

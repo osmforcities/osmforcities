@@ -5,7 +5,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import MonitorRefreshButton from "@/components/monitor-refresh-button";
+import MonitorMap from "@/components/monitor-map";
 import { useState, useEffect } from "react";
+import { FeatureCollection } from "geojson";
 
 type Monitor = {
   id: string;
@@ -16,6 +18,7 @@ type Monitor = {
   lastChecked: Date | null;
   dataCount: number;
   createdAt: Date;
+  geojson: FeatureCollection;
   template: {
     id: string;
     name: string;
@@ -26,6 +29,13 @@ type Monitor = {
     id: string;
     name: string | null;
     email: string;
+  };
+  area: {
+    id: number;
+    name: string;
+    countryCode: string | null;
+    bounds: string | null;
+    geojson: FeatureCollection | null;
   };
 };
 
@@ -211,12 +221,7 @@ export default function MonitorPage({
 
             <div className="border rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4">Data Visualization</h2>
-              <div className="bg-muted/30 border-2 border-dashed border-muted rounded-lg p-8 text-center">
-                <p className="text-muted-foreground">
-                  Charts and data trends will be displayed here in future
-                  updates.
-                </p>
-              </div>
+              <MonitorMap monitor={monitor} />
             </div>
           </div>
         </div>
