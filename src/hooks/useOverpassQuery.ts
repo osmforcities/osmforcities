@@ -1,30 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { z } from "zod";
 import { executeOverpassQuery } from "@/lib/osm";
-
-export const OverpassFeatureSchema = z.object({
-  type: z.string(),
-  id: z.number(),
-  lat: z.number().optional(),
-  lon: z.number().optional(),
-  tags: z.record(z.string(), z.string()).optional(),
-  geometry: z
-    .array(
-      z.object({
-        lat: z.number(),
-        lon: z.number(),
-      })
-    )
-    .optional(),
-});
-
-export type OverpassFeature = z.infer<typeof OverpassFeatureSchema>;
-
-export const OverpassResponseSchema = z.object({
-  elements: z.array(OverpassFeatureSchema),
-});
-
-export type OverpassResponse = z.infer<typeof OverpassResponseSchema>;
+import { OSMElementSchema, type OSMElement } from "@/types/osm";
 
 type UseOverpassQueryParams = {
   queryString: string;
@@ -45,14 +21,24 @@ export function useOverpassQuery({
   return useQuery({
     refetchOnWindowFocus: false,
     queryKey: ["overpass", queryString],
-    queryFn: async (): Promise<OverpassFeature[]> => {
+    queryFn: async (): Promise<OSMElement[]> => {
       if (!queryString) {
         return [];
       }
 
       try {
         const { elements } = await executeOverpassQuery(queryString);
-        return elements;
+
+        const validElements = elements.filter((element) => {
+          const validation = OSMElementSchema.safeParse(element);
+          if (!validation.success) {
+            console.warn("Invalid OSM element:", element, validation.error);
+            return false;
+          }
+          return true;
+        });
+
+        return validElements;
       } catch (error) {
         console.error("Invalid Overpass API response:", error);
         throw new Error("Invalid response format from Overpass API");

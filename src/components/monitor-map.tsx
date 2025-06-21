@@ -5,6 +5,7 @@ import Map, { Source, Layer, AttributionControl } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { FeatureCollection, Feature } from "geojson";
+import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 
 type MonitorMapProps = {
   monitor: {
@@ -52,7 +53,9 @@ export default function MonitorMap({ monitor }: MonitorMapProps) {
     );
   }
 
-  const geoJSONData = monitor.geojson;
+  const geoJSONData = GeoJSONFeatureCollectionSchema.parse(
+    monitor.geojson
+  ) as FeatureCollection;
 
   if (geoJSONData.features.length === 0) {
     return (

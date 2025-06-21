@@ -1,66 +1,13 @@
-import { FeatureCollection } from "geojson";
 import osmtogeojson from "osmtogeojson";
-
-// OSM element types for Overpass API
-export interface OSMNode {
-  type: "node";
-  id: number;
-  lat: number;
-  lon: number;
-  tags?: Record<string, string>;
-  timestamp?: string;
-  version?: number;
-  changeset?: number;
-  user?: string;
-  uid?: number;
-}
-
-export interface OSMWay {
-  type: "way";
-  id: number;
-  nodes: number[];
-  geometry?: Array<{ lat: number; lon: number }>;
-  tags?: Record<string, string>;
-  timestamp?: string;
-  version?: number;
-  changeset?: number;
-  user?: string;
-  uid?: number;
-}
-
-export interface OSMRelation {
-  type: "relation";
-  id: number;
-  members: Array<{
-    type: "node" | "way" | "relation";
-    ref: number;
-    role: string;
-  }>;
-  geometry?: Array<Array<{ lat: number; lon: number }>>;
-  tags?: Record<string, string>;
-  bounds?: {
-    minlat: number;
-    minlon: number;
-    maxlat: number;
-    maxlon: number;
-  };
-  timestamp?: string;
-  version?: number;
-  changeset?: number;
-  user?: string;
-  uid?: number;
-}
-
-export type OSMElement = OSMNode | OSMWay | OSMRelation;
-
-interface OverpassResponse {
-  elements: OSMElement[];
-  rawData?: unknown;
-}
-
-interface OverpassData {
-  elements: OSMElement[];
-}
+import { FeatureCollection } from "geojson";
+import {
+  OverpassResponseSchema,
+  OverpassErrorSchema,
+  type OverpassResponse,
+  type OverpassData,
+} from "@/types/overpass";
+import { OSMElementSchema, type OSMRelation } from "@/types/osm";
+import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 
 export async function fetchOsmRelationData(relationId: number) {
   const query = `
@@ -78,7 +25,15 @@ export async function fetchOsmRelationData(relationId: number) {
   if (!res.ok) return null;
 
   const data = await res.json();
-  const rel = data.elements?.[0] as OSMRelation;
+
+  const validationResult = OverpassResponseSchema.safeParse(data);
+
+  if (!validationResult.success) {
+    console.error("Invalid Overpass response:", validationResult.error);
+    return null;
+  }
+
+  const rel = validationResult.data.elements?.[0] as OSMRelation;
 
   if (!rel || rel.type !== "relation") return null;
 
@@ -108,13 +63,23 @@ export async function executeOverpassQuery(
   }
 
   const data = await response.json();
-  return {
-    elements: data.elements || [],
-    rawData: data,
-  };
+
+  const errorValidation = OverpassErrorSchema.safeParse(data);
+  if (errorValidation.success) {
+    throw new Error(
+      `Overpass API error: ${errorValidation.data.error.message}`
+    );
+  }
+
+  const validationResult = OverpassResponseSchema.safeParse(data);
+  if (!validationResult.success) {
+    console.error("Invalid Overpass response:", validationResult.error);
+    throw new Error("Invalid response format from Overpass API");
+  }
+
+  return validationResult.data;
 }
 
-// Convert Overpass API response to GeoJSON format using osmtogeojson library
 export function convertOverpassToGeoJSON(
   overpassData: OverpassData
 ): FeatureCollection {
@@ -125,5 +90,48 @@ export function convertOverpassToGeoJSON(
     };
   }
 
-  return osmtogeojson(overpassData);
+  try {
+    const validElements = overpassData.elements.filter((element) => {
+      const validation = OSMElementSchema.safeParse(element);
+      if (!validation.success) {
+        console.warn("Invalid OSM element:", element, validation.error);
+        return false;
+      }
+      return true;
+    });
+
+    if (validElements.length === 0) {
+      return {
+        type: "FeatureCollection",
+        features: [],
+      };
+    }
+
+    const validOverpassData = { ...overpassData, elements: validElements };
+    const geojson = osmtogeojson(validOverpassData);
+
+    const geojsonValidation = GeoJSONFeatureCollectionSchema.safeParse(geojson);
+    if (!geojsonValidation.success) {
+      console.error(
+        "Invalid GeoJSON from osmtogeojson:",
+        geojsonValidation.error
+      );
+      throw new Error("osmtogeojson returned invalid GeoJSON");
+    }
+
+    return geojsonValidation.data as FeatureCollection;
+  } catch (error) {
+    console.error("Error converting Overpass data to GeoJSON:", error);
+    return {
+      type: "FeatureCollection",
+      features: [],
+    };
+  }
 }
+
+export type { OSMNode, OSMWay, OSMRelation, OSMElement } from "@/types/osm";
+export type {
+  OverpassResponse,
+  OverpassError,
+  OverpassData,
+} from "@/types/overpass";

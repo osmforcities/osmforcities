@@ -7,6 +7,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { Button } from "@/components/ui/button";
 import { useOverpassQuery } from "@/hooks/useOverpassQuery";
 import { Area } from "@/types/area";
+import { convertOverpassToGeoJSON } from "@/lib/osm";
+import { FeatureCollection } from "geojson";
 
 type Template = {
   id: string;
@@ -77,6 +79,11 @@ export default function QueryTester({
     setHasExecutedQuery(true);
     refetch({ cancelRefetch: false });
   };
+
+  const geojsonData: FeatureCollection =
+    results.length > 0
+      ? convertOverpassToGeoJSON({ elements: results })
+      : { type: "FeatureCollection", features: [] };
 
   if (!selectedArea || !selectedTemplate) {
     return (
@@ -150,35 +157,77 @@ export default function QueryTester({
             }
           >
             <AttributionControl position="bottom-right" />
-            <Source
-              id="query-results"
-              type="geojson"
-              data={{
-                type: "FeatureCollection",
-                features: results
-                  .filter((f) => f.lat !== undefined && f.lon !== undefined)
-                  .map((feature) => ({
-                    type: "Feature" as const,
-                    geometry: {
-                      type: "Point" as const,
-                      coordinates: [feature.lon!, feature.lat!],
-                    },
-                    properties: feature.tags || {},
-                  })),
-              }}
-            >
-              <Layer
-                id="result-points"
-                type="circle"
-                paint={{
-                  "circle-radius": 8,
-                  "circle-color": "#007cbf",
-                  "circle-opacity": 0.8,
-                  "circle-stroke-width": 2,
-                  "circle-stroke-color": "#ffffff",
-                }}
-              />
-            </Source>
+
+            {geojsonData.features.length > 0 && (
+              <>
+                <Source
+                  id="query-polygons"
+                  type="geojson"
+                  data={{
+                    type: "FeatureCollection",
+                    features: geojsonData.features.filter(
+                      (f) =>
+                        f.geometry.type === "Polygon" ||
+                        f.geometry.type === "MultiPolygon"
+                    ),
+                  }}
+                >
+                  <Layer
+                    id="result-polygons"
+                    type="fill"
+                    paint={{
+                      "fill-color": "#007cbf",
+                      "fill-opacity": 0.3,
+                      "fill-outline-color": "#007cbf",
+                    }}
+                  />
+                </Source>
+
+                <Source
+                  id="query-lines"
+                  type="geojson"
+                  data={{
+                    type: "FeatureCollection",
+                    features: geojsonData.features.filter(
+                      (f) => f.geometry.type === "LineString"
+                    ),
+                  }}
+                >
+                  <Layer
+                    id="result-lines"
+                    type="line"
+                    paint={{
+                      "line-color": "#007cbf",
+                      "line-width": 3,
+                      "line-opacity": 0.8,
+                    }}
+                  />
+                </Source>
+
+                <Source
+                  id="query-points"
+                  type="geojson"
+                  data={{
+                    type: "FeatureCollection",
+                    features: geojsonData.features.filter(
+                      (f) => f.geometry.type === "Point"
+                    ),
+                  }}
+                >
+                  <Layer
+                    id="result-points"
+                    type="circle"
+                    paint={{
+                      "circle-radius": 8,
+                      "circle-color": "#007cbf",
+                      "circle-opacity": 0.8,
+                      "circle-stroke-width": 2,
+                      "circle-stroke-color": "#ffffff",
+                    }}
+                  />
+                </Source>
+              </>
+            )}
           </Map>
         </div>
       )}
