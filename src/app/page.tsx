@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import PublicMonitorsFeed from "@/components/public-monitors-feed";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "OSM for Cities - Monitor OpenStreetMap Datasets",
   description: "Monitor OpenStreetMap datasets across cities worldwide",
