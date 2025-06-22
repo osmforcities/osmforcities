@@ -26,6 +26,17 @@ export async function PATCH(
     const { isActive, isPublic } = await request.json();
     const { id: monitorId } = await params;
 
+    const currentMonitor = await prisma.monitor.findUnique({
+      where: {
+        id: monitorId,
+        userId: session.user.id,
+      },
+    });
+
+    if (!currentMonitor) {
+      return NextResponse.json({ error: "Monitor not found" }, { status: 404 });
+    }
+
     // Prepare update data
     const updateData: {
       isActive?: boolean;
@@ -43,7 +54,6 @@ export async function PATCH(
       updateData.isPublic = isPublic;
     }
 
-    // Update the monitor (only if it belongs to the user)
     const monitor = await prisma.monitor.updateMany({
       where: {
         id: monitorId,
@@ -54,6 +64,30 @@ export async function PATCH(
 
     if (monitor.count === 0) {
       return NextResponse.json({ error: "Monitor not found" }, { status: 404 });
+    }
+
+    if (isPublic === true && !currentMonitor.isPublic) {
+      try {
+        const existingWatch = await prisma.monitorWatch.findUnique({
+          where: {
+            userId_monitorId: {
+              userId: session.user.id,
+              monitorId: monitorId,
+            },
+          },
+        });
+
+        if (!existingWatch) {
+          await prisma.monitorWatch.create({
+            data: {
+              userId: session.user.id,
+              monitorId: monitorId,
+            },
+          });
+        }
+      } catch (watchError) {
+        console.error("Error auto-watching monitor:", watchError);
+      }
     }
 
     return NextResponse.json({ success: true });
