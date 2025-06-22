@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback, useEffect } from "react";
+import { useRef } from "react";
 import Map, { Source, Layer, AttributionControl } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -15,33 +15,6 @@ type MonitorMapProps = {
 export default function MonitorMap({ monitor }: MonitorMapProps) {
   const mapRef = useRef<MapRef | null>(null);
   const bbox = monitor.bbox;
-
-  const updateMapBounds = useCallback(() => {
-    if (bbox && bbox.length === 4 && mapRef.current) {
-      mapRef.current.fitBounds([bbox[0], bbox[1], bbox[2], bbox[3]], {
-        padding: 50,
-        animate: false,
-      });
-    } else if (monitor?.area?.bounds && mapRef.current) {
-      const bounds = monitor.area.bounds.split(",").map(Number);
-      mapRef.current.fitBounds(
-        [
-          bounds[1], // minLon
-          bounds[0], // minLat
-          bounds[3], // maxLon
-          bounds[2], // maxLat
-        ],
-        { padding: 50, animate: false }
-      );
-    }
-  }, [bbox, monitor]);
-
-  // Handle map bounds when monitor data loads
-  useEffect(() => {
-    if (mapRef.current && (bbox || monitor)) {
-      updateMapBounds();
-    }
-  }, [monitor, bbox, updateMapBounds]);
 
   if (!monitor.geojson) {
     return (
@@ -68,42 +41,14 @@ export default function MonitorMap({ monitor }: MonitorMapProps) {
     );
   }
 
-  const featureTypes = geoJSONData.features.reduce(
-    (acc: Record<string, number>, feature: Feature) => {
-      const type = feature.geometry.type;
-      acc[type] = (acc[type] || 0) + 1;
-      return acc;
-    },
-    {}
-  );
-
   return (
     <div className="space-y-4">
-      <div className="bg-muted/50 p-4 rounded-lg">
-        <h3 className="font-semibold text-sm uppercase tracking-wide mb-2">
-          Data Summary
-        </h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div>
-            <p className="text-2xl font-bold">{geoJSONData.features.length}</p>
-            <p className="text-sm text-muted-foreground">Total Features</p>
-          </div>
-          {Object.entries(featureTypes).map(([type, count]) => (
-            <div key={type}>
-              <p className="text-2xl font-bold">{count as number}</p>
-              <p className="text-sm text-muted-foreground capitalize">{type}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
       <div
         className="border rounded-lg overflow-hidden"
         style={{ height: 500 }}
       >
         <Map
           ref={mapRef}
-          onLoad={updateMapBounds}
           mapStyle="https://tiles.openfreemap.org/styles/positron"
           initialViewState={
             bbox && bbox.length === 4
