@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getUserFromCookie } from "@/lib/auth";
+import { Eye } from "lucide-react";
 
 export default async function NavBar() {
   const user = await getUserFromCookie();
@@ -30,6 +31,12 @@ function LoggedInNav() {
     <>
       <Button variant="ghost" asChild>
         <Link href="/my-monitors">My Monitors</Link>
+      </Button>
+      <Button variant="ghost" asChild>
+        <Link href="/watched-monitors" className="flex items-center gap-2">
+          <Eye className="h-4 w-4" />
+          Watched Monitors
+        </Link>
       </Button>
       <form action="/api/auth/logout" method="POST">
         <Button type="submit" variant="outline" size="sm">

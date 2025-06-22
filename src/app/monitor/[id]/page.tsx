@@ -4,12 +4,16 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import MonitorRefreshButton from "@/components/monitor-refresh-button";
 import MonitorMap from "@/components/monitor-map";
+import MonitorWatchButton from "@/components/monitor-watch-button";
 import { prisma } from "@/lib/db";
 import { MonitorSchema, type Monitor } from "@/schemas/monitor";
 import type { FeatureCollection } from "geojson";
+import { getUserFromCookie } from "@/lib/auth";
 
 async function getMonitor(id: string): Promise<Monitor | null> {
   try {
+    const user = await getUserFromCookie();
+
     const rawMonitor = await prisma.monitor.findUnique({
       where: { id },
       include: {
@@ -22,6 +26,15 @@ async function getMonitor(id: string): Promise<Monitor | null> {
           },
         },
         area: true,
+        watchers: user
+          ? {
+              where: { userId: user.id },
+              select: { id: true, userId: true, createdAt: true },
+            }
+          : false,
+        _count: {
+          select: { watchers: true },
+        },
       },
     });
 
@@ -35,6 +48,8 @@ async function getMonitor(id: string): Promise<Monitor | null> {
         ...rawMonitor.area,
         geojson: rawMonitor.area.geojson as FeatureCollection | null,
       },
+      isWatched: user ? rawMonitor.watchers.length > 0 : false,
+      watchersCount: rawMonitor._count.watchers,
     });
   } catch (error) {
     console.error("Error fetching monitor:", error);
@@ -81,6 +96,11 @@ export default async function MonitorPage({
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
+                  <MonitorWatchButton
+                    monitorId={monitor.id}
+                    isWatched={monitor.isWatched || false}
+                    isPublic={monitor.isPublic}
+                  />
                   <MonitorRefreshButton
                     monitorId={monitor.id}
                     isActive={monitor.isActive}
@@ -112,7 +132,7 @@ export default async function MonitorPage({
                 </p>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
                 <div className="bg-muted/50 p-4 rounded-lg">
                   <h3 className="font-semibold text-sm uppercase tracking-wide mb-2">
                     Category
@@ -139,6 +159,16 @@ export default async function MonitorPage({
                     {monitor.dataCount.toLocaleString()}
                   </p>
                 </div>
+                {monitor.isPublic && (
+                  <div className="bg-muted/50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-sm uppercase tracking-wide mb-2">
+                      Watchers
+                    </h3>
+                    <p className="text-2xl font-bold">
+                      {monitor.watchersCount?.toLocaleString() || 0}
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="mt-6 flex justify-center"></div>

@@ -18,6 +18,7 @@ model User {
   sessions           Session[]
   verificationTokens VerificationToken[]
   monitors           Monitor[]
+  watchedMonitors    MonitorWatch[]
 
   @@map("users")
 }
@@ -93,10 +94,24 @@ model Monitor {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  template DataTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  area     Area         @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template DataTemplate   @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  area     Area           @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  watchers MonitorWatch[]
 
   @@unique([userId, templateId, areaId])
   @@map("monitors")
+}
+
+model MonitorWatch {
+  id        String   @id @default(cuid())
+  userId    String
+  monitorId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  monitor Monitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, monitorId])
+  @@map("monitor_watches")
 }

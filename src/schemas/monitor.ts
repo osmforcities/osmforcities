@@ -7,6 +7,14 @@ export const CreateMonitorSchema = z.object({
   isPublic: z.boolean().optional(),
 });
 
+export const WatchMonitorSchema = z.object({
+  monitorId: z.string(),
+});
+
+export const UnwatchMonitorSchema = z.object({
+  monitorId: z.string(),
+});
+
 export const MonitorSchema = z.object({
   id: z.string(),
   cityName: z.string(),
@@ -36,7 +44,20 @@ export const MonitorSchema = z.object({
     bounds: z.string().nullable(),
     geojson: GeoJSONFeatureCollectionSchema.nullable(),
   }),
+  watchers: z
+    .array(
+      z.object({
+        id: z.string(),
+        userId: z.string(),
+        createdAt: z.date(),
+      })
+    )
+    .optional(),
+  isWatched: z.boolean().optional(),
+  watchersCount: z.number().optional(),
 });
 
 export type Monitor = z.infer<typeof MonitorSchema>;
 export type CreateMonitorInput = z.infer<typeof CreateMonitorSchema>;
+export type WatchMonitorInput = z.infer<typeof WatchMonitorSchema>;
+export type UnwatchMonitorInput = z.infer<typeof UnwatchMonitorSchema>;
