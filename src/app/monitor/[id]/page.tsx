@@ -80,7 +80,11 @@ export default async function MonitorPage({
                       ` (${monitor.area.countryCode})`}
                   </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2">
+                  <MonitorRefreshButton
+                    monitorId={monitor.id}
+                    isActive={monitor.isActive}
+                  />
                   <span
                     className={`px-3 py-1 text-sm rounded-full ${
                       monitor.isActive
@@ -111,22 +115,12 @@ export default async function MonitorPage({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                 <div className="bg-muted/50 p-4 rounded-lg">
                   <h3 className="font-semibold text-sm uppercase tracking-wide mb-2">
-                    Data Count
-                  </h3>
-                  <p className="text-2xl font-bold">
-                    {monitor.dataCount.toLocaleString()}
-                  </p>
-                </div>
-
-                <div className="bg-muted/50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-sm uppercase tracking-wide mb-2">
                     Category
                   </h3>
                   <p className="text-lg capitalize">
                     {monitor.template.category}
                   </p>
                 </div>
-
                 <div className="bg-muted/50 p-4 rounded-lg">
                   <h3 className="font-semibold text-sm uppercase tracking-wide mb-2">
                     Last Checked
@@ -137,42 +131,17 @@ export default async function MonitorPage({
                       : "Never"}
                   </p>
                 </div>
-              </div>
-
-              <div className="mt-6 flex justify-center">
-                <MonitorRefreshButton
-                  monitorId={monitor.id}
-                  isActive={monitor.isActive}
-                />
-              </div>
-            </div>
-
-            <div className="border rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">
-                Monitor Information
-              </h2>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Created by:</span>
-                  <span>
-                    {monitor.user.name || monitor.user.email.split("@")[0]}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Created on:</span>
-                  <span>
-                    {new Date(monitor.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Monitor ID:</span>
-                  <span className="font-mono text-xs">{monitor.id}</span>
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-sm uppercase tracking-wide mb-2">
+                    Features
+                  </h3>
+                  <p className="text-2xl font-bold">
+                    {monitor.dataCount.toLocaleString()}
+                  </p>
                 </div>
               </div>
-            </div>
 
-            <div className="border rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">Data Visualization</h2>
+              <div className="mt-6 flex justify-center"></div>
               <MonitorMap monitor={monitor} />
             </div>
           </div>
