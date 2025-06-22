@@ -123,9 +123,27 @@ export function useMonitorActions() {
       );
       window.location.reload();
       return { success: result.success };
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error deleting monitor:", error);
-      alert("Failed to delete monitor");
+
+      if (error && typeof error === "object" && "response" in error) {
+        const apiError = error as {
+          response?: { status?: number; data?: { details?: string } };
+        };
+        if (
+          apiError.response?.status === 403 &&
+          apiError.response?.data?.details
+        ) {
+          alert(apiError.response.data.details);
+        } else if (apiError.response?.data?.details) {
+          alert(apiError.response.data.details);
+        } else {
+          alert("Failed to delete monitor");
+        }
+      } else {
+        alert("Failed to delete monitor");
+      }
+
       return {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",

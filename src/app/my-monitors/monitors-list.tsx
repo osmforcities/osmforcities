@@ -9,6 +9,10 @@ import { useMonitorActions } from "@/hooks/useMonitorActions";
 type MonitorWithTemplateAndArea = Monitor & {
   template: DataTemplate;
   area: Area;
+  _count: {
+    watchers: number;
+  };
+  canDelete: boolean;
 };
 
 type MonitorsListProps = {
@@ -94,13 +98,23 @@ export default function MonitorsList({ monitors }: MonitorsListProps) {
             >
               {monitor.isPublic ? "Make Private" : "Make Public"}
             </button>
-            <button
-              onClick={() => handleDelete(monitor.id)}
-              disabled={deletingId === monitor.id}
-              className="px-3 py-1 text-sm border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors disabled:opacity-50"
-            >
-              {deletingId === monitor.id ? "Deleting..." : "Delete"}
-            </button>
+            {monitor.canDelete ? (
+              <button
+                onClick={() => handleDelete(monitor.id)}
+                disabled={deletingId === monitor.id}
+                className="px-3 py-1 text-sm border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors disabled:opacity-50"
+              >
+                {deletingId === monitor.id ? "Deleting..." : "Delete"}
+              </button>
+            ) : (
+              <button
+                disabled
+                title={`Cannot delete monitor with ${monitor._count.watchers} watcher(s). Make it private first or ask watchers to unwatch it.`}
+                className="px-3 py-1 text-sm border border-gray-300 text-gray-400 cursor-not-allowed"
+              >
+                Delete
+              </button>
+            )}
           </div>
         </div>
       ))}

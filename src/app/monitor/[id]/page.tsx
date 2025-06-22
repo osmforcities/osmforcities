@@ -50,6 +50,9 @@ async function getMonitor(id: string): Promise<Monitor | null> {
       },
       isWatched: user ? rawMonitor.watchers.length > 0 : false,
       watchersCount: rawMonitor._count.watchers,
+      canDelete: user
+        ? user.id === rawMonitor.user.id && rawMonitor._count.watchers <= 1
+        : false,
     });
   } catch (error) {
     console.error("Error fetching monitor:", error);

@@ -23,9 +23,20 @@ export default async function MyMonitors() {
 
   const monitors = await prisma.monitor.findMany({
     where: { userId: user.id },
-    include: { template: true, area: true },
+    include: {
+      template: true,
+      area: true,
+      _count: {
+        select: { watchers: true },
+      },
+    },
     orderBy: { createdAt: "desc" },
   });
+
+  const monitorsWithDeleteFlag = monitors.map((monitor) => ({
+    ...monitor,
+    canDelete: monitor._count.watchers <= 1,
+  }));
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
@@ -67,7 +78,7 @@ export default async function MyMonitors() {
                 Create New Monitor
               </Link>
             </div>
-            <MonitorsList monitors={monitors} />
+            <MonitorsList monitors={monitorsWithDeleteFlag} />
           </div>
         </div>
       </div>

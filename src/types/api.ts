@@ -8,6 +8,7 @@ import {
 const ApiResponseSchema = z.object({
   success: z.boolean(),
   error: z.string().optional(),
+  details: z.string().optional(),
 });
 
 const MonitorsResponseSchema = z.array(MonitorSchema);

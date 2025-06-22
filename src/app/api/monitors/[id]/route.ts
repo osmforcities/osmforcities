@@ -120,15 +120,49 @@ export async function DELETE(
 
     const { id: monitorId } = await params;
 
-    // Delete the monitor (only if it belongs to the user)
-    const monitor = await prisma.monitor.deleteMany({
+    const monitor = await prisma.monitor.findUnique({
+      where: {
+        id: monitorId,
+        userId: session.user.id,
+      },
+      include: {
+        _count: {
+          select: { watchers: true },
+        },
+      },
+    });
+
+    if (!monitor) {
+      return NextResponse.json({ error: "Monitor not found" }, { status: 404 });
+    }
+
+    const otherWatchers = await prisma.monitorWatch.findMany({
+      where: {
+        monitorId: monitorId,
+        userId: {
+          not: session.user.id,
+        },
+      },
+    });
+
+    if (otherWatchers.length > 0) {
+      return NextResponse.json(
+        {
+          error: "Cannot delete monitor with watchers",
+          details: `This monitor has ${otherWatchers.length} watcher(s) and cannot be deleted. Please make it private first or contact the watchers to unwatch it.`,
+        },
+        { status: 403 }
+      );
+    }
+
+    const deletedMonitor = await prisma.monitor.deleteMany({
       where: {
         id: monitorId,
         userId: session.user.id,
       },
     });
 
-    if (monitor.count === 0) {
+    if (deletedMonitor.count === 0) {
       return NextResponse.json({ error: "Monitor not found" }, { status: 404 });
     }
 

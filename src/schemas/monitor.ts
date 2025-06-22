@@ -55,6 +55,7 @@ export const MonitorSchema = z.object({
     .optional(),
   isWatched: z.boolean().optional(),
   watchersCount: z.number().optional(),
+  canDelete: z.boolean().optional(),
 });
 
 export type Monitor = z.infer<typeof MonitorSchema>;
