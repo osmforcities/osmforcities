@@ -71,13 +71,7 @@ export async function executeOverpassQuery(
     );
   }
 
-  const validationResult = OverpassResponseSchema.safeParse(data);
-  if (!validationResult.success) {
-    console.error("Invalid Overpass response:", validationResult.error);
-    throw new Error("Invalid response format from Overpass API");
-  }
-
-  return validationResult.data;
+  return data as OverpassResponse;
 }
 
 export function convertOverpassToGeoJSON(
