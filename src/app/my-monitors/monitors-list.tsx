@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { useMonitorActions } from "@/hooks/useMonitorsActions";
 
 import { Monitor, DataTemplate, Area } from "@prisma/client";
+import { useMonitorActions } from "@/hooks/useMonitorActions";
 
 type MonitorWithTemplateAndArea = Monitor & {
   template: DataTemplate;

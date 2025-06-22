@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
+import { useMonitorActions } from "@/hooks/useMonitorActions";
 
 interface MonitorWatchButtonProps {
   monitorId: string;
@@ -16,55 +17,25 @@ export default function MonitorWatchButton({
   isPublic,
 }: MonitorWatchButtonProps) {
   const [isWatched, setIsWatched] = useState(initialIsWatched);
-  const [isLoading, setIsLoading] = useState(false);
+  const { watchMonitor, unwatchMonitor, isLoading } = useMonitorActions();
 
   const handleWatch = async () => {
     if (!isPublic) return;
 
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/monitors/${monitorId}/watch`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ monitorId }),
-      });
-
-      if (response.ok) {
-        setIsWatched(true);
-      } else {
-        const error = await response.json();
-        console.error("Error watching monitor:", error);
-      }
-    } catch (error) {
-      console.error("Error watching monitor:", error);
-    } finally {
-      setIsLoading(false);
+    const result = await watchMonitor(monitorId);
+    if (result.success) {
+      setIsWatched(true);
+    } else {
+      console.error("Failed to watch monitor:", result.error);
     }
   };
 
   const handleUnwatch = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/monitors/${monitorId}/watch`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ monitorId }),
-      });
-
-      if (response.ok) {
-        setIsWatched(false);
-      } else {
-        const error = await response.json();
-        console.error("Error unwatching monitor:", error);
-      }
-    } catch (error) {
-      console.error("Error unwatching monitor:", error);
-    } finally {
-      setIsLoading(false);
+    const result = await unwatchMonitor(monitorId);
+    if (result.success) {
+      setIsWatched(false);
+    } else {
+      console.error("Failed to unwatch monitor:", result.error);
     }
   };
 

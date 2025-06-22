@@ -20,10 +20,10 @@ export const MonitorSchema = z.object({
   cityName: z.string(),
   isActive: z.boolean(),
   isPublic: z.boolean(),
-  lastChecked: z.date().nullable(),
+  lastChecked: z.coerce.date().nullable(),
   dataCount: z.number(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
   geojson: GeoJSONFeatureCollectionSchema.nullable(),
   bbox: z.array(z.number()).length(4).nullable(),
   template: z.object({
@@ -49,7 +49,7 @@ export const MonitorSchema = z.object({
       z.object({
         id: z.string(),
         userId: z.string(),
-        createdAt: z.date(),
+        createdAt: z.coerce.date(),
       })
     )
     .optional(),
