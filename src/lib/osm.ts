@@ -37,6 +37,9 @@ export async function fetchOsmRelationData(relationId: number) {
 
   if (!rel || rel.type !== "relation") return null;
 
+  // Convert to GeoJSON
+  const geojson = convertOverpassToGeoJSON(validationResult.data);
+
   return {
     name: rel.tags?.name || `Relation ${relationId}`,
     countryCode: rel.tags?.["ISO3166-1"] || null,
@@ -44,6 +47,7 @@ export async function fetchOsmRelationData(relationId: number) {
       ? `${rel.bounds.minlat},${rel.bounds.minlon},${rel.bounds.maxlat},${rel.bounds.maxlon}`
       : null,
     geojson: rel,
+    convertedGeojson: geojson,
   };
 }
 

@@ -4,7 +4,12 @@ import { findSessionByToken } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { CreateMonitorSchema } from "@/schemas/monitor";
 import { Prisma } from "@prisma/client";
-import { fetchOsmRelationData } from "@/lib/osm";
+import {
+  fetchOsmRelationData,
+  executeOverpassQuery,
+  convertOverpassToGeoJSON,
+} from "@/lib/osm";
+import { calculateBbox } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
   const cookieStore = await cookies();
@@ -54,7 +59,7 @@ export async function POST(req: NextRequest) {
           name: fetched.name,
           bounds: fetched.bounds,
           countryCode: fetched.countryCode,
-          geojson: fetched.geojson,
+          geojson: JSON.parse(JSON.stringify(fetched.convertedGeojson)),
         },
       });
     } catch (err) {
@@ -67,6 +72,15 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const queryString = template.overpassQuery.replace(
+      /\{OSM_RELATION_ID\}/g,
+      area.id.toString()
+    );
+
+    const overpassData = await executeOverpassQuery(queryString);
+    const geojsonData = convertOverpassToGeoJSON(overpassData);
+    const bbox = calculateBbox(geojsonData);
+
     const monitor = await prisma.monitor.create({
       data: {
         userId: session.user.id,
@@ -74,6 +88,10 @@ export async function POST(req: NextRequest) {
         areaId: area.id,
         cityName: area.name,
         isPublic: isPublic ?? false,
+        geojson: JSON.parse(JSON.stringify(geojsonData)),
+        bbox: bbox ? JSON.parse(JSON.stringify(bbox)) : null,
+        dataCount: overpassData.elements.length,
+        lastChecked: new Date(),
       },
       include: { template: true },
     });

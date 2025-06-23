@@ -37,13 +37,15 @@ export const OSMWaySchema = z.object({
 export const OSMRelationSchema = z.object({
   type: z.literal("relation"),
   id: z.number(),
-  members: z.array(
-    z.object({
-      type: z.enum(["node", "way", "relation"]),
-      ref: z.number(),
-      role: z.string(),
-    })
-  ),
+  members: z
+    .array(
+      z.object({
+        type: z.enum(["node", "way", "relation"]),
+        ref: z.number(),
+        role: z.string(),
+      })
+    )
+    .optional(),
   geometry: z
     .array(
       z.array(
