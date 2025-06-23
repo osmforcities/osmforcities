@@ -127,6 +127,27 @@ export function convertOverpassToGeoJSON(
   }
 }
 
+export function extractLatestTimestamp(
+  overpassData: OverpassData
+): Date | null {
+  if (!overpassData.elements || !Array.isArray(overpassData.elements)) {
+    return null;
+  }
+
+  let latestTimestamp: Date | null = null;
+
+  for (const element of overpassData.elements) {
+    if (element.timestamp) {
+      const elementDate = new Date(element.timestamp);
+      if (!latestTimestamp || elementDate > latestTimestamp) {
+        latestTimestamp = elementDate;
+      }
+    }
+  }
+
+  return latestTimestamp;
+}
+
 export type { OSMNode, OSMWay, OSMRelation, OSMElement } from "@/types/osm";
 export type {
   OverpassResponse,

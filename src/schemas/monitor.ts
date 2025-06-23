@@ -22,6 +22,7 @@ export const MonitorSchema = z.object({
   isPublic: z.boolean(),
   lastChecked: z.coerce.date().nullable(),
   dataCount: z.number(),
+  lastEdited: z.date().nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
   geojson: GeoJSONFeatureCollectionSchema.nullable(),

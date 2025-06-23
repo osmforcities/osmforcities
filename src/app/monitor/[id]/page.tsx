@@ -156,6 +156,31 @@ export default async function MonitorPage({
                 </div>
                 <div className="bg-muted/50 p-4 rounded-lg">
                   <h3 className="font-semibold text-sm uppercase tracking-wide mb-2">
+                    Last Edited
+                  </h3>
+                  <p className="text-lg">
+                    {monitor.lastEdited ? (
+                      <>
+                        <span className="font-medium">
+                          {Math.floor(
+                            (Date.now() -
+                              new Date(monitor.lastEdited).getTime()) /
+                              (1000 * 60 * 60 * 24)
+                          )}{" "}
+                          days ago
+                        </span>
+                        <br />
+                        <span className="text-sm text-muted-foreground">
+                          {new Date(monitor.lastEdited).toLocaleDateString()}
+                        </span>
+                      </>
+                    ) : (
+                      "Unknown"
+                    )}
+                  </p>
+                </div>
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-sm uppercase tracking-wide mb-2">
                     Features
                   </h3>
                   <p className="text-2xl font-bold">
@@ -172,6 +197,14 @@ export default async function MonitorPage({
                     </p>
                   </div>
                 )}
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-sm uppercase tracking-wide mb-2">
+                    Created
+                  </h3>
+                  <p className="text-lg">
+                    {new Date(monitor.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
 
               <div className="mt-6 flex justify-center"></div>
