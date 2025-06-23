@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
         bbox: bbox ? JSON.parse(JSON.stringify(bbox)) : null,
         dataCount: overpassData.elements.length,
         lastChecked: new Date(),
-        stats: datasetStats,
+        stats: JSON.parse(JSON.stringify(datasetStats)),
       },
       include: { template: true },
     });

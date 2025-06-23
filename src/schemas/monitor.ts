@@ -10,6 +10,25 @@ export const MonitorStatsSchema = z.object({
   mostRecentElement: z.coerce.date().nullable(),
   averageElementAge: z.number().nullable(),
   averageElementVersion: z.number().nullable(),
+
+  // Recent activity metrics (last 3 months)
+  recentActivity: z
+    .object({
+      elementsEdited: z.number(),
+      changesets: z.number(),
+      editors: z.number(),
+    })
+    .optional(),
+
+  // Quality indicators
+  qualityMetrics: z
+    .object({
+      staleElementsCount: z.number(),
+      recentlyUpdatedElementsCount: z.number(),
+      staleElementsPercentage: z.number(),
+      recentlyUpdatedElementsPercentage: z.number(),
+    })
+    .optional(),
 });
 
 export const CreateMonitorSchema = z.object({

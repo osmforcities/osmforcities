@@ -70,7 +70,7 @@ export async function POST(
       data: {
         dataCount: overpassData.elements.length,
         lastChecked: new Date(),
-        stats: datasetStats,
+        stats: JSON.parse(JSON.stringify(datasetStats)),
         geojson: JSON.parse(JSON.stringify(geojsonData)),
         bbox: bbox ? JSON.parse(JSON.stringify(bbox)) : null,
         updatedAt: new Date(),

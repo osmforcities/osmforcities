@@ -134,6 +134,21 @@ export interface DatasetStats {
   mostRecentElement: Date | null;
   averageElementAge: number | null;
   averageElementVersion: number | null;
+
+  // Recent activity metrics (last 3 months)
+  recentActivity: {
+    elementsEdited: number;
+    changesets: number;
+    editors: number;
+  };
+
+  // Quality indicators
+  qualityMetrics: {
+    staleElementsCount: number; // Elements not updated in 2+ years
+    recentlyUpdatedElementsCount: number; // Elements updated in last year
+    staleElementsPercentage: number;
+    recentlyUpdatedElementsPercentage: number;
+  };
 }
 
 export function extractDatasetStats(overpassData: OverpassData): DatasetStats {
@@ -146,6 +161,17 @@ export function extractDatasetStats(overpassData: OverpassData): DatasetStats {
       mostRecentElement: null,
       averageElementAge: null,
       averageElementVersion: null,
+      recentActivity: {
+        elementsEdited: 0,
+        changesets: 0,
+        editors: 0,
+      },
+      qualityMetrics: {
+        staleElementsCount: 0,
+        recentlyUpdatedElementsCount: 0,
+        staleElementsPercentage: 0,
+        recentlyUpdatedElementsPercentage: 0,
+      },
     };
   }
 
@@ -156,6 +182,18 @@ export function extractDatasetStats(overpassData: OverpassData): DatasetStats {
   let mostRecentTimestamp: Date | null = null;
   let totalAge = 0;
   let elementsWithAge = 0;
+
+  // Recent activity tracking (last 3 months)
+  const now = new Date();
+  const threeMonthsAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+  const twoYearsAgo = new Date(now.getTime() - 2 * 365 * 24 * 60 * 60 * 1000);
+  const oneYearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+
+  const recentEditors = new Set<string>();
+  const recentChangesets = new Set<number>();
+  let elementsEdited3m = 0;
+  let staleElementsCount = 0;
+  let recentlyUpdatedElementsCount = 0;
 
   for (const element of overpassData.elements) {
     if (element.user) {
@@ -185,6 +223,21 @@ export function extractDatasetStats(overpassData: OverpassData): DatasetStats {
         (Date.now() - elementDate.getTime()) / (1000 * 60 * 60 * 24);
       totalAge += ageInDays;
       elementsWithAge++;
+
+      // Recent activity tracking (last 3 months)
+      if (elementDate >= threeMonthsAgo) {
+        elementsEdited3m++;
+        if (element.user) recentEditors.add(element.user);
+        if (element.changeset) recentChangesets.add(element.changeset);
+      }
+
+      // Quality metrics
+      if (elementDate < twoYearsAgo) {
+        staleElementsCount++;
+      }
+      if (elementDate >= oneYearAgo) {
+        recentlyUpdatedElementsCount++;
+      }
     }
   }
 
@@ -203,6 +256,23 @@ export function extractDatasetStats(overpassData: OverpassData): DatasetStats {
     mostRecentElement: mostRecentTimestamp,
     averageElementAge,
     averageElementVersion,
+    recentActivity: {
+      elementsEdited: elementsEdited3m,
+      changesets: recentChangesets.size,
+      editors: recentEditors.size,
+    },
+    qualityMetrics: {
+      staleElementsCount,
+      recentlyUpdatedElementsCount,
+      staleElementsPercentage:
+        overpassData.elements.length > 0
+          ? (staleElementsCount / overpassData.elements.length) * 100
+          : 0,
+      recentlyUpdatedElementsPercentage:
+        overpassData.elements.length > 0
+          ? (recentlyUpdatedElementsCount / overpassData.elements.length) * 100
+          : 0,
+    },
   };
 }
 
