@@ -89,9 +89,9 @@ model Monitor {
   isPublic    Boolean   @default(false)
   lastChecked DateTime?
   dataCount   Int       @default(0)
-  lastEdited  DateTime?
   geojson     Json?
   bbox        Json?
+  stats       Json?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 

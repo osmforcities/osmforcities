@@ -37,7 +37,6 @@ export async function fetchOsmRelationData(relationId: number) {
 
   if (!rel || rel.type !== "relation") return null;
 
-  // Convert to GeoJSON
   const geojson = convertOverpassToGeoJSON(validationResult.data);
 
   return {
@@ -127,25 +126,84 @@ export function convertOverpassToGeoJSON(
   }
 }
 
-export function extractLatestTimestamp(
-  overpassData: OverpassData
-): Date | null {
+export interface DatasetStats {
+  editorsCount: number;
+  elementVersionsCount: number;
+  changesetsCount: number;
+  oldestElement: Date | null;
+  mostRecentElement: Date | null;
+  averageElementAge: number | null;
+  averageElementVersion: number | null;
+}
+
+export function extractDatasetStats(overpassData: OverpassData): DatasetStats {
   if (!overpassData.elements || !Array.isArray(overpassData.elements)) {
-    return null;
+    return {
+      editorsCount: 0,
+      elementVersionsCount: 0,
+      changesetsCount: 0,
+      oldestElement: null,
+      mostRecentElement: null,
+      averageElementAge: null,
+      averageElementVersion: null,
+    };
   }
 
-  let latestTimestamp: Date | null = null;
+  const editors = new Set<string>();
+  const changesets = new Set<number>();
+  let totalVersions = 0;
+  let oldestTimestamp: Date | null = null;
+  let mostRecentTimestamp: Date | null = null;
+  let totalAge = 0;
+  let elementsWithAge = 0;
 
   for (const element of overpassData.elements) {
+    if (element.user) {
+      editors.add(element.user);
+    }
+
+    if (element.version) {
+      totalVersions += element.version;
+    }
+
+    if (element.changeset) {
+      changesets.add(element.changeset);
+    }
+
     if (element.timestamp) {
       const elementDate = new Date(element.timestamp);
-      if (!latestTimestamp || elementDate > latestTimestamp) {
-        latestTimestamp = elementDate;
+
+      if (!oldestTimestamp || elementDate < oldestTimestamp) {
+        oldestTimestamp = elementDate;
       }
+
+      if (!mostRecentTimestamp || elementDate > mostRecentTimestamp) {
+        mostRecentTimestamp = elementDate;
+      }
+
+      const ageInDays =
+        (Date.now() - elementDate.getTime()) / (1000 * 60 * 60 * 24);
+      totalAge += ageInDays;
+      elementsWithAge++;
     }
   }
 
-  return latestTimestamp;
+  const averageElementAge =
+    elementsWithAge > 0 ? totalAge / elementsWithAge : null;
+  const averageElementVersion =
+    overpassData.elements.length > 0
+      ? totalVersions / overpassData.elements.length
+      : null;
+
+  return {
+    editorsCount: editors.size,
+    elementVersionsCount: totalVersions,
+    changesetsCount: changesets.size,
+    oldestElement: oldestTimestamp,
+    mostRecentElement: mostRecentTimestamp,
+    averageElementAge,
+    averageElementVersion,
+  };
 }
 
 export type { OSMNode, OSMWay, OSMRelation, OSMElement } from "@/types/osm";

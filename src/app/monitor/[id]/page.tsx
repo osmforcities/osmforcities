@@ -159,19 +159,21 @@ export default async function MonitorPage({
                     Last Edited
                   </h3>
                   <p className="text-lg">
-                    {monitor.lastEdited ? (
+                    {monitor.stats?.lastEdited ? (
                       <>
                         <span className="font-medium">
                           {Math.floor(
                             (Date.now() -
-                              new Date(monitor.lastEdited).getTime()) /
+                              new Date(monitor.stats.lastEdited).getTime()) /
                               (1000 * 60 * 60 * 24)
                           )}{" "}
                           days ago
                         </span>
                         <br />
                         <span className="text-sm text-muted-foreground">
-                          {new Date(monitor.lastEdited).toLocaleDateString()}
+                          {new Date(
+                            monitor.stats.lastEdited
+                          ).toLocaleDateString()}
                         </span>
                       </>
                     ) : (
@@ -196,6 +198,36 @@ export default async function MonitorPage({
                       {monitor.watchersCount?.toLocaleString() || 0}
                     </p>
                   </div>
+                )}
+                {monitor.stats && (
+                  <>
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <h3 className="font-semibold text-sm uppercase tracking-wide mb-2">
+                        Editors
+                      </h3>
+                      <p className="text-2xl font-bold">
+                        {monitor.stats.editorsCount.toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <h3 className="font-semibold text-sm uppercase tracking-wide mb-2">
+                        Changesets
+                      </h3>
+                      <p className="text-2xl font-bold">
+                        {monitor.stats.changesetsCount.toLocaleString()}
+                      </p>
+                    </div>
+                    {monitor.stats.averageElementAge && (
+                      <div className="bg-muted/50 p-4 rounded-lg">
+                        <h3 className="font-semibold text-sm uppercase tracking-wide mb-2">
+                          Avg Age
+                        </h3>
+                        <p className="text-lg">
+                          {Math.round(monitor.stats.averageElementAge)} days
+                        </p>
+                      </div>
+                    )}
+                  </>
                 )}
                 <div className="bg-muted/50 p-4 rounded-lg">
                   <h3 className="font-semibold text-sm uppercase tracking-wide mb-2">

@@ -1,6 +1,17 @@
 import { z } from "zod";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 
+export const MonitorStatsSchema = z.object({
+  lastEdited: z.coerce.date().nullable().optional(),
+  editorsCount: z.number(),
+  elementVersionsCount: z.number(),
+  changesetsCount: z.number(),
+  oldestElement: z.coerce.date().nullable(),
+  mostRecentElement: z.coerce.date().nullable(),
+  averageElementAge: z.number().nullable(),
+  averageElementVersion: z.number().nullable(),
+});
+
 export const CreateMonitorSchema = z.object({
   templateId: z.string(),
   osmRelationId: z.number(),
@@ -22,7 +33,7 @@ export const MonitorSchema = z.object({
   isPublic: z.boolean(),
   lastChecked: z.coerce.date().nullable(),
   dataCount: z.number(),
-  lastEdited: z.date().nullable(),
+  stats: MonitorStatsSchema.nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
   geojson: GeoJSONFeatureCollectionSchema.nullable(),
@@ -60,6 +71,7 @@ export const MonitorSchema = z.object({
 });
 
 export type Monitor = z.infer<typeof MonitorSchema>;
+export type MonitorStats = z.infer<typeof MonitorStatsSchema>;
 export type CreateMonitorInput = z.infer<typeof CreateMonitorSchema>;
 export type WatchMonitorInput = z.infer<typeof WatchMonitorSchema>;
 export type UnwatchMonitorInput = z.infer<typeof UnwatchMonitorSchema>;

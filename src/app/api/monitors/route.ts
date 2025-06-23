@@ -8,7 +8,7 @@ import {
   fetchOsmRelationData,
   executeOverpassQuery,
   convertOverpassToGeoJSON,
-  extractLatestTimestamp,
+  extractDatasetStats,
 } from "@/lib/osm";
 import { calculateBbox } from "@/lib/utils";
 
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     const overpassData = await executeOverpassQuery(queryString);
     const geojsonData = convertOverpassToGeoJSON(overpassData);
     const bbox = calculateBbox(geojsonData);
-    const lastEdited = extractLatestTimestamp(overpassData);
+    const datasetStats = extractDatasetStats(overpassData);
 
     const monitor = await prisma.monitor.create({
       data: {
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
         bbox: bbox ? JSON.parse(JSON.stringify(bbox)) : null,
         dataCount: overpassData.elements.length,
         lastChecked: new Date(),
-        lastEdited: lastEdited,
+        stats: datasetStats,
       },
       include: { template: true },
     });
