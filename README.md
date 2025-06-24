@@ -23,12 +23,27 @@ cp .env.example .env.local
 - `DATABASE_URL`: Your PostgreSQL connection string
 - `NEXTAUTH_SECRET`: A secure random string for session encryption
 - `NEXTAUTH_URL`: Your application URL (use `http://localhost:3000` for local development)
+- `CRON_ROUTE_SECRET`: **Generate a new random string** (e.g. with `openssl rand -hex 32`) and use it as your API secret for the cron job
+
+Example to generate a secret:
+
+```bash
+openssl rand -hex 32
+```
 
 Optional settings for email functionality:
 
 - AWS SES credentials (`EMAIL_SES_*`) for production email sending
 - `EMAIL_FORCE_REAL=true` to send real emails in development
 - `EMAIL_DISABLE=true` to disable all email sending
+
+3. (Optional) Add AWS SES credentials for email functionality.
+
+4. **GitHub Actions Setup for Cron:**
+   - Go to your repo's `Settings` → `Secrets and variables` → `Actions`
+   - Add:
+     - `CRON_ROUTE_SECRET`: The same value as in your `.env.local`
+     - `CRON_ENDPOINT_URL`: Full URL to your `/api/cron` endpoint (e.g. `https://yourdomain.com/api/cron`)
 
 ### Installation
 
