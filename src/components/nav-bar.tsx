@@ -31,6 +31,11 @@ function LoggedInNav() {
       <Button variant="ghost" asChild>
         <Link href="/about">About</Link>
       </Button>
+      <Button variant="ghost" asChild>
+        <Link href="/preferences" className="flex items-center gap-2">
+          Preferences
+        </Link>
+      </Button>
       <form action="/api/auth/logout" method="POST">
         <Button type="submit" variant="outline" size="sm">
           Sign Out

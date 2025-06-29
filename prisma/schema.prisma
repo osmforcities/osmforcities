@@ -8,14 +8,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ReportFrequency {
+  DAILY
+  WEEKLY
+}
+
 model User {
-  id           String    @id @default(cuid())
-  email        String    @unique
-  name         String?
-  isAdmin      Boolean   @default(false)
-  lastNotified DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id               String          @id @default(cuid())
+  email            String          @unique
+  name             String?
+  isAdmin          Boolean         @default(false)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  lastReportSent   DateTime?
+  reportsEnabled   Boolean         @default(false)
+  reportsFrequency ReportFrequency @default(DAILY)
 
   sessions           Session[]
   verificationTokens VerificationToken[]
