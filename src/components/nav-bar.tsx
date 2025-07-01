@@ -30,6 +30,9 @@ function LoggedInNav() {
   return (
     <>
       <Button variant="ghost" asChild>
+        <Link href="/about">About</Link>
+      </Button>
+      <Button variant="ghost" asChild>
         <Link href="/my-monitors">My Monitors</Link>
       </Button>
       <Button variant="ghost" asChild>
@@ -49,8 +52,13 @@ function LoggedInNav() {
 
 function LoggedOutNav() {
   return (
-    <Button asChild>
-      <Link href="/enter">Sign In</Link>
-    </Button>
+    <>
+      <Button variant="ghost" asChild>
+        <Link href="/about">About</Link>
+      </Button>
+      <Button asChild>
+        <Link href="/enter">Sign In</Link>
+      </Button>
+    </>
   );
 }
