@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { MonitorStats } from "@/schemas/monitor";
+import { DatasetStats } from "@/schemas/dataset";
 
 export interface DatasetStat {
   id: string;
@@ -10,7 +10,7 @@ export interface DatasetStat {
   lastChanged: Date | null;
   lastChecked: Date | null;
   isPublic: boolean;
-  stats: MonitorStats | null;
+  stats: DatasetStats | null;
 }
 
 export interface DatasetStatsResult {
@@ -40,7 +40,7 @@ export async function getFirstUserAndDatasetStats(): Promise<DatasetStatsResult 
     return null; // No users need notification
   }
 
-  const monitors = await prisma.monitor.findMany({
+  const datasets = await prisma.dataset.findMany({
     include: {
       template: true,
       area: true,
@@ -52,24 +52,24 @@ export async function getFirstUserAndDatasetStats(): Promise<DatasetStatsResult 
     orderBy: { updatedAt: "desc" },
   });
 
-  const datasetStats = monitors.map((monitor) => {
-    const monitorWithStats = monitor as typeof monitor & {
-      stats: MonitorStats | null;
+  const datasetStats = datasets.map((dataset) => {
+    const datasetWithStats = dataset as typeof dataset & {
+      stats: DatasetStats | null;
     };
-    const stats = monitorWithStats.stats;
+    const stats = datasetWithStats.stats;
     const lastChanged = stats?.mostRecentElement
       ? new Date(stats.mostRecentElement)
       : null;
 
     return {
-      id: monitor.id,
-      name: monitor.template.name,
-      cityName: monitor.cityName,
-      areaName: monitor.area.name,
-      dataCount: monitor.dataCount,
+      id: dataset.id,
+      name: dataset.template.name,
+      cityName: dataset.cityName,
+      areaName: dataset.area.name,
+      dataCount: dataset.dataCount,
       lastChanged,
-      lastChecked: monitor.lastChecked,
-      isPublic: monitor.isPublic,
+      lastChecked: dataset.lastChecked,
+      isPublic: dataset.isPublic,
       stats: stats,
     };
   });

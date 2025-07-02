@@ -1,5 +1,5 @@
 import { DatasetStatsResult } from "./get-dataset-stats";
-import { MonitorStats } from "@/schemas/monitor";
+import { DatasetStats } from "@/schemas/dataset";
 
 export interface EmailContent {
   html: string;
@@ -13,7 +13,7 @@ function isRecentlyEdited(lastChanged: Date | null): boolean {
   return lastChanged >= oneDayAgo;
 }
 
-function hasRecentActivity(stats: MonitorStats | null): boolean {
+function hasRecentActivity(stats: DatasetStats | null): boolean {
   if (!stats?.recentActivity) return false;
   return (
     stats.recentActivity.elementsEdited > 0 ||

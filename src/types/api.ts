@@ -1,9 +1,9 @@
 import { z } from "zod";
 import {
-  MonitorSchema,
-  WatchMonitorSchema,
-  UnwatchMonitorSchema,
-} from "@/schemas/monitor";
+  DatasetSchema,
+  WatchDatasetSchema,
+  UnwatchDatasetSchema,
+} from "@/schemas/dataset";
 
 const ApiResponseSchema = z.object({
   success: z.boolean(),
@@ -11,16 +11,16 @@ const ApiResponseSchema = z.object({
   details: z.string().optional(),
 });
 
-const MonitorsResponseSchema = z.array(MonitorSchema);
+const DatasetsResponseSchema = z.array(DatasetSchema);
 
-const MonitorResponseSchema = MonitorSchema;
+const DatasetResponseSchema = DatasetSchema;
 
 const WatchResponseSchema = z.object({
   success: z.boolean(),
   watch: z.object({
     id: z.string(),
     userId: z.string(),
-    monitorId: z.string(),
+    datasetId: z.string(),
     createdAt: z.coerce.date(),
   }),
 });
@@ -31,29 +31,29 @@ const RefreshResponseSchema = z.object({
   lastChecked: z.coerce.date().optional(),
 });
 
-const UpdateMonitorSchema = z.object({
+const UpdateDatasetSchema = z.object({
   isActive: z.boolean().optional(),
   isPublic: z.boolean().optional(),
 });
 
-const UpdateMonitorResponseSchema = ApiResponseSchema;
+const UpdateDatasetResponseSchema = ApiResponseSchema;
 
 export type ApiResponse = z.infer<typeof ApiResponseSchema>;
-export type MonitorResponse = z.infer<typeof MonitorResponseSchema>;
-export type MonitorsResponse = z.infer<typeof MonitorsResponseSchema>;
+export type DatasetResponse = z.infer<typeof DatasetResponseSchema>;
+export type DatasetsResponse = z.infer<typeof DatasetsResponseSchema>;
 export type WatchResponse = z.infer<typeof WatchResponseSchema>;
 export type RefreshResponse = z.infer<typeof RefreshResponseSchema>;
-export type UpdateMonitorInput = z.infer<typeof UpdateMonitorSchema>;
-export type UpdateMonitorResponse = z.infer<typeof UpdateMonitorResponseSchema>;
+export type UpdateDatasetInput = z.infer<typeof UpdateDatasetSchema>;
+export type UpdateDatasetResponse = z.infer<typeof UpdateDatasetResponseSchema>;
 
 export {
   ApiResponseSchema,
-  MonitorResponseSchema,
-  MonitorsResponseSchema,
+  DatasetResponseSchema,
+  DatasetsResponseSchema,
   WatchResponseSchema,
   RefreshResponseSchema,
-  UpdateMonitorSchema,
-  UpdateMonitorResponseSchema,
-  WatchMonitorSchema,
-  UnwatchMonitorSchema,
+  UpdateDatasetSchema,
+  UpdateDatasetResponseSchema,
+  WatchDatasetSchema,
+  UnwatchDatasetSchema,
 };

@@ -13,9 +13,9 @@ export const metadata: Metadata = {
     "Track changes in OpenStreetMap datasets across cities worldwide.",
 };
 
-async function getUserMonitors(userId: string) {
-  const [createdMonitors, watchedMonitors] = await Promise.all([
-    prisma.monitor.findMany({
+async function getUserDatasets(userId: string) {
+  const [createdDatasets, watchedDatasets] = await Promise.all([
+    prisma.dataset.findMany({
       where: { userId },
       include: {
         template: true,
@@ -27,10 +27,10 @@ async function getUserMonitors(userId: string) {
       orderBy: { createdAt: "desc" },
       take: 5,
     }),
-    prisma.monitorWatch.findMany({
+    prisma.datasetWatch.findMany({
       where: { userId },
       include: {
-        monitor: {
+        dataset: {
           include: {
             template: true,
             area: true,
@@ -52,7 +52,7 @@ async function getUserMonitors(userId: string) {
     }),
   ]);
 
-  return { createdMonitors, watchedMonitors };
+  return { createdDatasets, watchedDatasets };
 }
 
 export default async function Home() {
@@ -81,7 +81,7 @@ export default async function Home() {
     );
   }
 
-  const { createdMonitors, watchedMonitors } = await getUserMonitors(user.id);
+  const { createdDatasets, watchedDatasets } = await getUserDatasets(user.id);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
@@ -93,97 +93,97 @@ export default async function Home() {
                 Welcome back
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Here are your monitors and datasets you're following
+                Here are your datasets and datasets you're following
               </p>
             </div>
             <Button asChild>
               <Link
-                href="/my-monitors/create"
+                href="/my-datasets/create"
                 className="flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" />
-                Create Monitor
+                Create Dataset
               </Link>
             </Button>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* Created Monitors */}
+            {/* Created Datasets */}
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <h2 className="text-xl font-semibold text-black dark:text-white">
-                  Your Monitors
+                  Your Datasets
                 </h2>
-                {createdMonitors.length > 0 && (
+                {createdDatasets.length > 0 && (
                   <span className="text-sm text-gray-500">
-                    ({createdMonitors.length})
+                    ({createdDatasets.length})
                   </span>
                 )}
               </div>
 
-              {createdMonitors.length === 0 ? (
+              {createdDatasets.length === 0 ? (
                 <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-6 text-center">
                   <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    You haven't created any monitors yet.
+                    You haven't created any datasets yet.
                   </p>
                   <Button asChild>
-                    <Link href="/my-monitors/create">
-                      Create Your First Monitor
+                    <Link href="/my-datasets/create">
+                      Create Your First Dataset
                     </Link>
                   </Button>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {createdMonitors.map((monitor) => (
+                  {createdDatasets.map((dataset) => (
                     <div
-                      key={monitor.id}
+                      key={dataset.id}
                       className="border border-gray-200 dark:border-gray-800 rounded-lg p-4 hover:shadow-sm transition-shadow"
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div>
                           <h3 className="font-semibold text-black dark:text-white">
-                            {monitor.template.name} in {monitor.cityName}
-                            {monitor.area.countryCode &&
-                              ` (${monitor.area.countryCode})`}
+                            {dataset.template.name} in {dataset.cityName}
+                            {dataset.area.countryCode &&
+                              ` (${dataset.area.countryCode})`}
                           </h3>
                           <p className="text-sm text-gray-600 dark:text-gray-400 capitalize">
-                            {monitor.template.category}
+                            {dataset.template.category}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
                           <span
                             className={`px-2 py-1 text-xs rounded ${
-                              monitor.isActive
+                              dataset.isActive
                                 ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                                 : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
                             }`}
                           >
-                            {monitor.isActive ? "Active" : "Inactive"}
+                            {dataset.isActive ? "Active" : "Inactive"}
                           </span>
                           <span
                             className={`px-2 py-1 text-xs rounded ${
-                              monitor.isPublic
+                              dataset.isPublic
                                 ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                                 : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
                             }`}
                           >
-                            {monitor.isPublic ? "Public" : "Private"}
+                            {dataset.isPublic ? "Public" : "Private"}
                           </span>
                         </div>
                       </div>
 
                       <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
-                        <span>Data count: {monitor.dataCount}</span>
+                        <span>Data count: {dataset.dataCount}</span>
                         <Button size="sm" variant="ghost" asChild>
-                          <Link href={`/monitor/${monitor.id}`}>View</Link>
+                          <Link href={`/dataset/${dataset.id}`}>View</Link>
                         </Button>
                       </div>
                     </div>
                   ))}
-                  {createdMonitors.length >= 5 && (
+                  {createdDatasets.length >= 5 && (
                     <div className="text-center pt-2">
                       <Button variant="outline" size="sm" asChild>
-                        <Link href="/my-monitors">View All</Link>
+                        <Link href="/my-datasets">View All</Link>
                       </Button>
                     </div>
                   )}
@@ -191,75 +191,75 @@ export default async function Home() {
               )}
             </div>
 
-            {/* Watched Monitors */}
+            {/* Watched Datasets */}
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <Eye className="h-5 w-5 text-blue-500" />
                 <h2 className="text-xl font-semibold text-black dark:text-white">
                   Following
                 </h2>
-                {watchedMonitors.length > 0 && (
+                {watchedDatasets.length > 0 && (
                   <span className="text-sm text-gray-500">
-                    ({watchedMonitors.length})
+                    ({watchedDatasets.length})
                   </span>
                 )}
               </div>
 
-              {watchedMonitors.length === 0 ? (
+              {watchedDatasets.length === 0 ? (
                 <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-6 text-center">
                   <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    You're not following any monitors yet.
+                    You're not following any datasets yet.
                   </p>
                   <Button variant="outline" asChild>
-                    <Link href="/my-monitors">Browse Public Monitors</Link>
+                    <Link href="/my-datasets">Browse Public Datasets</Link>
                   </Button>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {watchedMonitors.map((watch) => {
-                    const monitor = watch.monitor;
+                  {watchedDatasets.map((watch) => {
+                    const dataset = watch.dataset;
                     return (
                       <div
-                        key={monitor.id}
+                        key={dataset.id}
                         className="border border-gray-200 dark:border-gray-800 rounded-lg p-4 hover:shadow-sm transition-shadow"
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h3 className="font-semibold text-black dark:text-white">
-                              {monitor.template.name} in {monitor.cityName}
-                              {monitor.area.countryCode &&
-                                ` (${monitor.area.countryCode})`}
+                              {dataset.template.name} in {dataset.cityName}
+                              {dataset.area.countryCode &&
+                                ` (${dataset.area.countryCode})`}
                             </h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">
                               by{" "}
-                              {monitor.user.name ||
-                                monitor.user.email.split("@")[0]}
+                              {dataset.user.name ||
+                                dataset.user.email.split("@")[0]}
                             </p>
                           </div>
                           <span
                             className={`px-2 py-1 text-xs rounded ${
-                              monitor.isActive
+                              dataset.isActive
                                 ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                                 : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
                             }`}
                           >
-                            {monitor.isActive ? "Active" : "Inactive"}
+                            {dataset.isActive ? "Active" : "Inactive"}
                           </span>
                         </div>
 
                         <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
-                          <span>Data count: {monitor.dataCount}</span>
+                          <span>Data count: {dataset.dataCount}</span>
                           <Button size="sm" variant="ghost" asChild>
-                            <Link href={`/monitor/${monitor.id}`}>View</Link>
+                            <Link href={`/dataset/${dataset.id}`}>View</Link>
                           </Button>
                         </div>
                       </div>
                     );
                   })}
-                  {watchedMonitors.length >= 5 && (
+                  {watchedDatasets.length >= 5 && (
                     <div className="text-center pt-2">
                       <Button variant="outline" size="sm" asChild>
-                        <Link href="/watched-monitors">View All</Link>
+                        <Link href="/watched-datasets">View All</Link>
                       </Button>
                     </div>
                   )}

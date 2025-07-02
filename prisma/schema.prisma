@@ -18,8 +18,8 @@ model User {
 
   sessions           Session[]
   verificationTokens VerificationToken[]
-  monitors           Monitor[]
-  watchedMonitors    MonitorWatch[]
+  datasets           Dataset[]
+  watchedDatasets    DatasetWatch[]
 
   @@map("users")
 }
@@ -61,7 +61,7 @@ model DataTemplate {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  monitors Monitor[]
+  datasets Dataset[]
 
   @@map("data_templates")
 }
@@ -75,12 +75,12 @@ model Area {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  monitors Monitor[]
+  datasets Dataset[]
 
   @@map("areas")
 }
 
-model Monitor {
+model Dataset {
   id          String    @id @default(cuid())
   userId      String
   templateId  String
@@ -99,21 +99,21 @@ model Monitor {
   user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   template DataTemplate   @relation(fields: [templateId], references: [id], onDelete: Cascade)
   area     Area           @relation(fields: [areaId], references: [id], onDelete: Cascade)
-  watchers MonitorWatch[]
+  watchers DatasetWatch[]
 
   @@unique([userId, templateId, areaId])
-  @@map("monitors")
+  @@map("datasets")
 }
 
-model MonitorWatch {
+model DatasetWatch {
   id        String   @id @default(cuid())
   userId    String
-  monitorId String
+  datasetId String
   createdAt DateTime @default(now())
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  monitor Monitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  dataset Dataset @relation(fields: [datasetId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, monitorId])
-  @@map("monitor_watches")
+  @@unique([userId, datasetId])
+  @@map("dataset_watches")
 }

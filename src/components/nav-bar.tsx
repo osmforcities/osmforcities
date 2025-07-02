@@ -33,12 +33,12 @@ function LoggedInNav() {
         <Link href="/about">About</Link>
       </Button>
       <Button variant="ghost" asChild>
-        <Link href="/my-monitors">My Monitors</Link>
+        <Link href="/my-datasets">My Datasets</Link>
       </Button>
       <Button variant="ghost" asChild>
-        <Link href="/watched-monitors" className="flex items-center gap-2">
+        <Link href="/watched-datasets" className="flex items-center gap-2">
           <Eye className="h-4 w-4" />
-          Watched Monitors
+          Watched Datasets
         </Link>
       </Button>
       <form action="/api/auth/logout" method="POST">
