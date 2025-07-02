@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getUserFromCookie } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { Plus } from "lucide-react";
 import HomeTabs from "@/components/home-tabs";
 
 export const dynamic = "force-dynamic";
@@ -119,24 +118,13 @@ export default async function Home() {
     <div className="min-h-screen bg-white dark:bg-black">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-black dark:text-white">
-                Welcome back
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Manage your datasets and explore the platform
-              </p>
-            </div>
-            <Button asChild>
-              <Link
-                href="/my-datasets/create"
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Create Dataset
-              </Link>
-            </Button>
+          <div>
+            <h1 className="text-3xl font-bold text-black dark:text-white">
+              Welcome back
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
+              Manage your datasets and explore the platform
+            </p>
           </div>
 
           <HomeTabs

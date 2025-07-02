@@ -356,15 +356,26 @@ export default function HomeTabs({
       </TabsContent>
 
       <TabsContent value="my-datasets" className="mt-6">
-        <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-xl font-semibold text-black dark:text-white">
-            Your Datasets
-          </h2>
-          {localCreatedDatasets.length > 0 && (
-            <span className="text-sm text-gray-500">
-              ({localCreatedDatasets.length})
-            </span>
-          )}
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-semibold text-black dark:text-white">
+              Your Datasets
+            </h2>
+            {localCreatedDatasets.length > 0 && (
+              <span className="text-sm text-gray-500">
+                ({localCreatedDatasets.length})
+              </span>
+            )}
+          </div>
+          <Button asChild>
+            <Link
+              href="/my-datasets/create"
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Create Dataset
+            </Link>
+          </Button>
         </div>
 
         {localCreatedDatasets.length === 0 ? (
