@@ -22,7 +22,7 @@ async function getTemplatesData() {
   }
 
   // Get all available templates
-  const templates = await prisma.dataTemplate.findMany({
+  const templates = await prisma.template.findMany({
     where: { isActive: true },
     select: {
       id: true,

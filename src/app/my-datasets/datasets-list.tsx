@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-import { Dataset, DataTemplate, Area } from "@prisma/client";
+import { Dataset, Template, Area } from "@prisma/client";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
 
 type DatasetWithTemplateAndArea = Dataset & {
-  template: DataTemplate;
+  template: Template;
   area: Area;
   _count: {
     watchers: number;

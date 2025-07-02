@@ -95,10 +95,10 @@ async function main() {
   console.log("Start seeding...");
 
   // Clear existing templates
-  await prisma.dataTemplate.deleteMany();
+  await prisma.template.deleteMany();
 
   for (const template of templates) {
-    await prisma.dataTemplate.create({
+    await prisma.template.create({
       data: template,
     });
   }

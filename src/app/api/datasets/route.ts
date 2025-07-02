@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
   const { templateId, osmRelationId, isPublic } = parsed.data;
 
-  const template = await prisma.dataTemplate.findUnique({
+  const template = await prisma.template.findUnique({
     where: { id: templateId },
   });
   if (!template)
