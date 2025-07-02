@@ -12,6 +12,7 @@ model User {
   id           String    @id @default(cuid())
   email        String    @unique
   name         String?
+  isAdmin      Boolean   @default(false)
   lastNotified DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
