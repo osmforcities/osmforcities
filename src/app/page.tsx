@@ -26,7 +26,6 @@ async function getUserDatasets(userId: string) {
         },
       },
       orderBy: { createdAt: "desc" },
-      take: 5,
     }),
     prisma.datasetWatch.findMany({
       where: { userId },
@@ -49,11 +48,15 @@ async function getUserDatasets(userId: string) {
         },
       },
       orderBy: { createdAt: "desc" },
-      take: 5,
     }),
   ]);
 
-  return { createdDatasets, watchedDatasets };
+  const createdDatasetsWithDeleteFlag = createdDatasets.map((dataset) => ({
+    ...dataset,
+    canDelete: dataset._count.watchers <= 1,
+  }));
+
+  return { createdDatasets: createdDatasetsWithDeleteFlag, watchedDatasets };
 }
 
 async function getAdminData() {
@@ -107,7 +110,7 @@ export default async function Home() {
 
   const { createdDatasets, watchedDatasets } = await getUserDatasets(user.id);
 
-  let adminData = { templates: [], users: [] };
+  let adminData: Awaited<ReturnType<typeof getAdminData>> | null = null;
   if (user.isAdmin) {
     adminData = await getAdminData();
   }
@@ -139,8 +142,8 @@ export default async function Home() {
           <HomeTabs
             createdDatasets={createdDatasets}
             watchedDatasets={watchedDatasets.map((watch) => watch.dataset)}
-            templates={adminData.templates}
-            users={adminData.users}
+            templates={adminData?.templates || []}
+            users={adminData?.users || []}
             isAdmin={user.isAdmin}
           />
         </div>

@@ -156,7 +156,8 @@ export function useDatasetActions() {
   const toggleField = async (
     datasetId: string,
     field: "isActive" | "isPublic",
-    currentValue: boolean
+    currentValue: boolean,
+    onSuccess?: () => void
   ): Promise<{ success: boolean; error?: string }> => {
     try {
       const validatedData = UpdateDatasetSchema.parse({
@@ -168,7 +169,11 @@ export function useDatasetActions() {
         validatedData
       );
 
-      window.location.reload();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        window.location.reload();
+      }
       return { success: result.success };
     } catch (error) {
       console.error("Error updating dataset:", error);
@@ -193,9 +198,9 @@ export function useDatasetActions() {
 
     deletingId,
     handleDelete,
-    toggleActive: (id: string, value: boolean) =>
-      toggleField(id, "isActive", value),
-    togglePublic: (id: string, value: boolean) =>
-      toggleField(id, "isPublic", value),
+    toggleActive: (id: string, value: boolean, onSuccess?: () => void) =>
+      toggleField(id, "isActive", value, onSuccess),
+    togglePublic: (id: string, value: boolean, onSuccess?: () => void) =>
+      toggleField(id, "isPublic", value, onSuccess),
   };
 }

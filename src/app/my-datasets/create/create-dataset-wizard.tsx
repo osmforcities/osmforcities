@@ -57,7 +57,7 @@ export default function CreateDatasetWizard({
       });
 
       if (response.ok) {
-        router.push("/my-datasets");
+        router.push("/");
       } else {
         const data = await response.json();
         alert(`Failed to create dataset: ${data.error || "Unknown error"}`);

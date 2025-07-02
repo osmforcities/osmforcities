@@ -47,10 +47,10 @@ export default async function CreateDatasetPage() {
         <div className="border-b border-black pb-4 mb-8">
           <div className="flex items-center mb-2">
             <Link
-              href="/my-datasets"
+              href="/"
               className="text-sm text-blue-600 hover:text-blue-800 flex items-center mr-4"
             >
-              ← Back to My Datasets
+              ← Back to Home
             </Link>
           </div>
           <h1 className="text-3xl font-bold">Create New Dataset</h1>

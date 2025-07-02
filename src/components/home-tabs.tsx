@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Eye, Plus, Users, FileText } from "lucide-react";
+import { useDatasetActions } from "@/hooks/useDatasetActions";
 
 type Dataset = {
   id: string;
@@ -23,6 +24,10 @@ type Dataset = {
     name: string | null;
     email: string;
   };
+  _count?: {
+    watchers: number;
+  };
+  canDelete?: boolean;
 };
 
 type Template = {
@@ -64,8 +69,69 @@ export default function HomeTabs({
   isAdmin,
 }: HomeTabsProps) {
   const [activeTab, setActiveTab] = useState("watched");
+  const [localCreatedDatasets, setLocalCreatedDatasets] =
+    useState(createdDatasets);
+  const { deletingId, handleDelete, toggleActive, togglePublic } =
+    useDatasetActions();
 
-  const renderDatasetCard = (dataset: Dataset, showCreator = false) => (
+  // Update local state when props change
+  useEffect(() => {
+    setLocalCreatedDatasets(createdDatasets);
+  }, [createdDatasets]);
+
+  const handleToggleActive = async (
+    datasetId: string,
+    currentValue: boolean
+  ) => {
+    // Optimistic update
+    setLocalCreatedDatasets((prev) =>
+      prev.map((dataset) =>
+        dataset.id === datasetId
+          ? { ...dataset, isActive: !currentValue }
+          : dataset
+      )
+    );
+
+    // Call the API
+    await toggleActive(datasetId, currentValue, () => {
+      // Success callback - no need to reload since we already updated optimistically
+    });
+  };
+
+  const handleTogglePublic = async (
+    datasetId: string,
+    currentValue: boolean
+  ) => {
+    // Optimistic update
+    setLocalCreatedDatasets((prev) =>
+      prev.map((dataset) =>
+        dataset.id === datasetId
+          ? { ...dataset, isPublic: !currentValue }
+          : dataset
+      )
+    );
+
+    // Call the API
+    await togglePublic(datasetId, currentValue, () => {
+      // Success callback - no need to reload since we already updated optimistically
+    });
+  };
+
+  const handleDeleteDataset = async (datasetId: string) => {
+    const result = await handleDelete(datasetId);
+    if (result.success) {
+      // Remove from local state
+      setLocalCreatedDatasets((prev) =>
+        prev.filter((dataset) => dataset.id !== datasetId)
+      );
+    }
+  };
+
+  const renderDatasetCard = (
+    dataset: Dataset,
+    showCreator = false,
+    isOwned = false
+  ) => (
     <div
       key={dataset.id}
       className="border border-gray-200 dark:border-gray-800 rounded-lg p-4 hover:shadow-sm transition-shadow"
@@ -107,11 +173,51 @@ export default function HomeTabs({
         </div>
       </div>
 
-      <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
-        <span>Data count: {dataset.dataCount}</span>
+      <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+        <p>Data count: {dataset.dataCount}</p>
+        {dataset._count && <p>Watchers: {dataset._count.watchers}</p>}
+      </div>
+
+      <div className="flex justify-between items-center">
         <Button size="sm" variant="ghost" asChild>
           <Link href={`/dataset/${dataset.id}`}>View</Link>
         </Button>
+
+        {isOwned && (
+          <div className="flex space-x-2">
+            <button
+              onClick={() => handleToggleActive(dataset.id, dataset.isActive)}
+              className="px-3 py-1 text-sm border border-black hover:bg-black hover:text-white transition-colors"
+            >
+              {dataset.isActive ? "Deactivate" : "Activate"}
+            </button>
+            <button
+              onClick={() => handleTogglePublic(dataset.id, dataset.isPublic)}
+              className="px-3 py-1 text-sm border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
+            >
+              {dataset.isPublic ? "Make Private" : "Make Public"}
+            </button>
+            {dataset.canDelete ? (
+              <button
+                onClick={() => handleDeleteDataset(dataset.id)}
+                disabled={deletingId === dataset.id}
+                className="px-3 py-1 text-sm border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors disabled:opacity-50"
+              >
+                {deletingId === dataset.id ? "Deleting..." : "Delete"}
+              </button>
+            ) : (
+              <button
+                disabled
+                title={`Cannot delete dataset with ${
+                  dataset._count?.watchers || 0
+                } watcher(s). Make it private first or ask watchers to unwatch it.`}
+                className="px-3 py-1 text-sm border border-gray-300 text-gray-400 cursor-not-allowed"
+              >
+                Delete
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -239,19 +345,12 @@ export default function HomeTabs({
               You're not following any datasets yet.
             </p>
             <Button variant="outline" asChild>
-              <Link href="/my-datasets">Browse Public Datasets</Link>
+              <Link href="/">Browse Public Datasets</Link>
             </Button>
           </div>
         ) : (
           <div className="space-y-3">
             {watchedDatasets.map((dataset) => renderDatasetCard(dataset, true))}
-            {watchedDatasets.length >= 5 && (
-              <div className="text-center pt-2">
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/watched-datasets">View All</Link>
-                </Button>
-              </div>
-            )}
           </div>
         )}
       </TabsContent>
@@ -261,14 +360,14 @@ export default function HomeTabs({
           <h2 className="text-xl font-semibold text-black dark:text-white">
             Your Datasets
           </h2>
-          {createdDatasets.length > 0 && (
+          {localCreatedDatasets.length > 0 && (
             <span className="text-sm text-gray-500">
-              ({createdDatasets.length})
+              ({localCreatedDatasets.length})
             </span>
           )}
         </div>
 
-        {createdDatasets.length === 0 ? (
+        {localCreatedDatasets.length === 0 ? (
           <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-6 text-center">
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               You haven't created any datasets yet.
@@ -279,13 +378,8 @@ export default function HomeTabs({
           </div>
         ) : (
           <div className="space-y-3">
-            {createdDatasets.map((dataset) => renderDatasetCard(dataset))}
-            {createdDatasets.length >= 5 && (
-              <div className="text-center pt-2">
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/my-datasets">View All</Link>
-                </Button>
-              </div>
+            {localCreatedDatasets.map((dataset) =>
+              renderDatasetCard(dataset, false, true)
             )}
           </div>
         )}

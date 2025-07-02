@@ -112,9 +112,9 @@ export default async function DatasetPage({
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-4 mb-8">
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/my-datasets" className="flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-2">
                 <ArrowLeft className="h-4 w-4" />
-                Back to My Datasets
+                Back to Home
               </Link>
             </Button>
           </div>
