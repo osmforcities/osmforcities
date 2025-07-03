@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
 
     await prisma.user.update({
       where: { id: data.user.id },
-      data: { lastNotified: new Date() },
+      data: { lastReportSent: new Date() },
     });
 
     const latestChangeDate =

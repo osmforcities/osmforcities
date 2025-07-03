@@ -31,7 +31,7 @@ export async function getFirstUserAndDatasetStats(): Promise<DatasetStatsResult 
 
   const firstUser = await prisma.user.findFirst({
     where: {
-      OR: [{ lastNotified: null }, { lastNotified: { lt: oneDayAgo } }],
+      OR: [{ lastReportSent: null }, { lastReportSent: { lt: oneDayAgo } }],
     },
     orderBy: { createdAt: "asc" },
   });
