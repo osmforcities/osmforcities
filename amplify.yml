@@ -26,6 +26,7 @@ frontend:
         - env | grep -e DATABASE_URL >> .env.production
         - env | grep -e NEXTAUTH_ >> .env.production
         - env | grep -e EMAIL_SES_ >> .env.production
+        - env | grep -e CRON_ROUTE_SECRET >> .env.production
         - echo "Building Next.js application..."
         - pnpm run build
   artifacts:
