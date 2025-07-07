@@ -83,14 +83,14 @@ The application includes a task-based API accessible at `/api/tasks`. Each task 
 
 ### Available Tasks
 
-- **send-email-report**: Sends dataset status reports to users who haven't received one in the last 24 hours
+- **send-user-reports**: Sends dataset status reports to users who haven't received one in the last 24 hours
 - **update-datasets**: Updates datasets that need refreshing (not yet implemented)
 
 ### Usage
 
 ```bash
 # Send email report
-curl -X POST "https://yourdomain.com/api/tasks/send-email-report" \
+curl -X POST "https://yourdomain.com/api/tasks/send-user-reports" \
   -H "Authorization: Bearer YOUR_CRON_ROUTE_SECRET"
 
 # Update datasets

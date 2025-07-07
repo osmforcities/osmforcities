@@ -73,10 +73,10 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error in send-email-report task:", error);
+    console.error("Error in send-user-reports task:", error);
     return NextResponse.json(
       {
-        error: "Failed to execute send-email-report task",
+        error: "Failed to execute send-user-reports task",
         details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
