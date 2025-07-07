@@ -47,3 +47,10 @@ next-env.d.ts
 data/
 
 /src/generated/prisma
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
