@@ -4,6 +4,7 @@ export interface DatasetStats {
   user: {
     id: string;
     email: string;
+    reportsFrequency: "DAILY" | "WEEKLY";
   };
   totalDatasets: number;
   publicDatasets: Array<{
@@ -25,15 +26,31 @@ export async function getFirstUserAndDatasetStats(): Promise<DatasetStats | null
       OR: [
         { lastReportSent: null },
         {
-          lastReportSent: {
-            lt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 24 hours ago
-          },
+          AND: [
+            { reportsFrequency: "DAILY" },
+            {
+              lastReportSent: {
+                lt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 24 hours ago
+              },
+            },
+          ],
+        },
+        {
+          AND: [
+            { reportsFrequency: "WEEKLY" },
+            {
+              lastReportSent: {
+                lt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
+              },
+            },
+          ],
         },
       ],
     },
     select: {
       id: true,
       email: true,
+      reportsFrequency: true,
     },
   });
 
@@ -63,7 +80,11 @@ export async function getFirstUserAndDatasetStats(): Promise<DatasetStats | null
   });
 
   return {
-    user,
+    user: {
+      id: user.id,
+      email: user.email,
+      reportsFrequency: user.reportsFrequency,
+    },
     totalDatasets,
     publicDatasets: publicDatasets.map((dataset) => ({
       id: dataset.id,

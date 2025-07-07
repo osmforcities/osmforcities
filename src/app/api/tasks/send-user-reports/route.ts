@@ -38,7 +38,8 @@ export async function POST(req: NextRequest) {
         message: "No users need notification at this time",
         data: {
           usersNotified: 0,
-          reason: "All users were notified within the last 24 hours",
+          reason:
+            "All users were notified within their configured frequency window",
         },
       });
     }
@@ -66,6 +67,7 @@ export async function POST(req: NextRequest) {
       message: "Dataset status report sent successfully",
       data: {
         userEmail: data.user.email,
+        reportsFrequency: data.user.reportsFrequency,
         totalDatasets: data.totalDatasets,
         publicDatasets: data.publicDatasets.length,
         latestChange: latestChangeDate,
