@@ -12,7 +12,7 @@ function isRecentlyEdited(lastChanged: Date | null): boolean {
   return lastChanged >= oneDayAgo;
 }
 
-export function generateDatasetReportEmail(data: DatasetStats): EmailContent {
+export function generateUserReport(data: DatasetStats): EmailContent {
   const { user, publicDatasets, latestChange, totalDatasets } = data;
 
   const latestChangeDate =

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email";
 import { prisma } from "@/lib/db";
 import { getFirstUserAndDatasetStats } from "@/lib/tasks/get-dataset-stats";
-import { generateDatasetReportEmail } from "@/lib/tasks/generate-email";
+import { generateUserReport } from "@/lib/tasks/generate-user-report";
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const emailContent = generateDatasetReportEmail(data);
+    const emailContent = generateUserReport(data);
 
     await sendEmail({
       to: data.user.email,
