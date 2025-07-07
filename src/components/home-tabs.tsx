@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Eye, Plus, Users, FileText } from "lucide-react";
+import { Eye, Plus, Users, FileText, Globe } from "lucide-react";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
 
 type Dataset = {
@@ -56,6 +56,7 @@ type User = {
 type HomeTabsProps = {
   createdDatasets: Dataset[];
   watchedDatasets: Dataset[];
+  publicDatasets: Dataset[];
   templates: Template[];
   users: User[];
   isAdmin: boolean;
@@ -64,6 +65,7 @@ type HomeTabsProps = {
 export default function HomeTabs({
   createdDatasets,
   watchedDatasets,
+  publicDatasets,
   templates,
   users,
   isAdmin,
@@ -304,7 +306,7 @@ export default function HomeTabs({
       onValueChange={setActiveTab}
       className="w-full"
     >
-      <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
+      <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
         <TabsTrigger value="watched" className="flex items-center gap-2">
           <Eye className="h-4 w-4" />
           Following
@@ -312,6 +314,10 @@ export default function HomeTabs({
         <TabsTrigger value="my-datasets" className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           My Datasets
+        </TabsTrigger>
+        <TabsTrigger value="public" className="flex items-center gap-2">
+          <Globe className="h-4 w-4" />
+          Public Datasets
         </TabsTrigger>
         {isAdmin && (
           <TabsTrigger value="templates" className="flex items-center gap-2">
@@ -392,6 +398,36 @@ export default function HomeTabs({
             {localCreatedDatasets.map((dataset) =>
               renderDatasetCard(dataset, false, true)
             )}
+          </div>
+        )}
+      </TabsContent>
+
+      <TabsContent value="public" className="mt-6">
+        <div className="flex items-center gap-2 mb-4">
+          <h2 className="text-xl font-semibold text-black dark:text-white">
+            Public Datasets
+          </h2>
+          {publicDatasets.length > 0 && (
+            <span className="text-sm text-gray-500">
+              ({publicDatasets.length})
+            </span>
+          )}
+        </div>
+
+        {publicDatasets.length === 0 ? (
+          <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-6 text-center">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              No public datasets found.
+            </p>
+            <Button variant="outline" asChild>
+              <Link href="/my-datasets/create">
+                Create the First Public Dataset
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {publicDatasets.map((dataset) => renderDatasetCard(dataset, true))}
           </div>
         )}
       </TabsContent>
