@@ -77,6 +77,27 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to view the application.
 
+## Tasks API
+
+The application includes a task-based API accessible at `/api/tasks`. Each task has its own dedicated endpoint for executing automated operations.
+
+### Available Tasks
+
+- **send-email-report**: Sends dataset status reports to users who haven't received one in the last 24 hours
+- **update-datasets**: Updates datasets that need refreshing (not yet implemented)
+
+### Usage
+
+```bash
+# Send email report
+curl -X POST "https://yourdomain.com/api/tasks/send-email-report" \
+  -H "Authorization: Bearer YOUR_CRON_ROUTE_SECRET"
+
+# Update datasets
+curl -X POST "https://yourdomain.com/api/tasks/update-datasets" \
+  -H "Authorization: Bearer YOUR_CRON_ROUTE_SECRET"
+```
+
 ## License
 
 MIT

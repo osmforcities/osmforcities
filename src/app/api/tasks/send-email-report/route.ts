@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email";
 import { prisma } from "@/lib/db";
-import { getFirstUserAndDatasetStats } from "./get-dataset-stats";
-import { generateDatasetReportEmail } from "./generate-email";
+import { getFirstUserAndDatasetStats } from "@/lib/tasks/get-dataset-stats";
+import { generateDatasetReportEmail } from "@/lib/tasks/generate-email";
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
@@ -73,10 +73,10 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error in cron job:", error);
+    console.error("Error in send-email-report task:", error);
     return NextResponse.json(
       {
-        error: "Failed to execute cron job",
+        error: "Failed to execute send-email-report task",
         details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
