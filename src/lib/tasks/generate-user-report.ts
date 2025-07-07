@@ -69,6 +69,11 @@ ${recentDatasetsList}
 ${recentDatasetsList}${
     recentDatasetsList && inactiveDatasetsList ? "\n" : ""
   }${inactiveDatasetsList}
+
+---
+To unsubscribe from these reports, visit: ${
+    process.env.NEXTAUTH_URL || "https://osmforcities.com"
+  }/preferences
   `;
 
   const htmlContent = `
@@ -100,6 +105,14 @@ ${recentDatasetsList}${
     <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; white-space: pre-wrap;">${recentDatasetsList}${
     recentDatasetsList && inactiveDatasetsList ? "\n" : ""
   }${inactiveDatasetsList}</pre>
+    
+    <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0;">
+    <p style="color: #666; font-size: 14px;">
+      To unsubscribe from these reports, 
+      <a href="${
+        process.env.NEXTAUTH_URL || "https://osmforcities.org"
+      }/preferences" style="color: #007bff; text-decoration: none;">visit your preferences page</a>.
+    </p>
   `;
 
   return {
