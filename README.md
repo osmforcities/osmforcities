@@ -39,12 +39,6 @@ Optional settings for email functionality:
 
 3. (Optional) Add AWS SES credentials for email functionality.
 
-4. **GitHub Actions Setup for Cron:**
-   - Go to your repo's `Settings` → `Secrets and variables` → `Actions`
-   - Add:
-     - `CRON_ROUTE_SECRET`: The same value as in your `.env.local`
-     - `CRON_ENDPOINT_URL`: Full URL to your `/api/cron` endpoint (e.g. `https://yourdomain.com/api/cron`)
-
 ### Installation
 
 Install dependencies:
