@@ -10,8 +10,8 @@
     "lint:fix": "eslint --fix .",
     "type-check": "tsc --noEmit",
     "db:seed": "tsx prisma/seed.ts",
-    "test:playwright": "playwright test",
-    "test:playwright:ui": "playwright test --ui",
+    "test:playwright": "NODE_ENV=test playwright test",
+    "test:playwright:ui": "NODE_ENV=test playwright test --ui",
     "test:db:setup": "TEST_DATABASE_URL=postgresql://postgres@localhost:5433/osmforcities-test pnpm prisma migrate reset --force --skip-seed && pnpm prisma migrate deploy",
     "prepare": "husky"
   },

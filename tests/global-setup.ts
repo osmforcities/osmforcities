@@ -3,9 +3,13 @@ import { TEST_DATABASE_URL } from "./config";
 
 async function globalSetup() {
   console.log("Setting up test database...");
+  if (process.env.NODE_ENV !== "test") {
+    throw new Error(
+      "This setup should only run in test environment. NODE_ENV must be 'test'"
+    );
+  }
 
   process.env.DATABASE_URL = TEST_DATABASE_URL;
-  process.env.NODE_ENV = "test";
 
   try {
     console.log("Resetting test database...");
