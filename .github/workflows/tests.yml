@@ -60,15 +60,11 @@ jobs:
       - name: Install Playwright Browsers
         run: pnpm playwright install chromium --with-deps
 
-      - name: Setup test database
-        run: pnpm test:db:setup
-        env:
-          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5433/osmforcities-test
-
       - name: Run Playwright tests
         run: pnpm test:playwright
         env:
           TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5433/osmforcities-test
+          NODE_ENV: test
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
