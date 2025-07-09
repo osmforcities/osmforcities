@@ -54,6 +54,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Generate Prisma Client
+        run: pnpm prisma generate
+
       - name: Install Playwright Browsers
         run: pnpm playwright install chromium --with-deps
 
