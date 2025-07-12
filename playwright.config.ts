@@ -22,7 +22,9 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     env: {
       NODE_ENV: "test",
-      DATABASE_URL: "postgresql://postgres@localhost:5433/osmforcities-test",
+      DATABASE_URL:
+        process.env.DATABASE_URL ||
+        "postgresql://postgres@localhost:5433/osmforcities-test",
     },
   },
   globalSetup: require.resolve("./tests/global-setup.ts"),
