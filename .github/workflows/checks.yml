@@ -1,0 +1,46 @@
+name: Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+  workflow_call:
+    outputs:
+      node_version:
+        description: "Node.js version"
+        value: ${{ jobs.checks.outputs.node_version }}
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    outputs:
+      node_version: ${{ steps.node-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read .nvmrc
+        id: node-version
+        run: echo "version=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.node-version.outputs.version }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Generate Prisma Client
+        run: pnpm prisma generate
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm type-check
