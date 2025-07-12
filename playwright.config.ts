@@ -1,5 +1,4 @@
 import { defineConfig, devices } from "@playwright/test";
-import { TEST_DATABASE_URL } from "./tests/config";
 
 export default defineConfig({
   testDir: "./tests",
@@ -22,8 +21,8 @@ export default defineConfig({
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     env: {
-      DATABASE_URL: TEST_DATABASE_URL,
       NODE_ENV: "test",
+      DATABASE_URL: "postgresql://postgres@localhost:5433/osmforcities-test",
     },
   },
   globalSetup: require.resolve("./tests/global-setup.ts"),

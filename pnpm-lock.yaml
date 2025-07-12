@@ -11,6 +11,9 @@ importers:
       '@aws-sdk/client-ses':
         specifier: ^3.823.0
         version: 3.823.0
+      '@next/env':
+        specifier: ^15.3.5
+        version: 15.3.5
       '@prisma/client':
         specifier: ^6.9.0
         version: 6.9.0(prisma@6.11.1(typescript@5.8.3))(typescript@5.8.3)
@@ -629,6 +632,9 @@ packages:
 
   '@next/env@15.3.3':
     resolution: {integrity: sha512-OdiMrzCl2Xi0VTjiQQUK0Xh7bJHnOuET2s+3V+Y40WJBAXrJeGA3f+I8MZJ/YQ3mVGi5XGR1L66oFlgqXhQ4Vw==}
+
+  '@next/env@15.3.5':
+    resolution: {integrity: sha512-7g06v8BUVtN2njAX/r8gheoVffhiKFVt4nx74Tt6G4Hqw9HCLYQVx/GkH2qHvPtAHZaUNZ0VXAa0pQP6v1wk7g==}
 
   '@next/eslint-plugin-next@15.3.3':
     resolution: {integrity: sha512-VKZJEiEdpKkfBmcokGjHu0vGDG+8CehGs90tBEy/IDoDDKGngeyIStt2MmE5FYNyU9BhgR7tybNWTAJY/30u+Q==}
@@ -3576,6 +3582,8 @@ snapshots:
     optional: true
 
   '@next/env@15.3.3': {}
+
+  '@next/env@15.3.5': {}
 
   '@next/eslint-plugin-next@15.3.3':
     dependencies:
