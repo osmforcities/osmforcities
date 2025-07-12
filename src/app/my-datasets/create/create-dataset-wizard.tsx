@@ -29,7 +29,6 @@ export default function CreateDatasetWizard({
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedArea, setSelectedArea] = useState<Area | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
-  const [isPublic, setIsPublic] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleNextStep = () => {
@@ -52,7 +51,6 @@ export default function CreateDatasetWizard({
         body: JSON.stringify({
           templateId: selectedTemplate,
           osmRelationId: selectedArea.id,
-          isPublic,
         }),
       });
 
@@ -141,19 +139,6 @@ export default function CreateDatasetWizard({
             onTemplateSelected={setSelectedTemplate}
           />
 
-          <div className="flex items-center space-x-2 mt-4">
-            <input
-              type="checkbox"
-              id="isPublic"
-              checked={isPublic}
-              onChange={(e) => setIsPublic(e.target.checked)}
-              className="w-4 h-4 text-black border-black focus:ring-black"
-            />
-            <label htmlFor="isPublic" className="text-sm font-medium">
-              Make this dataset public (others can see it)
-            </label>
-          </div>
-
           <div className="flex justify-between mt-6">
             <Button
               onClick={handlePrevStep}
@@ -226,11 +211,6 @@ export default function CreateDatasetWizard({
                 {templates.find((t) => t.id === selectedTemplate)
                   ?.description || ""}
               </p>
-            </div>
-
-            <div>
-              <h3 className="font-medium">Visibility:</h3>
-              <p>{isPublic ? "Public" : "Private"}</p>
             </div>
           </div>
 
