@@ -32,6 +32,10 @@ export async function sendEmail(options: EmailOptions) {
 
   const { to, subject, html, text } = options;
 
+  if (process.env.NODE_ENV === "test") {
+    return;
+  }
+
   if (process.env.NODE_ENV === "development" && !emailConfig.forceRealEmail) {
     console.log("\n📧 Email would be sent:");
     console.log("To:", to);

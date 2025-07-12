@@ -7,6 +7,8 @@ export async function createUser(email: string, name?: string) {
     data: {
       email,
       name,
+      reportsEnabled: true,
+      reportsFrequency: "DAILY",
     },
   });
 }
