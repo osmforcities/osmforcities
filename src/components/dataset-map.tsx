@@ -1,20 +1,71 @@
 "use client";
 
-import { useRef } from "react";
-import Map, { Source, Layer, AttributionControl } from "react-map-gl/maplibre";
-import type { MapRef } from "react-map-gl/maplibre";
+import { useRef, useState, useCallback } from "react";
+import Map, { Source, Layer, Popup } from "react-map-gl/maplibre";
+import type { MapRef, MapLayerMouseEvent } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { FeatureCollection, Feature } from "geojson";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 import type { Dataset } from "@/schemas/dataset";
+import { calculateBbox } from "@/lib/utils";
+
+const FEATURE_FILL_COLOR = "#ff6b35";
+const FEATURE_BORDER_COLOR = "#ff6b35";
+
+const POLYGON_STYLE = {
+  fill: {
+    "fill-color": FEATURE_FILL_COLOR,
+    "fill-opacity": 0.7,
+  },
+  stroke: {
+    "line-color": FEATURE_BORDER_COLOR,
+    "line-width": 4,
+    "line-opacity": 0.9,
+  },
+};
+
+const LINE_STYLE = {
+  "line-color": FEATURE_FILL_COLOR,
+  "line-width": 3,
+  "line-opacity": 0.9,
+};
+
+const POINT_STYLE = {
+  "circle-radius": 1,
+  "circle-color": FEATURE_FILL_COLOR,
+  "circle-opacity": 0.9,
+  "circle-stroke-width": 1,
+  "circle-stroke-color": FEATURE_BORDER_COLOR,
+};
 
 type DatasetMapProps = {
   dataset: Dataset;
 };
 
+type TooltipInfo = {
+  latitude: number;
+  longitude: number;
+  feature: Feature;
+};
+
 export default function DatasetMap({ dataset }: DatasetMapProps) {
   const mapRef = useRef<MapRef | null>(null);
-  const bbox = dataset.bbox;
+  const [tooltipInfo, setTooltipInfo] = useState<TooltipInfo | null>(null);
+
+  const onHover = useCallback((event: MapLayerMouseEvent) => {
+    const feature = event.features?.[0];
+    if (feature) {
+      setTooltipInfo({
+        latitude: event.lngLat.lat,
+        longitude: event.lngLat.lng,
+        feature,
+      });
+    }
+  }, []);
+
+  const onMouseLeave = useCallback(() => {
+    setTooltipInfo(null);
+  }, []);
 
   if (!dataset.geojson) {
     return (
@@ -41,6 +92,76 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
     );
   }
 
+  const dataBounds = calculateBbox(geoJSONData);
+
+  const renderTooltipContent = (feature: Feature) => {
+    const properties = feature.properties || {};
+
+    // Separate OSM tags from metadata
+    const tags: Record<string, string> = {};
+    const meta: Record<string, string> = {};
+
+    Object.entries(properties).forEach(([key, value]) => {
+      if (key.startsWith("@")) {
+        // OSM metadata starts with @
+        meta[key.slice(1)] = String(value);
+      } else {
+        // Regular OSM tags
+        tags[key] = String(value);
+      }
+    });
+
+    return (
+      <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border max-w-sm">
+        {Object.keys(tags).length > 0 && (
+          <div className="mb-3">
+            <h4 className="font-semibold text-sm text-gray-900 dark:text-white mb-2">
+              Tags
+            </h4>
+            <div className="space-y-1">
+              {Object.entries(tags).map(([key, value]) => (
+                <div key={key} className="flex text-xs">
+                  <span className="font-medium text-gray-600 dark:text-gray-300 mr-2 min-w-0 truncate">
+                    {key}:
+                  </span>
+                  <span className="text-gray-800 dark:text-gray-200 break-all">
+                    {value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {Object.keys(meta).length > 0 && (
+          <div>
+            <h4 className="font-semibold text-sm text-gray-900 dark:text-white mb-2">
+              Meta
+            </h4>
+            <div className="space-y-1">
+              {Object.entries(meta).map(([key, value]) => (
+                <div key={key} className="flex text-xs">
+                  <span className="font-medium text-gray-600 dark:text-gray-300 mr-2 min-w-0 truncate">
+                    {key}:
+                  </span>
+                  <span className="text-gray-800 dark:text-gray-200 break-all">
+                    {value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {Object.keys(tags).length === 0 && Object.keys(meta).length === 0 && (
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            No additional information available
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-4">
       <div
@@ -49,54 +170,26 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
       >
         <Map
           ref={mapRef}
-          mapStyle="https://tiles.openfreemap.org/styles/positron"
+          mapStyle="https://tiles.openfreemap.org/styles/dark"
           initialViewState={
-            bbox && bbox.length === 4
+            dataBounds
               ? {
-                  bounds: [bbox[0], bbox[1], bbox[2], bbox[3]],
-                  fitBoundsOptions: { padding: 20 },
-                }
-              : dataset.area.bounds
-              ? {
-                  bounds: (() => {
-                    const bounds = dataset.area.bounds.split(",").map(Number);
-                    return [
-                      bounds[1], // minLon
-                      bounds[0], // minLat
-                      bounds[3], // maxLon
-                      bounds[2], // maxLat
-                    ];
-                  })(),
+                  bounds: [
+                    dataBounds[0],
+                    dataBounds[1],
+                    dataBounds[2],
+                    dataBounds[3],
+                  ],
                   fitBoundsOptions: { padding: 20 },
                 }
               : undefined
           }
+          interactiveLayerIds={["data-polygons", "data-lines", "data-points"]}
+          onMouseMove={onHover}
+          onMouseLeave={onMouseLeave}
         >
-          <AttributionControl position="bottom-right" />
-
-          {/* Area boundary */}
-          {dataset.area.geojson && (
-            <Source
-              id="area-boundary"
-              type="geojson"
-              data={dataset.area.geojson}
-            >
-              <Layer
-                id="area-boundary-layer"
-                type="line"
-                paint={{
-                  "line-color": "#007cbf",
-                  "line-width": 3,
-                  "line-opacity": 0.8,
-                }}
-              />
-            </Source>
-          )}
-
-          {/* Dataset data - separated by geometry type */}
           {geoJSONData && (
             <>
-              {/* Polygons and MultiPolygons */}
               <Source
                 id="dataset-polygons"
                 type="geojson"
@@ -112,15 +205,15 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
                 <Layer
                   id="data-polygons"
                   type="fill"
-                  paint={{
-                    "fill-color": "#ff6b35",
-                    "fill-opacity": 0.3,
-                    "fill-outline-color": "#ff6b35",
-                  }}
+                  paint={POLYGON_STYLE.fill}
+                />
+                <Layer
+                  id="data-polygons-stroke"
+                  type="line"
+                  paint={POLYGON_STYLE.stroke}
                 />
               </Source>
 
-              {/* Lines */}
               <Source
                 id="dataset-lines"
                 type="geojson"
@@ -131,18 +224,9 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
                   ),
                 }}
               >
-                <Layer
-                  id="data-lines"
-                  type="line"
-                  paint={{
-                    "line-color": "#ff6b35",
-                    "line-width": 3,
-                    "line-opacity": 0.8,
-                  }}
-                />
+                <Layer id="data-lines" type="line" paint={LINE_STYLE} />
               </Source>
 
-              {/* Points - only standalone points */}
               <Source
                 id="dataset-points"
                 type="geojson"
@@ -153,19 +237,22 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
                   ),
                 }}
               >
-                <Layer
-                  id="data-points"
-                  type="circle"
-                  paint={{
-                    "circle-radius": 6,
-                    "circle-color": "#ff6b35",
-                    "circle-opacity": 0.8,
-                    "circle-stroke-width": 2,
-                    "circle-stroke-color": "#ffffff",
-                  }}
-                />
+                <Layer id="data-points" type="circle" paint={POINT_STYLE} />
               </Source>
             </>
+          )}
+
+          {tooltipInfo && (
+            <Popup
+              longitude={tooltipInfo.longitude}
+              latitude={tooltipInfo.latitude}
+              closeButton={false}
+              closeOnClick={false}
+              anchor="bottom"
+              offset={10}
+            >
+              {renderTooltipContent(tooltipInfo.feature)}
+            </Popup>
           )}
         </Map>
       </div>
