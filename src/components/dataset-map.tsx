@@ -7,6 +7,36 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { FeatureCollection, Feature } from "geojson";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 import type { Dataset } from "@/schemas/dataset";
+import { calculateBbox } from "@/lib/utils";
+
+const FEATURE_FILL_COLOR = "#ff6b35";
+const FEATURE_BORDER_COLOR = "#ff6b35";
+
+const POLYGON_STYLE = {
+  fill: {
+    "fill-color": FEATURE_FILL_COLOR,
+    "fill-opacity": 0.7,
+  },
+  stroke: {
+    "line-color": FEATURE_BORDER_COLOR,
+    "line-width": 4,
+    "line-opacity": 0.9,
+  },
+};
+
+const LINE_STYLE = {
+  "line-color": FEATURE_FILL_COLOR,
+  "line-width": 3,
+  "line-opacity": 0.9,
+};
+
+const POINT_STYLE = {
+  "circle-radius": 1,
+  "circle-color": FEATURE_FILL_COLOR,
+  "circle-opacity": 0.9,
+  "circle-stroke-width": 1,
+  "circle-stroke-color": FEATURE_BORDER_COLOR,
+};
 
 type DatasetMapProps = {
   dataset: Dataset;
@@ -14,7 +44,6 @@ type DatasetMapProps = {
 
 export default function DatasetMap({ dataset }: DatasetMapProps) {
   const mapRef = useRef<MapRef | null>(null);
-  const bbox = dataset.bbox;
 
   if (!dataset.geojson) {
     return (
@@ -41,6 +70,8 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
     );
   }
 
+  const dataBounds = calculateBbox(geoJSONData);
+
   return (
     <div className="space-y-4">
       <div
@@ -49,24 +80,16 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
       >
         <Map
           ref={mapRef}
-          mapStyle="https://tiles.openfreemap.org/styles/positron"
+          mapStyle="https://tiles.openfreemap.org/styles/dark"
           initialViewState={
-            bbox && bbox.length === 4
+            dataBounds
               ? {
-                  bounds: [bbox[0], bbox[1], bbox[2], bbox[3]],
-                  fitBoundsOptions: { padding: 20 },
-                }
-              : dataset.area.bounds
-              ? {
-                  bounds: (() => {
-                    const bounds = dataset.area.bounds.split(",").map(Number);
-                    return [
-                      bounds[1], // minLon
-                      bounds[0], // minLat
-                      bounds[3], // maxLon
-                      bounds[2], // maxLat
-                    ];
-                  })(),
+                  bounds: [
+                    dataBounds[0],
+                    dataBounds[1],
+                    dataBounds[2],
+                    dataBounds[3],
+                  ],
                   fitBoundsOptions: { padding: 20 },
                 }
               : undefined
@@ -74,29 +97,8 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
         >
           <AttributionControl position="bottom-right" />
 
-          {/* Area boundary */}
-          {dataset.area.geojson && (
-            <Source
-              id="area-boundary"
-              type="geojson"
-              data={dataset.area.geojson}
-            >
-              <Layer
-                id="area-boundary-layer"
-                type="line"
-                paint={{
-                  "line-color": "#007cbf",
-                  "line-width": 3,
-                  "line-opacity": 0.8,
-                }}
-              />
-            </Source>
-          )}
-
-          {/* Dataset data - separated by geometry type */}
           {geoJSONData && (
             <>
-              {/* Polygons and MultiPolygons */}
               <Source
                 id="dataset-polygons"
                 type="geojson"
@@ -112,15 +114,15 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
                 <Layer
                   id="data-polygons"
                   type="fill"
-                  paint={{
-                    "fill-color": "#ff6b35",
-                    "fill-opacity": 0.3,
-                    "fill-outline-color": "#ff6b35",
-                  }}
+                  paint={POLYGON_STYLE.fill}
+                />
+                <Layer
+                  id="data-polygons-stroke"
+                  type="line"
+                  paint={POLYGON_STYLE.stroke}
                 />
               </Source>
 
-              {/* Lines */}
               <Source
                 id="dataset-lines"
                 type="geojson"
@@ -131,18 +133,9 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
                   ),
                 }}
               >
-                <Layer
-                  id="data-lines"
-                  type="line"
-                  paint={{
-                    "line-color": "#ff6b35",
-                    "line-width": 3,
-                    "line-opacity": 0.8,
-                  }}
-                />
+                <Layer id="data-lines" type="line" paint={LINE_STYLE} />
               </Source>
 
-              {/* Points - only standalone points */}
               <Source
                 id="dataset-points"
                 type="geojson"
@@ -153,17 +146,7 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
                   ),
                 }}
               >
-                <Layer
-                  id="data-points"
-                  type="circle"
-                  paint={{
-                    "circle-radius": 6,
-                    "circle-color": "#ff6b35",
-                    "circle-opacity": 0.8,
-                    "circle-stroke-width": 2,
-                    "circle-stroke-color": "#ffffff",
-                  }}
-                />
+                <Layer id="data-points" type="circle" paint={POINT_STYLE} />
               </Source>
             </>
           )}
