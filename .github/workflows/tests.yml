@@ -63,8 +63,8 @@ jobs:
       - name: Run Playwright tests
         run: pnpm test:playwright
         env:
-          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5433/osmforcities-test
           NODE_ENV: test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5433/osmforcities-test
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}

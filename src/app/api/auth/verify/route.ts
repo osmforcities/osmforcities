@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       maxAge: 30 * 24 * 60 * 60, // 30 days
     });
 
-    const redirectUrl = new URL("/", baseUrl);
+    const redirectUrl = new URL("/watched", baseUrl);
     return NextResponse.redirect(redirectUrl);
   } catch {
     // Use baseUrl for error redirect as well

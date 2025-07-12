@@ -1,5 +1,5 @@
 import { execSync } from "child_process";
-import { TEST_DATABASE_URL } from "./config";
+import { loadEnvConfig } from "@next/env";
 
 async function globalSetup() {
   console.log("Setting up test database...");
@@ -9,7 +9,9 @@ async function globalSetup() {
     );
   }
 
-  process.env.DATABASE_URL = TEST_DATABASE_URL;
+  // Load environment variables from .env.test
+  const projectDir = process.cwd();
+  loadEnvConfig(projectDir);
 
   try {
     console.log("Resetting test database...");
