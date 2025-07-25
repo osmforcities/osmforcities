@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email";
 import { prisma } from "@/lib/db";
-import { getFirstUserAndDatasetStats } from "@/lib/tasks/get-dataset-stats";
-import { generateUserReport } from "@/lib/tasks/generate-user-report";
+import { generateNextUserReport } from "@/lib/tasks/user-report";
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
@@ -30,9 +29,9 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const data = await getFirstUserAndDatasetStats();
+    const report = await generateNextUserReport();
 
-    if (!data) {
+    if (!report) {
       return NextResponse.json({
         success: true,
         message: "No users need notification at this time",
@@ -44,33 +43,29 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const emailContent = generateUserReport(data);
+    const { userId, userEmail, emailContent, reportData } = report;
 
     await sendEmail({
-      to: data.user.email,
-      subject: "OSM for Cities - Dataset Status Report",
+      to: userEmail,
+      subject: emailContent.subject,
       html: emailContent.html,
       text: emailContent.text,
     });
 
     await prisma.user.update({
-      where: { id: data.user.id },
+      where: { id: userId },
       data: { lastReportSent: new Date() },
     });
-
-    const latestChangeDate =
-      data.latestChange?.lastChanged?.toLocaleDateString() ||
-      "No changes recorded";
 
     return NextResponse.json({
       success: true,
       message: "Dataset status report sent successfully",
       data: {
-        userEmail: data.user.email,
-        reportsFrequency: data.user.reportsFrequency,
-        totalDatasets: data.totalDatasets,
-        publicDatasets: data.publicDatasets.length,
-        latestChange: latestChangeDate,
+        userEmail: userEmail,
+        reportsFrequency: reportData.reportsFrequency,
+        totalDatasets: reportData.totalDatasets,
+        publicDatasets: reportData.publicDatasetsCount,
+        latestChange: reportData.latestChangeDate,
         usersNotified: 1,
       },
     });
