@@ -190,6 +190,7 @@ export async function generateNextUserReport(): Promise<{
   emailContent: EmailContent;
   reportData: {
     reportsFrequency: "DAILY" | "WEEKLY";
+    totalDatasets: number;
     publicDatasetsCount: number;
     latestChangeDate: string | null;
   };
@@ -310,6 +311,7 @@ export async function generateNextUserReport(): Promise<{
     emailContent,
     reportData: {
       reportsFrequency: user.reportsFrequency,
+      totalDatasets: datasetStats.recentDatasets.length,
       publicDatasetsCount: datasetStats.recentDatasets.length,
       latestChangeDate,
     },
