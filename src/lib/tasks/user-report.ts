@@ -20,55 +20,86 @@ interface DatasetStats {
   }>;
 }
 
-function generateEmailContent(data: DatasetStats): EmailContent {
-  const { user, recentDatasets } = data;
-  const frequency = user.reportsFrequency;
+function link(url: string, text: string): string {
+  return `<a href="${url}" style="color: #007bff; text-decoration: none;">${text}</a>`;
+}
 
+function getBaseUrl(): string {
+  return process.env.NEXTAUTH_URL || "https://osmforcities.com";
+}
+
+function generateEmailSubject(
+  hasRecentChanges: boolean,
+  recentDatasets: Array<{ id: string; name: string; lastChanged: Date | null }>,
+  frequency: "DAILY" | "WEEKLY"
+): string {
+  if (hasRecentChanges) {
+    return `${recentDatasets.length} dataset${
+      recentDatasets.length === 1 ? "" : "s"
+    } changed in the last ${frequency === "DAILY" ? "day" : "week"}`;
+  }
+
+  return `No changes in the last ${frequency === "DAILY" ? "day" : "week"}`;
+}
+
+function generateEmailBodyWithChanges(
+  recentDatasets: Array<{ id: string; name: string; lastChanged: Date | null }>,
+  frequency: "DAILY" | "WEEKLY"
+): string {
   const recentDatasetsList = recentDatasets
     .map(
       (ds) =>
-        `🔥 ${ds.name}: ${ds.lastChanged?.toLocaleDateString() || "Unknown"}`
+        `🔥 ${link(`${getBaseUrl()}/dataset/${ds.id}`, ds.name)}: ${
+          ds.lastChanged?.toLocaleDateString() || "Unknown"
+        }`
     )
-    .join("\n");
+    .join("<br>");
 
+  return `
+    <p>The following datasets were updated in the last ${
+      frequency === "DAILY" ? "day" : "week"
+    }:</p>
+    
+    <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">${recentDatasetsList}</div>`;
+}
+
+function generateEmailBodyNoChanges(frequency: "DAILY" | "WEEKLY"): string {
+  return `
+    <p>There were no changes to your ${link(
+      `${getBaseUrl()}/watched`,
+      "watched datasets"
+    )} in the last ${frequency === "DAILY" ? "day" : "week"}.</p>`;
+}
+
+function generateEmailContent(data: DatasetStats): EmailContent {
+  const { user, recentDatasets } = data;
+  const frequency = user.reportsFrequency;
   const hasRecentChanges = recentDatasets.length > 0;
 
-  let subject = "";
-  if (hasRecentChanges) {
-    subject = `${recentDatasets.length} dataset${
-      recentDatasets.length === 1 ? "" : "s"
-    } changed in the last ${frequency === "DAILY" ? "day" : "week"}`;
-  } else {
-    subject = `No changes in the last ${
-      frequency === "DAILY" ? "day" : "week"
-    }`;
-  }
+  const subject = generateEmailSubject(
+    hasRecentChanges,
+    recentDatasets,
+    frequency
+  );
+
+  const emailBody = hasRecentChanges
+    ? generateEmailBodyWithChanges(recentDatasets, frequency)
+    : generateEmailBodyNoChanges(frequency);
 
   const htmlContent = `
-    <p>Hi! ${
-      hasRecentChanges
-        ? `${recentDatasets.length} of your public dataset${
-            recentDatasets.length === 1 ? "" : "s"
-          } had changes in the last ${
-            frequency === "DAILY" ? "day" : "week"
-          }:</p>
+    <p>Hi!</p>
+  
+    ${emailBody}
     
-    <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; white-space: pre-wrap;">${recentDatasetsList}</pre>`
-        : `There were no changes on the datasets you are watching in the last ${
-            frequency === "DAILY" ? "day" : "week"
-          }.</p>
-    
-    <p><a href="${
-      process.env.NEXTAUTH_URL || "https://osmforcities.com"
-    }/watched" style="color: #007bff; text-decoration: none;">Visit your profile to see the list of datasets you are watching</a></p>`
-    }
-    
+    <p style="color: #999; font-size: 12px;">
+      This report was generated at ${new Date().toISOString().split(".")[0]}Z.
+    </p>
     <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0;">
     <p style="color: #666; font-size: 14px;">
-      To unsubscribe from these reports, 
-      <a href="${
-        process.env.NEXTAUTH_URL || "https://osmforcities.org"
-      }/preferences" style="color: #007bff; text-decoration: none;">visit your preferences page</a>.
+      To unsubscribe from these reports, ${link(
+        `${getBaseUrl()}/preferences`,
+        "visit your preferences page"
+      )}.
     </p>
   `;
 
