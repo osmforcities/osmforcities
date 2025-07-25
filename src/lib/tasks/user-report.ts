@@ -7,6 +7,27 @@ export interface EmailContent {
   text: string;
 }
 
+interface DatasetStatsData {
+  mostRecentElement?: string;
+  editorsCount?: number;
+  elementVersionsCount?: number;
+  changesetsCount?: number;
+  oldestElement?: string;
+  averageElementAge?: number;
+  averageElementVersion?: number;
+  recentActivity?: {
+    elementsEdited: number;
+    changesets: number;
+    editors: number;
+  };
+  qualityMetrics?: {
+    staleElementsCount: number;
+    recentlyUpdatedElementsCount: number;
+    staleElementsPercentage: number;
+    recentlyUpdatedElementsPercentage: number;
+  };
+}
+
 interface DatasetStats {
   user: {
     id: string;
@@ -16,6 +37,7 @@ interface DatasetStats {
   recentDatasets: Array<{
     id: string;
     name: string;
+    templateName: string;
     lastChanged: Date | null;
   }>;
 }
@@ -28,9 +50,20 @@ function getBaseUrl(): string {
   return process.env.NEXTAUTH_URL || "https://osmforcities.com";
 }
 
+function formatUTCDate(date: Date | null): string {
+  if (!date) return "Unknown";
+
+  return date.toISOString().split("T")[0];
+}
+
 function generateEmailSubject(
   hasRecentChanges: boolean,
-  recentDatasets: Array<{ id: string; name: string; lastChanged: Date | null }>,
+  recentDatasets: Array<{
+    id: string;
+    name: string;
+    templateName: string;
+    lastChanged: Date | null;
+  }>,
   frequency: "DAILY" | "WEEKLY"
 ): string {
   if (hasRecentChanges) {
@@ -43,24 +76,63 @@ function generateEmailSubject(
 }
 
 function generateEmailBodyWithChanges(
-  recentDatasets: Array<{ id: string; name: string; lastChanged: Date | null }>,
+  recentDatasets: Array<{
+    id: string;
+    name: string;
+    templateName: string;
+    lastChanged: Date | null;
+  }>,
   frequency: "DAILY" | "WEEKLY"
 ): string {
-  const recentDatasetsList = recentDatasets
-    .map(
-      (ds) =>
-        `🔥 ${link(`${getBaseUrl()}/dataset/${ds.id}`, ds.name)}: ${
-          ds.lastChanged?.toLocaleDateString() || "Unknown"
-        }`
-    )
-    .join("<br>");
+  const datasetsByDay = new Map<
+    string,
+    Array<{
+      id: string;
+      name: string;
+      templateName: string;
+    }>
+  >();
+
+  recentDatasets.forEach((ds) => {
+    const dayKey = ds.lastChanged
+      ? ds.lastChanged.toISOString().split("T")[0]
+      : "Unknown";
+    if (!datasetsByDay.has(dayKey)) {
+      datasetsByDay.set(dayKey, []);
+    }
+    datasetsByDay.get(dayKey)!.push({
+      id: ds.id,
+      name: ds.name,
+      templateName: ds.templateName,
+    });
+  });
+
+  const sortedDays = Array.from(datasetsByDay.keys()).sort().reverse();
+
+  const datasetsList = sortedDays
+    .map((day) => {
+      const datasets = datasetsByDay.get(day)!;
+      const dayFormatted = formatUTCDate(new Date(day + "T00:00:00Z"));
+      const datasetsList = datasets
+        .map(
+          (ds) =>
+            `${link(
+              `${getBaseUrl()}/dataset/${ds.id}`,
+              `${ds.templateName} - ${ds.name}`
+            )}`
+        )
+        .join("<br>");
+
+      return `<strong>${dayFormatted}</strong><br>${datasetsList}`;
+    })
+    .join("<br><br>");
 
   return `
     <p>The following datasets were updated in the last ${
       frequency === "DAILY" ? "day" : "week"
     }:</p>
     
-    <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">${recentDatasetsList}</div>`;
+    <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">${datasetsList}</div>`;
 }
 
 function generateEmailBodyNoChanges(frequency: "DAILY" | "WEEKLY"): string {
@@ -92,7 +164,9 @@ function generateEmailContent(data: DatasetStats): EmailContent {
     ${emailBody}
     
     <p style="color: #999; font-size: 12px;">
-      This report was generated at ${new Date().toISOString().split(".")[0]}Z.
+      This report was generated at ${
+        new Date().toISOString().split(".")[0]
+      }Z. All dates shown are in UTC.
     </p>
     <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0;">
     <p style="color: #666; font-size: 14px;">
@@ -170,16 +244,30 @@ export async function generateNextUserReport(): Promise<{
     where: {
       userId: user.id,
       isPublic: true,
-      updatedAt: {
-        gte: since,
-      },
     },
     select: {
       id: true,
       cityName: true,
-      updatedAt: true,
+      stats: true,
+      template: {
+        select: {
+          name: true,
+        },
+      },
     },
     orderBy: { updatedAt: "desc" },
+  });
+
+  const datasetsWithRecentChanges = recentDatasets.filter((dataset) => {
+    if (!dataset.stats || typeof dataset.stats !== "object") return false;
+
+    const stats = dataset.stats as DatasetStatsData;
+    const mostRecentElement = stats.mostRecentElement;
+
+    if (!mostRecentElement) return false;
+
+    const lastChangeDate = new Date(mostRecentElement);
+    return lastChangeDate >= since;
   });
 
   const datasetStats: DatasetStats = {
@@ -188,17 +276,32 @@ export async function generateNextUserReport(): Promise<{
       email: user.email,
       reportsFrequency: user.reportsFrequency,
     },
-    recentDatasets: recentDatasets.map((dataset) => ({
-      id: dataset.id,
-      name: dataset.cityName,
-      lastChanged: dataset.updatedAt,
-    })),
+    recentDatasets: datasetsWithRecentChanges.map((dataset) => {
+      const stats = dataset.stats as DatasetStatsData;
+      const mostRecentElement = stats.mostRecentElement;
+
+      return {
+        id: dataset.id,
+        name: dataset.cityName,
+        templateName: dataset.template.name,
+        lastChanged: mostRecentElement ? new Date(mostRecentElement) : null,
+      };
+    }),
   };
 
   const emailContent = generateEmailContent(datasetStats);
   const latestChangeDate =
-    recentDatasets.length > 0
-      ? recentDatasets[0].updatedAt.toLocaleDateString()
+    datasetsWithRecentChanges.length > 0
+      ? datasetsWithRecentChanges[0].stats &&
+        typeof datasetsWithRecentChanges[0].stats === "object"
+        ? (() => {
+            const stats = datasetsWithRecentChanges[0]
+              .stats as DatasetStatsData;
+            return stats.mostRecentElement
+              ? new Date(stats.mostRecentElement).toLocaleDateString()
+              : null;
+          })()
+        : null
       : null;
 
   return {
