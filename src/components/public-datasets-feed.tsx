@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
+import { getTranslations } from "next-intl/server";
 
 export default async function PublicDatasetsFeed() {
+  const t = await getTranslations("PublicDatasetsFeed");
+
   const datasets = await prisma.dataset.findMany({
     where: { isPublic: true },
     include: {
@@ -19,7 +22,7 @@ export default async function PublicDatasetsFeed() {
     return (
       <div className="w-full max-w-4xl mx-auto p-4">
         <div className="border border-black p-4 text-center">
-          <p className="text-gray-600">No public datasets yet.</p>
+          <p className="text-gray-600">{t("noDatasetsYet")}</p>
         </div>
       </div>
     );
@@ -29,10 +32,8 @@ export default async function PublicDatasetsFeed() {
     <div className="w-full max-w-4xl mx-auto p-4">
       <div className="border border-black">
         <div className="border-b border-black p-4 bg-gray-50">
-          <h2 className="text-xl font-bold">Public City Data Datasets</h2>
-          <p className="text-sm text-gray-600 mt-1">
-            Discover what datasets others are monitoring across different cities
-          </p>
+          <h2 className="text-xl font-bold">{t("title")}</h2>
+          <p className="text-sm text-gray-600 mt-1">{t("subtitle")}</p>
         </div>
 
         <div className="divide-y divide-gray-200">
@@ -56,25 +57,30 @@ export default async function PublicDatasetsFeed() {
 
               <div className="flex justify-between items-center text-sm text-gray-500">
                 <div className="flex space-x-4">
-                  <span>Data count: {dataset.dataCount}</span>
                   <span>
-                    Last checked:{" "}
+                    {t("dataCount")}: {dataset.dataCount}
+                  </span>
+                  <span>
+                    {t("lastChecked")}:{" "}
                     {dataset.lastChecked
                       ? new Date(dataset.lastChecked).toLocaleDateString()
-                      : "Never"}
+                      : t("never")}
                   </span>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right">
                     <p>
-                      By {dataset.user.name || dataset.user.email.split("@")[0]}
+                      {t("by")}{" "}
+                      {dataset.user.name || dataset.user.email.split("@")[0]}
                     </p>
                     <p className="text-xs">
                       {new Date(dataset.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                   <Button size="sm" asChild>
-                    <Link href={`/dataset/${dataset.id}`}>View Dataset</Link>
+                    <Link href={`/dataset/${dataset.id}`}>
+                      {t("viewDataset")}
+                    </Link>
                   </Button>
                 </div>
               </div>

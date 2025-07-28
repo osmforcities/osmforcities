@@ -13,7 +13,54 @@
     "watched": "Watched",
     "templates": "Templates",
     "users": "Users",
-    "preferences": "Preferences"
+    "preferences": "Preferences",
+    "brandName": "OSM for Cities",
+    "signIn": "Sign In",
+    "signOut": "Sign Out"
+  },
+  "TabLayout": {
+    "welcomeBack": "Welcome back",
+    "manageDatasetsSubtitle": "Manage your datasets and explore the platform",
+    "following": "Following",
+    "myDatasets": "My Datasets",
+    "publicDatasets": "Public Datasets",
+    "templates": "Templates",
+    "users": "Users"
+  },
+  "Public": {
+    "metaTitle": "Public Datasets - OSM for Cities",
+    "metaDescription": "All public datasets on the platform",
+    "title": "Public Datasets",
+    "emptyMessage": "No public datasets found.",
+    "emptyActionText": "Create the First Public Dataset"
+  },
+  "DatasetList": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "public": "Public",
+    "private": "Private",
+    "dataCount": "Data count",
+    "watchers": "Watchers",
+    "view": "View",
+    "deactivate": "Deactivate",
+    "activate": "Activate",
+    "makePrivate": "Make Private",
+    "makePublic": "Make Public",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "createDataset": "Create Dataset",
+    "by": "by",
+    "cannotDeleteTooltip": "Cannot delete dataset with {count} watcher(s). Make it private first or ask watchers to unwatch it."
+  },
+  "PublicDatasetsFeed": {
+    "noDatasetsYet": "No public datasets yet.",
+    "title": "Public City Data Datasets",
+    "subtitle": "Discover what datasets others are monitoring across different cities",
+    "dataCount": "Data count",
+    "lastChecked": "Last checked",
+    "never": "Never",
+    "by": "By",
+    "viewDataset": "View Dataset"
   },
   "Watched": {
     "metaTitle": "Following - OSM for Cities",

@@ -13,7 +13,54 @@
     "watched": "Observados",
     "templates": "Modelos",
     "users": "Usuários",
-    "preferences": "Preferências"
+    "preferences": "Preferências",
+    "brandName": "OSM for Cities",
+    "signIn": "Entrar",
+    "signOut": "Sair"
+  },
+  "TabLayout": {
+    "welcomeBack": "Bem-vindo de volta",
+    "manageDatasetsSubtitle": "Gerencie seus conjuntos de dados e explore a plataforma",
+    "following": "Seguindo",
+    "myDatasets": "Meus Conjuntos de Dados",
+    "publicDatasets": "Conjuntos de Dados Públicos",
+    "templates": "Modelos",
+    "users": "Usuários"
+  },
+  "Public": {
+    "metaTitle": "Conjuntos de Dados Públicos - OSM for Cities",
+    "metaDescription": "Todos os conjuntos de dados públicos na plataforma",
+    "title": "Conjuntos de Dados Públicos",
+    "emptyMessage": "Nenhum conjunto de dados público encontrado.",
+    "emptyActionText": "Criar o Primeiro Conjunto de Dados Público"
+  },
+  "DatasetList": {
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "public": "Público",
+    "private": "Privado",
+    "dataCount": "Contagem de dados",
+    "watchers": "Observadores",
+    "view": "Ver",
+    "deactivate": "Desativar",
+    "activate": "Ativar",
+    "makePrivate": "Tornar Privado",
+    "makePublic": "Tornar Público",
+    "delete": "Excluir",
+    "deleting": "Excluindo...",
+    "createDataset": "Criar Conjunto de Dados",
+    "by": "por",
+    "cannotDeleteTooltip": "Não é possível excluir conjunto de dados com {count} observador(es). Torne-o privado primeiro ou peça aos observadores para parar de observar."
+  },
+  "PublicDatasetsFeed": {
+    "noDatasetsYet": "Nenhum conjunto de dados público ainda.",
+    "title": "Conjuntos de Dados Públicos de Cidades",
+    "subtitle": "Descubra quais conjuntos de dados outros estão monitorando em diferentes cidades",
+    "dataCount": "Contagem de dados",
+    "lastChecked": "Última verificação",
+    "never": "Nunca",
+    "by": "Por",
+    "viewDataset": "Ver Conjunto de Dados"
   },
   "Watched": {
     "metaTitle": "Seguindo - OSM for Cities",

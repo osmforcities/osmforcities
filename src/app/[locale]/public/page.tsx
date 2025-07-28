@@ -4,13 +4,29 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import TabLayout from "@/components/tab-layout";
 import DatasetList from "@/components/dataset-list";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { routing } from "@/i18n/routing";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Public Datasets - OSM for Cities",
-  description: "All public datasets on the platform",
-};
+// See https://next-intl.dev/docs/getting-started/app-router/with-i18n-routing#static-rendering
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Public" });
+
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  };
+}
 
 async function getPublicDatasets() {
   const publicDatasets = await prisma.dataset.findMany({
@@ -54,8 +70,18 @@ async function getPublicDatasets() {
   return publicDatasets;
 }
 
-export default async function PublicPage() {
+export default async function PublicPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
+  // Enable static rendering
+  setRequestLocale(locale);
+
   const user = await getUserFromCookie();
+  const t = await getTranslations("Public");
 
   if (!user) {
     redirect("/");
@@ -67,9 +93,9 @@ export default async function PublicPage() {
     <TabLayout activeTab="public" isAdmin={user.isAdmin}>
       <DatasetList
         datasets={publicDatasets}
-        title="Public Datasets"
-        emptyMessage="No public datasets found."
-        emptyActionText="Create the First Public Dataset"
+        title={t("title")}
+        emptyMessage={t("emptyMessage")}
+        emptyActionText={t("emptyActionText")}
         emptyActionHref="/my-datasets/create"
         showCreator
       />

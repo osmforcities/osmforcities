@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Eye, Plus, Users, FileText, Globe } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type Dataset = {
   id: string;
@@ -67,16 +68,17 @@ export default function TabLayout({
   activeTab,
   isAdmin,
 }: TabLayoutProps) {
+  const t = useTranslations("TabLayout");
   return (
     <div className="min-h-screen bg-white dark:bg-black">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-8">
           <div>
             <h1 className="text-3xl font-bold text-black dark:text-white">
-              Welcome back
+              {t("welcomeBack")}
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Manage your datasets and explore the platform
+              {t("manageDatasetsSubtitle")}
             </p>
           </div>
 
@@ -85,26 +87,26 @@ export default function TabLayout({
               <TabsTrigger value="watched">
                 <Link href="/watched" className="flex items-center gap-2">
                   <Eye className="h-4 w-4" />
-                  Following
+                  {t("following")}
                 </Link>
               </TabsTrigger>
               <TabsTrigger value="my-datasets">
                 <Link href="/my-datasets" className="flex items-center gap-2">
                   <Plus className="h-4 w-4" />
-                  My Datasets
+                  {t("myDatasets")}
                 </Link>
               </TabsTrigger>
               <TabsTrigger value="public">
                 <Link href="/public" className="flex items-center gap-2">
                   <Globe className="h-4 w-4" />
-                  Public Datasets
+                  {t("publicDatasets")}
                 </Link>
               </TabsTrigger>
               {isAdmin && (
                 <TabsTrigger value="templates">
                   <Link href="/templates" className="flex items-center gap-2">
                     <FileText className="h-4 w-4" />
-                    Templates
+                    {t("templates")}
                   </Link>
                 </TabsTrigger>
               )}
@@ -112,7 +114,7 @@ export default function TabLayout({
                 <TabsTrigger value="users">
                   <Link href="/users" className="flex items-center gap-2">
                     <Users className="h-4 w-4" />
-                    Users
+                    {t("users")}
                   </Link>
                 </TabsTrigger>
               )}
