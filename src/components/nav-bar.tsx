@@ -19,7 +19,7 @@ export default async function NavBar() {
           </Link>
 
           <div className="flex items-center gap-4">
-            {user ? <LoggedInNav t={t} /> : <LoggedOutNav t={t} />}
+            {user ? <LoggedInNav /> : <LoggedOutNav />}
           </div>
         </div>
       </div>
@@ -27,7 +27,9 @@ export default async function NavBar() {
   );
 }
 
-function LoggedInNav({ t }: { t: (key: string) => string }) {
+async function LoggedInNav() {
+  const t = await getTranslations("Navigation");
+
   return (
     <>
       <Button variant="ghost" asChild>
@@ -47,7 +49,9 @@ function LoggedInNav({ t }: { t: (key: string) => string }) {
   );
 }
 
-function LoggedOutNav({ t }: { t: (key: string) => string }) {
+async function LoggedOutNav() {
+  const t = await getTranslations("Navigation");
+
   return (
     <>
       <Button variant="ghost" asChild>

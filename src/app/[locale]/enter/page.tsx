@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import AuthForm from "../auth-form";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Locale } from "next-intl";
 import { routing } from "@/i18n/routing";
 
 export function generateStaticParams() {
@@ -10,7 +11,7 @@ export function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "EnterPage" });
@@ -24,7 +25,7 @@ export async function generateMetadata({
 export default async function EnterPage({
   params,
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: Locale }>;
 }) {
   const { locale } = await params;
   setRequestLocale(locale);

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Locale } from "next-intl";
 import { routing } from "@/i18n/routing";
 
 export function generateStaticParams() {
@@ -12,7 +13,7 @@ export function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "AboutPage" });
@@ -37,7 +38,7 @@ const link = (href: string, children: React.ReactNode) => (
 const AboutPage = async ({
   params,
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: Locale }>;
 }) => {
   const { locale } = await params;
   setRequestLocale(locale);

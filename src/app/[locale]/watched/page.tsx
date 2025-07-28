@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import TabLayout from "@/components/tab-layout";
 import DatasetList from "@/components/dataset-list";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Locale } from "next-intl";
 import { routing } from "@/i18n/routing";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +18,7 @@ export function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Watched" });
@@ -58,7 +59,7 @@ async function getWatchedDatasets(userId: string) {
 export default async function WatchedPage({
   params,
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: Locale }>;
 }) {
   const { locale } = await params;
 

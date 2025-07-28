@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import NavBar from "@/components/nav-bar";
 import { QueryProvider } from "@/hooks/QueryProvider";
-import { NextIntlClientProvider, hasLocale } from "next-intl";
+import { NextIntlClientProvider, hasLocale, Locale } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
@@ -32,7 +32,7 @@ export default async function LocaleLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: Locale }>;
 }) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) {
