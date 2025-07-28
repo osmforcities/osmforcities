@@ -1,9 +1,11 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { getUserFromCookie } from "@/lib/auth";
+import { getTranslations } from "next-intl/server";
 
 export default async function NavBar() {
   const user = await getUserFromCookie();
+  const t = await getTranslations("Navigation");
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -13,7 +15,7 @@ export default async function NavBar() {
             href="/"
             className="flex items-center space-x-2 text-xl font-bold transition-colors hover:text-foreground/80"
           >
-            <span>OSM for Cities</span>
+            <span>{t("brandName")}</span>
           </Link>
 
           <div className="flex items-center gap-4">
@@ -25,34 +27,38 @@ export default async function NavBar() {
   );
 }
 
-function LoggedInNav() {
+async function LoggedInNav() {
+  const t = await getTranslations("Navigation");
+
   return (
     <>
       <Button variant="ghost" asChild>
-        <Link href="/about">About</Link>
+        <Link href="/about">{t("about")}</Link>
       </Button>
       <Button variant="ghost" asChild>
         <Link href="/preferences" className="flex items-center gap-2">
-          Preferences
+          {t("preferences")}
         </Link>
       </Button>
       <form action="/api/auth/logout" method="POST">
         <Button type="submit" variant="outline" size="sm">
-          Sign Out
+          {t("signOut")}
         </Button>
       </form>
     </>
   );
 }
 
-function LoggedOutNav() {
+async function LoggedOutNav() {
+  const t = await getTranslations("Navigation");
+
   return (
     <>
       <Button variant="ghost" asChild>
-        <Link href="/about">About</Link>
+        <Link href="/about">{t("about")}</Link>
       </Button>
       <Button asChild>
-        <Link href="/enter">Sign In</Link>
+        <Link href="/enter">{t("signIn")}</Link>
       </Button>
     </>
   );

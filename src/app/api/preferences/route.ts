@@ -31,13 +31,14 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { reportsEnabled, reportsFrequency } = await request.json();
+    const { reportsEnabled, reportsFrequency, language } = await request.json();
 
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
       data: {
         reportsEnabled,
         reportsFrequency,
+        language,
       },
     });
 
@@ -45,6 +46,7 @@ export async function PUT(request: NextRequest) {
       preference: {
         reportsEnabled: updatedUser.reportsEnabled,
         reportsFrequency: updatedUser.reportsFrequency,
+        language: updatedUser.language,
       },
     });
   } catch (error) {

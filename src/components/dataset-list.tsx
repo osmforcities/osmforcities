@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
+import { useTranslations } from "next-intl";
 
 type Dataset = {
   id: string;
@@ -53,6 +54,7 @@ export default function DatasetList({
   const [localDatasets, setLocalDatasets] = useState(datasets);
   const { deletingId, handleDelete, toggleActive, togglePublic } =
     useDatasetActions();
+  const t = useTranslations("DatasetList");
 
   // Update local state when props change
   useEffect(() => {
@@ -115,7 +117,7 @@ export default function DatasetList({
       <div className="flex justify-between items-start mb-2">
         <div>
           <h3 className="font-semibold text-black dark:text-white">
-            {dataset.template.name} in {dataset.cityName}
+            {dataset.template.name} {t("in")} {dataset.cityName}
             {dataset.area.countryCode && ` (${dataset.area.countryCode})`}
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 capitalize">
@@ -123,7 +125,7 @@ export default function DatasetList({
           </p>
           {showCreator && dataset.user && (
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              by {dataset.user.name || dataset.user.email.split("@")[0]}
+              {t("by")} {dataset.user.name || dataset.user.email.split("@")[0]}
             </p>
           )}
         </div>
@@ -135,7 +137,7 @@ export default function DatasetList({
                 : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
             }`}
           >
-            {dataset.isActive ? "Active" : "Inactive"}
+            {dataset.isActive ? t("active") : t("inactive")}
           </span>
           <span
             className={`px-2 py-1 text-xs rounded ${
@@ -144,19 +146,24 @@ export default function DatasetList({
                 : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
             }`}
           >
-            {dataset.isPublic ? "Public" : "Private"}
+            {dataset.isPublic ? t("public") : t("private")}
           </span>
         </div>
       </div>
 
       <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-        <p>Data count: {dataset.dataCount}</p>
-        {dataset._count && <p>Watchers: {dataset._count.watchers}</p>}
+        <p>{t("dataCount", { count: dataset.dataCount })}</p>
+        {dataset._count && (
+          <p>
+            {t("watchers")}
+            {t("colon")} {dataset._count.watchers}
+          </p>
+        )}
       </div>
 
       <div className="flex justify-between items-center">
         <Button size="sm" variant="ghost" asChild>
-          <Link href={`/dataset/${dataset.id}`}>View</Link>
+          <Link href={`/dataset/${dataset.id}`}>{t("view")}</Link>
         </Button>
 
         {isOwned && (
@@ -165,13 +172,13 @@ export default function DatasetList({
               onClick={() => handleToggleActive(dataset.id, dataset.isActive)}
               className="px-3 py-1 text-sm border border-black hover:bg-black hover:text-white transition-colors"
             >
-              {dataset.isActive ? "Deactivate" : "Activate"}
+              {dataset.isActive ? t("deactivate") : t("activate")}
             </button>
             <button
               onClick={() => handleTogglePublic(dataset.id, dataset.isPublic)}
               className="px-3 py-1 text-sm border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
             >
-              {dataset.isPublic ? "Make Private" : "Make Public"}
+              {dataset.isPublic ? t("makePrivate") : t("makePublic")}
             </button>
             {dataset.canDelete ? (
               <button
@@ -179,17 +186,17 @@ export default function DatasetList({
                 disabled={deletingId === dataset.id}
                 className="px-3 py-1 text-sm border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors disabled:opacity-50"
               >
-                {deletingId === dataset.id ? "Deleting..." : "Delete"}
+                {deletingId === dataset.id ? t("deleting") : t("delete")}
               </button>
             ) : (
               <button
                 disabled
-                title={`Cannot delete dataset with ${
-                  dataset._count?.watchers || 0
-                } watcher(s). Make it private first or ask watchers to unwatch it.`}
+                title={t("cannotDeleteTooltip", {
+                  count: dataset._count?.watchers || 0,
+                })}
                 className="px-3 py-1 text-sm border border-gray-300 text-gray-400 cursor-not-allowed"
               >
-                Delete
+                {t("delete")}
               </button>
             )}
           </div>
@@ -207,7 +214,9 @@ export default function DatasetList({
           </h2>
           {localDatasets.length > 0 && (
             <span className="text-sm text-gray-500">
-              ({localDatasets.length})
+              {t("openParen")}
+              {localDatasets.length}
+              {t("closeParen")}
             </span>
           )}
         </div>
@@ -218,7 +227,7 @@ export default function DatasetList({
               className="flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
-              Create Dataset
+              {t("createDataset")}
             </Link>
           </Button>
         )}
