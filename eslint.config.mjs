@@ -20,6 +20,21 @@ const eslintConfig = [
     rules: {
       "react/no-unescaped-entities": "off",
       "@typescript-eslint/no-unused-vars": "error",
+      // Avoid hardcoded labels in component markup
+      "react/jsx-no-literals": "error",
+      // Consistently import navigation APIs from `@/i18n/navigation`
+      "no-restricted-imports": [
+        "error",
+        {
+          name: "next/link",
+          message: "Please import from `@/i18n/navigation` instead."
+        },
+        {
+          name: "next/navigation",
+          importNames: ["redirect", "permanentRedirect", "useRouter", "usePathname"],
+          message: "Please import from `@/i18n/navigation` instead."
+        }
+      ]
     },
   },
   {
