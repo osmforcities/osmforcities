@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 type Template = {
   id: string;
@@ -20,6 +21,7 @@ export default function TemplateSelector({
   selectedTemplate,
   onTemplateSelected,
 }: TemplateSelectorProps) {
+  const t = useTranslations("TemplateSelector");
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
@@ -69,7 +71,7 @@ export default function TemplateSelector({
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search templates..."
+          placeholder={t("searchPlaceholder")}
           className="w-full p-2 border border-black focus:outline-none focus:ring-2 focus:ring-black"
         />
         {searchTerm && (
@@ -77,14 +79,14 @@ export default function TemplateSelector({
             onClick={() => setSearchTerm("")}
             className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
           >
-            ✕
+            {t("close")}
           </button>
         )}
       </div>
 
       {searchTerm && filteredTemplates.length === 0 && (
         <p className="text-gray-500 text-sm">
-          No templates found matching &quot;{searchTerm}&quot;
+          {t("noTemplatesFound")}{searchTerm}{t("quote")}
         </p>
       )}
 
@@ -131,7 +133,7 @@ export default function TemplateSelector({
                         )}
                       </div>
                       {selectedTemplate === template.id && (
-                        <div className="ml-2">✓</div>
+                        <div className="ml-2">{t("selected")}</div>
                       )}
                     </div>
                   </li>
@@ -145,7 +147,7 @@ export default function TemplateSelector({
       {/* Selected template details */}
       {selectedTemplate && (
         <div className="mt-4 p-3 border border-gray-200 rounded-md bg-gray-50">
-          <h3 className="font-medium">Selected Template:</h3>
+          <h3 className="font-medium">{t("selectedTemplate")}</h3>
           <p>{templates.find((t) => t.id === selectedTemplate)?.name || ""}</p>
           <p className="text-sm text-gray-600 mt-1">
             {templates.find((t) => t.id === selectedTemplate)?.description ||

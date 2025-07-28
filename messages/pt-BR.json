@@ -39,7 +39,7 @@
     "inactive": "Inativo",
     "public": "Público",
     "private": "Privado",
-    "dataCount": "Contagem de dados",
+    "dataCount": "Contagem de dados: {count, number}",
     "watchers": "Observadores",
     "view": "Ver",
     "deactivate": "Desativar",
@@ -52,30 +52,13 @@
     "by": "por",
     "cannotDeleteTooltip": "Não é possível excluir conjunto de dados com {count, plural, =0 {nenhum observador} one {# observador} other {# observadores}}. Torne-o privado primeiro ou peça aos observadores para parar de observar."
   },
-  "PublicDatasetsFeed": {
-    "noDatasetsYet": "Nenhum conjunto de dados público ainda.",
-    "title": "Conjuntos de Dados Públicos de Cidades",
-    "subtitle": "Descubra quais conjuntos de dados outros estão monitorando em diferentes cidades",
-    "dataCount": "Contagem de dados",
-    "lastChecked": "Última verificação",
-    "never": "Nunca",
-    "by": "Por",
-    "viewDataset": "Ver Conjunto de Dados"
-  },
+
   "Watched": {
     "metaTitle": "Seguindo - OSM for Cities",
     "metaDescription": "Conjuntos de dados que você segue",
     "title": "Seguindo",
     "emptyMessage": "Você ainda não está seguindo nenhum conjunto de dados.",
     "emptyActionText": "Explorar Conjuntos de Dados Públicos"
-  },
-  "AuthForm": {
-    "checkYourEmail": "Verifique seu email",
-    "sentLinkTo": "Enviamos um link para {email}",
-    "tryDifferentEmail": "Tentar email diferente",
-    "emailPlaceholder": "Email",
-    "sending": "Enviando...",
-    "continue": "Continuar"
   },
   "EnterPage": {
     "metaTitle": "Entrar - OSM for Cities",
@@ -101,6 +84,164 @@
     "getInvolved": "Participe",
     "getInvolvedDescription": "Seu feedback ajuda a moldar este experimento. Seja com ideias para novos recursos, algo que encontrou que não funciona direito, ou apenas quer compartilhar como está usando a plataforma — adoraríamos ouvir de você.",
     "shareFeedback": "Compartilhar Feedback",
-    "viewOnGitHub": "Ver no GitHub"
+    "viewOnGitHub": "Ver no GitHub",
+    "bulletPoint": "•"
+  },
+  "DatasetPage": {
+    "backToHome": "Voltar ao Início",
+    "datasetStats": "Estatísticas do Conjunto de Dados",
+    "category": "Categoria",
+    "totalFeatures": "Total de Recursos",
+    "totalEditors": "Total de Editores",
+    "changesets": "Conjuntos de Mudanças",
+    "watchers": "Observadores",
+    "avgAgeDays": "Idade Média (dias)",
+    "recentActivity": "Atividade Recente (Últimos 3 Meses)",
+    "elementsEdited": "Elementos Editados",
+    "percentOfTotal": "% do total",
+    "activeEditors": "Editores Ativos",
+    "recentChangesets": "Conjuntos de Mudanças Recentes",
+    "overallAssessment": "Avaliação Geral",
+    "lastChecked": "Última Verificação:",
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "public": "Público",
+    "private": "Privado"
+  },
+  "AuthForm": {
+    "checkYourEmail": "Verifique seu email",
+    "sentLinkTo": "Enviamos um link para {email}",
+    "tryDifferentEmail": "Tentar email diferente",
+    "emailPlaceholder": "Email",
+    "sending": "Enviando...",
+    "continue": "Continuar",
+    "emailIcon": "📧"
+  },
+  "DatasetPage": {
+    "backToHome": "Voltar ao Início",
+    "datasetStats": "Estatísticas do Conjunto de Dados",
+    "category": "Categoria",
+    "totalFeatures": "Total de Recursos",
+    "totalEditors": "Total de Editores",
+    "changesets": "Conjuntos de Mudanças",
+    "watchers": "Observadores",
+    "avgAgeDays": "Idade Média (dias)",
+    "recentActivity": "Atividade Recente (Últimos 3 Meses)",
+    "elementsEdited": "Elementos Editados",
+    "percentOfTotal": "% do total",
+    "activeEditors": "Editores Ativos",
+    "recentChangesets": "Conjuntos de Mudanças Recentes",
+    "overallAssessment": "Avaliação Geral",
+    "lastChecked": "Última Verificação:",
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "public": "Público",
+    "private": "Privado",
+    "veryActive": "Muito Ativo",
+    "lowActivity": "Baixa Atividade",
+    "strongCommunity": "Comunidade Forte",
+    "someContributors": "Alguns Contribuidores",
+    "singleEditor": "Editor Único"
+  },
+  "AreaSelector": {
+    "searchPlaceholder": "Digite pelo menos 3 caracteres para pesquisar",
+    "searchDescription": "Apenas áreas administrativas (cidades, vilas, bairros) serão mostradas nos resultados",
+    "id": "ID:",
+    "noAreasFound": "Nenhuma área encontrada. Tente um termo de pesquisa diferente.",
+    "boundingBox": "Caixa Delimitadora: [",
+    "boundingBoxEnd": "]",
+    "viewOnOsm": "Ver no OpenStreetMap →",
+    "change": "Alterar"
+  },
+  "CreateDatasetWizard": {
+    "selectArea": "Selecionar uma Área",
+    "selectAreaDescription": "Digite o nome de uma área e selecione das sugestões. Pode ser uma cidade, vila, bairro ou qualquer área administrativa no OpenStreetMap.",
+    "nextSelectTemplate": "Próximo: Selecionar Modelo",
+    "selectTemplate": "Selecionar um Modelo",
+    "selectTemplateDescription": "Escolha um modelo de dados que define quais recursos do OpenStreetMap monitorar.",
+    "back": "Voltar",
+    "nextTestQuery": "Próximo: Testar Consulta",
+    "testYourQuery": "Testar Sua Consulta",
+    "testQueryDescription": "Teste a consulta do modelo selecionado contra sua área escolhida para ver quais dados serão monitorados.",
+    "nextConfirm": "Próximo: Confirmar",
+    "confirmDatasetCreation": "Confirmar Criação do Conjunto de Dados",
+    "confirmDescription": "Revise suas seleções e crie seu conjunto de dados.",
+    "selectedArea": "Área Selecionada:",
+    "selectedTemplate": "Modelo Selecionado:"
+  },
+  "CreateDatasetPage": {
+    "backToHome": "← Voltar ao Início",
+    "createNewDataset": "Criar Novo Conjunto de Dados",
+    "createDescription": "Siga os passos abaixo para criar um novo conjunto de dados para acompanhar dados do OpenStreetMap."
+  },
+  "QueryTester": {
+    "selectAreaTemplateFirst": "Por favor, selecione uma área e um modelo primeiro.",
+    "queryPreview": "Visualização da Consulta",
+    "queryingOverpass": "Consultando API Overpass...",
+    "error": "Erro",
+    "noResults": "Nenhum Resultado",
+    "noResultsDescription": "A consulta não retornou resultados. Isso pode significar:",
+    "noFeaturesMatch": "Nenhum recurso corresponde aos critérios nesta área",
+    "areaNoAmenities": "A área pode não ter as amenidades especificadas",
+    "queryNeedsAdjustment": "A consulta pode precisar de ajustes"
+  },
+  "TemplateSelector": {
+    "close": "✕",
+    "noTemplatesFound": "Nenhum modelo encontrado correspondendo a \"",
+    "quote": "\"",
+    "selected": "✓",
+    "selectedTemplate": "Modelo Selecionado:"
+  },
+  "PreferencesPage": {
+    "emailPreferences": "Preferências de Email",
+    "reports": "Relatórios",
+    "reportsDescription": "Receba um resumo de seus monitores e suas atividades.",
+    "magicLinks": "Links Mágicos",
+    "magicLinksDescription": "Links mágicos para entrar estão sempre habilitados e não podem ser desabilitados."
+  },
+  "PreferencesForm": {
+    "enableReports": "Habilitar relatórios",
+    "frequency": "Frequência:",
+    "daily": "Diário",
+    "weekly": "Semanal"
+  },
+  "TemplatesPage": {
+    "templates": "Modelos",
+    "openParen": "(",
+    "closeParen": ")",
+    "noTemplatesFound": "Nenhum modelo encontrado.",
+    "datasets": "Conjuntos de Dados:",
+    "tags": "Tags:"
+  },
+  "UsersPage": {
+    "users": "Usuários",
+    "openParen": "(",
+    "closeParen": ")",
+    "noUsersFound": "Nenhum usuário encontrado.",
+    "datasets": "Conjuntos de Dados:",
+    "joined": "Entrou:"
+  },
+  "DatasetMap": {
+    "noDataAvailable": "Nenhum dado disponível. Os dados serão atualizados automaticamente quando você visitar esta página.",
+    "noGeographicData": "Nenhum dado geográfico encontrado nos resultados do conjunto de dados.",
+    "tags": "Tags",
+    "meta": "Meta",
+    "noAdditionalInfo": "Nenhuma informação adicional disponível"
+  },
+  "DatasetWatchButton": {
+    "privateDataset": "Conjunto de Dados Privado"
+  },
+  "PublicDatasetsFeed": {
+    "noDatasetsYet": "Nenhum conjunto de dados público ainda.",
+    "title": "Conjuntos de Dados Públicos de Cidades",
+    "subtitle": "Descubra quais conjuntos de dados outros estão monitorando em diferentes cidades",
+    "dataCount": "Contagem de dados: {count, number}",
+    "lastChecked": "Última verificação",
+    "never": "Nunca",
+    "by": "Por",
+    "viewDataset": "Ver Conjunto de Dados",
+    "in": "em",
+    "colon": ":",
+    "datasetTitle": "{templateName} em {cityName} ({countryCode})"
   }
 }

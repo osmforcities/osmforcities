@@ -8,6 +8,7 @@ import { FeatureCollection, Feature } from "geojson";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 import type { Dataset } from "@/schemas/dataset";
 import { calculateBbox } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 const FEATURE_FILL_COLOR = "#ff6b35";
 const FEATURE_BORDER_COLOR = "#ff6b35";
@@ -49,6 +50,7 @@ type TooltipInfo = {
 };
 
 export default function DatasetMap({ dataset }: DatasetMapProps) {
+  const t = useTranslations("DatasetMap");
   const mapRef = useRef<MapRef | null>(null);
   const [tooltipInfo, setTooltipInfo] = useState<TooltipInfo | null>(null);
 
@@ -71,8 +73,7 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
     return (
       <div className="bg-muted/30 border-2 border-dashed border-muted rounded-lg p-8 text-center">
         <p className="text-muted-foreground">
-          No data available. Data will be automatically refreshed when you visit
-          this page.
+          {t("noDataAvailable")}
         </p>
       </div>
     );
@@ -86,7 +87,7 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
     return (
       <div className="bg-muted/30 border-2 border-dashed border-muted rounded-lg p-8 text-center">
         <p className="text-muted-foreground">
-          No geographic data found in the dataset results.
+          {t("noGeographicData")}
         </p>
       </div>
     );
@@ -116,13 +117,13 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
         {Object.keys(tags).length > 0 && (
           <div className="mb-3">
             <h4 className="font-semibold text-sm text-gray-900 dark:text-white mb-2">
-              Tags
+              {t("tags")}
             </h4>
             <div className="space-y-1">
               {Object.entries(tags).map(([key, value]) => (
                 <div key={key} className="flex text-xs">
                   <span className="font-medium text-gray-600 dark:text-gray-300 mr-2 min-w-0 truncate">
-                    {key}:
+                    {key}{t("colon")}
                   </span>
                   <span className="text-gray-800 dark:text-gray-200 break-all">
                     {value}
@@ -136,13 +137,13 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
         {Object.keys(meta).length > 0 && (
           <div>
             <h4 className="font-semibold text-sm text-gray-900 dark:text-white mb-2">
-              Meta
+              {t("meta")}
             </h4>
             <div className="space-y-1">
               {Object.entries(meta).map(([key, value]) => (
                 <div key={key} className="flex text-xs">
                   <span className="font-medium text-gray-600 dark:text-gray-300 mr-2 min-w-0 truncate">
-                    {key}:
+                    {key}{t("colon")}
                   </span>
                   <span className="text-gray-800 dark:text-gray-200 break-all">
                     {value}
@@ -155,7 +156,7 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
 
         {Object.keys(tags).length === 0 && Object.keys(meta).length === 0 && (
           <div className="text-xs text-gray-500 dark:text-gray-400">
-            No additional information available
+            {t("noAdditionalInfo")}
           </div>
         )}
       </div>

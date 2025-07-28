@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { getUserFromCookie } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { prisma } from "@/lib/db";
 import TabLayout from "@/components/tab-layout";
 import DatasetList from "@/components/dataset-list";
@@ -85,13 +85,13 @@ export default async function PublicPage({
   const t = await getTranslations("Public");
 
   if (!user) {
-    redirect("/");
+    redirect({ href: "/", locale: "en" });
   }
 
   const publicDatasets = await getPublicDatasets();
 
   return (
-    <TabLayout activeTab="public" isAdmin={user.isAdmin}>
+    <TabLayout activeTab="public" isAdmin={user!.isAdmin}>
       <DatasetList
         datasets={publicDatasets}
         title={t("title")}

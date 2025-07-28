@@ -1,36 +1,37 @@
 import { getUserFromCookie } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { PreferencesForm } from "./preferences-form";
+import { getTranslations } from "next-intl/server";
 
 export default async function PreferencesPage() {
   const user = await getUserFromCookie();
+  const t = await getTranslations("PreferencesPage");
 
   if (!user) {
-    redirect("/enter");
+    redirect({ href: "/enter", locale: "en" });
   }
 
   return (
     <div className="container mx-auto p-6 max-w-2xl">
-      <h1 className="text-2xl font-bold mb-6">Email Preferences</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("emailPreferences")}</h1>
 
       <div className="space-y-6">
         <div className="border rounded-lg p-6">
-          <h2 className="text-lg font-semibold mb-4">Reports</h2>
+          <h2 className="text-lg font-semibold mb-4">{t("reports")}</h2>
           <p className="text-gray-600 mb-4">
-            Get a summary of your monitors and their activity.
+            {t("reportsDescription")}
           </p>
 
           <PreferencesForm
-            initialReportsEnabled={user.reportsEnabled}
-            initialReportsFrequency={user.reportsFrequency}
+            initialReportsEnabled={user!.reportsEnabled}
+            initialReportsFrequency={user!.reportsFrequency}
           />
         </div>
 
         <div className="border rounded-lg p-6 bg-gray-50">
-          <h2 className="text-lg font-semibold mb-4">Magic Links</h2>
+          <h2 className="text-lg font-semibold mb-4">{t("magicLinks")}</h2>
           <p className="text-gray-600 mb-4">
-            Magic links for signing in are always enabled and cannot be
-            disabled.
+            {t("magicLinksDescription")}
           </p>
         </div>
       </div>

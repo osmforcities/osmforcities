@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { getUserFromCookie } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { prisma } from "@/lib/db";
 import TabLayout from "@/components/tab-layout";
 import DatasetList from "@/components/dataset-list";
@@ -70,13 +70,13 @@ export default async function WatchedPage({
   const t = await getTranslations("Watched");
 
   if (!user) {
-    redirect("/");
+    redirect({ href: "/", locale: "en" });
   }
 
-  const watchedDatasets = await getWatchedDatasets(user.id);
+  const watchedDatasets = await getWatchedDatasets(user!.id);
 
   return (
-    <TabLayout activeTab="watched" isAdmin={user.isAdmin}>
+    <TabLayout activeTab="watched" isAdmin={user!.isAdmin}>
       <DatasetList
         datasets={watchedDatasets}
         title={t("title")}

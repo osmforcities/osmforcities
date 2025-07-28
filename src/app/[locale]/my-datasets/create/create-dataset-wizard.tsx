@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import AreaSelector from "./area-selector";
 import TemplateSelector from "./template-selector";
 import QueryTester from "./query-tester";
 import { Area } from "@/types/area";
+import { useTranslations } from "next-intl";
 
 type Template = {
   id: string;
@@ -25,6 +26,7 @@ type CreateDatasetWizardProps = {
 export default function CreateDatasetWizard({
   templates,
 }: CreateDatasetWizardProps) {
+  const t = useTranslations("CreateDatasetWizard");
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedArea, setSelectedArea] = useState<Area | null>(null);
@@ -100,11 +102,9 @@ export default function CreateDatasetWizard({
       {/* Step 1: Area Selection */}
       {currentStep === 1 && (
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Select an Area</h2>
+          <h2 className="text-xl font-semibold">{t("selectArea")}</h2>
           <p className="text-gray-600">
-            Type an area name and select from the suggestions. This can be a
-            city, town, neighborhood, or any administrative area in
-            OpenStreetMap.
+            {t("selectAreaDescription")}
           </p>
 
           <AreaSelector
@@ -118,7 +118,7 @@ export default function CreateDatasetWizard({
               disabled={!selectedArea}
               className="bg-black text-white py-2 px-4 border-2 border-black hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Next: Select Template
+              {t("nextSelectTemplate")}
             </Button>
           </div>
         </div>
@@ -127,10 +127,9 @@ export default function CreateDatasetWizard({
       {/* Step 2: Template Selection */}
       {currentStep === 2 && (
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Select a Template</h2>
+          <h2 className="text-xl font-semibold">{t("selectTemplate")}</h2>
           <p className="text-gray-600">
-            Choose a data template that defines what OpenStreetMap features to
-            dataset.
+            {t("selectTemplateDescription")}
           </p>
 
           <TemplateSelector
@@ -144,14 +143,14 @@ export default function CreateDatasetWizard({
               onClick={handlePrevStep}
               className="bg-white text-black py-2 px-4 border-2 border-black hover:bg-gray-100 transition-colors"
             >
-              Back
+              {t("back")}
             </Button>
             <Button
               onClick={handleNextStep}
               disabled={!selectedTemplate}
               className="bg-black text-white py-2 px-4 border-2 border-black hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Next: Test Query
+              {t("nextTestQuery")}
             </Button>
           </div>
         </div>
@@ -160,10 +159,9 @@ export default function CreateDatasetWizard({
       {/* Step 3: Query Testing */}
       {currentStep === 3 && (
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Test Your Query</h2>
+          <h2 className="text-xl font-semibold">{t("testYourQuery")}</h2>
           <p className="text-gray-600">
-            Test the selected template query against your chosen area to see
-            what data will be monitored.
+            {t("testQueryDescription")}
           </p>
 
           <QueryTester
@@ -176,13 +174,13 @@ export default function CreateDatasetWizard({
               onClick={handlePrevStep}
               className="bg-white text-black py-2 px-4 border-2 border-black hover:bg-gray-100 transition-colors"
             >
-              Back
+              {t("back")}
             </Button>
             <Button
               onClick={handleNextStep}
               className="bg-black text-white py-2 px-4 border-2 border-black hover:bg-white hover:text-black transition-colors"
             >
-              Next: Confirm
+              {t("nextConfirm")}
             </Button>
           </div>
         </div>
@@ -191,19 +189,19 @@ export default function CreateDatasetWizard({
       {/* Step 4: Confirmation */}
       {currentStep === 4 && (
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Confirm Dataset Creation</h2>
+          <h2 className="text-xl font-semibold">{t("confirmDatasetCreation")}</h2>
           <p className="text-gray-600">
-            Review your selections and create your dataset.
+            {t("confirmDescription")}
           </p>
 
           <div className="border border-gray-200 p-4 rounded-md space-y-3">
             <div>
-              <h3 className="font-medium">Selected Area:</h3>
+              <h3 className="font-medium">{t("selectedArea")}</h3>
               <p>{selectedArea?.displayName}</p>
             </div>
 
             <div>
-              <h3 className="font-medium">Selected Template:</h3>
+              <h3 className="font-medium">{t("selectedTemplate")}</h3>
               <p>
                 {templates.find((t) => t.id === selectedTemplate)?.name || ""}
               </p>
@@ -219,7 +217,7 @@ export default function CreateDatasetWizard({
               onClick={handlePrevStep}
               className="bg-white text-black py-2 px-4 border-2 border-black hover:bg-gray-100 transition-colors"
             >
-              Back
+              {t("back")}
             </Button>
             <Button
               onClick={handleSubmit}

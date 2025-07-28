@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 type PreferencesFormProps = {
   initialReportsEnabled: boolean;
@@ -11,6 +12,7 @@ export function PreferencesForm({
   initialReportsEnabled,
   initialReportsFrequency,
 }: PreferencesFormProps) {
+  const t = useTranslations("PreferencesForm");
   const [reportsEnabled, setReportsEnabled] = useState(initialReportsEnabled);
   const [reportsFrequency, setReportsFrequency] = useState(
     initialReportsFrequency
@@ -54,12 +56,12 @@ export function PreferencesForm({
           }}
           className="mr-2"
         />
-        Enable reports
+        {t("enableReports")}
       </label>
 
       {reportsEnabled && (
         <div className="ml-6">
-          <label className="block text-sm font-medium mb-2">Frequency:</label>
+          <label className="block text-sm font-medium mb-2">{t("frequency")}</label>
           <select
             value={reportsFrequency}
             onChange={(e) => {
@@ -68,8 +70,8 @@ export function PreferencesForm({
             className="border rounded px-3 py-2"
             disabled={saving}
           >
-            <option value="DAILY">Daily</option>
-            <option value="WEEKLY">Weekly</option>
+            <option value="DAILY">{t("daily")}</option>
+            <option value="WEEKLY">{t("weekly")}</option>
           </select>
         </div>
       )}

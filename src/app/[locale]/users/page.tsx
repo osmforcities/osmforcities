@@ -1,8 +1,9 @@
 import { Metadata } from "next";
 import { getUserFromCookie } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { prisma } from "@/lib/db";
 import TabLayout from "@/components/tab-layout";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
@@ -26,32 +27,33 @@ async function getUsers() {
 
 export default async function UsersPage() {
   const user = await getUserFromCookie();
+  const t = await getTranslations("UsersPage");
 
   if (!user) {
-    redirect("/");
+    redirect({ href: "/", locale: "en" });
   }
 
-  if (!user.isAdmin) {
-    redirect("/watched");
+  if (!user!.isAdmin) {
+    redirect({ href: "/watched", locale: "en" });
   }
 
   const users = await getUsers();
 
   return (
-    <TabLayout activeTab="users" isAdmin={user.isAdmin}>
+    <TabLayout activeTab="users" isAdmin={user!.isAdmin}>
       <div>
         <div className="flex items-center gap-2 mb-4">
           <h2 className="text-xl font-semibold text-black dark:text-white">
-            Users
+            {t("users")}
           </h2>
           {users.length > 0 && (
-            <span className="text-sm text-gray-500">({users.length})</span>
+            <span className="text-sm text-gray-500">{t("openParen")}{users.length}{t("closeParen")}</span>
           )}
         </div>
 
         {users.length === 0 ? (
           <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-6 text-center">
-            <p className="text-gray-600 dark:text-gray-400">No users found.</p>
+            <p className="text-gray-600 dark:text-gray-400">{t("noUsersFound")}</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -83,9 +85,9 @@ export default async function UsersPage() {
                 </div>
 
                 <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
-                  <span>Datasets: {user._count.datasets}</span>
+                  <span>{t("datasets")} {user._count.datasets}</span>
                   <span>
-                    Joined: {new Date(user.createdAt).toLocaleDateString()}
+                    {t("joined")} {new Date(user.createdAt).toLocaleDateString()}
                   </span>
                 </div>
               </div>

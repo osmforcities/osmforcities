@@ -1,8 +1,9 @@
 import { Metadata } from "next";
 import { getUserFromCookie } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { prisma } from "@/lib/db";
 import TabLayout from "@/components/tab-layout";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
@@ -26,33 +27,34 @@ async function getTemplates() {
 
 export default async function TemplatesPage() {
   const user = await getUserFromCookie();
+  const t = await getTranslations("TemplatesPage");
 
   if (!user) {
-    redirect("/");
+    redirect({ href: "/", locale: "en" });
   }
 
-  if (!user.isAdmin) {
-    redirect("/watched");
+  if (!user!.isAdmin) {
+    redirect({ href: "/watched", locale: "en" });
   }
 
   const templates = await getTemplates();
 
   return (
-    <TabLayout activeTab="templates" isAdmin={user.isAdmin}>
+    <TabLayout activeTab="templates" isAdmin={user!.isAdmin}>
       <div>
         <div className="flex items-center gap-2 mb-4">
           <h2 className="text-xl font-semibold text-black dark:text-white">
-            Templates
+            {t("templates")}
           </h2>
           {templates.length > 0 && (
-            <span className="text-sm text-gray-500">({templates.length})</span>
+            <span className="text-sm text-gray-500">{t("openParen")}{templates.length}{t("closeParen")}</span>
           )}
         </div>
 
         {templates.length === 0 ? (
           <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-6 text-center">
             <p className="text-gray-600 dark:text-gray-400">
-              No templates found.
+              {t("noTemplatesFound")}
             </p>
           </div>
         ) : (
@@ -89,9 +91,9 @@ export default async function TemplatesPage() {
 
                 <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
                   <div className="flex gap-2">
-                    <span>Datasets: {template._count.datasets}</span>
+                    <span>{t("datasets")} {template._count.datasets}</span>
                     {template.tags.length > 0 && (
-                      <span>Tags: {template.tags.slice(0, 2).join(", ")}</span>
+                      <span>{t("tags")} {template.tags.slice(0, 2).join(", ")}</span>
                     )}
                   </div>
                 </div>

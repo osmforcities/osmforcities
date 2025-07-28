@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Area } from "@/types/area";
+import { useTranslations } from "next-intl";
 
 type NominatimResult = {
   place_id: number;
@@ -28,6 +29,7 @@ export default function AreaSelector({
   onAreaSelected,
   selectedArea,
 }: AreaSelectorProps) {
+  const t = useTranslations("AreaSelector");
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<NominatimResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -155,7 +157,7 @@ export default function AreaSelector({
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Type an area name (city, town, neighborhood, etc.)"
+              placeholder={t("searchPlaceholder")}
               className="w-full p-2 border border-black focus:outline-none focus:ring-2 focus:ring-black"
               disabled={isSearching}
               autoFocus
@@ -170,15 +172,10 @@ export default function AreaSelector({
           {error && <p className="text-red-500 text-sm">{error}</p>}
 
           {searchTerm.length > 0 && searchTerm.length < 3 && (
-            <p className="text-gray-500 text-sm">
-              Please enter at least 3 characters to search
-            </p>
+            <p className="text-gray-500 text-sm">{t("searchPlaceholder")}</p>
           )}
 
-          <p className="text-gray-500 text-xs mt-1">
-            Only administrative areas (cities, towns, neighborhoods) will be
-            shown in results
-          </p>
+          <p className="text-gray-500 text-xs mt-1">{t("searchDescription")}</p>
 
           {searchResults.length > 0 && (
             <div className="border border-gray-200 rounded-md overflow-hidden">
@@ -198,7 +195,7 @@ export default function AreaSelector({
                     <p className="text-xs text-gray-500">
                       {result.osm_type.charAt(0).toUpperCase() +
                         result.osm_type.slice(1)}{" "}
-                      ID: {result.osm_id}
+                      {t("id")} {result.osm_id}
                     </p>
                   </li>
                 ))}
@@ -209,9 +206,7 @@ export default function AreaSelector({
           {searchTerm.length >= 3 &&
             searchResults.length === 0 &&
             !isSearching && (
-              <p className="text-gray-500 text-sm">
-                No areas found. Try a different search term.
-              </p>
+              <p className="text-gray-500 text-sm">{t("noAreasFound")}</p>
             )}
         </>
       ) : (
@@ -225,10 +220,12 @@ export default function AreaSelector({
               <p className="text-xs text-gray-500 mt-1">
                 {selectedArea.osmType.charAt(0).toUpperCase() +
                   selectedArea.osmType.slice(1)}{" "}
-                ID: {selectedArea.id}
+                {t("id")} {selectedArea.id}
               </p>
               <p className="text-xs text-gray-500">
-                Bounding Box: [{selectedArea.boundingBox.join(", ")}]
+                {t("boundingBox")}
+                {selectedArea.boundingBox.join(", ")}
+                {t("boundingBoxEnd")}
               </p>
               <a
                 href={`https://www.openstreetmap.org/${selectedArea.osmType}/${selectedArea.id}`}
@@ -236,7 +233,7 @@ export default function AreaSelector({
                 rel="noopener noreferrer"
                 className="text-xs text-blue-600 hover:text-blue-800 mt-2 inline-block"
               >
-                View on OpenStreetMap →
+                {t("viewOnOsm")}
               </a>
             </div>
             <Button
@@ -244,7 +241,7 @@ export default function AreaSelector({
               variant="outline"
               className="text-sm border-gray-300"
             >
-              Change
+              {t("change")}
             </Button>
           </div>
         </div>

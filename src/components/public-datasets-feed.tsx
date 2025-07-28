@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { getTranslations } from "next-intl/server";
@@ -42,9 +42,7 @@ export default async function PublicDatasetsFeed() {
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <h3 className="font-semibold">
-                    {dataset.template.name} in {dataset.cityName}
-                    {dataset.area.countryCode &&
-                      ` (${dataset.area.countryCode})`}
+                    {dataset.template.name} {t("in")} {dataset.cityName}
                   </h3>
                   <p className="text-sm text-gray-600">
                     {dataset.template.description}
@@ -58,13 +56,16 @@ export default async function PublicDatasetsFeed() {
               <div className="flex justify-between items-center text-sm text-gray-500">
                 <div className="flex space-x-4">
                   <span>
-                    {t("dataCount")}: {dataset.dataCount}
+                    {t("dataCount", {
+                      count: dataset.dataCount,
+                    })}
                   </span>
                   <span>
-                    {t("lastChecked")}:{" "}
-                    {dataset.lastChecked
-                      ? new Date(dataset.lastChecked).toLocaleDateString()
-                      : t("never")}
+                    {t("lastChecked", {
+                      date: dataset.lastChecked
+                        ? new Date(dataset.lastChecked).toLocaleDateString()
+                        : t("never"),
+                    })}
                   </span>
                 </div>
                 <div className="flex items-center gap-4">

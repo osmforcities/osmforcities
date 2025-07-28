@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -80,11 +80,11 @@ const AboutPage = async ({
                 {t("featureHighlights")}
               </h2>
 
-              <ul className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed space-y-2">
-                <li>• {t("feature1")}</li>
-                <li>• {t("feature2")}</li>
-                <li>• {t("feature3")}</li>
-                <li>• {t("feature4")}</li>
+              <ul className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed space-y-2 list-disc pl-5">
+                <li>{t("feature1")}</li>
+                <li>{t("feature2")}</li>
+                <li>{t("feature3")}</li>
+                <li>{t("feature4")}</li>
               </ul>
             </div>
 

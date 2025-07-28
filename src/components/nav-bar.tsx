@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { getUserFromCookie } from "@/lib/auth";
 import { getTranslations } from "next-intl/server";

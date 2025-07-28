@@ -9,6 +9,7 @@ import { useOverpassQuery } from "@/hooks/useOverpassQuery";
 import { Area } from "@/types/area";
 import { convertOverpassToGeoJSON } from "@/lib/osm";
 import { FeatureCollection } from "geojson";
+import { useTranslations } from "next-intl";
 
 type Template = {
   id: string;
@@ -28,6 +29,7 @@ export default function QueryTester({
   selectedArea,
   selectedTemplate,
 }: QueryTesterProps) {
+  const t = useTranslations("QueryTester");
   const mapRef = useRef<MapRef | null>(null);
 
   const updateMapBounds = useCallback(() => {
@@ -88,9 +90,7 @@ export default function QueryTester({
   if (!selectedArea || !selectedTemplate) {
     return (
       <div className="border border-gray-200 p-4 rounded-md bg-gray-50">
-        <p className="text-gray-500">
-          Please select an area and template first.
-        </p>
+        <p className="text-gray-500">{t("selectAreaTemplateFirst")}</p>
       </div>
     );
   }
@@ -99,7 +99,7 @@ export default function QueryTester({
     <div className="space-y-4">
       {/* Query Preview */}
       <div className="border border-gray-200 p-4 rounded-md">
-        <h3 className="font-medium mb-2">Query Preview</h3>
+        <h3 className="font-medium mb-2">{t("queryPreview")}</h3>
         <div className="bg-gray-100 p-3 rounded text-sm font-mono overflow-x-auto">
           <pre className="whitespace-pre-wrap">{queryString}</pre>
         </div>
@@ -112,7 +112,7 @@ export default function QueryTester({
           disabled={isFetching}
           className="bg-blue-600 text-white py-2 px-6 border-2 border-blue-600 hover:bg-white hover:text-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isFetching ? "Testing Query..." : "Test Query"}
+          {isFetching ? t("testingQuery") : t("testQuery")}
         </Button>
       </div>
 
@@ -121,14 +121,14 @@ export default function QueryTester({
         <div className="border border-gray-200 p-4 rounded-md">
           <div className="flex items-center justify-center space-x-2">
             <div className="animate-spin h-5 w-5 border-2 border-blue-600 border-t-transparent rounded-full"></div>
-            <span>Querying Overpass API...</span>
+            <span>{t("queryingOverpass")}</span>
           </div>
         </div>
       )}
 
       {error && (
         <div className="border border-red-200 p-4 rounded-md bg-red-50">
-          <h3 className="font-medium text-red-800 mb-2">Error</h3>
+          <h3 className="font-medium text-red-800 mb-2">{t("error")}</h3>
           <p className="text-red-700 text-sm">{(error as Error).message}</p>
         </div>
       )}
@@ -234,14 +234,12 @@ export default function QueryTester({
 
       {!isFetching && !error && hasExecutedQuery && results.length === 0 && (
         <div className="border border-gray-200 p-4 rounded-md bg-yellow-50">
-          <h3 className="font-medium text-yellow-800 mb-2">No Results</h3>
-          <p className="text-yellow-700 text-sm">
-            The query returned no results. This could mean:
-          </p>
+          <h3 className="font-medium text-yellow-800 mb-2">{t("noResults")}</h3>
+          <p className="text-yellow-700 text-sm">{t("noResultsDescription")}</p>
           <ul className="text-yellow-700 text-sm mt-2 list-disc list-inside">
-            <li>No features match the criteria in this area</li>
-            <li>The area might not have the specified amenities</li>
-            <li>The query might need adjustment</li>
+            <li>{t("noFeaturesMatch")}</li>
+            <li>{t("areaNoAmenities")}</li>
+            <li>{t("queryNeedsAdjustment")}</li>
           </ul>
         </div>
       )}

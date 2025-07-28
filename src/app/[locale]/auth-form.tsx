@@ -46,6 +46,7 @@ export default function AuthForm() {
   if (step === "sent") {
     return (
       <div className="text-center space-y-4">
+        {/* eslint-disable-next-line react/jsx-no-literals */}
         <div className="text-2xl">📧</div>
         <div>
           <h3 className="font-medium text-black dark:text-white">

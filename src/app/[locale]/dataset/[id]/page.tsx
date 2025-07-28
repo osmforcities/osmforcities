@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
+import { getTranslations } from "next-intl/server";
 import {
   ArrowLeft,
   Users,
@@ -68,18 +69,6 @@ async function getDataset(id: string): Promise<Dataset | null> {
   }
 }
 
-function getActivityLevel(elementsEdited: number) {
-  if (elementsEdited > 50) return { label: "Very Active", color: "green" };
-  if (elementsEdited > 10) return { label: "Active", color: "yellow" };
-  return { label: "Low Activity", color: "gray" };
-}
-
-function getCommunityStrength(editors: number) {
-  if (editors > 5) return { label: "Strong Community", color: "blue" };
-  if (editors > 1) return { label: "Some Contributors", color: "yellow" };
-  return { label: "Single Editor", color: "gray" };
-}
-
 function getColorClasses(color: string) {
   const colors = {
     green: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
@@ -101,6 +90,7 @@ export default async function DatasetPage({
 }) {
   const { id } = await params;
   const dataset = await getDataset(id);
+  const t = await getTranslations("DatasetPage");
 
   if (!dataset) {
     notFound();
@@ -114,7 +104,7 @@ export default async function DatasetPage({
             <Button variant="ghost" size="sm" asChild>
               <Link href="/" className="flex items-center gap-2">
                 <ArrowLeft className="h-4 w-4" />
-                Back to Home
+                {t("backToHome")}
               </Link>
             </Button>
           </div>
@@ -155,7 +145,7 @@ export default async function DatasetPage({
                         : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
                     }`}
                   >
-                    {dataset.isActive ? "Active" : "Inactive"}
+                    {dataset.isActive ? t("active") : t("inactive")}
                   </span>
                   <span
                     className={`px-3 py-1 text-sm rounded-full capitalize ${
@@ -164,7 +154,7 @@ export default async function DatasetPage({
                         : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
                     }`}
                   >
-                    {dataset.isPublic ? "Public" : "Private"}
+                    {dataset.isPublic ? t("public") : t("private")}
                   </span>
                 </div>
               </div>
@@ -178,10 +168,10 @@ export default async function DatasetPage({
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <BarChart3 className="h-6 w-6" />
-                      <h2 className="text-xl font-bold">Dataset Stats</h2>
+                      <h2 className="text-xl font-bold">{t("datasetStats")}</h2>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs opacity-80">Category</div>
+                      <div className="text-xs opacity-80">{t("category")}</div>
                       <div className="text-sm font-semibold capitalize">
                         {dataset.template.category}
                       </div>
@@ -199,7 +189,7 @@ export default async function DatasetPage({
                         {dataset.dataCount.toLocaleString()}
                       </div>
                       <div className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                        Total Features
+                        {t("totalFeatures")}
                       </div>
                     </div>
 
@@ -209,7 +199,7 @@ export default async function DatasetPage({
                         {dataset.stats?.editorsCount?.toLocaleString() || 0}
                       </div>
                       <div className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                        Total Editors
+                        {t("totalEditors")}
                       </div>
                     </div>
 
@@ -219,7 +209,7 @@ export default async function DatasetPage({
                         {dataset.stats?.changesetsCount?.toLocaleString() || 0}
                       </div>
                       <div className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                        Changesets
+                        {t("changesets")}
                       </div>
                     </div>
 
@@ -230,7 +220,7 @@ export default async function DatasetPage({
                           {dataset.watchersCount?.toLocaleString() || 0}
                         </div>
                         <div className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                          Watchers
+                          {t("watchers")}
                         </div>
                       </div>
                     )}
@@ -242,7 +232,7 @@ export default async function DatasetPage({
                           {Math.round(dataset.stats.averageElementAge)}
                         </div>
                         <div className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                          Avg Age (days)
+                          {t("avgAgeDays")}
                         </div>
                       </div>
                     )}
@@ -252,7 +242,7 @@ export default async function DatasetPage({
                     <div className="border-t border-blue-200/30 dark:border-blue-700/30 pt-6">
                       <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-4 flex items-center gap-2">
                         <Activity className="h-5 w-5" />
-                        Recent Activity (Last 3 Months)
+                        {t("recentActivity")}
                       </h3>
                       <div className="grid grid-cols-3 gap-4">
                         <div className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/50 dark:to-blue-800/50 p-4 rounded-lg text-center">
@@ -260,7 +250,7 @@ export default async function DatasetPage({
                             {dataset.stats.recentActivity.elementsEdited.toLocaleString()}
                           </div>
                           <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                            Elements Edited
+                            {t("elementsEdited")}
                           </div>
                           {dataset.dataCount > 0 && (
                             <div className="text-xs text-blue-500 dark:text-blue-400 mt-1">
@@ -269,7 +259,7 @@ export default async function DatasetPage({
                                   dataset.dataCount) *
                                 100
                               ).toFixed(1)}
-                              % of total
+                              {t("percentOfTotal")}
                             </div>
                           )}
                         </div>
@@ -278,7 +268,7 @@ export default async function DatasetPage({
                             {dataset.stats.recentActivity.editors.toLocaleString()}
                           </div>
                           <div className="text-xs text-green-600 dark:text-green-400 font-medium">
-                            Active Editors
+                            {t("activeEditors")}
                           </div>
                         </div>
                         <div className="bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/50 dark:to-purple-800/50 p-4 rounded-lg text-center">
@@ -286,7 +276,7 @@ export default async function DatasetPage({
                             {dataset.stats.recentActivity.changesets.toLocaleString()}
                           </div>
                           <div className="text-xs text-purple-600 dark:text-purple-400 font-medium">
-                            Recent Changesets
+                            {t("recentChangesets")}
                           </div>
                         </div>
                       </div>
@@ -296,13 +286,31 @@ export default async function DatasetPage({
                   {dataset.stats?.recentActivity && (
                     <div className="border-t border-blue-200/30 dark:border-blue-700/30 pt-6 mt-6">
                       <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-3">
-                        Overall Assessment
+                        {t("overallAssessment")}
                       </h3>
                       <div className="flex flex-wrap gap-2">
                         {(() => {
-                          const activityLevel = getActivityLevel(
-                            dataset.stats.recentActivity.elementsEdited
-                          );
+                          let activityLevel;
+                          if (
+                            dataset.stats.recentActivity.elementsEdited > 50
+                          ) {
+                            activityLevel = {
+                              label: t("veryActive"),
+                              color: "green",
+                            };
+                          } else if (
+                            dataset.stats.recentActivity.elementsEdited > 10
+                          ) {
+                            activityLevel = {
+                              label: t("active"),
+                              color: "yellow",
+                            };
+                          } else {
+                            activityLevel = {
+                              label: t("lowActivity"),
+                              color: "gray",
+                            };
+                          }
                           return (
                             <span
                               className={`px-3 py-1 rounded-full text-xs font-bold ${getColorClasses(
@@ -316,9 +324,23 @@ export default async function DatasetPage({
                         })()}
 
                         {(() => {
-                          const communityStrength = getCommunityStrength(
-                            dataset.stats?.editorsCount || 0
-                          );
+                          let communityStrength;
+                          if ((dataset.stats?.editorsCount || 0) > 5) {
+                            communityStrength = {
+                              label: t("strongCommunity"),
+                              color: "blue",
+                            };
+                          } else if ((dataset.stats?.editorsCount || 0) > 1) {
+                            communityStrength = {
+                              label: t("someContributors"),
+                              color: "yellow",
+                            };
+                          } else {
+                            communityStrength = {
+                              label: t("singleEditor"),
+                              color: "gray",
+                            };
+                          }
                           return (
                             <span
                               className={`px-3 py-1 rounded-full text-xs font-bold ${getColorClasses(
@@ -339,7 +361,7 @@ export default async function DatasetPage({
                       {dataset.lastChecked && (
                         <div className="flex items-center gap-1">
                           <Activity className="h-3 w-3" />
-                          Last Checked:{" "}
+                          {t("lastChecked")}{" "}
                           {new Date(dataset.lastChecked).toLocaleDateString()}
                         </div>
                       )}

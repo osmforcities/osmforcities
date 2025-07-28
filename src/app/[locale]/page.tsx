@@ -1,8 +1,8 @@
 import { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { getUserFromCookie } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
@@ -41,5 +41,5 @@ export default async function Home() {
   }
 
   // Redirect to the watched tab by default
-  redirect("/watched");
+  redirect({ href: "/watched", locale: "en" });
 }

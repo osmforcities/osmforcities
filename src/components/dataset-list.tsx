@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
@@ -117,7 +117,7 @@ export default function DatasetList({
       <div className="flex justify-between items-start mb-2">
         <div>
           <h3 className="font-semibold text-black dark:text-white">
-            {dataset.template.name} in {dataset.cityName}
+            {dataset.template.name} {t("in")} {dataset.cityName}
             {dataset.area.countryCode && ` (${dataset.area.countryCode})`}
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 capitalize">
@@ -152,12 +152,11 @@ export default function DatasetList({
       </div>
 
       <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-        <p>
-          {t("dataCount")}: {dataset.dataCount}
-        </p>
+        <p>{t("dataCount", { count: dataset.dataCount })}</p>
         {dataset._count && (
           <p>
-            {t("watchers")}: {dataset._count.watchers}
+            {t("watchers")}
+            {t("colon")} {dataset._count.watchers}
           </p>
         )}
       </div>
@@ -215,7 +214,9 @@ export default function DatasetList({
           </h2>
           {localDatasets.length > 0 && (
             <span className="text-sm text-gray-500">
-              ({localDatasets.length})
+              {t("openParen")}
+              {localDatasets.length}
+              {t("closeParen")}
             </span>
           )}
         </div>
