@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getUserFromCookie } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
@@ -14,16 +15,17 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const user = await getUserFromCookie();
+  const t = await getTranslations("Index");
 
   if (!user) {
     return (
       <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
         <div className="w-full max-w-2xl text-center p-4 space-y-8">
           <h1 className="text-5xl font-bold text-black dark:text-white mb-4">
-            OSM for Cities
+            {t("title")}
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-            Track and follow OpenStreetMap updates in places you care about.
+            {t("description")}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" asChild>

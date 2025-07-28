@@ -19,5 +19,19 @@
     "title": "Following",
     "emptyMessage": "You're not following any datasets yet.",
     "emptyActionText": "Browse Public Datasets"
+  },
+  "AuthForm": {
+    "checkYourEmail": "Check your email",
+    "sentLinkTo": "We sent a link to {email}",
+    "tryDifferentEmail": "Try different email",
+    "emailPlaceholder": "Email",
+    "sending": "Sending...",
+    "continue": "Continue"
+  },
+  "EnterPage": {
+    "metaTitle": "Sign In - OSM for Cities",
+    "metaDescription": "Sign in to monitor OpenStreetMap datasets",
+    "signIn": "Sign In",
+    "enterEmailToStart": "Enter your email to get started"
   }
 }

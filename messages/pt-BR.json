@@ -19,5 +19,19 @@
     "title": "Seguindo",
     "emptyMessage": "Você ainda não está seguindo nenhum conjunto de dados.",
     "emptyActionText": "Explorar Conjuntos de Dados Públicos"
+  },
+  "AuthForm": {
+    "checkYourEmail": "Verifique seu email",
+    "sentLinkTo": "Enviamos um link para {email}",
+    "tryDifferentEmail": "Tentar email diferente",
+    "emailPlaceholder": "Email",
+    "sending": "Enviando...",
+    "continue": "Continuar"
+  },
+  "EnterPage": {
+    "metaTitle": "Entrar - OSM para Cidades",
+    "metaDescription": "Entre para monitorar conjuntos de dados do OpenStreetMap",
+    "signIn": "Entrar",
+    "enterEmailToStart": "Digite seu email para começar"
   }
 }

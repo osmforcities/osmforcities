@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export default function AuthForm() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<"email" | "sent">("email");
   const [error, setError] = useState("");
+  const t = useTranslations("AuthForm");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,10 +49,10 @@ export default function AuthForm() {
         <div className="text-2xl">📧</div>
         <div>
           <h3 className="font-medium text-black dark:text-white">
-            Check your email
+            {t("checkYourEmail")}
           </h3>
           <p className="mt-1 text-sm text-black/70 dark:text-white/70">
-            We sent a link to {email}
+            {t("sentLinkTo", { email })}
           </p>
         </div>
 
@@ -58,7 +60,7 @@ export default function AuthForm() {
           onClick={() => setStep("email")}
           className="text-sm text-black/70 hover:text-black dark:text-white/70 dark:hover:text-white"
         >
-          Try different email
+          {t("tryDifferentEmail")}
         </button>
       </div>
     );
@@ -78,7 +80,7 @@ export default function AuthForm() {
         autoComplete="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
+        placeholder={t("emailPlaceholder")}
         required
         className="w-full py-3 px-4 border-2 border-black/20 dark:border-white/20 rounded-lg bg-transparent text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:border-black dark:focus:border-white outline-none"
       />
@@ -88,7 +90,7 @@ export default function AuthForm() {
         disabled={!email || isLoading}
         className="w-full py-3 bg-black dark:bg-white text-white dark:text-black rounded-lg font-medium disabled:opacity-50 hover:opacity-90 transition-opacity"
       >
-        {isLoading ? "Sending..." : "Continue"}
+        {isLoading ? t("sending") : t("continue")}
       </button>
     </form>
   );

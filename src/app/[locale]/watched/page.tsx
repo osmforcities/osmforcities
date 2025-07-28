@@ -4,13 +4,29 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import TabLayout from "@/components/tab-layout";
 import DatasetList from "@/components/dataset-list";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { routing } from "@/i18n/routing";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Following - OSM for Cities",
-  description: "Datasets you're following",
-};
+// Add generateStaticParams for static rendering
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Watched" });
+
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  };
+}
 
 async function getWatchedDatasets(userId: string) {
   const watchedDatasets = await prisma.datasetWatch.findMany({
@@ -39,8 +55,18 @@ async function getWatchedDatasets(userId: string) {
   return watchedDatasets.map((watch) => watch.dataset);
 }
 
-export default async function WatchedPage() {
+export default async function WatchedPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
+  // Enable static rendering
+  setRequestLocale(locale);
+
   const user = await getUserFromCookie();
+  const t = await getTranslations("Watched");
 
   if (!user) {
     redirect("/");
@@ -52,9 +78,9 @@ export default async function WatchedPage() {
     <TabLayout activeTab="watched" isAdmin={user.isAdmin}>
       <DatasetList
         datasets={watchedDatasets}
-        title="Following"
-        emptyMessage="You're not following any datasets yet."
-        emptyActionText="Browse Public Datasets"
+        title={t("title")}
+        emptyMessage={t("emptyMessage")}
+        emptyActionText={t("emptyActionText")}
         emptyActionHref="/public"
         showCreator
       />
