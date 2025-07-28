@@ -13,13 +13,13 @@ async function getTemplatesData() {
   const sessionToken = cookieStore.get("session")?.value;
 
   if (!sessionToken) {
-    redirect({ href: "/", locale: "en" });
+    return redirect({ href: "/", locale: "en" });
   }
 
   const session = await findSessionByToken(sessionToken!);
 
   if (!session || session.expiresAt < new Date() || !session.user) {
-    redirect({ href: "/", locale: "en" });
+    return redirect({ href: "/", locale: "en" });
   }
 
   // Get all available templates
@@ -36,7 +36,7 @@ async function getTemplatesData() {
     orderBy: { name: "asc" },
   });
 
-  return { user: session!.user, templates };
+  return { user: session.user, templates };
 }
 
 export default async function CreateDatasetPage() {
