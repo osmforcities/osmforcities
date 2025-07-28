@@ -1,0 +1,23 @@
+{
+  "Index": {
+    "title": "Bem-vindo ao OSM para Cidades",
+    "description": "Monitore e acompanhe dados do OpenStreetMap para sua cidade"
+  },
+  "Navigation": {
+    "home": "Início",
+    "about": "Sobre",
+    "myDatasets": "Meus Conjuntos de Dados",
+    "public": "Público",
+    "watched": "Observados",
+    "templates": "Modelos",
+    "users": "Usuários",
+    "preferences": "Preferências"
+  },
+  "Watched": {
+    "metaTitle": "Seguindo - OSM para Cidades",
+    "metaDescription": "Conjuntos de dados que você segue",
+    "title": "Seguindo",
+    "emptyMessage": "Você ainda não está seguindo nenhum conjunto de dados.",
+    "emptyActionText": "Explorar Conjuntos de Dados Públicos"
+  }
+}

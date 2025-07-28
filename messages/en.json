@@ -1,0 +1,23 @@
+{
+  "Index": {
+    "title": "Welcome to OSM for Cities",
+    "description": "Monitor and track OpenStreetMap data for your city"
+  },
+  "Navigation": {
+    "home": "Home",
+    "about": "About",
+    "myDatasets": "My Datasets",
+    "public": "Public",
+    "watched": "Watched",
+    "templates": "Templates",
+    "users": "Users",
+    "preferences": "Preferences"
+  },
+  "Watched": {
+    "metaTitle": "Following - OSM for Cities",
+    "metaDescription": "Datasets you're following",
+    "title": "Following",
+    "emptyMessage": "You're not following any datasets yet.",
+    "emptyActionText": "Browse Public Datasets"
+  }
+}
