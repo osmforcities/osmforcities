@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { PrismaClient } from "@prisma/client";
+import { getLocalizedPath } from "./config";
 
 test.describe("Magic Link Authentication", () => {
   let prisma: PrismaClient;
@@ -19,7 +20,7 @@ test.describe("Magic Link Authentication", () => {
   });
 
   test("should display sign in form on enter page", async ({ page }) => {
-    await page.goto("/enter");
+    await page.goto(getLocalizedPath("/enter"));
 
     await expect(page.getByRole("heading", { name: "Sign In" })).toBeVisible();
     await expect(
@@ -30,7 +31,7 @@ test.describe("Magic Link Authentication", () => {
   });
 
   test("should show validation error for invalid email", async ({ page }) => {
-    await page.goto("/enter");
+    await page.goto(getLocalizedPath("/enter"));
 
     await page.getByPlaceholder("Email").fill("invalid-email");
     await page.getByRole("button", { name: "Continue" }).click();
@@ -39,7 +40,7 @@ test.describe("Magic Link Authentication", () => {
   });
 
   test("should successfully send magic link", async ({ page }) => {
-    await page.goto("/enter");
+    await page.goto(getLocalizedPath("/enter"));
 
     await page.getByPlaceholder("Email").fill("test@example.com");
     await page.getByRole("button", { name: "Continue" }).click();
@@ -66,7 +67,7 @@ test.describe("Magic Link Authentication", () => {
   test("should show loading state during magic link request", async ({
     page,
   }) => {
-    await page.goto("/enter");
+    await page.goto(getLocalizedPath("/enter"));
 
     await page.getByPlaceholder("Email").fill("test@example.com");
     await page.getByRole("button", { name: "Continue" }).click();
@@ -80,7 +81,7 @@ test.describe("Magic Link Authentication", () => {
   test("should allow trying different email after success", async ({
     page,
   }) => {
-    await page.goto("/enter");
+    await page.goto(getLocalizedPath("/enter"));
 
     await page.getByPlaceholder("Email").fill("test@example.com");
     await page.getByRole("button", { name: "Continue" }).click();
@@ -111,9 +112,11 @@ test.describe("Magic Link Authentication", () => {
       },
     });
 
-    await page.goto(`/api/auth/verify?token=${verificationToken.token}`);
+    await page.goto(
+      getLocalizedPath(`/api/auth/verify?token=${verificationToken.token}`)
+    );
 
-    await expect(page).toHaveURL("/watched");
+    await expect(page).toHaveURL(getLocalizedPath("/watched"));
 
     const updatedToken = await prisma.verificationToken.findUnique({
       where: { id: verificationToken.id },
@@ -127,15 +130,17 @@ test.describe("Magic Link Authentication", () => {
   });
 
   test("should handle invalid magic link token", async ({ page }) => {
-    await page.goto("/api/auth/verify?token=invalid-token");
+    await page.goto(getLocalizedPath("/api/auth/verify?token=invalid-token"));
 
-    await expect(page).toHaveURL("/?error=invalid-or-expired-token");
+    await expect(page).toHaveURL(
+      getLocalizedPath("/?error=invalid-or-expired-token")
+    );
   });
 
   test("should handle missing magic link token", async ({ page }) => {
-    await page.goto("/api/auth/verify");
+    await page.goto(getLocalizedPath("/api/auth/verify"));
 
-    await expect(page).toHaveURL("/?error=invalid-token");
+    await expect(page).toHaveURL(getLocalizedPath("/?error=invalid-token"));
   });
 
   test("should handle expired magic link token", async ({ page }) => {
@@ -156,15 +161,19 @@ test.describe("Magic Link Authentication", () => {
       },
     });
 
-    await page.goto(`/api/auth/verify?token=${expiredToken.token}`);
+    await page.goto(
+      getLocalizedPath(`/api/auth/verify?token=${expiredToken.token}`)
+    );
 
-    await expect(page).toHaveURL("/?error=invalid-or-expired-token");
+    await expect(page).toHaveURL(
+      getLocalizedPath("/?error=invalid-or-expired-token")
+    );
   });
 
   test("should disable continue button when email is empty", async ({
     page,
   }) => {
-    await page.goto("/enter");
+    await page.goto(getLocalizedPath("/enter"));
 
     // Button should be disabled initially
     await expect(page.getByRole("button", { name: "Continue" })).toBeDisabled();
@@ -183,7 +192,7 @@ test.describe("Magic Link Authentication", () => {
       await route.abort("failed");
     });
 
-    await page.goto("/enter");
+    await page.goto(getLocalizedPath("/enter"));
     await page.getByPlaceholder("Email").fill("test@example.com");
     await page.getByRole("button", { name: "Continue" }).click();
 
@@ -191,12 +200,13 @@ test.describe("Magic Link Authentication", () => {
   });
 
   test("should complete full authentication flow", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/"));
 
     await expect(page.getByRole("link", { name: "Enter" })).toBeVisible();
 
     await page.getByRole("link", { name: "Enter" }).click();
-    await expect(page).toHaveURL("/enter");
+    await page.waitForURL(getLocalizedPath("/enter"));
+    await expect(page).toHaveURL(getLocalizedPath("/enter"));
 
     await page.getByPlaceholder("Email").fill("test@example.com");
     await page.getByRole("button", { name: "Continue" }).click();
@@ -205,7 +215,7 @@ test.describe("Magic Link Authentication", () => {
   });
 
   test("should create new user if email does not exist", async ({ page }) => {
-    await page.goto("/enter");
+    await page.goto(getLocalizedPath("/enter"));
 
     let apiCallMade = false;
     await page.route("**/api/auth/send-magic-link", async (route) => {
@@ -237,7 +247,7 @@ test.describe("Magic Link Authentication", () => {
       },
     });
 
-    await page.goto("/enter");
+    await page.goto(getLocalizedPath("/enter"));
 
     await page.getByPlaceholder("Email").fill("existing@example.com");
     await page.getByRole("button", { name: "Continue" }).click();
