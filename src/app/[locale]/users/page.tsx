@@ -30,30 +30,36 @@ export default async function UsersPage() {
   const t = await getTranslations("UsersPage");
 
   if (!user) {
-    redirect({ href: "/", locale: "en" });
+    return redirect({ href: "/", locale: "en" });
   }
 
-  if (!user!.isAdmin) {
-    redirect({ href: "/watched", locale: "en" });
+  if (!user.isAdmin) {
+    return redirect({ href: "/watched", locale: "en" });
   }
 
   const users = await getUsers();
 
   return (
-    <TabLayout activeTab="users" isAdmin={user!.isAdmin}>
+    <TabLayout activeTab="users" isAdmin={user.isAdmin}>
       <div>
         <div className="flex items-center gap-2 mb-4">
           <h2 className="text-xl font-semibold text-black dark:text-white">
             {t("users")}
           </h2>
           {users.length > 0 && (
-            <span className="text-sm text-gray-500">{t("openParen")}{users.length}{t("closeParen")}</span>
+            <span className="text-sm text-gray-500">
+              {t("openParen")}
+              {users.length}
+              {t("closeParen")}
+            </span>
           )}
         </div>
 
         {users.length === 0 ? (
           <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-6 text-center">
-            <p className="text-gray-600 dark:text-gray-400">{t("noUsersFound")}</p>
+            <p className="text-gray-600 dark:text-gray-400">
+              {t("noUsersFound")}
+            </p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -85,9 +91,12 @@ export default async function UsersPage() {
                 </div>
 
                 <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
-                  <span>{t("datasets")} {user._count.datasets}</span>
                   <span>
-                    {t("joined")} {new Date(user.createdAt).toLocaleDateString()}
+                    {t("datasets")} {user._count.datasets}
+                  </span>
+                  <span>
+                    {t("joined")}{" "}
+                    {new Date(user.createdAt).toLocaleDateString()}
                   </span>
                 </div>
               </div>

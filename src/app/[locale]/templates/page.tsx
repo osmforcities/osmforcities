@@ -30,24 +30,28 @@ export default async function TemplatesPage() {
   const t = await getTranslations("TemplatesPage");
 
   if (!user) {
-    redirect({ href: "/", locale: "en" });
+    return redirect({ href: "/", locale: "en" });
   }
 
-  if (!user!.isAdmin) {
-    redirect({ href: "/watched", locale: "en" });
+  if (!user.isAdmin) {
+    return redirect({ href: "/watched", locale: "en" });
   }
 
   const templates = await getTemplates();
 
   return (
-    <TabLayout activeTab="templates" isAdmin={user!.isAdmin}>
+    <TabLayout activeTab="templates" isAdmin={user.isAdmin}>
       <div>
         <div className="flex items-center gap-2 mb-4">
           <h2 className="text-xl font-semibold text-black dark:text-white">
             {t("templates")}
           </h2>
           {templates.length > 0 && (
-            <span className="text-sm text-gray-500">{t("openParen")}{templates.length}{t("closeParen")}</span>
+            <span className="text-sm text-gray-500">
+              {t("openParen")}
+              {templates.length}
+              {t("closeParen")}
+            </span>
           )}
         </div>
 
@@ -91,9 +95,13 @@ export default async function TemplatesPage() {
 
                 <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
                   <div className="flex gap-2">
-                    <span>{t("datasets")} {template._count.datasets}</span>
+                    <span>
+                      {t("datasets")} {template._count.datasets}
+                    </span>
                     {template.tags.length > 0 && (
-                      <span>{t("tags")} {template.tags.slice(0, 2).join(", ")}</span>
+                      <span>
+                        {t("tags")} {template.tags.slice(0, 2).join(", ")}
+                      </span>
                     )}
                   </div>
                 </div>

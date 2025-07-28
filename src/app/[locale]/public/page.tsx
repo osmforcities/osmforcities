@@ -85,13 +85,13 @@ export default async function PublicPage({
   const t = await getTranslations("Public");
 
   if (!user) {
-    redirect({ href: "/", locale: "en" });
+    return redirect({ href: "/", locale: "en" });
   }
 
   const publicDatasets = await getPublicDatasets();
 
   return (
-    <TabLayout activeTab="public" isAdmin={user!.isAdmin}>
+    <TabLayout activeTab="public" isAdmin={user.isAdmin}>
       <DatasetList
         datasets={publicDatasets}
         title={t("title")}

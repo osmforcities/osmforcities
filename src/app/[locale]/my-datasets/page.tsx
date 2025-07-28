@@ -35,13 +35,13 @@ export default async function MyDatasetsPage() {
   const user = await getUserFromCookie();
 
   if (!user) {
-    redirect({ href: "/", locale: "en" });
+    return redirect({ href: "/", locale: "en" });
   }
 
-  const createdDatasets = await getCreatedDatasets(user!.id);
+  const createdDatasets = await getCreatedDatasets(user.id);
 
   return (
-    <TabLayout activeTab="my-datasets" isAdmin={user!.isAdmin}>
+    <TabLayout activeTab="my-datasets" isAdmin={user.isAdmin}>
       <DatasetList
         datasets={createdDatasets}
         title="Your Datasets"

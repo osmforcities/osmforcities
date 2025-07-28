@@ -203,7 +203,10 @@
     "enableReports": "Habilitar relatórios",
     "frequency": "Frequência:",
     "daily": "Diário",
-    "weekly": "Semanal"
+    "weekly": "Semanal",
+    "language": "Idioma",
+    "en": "English",
+    "pt-BR": "Português (Brasil)"
   },
   "TemplatesPage": {
     "templates": "Modelos",

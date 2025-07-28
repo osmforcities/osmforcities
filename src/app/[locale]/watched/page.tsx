@@ -70,13 +70,13 @@ export default async function WatchedPage({
   const t = await getTranslations("Watched");
 
   if (!user) {
-    redirect({ href: "/", locale: "en" });
+    return redirect({ href: "/", locale: "en" });
   }
 
-  const watchedDatasets = await getWatchedDatasets(user!.id);
+  const watchedDatasets = await getWatchedDatasets(user.id);
 
   return (
-    <TabLayout activeTab="watched" isAdmin={user!.isAdmin}>
+    <TabLayout activeTab="watched" isAdmin={user.isAdmin}>
       <DatasetList
         datasets={watchedDatasets}
         title={t("title")}

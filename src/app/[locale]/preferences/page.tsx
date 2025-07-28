@@ -8,7 +8,7 @@ export default async function PreferencesPage() {
   const t = await getTranslations("PreferencesPage");
 
   if (!user) {
-    redirect({ href: "/enter", locale: "en" });
+    return redirect({ href: "/enter", locale: "en" });
   }
 
   return (
@@ -18,21 +18,18 @@ export default async function PreferencesPage() {
       <div className="space-y-6">
         <div className="border rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">{t("reports")}</h2>
-          <p className="text-gray-600 mb-4">
-            {t("reportsDescription")}
-          </p>
+          <p className="text-gray-600 mb-4">{t("reportsDescription")}</p>
 
           <PreferencesForm
-            initialReportsEnabled={user!.reportsEnabled}
-            initialReportsFrequency={user!.reportsFrequency}
+            initialReportsEnabled={user.reportsEnabled}
+            initialReportsFrequency={user.reportsFrequency}
+            initialLanguage={user.language}
           />
         </div>
 
         <div className="border rounded-lg p-6 bg-gray-50">
           <h2 className="text-lg font-semibold mb-4">{t("magicLinks")}</h2>
-          <p className="text-gray-600 mb-4">
-            {t("magicLinksDescription")}
-          </p>
+          <p className="text-gray-600 mb-4">{t("magicLinksDescription")}</p>
         </div>
       </div>
     </div>
