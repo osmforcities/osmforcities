@@ -23,6 +23,7 @@ model User {
   lastReportSent   DateTime?
   reportsEnabled   Boolean         @default(false)
   reportsFrequency ReportFrequency @default(DAILY)
+  language         String          @default("en")
 
   sessions           Session[]
   verificationTokens VerificationToken[]
