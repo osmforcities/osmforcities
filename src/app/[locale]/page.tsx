@@ -29,10 +29,10 @@ export default async function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" asChild>
-              <Link href="/about">Learn More</Link>
+              <Link href="/about">{t("learnMore")}</Link>
             </Button>
             <Button size="lg" asChild>
-              <Link href="/enter">Enter</Link>
+              <Link href="/enter">{t("enter")}</Link>
             </Button>
           </div>
         </div>

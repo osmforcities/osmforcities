@@ -1,7 +1,9 @@
 {
   "Index": {
     "title": "Bem-vindo ao OSM for Cities",
-    "description": "Monitore e acompanhe dados do OpenStreetMap para sua cidade"
+    "description": "Monitore e acompanhe dados do OpenStreetMap para sua cidade",
+    "learnMore": "Saiba Mais",
+    "enter": "Entrar"
   },
   "Navigation": {
     "home": "Início",
