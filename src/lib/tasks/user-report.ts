@@ -47,7 +47,7 @@ function link(url: string, text: string): string {
 }
 
 function getBaseUrl(): string {
-  return process.env.NEXTAUTH_URL || "https://osmforcities.com";
+  return process.env.AUTH_URL || "https://osmforcities.com";
 }
 
 function formatUTCDate(date: Date | null): string {
