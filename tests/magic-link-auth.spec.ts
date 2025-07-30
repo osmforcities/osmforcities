@@ -45,23 +45,26 @@ test.describe("Magic Link Authentication", () => {
     await page.getByPlaceholder("Email").fill("test@example.com");
     await page.getByRole("button", { name: "Continue" }).click();
 
-    // Wait for the user to appear in the database (retry up to 10 times)
-    let user = null;
-    for (let i = 0; i < 10; i++) {
-      user = await prisma.user.findUnique({
-        where: { email: "test@example.com" },
-      });
-      if (user) break;
-      await new Promise((res) => setTimeout(res, 200));
-    }
-    expect(user).toBeTruthy();
-    expect(user?.email).toBe("test@example.com");
+    // Wait for the user to appear in the database
+    await expect
+      .poll(
+        async () => {
+          const user = await prisma.user.findUnique({
+            where: { email: "test@example.com" },
+          });
+          return user?.email === "test@example.com";
+        },
+        {
+          message: "User should be created after magic link request",
+          timeout: 3000,
+        }
+      )
+      .toBe(true);
 
     const token = await prisma.verificationToken.findFirst({
-      where: { email: "test@example.com" },
+      where: { identifier: "test@example.com" },
     });
     expect(token).toBeTruthy();
-    expect(token?.used).toBe(false);
   });
 
   test("should show loading state during magic link request", async ({
@@ -106,9 +109,8 @@ test.describe("Magic Link Authentication", () => {
     const verificationToken = await prisma.verificationToken.create({
       data: {
         token: "test-token-123",
-        email: "test@example.com",
-        userId: user.id,
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        identifier: "test@example.com",
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
       },
     });
 
@@ -119,14 +121,25 @@ test.describe("Magic Link Authentication", () => {
     await expect(page).toHaveURL(getLocalizedPath("/watched"));
 
     const updatedToken = await prisma.verificationToken.findUnique({
-      where: { id: verificationToken.id },
+      where: { token: verificationToken.token },
     });
-    expect(updatedToken?.used).toBe(true);
+    expect(updatedToken).toBeNull();
 
-    const session = await prisma.session.findFirst({
-      where: { userId: user.id },
-    });
-    expect(session).toBeTruthy();
+    await expect
+      .poll(
+        async () => {
+          const updatedUser = await prisma.user.findUnique({
+            where: { id: user.id },
+          });
+          return updatedUser?.emailVerified;
+        },
+        {
+          message:
+            "User email should be verified after magic link verification",
+          timeout: 5000,
+        }
+      )
+      .toBeTruthy();
   });
 
   test("should handle invalid magic link token", async ({ page }) => {
@@ -144,7 +157,7 @@ test.describe("Magic Link Authentication", () => {
   });
 
   test("should handle expired magic link token", async ({ page }) => {
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
         email: "test@example.com",
         reportsEnabled: true,
@@ -155,9 +168,8 @@ test.describe("Magic Link Authentication", () => {
     const expiredToken = await prisma.verificationToken.create({
       data: {
         token: "expired-token-123",
-        email: "test@example.com",
-        userId: user.id,
-        expiresAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        identifier: "test@example.com",
+        expires: new Date(Date.now() - 24 * 60 * 60 * 1000),
       },
     });
 
@@ -229,10 +241,6 @@ test.describe("Magic Link Authentication", () => {
     await expect(page.getByText("Check your email")).toBeVisible();
 
     expect(apiCallMade).toBe(true);
-
-    await page.waitForTimeout(2000);
-
-    expect(apiCallMade).toBe(true);
   });
 
   test("should reuse existing user if email already exists", async ({
@@ -254,8 +262,7 @@ test.describe("Magic Link Authentication", () => {
 
     await expect(page.getByText("Check your email")).toBeVisible();
 
-    await page.waitForTimeout(1000);
-
+    // Verify that the existing user still exists and no new user was created
     const users = await prisma.user.findMany({
       where: { email: "existing@example.com" },
     });
