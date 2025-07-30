@@ -12,7 +12,9 @@
     "db:seed": "tsx prisma/seed.ts",
     "test:playwright": "NODE_ENV=test playwright test",
     "test:playwright:ui": "NODE_ENV=test playwright test --ui",
-    "prepare": "husky"
+    "prepare": "husky",
+    "i18n:check": "i18n-check --locales messages --source en",
+    "i18n:check:fix": "i18n-check --locales messages --source en --fix"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
@@ -41,6 +43,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@lingual/i18n-check": "^0.8.4",
     "@playwright/test": "^1.53.2",
     "@tailwindcss/postcss": "^4",
     "@types/html-to-text": "^9.0.4",
@@ -63,6 +66,9 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix"
+    ],
+    "messages/*.json": [
+      "i18n-check --locales messages --source en"
     ]
   }
 }
