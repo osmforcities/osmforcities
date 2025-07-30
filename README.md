@@ -98,6 +98,22 @@ curl -X POST "https://yourdomain.com/api/tasks/update-datasets" \
   -H "Authorization: Bearer YOUR_CRON_ROUTE_SECRET"
 ```
 
+## Internationalization (i18n)
+
+This project uses [next-intl](https://next-intl.com/) for internationalization. Translation files are in the `messages/` directory.
+
+### Checking Translations
+
+```bash
+# Check for missing or invalid translations
+pnpm i18n:check
+
+# Check and automatically fix issues (when possible)
+pnpm i18n:check:fix
+```
+
+The i18n check runs automatically in CI/CD and before commits when translation files are modified.
+
 ## License
 
 MIT

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { Locale } from "@/i18n/routing";
+import { AVAILABLE_LOCALES, LOCALE_DISPLAY_NAMES } from "@/i18n/constants";
 
 type PreferencesFormProps = {
   initialReportsEnabled: boolean;
@@ -48,6 +49,10 @@ export function PreferencesForm({
         if (frequency) setReportsFrequency(frequency);
         if (lang) {
           setLanguage(lang);
+          // Set language preference cookie for immediate effect
+          document.cookie = `language-preference=${lang}; path=/; max-age=${
+            60 * 60 * 24 * 365
+          }`; // 1 year
           router.push(pathname, { locale: lang as Locale });
         }
       }
@@ -104,8 +109,15 @@ export function PreferencesForm({
           className="border rounded px-3 py-2"
           disabled={saving}
         >
-          <option value="en">{t("en")}</option>
-          <option value="pt-BR">{t("pt-BR")}</option>
+          {AVAILABLE_LOCALES.map((locale) => (
+            <option key={locale} value={locale}>
+              {
+                LOCALE_DISPLAY_NAMES[
+                  locale as keyof typeof LOCALE_DISPLAY_NAMES
+                ]
+              }
+            </option>
+          ))}
         </select>
       </div>
     </div>

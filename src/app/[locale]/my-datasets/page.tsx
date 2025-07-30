@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getUserFromCookie } from "@/lib/auth";
+import { auth } from "@/auth";
 import { redirect } from "@/i18n/navigation";
 import { prisma } from "@/lib/db";
 import TabLayout from "@/components/tab-layout";
@@ -32,7 +32,8 @@ async function getCreatedDatasets(userId: string) {
 }
 
 export default async function MyDatasetsPage() {
-  const user = await getUserFromCookie();
+  const session = await auth();
+  const user = session?.user || null;
 
   if (!user) {
     return redirect({ href: "/", locale: "en" });

@@ -1,10 +1,11 @@
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { getUserFromCookie } from "@/lib/auth";
+import { auth } from "@/auth";
 import { getTranslations } from "next-intl/server";
 
 export default async function NavBar() {
-  const user = await getUserFromCookie();
+  const session = await auth();
+  const user = session?.user || null;
   const t = await getTranslations("Navigation");
 
   return (

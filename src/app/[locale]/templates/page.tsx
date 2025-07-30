@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getUserFromCookie } from "@/lib/auth";
+import { auth } from "@/auth";
 import { redirect } from "@/i18n/navigation";
 import { prisma } from "@/lib/db";
 import TabLayout from "@/components/tab-layout";
@@ -26,7 +26,8 @@ async function getTemplates() {
 }
 
 export default async function TemplatesPage() {
-  const user = await getUserFromCookie();
+  const session = await auth();
+  const user = session?.user || null;
   const t = await getTranslations("TemplatesPage");
 
   if (!user) {

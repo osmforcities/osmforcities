@@ -1,13 +1,29 @@
-import { getUserFromCookie } from "@/lib/auth";
+import { auth } from "@/auth";
 import { redirect } from "@/i18n/navigation";
 import { PreferencesForm } from "./preferences-form";
 import { getTranslations } from "next-intl/server";
+import { prisma } from "@/lib/db";
 
 export default async function PreferencesPage() {
-  const user = await getUserFromCookie();
+  const session = await auth();
+  const user = session?.user || null;
   const t = await getTranslations("PreferencesPage");
 
   if (!user) {
+    return redirect({ href: "/enter", locale: "en" });
+  }
+
+  // Fetch user preferences from database
+  const userPreferences = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: {
+      reportsEnabled: true,
+      reportsFrequency: true,
+      language: true,
+    },
+  });
+
+  if (!userPreferences) {
     return redirect({ href: "/enter", locale: "en" });
   }
 
@@ -21,9 +37,9 @@ export default async function PreferencesPage() {
           <p className="text-gray-600 mb-4">{t("reportsDescription")}</p>
 
           <PreferencesForm
-            initialReportsEnabled={user.reportsEnabled}
-            initialReportsFrequency={user.reportsFrequency}
-            initialLanguage={user.language}
+            initialReportsEnabled={userPreferences.reportsEnabled}
+            initialReportsFrequency={userPreferences.reportsFrequency}
+            initialLanguage={userPreferences.language}
           />
         </div>
 

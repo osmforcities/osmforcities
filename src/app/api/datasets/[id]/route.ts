@@ -1,26 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { findSessionByToken } from "@/lib/auth";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { auth } from "@/auth";
+import { prisma } from "@/lib/db";
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get("session")?.value;
+    const session = await auth();
+    const user = session?.user || null;
 
-    if (!sessionToken) {
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const session = await findSessionByToken(sessionToken);
-
-    if (!session || session.expiresAt < new Date()) {
-      return NextResponse.json({ error: "Session expired" }, { status: 401 });
     }
 
     const { isActive, isPublic } = await request.json();
@@ -29,7 +20,7 @@ export async function PATCH(
     const currentDataset = await prisma.dataset.findUnique({
       where: {
         id: datasetId,
-        userId: session.user.id,
+        userId: user.id,
       },
     });
 
@@ -57,7 +48,7 @@ export async function PATCH(
     const dataset = await prisma.dataset.updateMany({
       where: {
         id: datasetId,
-        userId: session.user.id,
+        userId: user.id,
       },
       data: updateData,
     });
@@ -71,7 +62,7 @@ export async function PATCH(
         const existingWatch = await prisma.datasetWatch.findUnique({
           where: {
             userId_datasetId: {
-              userId: session.user.id,
+              userId: user.id,
               datasetId: datasetId,
             },
           },
@@ -80,7 +71,7 @@ export async function PATCH(
         if (!existingWatch) {
           await prisma.datasetWatch.create({
             data: {
-              userId: session.user.id,
+              userId: user.id,
               datasetId: datasetId,
             },
           });
@@ -105,17 +96,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get("session")?.value;
+    const session = await auth();
+    const user = session?.user || null;
 
-    if (!sessionToken) {
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const session = await findSessionByToken(sessionToken);
-
-    if (!session || session.expiresAt < new Date()) {
-      return NextResponse.json({ error: "Session expired" }, { status: 401 });
     }
 
     const { id: datasetId } = await params;
@@ -123,7 +108,7 @@ export async function DELETE(
     const dataset = await prisma.dataset.findUnique({
       where: {
         id: datasetId,
-        userId: session.user.id,
+        userId: user.id,
       },
       include: {
         _count: {
@@ -140,7 +125,7 @@ export async function DELETE(
       where: {
         datasetId: datasetId,
         userId: {
-          not: session.user.id,
+          not: user.id,
         },
       },
     });
@@ -158,7 +143,7 @@ export async function DELETE(
     const deletedDataset = await prisma.dataset.deleteMany({
       where: {
         id: datasetId,
-        userId: session.user.id,
+        userId: user.id,
       },
     });
 

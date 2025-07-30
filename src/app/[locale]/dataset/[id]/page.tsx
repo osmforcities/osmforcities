@@ -17,11 +17,12 @@ import DatasetWatchButton from "@/components/dataset-watch-button";
 import { prisma } from "@/lib/db";
 import { DatasetSchema, type Dataset } from "@/schemas/dataset";
 import type { FeatureCollection } from "geojson";
-import { getUserFromCookie } from "@/lib/auth";
+import { auth } from "@/auth";
 
 async function getDataset(id: string): Promise<Dataset | null> {
   try {
-    const user = await getUserFromCookie();
+    const session = await auth();
+    const user = session?.user || null;
 
     const rawDataset = await prisma.dataset.findUnique({
       where: { id },

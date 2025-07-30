@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getUserFromCookie } from "@/lib/auth";
+import { auth } from "@/auth";
 import { redirect } from "@/i18n/navigation";
 import { prisma } from "@/lib/db";
 import TabLayout from "@/components/tab-layout";
@@ -66,7 +66,8 @@ export default async function WatchedPage({
   // Enable static rendering
   setRequestLocale(locale);
 
-  const user = await getUserFromCookie();
+  const session = await auth();
+  const user = session?.user || null;
   const t = await getTranslations("Watched");
 
   if (!user) {
