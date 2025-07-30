@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth";
-import { signIn } from "@/auth";
+import { verifyToken, signIn } from "@/auth";
 import { getBaseUrl } from "@/lib/utils";
 import { prisma } from "@/lib/db";
 

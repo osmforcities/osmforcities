@@ -3,7 +3,7 @@ import {
   findUserByEmail,
   createUser,
   createVerificationToken,
-} from "@/lib/auth";
+} from "@/auth";
 import { sendEmail } from "@/lib/email";
 import { getBaseUrl } from "@/lib/utils";
 
