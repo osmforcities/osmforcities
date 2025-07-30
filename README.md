@@ -21,8 +21,8 @@ cp .env.example .env.local
 2. Update the following required settings in `.env.local`:
 
 - `DATABASE_URL`: Your PostgreSQL connection string
-- `NEXTAUTH_SECRET`: A secure random string for session encryption
-- `NEXTAUTH_URL`: Your application URL (use `http://localhost:3000` for local development)
+- `AUTH_SECRET`: A secure random string for session encryption
+- `AUTH_URL`: Your application URL
 - `CRON_ROUTE_SECRET`: **Generate a new random string** (e.g. with `openssl rand -hex 32`) and use it as your API secret for the cron job
 
 Example to generate a secret:
@@ -105,7 +105,7 @@ This project uses [next-intl](https://next-intl.com/) for internationalization. 
 ### Checking Translations
 
 ```bash
-# Check for missing or invalid translations
+
 pnpm i18n:check
 
 # Check and automatically fix issues (when possible)

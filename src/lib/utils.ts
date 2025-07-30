@@ -10,8 +10,8 @@ export function cn(...inputs: ClassValue[]) {
 
 // Returns the base URL for API route redirects
 export function getBaseUrl(request: { url: string }): string {
-  if (process.env.NODE_ENV === "production" && process.env.NEXTAUTH_URL) {
-    return process.env.NEXTAUTH_URL.replace(/\/$/, "");
+  if (process.env.NODE_ENV === "production" && process.env.AUTH_URL) {
+    return process.env.AUTH_URL.replace(/\/$/, "");
   }
   const url = new URL(request.url);
   return url.origin;
