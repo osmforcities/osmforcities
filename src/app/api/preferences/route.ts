@@ -56,13 +56,26 @@ export async function PUT(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       preference: {
         reportsEnabled: updatedUser.reportsEnabled,
         reportsFrequency: updatedUser.reportsFrequency,
         language: updatedUser.language,
       },
     });
+
+    // Set language preference cookie if language was updated
+    if (language && language !== user.language) {
+      response.cookies.set("language-preference", language, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 365, // 1 year
+        httpOnly: false, // Allow client-side access
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+      });
+    }
+
+    return response;
   } catch (error) {
     console.error("Error updating preference:", error);
     return NextResponse.json(

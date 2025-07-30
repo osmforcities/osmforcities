@@ -48,6 +48,10 @@ export function PreferencesForm({
         if (frequency) setReportsFrequency(frequency);
         if (lang) {
           setLanguage(lang);
+          // Set language preference cookie for immediate effect
+          document.cookie = `language-preference=${lang}; path=/; max-age=${
+            60 * 60 * 24 * 365
+          }`; // 1 year
           router.push(pathname, { locale: lang as Locale });
         }
       }
