@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken, createSession } from "@/lib/auth";
-import { cookies } from "next/headers";
+import { verifyToken } from "@/lib/auth";
+import { signIn } from "@/auth";
 import { getBaseUrl } from "@/lib/utils";
+import { prisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   const baseUrl = getBaseUrl(request);
@@ -21,14 +22,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const session = await createSession(verificationResult.user.id);
+    await prisma.user.update({
+      where: { id: verificationResult.user.id },
+      data: { emailVerified: new Date() },
+    });
 
-    const cookieStore = await cookies();
-    cookieStore.set("session", session.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60, // 30 days
+    await signIn("magic-link", {
+      userId: verificationResult.user.id,
+      redirect: false,
     });
 
     const redirectUrl = new URL("/watched", baseUrl);

@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       user = await createUser(email);
     }
 
-    const verificationToken = await createVerificationToken(email, user.id);
+    const verificationToken = await createVerificationToken(email);
 
     const baseUrl = getBaseUrl(request);
     const magicLink = `${baseUrl}/api/auth/verify?token=${verificationToken.token}`;

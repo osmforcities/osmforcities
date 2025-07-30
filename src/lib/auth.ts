@@ -19,16 +19,15 @@ export async function findUserByEmail(email: string) {
   });
 }
 
-export async function createVerificationToken(email: string, userId?: string) {
+export async function createVerificationToken(email: string) {
   const token = randomBytes(32).toString("hex");
-  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
   return await prisma.verificationToken.create({
     data: {
+      identifier: email,
       token,
-      email,
-      userId,
-      expiresAt,
+      expires,
     },
   });
 }
@@ -36,23 +35,25 @@ export async function createVerificationToken(email: string, userId?: string) {
 export async function verifyToken(token: string) {
   const verificationToken = await prisma.verificationToken.findUnique({
     where: { token },
-    include: { user: true },
   });
 
-  if (
-    !verificationToken ||
-    verificationToken.used ||
-    verificationToken.expiresAt < new Date()
-  ) {
+  if (!verificationToken || verificationToken.expires < new Date()) {
     return null;
   }
 
-  await prisma.verificationToken.update({
-    where: { id: verificationToken.id },
-    data: { used: true },
+  const user = await prisma.user.findUnique({
+    where: { email: verificationToken.identifier },
   });
 
-  return verificationToken;
+  if (!user) {
+    return null;
+  }
+
+  await prisma.verificationToken.delete({
+    where: { token },
+  });
+
+  return { user, token: verificationToken };
 }
 
 export async function createSession(userId: string) {
