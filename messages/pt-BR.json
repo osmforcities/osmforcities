@@ -225,9 +225,7 @@
     "frequency": "Frequência:",
     "daily": "Diário",
     "weekly": "Semanal",
-    "language": "Idioma",
-    "en": "English",
-    "pt-BR": "Português (Brasil)"
+    "language": "Idioma"
   },
   "TemplatesPage": {
     "templates": "Modelos",

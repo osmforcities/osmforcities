@@ -1,11 +1,10 @@
 import { defineRouting } from "next-intl/routing";
+import { AVAILABLE_LOCALES, DEFAULT_LOCALE } from "./constants";
 
 export const routing = defineRouting({
-  // A list of all locales that are supported
-  locales: ["en", "pt-BR"],
+  locales: AVAILABLE_LOCALES,
 
-  // Used when no locale matches
-  defaultLocale: "en",
+  defaultLocale: DEFAULT_LOCALE,
 });
 
 export type Locale = (typeof routing.locales)[number];
