@@ -1,18 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { getUserFromCookie } from "@/lib/auth";
+import { auth } from "@/auth";
 
 export async function GET() {
   try {
-    const user = await getUserFromCookie();
+    const session = await auth();
+    const user = session?.user || null;
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userPreferences = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: {
+        reportsEnabled: true,
+        reportsFrequency: true,
+      },
+    });
+
+    if (!userPreferences) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     return NextResponse.json({
       preference: {
-        reportsEnabled: user.reportsEnabled,
-        reportsFrequency: user.reportsFrequency,
+        reportsEnabled: userPreferences.reportsEnabled,
+        reportsFrequency: userPreferences.reportsFrequency,
       },
     });
   } catch (error) {
@@ -26,7 +39,8 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const user = await getUserFromCookie();
+    const session = await auth();
+    const user = session?.user || null;
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

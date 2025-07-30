@@ -1,24 +1,15 @@
-import { cookies } from "next/headers";
-import { findSessionByToken } from "@/lib/auth";
+import { auth } from "@/auth";
 import { redirect } from "@/i18n/navigation";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/db";
 import { Link } from "@/i18n/navigation";
 import CreateDatasetWizard from "./create-dataset-wizard";
 import { getTranslations } from "next-intl/server";
 
-const prisma = new PrismaClient();
-
 async function getTemplatesData() {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("session")?.value;
+  const session = await auth();
+  const user = session?.user || null;
 
-  if (!sessionToken) {
-    return redirect({ href: "/", locale: "en" });
-  }
-
-  const session = await findSessionByToken(sessionToken!);
-
-  if (!session || session.expiresAt < new Date() || !session.user) {
+  if (!user) {
     return redirect({ href: "/", locale: "en" });
   }
 
@@ -36,7 +27,7 @@ async function getTemplatesData() {
     orderBy: { name: "asc" },
   });
 
-  return { user: session.user, templates };
+  return { user, templates };
 }
 
 export default async function CreateDatasetPage() {
