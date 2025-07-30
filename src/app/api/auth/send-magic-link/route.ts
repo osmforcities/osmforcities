@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  findUserByEmail,
-  createUser,
-  createVerificationToken,
-} from "@/auth";
+import { findUserByEmail, createUser, createVerificationToken } from "@/auth";
 import { sendEmail } from "@/lib/email";
 import { getBaseUrl } from "@/lib/utils";
 
@@ -30,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     await sendEmail({
       to: email,
-      subject: "Your Magic Link",
+      subject: "Sign in to OSM for Cities",
       html: `<p>Click <a href=\"${magicLink}\">here</a> to sign in.</p>`,
       text: `Visit this link to sign in: ${magicLink}`,
     });
