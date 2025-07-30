@@ -3,6 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
 import type { JWT } from "next-auth/jwt";
 import type { Session } from "next-auth";
+import Credentials from "next-auth/providers/credentials";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -12,7 +13,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/enter",
   },
 
-  providers: [],
+  providers: [
+    Credentials({
+      id: "magic-link",
+      name: "Magic Link",
+      credentials: {
+        userId: { label: "User ID", type: "text" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.userId) {
+          return null;
+        }
+
+        const user = await prisma.user.findUnique({
+          where: { id: credentials.userId as string },
+        });
+
+        if (!user) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          isAdmin: user.isAdmin,
+          language: user.language,
+        };
+      },
+    }),
+  ],
 
   callbacks: {
     async jwt({ token, user }): Promise<JWT> {
