@@ -44,19 +44,41 @@ export default async function middleware(req: NextRequest) {
     return addDebugHeaders(redirectResponse);
   }
 
-  // Language preference logic for logged-in users
-  if (isLoggedIn && session?.user?.language) {
-    const preferredLanguage = session.user.language as Locale;
+  // Language preference priority: Cookie > JWT > Accept-Language (handled by NextIntl)
+  const cookieLanguage = req.cookies.get("language-preference")
+    ?.value as Locale;
+  const jwtLanguage = session?.user?.language as Locale;
+  const preferredLanguage = cookieLanguage || jwtLanguage;
+
+  // For authenticated users with language preference, check if redirect needed
+  if (
+    isLoggedIn &&
+    preferredLanguage &&
+    routing.locales.includes(preferredLanguage)
+  ) {
     const currentLocale = routing.locales.find(
       (locale) =>
         pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
     );
 
     if (currentLocale && currentLocale !== preferredLanguage) {
+      // User is on wrong locale, redirect to their preference
       const newPathname = pathname.replace(
         `/${currentLocale}`,
         `/${preferredLanguage}`
       );
+      if (isValidLocalePath(newPathname)) {
+        const redirectUrl = new URL(newPathname, req.nextUrl.origin);
+        redirectUrl.search = req.nextUrl.search;
+        return addDebugHeaders(NextResponse.redirect(redirectUrl));
+      }
+    } else if (
+      !currentLocale &&
+      pathname !== "/" &&
+      !pathname.startsWith("/api")
+    ) {
+      // User has no locale in path, redirect to their preference
+      const newPathname = `/${preferredLanguage}${pathname}`;
       if (isValidLocalePath(newPathname)) {
         const redirectUrl = new URL(newPathname, req.nextUrl.origin);
         redirectUrl.search = req.nextUrl.search;
