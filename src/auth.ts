@@ -1,13 +1,19 @@
 import NextAuth from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
+// import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
 import type { JWT } from "next-auth/jwt";
 import type { Session } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { randomBytes } from "crypto";
+function generateSecureToken(length = 32) {
+  const buffer = new Uint8Array(length);
+  crypto.getRandomValues(buffer);
+  return Array.from(buffer, (byte) => byte.toString(16).padStart(2, "0")).join(
+    ""
+  );
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  // adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
 
   pages: {
@@ -84,7 +90,7 @@ export async function findUserByEmail(email: string) {
 }
 
 export async function createVerificationToken(email: string) {
-  const token = randomBytes(32).toString("hex");
+  const token = generateSecureToken();
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
   return await prisma.verificationToken.create({
