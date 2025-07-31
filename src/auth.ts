@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-// import { PrismaAdapter } from "@auth/prisma-adapter";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
 import type { JWT } from "next-auth/jwt";
 import type { Session } from "next-auth";
@@ -13,7 +13,7 @@ function generateSecureToken(length = 32) {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  // adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
 
   pages: {
