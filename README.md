@@ -21,8 +21,8 @@ cp .env.example .env.local
 2. Update the following required settings in `.env.local`:
 
 - `DATABASE_URL`: Your PostgreSQL connection string
-- `NEXTAUTH_SECRET`: A secure random string for session encryption
-- `NEXTAUTH_URL`: Your application URL (use `http://localhost:3000` for local development)
+- `AUTH_SECRET`: A secure random string for session encryption
+- `AUTH_URL`: Your application URL
 - `CRON_ROUTE_SECRET`: **Generate a new random string** (e.g. with `openssl rand -hex 32`) and use it as your API secret for the cron job
 
 Example to generate a secret:
@@ -97,6 +97,22 @@ curl -X POST "https://yourdomain.com/api/tasks/send-user-reports" \
 curl -X POST "https://yourdomain.com/api/tasks/update-datasets" \
   -H "Authorization: Bearer YOUR_CRON_ROUTE_SECRET"
 ```
+
+## Internationalization (i18n)
+
+This project uses [next-intl](https://next-intl.com/) for internationalization. Translation files are in the `messages/` directory.
+
+### Checking Translations
+
+```bash
+
+pnpm i18n:check
+
+# Check and automatically fix issues (when possible)
+pnpm i18n:check:fix
+```
+
+The i18n check runs automatically in CI/CD and before commits when translation files are modified.
 
 ## License
 

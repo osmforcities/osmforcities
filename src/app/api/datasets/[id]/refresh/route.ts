@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { findSessionByToken } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import {
   executeOverpassQuery,
@@ -14,17 +13,11 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get("session")?.value;
+    const session = await auth();
+    const user = session?.user || null;
 
-    if (!sessionToken) {
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const session = await findSessionByToken(sessionToken);
-
-    if (!session || session.expiresAt < new Date()) {
-      return NextResponse.json({ error: "Session expired" }, { status: 401 });
     }
 
     const { id: datasetId } = await params;
@@ -32,7 +25,7 @@ export async function POST(
     const dataset = await prisma.dataset.findFirst({
       where: {
         id: datasetId,
-        userId: session.user.id,
+        userId: user.id,
       },
       include: {
         template: true,

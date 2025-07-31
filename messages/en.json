@@ -1,0 +1,250 @@
+{
+  "Index": {
+    "title": "Welcome to OSM for Cities",
+    "description": "Monitor and track OpenStreetMap data for your city",
+    "learnMore": "Learn More",
+    "enter": "Enter"
+  },
+  "Navigation": {
+    "home": "Home",
+    "about": "About",
+    "myDatasets": "My Datasets",
+    "public": "Public",
+    "watched": "Watched",
+    "templates": "Templates",
+    "users": "Users",
+    "preferences": "Preferences",
+    "brandName": "OSM for Cities",
+    "signIn": "Sign In",
+    "signOut": "Sign Out"
+  },
+  "TabLayout": {
+    "welcomeBack": "Welcome back",
+    "manageDatasetsSubtitle": "Manage your datasets and explore the platform",
+    "following": "Following",
+    "myDatasets": "My Datasets",
+    "publicDatasets": "Public Datasets",
+    "templates": "Templates",
+    "users": "Users"
+  },
+  "Public": {
+    "metaTitle": "Public Datasets - OSM for Cities",
+    "metaDescription": "All public datasets on the platform",
+    "title": "Public Datasets",
+    "emptyMessage": "No public datasets found.",
+    "emptyActionText": "Create the First Public Dataset"
+  },
+  "DatasetList": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "public": "Public",
+    "private": "Private",
+    "dataCount": "Data count: {count, number}",
+    "watchers": "Watchers",
+    "view": "View",
+    "deactivate": "Deactivate",
+    "activate": "Activate",
+    "makePrivate": "Make Private",
+    "makePublic": "Make Public",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "createDataset": "Create Dataset",
+    "by": "by",
+    "cannotDeleteTooltip": "Cannot delete dataset with {count, plural, =0 {no watchers} one {# watcher} other {# watchers}}. Make it private first or ask watchers to unwatch it.",
+    "in": "in",
+    "colon": ":",
+    "openParen": "(",
+    "closeParen": ")",
+    "backToHome": "Back to Home",
+    "datasetStats": "Dataset Stats",
+    "category": "Category",
+    "totalFeatures": "Total Features",
+    "totalEditors": "Total Editors",
+    "changesets": "Changesets",
+    "avgAgeDays": "Avg Age (days)",
+    "recentActivity": "Recent Activity (Last 3 Months)",
+    "elementsEdited": "Elements Edited",
+    "percentOfTotal": "% of total",
+    "activeEditors": "Active Editors",
+    "recentChangesets": "Recent Changesets",
+    "overallAssessment": "Overall Assessment",
+    "lastChecked": "Last Checked:"
+  },
+  "Watched": {
+    "metaTitle": "Following - OSM for Cities",
+    "metaDescription": "Datasets you're following",
+    "title": "Following",
+    "emptyMessage": "You're not following any datasets yet.",
+    "emptyActionText": "Browse Public Datasets"
+  },
+  "EnterPage": {
+    "metaTitle": "Sign In - OSM for Cities",
+    "metaDescription": "Sign in to monitor OpenStreetMap datasets",
+    "signIn": "Sign In",
+    "enterEmailToStart": "Enter your email to get started"
+  },
+  "AboutPage": {
+    "metaTitle": "About - OSM for Cities",
+    "metaDescription": "Learn about OSM for Cities - Daily updated datasets from OpenStreetMap",
+    "backToHome": "Back to Home",
+    "title": "About",
+    "description1": "OSM for Cities is an experimental platform to help people explore and follow updates from OpenStreetMap — a free, open map of the world built by volunteers. Every day, people add and improve data about streets, buildings, schools, parks, transport, and more. This project gives you a way to track those changes in places you care about.",
+    "description2": "You might want to keep an eye on edits to schools in your region, or monitor how crosswalks, bus stops, or bike racks are being added to your city. Maybe you're just curious about how your neighborhood park is evolving. Whether it's a critical dataset for urban planning or something more personal and informal, the platform lets you create and follow it.",
+    "featureHighlights": "Feature Highlights",
+    "feature1": "Create custom datasets by selecting a place and a topic",
+    "feature2": "Follow datasets and receive daily or weekly update summaries",
+    "feature3": "See contributor activity and edit frequency for each dataset",
+    "feature4": "Reuse or remix templates shared by other users",
+    "theExperiment": "The Experiment",
+    "experiment1": "OSM for Cities is a proof of concept created by <vitorLink>Vitor George</vitorLink> and developed as a Labs project by <devSeedLink>Development Seed</devSeedLink>. It's a space to test ideas around surfacing OSM data in useful, accessible ways.",
+    "experiment2": "Whether it evolves into a broader tool will depend on how the community engages with it. The source code is open and available on <githubLink>GitHub</githubLink>.",
+    "getInvolved": "Get Involved",
+    "getInvolvedDescription": "Your feedback helps shape this experiment. Whether you have ideas for new features, found something that doesn't work quite right, or just want to share how you're using the platform — we'd love to hear from you.",
+    "shareFeedback": "Share Feedback",
+    "viewOnGitHub": "View on GitHub",
+    "bulletPoint": "•"
+  },
+  "DatasetPage": {
+    "backToHome": "Back to Home",
+    "datasetStats": "Dataset Stats",
+    "category": "Category",
+    "totalFeatures": "Total Features",
+    "totalEditors": "Total Editors",
+    "changesets": "Changesets",
+    "watchers": "Watchers",
+    "avgAgeDays": "Avg Age (days)",
+    "recentActivity": "Recent Activity (Last 3 Months)",
+    "elementsEdited": "Elements Edited",
+    "percentOfTotal": "% of total",
+    "activeEditors": "Active Editors",
+    "recentChangesets": "Recent Changesets",
+    "overallAssessment": "Overall Assessment",
+    "lastChecked": "Last Checked:",
+    "active": "Active",
+    "inactive": "Inactive",
+    "public": "Public",
+    "private": "Private",
+    "veryActive": "Very Active",
+    "lowActivity": "Low Activity",
+    "strongCommunity": "Strong Community",
+    "someContributors": "Some Contributors",
+    "singleEditor": "Single Editor"
+  },
+  "AuthForm": {
+    "checkYourEmail": "Check your email",
+    "sentLinkTo": "We sent a link to {email}",
+    "tryDifferentEmail": "Try different email",
+    "emailPlaceholder": "Email",
+    "sending": "Sending...",
+    "continue": "Continue",
+    "emailIcon": "📧"
+  },
+
+  "AreaSelector": {
+    "searchPlaceholder": "Please enter at least 3 characters to search",
+    "searchDescription": "Only administrative areas (cities, towns, neighborhoods) will be shown in results",
+    "id": "ID:",
+    "noAreasFound": "No areas found. Try a different search term.",
+    "boundingBox": "Bounding Box: [",
+    "boundingBoxEnd": "]",
+    "viewOnOsm": "View on OpenStreetMap →",
+    "change": "Change"
+  },
+  "CreateDatasetWizard": {
+    "selectArea": "Select an Area",
+    "selectAreaDescription": "Type an area name and select from the suggestions. This can be a city, town, neighborhood, or any administrative area in OpenStreetMap.",
+    "nextSelectTemplate": "Next: Select Template",
+    "selectTemplate": "Select a Template",
+    "selectTemplateDescription": "Choose a data template that defines what OpenStreetMap features to dataset.",
+    "back": "Back",
+    "nextTestQuery": "Next: Test Query",
+    "testYourQuery": "Test Your Query",
+    "testQueryDescription": "Test the selected template query against your chosen area to see what data will be monitored.",
+    "nextConfirm": "Next: Confirm",
+    "confirmDatasetCreation": "Confirm Dataset Creation",
+    "confirmDescription": "Review your selections and create your dataset.",
+    "selectedArea": "Selected Area:",
+    "selectedTemplate": "Selected Template:"
+  },
+  "CreateDatasetPage": {
+    "backToHome": "← Back to Home",
+    "createNewDataset": "Create New Dataset",
+    "createDescription": "Follow the steps below to create a new dataset for tracking OpenStreetMap data."
+  },
+  "QueryTester": {
+    "selectAreaTemplateFirst": "Please select an area and template first.",
+    "queryPreview": "Query Preview",
+    "queryingOverpass": "Querying Overpass API...",
+    "error": "Error",
+    "noResults": "No Results",
+    "noResultsDescription": "The query returned no results. This could mean:",
+    "noFeaturesMatch": "No features match the criteria in this area",
+    "areaNoAmenities": "The area might not have the specified amenities",
+    "queryNeedsAdjustment": "The query might need adjustment",
+    "testQuery": "Test Query",
+    "testingQuery": "Testing Query..."
+  },
+  "TemplateSelector": {
+    "close": "✕",
+    "noTemplatesFound": "No templates found matching \"",
+    "quote": "\"",
+    "selected": "✓",
+    "selectedTemplate": "Selected Template:",
+    "searchPlaceholder": "Search templates..."
+  },
+  "PreferencesPage": {
+    "emailPreferences": "Email Preferences",
+    "reports": "Reports",
+    "reportsDescription": "Get a summary of your monitors and their activity.",
+    "magicLinks": "Magic Links",
+    "magicLinksDescription": "Magic links for signing in are always enabled and cannot be disabled."
+  },
+  "PreferencesForm": {
+    "enableReports": "Enable reports",
+    "frequency": "Frequency:",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "language": "Language"
+  },
+  "TemplatesPage": {
+    "templates": "Templates",
+    "openParen": "(",
+    "closeParen": ")",
+    "noTemplatesFound": "No templates found.",
+    "datasets": "Datasets:",
+    "tags": "Tags:"
+  },
+  "UsersPage": {
+    "users": "Users",
+    "openParen": "(",
+    "closeParen": ")",
+    "noUsersFound": "No users found.",
+    "datasets": "Datasets:",
+    "joined": "Joined:"
+  },
+  "DatasetMap": {
+    "noDataAvailable": "No data available. Data will be automatically refreshed when you visit this page.",
+    "noGeographicData": "No geographic data found in the dataset results.",
+    "tags": "Tags",
+    "meta": "Meta",
+    "noAdditionalInfo": "No additional information available",
+    "colon": ":"
+  },
+  "DatasetWatchButton": {
+    "privateDataset": "Private Dataset"
+  },
+  "PublicDatasetsFeed": {
+    "noDatasetsYet": "No public datasets yet.",
+    "title": "Public City Data Datasets",
+    "subtitle": "Discover what datasets others are monitoring across different cities",
+
+    "dataCount": "Data count: {count, number}",
+    "lastChecked": "Last checked: {date}",
+    "never": "Never",
+    "by": "By",
+    "viewDataset": "View Dataset",
+    "in": "in",
+    "colon": ":",
+    "datasetTitle": "{templateName} in {cityName} ({countryCode})"
+  }
+}

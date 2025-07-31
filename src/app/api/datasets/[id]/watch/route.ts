@@ -1,27 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { findSessionByToken } from "@/lib/auth";
-import { PrismaClient } from "@prisma/client";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/db";
 import { WatchDatasetSchema, UnwatchDatasetSchema } from "@/schemas/dataset";
-
-const prisma = new PrismaClient();
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get("session")?.value;
+    const session = await auth();
+    const user = session?.user || null;
 
-    if (!sessionToken) {
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const session = await findSessionByToken(sessionToken);
-
-    if (!session || session.expiresAt < new Date()) {
-      return NextResponse.json({ error: "Session expired" }, { status: 401 });
     }
 
     const { id: datasetId } = await params;
@@ -46,7 +37,7 @@ export async function POST(
     const existingWatch = await prisma.datasetWatch.findUnique({
       where: {
         userId_datasetId: {
-          userId: session.user.id,
+          userId: user.id,
           datasetId: validatedData.datasetId,
         },
       },
@@ -61,7 +52,7 @@ export async function POST(
 
     const watch = await prisma.datasetWatch.create({
       data: {
-        userId: session.user.id,
+        userId: user.id,
         datasetId: validatedData.datasetId,
       },
     });
@@ -81,17 +72,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get("session")?.value;
+    const session = await auth();
+    const user = session?.user || null;
 
-    if (!sessionToken) {
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const session = await findSessionByToken(sessionToken);
-
-    if (!session || session.expiresAt < new Date()) {
-      return NextResponse.json({ error: "Session expired" }, { status: 401 });
     }
 
     const { id: datasetId } = await params;
@@ -101,7 +86,7 @@ export async function DELETE(
     const existingWatch = await prisma.datasetWatch.findUnique({
       where: {
         userId_datasetId: {
-          userId: session.user.id,
+          userId: user.id,
           datasetId: validatedData.datasetId,
         },
       },
@@ -117,7 +102,7 @@ export async function DELETE(
     await prisma.datasetWatch.delete({
       where: {
         userId_datasetId: {
-          userId: session.user.id,
+          userId: user.id,
           datasetId: validatedData.datasetId,
         },
       },

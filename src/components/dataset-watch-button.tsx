@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
+import { useTranslations } from "next-intl";
 
 interface DatasetWatchButtonProps {
   datasetId: string;
@@ -16,6 +17,7 @@ export default function DatasetWatchButton({
   isWatched: initialIsWatched,
   isPublic,
 }: DatasetWatchButtonProps) {
+  const t = useTranslations("DatasetWatchButton");
   const [isWatched, setIsWatched] = useState(initialIsWatched);
   const { watchDataset, unwatchDataset, isLoading } = useDatasetActions();
 
@@ -44,7 +46,7 @@ export default function DatasetWatchButton({
       <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" disabled>
           <EyeOff className="h-4 w-4 mr-2" />
-          Private Dataset
+          {t("privateDataset")}
         </Button>
       </div>
     );

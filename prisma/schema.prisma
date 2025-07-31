@@ -23,11 +23,11 @@ model User {
   lastReportSent   DateTime?
   reportsEnabled   Boolean         @default(false)
   reportsFrequency ReportFrequency @default(DAILY)
-
-  sessions           Session[]
-  verificationTokens VerificationToken[]
-  datasets           Dataset[]
-  watchedDatasets    DatasetWatch[]
+  language         String          @default("en")
+  emailVerified    DateTime?
+  watchedDatasets  DatasetWatch[]
+  datasets         Dataset[]
+  sessions         Session[]
 
   @@map("users")
 }
@@ -45,16 +45,11 @@ model Session {
 }
 
 model VerificationToken {
-  id        String   @id @default(cuid())
-  token     String   @unique
-  email     String
-  userId    String?
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-  used      Boolean  @default(false)
+  token      String   @unique
+  expires    DateTime
+  identifier String
 
-  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  @@unique([identifier, token])
   @@map("verification_tokens")
 }
 

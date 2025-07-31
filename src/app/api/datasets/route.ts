@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { findSessionByToken } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { CreateDatasetSchema } from "@/schemas/dataset";
 import { Prisma } from "@prisma/client";
@@ -13,15 +12,11 @@ import {
 import { calculateBbox } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("session")?.value;
+  const session = await auth();
+  const user = session?.user || null;
 
-  if (!sessionToken)
+  if (!user)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const session = await findSessionByToken(sessionToken);
-  if (!session || session.expiresAt < new Date())
-    return NextResponse.json({ error: "Session expired" }, { status: 401 });
 
   const body = await req.json();
   const parsed = CreateDatasetSchema.safeParse(body);
@@ -85,7 +80,7 @@ export async function POST(req: NextRequest) {
 
     const dataset = await prisma.dataset.create({
       data: {
-        userId: session.user.id,
+        userId: user.id,
         templateId,
         areaId: area.id,
         cityName: area.name,
