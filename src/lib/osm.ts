@@ -16,7 +16,8 @@ export async function fetchOsmRelationData(relationId: number) {
     out bb tags;
   `;
 
-  const res = await fetch("https://overpass-api.de/api/interpreter", {
+  const overpassUrl = process.env.OVERPASS_API_URL || "https://overpass-api.de/api/interpreter";
+  const res = await fetch(overpassUrl, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: `data=${encodeURIComponent(query)}`,
@@ -53,7 +54,8 @@ export async function fetchOsmRelationData(relationId: number) {
 export async function executeOverpassQuery(
   queryString: string
 ): Promise<OverpassResponse> {
-  const response = await fetch("https://overpass-api.de/api/interpreter", {
+  const overpassUrl = process.env.OVERPASS_API_URL || "https://overpass-api.de/api/interpreter";
+  const response = await fetch(overpassUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
