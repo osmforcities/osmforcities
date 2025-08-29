@@ -11,7 +11,7 @@ import { calculateBbox } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { DateFilterControls } from "./date-filter-controls";
 import { FeatureTooltip } from "./feature-tooltip";
-import { MapLayers } from "./map-layers";
+import { MapLayers } from "./layers";
 import { NoDataMessage } from "./no-data-message";
 import { AgeLegend } from "./age-legend";
 import { processOSMFeaturesForVisualization } from "../../lib/osm-data-processor";
@@ -49,13 +49,14 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
     dataset.geojson
   ) as FeatureCollection;
 
-  const geoJSONData = processOSMFeaturesForVisualization(rawGeoJSONData, dateFilter);
+  const geoJSONData = processOSMFeaturesForVisualization(
+    rawGeoJSONData,
+    dateFilter
+  );
 
-  // Update filter if needed and get available timeframes
   const availableTimeframes = geoJSONData.availableTimeframes;
   updateFilterIfNeeded(availableTimeframes);
 
-  // Check if filtered data is empty but show filter controls
   const hasFilteredData = geoJSONData.features.length > 0;
 
   const dataBounds = calculateBbox(geoJSONData);
@@ -77,46 +78,47 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
             style={{ height: 500 }}
           >
             <Map
-            ref={mapRef}
-            mapStyle="https://tiles.openfreemap.org/styles/positron"
-            initialViewState={
-              dataBounds
-                ? {
-                    bounds: [
-                      dataBounds[0],
-                      dataBounds[1],
-                      dataBounds[2],
-                      dataBounds[3],
-                    ],
-                    fitBoundsOptions: { padding: 20 },
-                  }
-                : undefined
-            }
-            interactiveLayerIds={[
-              "dataset-polygons",
-              "dataset-lines",
-              "dataset-points",
-            ]}
-            onMouseMove={handleHover}
-            onMouseLeave={handleMouseLeave}
-          >
-            {geoJSONData && <MapLayers geoJSONData={geoJSONData} />}
+              ref={mapRef}
+              mapStyle="https://tiles.openfreemap.org/styles/positron"
+              initialViewState={
+                dataBounds
+                  ? {
+                      bounds: [
+                        dataBounds[0],
+                        dataBounds[1],
+                        dataBounds[2],
+                        dataBounds[3],
+                      ],
+                      fitBoundsOptions: { padding: 20 },
+                    }
+                  : undefined
+              }
+              interactiveLayerIds={[
+                "simplified-features",
+                "detailed-polygons",
+                "detailed-lines",
+                "detailed-points",
+              ]}
+              onMouseMove={handleHover}
+              onMouseLeave={handleMouseLeave}
+            >
+              {geoJSONData && <MapLayers geoJSONData={geoJSONData} />}
 
-            {tooltipInfo && (
-              <Popup
-                longitude={tooltipInfo.longitude}
-                latitude={tooltipInfo.latitude}
-                closeButton={false}
-                closeOnClick={false}
-                anchor="bottom"
-                offset={10}
-              >
-                <FeatureTooltip feature={tooltipInfo.feature} />
-              </Popup>
-            )}
-          </Map>
+              {tooltipInfo && (
+                <Popup
+                  longitude={tooltipInfo.longitude}
+                  latitude={tooltipInfo.latitude}
+                  closeButton={false}
+                  closeOnClick={false}
+                  anchor="bottom"
+                  offset={10}
+                >
+                  <FeatureTooltip feature={tooltipInfo.feature} />
+                </Popup>
+              )}
+            </Map>
           </div>
-          
+
           {/* Age-based legend positioned over the map */}
           <div className="absolute bottom-4 left-4 z-10">
             <AgeLegend />
