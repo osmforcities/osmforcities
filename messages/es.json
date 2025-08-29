@@ -194,9 +194,7 @@
   "PreferencesPage": {
     "emailPreferences": "Preferencias de Email",
     "reports": "Reportes",
-    "reportsDescription": "Recibe un resumen de tus monitores y su actividad.",
-    "magicLinks": "Enlaces Mágicos",
-    "magicLinksDescription": "Los enlaces mágicos para iniciar sesión siempre están habilitados y no se pueden deshabilitar."
+    "reportsDescription": "Recibe un resumen de tus monitores y su actividad."
   },
   "PreferencesForm": {
     "enableReports": "Habilitar reportes",

@@ -195,9 +195,7 @@
   "PreferencesPage": {
     "emailPreferences": "Email Preferences",
     "reports": "Reports",
-    "reportsDescription": "Get a summary of your monitors and their activity.",
-    "magicLinks": "Magic Links",
-    "magicLinksDescription": "Magic links for signing in are always enabled and cannot be disabled."
+    "reportsDescription": "Get a summary of your monitors and their activity."
   },
   "PreferencesForm": {
     "enableReports": "Enable reports",
