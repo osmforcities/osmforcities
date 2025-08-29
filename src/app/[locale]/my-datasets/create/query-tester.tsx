@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import Map, { Source, Layer, AttributionControl } from "react-map-gl/maplibre";
+import Map, { AttributionControl } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,11 @@ import { Area } from "@/types/area";
 import { convertOverpassToGeoJSON } from "@/lib/osm";
 import { FeatureCollection } from "geojson";
 import { useTranslations } from "next-intl";
+import { MapLayers } from "@/components/dataset-map/layers";
+import { processOSMFeaturesForVisualization } from "@/lib/osm-data-processor";
+import { DateFilterControls } from "@/components/dataset-map/date-filter-controls";
+import { AgeLegend } from "@/components/dataset-map/age-legend";
+import { NoDataMessage } from "@/components/dataset-map/no-data-message";
 
 type Template = {
   id: string;
@@ -54,6 +59,9 @@ export default function QueryTester({
   }, [updateMapBounds]);
   const [queryString, setQueryString] = useState<string>("");
   const [hasExecutedQuery, setHasExecutedQuery] = useState(false);
+  const [dateFilter, setDateFilter] = useState<
+    "all" | "7days" | "30days" | "90days"
+  >("all");
 
   useEffect(() => {
     if (selectedArea && selectedTemplate) {
@@ -82,10 +90,15 @@ export default function QueryTester({
     refetch({ cancelRefetch: false });
   };
 
-  const geojsonData: FeatureCollection =
+  const rawGeoJSONData: FeatureCollection =
     results.length > 0
       ? convertOverpassToGeoJSON({ elements: results })
       : { type: "FeatureCollection", features: [] };
+
+  const geojsonData = processOSMFeaturesForVisualization(
+    rawGeoJSONData,
+    dateFilter
+  );
 
   if (!selectedArea || !selectedTemplate) {
     return (
@@ -97,7 +110,6 @@ export default function QueryTester({
 
   return (
     <div className="space-y-4">
-      {/* Query Preview */}
       <div className="border border-gray-200 p-4 rounded-md">
         <h3 className="font-medium mb-2">{t("queryPreview")}</h3>
         <div className="bg-gray-100 p-3 rounded text-sm font-mono overflow-x-auto">
@@ -105,7 +117,6 @@ export default function QueryTester({
         </div>
       </div>
 
-      {/* Test Button */}
       <div className="flex justify-center">
         <Button
           onClick={testQuery}
@@ -116,7 +127,6 @@ export default function QueryTester({
         </Button>
       </div>
 
-      {/* Results */}
       {isFetching && (
         <div className="border border-gray-200 p-4 rounded-md">
           <div className="flex items-center justify-center space-x-2">
@@ -134,101 +144,57 @@ export default function QueryTester({
       )}
 
       {!isFetching && !error && results.length > 0 && (
-        <div
-          className="border border-gray-200 rounded-md overflow-hidden"
-          style={{ height: 500 }}
-        >
-          <Map
-            ref={mapRef}
-            onLoad={updateMapBounds}
-            mapStyle="https://tiles.openfreemap.org/styles/positron"
-            initialViewState={
-              selectedArea
-                ? {
-                    bounds: [
-                      selectedArea.boundingBox[1], // minLon
-                      selectedArea.boundingBox[0], // minLat
-                      selectedArea.boundingBox[3], // maxLon
-                      selectedArea.boundingBox[2], // maxLat
-                    ],
-                    fitBoundsOptions: { padding: 20 },
-                  }
-                : undefined
-            }
+        <div className="space-y-4">
+          <DateFilterControls
+            availableTimeframes={geojsonData.availableTimeframes}
+            dateFilter={dateFilter}
+            onDateFilterChange={setDateFilter}
+          />
+
+          <NoDataMessage
+            hasData={geojsonData.features.length > 0}
+            dateFilter={dateFilter}
+          />
+
+          <div
+            className="border border-gray-200 rounded-md overflow-hidden relative"
+            style={{ height: 500 }}
           >
-            <AttributionControl position="bottom-right" />
+            <Map
+              ref={mapRef}
+              onLoad={updateMapBounds}
+              mapStyle="https://tiles.openfreemap.org/styles/positron"
+              interactiveLayerIds={[
+                "simplified-features",
+                "detailed-polygons",
+                "detailed-lines",
+                "detailed-points",
+              ]}
+              initialViewState={
+                selectedArea
+                  ? {
+                      bounds: [
+                        selectedArea.boundingBox[1], // minLon
+                        selectedArea.boundingBox[0], // minLat
+                        selectedArea.boundingBox[3], // maxLon
+                        selectedArea.boundingBox[2], // maxLat
+                      ],
+                      fitBoundsOptions: { padding: 20 },
+                    }
+                  : undefined
+              }
+            >
+              <AttributionControl position="bottom-right" />
 
-            {geojsonData.features.length > 0 && (
-              <>
-                <Source
-                  id="query-polygons"
-                  type="geojson"
-                  data={{
-                    type: "FeatureCollection",
-                    features: geojsonData.features.filter(
-                      (f) =>
-                        f.geometry.type === "Polygon" ||
-                        f.geometry.type === "MultiPolygon"
-                    ),
-                  }}
-                >
-                  <Layer
-                    id="result-polygons"
-                    type="fill"
-                    paint={{
-                      "fill-color": "#007cbf",
-                      "fill-opacity": 0.3,
-                      "fill-outline-color": "#007cbf",
-                    }}
-                  />
-                </Source>
+              {geojsonData.features.length > 0 && (
+                <MapLayers geoJSONData={geojsonData} />
+              )}
+            </Map>
 
-                <Source
-                  id="query-lines"
-                  type="geojson"
-                  data={{
-                    type: "FeatureCollection",
-                    features: geojsonData.features.filter(
-                      (f) => f.geometry.type === "LineString"
-                    ),
-                  }}
-                >
-                  <Layer
-                    id="result-lines"
-                    type="line"
-                    paint={{
-                      "line-color": "#007cbf",
-                      "line-width": 3,
-                      "line-opacity": 0.8,
-                    }}
-                  />
-                </Source>
-
-                <Source
-                  id="query-points"
-                  type="geojson"
-                  data={{
-                    type: "FeatureCollection",
-                    features: geojsonData.features.filter(
-                      (f) => f.geometry.type === "Point"
-                    ),
-                  }}
-                >
-                  <Layer
-                    id="result-points"
-                    type="circle"
-                    paint={{
-                      "circle-radius": 8,
-                      "circle-color": "#007cbf",
-                      "circle-opacity": 0.8,
-                      "circle-stroke-width": 2,
-                      "circle-stroke-color": "#ffffff",
-                    }}
-                  />
-                </Source>
-              </>
-            )}
-          </Map>
+            <div className="absolute bottom-4 left-4 z-10">
+              <AgeLegend />
+            </div>
+          </div>
         </div>
       )}
 
