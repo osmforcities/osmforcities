@@ -1,8 +1,9 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { bbox } from "@turf/bbox";
-import type { FeatureCollection } from "geojson";
+import type { FeatureCollection, Feature } from "geojson";
 import { BboxSchema, type Bbox } from "@/types/geojson";
+import type { DateFilter } from "../types/geojson";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -39,3 +40,67 @@ export function calculateBbox(geojson: FeatureCollection): Bbox | null {
     return null;
   }
 }
+
+export const getAvailableTimeframes = (features: Feature[]): DateFilter[] => {
+  const availableTimeframes: DateFilter[] = ["all"];
+
+  // Check if there are features in each timeframe by calculating age on-demand
+  const has7Days = features.some((f) => {
+    const timestamp = f.properties?.["@timestamp"] || f.properties?.timestamp;
+    if (!timestamp) return false;
+    const age = calculateAge(timestamp);
+    return age <= 7;
+  });
+
+  const has30Days = features.some((f) => {
+    const timestamp = f.properties?.["@timestamp"] || f.properties?.timestamp;
+    if (!timestamp) return false;
+    const age = calculateAge(timestamp);
+    return age <= 30;
+  });
+
+  const has90Days = features.some((f) => {
+    const timestamp = f.properties?.["@timestamp"] || f.properties?.timestamp;
+    if (!timestamp) return false;
+    const age = calculateAge(timestamp);
+    return age <= 90;
+  });
+
+  if (has7Days) availableTimeframes.push("7days");
+  if (has30Days) availableTimeframes.push("30days");
+  if (has90Days) availableTimeframes.push("90days");
+
+  return availableTimeframes;
+};
+
+export const calculateAge = (timestamp: string) => {
+  const featureDate = new Date(timestamp);
+  const currentDate = new Date();
+
+  if (isNaN(featureDate.getTime())) {
+    console.warn(`Invalid timestamp: ${timestamp}`);
+    return 0;
+  }
+
+  const diffTime = Math.abs(currentDate.getTime() - featureDate.getTime());
+  const ageInDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  return ageInDays;
+};
+
+export const filterFeaturesByDate = (
+  features: Feature[],
+  dateFilter: DateFilter
+): Feature[] => {
+  if (dateFilter === "all") return features;
+
+  const maxAge = dateFilter === "7days" ? 7 : dateFilter === "30days" ? 30 : 90;
+
+  return features.filter((feature) => {
+    const timestamp =
+      feature.properties?.["@timestamp"] || feature.properties?.timestamp;
+    if (!timestamp) return false;
+    const age = calculateAge(timestamp);
+    return age <= maxAge;
+  });
+};
