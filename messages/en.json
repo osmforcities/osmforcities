@@ -228,7 +228,18 @@
     "tags": "Tags",
     "meta": "Meta",
     "noAdditionalInfo": "No additional information available",
-    "colon": ":"
+    "colon": ":",
+    "showData": "Show data",
+    "showAll": "All",
+    "last7Days": "Last 7 days",
+    "last30Days": "Last 30 days",
+    "last90Days": "Last 90 days",
+    "noDataInTimeframe": "No data found in the selected time period",
+    "lastEditedLegend": "Last Edited",
+    "recentChanges": "≤ 7 days ago",
+    "mediumChanges": "8-30 days ago",
+    "olderChanges": "31-90 days ago",
+    "veryOldChanges": "> 90 days ago"
   },
   "DatasetWatchButton": {
     "privateDataset": "Private Dataset"
