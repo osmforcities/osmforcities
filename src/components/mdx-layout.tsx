@@ -14,8 +14,7 @@ export default function MdxLayout({ children }: MdxLayoutProps) {
         [&>p]:text-lg [&>p]:text-gray-600 [&>p]:dark:text-gray-400 [&>p]:leading-relaxed [&>p]:mb-4
         [&>ul]:text-lg [&>ul]:text-gray-600 [&>ul]:dark:text-gray-400 [&>ul]:leading-relaxed 
         [&>ul]:space-y-2 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-4
-        [&>a]:text-blue-600 [&>a]:dark:text-blue-400 [&>a]:hover:underline 
-        [&>a]:inline-flex [&>a]:items-center [&>a]:gap-1
+        [&_a]:text-blue-600 [&_a]:dark:text-blue-400 [&_a]:hover:underline [&_a]:font-medium
       `}
     >
       {children}
