@@ -18,6 +18,10 @@
     "signIn": "Iniciar Sesión",
     "signOut": "Cerrar Sesión"
   },
+  "Common": {
+    "shareFeedback": "Compartir Comentarios",
+    "viewOnGitHub": "Ver en GitHub"
+  },
   "TabLayout": {
     "welcomeBack": "Bienvenido de vuelta",
     "manageDatasetsSubtitle": "Gestiona tus conjuntos de datos y explora la plataforma",
@@ -83,27 +87,7 @@
     "signIn": "Iniciar Sesión",
     "enterEmailToStart": "Ingresa tu email para comenzar"
   },
-  "AboutPage": {
-    "metaTitle": "Acerca de - OSM for Cities",
-    "metaDescription": "Conoce más sobre OSM for Cities - Conjuntos de datos actualizados diariamente desde OpenStreetMap",
-    "backToHome": "Volver al Inicio",
-    "title": "Acerca de",
-    "description1": "OSM for Cities es una plataforma experimental para ayudar a las personas a explorar y seguir actualizaciones de OpenStreetMap — un mapa gratuito y abierto del mundo construido por voluntarios. Todos los días, las personas agregan y mejoran datos sobre calles, edificios, escuelas, parques, transporte y más. Este proyecto te da una forma de rastrear esos cambios en lugares que te importan.",
-    "description2": "Podrías querer mantener un ojo en las ediciones de escuelas en tu región, o monitorear cómo se están agregando cruces peatonales, paradas de autobús o estacionamientos de bicicletas a tu ciudad. Tal vez solo tengas curiosidad sobre cómo está evolucionando el parque de tu vecindario. Ya sea un conjunto de datos crítico para la planificación urbana o algo más personal e informal, la plataforma te permite crear y seguirlo.",
-    "featureHighlights": "Características Principales",
-    "feature1": "Crea conjuntos de datos personalizados seleccionando un lugar y un tema",
-    "feature2": "Sigue conjuntos de datos y recibe resúmenes de actualizaciones diarias o semanales",
-    "feature3": "Ve la actividad de colaboradores y frecuencia de ediciones para cada conjunto de datos",
-    "feature4": "Reutiliza o remezcla plantillas compartidas por otros usuarios",
-    "theExperiment": "El Experimento",
-    "experiment1": "OSM for Cities es una prueba de concepto creada por <vitorLink>Vitor George</vitorLink> y desarrollada como un proyecto Labs por <devSeedLink>Development Seed</devSeedLink>. Es un espacio para probar ideas sobre cómo presentar datos de OSM de maneras útiles y accesibles.",
-    "experiment2": "Si evoluciona hacia una herramienta más amplia dependerá de cómo la comunidad se involucre con ella. El código fuente es abierto y está disponible en <githubLink>GitHub</githubLink>.",
-    "getInvolved": "Involúcrate",
-    "getInvolvedDescription": "Tu retroalimentación ayuda a dar forma a este experimento. Ya sea con ideas para nuevas características, algo que encontraste que no funciona bien, o solo quieres compartir cómo estás usando la plataforma — nos encantaría escuchar de ti.",
-    "shareFeedback": "Compartir Retroalimentación",
-    "viewOnGitHub": "Ver en GitHub",
-    "bulletPoint": "•"
-  },
+
   "DatasetPage": {
     "backToHome": "Volver al Inicio",
     "datasetStats": "Estadísticas del Conjunto de Datos",

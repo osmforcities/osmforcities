@@ -19,7 +19,9 @@
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
     "@aws-sdk/client-ses": "^3.823.0",
+    "@mdx-js/loader": "^3.1.0",
     "@next/env": "^15.3.5",
+    "@next/mdx": "^15.5.2",
     "@prisma/client": "^6.9.0",
     "@radix-ui/react-slot": "^1.2.3",
     "@tanstack/react-query": "^5.80.7",
@@ -39,6 +41,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-map-gl": "^8.0.4",
+    "remark-frontmatter": "^5.0.0",
+    "remark-mdx-frontmatter": "^5.2.0",
     "tailwind-merge": "^3.3.0",
     "zod": "^3.25.64"
   },
