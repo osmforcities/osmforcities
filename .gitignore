@@ -47,6 +47,7 @@ next-env.d.ts
 
 # claude context
 CLAUDE.md
+.claude/
 
 data/
 
