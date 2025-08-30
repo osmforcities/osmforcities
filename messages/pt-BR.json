@@ -18,6 +18,10 @@
     "signIn": "Entrar",
     "signOut": "Sair"
   },
+  "Common": {
+    "shareFeedback": "Compartilhar Feedback",
+    "viewOnGitHub": "Ver no GitHub"
+  },
   "TabLayout": {
     "welcomeBack": "Bem-vindo de volta",
     "manageDatasetsSubtitle": "Gerencie seus conjuntos de dados e explore a plataforma",
@@ -84,27 +88,7 @@
     "signIn": "Entrar",
     "enterEmailToStart": "Digite seu email para começar"
   },
-  "AboutPage": {
-    "metaTitle": "Sobre - OSM for Cities",
-    "metaDescription": "Saiba mais sobre OSM for Cities - Conjuntos de dados atualizados diariamente do OpenStreetMap",
-    "backToHome": "Voltar ao Início",
-    "title": "Sobre",
-    "description1": "OSM for Cities é uma plataforma experimental para ajudar pessoas a explorar e acompanhar atualizações do OpenStreetMap — um mapa gratuito e aberto do mundo construído por voluntários. Todos os dias, pessoas adicionam e melhoram dados sobre ruas, edifícios, escolas, parques, transporte e muito mais. Este projeto oferece uma maneira de acompanhar essas mudanças em lugares que você se importa.",
-    "description2": "Você pode querer acompanhar edições em escolas da sua região, ou monitorar como travessias de pedestres, pontos de ônibus ou bicicletários estão sendo adicionados à sua cidade. Talvez você esteja apenas curioso sobre como o parque do seu bairro está evoluindo. Seja um conjunto de dados crítico para planejamento urbano ou algo mais pessoal e informal, a plataforma permite que você crie e acompanhe.",
-    "featureHighlights": "Funcionalidades Principais",
-    "feature1": "Crie conjuntos de dados personalizados selecionando um lugar e um tópico",
-    "feature2": "Siga conjuntos de dados e receba resumos de atualizações diárias ou semanais",
-    "feature3": "Veja atividade de colaboradores e frequência de edições para cada conjunto de dados",
-    "feature4": "Reutilize ou remixe modelos compartilhados por outros usuários",
-    "theExperiment": "O Experimento",
-    "experiment1": "OSM for Cities é uma prova de conceito criada por <vitorLink>Vitor George</vitorLink> e desenvolvida como um projeto Labs pela <devSeedLink>Development Seed</devSeedLink>. É um espaço para testar ideias sobre como apresentar dados do OSM de maneiras úteis e acessíveis.",
-    "experiment2": "Se evoluirá para uma ferramenta mais ampla dependerá de como a comunidade se engaja com ela. O código fonte é aberto e está disponível no <githubLink>GitHub</githubLink>.",
-    "getInvolved": "Participe",
-    "getInvolvedDescription": "Seu feedback ajuda a moldar este experimento. Seja com ideias para novos recursos, algo que encontrou que não funciona direito, ou apenas quer compartilhar como está usando a plataforma — adoraríamos ouvir de você.",
-    "shareFeedback": "Compartilhar Feedback",
-    "viewOnGitHub": "Ver no GitHub",
-    "bulletPoint": "•"
-  },
+
   "DatasetPage": {
     "backToHome": "Voltar ao Início",
     "datasetStats": "Estatísticas do Conjunto de Dados",
@@ -216,9 +200,7 @@
   "PreferencesPage": {
     "emailPreferences": "Preferências de Email",
     "reports": "Relatórios",
-    "reportsDescription": "Receba um resumo de seus monitores e suas atividades.",
-    "magicLinks": "Links Mágicos",
-    "magicLinksDescription": "Links mágicos para entrar estão sempre habilitados e não podem ser desabilitados."
+    "reportsDescription": "Receba um resumo de seus monitores e suas atividades."
   },
   "PreferencesForm": {
     "enableReports": "Habilitar relatórios",
@@ -249,7 +231,18 @@
     "tags": "Tags",
     "meta": "Meta",
     "noAdditionalInfo": "Nenhuma informação adicional disponível",
-    "colon": ":"
+    "colon": ":",
+    "showData": "Mostrar dados",
+    "showAll": "Todos",
+    "last7Days": "Últimos 7 dias",
+    "last30Days": "Últimos 30 dias",
+    "last90Days": "Últimos 90 dias",
+    "noDataInTimeframe": "Nenhum dado encontrado no período selecionado",
+    "lastEditedLegend": "Última Edição",
+    "recentChanges": "≤ 7 dias atrás",
+    "mediumChanges": "8-30 dias atrás",
+    "olderChanges": "31-90 dias atrás",
+    "veryOldChanges": "> 90 dias atrás"
   },
   "DatasetWatchButton": {
     "privateDataset": "Conjunto de Dados Privado"

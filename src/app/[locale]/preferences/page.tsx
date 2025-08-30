@@ -42,11 +42,6 @@ export default async function PreferencesPage() {
             initialLanguage={userPreferences.language}
           />
         </div>
-
-        <div className="border rounded-lg p-6 bg-gray-50">
-          <h2 className="text-lg font-semibold mb-4">{t("magicLinks")}</h2>
-          <p className="text-gray-600 mb-4">{t("magicLinksDescription")}</p>
-        </div>
       </div>
     </div>
   );

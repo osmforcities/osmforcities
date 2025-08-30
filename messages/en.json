@@ -18,6 +18,10 @@
     "signIn": "Sign In",
     "signOut": "Sign Out"
   },
+  "Common": {
+    "shareFeedback": "Share Feedback",
+    "viewOnGitHub": "View on GitHub"
+  },
   "TabLayout": {
     "welcomeBack": "Welcome back",
     "manageDatasetsSubtitle": "Manage your datasets and explore the platform",
@@ -83,27 +87,7 @@
     "signIn": "Sign In",
     "enterEmailToStart": "Enter your email to get started"
   },
-  "AboutPage": {
-    "metaTitle": "About - OSM for Cities",
-    "metaDescription": "Learn about OSM for Cities - Daily updated datasets from OpenStreetMap",
-    "backToHome": "Back to Home",
-    "title": "About",
-    "description1": "OSM for Cities is an experimental platform to help people explore and follow updates from OpenStreetMap — a free, open map of the world built by volunteers. Every day, people add and improve data about streets, buildings, schools, parks, transport, and more. This project gives you a way to track those changes in places you care about.",
-    "description2": "You might want to keep an eye on edits to schools in your region, or monitor how crosswalks, bus stops, or bike racks are being added to your city. Maybe you're just curious about how your neighborhood park is evolving. Whether it's a critical dataset for urban planning or something more personal and informal, the platform lets you create and follow it.",
-    "featureHighlights": "Feature Highlights",
-    "feature1": "Create custom datasets by selecting a place and a topic",
-    "feature2": "Follow datasets and receive daily or weekly update summaries",
-    "feature3": "See contributor activity and edit frequency for each dataset",
-    "feature4": "Reuse or remix templates shared by other users",
-    "theExperiment": "The Experiment",
-    "experiment1": "OSM for Cities is a proof of concept created by <vitorLink>Vitor George</vitorLink> and developed as a Labs project by <devSeedLink>Development Seed</devSeedLink>. It's a space to test ideas around surfacing OSM data in useful, accessible ways.",
-    "experiment2": "Whether it evolves into a broader tool will depend on how the community engages with it. The source code is open and available on <githubLink>GitHub</githubLink>.",
-    "getInvolved": "Get Involved",
-    "getInvolvedDescription": "Your feedback helps shape this experiment. Whether you have ideas for new features, found something that doesn't work quite right, or just want to share how you're using the platform — we'd love to hear from you.",
-    "shareFeedback": "Share Feedback",
-    "viewOnGitHub": "View on GitHub",
-    "bulletPoint": "•"
-  },
+
   "DatasetPage": {
     "backToHome": "Back to Home",
     "datasetStats": "Dataset Stats",
@@ -195,9 +179,7 @@
   "PreferencesPage": {
     "emailPreferences": "Email Preferences",
     "reports": "Reports",
-    "reportsDescription": "Get a summary of your monitors and their activity.",
-    "magicLinks": "Magic Links",
-    "magicLinksDescription": "Magic links for signing in are always enabled and cannot be disabled."
+    "reportsDescription": "Get a summary of your monitors and their activity."
   },
   "PreferencesForm": {
     "enableReports": "Enable reports",
@@ -228,7 +210,18 @@
     "tags": "Tags",
     "meta": "Meta",
     "noAdditionalInfo": "No additional information available",
-    "colon": ":"
+    "colon": ":",
+    "showData": "Show data",
+    "showAll": "All",
+    "last7Days": "Last 7 days",
+    "last30Days": "Last 30 days",
+    "last90Days": "Last 90 days",
+    "noDataInTimeframe": "No data found in the selected time period",
+    "lastEditedLegend": "Last Edited",
+    "recentChanges": "≤ 7 days ago",
+    "mediumChanges": "8-30 days ago",
+    "olderChanges": "31-90 days ago",
+    "veryOldChanges": "> 90 days ago"
   },
   "DatasetWatchButton": {
     "privateDataset": "Private Dataset"

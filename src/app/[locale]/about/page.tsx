@@ -5,10 +5,37 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
 import { routing } from "@/i18n/routing";
+import { notFound } from "next/navigation";
+
+// Import MDX content based on locale
+import EnAbout from "@/content/about/en.mdx";
+import PtBrAbout from "@/content/about/pt-BR.mdx";
+import EsAbout from "@/content/about/es.mdx";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
+
+const getMdxMetadata = (locale: Locale): Metadata => {
+  const defaultMetadata: Metadata = {
+    title: "About - OSM for Cities",
+    description:
+      "Learn about OSM for Cities - Daily updated datasets from OpenStreetMap",
+  };
+
+  try {
+    const mdxComponents = {
+      en: EnAbout,
+      "pt-BR": PtBrAbout,
+      es: EsAbout,
+    } as const;
+
+    return mdxComponents[locale]?.metadata || defaultMetadata;
+  } catch (error) {
+    console.error(`Error loading metadata for locale ${locale}:`, error);
+    return defaultMetadata;
+  }
+};
 
 export async function generateMetadata({
   params,
@@ -16,24 +43,25 @@ export async function generateMetadata({
   params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "AboutPage" });
-
-  return {
-    title: t("metaTitle"),
-    description: t("metaDescription"),
-  };
+  return getMdxMetadata(locale);
 }
 
-const link = (href: string, children: React.ReactNode) => (
-  <a
-    href={href}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
-  >
-    {children}
-  </a>
-);
+const getMdxComponent = (
+  locale: Locale
+): React.ComponentType<Record<string, unknown>> => {
+  const mdxComponents = {
+    en: EnAbout,
+    "pt-BR": PtBrAbout,
+    es: EsAbout,
+  } as const;
+
+  const component = mdxComponents[locale];
+  if (!component) {
+    notFound();
+  }
+
+  return component as React.ComponentType<Record<string, unknown>>;
+};
 
 const AboutPage = async ({
   params,
@@ -43,7 +71,9 @@ const AboutPage = async ({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const t = await getTranslations("AboutPage");
+  const tDataset = await getTranslations("DatasetList");
+  const tCommon = await getTranslations("Common");
+  const AboutContent = getMdxComponent(locale);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
@@ -53,103 +83,41 @@ const AboutPage = async ({
             <Button variant="ghost" size="sm" asChild>
               <Link href="/" className="flex items-center gap-2">
                 <ArrowLeft className="h-4 w-4" />
-                {t("backToHome")}
+                {tDataset("backToHome")}
               </Link>
             </Button>
           </div>
 
-          <div className="space-y-8">
-            <div>
-              <h1 className="text-4xl font-bold text-black dark:text-white mb-6">
-                {t("title")}
-              </h1>
+          <AboutContent />
 
-              <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                {t("description1")}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                {t("description2")}
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-semibold text-black dark:text-white mb-4">
-                {t("featureHighlights")}
-              </h2>
-
-              <ul className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed space-y-2 list-disc pl-5">
-                <li>{t("feature1")}</li>
-                <li>{t("feature2")}</li>
-                <li>{t("feature3")}</li>
-                <li>{t("feature4")}</li>
-              </ul>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-semibold text-black dark:text-white mb-4">
-                {t("theExperiment")}
-              </h2>
-
-              <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                {t.rich("experiment1", {
-                  vitorLink: (chunks) =>
-                    link("https://github.com/vgeorge", chunks),
-                  devSeedLink: (chunks) =>
-                    link("https://developmentseed.org", chunks),
-                })}
-              </p>
-
-              <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                {t.rich("experiment2", {
-                  githubLink: (chunks) =>
-                    link(
-                      "https://github.com/osmforcities/osmforcities",
-                      chunks
-                    ),
-                })}
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-semibold text-black dark:text-white mb-4">
-                {t("getInvolved")}
-              </h2>
-
-              <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                {t("getInvolvedDescription")}
-              </p>
-
-              <div className="flex flex-wrap gap-4">
-                <Button
-                  asChild
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+          <div className="mt-8">
+            <div className="flex flex-wrap gap-4">
+              <Button
+                asChild
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <a
+                  href="https://forms.gle/RGZdZ1mzo4hZx5g27"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
                 >
-                  <a
-                    href="https://forms.gle/RGZdZ1mzo4hZx5g27"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2"
-                  >
-                    {t("shareFeedback")}
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                </Button>
+                  {tCommon("shareFeedback")}
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </Button>
 
-                <Button variant="outline" asChild>
-                  <a
-                    href="https://github.com/osmforcities/osmforcities"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2"
-                  >
-                    {t("viewOnGitHub")}
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                </Button>
-              </div>
+              <Button variant="outline" asChild>
+                <a
+                  href="https://github.com/osmforcities/osmforcities"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  {tCommon("viewOnGitHub")}
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </Button>
             </div>
           </div>
         </div>

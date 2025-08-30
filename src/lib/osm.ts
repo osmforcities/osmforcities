@@ -9,6 +9,9 @@ import {
 import { OSMElementSchema, type OSMRelation } from "@/types/osm";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 
+const OVERPASS_API_URL =
+  process.env.OVERPASS_API_URL || "https://overpass-api.de/api/interpreter";
+
 export async function fetchOsmRelationData(relationId: number) {
   const query = `
     [out:json][timeout:25];
@@ -16,7 +19,7 @@ export async function fetchOsmRelationData(relationId: number) {
     out bb tags;
   `;
 
-  const res = await fetch("https://overpass-api.de/api/interpreter", {
+  const res = await fetch(OVERPASS_API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: `data=${encodeURIComponent(query)}`,
@@ -53,7 +56,7 @@ export async function fetchOsmRelationData(relationId: number) {
 export async function executeOverpassQuery(
   queryString: string
 ): Promise<OverpassResponse> {
-  const response = await fetch("https://overpass-api.de/api/interpreter", {
+  const response = await fetch(OVERPASS_API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
