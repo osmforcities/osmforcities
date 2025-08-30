@@ -45,6 +45,9 @@ next-env.d.ts
 # cursor
 .cursor/
 
+# claude context
+CLAUDE.md
+
 data/
 
 /src/generated/prisma
