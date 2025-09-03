@@ -244,6 +244,7 @@
     "template": "Plantilla",
     "category": "Categoría",
     "status": "Estado",
+    "visibility": "Visibilidad",
     "watchers": "Observadores",
     "created": "Creado",
     "createdBy": "Creado por",
@@ -251,7 +252,12 @@
     "value": "Valor",
     "assessment": "Evaluación",
     "basicInfo": "Información Básica",
-    "dataMetrics": "Métricas de Datos"
+    "dataMetrics": "Métricas de Datos",
+    "actions": "Acciones",
+    "refreshData": "Actualizar Datos",
+    "refreshing": "Actualizando...",
+    "watch": "Seguir",
+    "unwatch": "Dejar de Seguir"
   },
   "PublicDatasetsFeed": {
     "noDatasetsYet": "Aún no hay conjuntos de datos públicos.",

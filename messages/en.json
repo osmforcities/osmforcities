@@ -245,6 +245,7 @@
     "template": "Template",
     "category": "Category",
     "status": "Status",
+    "visibility": "Visibility", 
     "watchers": "Watchers",
     "created": "Created",
     "createdBy": "Created by",
@@ -252,7 +253,12 @@
     "value": "Value",
     "assessment": "Assessment",
     "basicInfo": "Basic Information",
-    "dataMetrics": "Data Metrics"
+    "dataMetrics": "Data Metrics",
+    "actions": "Actions",
+    "refreshData": "Refresh Data",
+    "refreshing": "Refreshing...",
+    "watch": "Watch",
+    "unwatch": "Unwatch"
   },
   "PublicDatasetsFeed": {
     "noDatasetsYet": "No public datasets yet.",

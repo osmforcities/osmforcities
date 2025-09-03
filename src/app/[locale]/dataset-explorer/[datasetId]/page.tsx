@@ -75,11 +75,13 @@ export default async function DatasetExplorerPage({
   return (
     <ExplorerLayout
       infoPanel={
-        <>
-          <DatasetInfoPanel dataset={dataset} />
-          <DatasetStatsTable dataset={dataset} />
+        <div className="flex flex-col h-full">
+          <div className="flex-1 overflow-y-auto space-y-6">
+            <DatasetInfoPanel dataset={dataset} />
+            <DatasetStatsTable dataset={dataset} />
+          </div>
           <DatasetActionsSection dataset={dataset} />
-        </>
+        </div>
       }
       mapPanel={<DatasetMapWrapper dataset={dataset} />}
     />

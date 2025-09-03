@@ -269,6 +269,7 @@
     "template": "Modelo",
     "category": "Categoria",
     "status": "Status",
+    "visibility": "Visibilidade",
     "watchers": "Observadores",
     "created": "Criado",
     "createdBy": "Criado por",
@@ -276,7 +277,12 @@
     "value": "Valor",
     "assessment": "Avaliação",
     "basicInfo": "Informações Básicas",
-    "dataMetrics": "Métricas dos Dados"
+    "dataMetrics": "Métricas dos Dados",
+    "actions": "Ações",
+    "refreshData": "Atualizar Dados",
+    "refreshing": "Atualizando...",
+    "watch": "Seguir",
+    "unwatch": "Parar de Seguir"
   },
   "PublicDatasetsFeed": {
     "noDatasetsYet": "Nenhum conjunto de dados público ainda.",

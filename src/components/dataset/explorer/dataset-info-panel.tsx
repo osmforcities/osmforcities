@@ -23,7 +23,7 @@ export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
   const basicInfoRows: InfoRowData[] = [
     { label: t("category"), value: dataset.template.category, isPill: true },
     { label: t("status"), value: dataset.isActive ? pageT("active") : pageT("inactive"), isPill: true },
-    { label: pageT("watchers"), value: dataset.isPublic ? pageT("public") : pageT("private"), isPill: true },
+    { label: t("visibility"), value: dataset.isPublic ? pageT("public") : pageT("private"), isPill: true },
   ];
 
   return (

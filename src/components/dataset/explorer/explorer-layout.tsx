@@ -6,10 +6,10 @@ type ExplorerLayoutProps = {
 const InfoPanel = ({ children }: { children: React.ReactNode }) => {
   return (
     <section
-      className="w-[32rem] flex flex-col"
+      className="w-96 flex flex-col"
       style={{ height: "calc(100vh - var(--nav-height))" }}
     >
-      <div className="flex-1 overflow-y-auto flex flex-col pl-6 pr-3 space-y-6 py-4">
+      <div className="flex-1 flex flex-col pl-6 pr-3 py-4">
         {children}
       </div>
     </section>
