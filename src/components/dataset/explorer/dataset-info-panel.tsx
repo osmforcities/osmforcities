@@ -1,57 +1,81 @@
+"use client";
+
 import type { Dataset } from "@/schemas/dataset";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { Table, TableBody, TableHeader, Row, Cell, Column } from "react-aria-components";
 
 type DatasetInfoPanelProps = {
   dataset: Dataset;
 };
 
-export async function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
-  const t = await getTranslations("DatasetExplorer");
-  const pageT = await getTranslations("DatasetPage");
+type InfoRowData = {
+  label: string;
+  value: string;
+  isPill?: boolean;
+};
+
+export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
+  const t = useTranslations("DatasetExplorer");
+  const pageT = useTranslations("DatasetPage");
+
+  const basicInfoRows: InfoRowData[] = [
+    { label: t("category"), value: dataset.template.category, isPill: true },
+    { label: t("status"), value: dataset.isActive ? pageT("active") : pageT("inactive"), isPill: true },
+    { label: pageT("watchers"), value: dataset.isPublic ? pageT("public") : pageT("private"), isPill: true },
+  ];
 
   return (
-    <div>
+    <div className="space-y-4">
       <Link
         href="/"
-        className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-4 text-sm"
+        className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm"
       >
         <ArrowLeft className="h-4 w-4" />
         {t("backToDatasets")}
       </Link>
 
-      <h2 className="text-2xl font-bold mb-4">
+      <h2 className="text-lg font-semibold leading-tight">
         {t("datasetTitle", {
           template: dataset.template.name,
-          city: dataset.cityName,
+          city: dataset.area.name,
         })}
       </h2>
 
-      <div className="flex items-center gap-2 mb-4">
-        <span
-          className="px-3 py-1 text-sm rounded-full bg-muted text-muted-foreground"
-          title={
-            dataset.isActive
-              ? "Dataset is actively being updated"
-              : "Dataset is not currently being updated"
-          }
+      <div className="space-y-2">
+        <h3 className="text-sm font-semibold">{t("basicInfo")}</h3>
+        <Table 
+          aria-label={t("basicInfo")}
+          className="w-full"
         >
-          {dataset.isActive ? pageT("active") : pageT("inactive")}
-        </span>
-        <span
-          className="px-3 py-1 text-sm rounded-full bg-muted text-muted-foreground"
-          title={
-            dataset.isPublic
-              ? "Dataset is visible to all users"
-              : "Dataset is only visible to you"
-          }
-        >
-          {dataset.isPublic ? pageT("public") : pageT("private")}
-        </span>
+          <TableHeader>
+            <Column isRowHeader className="sr-only">{t("property")}</Column>
+            <Column className="sr-only">{t("value")}</Column>
+          </TableHeader>
+          <TableBody>
+            {basicInfoRows.map((row, index) => (
+              <Row 
+                key={index}
+                className="border-b border-gray-100 last:border-b-0"
+              >
+                <Cell className="font-thin py-2 text-sm text-muted-foreground">
+                  {row.label}
+                </Cell>
+                <Cell className="text-right py-2 text-sm">
+                  {row.isPill ? (
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground">
+                      {row.value}
+                    </span>
+                  ) : (
+                    <span className="font-semibold">{row.value}</span>
+                  )}
+                </Cell>
+              </Row>
+            ))}
+          </TableBody>
+        </Table>
       </div>
-
-      <div className="border-t border-gray-200 my-4"></div>
     </div>
   );
 }

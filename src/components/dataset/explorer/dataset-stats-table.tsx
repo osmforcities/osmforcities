@@ -17,13 +17,7 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
   const t = useTranslations("DatasetExplorer");
   const pageT = useTranslations("DatasetPage");
 
-  const basicInfoRows: TableRowData[] = [
-    { label: t("area"), value: dataset.area.name },
-    { label: t("template"), value: dataset.template.name },
-    { label: t("category"), value: dataset.template.category },
-  ];
-
-  const dataMetricsRows: TableRowData[] = [
+  const dataRows: TableRowData[] = [
     { 
       label: pageT("totalFeatures"), 
       value: dataset.dataCount.toLocaleString() 
@@ -37,6 +31,36 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
       value: (dataset.stats?.changesetsCount || 0).toLocaleString() 
     },
   ];
+
+  const activityRows: TableRowData[] = [];
+  
+  if (dataset.stats?.recentActivity) {
+    const elementsEdited = dataset.stats.recentActivity.elementsEdited;
+    const editorsCount = dataset.stats?.editorsCount || 0;
+
+    let activityLevel;
+    if (elementsEdited > 50) {
+      activityLevel = pageT("veryActive");
+    } else if (elementsEdited > 10) {
+      activityLevel = pageT("active");
+    } else {
+      activityLevel = pageT("lowActivity");
+    }
+
+    let communityStrength;
+    if (editorsCount > 5) {
+      communityStrength = pageT("strongCommunity");
+    } else if (editorsCount > 1) {
+      communityStrength = pageT("someContributors");
+    } else {
+      communityStrength = pageT("singleEditor");
+    }
+
+    activityRows.push(
+      { label: pageT("activityLevel"), value: activityLevel },
+      { label: pageT("communityStrength"), value: communityStrength }
+    );
+  }
 
   const renderTable = (rows: TableRowData[], ariaLabel: string) => (
     <Table 
@@ -57,13 +81,7 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
               {row.label}
             </Cell>
             <Cell className="text-right py-2 text-sm">
-              {row.label === t("category") ? (
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground">
-                  {row.value}
-                </span>
-              ) : (
-                <span className="font-semibold">{row.value}</span>
-              )}
+              <span className="font-semibold">{row.value}</span>
             </Cell>
           </Row>
         ))}
@@ -73,17 +91,19 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
 
   return (
     <div className="space-y-6">
-      {/* Basic Information */}
-      <div className="space-y-2">
-        <h3 className="text-sm font-semibold">{t("basicInfo")}</h3>
-        {renderTable(basicInfoRows, t("basicInfo"))}
-      </div>
-
-      {/* Data Metrics */}
+      {/* Data Overview */}
       <div className="space-y-2">
         <h3 className="text-sm font-semibold">{t("dataMetrics")}</h3>
-        {renderTable(dataMetricsRows, t("dataMetrics"))}
+        {renderTable(dataRows, t("dataMetrics"))}
       </div>
+
+      {/* Activity Assessment */}
+      {activityRows.length > 0 && (
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold">{pageT("communityActivity")}</h3>
+          {renderTable(activityRows, pageT("overallAssessment"))}
+        </div>
+      )}
     </div>
   );
 }

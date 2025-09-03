@@ -6,7 +6,6 @@ import type { FeatureCollection } from "geojson";
 import { DatasetMapWrapper } from "@/components/dataset/map-wrapper";
 import { DatasetInfoPanel } from "@/components/dataset/explorer/dataset-info-panel";
 import { DatasetStatsTable } from "@/components/dataset/explorer/dataset-stats-table";
-import { DatasetActivityAssessment } from "@/components/dataset/explorer/dataset-activity-assessment";
 import { DatasetActionsSection } from "@/components/dataset/explorer/dataset-actions-section";
 import { ExplorerLayout } from "@/components/dataset/explorer/explorer-layout";
 
@@ -79,7 +78,6 @@ export default async function DatasetExplorerPage({
         <>
           <DatasetInfoPanel dataset={dataset} />
           <DatasetStatsTable dataset={dataset} />
-          <DatasetActivityAssessment dataset={dataset} />
           <DatasetActionsSection dataset={dataset} />
         </>
       }
