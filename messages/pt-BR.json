@@ -62,7 +62,7 @@
     "backToHome": "Voltar ao Início",
     "datasetStats": "Estatísticas do Conjunto de Dados",
     "category": "Categoria",
-    "totalFeatures": "Total de Recursos",
+    "totalFeatures": "Total de Feições",
     "totalEditors": "Total de Editores",
     "changesets": "Conjuntos de Mudanças",
     "avgAgeDays": "Idade Média (dias)",
@@ -95,7 +95,7 @@
     "backToHome": "Voltar ao Início",
     "datasetStats": "Estatísticas do Conjunto de Dados",
     "category": "Categoria",
-    "totalFeatures": "Total de Recursos",
+    "totalFeatures": "Total de Feições",
     "totalEditors": "Total de Editores",
     "changesets": "Conjuntos de Mudanças",
     "watchers": "Observadores",
@@ -127,7 +127,7 @@
     "backToHome": "Voltar ao Início",
     "datasetStats": "Estatísticas do Conjunto de Dados",
     "category": "Categoria",
-    "totalFeatures": "Total de Recursos",
+    "totalFeatures": "Total de Feições",
     "totalEditors": "Total de Editores",
     "changesets": "Conjuntos de Mudanças",
     "watchers": "Observadores",
@@ -268,7 +268,10 @@
     "status": "Status",
     "watchers": "Observadores",
     "created": "Criado",
-    "createdBy": "Criado por"
+    "createdBy": "Criado por",
+    "property": "Propriedade",
+    "value": "Valor",
+    "assessment": "Avaliação"
   },
   "PublicDatasetsFeed": {
     "noDatasetsYet": "Nenhum conjunto de dados público ainda.",

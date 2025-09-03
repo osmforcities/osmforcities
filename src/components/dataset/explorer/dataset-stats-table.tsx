@@ -39,13 +39,6 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
     },
   ];
 
-  if (dataset.stats?.averageElementAge) {
-    rows.push({
-      label: pageT("avgAgeDays"),
-      value: Math.round(dataset.stats.averageElementAge).toString(),
-    });
-  }
-
   return (
     <div className="space-y-2">
       <Table 
@@ -53,8 +46,8 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
         className="w-full"
       >
         <TableHeader>
-          <Column isRowHeader className="sr-only">Property</Column>
-          <Column className="sr-only">Value</Column>
+          <Column isRowHeader className="sr-only">{t("property")}</Column>
+          <Column className="sr-only">{t("value")}</Column>
         </TableHeader>
         <TableBody>
           {rows.map((row, index) => (

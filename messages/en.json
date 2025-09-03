@@ -245,7 +245,10 @@
     "status": "Status",
     "watchers": "Watchers",
     "created": "Created",
-    "createdBy": "Created by"
+    "createdBy": "Created by",
+    "property": "Property",
+    "value": "Value",
+    "assessment": "Assessment"
   },
   "PublicDatasetsFeed": {
     "noDatasetsYet": "No public datasets yet.",

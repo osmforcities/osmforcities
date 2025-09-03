@@ -244,7 +244,10 @@
     "status": "Estado",
     "watchers": "Observadores",
     "created": "Creado",
-    "createdBy": "Creado por"
+    "createdBy": "Creado por",
+    "property": "Propiedad",
+    "value": "Valor",
+    "assessment": "Evaluación"
   },
   "PublicDatasetsFeed": {
     "noDatasetsYet": "Aún no hay conjuntos de datos públicos.",

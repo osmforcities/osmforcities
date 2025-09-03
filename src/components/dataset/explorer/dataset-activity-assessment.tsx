@@ -15,6 +15,7 @@ type AssessmentRowData = {
 
 export function DatasetActivityAssessment({ dataset }: DatasetActivityAssessmentProps) {
   const t = useTranslations("DatasetPage");
+  const explorerT = useTranslations("DatasetExplorer");
 
   if (!dataset.stats?.recentActivity) {
     return null;
@@ -54,8 +55,8 @@ export function DatasetActivityAssessment({ dataset }: DatasetActivityAssessment
         className="w-full"
       >
         <TableHeader>
-          <Column isRowHeader className="sr-only">Assessment</Column>
-          <Column className="sr-only">Value</Column>
+          <Column isRowHeader className="sr-only">{explorerT("assessment")}</Column>
+          <Column className="sr-only">{explorerT("value")}</Column>
         </TableHeader>
         <TableBody>
           {rows.map((row, index) => (
