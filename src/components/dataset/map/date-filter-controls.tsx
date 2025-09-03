@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback } from "react";
-import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
+import { ToggleButton, Group } from "react-aria-components";
 import type { DateFilter } from "@/types/geojson";
 import { DATE_FILTER_OPTIONS } from "@/types/geojson";
 
@@ -31,26 +31,39 @@ export const DateFilterControls = React.memo<DateFilterControlsProps>(
       [onDateFilterChange]
     );
 
+    // Hide when only one option available
+    if (filteredOptions.length <= 1) {
+      return null;
+    }
+
     return (
-      <div className="flex items-center justify-center gap-4">
-        <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
-          {t("showData")}
-          {t("colon")}
-        </span>
-        <div className="flex gap-2">
-          {filteredOptions.map((option) => (
-            <Button
-              key={option.value}
-              variant={dateFilter === option.value ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleFilterChange(option.value)}
-              className="transition-all duration-200 hover:scale-105 whitespace-nowrap"
-            >
-              {t(option.labelKey)}
-            </Button>
-          ))}
-        </div>
-      </div>
+      <Group 
+        aria-label={t("showData")}
+        className="inline-flex bg-background/95 backdrop-blur-sm border rounded-lg p-1 shadow-sm"
+      >
+        {filteredOptions.map((option) => (
+          <ToggleButton
+            key={option.value}
+            isSelected={dateFilter === option.value}
+            onChange={(isSelected) => {
+              if (isSelected) {
+                handleFilterChange(option.value);
+              }
+            }}
+            className={({ isSelected, isHovered, isFocused, isPressed }) => `
+              px-3 py-1.5 text-xs font-medium whitespace-nowrap rounded-md transition-all duration-200
+              sm:px-4 sm:py-2 sm:text-sm
+              ${isFocused ? 'outline-none ring-2 ring-primary ring-offset-1' : ''}
+              ${isSelected 
+                ? 'bg-primary text-primary-foreground shadow-sm' 
+                : `text-muted-foreground ${isHovered ? 'text-foreground bg-muted/50' : ''} ${isPressed ? 'bg-muted' : ''}`
+              }
+            `}
+          >
+            {t(option.labelKey)}
+          </ToggleButton>
+        ))}
+      </Group>
     );
   }
 );
