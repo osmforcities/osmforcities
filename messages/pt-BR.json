@@ -251,7 +251,7 @@
     "downloadData": "Baixar Dados",
     "datasetDetails": "Detalhes do Conjunto de Dados",
     "datasetDescription": "Este conjunto de dados monitora características de {template} em {city}.",
-    "backToDatasets": "← voltar aos conjuntos de dados",
+    "backToDatasets": "voltar aos conjuntos de dados",
     "datasetTitle": "{template} em {city}",
     "invalidData": "Dados Inválidos",
     "invalidDataMessage": "O conjunto de dados contém dados GeoJSON inválidos.",
