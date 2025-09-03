@@ -2,7 +2,14 @@
 
 import type { Dataset } from "@/schemas/dataset";
 import { useTranslations } from "next-intl";
-import { Table, TableBody, TableHeader, Row, Cell, Column } from "react-aria-components";
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  Row,
+  Cell,
+  Column,
+} from "react-aria-components";
 
 type DatasetStatsTableProps = {
   dataset: Dataset;
@@ -18,22 +25,22 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
   const pageT = useTranslations("DatasetPage");
 
   const dataRows: TableRowData[] = [
-    { 
-      label: pageT("totalFeatures"), 
-      value: dataset.dataCount.toLocaleString() 
+    {
+      label: pageT("totalFeatures"),
+      value: dataset.dataCount.toLocaleString(),
     },
-    { 
-      label: pageT("totalEditors"), 
-      value: (dataset.stats?.editorsCount || 0).toLocaleString() 
+    {
+      label: pageT("totalEditors"),
+      value: (dataset.stats?.editorsCount || 0).toLocaleString(),
     },
-    { 
-      label: pageT("changesets"), 
-      value: (dataset.stats?.changesetsCount || 0).toLocaleString() 
+    {
+      label: pageT("changesets"),
+      value: (dataset.stats?.changesetsCount || 0).toLocaleString(),
     },
   ];
 
   const activityRows: TableRowData[] = [];
-  
+
   if (dataset.stats?.recentActivity) {
     const elementsEdited = dataset.stats.recentActivity.elementsEdited;
     const editorsCount = dataset.stats?.editorsCount || 0;
@@ -63,25 +70,19 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
   }
 
   const renderTable = (rows: TableRowData[], ariaLabel: string) => (
-    <Table 
-      aria-label={ariaLabel}
-      className="w-full"
-    >
+    <Table aria-label={ariaLabel} className="w-full">
       <TableHeader>
-        <Column isRowHeader className="sr-only">{t("property")}</Column>
+        <Column isRowHeader className="sr-only">
+          {t("property")}
+        </Column>
         <Column className="sr-only">{t("value")}</Column>
       </TableHeader>
       <TableBody>
         {rows.map((row, index) => (
-          <Row 
-            key={index}
-            className="border-b border-gray-100 last:border-b-0"
-          >
-            <Cell className="font-thin py-2 text-sm text-muted-foreground">
-              {row.label}
-            </Cell>
+          <Row key={index} className="border-b border-gray-200 last:border-b-0">
+            <Cell className="py-2 text-sm text-gray-700">{row.label}</Cell>
             <Cell className="text-right py-2 text-sm">
-              <span className="font-semibold">{row.value}</span>
+              <span className="font-semibold text-gray-900">{row.value}</span>
             </Cell>
           </Row>
         ))}
@@ -100,7 +101,9 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
       {/* Activity Assessment */}
       {activityRows.length > 0 && (
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold">{pageT("communityActivity")}</h3>
+          <h3 className="text-sm font-semibold">
+            {pageT("communityActivity")}
+          </h3>
           {renderTable(activityRows, pageT("overallAssessment"))}
         </div>
       )}

@@ -14,7 +14,8 @@ type DatasetActionsSectionProps = {
 export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
   const t = useTranslations("DatasetExplorer");
   const { downloadDataset } = useDatasetDownload();
-  const { watchDataset, unwatchDataset, refreshDataset, isLoading } = useDatasetActions();
+  const { watchDataset, unwatchDataset, refreshDataset, isLoading } =
+    useDatasetActions();
 
   const isWatched = dataset.isWatched || false;
   const canWatch = dataset.isPublic;
@@ -37,13 +38,13 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
 
   return (
     <div className="pt-4 pb-2">
-      <div className="border-t border-gray-200 mb-4"></div>
-      <div className="flex flex-col gap-2">
+      <div className="border-t border-gray-300 mb-4"></div>
+      <div className="flex flex-col gap-3">
         {/* Refresh Button */}
         <Button
           onClick={handleRefresh}
           disabled={!dataset.isActive || isLoading}
-          className="flex items-center gap-2 w-full"
+          className="flex items-center gap-2 w-full h-10"
           variant="outline"
           title={
             !dataset.isActive
@@ -51,7 +52,7 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
               : "Update dataset with latest OpenStreetMap data"
           }
         >
-          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
           {isLoading ? t("refreshing") : t("refreshData")}
         </Button>
 
@@ -59,7 +60,7 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
         <Button
           onClick={() => downloadDataset(dataset)}
           disabled={!dataset.geojson}
-          className="flex items-center gap-2 w-full"
+          className="flex items-center gap-2 w-full h-10"
           variant="outline"
           title={
             !dataset.geojson
@@ -76,7 +77,7 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
           <Button
             onClick={handleToggleWatch}
             disabled={isLoading}
-            className="flex items-center gap-2 w-full"
+            className="flex items-center gap-2 w-full h-10"
             variant={isWatched ? "default" : "outline"}
             title={
               isWatched
@@ -84,7 +85,11 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
                 : "Get notified when this dataset is updated"
             }
           >
-            {isWatched ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {isWatched ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
             {isWatched ? t("unwatch") : t("watch")}
           </Button>
         )}
