@@ -238,7 +238,7 @@
     "invalidData": "Datos Inválidos",
     "invalidDataMessage": "El conjunto de datos contiene datos GeoJSON inválidos.",
     "downloadGeoJSON": "Descargar GeoJSON",
-    "city": "Ciudad",
+    "area": "Área",
     "template": "Plantilla",
     "category": "Categoría",
     "status": "Estado",

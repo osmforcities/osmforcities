@@ -18,7 +18,7 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
   const pageT = useTranslations("DatasetPage");
 
   const rows: TableRowData[] = [
-    { label: t("city"), value: dataset.cityName },
+    { label: t("area"), value: dataset.area.name },
     { label: t("template"), value: dataset.template.name },
     { label: t("category"), value: dataset.template.category },
     { 

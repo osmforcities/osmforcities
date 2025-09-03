@@ -239,7 +239,7 @@
     "invalidData": "Invalid Data",
     "invalidDataMessage": "The dataset contains invalid GeoJSON data.",
     "downloadGeoJSON": "Download GeoJSON",
-    "city": "City",
+    "area": "Area",
     "template": "Template",
     "category": "Category",
     "status": "Status",
