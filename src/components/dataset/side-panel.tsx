@@ -132,6 +132,18 @@ export async function DatasetSidePanel({ dataset }: DatasetSidePanelProps) {
             </div>
           </div>
 
+          {dataset.isPublic && (
+            <div className="bg-muted/50 p-3 rounded-lg text-center">
+              <Users className="h-4 w-4 text-orange-600 mx-auto mb-1" />
+              <div className="text-lg font-bold text-orange-600">
+                {dataset.watchersCount?.toLocaleString() || 0}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {t("watchers")}
+              </div>
+            </div>
+          )}
+
           {dataset.stats?.averageElementAge && (
             <div className="bg-muted/50 p-3 rounded-lg text-center">
               <Calendar className="h-4 w-4 text-indigo-600 mx-auto mb-1" />

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
+import { auth } from "@/auth";
 import { DatasetMapWrapper } from "@/components/dataset/map-wrapper";
 import { DatasetInfoPanel } from "@/components/dataset/explorer/dataset-info-panel";
 import { DatasetStatsTable } from "@/components/dataset/explorer/dataset-stats-table";
@@ -8,6 +9,9 @@ import { DatasetActionsSection } from "@/components/dataset/explorer/dataset-act
 import { ExplorerLayout } from "@/components/dataset/explorer/explorer-layout";
 
 async function getDataset(id: string) {
+  const session = await auth();
+  const user = session?.user || null;
+
   const dataset = await prisma.dataset.findUnique({
     where: { id },
     include: {
@@ -20,6 +24,12 @@ async function getDataset(id: string) {
           email: true,
         },
       },
+      watchers: user
+        ? {
+            where: { userId: user.id },
+            select: { id: true, userId: true, createdAt: true },
+          }
+        : false,
       _count: {
         select: { watchers: true },
       },
@@ -35,6 +45,8 @@ export default async function DatasetExplorerPage({
   params: Promise<{ datasetId: string }>;
 }) {
   const { datasetId } = await params;
+  const session = await auth();
+  const user = session?.user || null;
   const rawDataset = await getDataset(datasetId);
 
   if (!rawDataset) {
@@ -67,6 +79,7 @@ export default async function DatasetExplorerPage({
         : null,
     },
     watchersCount: rawDataset._count.watchers,
+    isWatched: user ? rawDataset.watchers.length > 0 : false,
   };
 
   return (
@@ -76,7 +89,7 @@ export default async function DatasetExplorerPage({
           <DatasetInfoPanel dataset={dataset} />
           <DatasetStatsTable dataset={dataset} />
           <DatasetDetailsSection dataset={dataset} />
-          <DatasetActionsSection />
+          <DatasetActionsSection dataset={dataset} />
         </>
       }
       mapPanel={<DatasetMapWrapper dataset={dataset} />}

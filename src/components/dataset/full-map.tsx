@@ -16,12 +16,9 @@ type DatasetFullMapProps = {
   dataset: Dataset;
 };
 
-// Memoized components to prevent unnecessary re-renders
+// Only memoize heavy components that actually benefit from it
 const MemoizedMapLayers = React.memo(MapLayers);
 const MemoizedMapDateFilterControl = React.memo(MapDateFilterControl);
-const MemoizedAgeLegend = React.memo(AgeLegend);
-const MemoizedMapErrorState = React.memo(MapErrorState);
-const MemoizedMapNoDataState = React.memo(MapNoDataState);
 
 export function DatasetFullMap({ dataset }: DatasetFullMapProps) {
   const mapRef = useRef<MapRef | null>(null);
@@ -49,12 +46,12 @@ export function DatasetFullMap({ dataset }: DatasetFullMapProps) {
 
   // Early return for no data
   if (!dataset.geojson) {
-    return <MemoizedMapNoDataState dateFilter={dateFilter} hasData={false} />;
+    return <MapNoDataState dateFilter={dateFilter} hasData={false} />;
   }
 
   // Error state
   if (!processedData) {
-    return <MemoizedMapErrorState dateFilter={dateFilter} />;
+    return <MapErrorState dateFilter={dateFilter} />;
   }
 
   return (
@@ -67,7 +64,7 @@ export function DatasetFullMap({ dataset }: DatasetFullMapProps) {
         className="absolute z-10"
         style={{ top: "calc(var(--nav-height) + 1rem)", right: "1rem" }}
       >
-        <MemoizedAgeLegend />
+        <AgeLegend />
       </div>
 
       {/* Map */}
@@ -93,10 +90,7 @@ export function DatasetFullMap({ dataset }: DatasetFullMapProps) {
             />
           </Map>
         ) : (
-          <MemoizedMapNoDataState
-            dateFilter={dateFilter}
-            hasData={hasFilteredData}
-          />
+          <MapNoDataState dateFilter={dateFilter} hasData={hasFilteredData} />
         )}
       </div>
     </div>

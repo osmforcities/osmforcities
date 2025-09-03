@@ -7,7 +7,7 @@ type DatasetInfoPanelProps = {
 
 export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
   const t = useTranslations("DatasetExplorer");
-  
+
   return (
     <div>
       <div className="text-sm text-blue-600 hover:text-blue-800 mb-4">
@@ -15,9 +15,9 @@ export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
       </div>
 
       <h2 className="text-2xl font-bold mb-4">
-        {t("datasetTitle", { 
+        {t("datasetTitle", {
           template: dataset.template.name,
-          city: dataset.cityName 
+          city: dataset.cityName,
         })}
       </h2>
 
