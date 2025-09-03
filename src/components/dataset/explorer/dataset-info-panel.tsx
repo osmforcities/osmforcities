@@ -1,5 +1,7 @@
 import type { Dataset } from "@/schemas/dataset";
 import { getTranslations } from "next-intl/server";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 
 type DatasetInfoPanelProps = {
   dataset: Dataset;
@@ -11,9 +13,13 @@ export async function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
 
   return (
     <div>
-      <div className="text-sm text-blue-600 hover:text-blue-800 mb-4">
+      <Link
+        href="/"
+        className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-4 text-sm"
+      >
+        <ArrowLeft className="h-4 w-4" />
         {t("backToDatasets")}
-      </div>
+      </Link>
 
       <h2 className="text-2xl font-bold mb-4">
         {t("datasetTitle", {
