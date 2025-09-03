@@ -56,8 +56,14 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
             <Cell className="font-thin py-2 text-sm text-muted-foreground">
               {row.label}
             </Cell>
-            <Cell className="font-semibold text-right py-2 text-sm">
-              {row.value}
+            <Cell className="text-right py-2 text-sm">
+              {row.label === t("category") ? (
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground">
+                  {row.value}
+                </span>
+              ) : (
+                <span className="font-semibold">{row.value}</span>
+              )}
             </Cell>
           </Row>
         ))}
