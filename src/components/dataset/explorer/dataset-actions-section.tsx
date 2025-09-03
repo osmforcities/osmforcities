@@ -17,9 +17,9 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
   const { downloadDataset } = useDatasetDownload();
 
   return (
-    <div className="pb-8">
-      <div className="border-t border-gray-200 my-4"></div>
-      <div className="mt-4 flex justify-center items-center gap-3">
+    <div className="space-y-4">
+      <div className="border-t border-gray-200"></div>
+      <div className="flex justify-center items-center gap-3">
         {/* Interactive Actions */}
         <div className="flex items-center gap-2">
           <DatasetWatchButton

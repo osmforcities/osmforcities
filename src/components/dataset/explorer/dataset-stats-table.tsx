@@ -1,51 +1,77 @@
+"use client";
+
 import type { Dataset } from "@/schemas/dataset";
+import { useTranslations } from "next-intl";
+import { Table, TableBody, TableHeader, Row, Cell, Column } from "react-aria-components";
 
 type DatasetStatsTableProps = {
   dataset: Dataset;
 };
 
-const Table = ({ children }: { children: React.ReactNode }) => {
-  return <table className="table-auto w-full">{children}</table>;
-};
-
-const TableRow = ({
-  label,
-  value,
-}: {
+type TableRowData = {
   label: string;
-  value: React.ReactNode;
-}) => {
-  return (
-    <tr className="">
-      <td className="font-thin py-1">{label}</td>
-      <td className="font-semibold text-right">{value}</td>
-    </tr>
-  );
+  value: string;
 };
 
 export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
+  const t = useTranslations("DatasetExplorer");
+  const pageT = useTranslations("DatasetPage");
+
+  const rows: TableRowData[] = [
+    { label: t("city"), value: dataset.cityName },
+    { label: t("template"), value: dataset.template.name },
+    { label: t("category"), value: dataset.template.category },
+    { 
+      label: t("status"), 
+      value: dataset.isActive ? pageT("active") : pageT("inactive")
+    },
+    { 
+      label: pageT("totalFeatures"), 
+      value: dataset.dataCount.toLocaleString() 
+    },
+    { 
+      label: pageT("totalEditors"), 
+      value: (dataset.stats?.editorsCount || 0).toLocaleString() 
+    },
+    { 
+      label: pageT("changesets"), 
+      value: (dataset.stats?.changesetsCount || 0).toLocaleString() 
+    },
+  ];
+
+  if (dataset.stats?.averageElementAge) {
+    rows.push({
+      label: pageT("avgAgeDays"),
+      value: Math.round(dataset.stats.averageElementAge).toString(),
+    });
+  }
+
   return (
-    <Table>
-      <tbody>
-        <TableRow label="City" value={dataset.cityName} />
-        <TableRow label="Template" value={dataset.template.name} />
-        <TableRow label="Category" value={dataset.template.category} />
-        <TableRow
-          label="Status"
-          value={dataset.isActive ? "Active" : "Inactive"}
-        />
-        <TableRow label="Watchers" value={dataset.watchersCount} />
-        <TableRow
-          label="Created"
-          value={dataset.createdAt.toLocaleDateString()}
-        />
-        {dataset.user && (
-          <TableRow
-            label="Created by"
-            value={dataset.user.name || dataset.user.email}
-          />
-        )}
-      </tbody>
-    </Table>
+    <div className="space-y-2">
+      <Table 
+        aria-label={t("datasetDetails")}
+        className="w-full"
+      >
+        <TableHeader>
+          <Column isRowHeader className="sr-only">Property</Column>
+          <Column className="sr-only">Value</Column>
+        </TableHeader>
+        <TableBody>
+          {rows.map((row, index) => (
+            <Row 
+              key={index}
+              className="border-b border-gray-100 last:border-b-0"
+            >
+              <Cell className="font-thin py-2 text-sm text-muted-foreground">
+                {row.label}
+              </Cell>
+              <Cell className="font-semibold text-right py-2 text-sm">
+                {row.value}
+              </Cell>
+            </Row>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

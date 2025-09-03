@@ -72,6 +72,8 @@
     "activeEditors": "Active Editors",
     "recentChangesets": "Recent Changesets",
     "overallAssessment": "Overall Assessment",
+    "activityLevel": "Activity Level",
+    "communityStrength": "Community Strength",
     "lastChecked": "Last Checked:"
   },
   "Watched": {
@@ -103,6 +105,8 @@
     "activeEditors": "Active Editors",
     "recentChangesets": "Recent Changesets",
     "overallAssessment": "Overall Assessment",
+    "activityLevel": "Activity Level",
+    "communityStrength": "Community Strength",
     "lastChecked": "Last Checked:",
     "active": "Active",
     "inactive": "Inactive",
@@ -234,7 +238,14 @@
     "datasetTitle": "{template} in {city}",
     "invalidData": "Invalid Data",
     "invalidDataMessage": "The dataset contains invalid GeoJSON data.",
-    "downloadGeoJSON": "Download GeoJSON"
+    "downloadGeoJSON": "Download GeoJSON",
+    "city": "City",
+    "template": "Template",
+    "category": "Category",
+    "status": "Status",
+    "watchers": "Watchers",
+    "created": "Created",
+    "createdBy": "Created by"
   },
   "PublicDatasetsFeed": {
     "noDatasetsYet": "No public datasets yet.",

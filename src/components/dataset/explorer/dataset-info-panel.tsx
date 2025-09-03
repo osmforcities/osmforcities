@@ -28,14 +28,9 @@ export async function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
         })}
       </h2>
 
-      {/* Status Badges */}
       <div className="flex items-center gap-2 mb-4">
         <span
-          className={`px-3 py-1 text-sm rounded-full ${
-            dataset.isActive
-              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-              : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
-          }`}
+          className="px-3 py-1 text-sm rounded-full bg-muted text-muted-foreground"
           title={
             dataset.isActive
               ? "Dataset is actively being updated"
@@ -45,11 +40,7 @@ export async function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
           {dataset.isActive ? pageT("active") : pageT("inactive")}
         </span>
         <span
-          className={`px-3 py-1 text-sm rounded-full capitalize ${
-            dataset.isPublic
-              ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-              : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-          }`}
+          className="px-3 py-1 text-sm rounded-full bg-muted text-muted-foreground"
           title={
             dataset.isPublic
               ? "Dataset is visible to all users"

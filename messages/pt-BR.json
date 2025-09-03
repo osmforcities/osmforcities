@@ -72,6 +72,8 @@
     "activeEditors": "Editores Ativos",
     "recentChangesets": "Conjuntos de Mudanças Recentes",
     "overallAssessment": "Avaliação Geral",
+    "activityLevel": "Nível de Atividade",
+    "communityStrength": "Força da Comunidade",
     "lastChecked": "Última Verificação:"
   },
 
@@ -104,6 +106,8 @@
     "activeEditors": "Editores Ativos",
     "recentChangesets": "Conjuntos de Mudanças Recentes",
     "overallAssessment": "Avaliação Geral",
+    "activityLevel": "Nível de Atividade",
+    "communityStrength": "Força da Comunidade",
     "lastChecked": "Última Verificação:",
     "active": "Ativo",
     "inactive": "Inativo",
@@ -134,6 +138,8 @@
     "activeEditors": "Editores Ativos",
     "recentChangesets": "Conjuntos de Mudanças Recentes",
     "overallAssessment": "Avaliação Geral",
+    "activityLevel": "Nível de Atividade",
+    "communityStrength": "Força da Comunidade",
     "lastChecked": "Última Verificação:",
     "active": "Ativo",
     "inactive": "Inativo",
@@ -255,7 +261,14 @@
     "datasetTitle": "{template} em {city}",
     "invalidData": "Dados Inválidos",
     "invalidDataMessage": "O conjunto de dados contém dados GeoJSON inválidos.",
-    "downloadGeoJSON": "Baixar GeoJSON"
+    "downloadGeoJSON": "Baixar GeoJSON",
+    "city": "Cidade",
+    "template": "Modelo",
+    "category": "Categoria",
+    "status": "Status",
+    "watchers": "Observadores",
+    "created": "Criado",
+    "createdBy": "Criado por"
   },
   "PublicDatasetsFeed": {
     "noDatasetsYet": "Nenhum conjunto de dados público ainda.",
