@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import type { MapLayerMouseEvent } from "react-map-gl/maplibre";
-import type { DateFilter } from "../../types/geojson";
-import type { TooltipInfo } from "../../types/geojson";
+import type { DateFilter } from "../../../../types/geojson";
+import type { TooltipInfo } from "../../../../types/geojson";
 
 export function useMapInteractions() {
   const [tooltipInfo, setTooltipInfo] = useState<TooltipInfo | null>(null);

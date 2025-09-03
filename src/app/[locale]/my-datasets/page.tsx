@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { redirect } from "@/i18n/navigation";
 import { prisma } from "@/lib/db";
 import TabLayout from "@/components/tab-layout";
-import DatasetList from "@/components/dataset-list";
+import DatasetList from "@/components/dataset/list";
 
 export const dynamic = "force-dynamic";
 
