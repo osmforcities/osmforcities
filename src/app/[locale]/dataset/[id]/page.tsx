@@ -11,9 +11,9 @@ import {
   MapPin,
   Database,
 } from "lucide-react";
-import DatasetRefreshButton from "@/components/dataset-refresh-button";
-import DatasetMap from "@/components/dataset-map";
-import DatasetWatchButton from "@/components/dataset-watch-button";
+import DatasetRefreshButton from "@/components/dataset/refresh-button";
+import DatasetMap from "@/components/dataset/map";
+import DatasetWatchButton from "@/components/dataset/watch-button";
 import { prisma } from "@/lib/db";
 import { DatasetSchema, type Dataset } from "@/schemas/dataset";
 import type { FeatureCollection } from "geojson";

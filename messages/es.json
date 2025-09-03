@@ -225,6 +225,16 @@
   "DatasetWatchButton": {
     "privateDataset": "Conjunto de Datos Privado"
   },
+  "DatasetExplorer": {
+    "downloadData": "Descargar Datos",
+    "datasetDetails": "Detalles del Conjunto de Datos",
+    "datasetDescription": "Este conjunto de datos monitorea características de {template} en {city}.",
+    "backToDatasets": "← volver a conjuntos de datos",
+    "datasetTitle": "{template} en {city}",
+    "invalidData": "Datos Inválidos",
+    "invalidDataMessage": "El conjunto de datos contiene datos GeoJSON inválidos.",
+    "downloadGeoJSON": "Descargar GeoJSON"
+  },
   "PublicDatasetsFeed": {
     "noDatasetsYet": "Aún no hay conjuntos de datos públicos.",
     "title": "Conjuntos de Datos Públicos de Ciudades",

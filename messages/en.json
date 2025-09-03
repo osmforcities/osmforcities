@@ -226,6 +226,16 @@
   "DatasetWatchButton": {
     "privateDataset": "Private Dataset"
   },
+  "DatasetExplorer": {
+    "downloadData": "Download Data",
+    "datasetDetails": "Dataset Details",
+    "datasetDescription": "This dataset monitors {template} features in {city}.",
+    "backToDatasets": "← back to datasets",
+    "datasetTitle": "{template} in {city}",
+    "invalidData": "Invalid Data",
+    "invalidDataMessage": "The dataset contains invalid GeoJSON data.",
+    "downloadGeoJSON": "Download GeoJSON"
+  },
   "PublicDatasetsFeed": {
     "noDatasetsYet": "No public datasets yet.",
     "title": "Public City Data Datasets",
