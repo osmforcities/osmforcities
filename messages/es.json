@@ -74,6 +74,7 @@
     "overallAssessment": "Evaluación General",
     "activityLevel": "Nivel de Actividad",
     "communityStrength": "Fortaleza de la Comunidad",
+    "communityActivity": "Actividad de la Comunidad",
     "lastChecked": "Última Verificación:"
   },
   "Watched": {
@@ -107,6 +108,7 @@
     "overallAssessment": "Evaluación General",
     "activityLevel": "Nivel de Actividad",
     "communityStrength": "Fortaleza de la Comunidad",
+    "communityActivity": "Actividad de la Comunidad",
     "lastChecked": "Última Verificación:",
     "active": "Activo",
     "inactive": "Inactivo",
@@ -247,7 +249,9 @@
     "createdBy": "Creado por",
     "property": "Propiedad",
     "value": "Valor",
-    "assessment": "Evaluación"
+    "assessment": "Evaluación",
+    "basicInfo": "Información Básica",
+    "dataMetrics": "Métricas de Datos"
   },
   "PublicDatasetsFeed": {
     "noDatasetsYet": "Aún no hay conjuntos de datos públicos.",

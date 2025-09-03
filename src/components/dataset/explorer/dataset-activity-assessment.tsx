@@ -49,7 +49,7 @@ export function DatasetActivityAssessment({ dataset }: DatasetActivityAssessment
 
   return (
     <div className="space-y-2">
-      <h3 className="text-sm font-semibold">{t("overallAssessment")}</h3>
+      <h3 className="text-sm font-semibold">{t("communityActivity")}</h3>
       <Table 
         aria-label={t("overallAssessment")}
         className="w-full"

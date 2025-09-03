@@ -74,6 +74,7 @@
     "overallAssessment": "Avaliação Geral",
     "activityLevel": "Nível de Atividade",
     "communityStrength": "Força da Comunidade",
+    "communityActivity": "Atividade da Comunidade",
     "lastChecked": "Última Verificação:"
   },
 
@@ -108,6 +109,7 @@
     "overallAssessment": "Avaliação Geral",
     "activityLevel": "Nível de Atividade",
     "communityStrength": "Força da Comunidade",
+    "communityActivity": "Atividade da Comunidade",
     "lastChecked": "Última Verificação:",
     "active": "Ativo",
     "inactive": "Inativo",
@@ -140,6 +142,7 @@
     "overallAssessment": "Avaliação Geral",
     "activityLevel": "Nível de Atividade",
     "communityStrength": "Força da Comunidade",
+    "communityActivity": "Atividade da Comunidade",
     "lastChecked": "Última Verificação:",
     "active": "Ativo",
     "inactive": "Inativo",
@@ -271,7 +274,9 @@
     "createdBy": "Criado por",
     "property": "Propriedade",
     "value": "Valor",
-    "assessment": "Avaliação"
+    "assessment": "Avaliação",
+    "basicInfo": "Informações Básicas",
+    "dataMetrics": "Métricas dos Dados"
   },
   "PublicDatasetsFeed": {
     "noDatasetsYet": "Nenhum conjunto de dados público ainda.",

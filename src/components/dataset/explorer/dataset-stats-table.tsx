@@ -17,14 +17,13 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
   const t = useTranslations("DatasetExplorer");
   const pageT = useTranslations("DatasetPage");
 
-  const rows: TableRowData[] = [
+  const basicInfoRows: TableRowData[] = [
     { label: t("area"), value: dataset.area.name },
     { label: t("template"), value: dataset.template.name },
     { label: t("category"), value: dataset.template.category },
-    { 
-      label: t("status"), 
-      value: dataset.isActive ? pageT("active") : pageT("inactive")
-    },
+  ];
+
+  const dataMetricsRows: TableRowData[] = [
     { 
       label: pageT("totalFeatures"), 
       value: dataset.dataCount.toLocaleString() 
@@ -39,32 +38,46 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
     },
   ];
 
+  const renderTable = (rows: TableRowData[], ariaLabel: string) => (
+    <Table 
+      aria-label={ariaLabel}
+      className="w-full"
+    >
+      <TableHeader>
+        <Column isRowHeader className="sr-only">{t("property")}</Column>
+        <Column className="sr-only">{t("value")}</Column>
+      </TableHeader>
+      <TableBody>
+        {rows.map((row, index) => (
+          <Row 
+            key={index}
+            className="border-b border-gray-100 last:border-b-0"
+          >
+            <Cell className="font-thin py-2 text-sm text-muted-foreground">
+              {row.label}
+            </Cell>
+            <Cell className="font-semibold text-right py-2 text-sm">
+              {row.value}
+            </Cell>
+          </Row>
+        ))}
+      </TableBody>
+    </Table>
+  );
+
   return (
-    <div className="space-y-2">
-      <Table 
-        aria-label={t("datasetDetails")}
-        className="w-full"
-      >
-        <TableHeader>
-          <Column isRowHeader className="sr-only">{t("property")}</Column>
-          <Column className="sr-only">{t("value")}</Column>
-        </TableHeader>
-        <TableBody>
-          {rows.map((row, index) => (
-            <Row 
-              key={index}
-              className="border-b border-gray-100 last:border-b-0"
-            >
-              <Cell className="font-thin py-2 text-sm text-muted-foreground">
-                {row.label}
-              </Cell>
-              <Cell className="font-semibold text-right py-2 text-sm">
-                {row.value}
-              </Cell>
-            </Row>
-          ))}
-        </TableBody>
-      </Table>
+    <div className="space-y-6">
+      {/* Basic Information */}
+      <div className="space-y-2">
+        <h3 className="text-sm font-semibold">{t("basicInfo")}</h3>
+        {renderTable(basicInfoRows, t("basicInfo"))}
+      </div>
+
+      {/* Data Metrics */}
+      <div className="space-y-2">
+        <h3 className="text-sm font-semibold">{t("dataMetrics")}</h3>
+        {renderTable(dataMetricsRows, t("dataMetrics"))}
+      </div>
     </div>
   );
 }

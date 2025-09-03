@@ -74,6 +74,7 @@
     "overallAssessment": "Overall Assessment",
     "activityLevel": "Activity Level",
     "communityStrength": "Community Strength",
+    "communityActivity": "Community Activity",
     "lastChecked": "Last Checked:"
   },
   "Watched": {
@@ -107,6 +108,7 @@
     "overallAssessment": "Overall Assessment",
     "activityLevel": "Activity Level",
     "communityStrength": "Community Strength",
+    "communityActivity": "Community Activity",
     "lastChecked": "Last Checked:",
     "active": "Active",
     "inactive": "Inactive",
@@ -248,7 +250,9 @@
     "createdBy": "Created by",
     "property": "Property",
     "value": "Value",
-    "assessment": "Assessment"
+    "assessment": "Assessment",
+    "basicInfo": "Basic Information",
+    "dataMetrics": "Data Metrics"
   },
   "PublicDatasetsFeed": {
     "noDatasetsYet": "No public datasets yet.",
