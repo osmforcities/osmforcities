@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/navigation";
-import { Button } from "@/components/ui/button";
 import { auth } from "@/auth";
 import { getTranslations } from "next-intl/server";
+import NavActions from "@/components/nav-actions";
 
 export default async function NavBar() {
   const session = await auth();
@@ -9,58 +9,29 @@ export default async function NavBar() {
   const t = await getTranslations("Navigation");
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <Link
             href="/"
-            className="flex items-center space-x-2 text-xl font-bold transition-colors hover:text-foreground/80"
+            className="flex items-center text-xl font-bold text-gray-900 transition-colors hover:text-gray-700"
           >
             <span>{t("brandName")}</span>
           </Link>
 
           <div className="flex items-center gap-4">
-            {user ? <LoggedInNav /> : <LoggedOutNav />}
+            <NavActions 
+              isLoggedIn={!!user}
+              translations={{
+                about: t("about"),
+                preferences: t("preferences"),
+                signOut: t("signOut"),
+                signIn: t("signIn")
+              }}
+            />
           </div>
         </div>
       </div>
     </nav>
-  );
-}
-
-async function LoggedInNav() {
-  const t = await getTranslations("Navigation");
-
-  return (
-    <>
-      <Button variant="ghost" asChild>
-        <Link href="/about">{t("about")}</Link>
-      </Button>
-      <Button variant="ghost" asChild>
-        <Link href="/preferences" className="flex items-center gap-2">
-          {t("preferences")}
-        </Link>
-      </Button>
-      <form action="/api/auth/logout" method="POST">
-        <Button type="submit" variant="outline" size="sm">
-          {t("signOut")}
-        </Button>
-      </form>
-    </>
-  );
-}
-
-async function LoggedOutNav() {
-  const t = await getTranslations("Navigation");
-
-  return (
-    <>
-      <Button variant="ghost" asChild>
-        <Link href="/about">{t("about")}</Link>
-      </Button>
-      <Button asChild>
-        <Link href="/enter">{t("signIn")}</Link>
-      </Button>
-    </>
   );
 }
