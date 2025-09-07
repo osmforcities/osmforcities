@@ -63,6 +63,9 @@ export function convertNominatimResultToArea(result: NominatimResult): Area {
     name: result.name || result.display_name.split(",")[0].trim(),
     displayName: result.display_name,
     osmType: result.osm_type,
+    class: result.class,
+    type: result.type,
+    addresstype: result.addresstype,
     boundingBox: [
       parseFloat(result.boundingbox[0]), // minLat
       parseFloat(result.boundingbox[2]), // minLon
@@ -70,5 +73,6 @@ export function convertNominatimResultToArea(result: NominatimResult): Area {
       parseFloat(result.boundingbox[3]), // maxLon
     ],
     countryCode: result.address?.country_code,
+    country: result.address?.country,
   };
 }

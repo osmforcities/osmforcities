@@ -11,11 +11,15 @@ type NominatimResult = {
   osm_id: number;
   display_name: string;
   name: string;
+  class: string;
+  type: string;
+  addresstype?: string;
   boundingbox: string[];
   lat: string;
   lon: string;
   address: {
     country_code?: string;
+    country?: string;
     [key: string]: string | undefined;
   };
 };
@@ -129,13 +133,17 @@ export default function AreaSelector({
       name: result.name || result.display_name.split(",")[0].trim(),
       displayName: result.display_name,
       osmType: result.osm_type,
+      class: result.class,
+      type: result.type,
+      addresstype: result.addresstype,
       boundingBox: [
         parseFloat(result.boundingbox[0]),
         parseFloat(result.boundingbox[2]),
         parseFloat(result.boundingbox[1]),
         parseFloat(result.boundingbox[3]),
-      ],
-      countryCode: result.address.country_code,
+      ] as [number, number, number, number],
+      countryCode: result.address?.country_code,
+      country: result.address?.country,
     };
 
     onAreaSelected(area);

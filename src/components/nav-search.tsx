@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import {
@@ -10,22 +11,50 @@ import {
   ListBoxItem,
   Popover,
 } from "react-aria-components";
-import { useState, useMemo } from "react";
 import { Search, X } from "lucide-react";
 import { useNominatimAreas } from "@/hooks/useNominatimSearch";
 import { Area } from "@/types/area";
 
+type SearchResultItem = Area | EmptyResultItem;
+
 type EmptyResultItem = {
-  id: string;
+  id: "no-results";
   name: string;
-  displayName: string;
-  osmType: string;
-  boundingBox: [number, number, number, number];
-  countryCode?: string;
+  displayName: "";
+  osmType: "";
+  class: "";
+  type: "";
+  addresstype: undefined;
+  boundingBox: [0, 0, 0, 0];
+  countryCode: undefined;
+  country: undefined;
 };
+
+function formatAddressTypeDisplay(
+  item: SearchResultItem,
+  translateAddressType: (key: string) => string
+): string {
+  if (item.id === "no-results") return "";
+
+  const addressType = item.addresstype || item.type;
+  if (!addressType) return "";
+
+  const translatedType = translateAddressType(addressType) || addressType;
+
+  if (item.country) {
+    return `${translatedType} in ${item.country}`;
+  }
+
+  if (item.countryCode) {
+    return `${translatedType} in ${item.countryCode.toUpperCase()}`;
+  }
+
+  return translatedType;
+}
 
 function NavSearch() {
   const t = useTranslations("NavSearch");
+  const translateAddressType = useTranslations("AddressTypes");
   const router = useRouter();
 
   const [inputValue, setInputValue] = useState("");
@@ -39,42 +68,31 @@ function NavSearch() {
     enabled: inputValue.length >= 3,
   });
 
-  const items = useMemo((): (Area | EmptyResultItem)[] => {
-    if (inputValue.length < 3) {
-      return [];
-    }
+  const searchResults = useMemo((): SearchResultItem[] => {
+    if (inputValue.length < 3) return [];
 
-    if (error) {
-      return [
-        {
-          id: "no-results",
-          name: "No areas found",
-          displayName: "",
-          osmType: "",
-          boundingBox: [0, 0, 0, 0] as [number, number, number, number],
-        },
-      ];
-    }
+    const noResultsItem: EmptyResultItem = {
+      id: "no-results",
+      name: t("noAreasFound"),
+      displayName: "",
+      osmType: "",
+      class: "",
+      type: "",
+      addresstype: undefined,
+      boundingBox: [0, 0, 0, 0],
+      countryCode: undefined,
+      country: undefined,
+    };
 
-    if (areas.length === 0 && !isLoading) {
-      return [
-        {
-          id: "no-results",
-          name: "No areas found",
-          displayName: "",
-          osmType: "",
-          boundingBox: [0, 0, 0, 0] as [number, number, number, number],
-        },
-      ];
-    }
+    if (error) return [noResultsItem];
+    if (areas.length === 0 && !isLoading) return [noResultsItem];
+
     return areas;
-  }, [inputValue, areas, isLoading, error]);
+  }, [inputValue, areas, isLoading, error, t]);
 
-  const handleInputChange = (value: string) => {
-    setInputValue(value);
-  };
+  const handleInputChange = (value: string) => setInputValue(value);
 
-  const handleSearchResultSelection = (selectedKey: React.Key | null) => {
+  const handleSelectionChange = (selectedKey: React.Key | null) => {
     if (selectedKey && selectedKey !== "no-results") {
       const selectedArea = areas.find(
         (area) => area.id.toString() === selectedKey
@@ -86,24 +104,20 @@ function NavSearch() {
     }
   };
 
-  const handleSearchInputKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Escape") {
-      setInputValue("");
-    }
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Escape") setInputValue("");
   };
 
-  const clearSearchInput = () => {
-    setInputValue("");
-  };
+  const clearInput = () => setInputValue("");
 
   return (
     <div className="flex-1 max-w-lg">
       <ComboBox
-        items={items}
+        items={searchResults}
         inputValue={inputValue}
         onInputChange={handleInputChange}
-        onSelectionChange={handleSearchResultSelection}
-        allowsEmptyCollection={true}
+        onSelectionChange={handleSelectionChange}
+        allowsEmptyCollection
         menuTrigger="input"
         className="relative"
       >
@@ -111,15 +125,14 @@ function NavSearch() {
           <Input
             placeholder={t("searchPlaceholder")}
             aria-label={t("searchPlaceholder")}
-            onKeyDown={handleSearchInputKeyDown}
+            onKeyDown={handleKeyDown}
             className="w-full px-3 py-1.5 text-sm border-0 rounded-l focus:outline-none bg-white transition-all duration-150"
           />
           <Button
             className="px-2 py-1.5 border-0 rounded-r bg-white hover:bg-olive-100 focus:outline-none transition-all duration-150"
-            onPress={clearSearchInput}
+            onPress={clearInput}
             excludeFromTabOrder
           >
-            {/* Show search icon when no input, clear button when there is input, loading spinner when searching */}
             {isLoading ? (
               <div className="animate-spin h-4 w-4 border-2 border-gray-400 border-t-transparent rounded-full" />
             ) : !inputValue ? (
@@ -136,7 +149,7 @@ function NavSearch() {
             style={{ width: "var(--trigger-width)" }}
           >
             <ListBox className="outline-none py-2">
-              {(item: Area | EmptyResultItem) => {
+              {(item: SearchResultItem) => {
                 if (item.id === "no-results") {
                   return (
                     <ListBoxItem
@@ -160,13 +173,12 @@ function NavSearch() {
                         {item.name}
                       </p>
                       <p className="text-xs text-gray-600 truncate">
-                        {item.displayName}
+                        {formatAddressTypeDisplay(item, translateAddressType)}
                       </p>
                       <p className="text-xs text-gray-500">
                         {item.osmType.charAt(0).toUpperCase() +
                           item.osmType.slice(1)}{" "}
-                        {"ID: "}
-                        {item.id}
+                        {"ID: "} {item.id}
                       </p>
                     </div>
                   </ListBoxItem>

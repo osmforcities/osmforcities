@@ -172,6 +172,26 @@
     "searchPlaceholder": "Buscar cidades e áreas...",
     "noAreasFound": "Nenhuma área encontrada"
   },
+  "AddressTypes": {
+    "city": "Cidade",
+    "town": "Cidade",
+    "village": "Vila",
+    "hamlet": "Aldeia",
+    "municipality": "Município",
+    "county": "Condado",
+    "state": "Estado",
+    "country": "País",
+    "region": "Região",
+    "province": "Província",
+    "district": "Distrito",
+    "suburb": "Subúrbio",
+    "neighbourhood": "Bairro",
+    "city_district": "Distrito de Cidade",
+    "administrative": "Área Administrativa",
+    "postcode": "Código Postal",
+    "road": "Rua",
+    "house_number": "Número da Casa"
+  },
   "AreaSelector": {
     "searchPlaceholder": "Digite pelo menos 3 caracteres para pesquisar",
     "searchDescription": "Apenas áreas administrativas (cidades, vilas, bairros) serão mostradas nos resultados",

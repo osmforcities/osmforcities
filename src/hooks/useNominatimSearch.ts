@@ -24,30 +24,29 @@ export function useNominatimSearch({
 export function useNominatimAreas({
   searchTerm,
   enabled = true,
-}: UseNominatimSearchOptions): {
-  data: Area[] | undefined;
-  isLoading: boolean;
-  error: Error | null;
-  isError: boolean;
-} {
+}: UseNominatimSearchOptions) {
   const { data, isLoading, error, isError } = useNominatimSearch({
     searchTerm,
     enabled,
   });
 
-  const areas =
+  const areas: Area[] =
     data?.map((result) => ({
       id: result.osm_id,
       name: result.name || result.display_name.split(",")[0].trim(),
       displayName: result.display_name,
       osmType: result.osm_type,
+      class: result.class,
+      type: result.type,
+      addresstype: result.addresstype,
       boundingBox: [
         parseFloat(result.boundingbox[0]),
         parseFloat(result.boundingbox[2]),
         parseFloat(result.boundingbox[1]),
         parseFloat(result.boundingbox[3]),
-      ],
+      ] as [number, number, number, number],
       countryCode: result.address?.country_code,
+      country: result.address?.country,
     })) || [];
 
   return {

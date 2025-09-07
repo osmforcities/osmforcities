@@ -7,6 +7,9 @@ export const NominatimResultSchema = z.object({
   osm_id: z.number(),
   display_name: z.string(),
   name: z.string(),
+  class: z.string(), // Primary category (e.g., "place", "amenity")
+  type: z.string(), // Subcategory within class (e.g., "city", "village", "town")
+  addresstype: z.string().optional(), // Address type (e.g., "municipality", "city", "village")
   boundingbox: z.array(z.string()).length(4), // [minLat, maxLat, minLon, maxLon]
   lat: z.string(),
   lon: z.string(),

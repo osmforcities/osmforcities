@@ -3,6 +3,10 @@ export type Area = {
   name: string;
   displayName: string;
   osmType: string;
-  boundingBox: [number, number, number, number]; // [minLat, minLon, maxLat, maxLon]
+  class: string;
+  type: string;
+  addresstype?: string;
+  boundingBox: [number, number, number, number];
   countryCode?: string;
+  country?: string;
 };
