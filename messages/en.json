@@ -162,6 +162,7 @@
     "district": "District",
     "suburb": "Suburb",
     "neighbourhood": "Neighbourhood",
+    "city_block": "City Block",
     "city_district": "City District",
     "administrative": "Administrative Area",
     "postcode": "Postal Code",

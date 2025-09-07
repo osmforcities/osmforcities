@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import {
   Button,
   ComboBox,
@@ -14,6 +14,7 @@ import {
 import { Search, X } from "lucide-react";
 import { useNominatimAreas } from "@/hooks/useNominatimSearch";
 import { Area } from "@/types/area";
+import { getAreaCharacteristics } from "@/lib/utils";
 
 type SearchResultItem = Area | EmptyResultItem;
 
@@ -30,31 +31,10 @@ type EmptyResultItem = {
   country: undefined;
 };
 
-function formatAddressTypeDisplay(
-  item: SearchResultItem,
-  translateAddressType: (key: string) => string
-): string {
-  if (item.id === "no-results") return "";
-
-  const addressType = item.addresstype || item.type;
-  if (!addressType) return "";
-
-  const translatedType = translateAddressType(addressType) || addressType;
-
-  if (item.country) {
-    return `${translatedType} in ${item.country}`;
-  }
-
-  if (item.countryCode) {
-    return `${translatedType} in ${item.countryCode.toUpperCase()}`;
-  }
-
-  return translatedType;
-}
-
 function NavSearch() {
   const t = useTranslations("NavSearch");
   const translateAddressType = useTranslations("AddressTypes");
+  const locale = useLocale();
   const router = useRouter();
 
   const [inputValue, setInputValue] = useState("");
@@ -65,6 +45,7 @@ function NavSearch() {
     error,
   } = useNominatimAreas({
     searchTerm: inputValue,
+    language: locale,
     enabled: inputValue.length >= 3,
   });
 
@@ -166,20 +147,31 @@ function NavSearch() {
                   <ListBoxItem
                     key={item.id.toString()}
                     id={item.id.toString()}
-                    className="px-4 py-2.5 cursor-pointer transition-all duration-150 ease-in-out data-[hovered]:bg-olive-100 data-[hovered]:shadow-sm data-[focused]:bg-olive-100 data-[focused]:outline-none data-[selected]:bg-olive-200 data-[selected]:shadow-md data-[selected]:font-semibold"
+                    className="px-4 py-3 cursor-pointer transition-all duration-150 ease-in-out data-[hovered]:bg-olive-100 data-[hovered]:shadow-sm data-[focused]:bg-olive-100 data-[focused]:outline-none data-[selected]:bg-olive-200 data-[selected]:shadow-md data-[selected]:font-semibold"
                   >
-                    <div>
-                      <p className="font-medium text-sm text-gray-900">
-                        {item.name}
-                      </p>
-                      <p className="text-xs text-gray-600 truncate">
-                        {formatAddressTypeDisplay(item, translateAddressType)}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {item.osmType.charAt(0).toUpperCase() +
-                          item.osmType.slice(1)}{" "}
-                        {"ID: "} {item.id}
-                      </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm text-gray-900 truncate">
+                          {item.name}
+                        </p>
+                        <div className="flex items-center gap-1 mt-1">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-500">
+                            {
+                              getAreaCharacteristics(
+                                item,
+                                translateAddressType
+                              ).slice(-1)[0]
+                            }
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex-shrink-0 ml-3">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-olive-100 text-olive-800">
+                          {getAreaCharacteristics(item, translateAddressType)
+                            .slice(0, -1)
+                            .join(", ")}
+                        </span>
+                      </div>
                     </div>
                   </ListBoxItem>
                 );

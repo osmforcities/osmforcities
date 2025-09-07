@@ -161,6 +161,7 @@
     "district": "Distrito",
     "suburb": "Suburbio",
     "neighbourhood": "Barrio",
+    "city_block": "Manzana",
     "city_district": "Distrito de Ciudad",
     "administrative": "Área Administrativa",
     "postcode": "Código Postal",

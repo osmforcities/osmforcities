@@ -11,7 +11,11 @@ const mockNominatimResponse = [
     boundingbox: ["-23.8", "-23.3", "-46.8", "-46.1"],
     lat: "-23.5",
     lon: "-46.6",
-    address: { country_code: "br" },
+    address: {
+      country_code: "br",
+      country: "Brazil",
+      type: "city",
+    },
   },
   {
     place_id: 789012,
@@ -22,7 +26,11 @@ const mockNominatimResponse = [
     boundingbox: ["-23.3", "-22.9", "-45.9", "-45.8"],
     lat: "-23.2",
     lon: "-45.9",
-    address: { country_code: "br" },
+    address: {
+      country_code: "br",
+      country: "Brazil",
+      type: "city",
+    },
   },
 ];
 
@@ -119,15 +127,19 @@ test.describe("NavSearch Component", () => {
     await expect(page.getByRole("listbox")).toBeVisible();
     await expect(page.getByRole("option")).toHaveCount(2);
 
-    // Check result content
+    // Check result content - should show name and characteristics with better layout
     await expect(page.getByRole("option").first()).toContainText("São Paulo");
-    await expect(page.getByRole("option").first()).toContainText(
-      "State of São Paulo, Brazil"
-    );
+    // Should show characteristics as badges with ID prominently on the right
+    await expect(page.getByRole("option").first()).toContainText("City");
+    await expect(page.getByRole("option").first()).toContainText("Brazil");
+    await expect(page.getByRole("option").first()).toContainText("ID: 54321");
 
     await expect(page.getByRole("option").last()).toContainText(
       "São José dos Campos"
     );
+    await expect(page.getByRole("option").last()).toContainText("City");
+    await expect(page.getByRole("option").last()).toContainText("Brazil");
+    await expect(page.getByRole("option").last()).toContainText("ID: 98765");
   });
 
   test("should show no results message for empty response", async ({

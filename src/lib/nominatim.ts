@@ -7,10 +7,12 @@ import { Area } from "@/types/area";
 /**
  * Search for areas using Nominatim API
  * @param searchTerm - The search term to query
+ * @param language - The language code for the response (e.g., 'en', 'pt-BR', 'es')
  * @returns Promise<NominatimResult[]> - Array of validated Nominatim results
  */
 export async function searchAreasWithNominatim(
-  searchTerm: string
+  searchTerm: string,
+  language: string = "en"
 ): Promise<NominatimResult[]> {
   if (searchTerm.length < 3) {
     return [];
@@ -23,7 +25,7 @@ export async function searchAreasWithNominatim(
       )}&format=json&addressdetails=1&limit=10&polygon_geojson=1&osm_type=relation`,
       {
         headers: {
-          "Accept-Language": "en",
+          "Accept-Language": language,
           "User-Agent": "OSMForCities/1.0",
         },
       }
