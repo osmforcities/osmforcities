@@ -90,7 +90,7 @@ function NavSearch() {
         onSelectionChange={handleSelectionChange}
         className="relative"
       >
-        <div className="relative flex rounded-md border border-olive-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20">
+        <div className="relative flex rounded-md border border-border focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20">
           <Input
             placeholder={t("searchPlaceholder")}
             aria-label={t("searchPlaceholder")}
