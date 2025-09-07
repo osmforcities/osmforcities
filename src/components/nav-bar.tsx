@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { getTranslations } from "next-intl/server";
+import { Home } from "lucide-react";
 import HamburgerMenu from "@/components/hamburger-menu";
 import NavSearch from "@/components/nav-search";
 
@@ -16,8 +17,14 @@ export default async function NavBar() {
           <Link
             href="/"
             className="flex items-center text-lg md:text-xl font-bold text-gray-900 transition-colors hover:text-gray-700"
+            aria-label={t("brandName")}
           >
-            <span>{t("brandName")}</span>
+            {/* Mobile: Home icon button */}
+            <div className="md:hidden p-3 rounded text-gray-600 hover:text-gray-900 hover:bg-olive-100 focus:outline-none focus:ring-2 focus:ring-olive-500 focus:ring-offset-2">
+              <Home size={28} />
+            </div>
+            {/* Desktop: Brand name */}
+            <span className="hidden md:inline">{t("brandName")}</span>
           </Link>
 
           <div className="flex items-center gap-4 flex-1 justify-center max-w-md mx-2 md:mx-8">

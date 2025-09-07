@@ -52,9 +52,9 @@ export default function HamburgerMenu({
         <DialogTrigger>
           <Button
             aria-label="Open menu"
-            className="p-2 rounded text-gray-600 hover:text-gray-900 hover:bg-olive-100 focus:outline-none focus:ring-2 focus:ring-olive-500 focus:ring-offset-2"
+            className="p-3 rounded text-gray-600 hover:text-gray-900 hover:bg-olive-100 focus:outline-none focus:ring-2 focus:ring-olive-500 focus:ring-offset-2"
           >
-            <Menu size={20} />
+            <Menu size={28} />
           </Button>
 
           <ModalOverlay className="fixed inset-0 z-50 bg-black/40 data-[entering]:animate-fade-in data-[exiting]:animate-fade-out">
@@ -76,9 +76,9 @@ export default function HamburgerMenu({
                     <Button
                       slot="close"
                       aria-label="Close"
-                      className="p-2 rounded text-gray-600 hover:text-gray-900 hover:bg-olive-100 focus:outline-none focus:ring-2 focus:ring-olive-500"
+                      className="p-3 rounded text-gray-600 hover:text-gray-900 hover:bg-olive-100 focus:outline-none focus:ring-2 focus:ring-olive-500"
                     >
-                      <X size={20} />
+                      <X size={28} />
                     </Button>
                   </div>
 
