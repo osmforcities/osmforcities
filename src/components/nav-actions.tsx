@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
+import { NavLink, NavButton } from "@/components/ui/nav-link";
 
 interface NavActionsProps {
   isLoggedIn: boolean;
@@ -21,34 +21,24 @@ export default function NavActions({
   const containerClass = isMobile
     ? "flex flex-col divide-y divide-gray-300"
     : "flex items-center gap-4";
-  const linkClass = isMobile
-    ? "w-full px-4 py-4 text-left font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset text-gray-700 hover:text-gray-900 hover:bg-blue-200"
-    : "px-4 py-2 text-sm font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-gray-700 hover:text-gray-900 hover:bg-blue-200";
 
   if (isLoggedIn) {
     return (
       <div className={containerClass}>
-        <Link href="/about" className={linkClass}>
+        <NavLink href="/about" isMobile={isMobile}>
           {translations.about}
-        </Link>
-        <Link href="/preferences" className={linkClass}>
+        </NavLink>
+        <NavLink href="/preferences" isMobile={isMobile}>
           {translations.preferences}
-        </Link>
+        </NavLink>
         <form
           action="/api/auth/logout"
           method="POST"
           className={isMobile ? "w-full" : ""}
         >
-          <button
-            type="submit"
-            className={
-              isMobile
-                ? "w-full px-4 py-4 text-left font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset text-gray-700 hover:bg-red-100 hover:text-red-700 cursor-pointer"
-                : `${linkClass} bg-white border border-gray-200 hover:bg-blue-200 hover:text-gray-900`
-            }
-          >
+          <NavButton type="submit" isMobile={isMobile} variant="destructive">
             {translations.signOut}
-          </button>
+          </NavButton>
         </form>
       </div>
     );
@@ -56,15 +46,12 @@ export default function NavActions({
 
   return (
     <div className={containerClass}>
-      <Link href="/about" className={linkClass}>
+      <NavLink href="/about" isMobile={isMobile}>
         {translations.about}
-      </Link>
-      <Link
-        href="/enter"
-        className={`${linkClass} bg-blue-500 text-white hover:bg-blue-600`}
-      >
+      </NavLink>
+      <NavLink href="/enter" isMobile={isMobile} variant="primary">
         {translations.signIn}
-      </Link>
+      </NavLink>
     </div>
   );
 }

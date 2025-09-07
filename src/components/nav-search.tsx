@@ -90,16 +90,16 @@ function NavSearch() {
         onSelectionChange={handleSelectionChange}
         className="relative"
       >
-        <div className="relative flex rounded-md border border-border focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20">
+        <div className="relative flex rounded border border-border focus-within:border-olive-500 focus-within:ring-2 focus-within:ring-olive-500/20">
           <Input
             placeholder={t("searchPlaceholder")}
             aria-label={t("searchPlaceholder")}
             onKeyDown={handleKeyDown}
-            className="w-full px-3 py-1.5 text-sm border-0 rounded-l-md focus:outline-none bg-white"
+            className="w-full px-3 py-1.5 text-sm border-0 rounded-l focus:outline-none bg-white"
           />
           <Button
-            className={`px-2 py-1.5 border-0 rounded-r-md bg-white hover:bg-gray-50 focus:outline-none transition-all duration-150 ${
-              isOpen ? "bg-gray-50" : ""
+            className={`px-2 py-1.5 border-0 rounded-r bg-white hover:bg-olive-100 focus:outline-none transition-all duration-150 ${
+              isOpen ? "bg-olive-100" : ""
             }`}
             excludeFromTabOrder
           >
@@ -113,7 +113,7 @@ function NavSearch() {
         </div>
 
         <Popover
-          className="mt-1 bg-white border border-gray-200 rounded-md shadow-xl z-50 max-h-80 overflow-y-auto"
+          className="mt-1 bg-white border border-gray-200 rounded shadow-xl z-50 max-h-80 overflow-y-auto"
           style={{ width: "var(--trigger-width)" }}
         >
           <ListBox className="outline-none py-2">
@@ -126,7 +126,7 @@ function NavSearch() {
               <ListBoxItem
                 key={option.id}
                 id={option.id}
-                className="px-4 py-2.5 cursor-pointer transition-all duration-150 ease-in-out data-[hovered]:bg-blue-200 data-[hovered]:shadow-sm data-[focused]:bg-blue-200 data-[focused]:outline-none data-[selected]:bg-blue-300 data-[selected]:shadow-md data-[selected]:font-semibold"
+                className="px-4 py-2.5 cursor-pointer transition-all duration-150 ease-in-out data-[hovered]:bg-olive-100 data-[hovered]:shadow-sm data-[focused]:bg-olive-100 data-[focused]:outline-none data-[selected]:bg-olive-200 data-[selected]:shadow-md data-[selected]:font-semibold"
               >
                 <div>
                   <p className="font-medium text-sm text-gray-900">

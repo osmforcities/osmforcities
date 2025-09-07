@@ -52,7 +52,7 @@ export default function HamburgerMenu({
         <DialogTrigger>
           <Button
             aria-label="Open menu"
-            className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="p-2 rounded text-gray-600 hover:text-gray-900 hover:bg-olive-100 focus:outline-none focus:ring-2 focus:ring-olive-500 focus:ring-offset-2"
           >
             <Menu size={20} />
           </Button>
@@ -76,7 +76,7 @@ export default function HamburgerMenu({
                     <Button
                       slot="close"
                       aria-label="Close"
-                      className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="p-2 rounded text-gray-600 hover:text-gray-900 hover:bg-olive-100 focus:outline-none focus:ring-2 focus:ring-olive-500"
                     >
                       <X size={20} />
                     </Button>
