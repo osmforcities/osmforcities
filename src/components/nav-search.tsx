@@ -81,7 +81,7 @@ function NavSearch() {
   };
 
   return (
-    <div className="flex-1 max-w-md">
+    <div className="flex-1 max-w-lg">
       <ComboBox
         items={filteredOptions}
         inputValue={inputValue}
@@ -98,22 +98,25 @@ function NavSearch() {
             className="w-full px-3 py-1.5 text-sm border-0 rounded-l-md focus:outline-none bg-white"
           />
           <Button
-            className={`px-2 py-1.5 border-0 rounded-r-md bg-white hover:bg-olive-50 focus:outline-none transition-all duration-150 ${
-              isOpen ? "bg-olive-50" : ""
+            className={`px-2 py-1.5 border-0 rounded-r-md bg-white hover:bg-gray-50 focus:outline-none transition-all duration-150 ${
+              isOpen ? "bg-gray-50" : ""
             }`}
             excludeFromTabOrder
           >
             <ChevronDown
               size={16}
-              className={`text-olive-600 transition-transform duration-150 ${
+              className={`text-gray-600 transition-transform duration-150 ${
                 isOpen ? "rotate-180" : ""
               }`}
             />
           </Button>
         </div>
 
-        <Popover className="w-[--trigger-width] mt-1 bg-white border border-olive-200 rounded-md shadow-lg z-50 max-h-80 overflow-y-auto">
-          <ListBox className="outline-none py-1">
+        <Popover
+          className="mt-1 bg-white border border-gray-200 rounded-md shadow-xl z-50 max-h-80 overflow-y-auto"
+          style={{ width: "var(--trigger-width)" }}
+        >
+          <ListBox className="outline-none py-2">
             {(option: {
               id: string;
               name: string;
@@ -123,13 +126,13 @@ function NavSearch() {
               <ListBoxItem
                 key={option.id}
                 id={option.id}
-                className="px-3 py-2 cursor-pointer transition-all duration-150 ease-in-out data-[hovered]:bg-olive-50 data-[hovered]:shadow-sm data-[focused]:bg-blue-50 data-[focused]:outline-none data-[focused]:ring-2 data-[focused]:ring-blue-200 data-[focused]:ring-inset data-[selected]:bg-blue-100 data-[selected]:shadow-md data-[selected]:font-semibold"
+                className="px-4 py-2.5 cursor-pointer transition-all duration-150 ease-in-out data-[hovered]:bg-blue-200 data-[hovered]:shadow-sm data-[focused]:bg-blue-200 data-[focused]:outline-none data-[selected]:bg-blue-300 data-[selected]:shadow-md data-[selected]:font-semibold"
               >
                 <div>
-                  <p className="font-medium text-sm text-olive-700">
+                  <p className="font-medium text-sm text-gray-900">
                     {option.name}
                   </p>
-                  <p className="text-xs text-olive-600 truncate">
+                  <p className="text-xs text-gray-600 truncate">
                     {option.displayName}
                   </p>
                 </div>
