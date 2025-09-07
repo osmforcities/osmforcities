@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { getLocalizedPath } from "./config";
-import { setupAuthenticationWithSignup, cleanupTestUser } from "./utils/auth";
+import { setupAuthenticationWithSignup, cleanupTestUser, TestUser } from "./utils/auth";
 
 const mockNominatimResponse = [
   {
@@ -84,7 +84,7 @@ test.describe("Navbar", () => {
   });
 
   test.describe("Search functionality for authenticated users", () => {
-    let testUser: { id: string; email: string; name: string; password: string };
+    let testUser: TestUser;
 
     test.beforeEach(async ({ page }) => {
       // Set up authentication with unique email for each test

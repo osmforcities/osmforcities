@@ -78,3 +78,59 @@ export function convertNominatimResultToArea(result: NominatimResult): Area {
     country: result.address?.country,
   };
 }
+
+/**
+ * Fetch area details by OSM relation ID
+ * @param osmRelationId - The OSM relation ID
+ * @param language - The language code for the response (e.g., 'en', 'pt-BR', 'es')
+ * @returns Promise<Area | null> - Area details or null if not found
+ */
+export async function getAreaDetailsById(
+  osmRelationId: number,
+  language: string = "en"
+): Promise<Area | null> {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/lookup?osm_ids=R${osmRelationId}&format=json&addressdetails=1&extratags=1`,
+      {
+        headers: {
+          "Accept-Language": language,
+          "User-Agent": "OSMForCities/1.0",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    if (!data || data.length === 0) {
+      return null;
+    }
+
+    // Convert the lookup result to our Area format
+    const result = data[0];
+    return {
+      id: osmRelationId,
+      name: result.name || result.display_name.split(",")[0].trim(),
+      displayName: result.display_name,
+      osmType: "relation" as const,
+      class: result.class || "",
+      type: result.type || "",
+      addresstype: result.addresstype,
+      boundingBox: [
+        parseFloat(result.boundingbox[0]),
+        parseFloat(result.boundingbox[2]),
+        parseFloat(result.boundingbox[1]),
+        parseFloat(result.boundingbox[3]),
+      ],
+      countryCode: result.address?.country_code,
+      country: result.address?.country,
+      state: result.address?.state,
+    };
+  } catch (error) {
+    console.error("Error fetching area details:", error);
+    return null;
+  }
+}

@@ -24,11 +24,16 @@ export default async function LoginPage({
   setRequestLocale(locale);
 
   // Only show this page in test or development environment
-  if (process.env.NODE_ENV !== "test" && process.env.NODE_ENV !== "development") {
+  if (
+    process.env.NODE_ENV !== "test" &&
+    process.env.NODE_ENV !== "development"
+  ) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-semibold text-gray-900">{"Not Found"}</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            {"Not Found"}
+          </h1>
           <p className="text-gray-600 mt-2">
             {"This page is only available in test environment."}
           </p>

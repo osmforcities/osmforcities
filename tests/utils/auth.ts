@@ -17,7 +17,7 @@ export interface TestUser {
   isAdmin?: boolean;
   language?: string;
   reportsEnabled?: boolean;
-  reportsFrequency?: string;
+  reportsFrequency?: "DAILY" | "WEEKLY";
 }
 
 /**
@@ -43,8 +43,7 @@ export async function createTestUser(
       language: userData.language || "en",
       reportsEnabled: userData.reportsEnabled ?? true,
       reportsFrequency:
-        (userData.reportsFrequency as "DAILY" | "WEEKLY" | "MONTHLY") ||
-        "DAILY",
+        (userData.reportsFrequency as "DAILY" | "WEEKLY") || "DAILY",
       emailVerified: new Date(),
     },
   });

@@ -6,6 +6,14 @@ import type { Session } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
+type DatabaseUser = {
+  id: string;
+  email: string;
+  name: string | null;
+  isAdmin: boolean;
+  language: string | null;
+};
+
 function generateSecureToken(length = 32) {
   const buffer = new Uint8Array(length);
   crypto.getRandomValues(buffer);
@@ -15,13 +23,13 @@ function generateSecureToken(length = 32) {
 }
 
 // Helper function to create user object from database user
-function createUserObject(user: { id: string; email: string; name: string | null; isAdmin: boolean; language: string | null }) {
+function createUserObject(user: DatabaseUser) {
   return {
     id: user.id,
     email: user.email,
     name: user.name,
     isAdmin: user.isAdmin,
-    language: user.language,
+    language: user.language || "en", // Default to "en" if null
   };
 }
 
@@ -128,6 +136,7 @@ const {
               if (
                 hashedPassword &&
                 credentials.password &&
+                typeof credentials.password === "string" &&
                 (await bcrypt.compare(credentials.password, hashedPassword))
               ) {
                 return createUserObject(user);
