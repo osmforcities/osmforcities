@@ -31,7 +31,8 @@ export default async function AreaPage({ params }: AreaPageProps) {
           href="/"
           className="inline-flex items-center gap-2 text-olive-600 hover:text-olive-500 transition-colors"
         >
-          {"← "}{t("backToHome")}
+          {"← "}
+          {t("backToHome")}
         </Link>
       </div>
 

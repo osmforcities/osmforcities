@@ -1,6 +1,10 @@
 import { test, expect } from "@playwright/test";
 import { getLocalizedPath } from "./config";
-import { setupAuthenticationWithSignup, cleanupTestUser, TestUser } from "./utils/auth";
+import {
+  setupAuthenticationWithSignup,
+  cleanupTestUser,
+  TestUser,
+} from "./utils/auth";
 
 const mockNominatimResponse = [
   {
