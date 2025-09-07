@@ -154,6 +154,45 @@
     "someContributors": "Alguns Contribuidores",
     "singleEditor": "Editor Único"
   },
+  "AreaPage": {
+    "backToHome": "← Voltar ao Início",
+    "osmId": "ID OSM",
+    "adminLevel": "Nível Administrativo",
+    "population": "População",
+    "country": "País",
+    "availableDatasets": "Datasets Disponíveis",
+    "comingSoon": "Descoberta de datasets em breve!",
+    "comingSoonDescription": "Você poderá explorar e criar datasets para esta área diretamente desta página.",
+    "areaDetails": "Detalhes da Área",
+    "boundingBox": "Caixa Delimitadora",
+    "osmLink": "OpenStreetMap",
+    "viewOnOpenStreetMap": "Ver no OpenStreetMap →"
+  },
+  "NavSearch": {
+    "searchPlaceholder": "Buscar cidades e áreas...",
+    "noAreasFound": "Nenhuma área encontrada"
+  },
+  "AddressTypes": {
+    "city": "Cidade",
+    "town": "Cidade",
+    "village": "Vila",
+    "hamlet": "Aldeia",
+    "municipality": "Município",
+    "county": "Condado",
+    "state": "Estado",
+    "country": "País",
+    "region": "Região",
+    "province": "Província",
+    "district": "Distrito",
+    "suburb": "Subúrbio",
+    "neighbourhood": "Bairro",
+    "city_block": "Quadra",
+    "city_district": "Distrito de Cidade",
+    "administrative": "Área Administrativa",
+    "postcode": "Código Postal",
+    "road": "Rua",
+    "house_number": "Número da Casa"
+  },
   "AreaSelector": {
     "searchPlaceholder": "Digite pelo menos 3 caracteres para pesquisar",
     "searchDescription": "Apenas áreas administrativas (cidades, vilas, bairros) serão mostradas nos resultados",

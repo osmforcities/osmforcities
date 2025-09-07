@@ -1,7 +1,6 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
-import NavButton from "@/components/ui/nav-button";
+import { NavLink, NavButton } from "@/components/ui/nav-link";
 
 interface NavActionsProps {
   isLoggedIn: boolean;
@@ -11,35 +10,48 @@ interface NavActionsProps {
     signOut: string;
     signIn: string;
   };
+  isMobile?: boolean;
 }
 
-export default function NavActions({ isLoggedIn, translations }: NavActionsProps) {
+export default function NavActions({
+  isLoggedIn,
+  translations,
+  isMobile = false,
+}: NavActionsProps) {
+  const containerClass = isMobile
+    ? "flex flex-col divide-y divide-gray-300"
+    : "flex items-center gap-4";
+
   if (isLoggedIn) {
     return (
-      <>
-        <NavButton variant="ghost">
-          <Link href="/about">{translations.about}</Link>
-        </NavButton>
-        <NavButton variant="ghost">
-          <Link href="/preferences">{translations.preferences}</Link>
-        </NavButton>
-        <form action="/api/auth/logout" method="POST">
-          <NavButton type="submit" variant="secondary">
+      <div className={containerClass}>
+        <NavLink href="/about" isMobile={isMobile}>
+          {translations.about}
+        </NavLink>
+        <NavLink href="/preferences" isMobile={isMobile}>
+          {translations.preferences}
+        </NavLink>
+        <form
+          action="/api/auth/logout"
+          method="POST"
+          className={isMobile ? "w-full" : ""}
+        >
+          <NavButton type="submit" isMobile={isMobile} variant="destructive">
             {translations.signOut}
           </NavButton>
         </form>
-      </>
+      </div>
     );
   }
 
   return (
-    <>
-      <NavButton variant="ghost">
-        <Link href="/about">{translations.about}</Link>
-      </NavButton>
-      <NavButton variant="default">
-        <Link href="/enter">{translations.signIn}</Link>
-      </NavButton>
-    </>
+    <div className={containerClass}>
+      <NavLink href="/about" isMobile={isMobile}>
+        {translations.about}
+      </NavLink>
+      <NavLink href="/enter" isMobile={isMobile} variant="primary">
+        {translations.signIn}
+      </NavLink>
+    </div>
   );
 }

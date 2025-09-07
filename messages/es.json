@@ -129,6 +129,45 @@
     "continue": "Continuar",
     "emailIcon": "📧"
   },
+  "AreaPage": {
+    "backToHome": "← Volver al Inicio",
+    "osmId": "ID OSM",
+    "adminLevel": "Nivel Administrativo",
+    "population": "Población",
+    "country": "País",
+    "availableDatasets": "Conjuntos de Datos Disponibles",
+    "comingSoon": "¡Descubrimiento de conjuntos de datos próximamente!",
+    "comingSoonDescription": "Podrás explorar y crear conjuntos de datos para esta área directamente desde esta página.",
+    "areaDetails": "Detalles del Área",
+    "boundingBox": "Caja Delimitadora",
+    "osmLink": "OpenStreetMap",
+    "viewOnOpenStreetMap": "Ver en OpenStreetMap →"
+  },
+  "NavSearch": {
+    "searchPlaceholder": "Buscar ciudades y áreas...",
+    "noAreasFound": "No se encontraron áreas"
+  },
+  "AddressTypes": {
+    "city": "Ciudad",
+    "town": "Pueblo",
+    "village": "Aldea",
+    "hamlet": "Caserío",
+    "municipality": "Municipio",
+    "county": "Condado",
+    "state": "Estado",
+    "country": "País",
+    "region": "Región",
+    "province": "Provincia",
+    "district": "Distrito",
+    "suburb": "Suburbio",
+    "neighbourhood": "Barrio",
+    "city_block": "Manzana",
+    "city_district": "Distrito de Ciudad",
+    "administrative": "Área Administrativa",
+    "postcode": "Código Postal",
+    "road": "Calle",
+    "house_number": "Número de Casa"
+  },
   "AreaSelector": {
     "searchPlaceholder": "Por favor ingresa al menos 3 caracteres para buscar",
     "searchDescription": "Solo las áreas administrativas (ciudades, pueblos, vecindarios) se mostrarán en los resultados",

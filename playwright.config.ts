@@ -13,13 +13,15 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        ...devices["Desktop Chrome"],
+      },
     },
   ],
   webServer: {
-    command: "npm run dev",
+    command: "pnpm dev:test",
     url: "http://localhost:3000/api/health",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 120 * 1000,
     env: {
       NODE_ENV: "test",
