@@ -17,7 +17,8 @@ function NavSearch() {
   const t = useTranslations("NavSearch");
   const router = useRouter();
   const [inputValue, setInputValue] = useState("");
-  const [selectedKey, setSelectedKey] = useState<React.Key | null>(null);
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   // Fixed options for testing
   const FIXED_OPTIONS = [
@@ -55,11 +56,12 @@ function NavSearch() {
   );
 
   const handleSelectionChange = (key: React.Key | null) => {
-    setSelectedKey(key);
+    setSelectedKey(key as string | null);
     if (key) {
       const option = FIXED_OPTIONS.find((opt) => opt.id === key);
       if (option) {
         setInputValue("");
+        setIsOpen(false);
         router.push(`/area/${option.osmId}`);
       }
     }
@@ -69,7 +71,13 @@ function NavSearch() {
     if (e.key === "Escape") {
       setInputValue("");
       setSelectedKey(null);
+      setIsOpen(false);
     }
+  };
+
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+    setIsOpen(value.length > 0);
   };
 
   return (
@@ -77,25 +85,41 @@ function NavSearch() {
       <ComboBox
         items={filteredOptions}
         inputValue={inputValue}
-        onInputChange={setInputValue}
+        onInputChange={handleInputChange}
         selectedKey={selectedKey}
         onSelectionChange={handleSelectionChange}
         className="relative"
       >
-        <div className="relative flex">
+        <div className="relative flex rounded-md border border-olive-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20">
           <Input
             placeholder={t("searchPlaceholder")}
             aria-label={t("searchPlaceholder")}
             onKeyDown={handleKeyDown}
-            className="w-full px-3 py-1.5 text-sm border border-olive-200 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            className="w-full px-3 py-1.5 text-sm border-0 rounded-l-md focus:outline-none bg-white"
           />
-          <Button className="px-2 py-1.5 border border-l-0 border-olive-200 rounded-r-md bg-white hover:bg-olive-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            <ChevronDown size={16} className="text-olive-600" />
+          <Button
+            className={`px-2 py-1.5 border-0 rounded-r-md bg-white hover:bg-olive-50 focus:outline-none transition-all duration-150 ${
+              isOpen ? "bg-olive-50" : ""
+            }`}
+            excludeFromTabOrder
+          >
+            <ChevronDown
+              size={16}
+              className={`text-olive-600 transition-transform duration-150 ${
+                isOpen ? "rotate-180" : ""
+              }`}
+            />
           </Button>
         </div>
+
         <Popover className="w-[--trigger-width] mt-1 bg-white border border-olive-200 rounded-md shadow-lg z-50 max-h-80 overflow-y-auto">
           <ListBox className="outline-none py-1">
-            {(option: { id: string; name: string; displayName: string; osmId: number }) => (
+            {(option: {
+              id: string;
+              name: string;
+              displayName: string;
+              osmId: number;
+            }) => (
               <ListBoxItem
                 key={option.id}
                 id={option.id}
