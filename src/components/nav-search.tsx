@@ -160,7 +160,8 @@ function NavSearch() {
                             : item.state || item.country || ""}
                         </p>
                         <p className="text-xs text-gray-400 mt-1">
-                          {"ID: "}{item.id}
+                          {"ID: "}
+                          {item.id}
                         </p>
                       </div>
                       <div className="flex-shrink-0 ml-3">
