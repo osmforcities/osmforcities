@@ -2,6 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { getTranslations } from "next-intl/server";
 import NavActions from "@/components/nav-actions";
+import NavSearch from "@/components/nav-search";
 
 export default async function NavBar() {
   const session = await auth();
@@ -18,6 +19,10 @@ export default async function NavBar() {
           >
             <span>{t("brandName")}</span>
           </Link>
+
+          <div className="flex items-center gap-4 flex-1 justify-center max-w-md mx-8">
+            <NavSearch />
+          </div>
 
           <div className="flex items-center gap-4">
             <NavActions 

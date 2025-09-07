@@ -83,6 +83,9 @@ importers:
       react-map-gl:
         specifier: ^8.0.4
         version: 8.0.4(maplibre-gl@5.6.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react-stately:
+        specifier: ^3.41.0
+        version: 3.41.0(react@19.1.0)
       remark-frontmatter:
         specifier: ^5.0.0
         version: 5.0.0

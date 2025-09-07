@@ -154,6 +154,24 @@
     "someContributors": "Alguns Contribuidores",
     "singleEditor": "Editor Único"
   },
+  "AreaPage": {
+    "backToHome": "← Voltar ao Início",
+    "osmId": "ID OSM",
+    "adminLevel": "Nível Administrativo",
+    "population": "População",
+    "country": "País",
+    "availableDatasets": "Datasets Disponíveis",
+    "comingSoon": "Descoberta de datasets em breve!",
+    "comingSoonDescription": "Você poderá explorar e criar datasets para esta área diretamente desta página.",
+    "areaDetails": "Detalhes da Área",
+    "boundingBox": "Caixa Delimitadora",
+    "osmLink": "OpenStreetMap",
+    "viewOnOpenStreetMap": "Ver no OpenStreetMap →"
+  },
+  "NavSearch": {
+    "searchPlaceholder": "Buscar cidades e áreas...",
+    "noAreasFound": "Nenhuma área encontrada"
+  },
   "AreaSelector": {
     "searchPlaceholder": "Digite pelo menos 3 caracteres para pesquisar",
     "searchDescription": "Apenas áreas administrativas (cidades, vilas, bairros) serão mostradas nos resultados",

@@ -130,6 +130,24 @@
     "emailIcon": "📧"
   },
 
+  "AreaPage": {
+    "backToHome": "← Back to Home",
+    "osmId": "OSM ID",
+    "adminLevel": "Admin Level",
+    "population": "Population",
+    "country": "Country",
+    "availableDatasets": "Available Datasets",
+    "comingSoon": "Dataset discovery coming soon!",
+    "comingSoonDescription": "You'll be able to explore and create datasets for this area directly from this page.",
+    "areaDetails": "Area Details",
+    "boundingBox": "Bounding Box",
+    "osmLink": "OpenStreetMap",
+    "viewOnOpenStreetMap": "View on OpenStreetMap →"
+  },
+  "NavSearch": {
+    "searchPlaceholder": "Search cities and areas...",
+    "noAreasFound": "No areas found"
+  },
   "AreaSelector": {
     "searchPlaceholder": "Please enter at least 3 characters to search",
     "searchDescription": "Only administrative areas (cities, towns, neighborhoods) will be shown in results",

@@ -45,6 +45,7 @@
     "react-aria-components": "^1.12.1",
     "react-dom": "^19.0.0",
     "react-map-gl": "^8.0.4",
+    "react-stately": "^3.41.0",
     "remark-frontmatter": "^5.0.0",
     "remark-mdx-frontmatter": "^5.2.0",
     "tailwind-merge": "^3.3.0",
