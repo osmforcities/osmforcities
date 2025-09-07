@@ -12,10 +12,7 @@ import {
 } from "react-aria-components";
 import { useState, useMemo } from "react";
 import { Search, X } from "lucide-react";
-import {
-  searchAreasWithNominatim,
-  convertNominatimResultToArea,
-} from "@/lib/nominatim";
+import { useNominatimAreas } from "@/hooks/useNominatimSearch";
 import { Area } from "@/types/area";
 
 type EmptyResultItem = {
@@ -32,18 +29,34 @@ function NavSearch() {
   const router = useRouter();
 
   const [inputValue, setInputValue] = useState("");
-  const [areas, setAreas] = useState<Area[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
 
-  // Create items with empty state when needed
+  const {
+    data: areas = [],
+    isLoading,
+    error,
+  } = useNominatimAreas({
+    searchTerm: inputValue,
+    enabled: inputValue.length >= 3,
+  });
+
   const items = useMemo((): (Area | EmptyResultItem)[] => {
-    // Don't show dropdown for queries less than 3 characters
     if (inputValue.length < 3) {
       return [];
     }
 
+    if (error) {
+      return [
+        {
+          id: "no-results",
+          name: "No areas found",
+          displayName: "",
+          osmType: "",
+          boundingBox: [0, 0, 0, 0] as [number, number, number, number],
+        },
+      ];
+    }
+
     if (areas.length === 0 && !isLoading) {
-      // Return a special "no results" item
       return [
         {
           id: "no-results",
@@ -55,59 +68,32 @@ function NavSearch() {
       ];
     }
     return areas;
-  }, [inputValue, areas, isLoading]);
+  }, [inputValue, areas, isLoading, error]);
 
-  // Handle search input changes
-  const handleInputChange = async (value: string) => {
+  const handleInputChange = (value: string) => {
     setInputValue(value);
-
-    if (!value || value.length < 3) {
-      setAreas([]);
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const nominatimResults = await searchAreasWithNominatim(value);
-      const fetchedAreas = nominatimResults.map(convertNominatimResultToArea);
-      setAreas(fetchedAreas);
-    } catch (error) {
-      console.error("Error searching areas:", error);
-      setAreas([]);
-    } finally {
-      setIsLoading(false);
-    }
   };
 
-  // Handle user selection from search results
   const handleSearchResultSelection = (selectedKey: React.Key | null) => {
     if (selectedKey && selectedKey !== "no-results") {
       const selectedArea = areas.find(
         (area) => area.id.toString() === selectedKey
       );
       if (selectedArea) {
-        // Clear search and navigate to selected area
         setInputValue("");
-        setAreas([]);
         router.push(`/area/${selectedArea.id}`);
       }
     }
   };
 
-  // Handle keyboard interactions (Escape to clear)
   const handleSearchInputKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Escape") {
-      // Reset search state on Escape key
       setInputValue("");
-      setAreas([]);
     }
   };
 
-  // Clear search input and reset state
   const clearSearchInput = () => {
     setInputValue("");
-    setAreas([]);
   };
 
   return (
@@ -179,7 +165,8 @@ function NavSearch() {
                       <p className="text-xs text-gray-500">
                         {item.osmType.charAt(0).toUpperCase() +
                           item.osmType.slice(1)}{" "}
-                        {"ID: "}{item.id}
+                        {"ID: "}
+                        {item.id}
                       </p>
                     </div>
                   </ListBoxItem>

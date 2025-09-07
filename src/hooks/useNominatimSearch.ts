@@ -1,0 +1,59 @@
+import { useQuery } from "@tanstack/react-query";
+import { searchAreasWithNominatim } from "@/lib/nominatim";
+import { Area } from "@/types/area";
+
+type UseNominatimSearchOptions = {
+  searchTerm: string;
+  enabled?: boolean;
+};
+
+export function useNominatimSearch({
+  searchTerm,
+  enabled = true,
+}: UseNominatimSearchOptions) {
+  return useQuery({
+    queryKey: ["nominatim-search", searchTerm],
+    queryFn: () => searchAreasWithNominatim(searchTerm),
+    enabled: enabled && searchTerm.length >= 3,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+    retryDelay: 1000,
+  });
+}
+
+export function useNominatimAreas({
+  searchTerm,
+  enabled = true,
+}: UseNominatimSearchOptions): {
+  data: Area[] | undefined;
+  isLoading: boolean;
+  error: Error | null;
+  isError: boolean;
+} {
+  const { data, isLoading, error, isError } = useNominatimSearch({
+    searchTerm,
+    enabled,
+  });
+
+  const areas =
+    data?.map((result) => ({
+      id: result.osm_id,
+      name: result.name || result.display_name.split(",")[0].trim(),
+      displayName: result.display_name,
+      osmType: result.osm_type,
+      boundingBox: [
+        parseFloat(result.boundingbox[0]),
+        parseFloat(result.boundingbox[2]),
+        parseFloat(result.boundingbox[1]),
+        parseFloat(result.boundingbox[3]),
+      ],
+      countryCode: result.address?.country_code,
+    })) || [];
+
+  return {
+    data: areas,
+    isLoading,
+    error: error as Error | null,
+    isError,
+  };
+}
