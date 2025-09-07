@@ -9,4 +9,5 @@ export type Area = {
   boundingBox: [number, number, number, number];
   countryCode?: string;
   country?: string;
+  state?: string;
 };

@@ -8,12 +8,15 @@ const mockNominatimResponse = [
     osm_id: 54321,
     display_name: "São Paulo, State of São Paulo, Brazil",
     name: "São Paulo",
+    class: "place",
+    type: "city",
     boundingbox: ["-23.8", "-23.3", "-46.8", "-46.1"],
     lat: "-23.5",
     lon: "-46.6",
     address: {
       country_code: "br",
       country: "Brazil",
+      state: "State of São Paulo",
       type: "city",
     },
   },
@@ -23,12 +26,15 @@ const mockNominatimResponse = [
     osm_id: 98765,
     display_name: "São José dos Campos, State of São Paulo, Brazil",
     name: "São José dos Campos",
+    class: "place",
+    type: "city",
     boundingbox: ["-23.3", "-22.9", "-45.9", "-45.8"],
     lat: "-23.2",
     lon: "-45.9",
     address: {
       country_code: "br",
       country: "Brazil",
+      state: "State of São Paulo",
       type: "city",
     },
   },
@@ -129,16 +135,25 @@ test.describe("NavSearch Component", () => {
 
     // Check result content - should show name and characteristics with better layout
     await expect(page.getByRole("option").first()).toContainText("São Paulo");
-    // Should show characteristics as badges with ID prominently on the right
+    // Should show state and country on second line
+    await expect(page.getByRole("option").first()).toContainText(
+      "State of São Paulo, Brazil"
+    );
+    // Should show element type badge on the right
     await expect(page.getByRole("option").first()).toContainText("City");
-    await expect(page.getByRole("option").first()).toContainText("Brazil");
+    // Should show ID on third line as regular text
     await expect(page.getByRole("option").first()).toContainText("ID: 54321");
 
     await expect(page.getByRole("option").last()).toContainText(
       "São José dos Campos"
     );
+    // Should show state and country on second line
+    await expect(page.getByRole("option").last()).toContainText(
+      "State of São Paulo, Brazil"
+    );
+    // Should show element type badge on the right
     await expect(page.getByRole("option").last()).toContainText("City");
-    await expect(page.getByRole("option").last()).toContainText("Brazil");
+    // Should show ID on third line as regular text
     await expect(page.getByRole("option").last()).toContainText("ID: 98765");
   });
 

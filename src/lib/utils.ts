@@ -132,12 +132,29 @@ export function getAreaCharacteristics(
   // Add address type
   const addressType = item.addresstype || item.type;
   if (addressType) {
-    const translatedType = translateAddressType(addressType as never);
+    try {
+      const translatedType = translateAddressType(addressType as never);
 
-    // If translation returns the same key, it means it's not translated
-    // Show the original value with a fallback format
-    if (translatedType === addressType) {
-      // Convert snake_case to Title Case for better display
+      // If translation returns the same key, it means it's not translated
+      // Show the original value with a fallback format
+      if (translatedType === addressType) {
+        // Convert snake_case to Title Case for better display
+        const formattedType = addressType
+          .split("_")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+
+        characteristics.push(formattedType);
+
+        // Log untranslated address types for debugging
+        if (process.env.NODE_ENV === "development") {
+          console.warn(`Untranslated address type: ${addressType}`);
+        }
+      } else {
+        characteristics.push(translatedType);
+      }
+    } catch (error) {
+      // Fallback to formatted original value if translation fails
       const formattedType = addressType
         .split("_")
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -145,12 +162,13 @@ export function getAreaCharacteristics(
 
       characteristics.push(formattedType);
 
-      // Log untranslated address types for debugging
+      // Log translation errors for debugging
       if (process.env.NODE_ENV === "development") {
-        console.warn(`Untranslated address type: ${addressType}`);
+        console.warn(
+          `Translation error for address type "${addressType}":`,
+          error
+        );
       }
-    } else {
-      characteristics.push(translatedType);
     }
   }
 

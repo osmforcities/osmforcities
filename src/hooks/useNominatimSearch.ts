@@ -51,6 +51,7 @@ export function useNominatimAreas({
       ] as [number, number, number, number],
       countryCode: result.address?.country_code,
       country: result.address?.country,
+      state: result.address?.state,
     })) || [];
 
   return {

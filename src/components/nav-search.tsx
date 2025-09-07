@@ -154,22 +154,23 @@ function NavSearch() {
                         <p className="font-medium text-sm text-gray-900 truncate">
                           {item.name}
                         </p>
-                        <div className="flex items-center gap-1 mt-1">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-500">
-                            {
-                              getAreaCharacteristics(
-                                item,
-                                translateAddressType
-                              ).slice(-1)[0]
-                            }
-                          </span>
-                        </div>
+                        <p className="text-xs text-gray-600 mt-1">
+                          {item.state && item.country
+                            ? `${item.state}, ${item.country}`
+                            : item.state || item.country || ""}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {"ID: "}{item.id}
+                        </p>
                       </div>
                       <div className="flex-shrink-0 ml-3">
                         <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-olive-100 text-olive-800">
-                          {getAreaCharacteristics(item, translateAddressType)
-                            .slice(0, -1)
-                            .join(", ")}
+                          {
+                            getAreaCharacteristics(
+                              item,
+                              translateAddressType
+                            )[0]
+                          }
                         </span>
                       </div>
                     </div>
