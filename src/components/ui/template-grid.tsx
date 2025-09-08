@@ -139,7 +139,7 @@ export function DatasetGrid({ templates, areaId }: DatasetGridProps) {
           {(template) => (
             <GridListItem key={template.id} className="group h-full">
               <Card
-                href={`/area/${areaId}/template/${template.id}`}
+                href={`/area/${areaId}/dataset/${template.id}`}
                 description={template.description || undefined}
               >
                 <CardHeader>

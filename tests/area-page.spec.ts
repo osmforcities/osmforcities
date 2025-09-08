@@ -129,13 +129,13 @@ test.describe("Area Page", () => {
     await expect(page.locator("[data-testid='template-grid']")).toBeVisible();
 
     // Check that dataset cards are present and clickable
-    const datasetCards = page.locator("a[href*='/template/']");
+    const datasetCards = page.locator("a[href*='/dataset/']");
     await expect(datasetCards.first()).toBeVisible();
 
     // Verify dataset links have correct structure
     const firstDatasetLink = datasetCards.first();
     const href = await firstDatasetLink.getAttribute("href");
-    expect(href).toMatch(/\/area\/298470\/template\/[^\/]+$/);
+    expect(href).toMatch(/\/area\/298470\/dataset\/[^\/]+$/);
 
     // Check that dataset cards have proper content
     await expect(firstDatasetLink.locator("h3")).toBeVisible(); // Dataset name
