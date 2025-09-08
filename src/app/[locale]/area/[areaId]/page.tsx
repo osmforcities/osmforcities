@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
 import { ExternalLink } from "lucide-react";
 import { getAreaDetailsById } from "@/lib/nominatim";
+import { prisma } from "@/lib/db";
+import { DatasetGrid } from "@/components/ui/template-grid";
+import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 
 type AreaPageProps = {
   params: Promise<{
@@ -10,30 +12,52 @@ type AreaPageProps = {
   }>;
 };
 
+async function getActiveTemplates() {
+  return await prisma.template.findMany({
+    where: {
+      isActive: true,
+    },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      category: true,
+      tags: true,
+    },
+    orderBy: {
+      name: "asc",
+    },
+  });
+}
+
 export default async function AreaPage({ params }: AreaPageProps) {
   const { areaId } = await params;
   const t = await getTranslations("AreaPage");
+  const navT = await getTranslations("Navigation");
 
   const osmRelationId = parseInt(areaId, 10);
   if (isNaN(osmRelationId)) {
     notFound();
   }
 
-  const areaInfo = await getAreaDetailsById(osmRelationId);
+  const [areaInfo, templates] = await Promise.all([
+    getAreaDetailsById(osmRelationId),
+    getActiveTemplates(),
+  ]);
+
   if (!areaInfo) {
     notFound();
   }
 
+  const breadcrumbItems = [
+    { label: navT("home"), href: "/" },
+    { label: areaInfo.name },
+  ];
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-olive-600 hover:text-olive-500 transition-colors"
-        >
-          {"← "}
-          {t("backToHome")}
-        </Link>
+        <BreadcrumbNav items={breadcrumbItems} />
       </div>
 
       <div className="max-w-2xl mx-auto">
@@ -49,7 +73,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
                   : areaInfo.state || areaInfo.country || ""}
               </p>
               <p className="text-xs text-gray-400">
-                {"ID: "}
+                {t("idLabel")}
                 {areaInfo.id}
               </p>
             </div>
@@ -64,16 +88,11 @@ export default async function AreaPage({ params }: AreaPageProps) {
               {t("viewOnOpenStreetMap")}
             </a>
           </div>
-
-          <div className="border-t border-gray-200 pt-4">
-            <div className="text-sm text-gray-600">
-              <p className="mb-2">{t("comingSoon")}</p>
-              <p className="text-xs text-gray-500">
-                {t("comingSoonDescription")}
-              </p>
-            </div>
-          </div>
         </div>
+      </div>
+
+      <div className="mt-12">
+        <DatasetGrid templates={templates} areaId={areaId} />
       </div>
     </div>
   );

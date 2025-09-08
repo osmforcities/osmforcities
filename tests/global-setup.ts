@@ -26,6 +26,12 @@ async function globalSetup() {
       stdio: "inherit",
     });
 
+    console.log("Seeding test database...");
+    execSync("npx prisma db seed", {
+      env: { ...process.env, DATABASE_URL: process.env.DATABASE_URL },
+      stdio: "inherit",
+    });
+
     console.log("Test database setup complete!");
   } catch (error) {
     console.error("Failed to setup test database:", error);
