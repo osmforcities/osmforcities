@@ -4,6 +4,7 @@ import { getAreaDetailsById } from "@/lib/nominatim";
 import { prisma } from "@/lib/db";
 import { DatasetGrid } from "@/components/ui/template-grid";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
+import { ExternalLink } from "lucide-react";
 
 type AreaPageProps = {
   params: Promise<{
@@ -78,10 +79,11 @@ export default async function AreaPage({ params }: AreaPageProps) {
                 href={`https://www.openstreetmap.org/relation/${areaInfo.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-gray-500 hover:text-olive-600 transition-colors"
+                className="inline-flex items-center gap-1 text-sm text-link hover:text-link-active hover:underline transition-colors"
               >
                 {t("idLabel")}
                 {areaInfo.id}
+                <ExternalLink className="w-3 h-3" />
               </a>
             </div>
           </div>
