@@ -223,4 +223,12 @@
   .animate-slide-out {
     animation: slide-out 300ms ease-out;
   }
+
+  /* Line clamp utilities for Design Atlas card patterns */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }

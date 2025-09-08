@@ -1,8 +1,8 @@
 "use client";
 
 import { GridList, GridListItem } from "react-aria-components";
-import { Link as NextLink } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { Card, CardHeader, CardFooter } from "@/components/ui/card";
 import {
   Building2,
   MapPin,
@@ -72,34 +72,28 @@ export function DatasetGrid({ templates, areaId }: DatasetGridProps) {
         data-testid="template-grid"
       >
         {(template) => (
-          <GridListItem key={template.id} className="group">
-            <NextLink
+          <GridListItem key={template.id} className="group h-full">
+            <Card
               href={`/area/${areaId}/template/${template.id}`}
-              className="block"
+              description={template.description || undefined}
             >
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 hover:border-olive-300 hover:bg-olive-50 transition-all duration-200 group-hover:shadow-md">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-olive-100 text-olive-600 rounded-lg">
-                      {getCategoryIcon(template.category)}
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900 group-hover:text-olive-700">
-                        {template.name}
-                      </h3>
-                      <p className="text-sm text-gray-500 capitalize">
-                        {template.category}
-                      </p>
-                    </div>
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-olive-100 text-olive-600 rounded-lg">
+                    {getCategoryIcon(template.category)}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 group-hover:text-olive-700">
+                      {template.name}
+                    </h3>
+                    <p className="text-sm text-gray-500 capitalize">
+                      {template.category}
+                    </p>
                   </div>
                 </div>
+              </CardHeader>
 
-                {template.description && (
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                    {template.description}
-                  </p>
-                )}
-
+              <CardFooter>
                 {template.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {template.tags.slice(0, 3).map((tag) => (
@@ -119,8 +113,8 @@ export function DatasetGrid({ templates, areaId }: DatasetGridProps) {
                     )}
                   </div>
                 )}
-              </div>
-            </NextLink>
+              </CardFooter>
+            </Card>
           </GridListItem>
         )}
       </GridList>
