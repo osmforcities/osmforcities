@@ -58,10 +58,12 @@ export function DatasetFullMap({ dataset }: DatasetFullMapProps) {
     <div className="flex flex-col h-full">
       {/* Map */}
       <div className="flex-1 relative">
-        {/* Legend */}
-        <div className="absolute z-10 top-4 right-4">
-          <AgeLegend />
-        </div>
+        {hasFilteredData && (
+          /* Legend */
+          <div className="absolute z-10 top-4 right-4">
+            <AgeLegend />
+          </div>
+        )}
 
         {hasFilteredData ? (
           <Map
