@@ -22,7 +22,7 @@ type InfoRowData = {
 };
 
 export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
-  const t = useTranslations("DatasetExplorer");
+  const t = useTranslations("DatasetPage");
   const pageT = useTranslations("DatasetPage");
 
   const basicInfoRows: InfoRowData[] = [

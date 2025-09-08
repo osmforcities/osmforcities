@@ -33,7 +33,7 @@ type DatasetSidePanelProps = {
 
 export async function DatasetSidePanel({ dataset }: DatasetSidePanelProps) {
   const t = await getTranslations("DatasetPage");
-  const explorerT = await getTranslations("DatasetExplorer");
+  const explorerT = await getTranslations("DatasetPage");
 
   return (
     <div className="space-y-6">

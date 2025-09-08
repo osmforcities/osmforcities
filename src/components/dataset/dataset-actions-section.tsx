@@ -12,7 +12,7 @@ type DatasetActionsSectionProps = {
 };
 
 export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
-  const t = useTranslations("DatasetExplorer");
+  const t = useTranslations("DatasetPage");
   const { downloadDataset } = useDatasetDownload();
   const { watchDataset, unwatchDataset, refreshDataset, isLoading } =
     useDatasetActions();

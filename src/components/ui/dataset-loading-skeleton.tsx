@@ -1,36 +1,58 @@
 export function DatasetLoadingSkeleton() {
   return (
-    <div className="flex" data-testid="dataset-loading-skeleton">
+    <div className="flex max-w-7xl mx-auto" data-testid="dataset-loading-skeleton">
+      {/* Info Panel */}
       <section
         className="w-96 flex flex-col"
         style={{ height: "calc(100vh - var(--nav-height))" }}
       >
         <div className="flex-1 flex flex-col pl-6 pr-3 py-4 space-y-6">
+          {/* Dataset Title */}
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-3/4 mb-3"></div>
-            <div className="h-5 bg-gray-200 rounded w-1/2 mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+            <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
           </div>
 
+          {/* Basic Information */}
           <div className="animate-pulse">
-            <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
+            <div className="h-5 bg-gray-200 rounded w-1/3 mb-4"></div>
             <div className="space-y-3">
-              <div className="h-4 bg-gray-200 rounded w-full"></div>
-              <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-              <div className="h-4 bg-gray-200 rounded w-4/5"></div>
+              <div className="flex justify-between items-center py-2">
+                <div className="h-4 bg-gray-200 rounded w-16"></div>
+                <div className="h-6 bg-gray-200 rounded w-20"></div>
+              </div>
+              <div className="flex justify-between items-center py-2">
+                <div className="h-4 bg-gray-200 rounded w-12"></div>
+                <div className="h-6 bg-gray-200 rounded w-16"></div>
+              </div>
+              <div className="flex justify-between items-center py-2">
+                <div className="h-4 bg-gray-200 rounded w-20"></div>
+                <div className="h-6 bg-gray-200 rounded w-18"></div>
+              </div>
             </div>
           </div>
 
+          {/* Data Metrics */}
           <div className="animate-pulse">
-            <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
-            <div className="space-y-2">
-              <div className="h-3 bg-gray-200 rounded w-full"></div>
-              <div className="h-3 bg-gray-200 rounded w-3/4"></div>
-              <div className="h-3 bg-gray-200 rounded w-5/6"></div>
+            <div className="h-5 bg-gray-200 rounded w-1/4 mb-4"></div>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center py-2">
+                <div className="h-4 bg-gray-200 rounded w-24"></div>
+                <div className="h-4 bg-gray-200 rounded w-12"></div>
+              </div>
+              <div className="flex justify-between items-center py-2">
+                <div className="h-4 bg-gray-200 rounded w-20"></div>
+                <div className="h-4 bg-gray-200 rounded w-16"></div>
+              </div>
+              <div className="flex justify-between items-center py-2">
+                <div className="h-4 bg-gray-200 rounded w-28"></div>
+                <div className="h-4 bg-gray-200 rounded w-14"></div>
+              </div>
             </div>
           </div>
         </div>
 
+        {/* Actions Section */}
         <div className="px-6 py-4 border-t border-gray-200">
           <div className="animate-pulse">
             <div className="h-10 bg-gray-200 rounded w-full mb-3"></div>
@@ -42,7 +64,8 @@ export function DatasetLoadingSkeleton() {
         </div>
       </section>
 
-      <div className="flex-1">
+      {/* Map Panel */}
+      <div className="w-[800px]">
         <div className="h-full bg-gray-100 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin h-12 w-12 border-4 border-gray-300 border-t-blue-600 rounded-full mx-auto mb-4"></div>

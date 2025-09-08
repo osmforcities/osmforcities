@@ -302,7 +302,7 @@
   "DatasetWatchButton": {
     "privateDataset": "Conjunto de Dados Privado"
   },
-  "DatasetExplorer": {
+  "DatasetPage": {
     "downloadData": "Baixar Dados",
     "datasetDetails": "Detalhes do Conjunto de Dados",
     "datasetDescription": "Este conjunto de dados monitora características de {template} em {city}.",
@@ -328,7 +328,26 @@
     "refreshData": "Atualizar Dados",
     "refreshing": "Atualizando...",
     "watch": "Seguir",
-    "unwatch": "Parar de Seguir"
+    "unwatch": "Parar de Seguir",
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "public": "Público",
+    "private": "Privado",
+    "totalFeatures": "Características Totais",
+    "totalEditors": "Editores Totais",
+    "changesets": "Conjuntos de Mudanças",
+    "avgAgeDays": "Idade Média (dias)",
+    "datasetStats": "Estatísticas do Conjunto de Dados",
+    "veryActive": "Muito Ativo",
+    "lowActivity": "Baixa Atividade",
+    "strongCommunity": "Comunidade Forte",
+    "someContributors": "Alguns Contribuidores",
+    "singleEditor": "Editor Único",
+    "activityLevel": "Nível de Atividade",
+    "communityStrength": "Força da Comunidade",
+    "communityActivity": "Atividade da Comunidade",
+    "overallAssessment": "Avaliação Geral",
+    "lastChecked": "Última Verificação:"
   },
   "PublicDatasetsFeed": {
     "noDatasetsYet": "Nenhum conjunto de dados público ainda.",

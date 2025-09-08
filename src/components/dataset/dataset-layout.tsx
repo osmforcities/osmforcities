@@ -1,4 +1,4 @@
-type ExplorerLayoutProps = {
+type DatasetLayoutProps = {
   infoPanel: React.ReactNode;
   mapPanel: React.ReactNode;
 };
@@ -14,7 +14,7 @@ const InfoPanel = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export function ExplorerLayout({ infoPanel, mapPanel }: ExplorerLayoutProps) {
+export function DatasetLayout({ infoPanel, mapPanel }: DatasetLayoutProps) {
   return (
     <div className="flex max-w-7xl mx-auto">
       <InfoPanel>{infoPanel}</InfoPanel>
