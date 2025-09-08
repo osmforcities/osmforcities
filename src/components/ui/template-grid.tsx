@@ -45,22 +45,13 @@ export function DatasetGrid({ templates, areaId }: DatasetGridProps) {
 
   if (templates.length === 0) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-            {t("availableDatasets")}
-          </h2>
-          <p className="text-gray-600">{t("chooseDatasetDescription")}</p>
-        </div>
-
-        <div className="flex flex-col items-center justify-center py-12 px-6 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-          <FileX className="w-12 h-12 text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+      <div className="text-center py-12">
+        <div className="flex flex-col items-center justify-center">
+          <FileX className="w-16 h-16 text-gray-300 mb-4" />
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
             {t("noDatasetsAvailable")}
           </h3>
-          <p className="text-gray-600 text-center max-w-md">
-            {t("noDatasetsDescription")}
-          </p>
+          <p className="text-gray-600 max-w-md">{t("noDatasetsDescription")}</p>
         </div>
       </div>
     );
@@ -77,7 +68,7 @@ export function DatasetGrid({ templates, areaId }: DatasetGridProps) {
 
       <GridList
         items={templates}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
         data-testid="template-grid"
       >
         {(template) => (
@@ -86,7 +77,7 @@ export function DatasetGrid({ templates, areaId }: DatasetGridProps) {
               href={`/area/${areaId}/template/${template.id}`}
               className="block"
             >
-              <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-olive-300 hover:shadow-md transition-all duration-200 group-hover:bg-olive-50">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 hover:border-olive-300 hover:bg-olive-50 transition-all duration-200 group-hover:shadow-md">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-olive-100 text-olive-600 rounded-lg">

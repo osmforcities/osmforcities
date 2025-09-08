@@ -55,24 +55,25 @@ export default async function AreaPage({ params }: AreaPageProps) {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <BreadcrumbNav items={breadcrumbItems} />
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <BreadcrumbNav items={breadcrumbItems} />
+        </div>
 
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg border border-olive-200 p-6">
-          <div className="flex items-start justify-between mb-4">
+        {/* Area Header Card */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-8">
+          <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+              <h1 className="text-3xl font-bold text-gray-900 mb-3">
                 {areaInfo.name}
               </h1>
-              <p className="text-sm text-gray-600 mb-2">
+              <p className="text-lg text-gray-600 mb-2">
                 {areaInfo.state && areaInfo.country
                   ? `${areaInfo.state}, ${areaInfo.country}`
                   : areaInfo.state || areaInfo.country || ""}
               </p>
-              <p className="text-xs text-gray-400">
+              <p className="text-sm text-gray-500">
                 {t("idLabel")}
                 {areaInfo.id}
               </p>
@@ -82,17 +83,18 @@ export default async function AreaPage({ params }: AreaPageProps) {
               href={`https://www.openstreetmap.org/relation/${areaInfo.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-olive-600 text-white rounded-lg hover:bg-olive-700 transition-colors text-sm font-medium"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-olive-600 text-white rounded-lg hover:bg-olive-700 transition-colors font-medium shadow-sm"
             >
-              <ExternalLink size={16} />
+              <ExternalLink size={18} />
               {t("viewOnOpenStreetMap")}
             </a>
           </div>
         </div>
-      </div>
 
-      <div className="mt-12">
-        <DatasetGrid templates={templates} areaId={areaId} />
+        {/* Datasets Section */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+          <DatasetGrid templates={templates} areaId={areaId} />
+        </div>
       </div>
     </div>
   );
