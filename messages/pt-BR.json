@@ -165,6 +165,8 @@
     "noDatasetsAvailable": "Nenhum dataset disponível",
     "noDatasetsDescription": "Atualmente não há datasets disponíveis para esta área. Volte mais tarde ou entre em contato conosco se precisar de tipos de dados específicos.",
     "moreTags": "+{count} mais",
+    "dataset": "dataset",
+    "datasets": "datasets",
     "idLabel": "ID: ",
     "comingSoon": "Descoberta de datasets em breve!",
     "comingSoonDescription": "Você poderá explorar e criar datasets para esta área diretamente desta página.",

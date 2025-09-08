@@ -42,3 +42,14 @@ The area search feature integrates with the area page at `/area/{osmRelationId}`
 - **Empty State**: User-friendly message when no datasets are available
 
 The area page uses the `DatasetGrid` component to display templates as datasets, providing a seamless user experience for discovering and accessing data for any geographic area.
+
+### Dataset Filtering
+
+The `DatasetGrid` component (`osmforcities/src/components/ui/template-grid.tsx`) includes:
+
+- **Category Pills**: Filter datasets by category (education, healthcare, transportation, etc.)
+- **Text Search**: Search across dataset names, descriptions, and tags
+- **Combined Filtering**: Both filters work together for precise results
+- **Responsive Design**: Works across all screen sizes
+
+**Potential Enhancements**: Custom category icons for better visual recognition

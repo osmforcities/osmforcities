@@ -140,6 +140,8 @@
     "noDatasetsAvailable": "No hay conjuntos de datos disponibles",
     "noDatasetsDescription": "Actualmente no hay conjuntos de datos disponibles para esta área. Vuelve más tarde o contáctanos si necesitas tipos de datos específicos.",
     "moreTags": "+{count} más",
+    "dataset": "conjunto de datos",
+    "datasets": "conjuntos de datos",
     "idLabel": "ID: ",
     "comingSoon": "¡Descubrimiento de conjuntos de datos próximamente!",
     "comingSoonDescription": "Podrás explorar y crear conjuntos de datos para esta área directamente desde esta página.",
