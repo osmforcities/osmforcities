@@ -2,8 +2,6 @@
 
 import type { Dataset } from "@/schemas/dataset";
 import { useTranslations } from "next-intl";
-import { ArrowLeft } from "lucide-react";
-import { Link } from "@/i18n/navigation";
 import {
   Table,
   TableBody,
@@ -43,14 +41,6 @@ export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
 
   return (
     <div className="space-y-4">
-      <Link
-        href="/"
-        className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        {t("backToDatasets")}
-      </Link>
-
       <h2 className="text-lg font-semibold leading-tight">
         {t("datasetTitle", {
           template: dataset.template.name,

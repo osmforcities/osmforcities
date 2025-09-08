@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { createTestUser, setupAuthenticationWithLogin } from "./utils/auth";
 import { PrismaClient } from "@prisma/client";
 
-test.describe("Dataset Explorer Page", () => {
+test.describe("Dataset Page", () => {
   test.beforeEach(async ({ page }) => {
     // Create and login test user
     const prisma = new PrismaClient();
@@ -37,5 +37,12 @@ test.describe("Dataset Explorer Page", () => {
       await page.goto(`/area/298470/dataset/${invalidId}`);
       await expect(page.locator("text=Template Not Found")).toBeVisible();
     }
+  });
+
+  test("should display breadcrumb navigation", async ({ page }) => {
+    await page.goto("/area/298470/dataset/bicycle-parking");
+
+    // Should show breadcrumb navigation
+    await expect(page.locator("[data-testid='breadcrumb-nav']")).toBeVisible();
   });
 });

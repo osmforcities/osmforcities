@@ -1,8 +1,6 @@
-import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { getTranslations } from "next-intl/server";
 import {
-  ArrowLeft,
   Users,
   Activity,
   Calendar,
@@ -41,13 +39,6 @@ export async function DatasetSidePanel({ dataset }: DatasetSidePanelProps) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <Button variant="ghost" size="sm" asChild className="mb-4">
-          <Link href="/" className="flex items-center gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            {t("backToHome")}
-          </Link>
-        </Button>
-
         <h1 className="text-2xl font-bold mb-2">{dataset.template.name}</h1>
 
         <div className="flex items-center gap-2 text-lg text-muted-foreground mb-3">
