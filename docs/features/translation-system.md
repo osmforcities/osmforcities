@@ -20,6 +20,30 @@ messages/
 └── en.d.json.ts     # TypeScript definitions
 ```
 
+### ⚠️ Important: Reading Translation Files
+
+**Never use `tail` or `head` commands when reading translation files!**
+
+Translation files are JSON objects where keys can appear anywhere in the file. Using `tail` or `head` will only show you a portion of the file and you might miss important keys or see incomplete JSON structure.
+
+**✅ Correct approach:**
+
+```bash
+# Use grep to search for specific keys
+grep -n "availableDatasets" messages/en.json
+
+# Or read the entire file
+cat messages/en.json
+```
+
+**❌ Avoid:**
+
+```bash
+# Don't use tail/head - you'll miss keys!
+tail -20 messages/en.json
+head -10 messages/en.json
+```
+
 ## Translation Keys Structure
 
 Translations are organized by feature/page sections:
