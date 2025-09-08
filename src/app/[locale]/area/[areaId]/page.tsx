@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ExternalLink } from "lucide-react";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { prisma } from "@/lib/db";
 import { DatasetGrid } from "@/components/ui/template-grid";
@@ -51,6 +50,8 @@ export default async function AreaPage({ params }: AreaPageProps) {
 
   const breadcrumbItems = [
     { label: navT("home"), href: "/" },
+    { label: areaInfo.country || "Area" },
+    ...(areaInfo.state ? [{ label: areaInfo.state }] : []),
     { label: areaInfo.name },
   ];
 
@@ -73,21 +74,16 @@ export default async function AreaPage({ params }: AreaPageProps) {
                   ? `${areaInfo.state}, ${areaInfo.country}`
                   : areaInfo.state || areaInfo.country || ""}
               </p>
-              <p className="text-sm text-gray-500">
+              <a
+                href={`https://www.openstreetmap.org/relation/${areaInfo.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-gray-500 hover:text-olive-600 transition-colors"
+              >
                 {t("idLabel")}
                 {areaInfo.id}
-              </p>
+              </a>
             </div>
-
-            <a
-              href={`https://www.openstreetmap.org/relation/${areaInfo.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-olive-600 text-white rounded-lg hover:bg-olive-700 transition-colors font-medium shadow-sm"
-            >
-              <ExternalLink size={18} />
-              {t("viewOnOpenStreetMap")}
-            </a>
           </div>
         </div>
 
