@@ -120,6 +120,7 @@ This project's documentation is an ongoing effort. You can find more detailed in
 
 - [Area Search Feature](./docs/features/area-search.md)
 - [Translation System](./docs/features/translation-system.md)
+- [Design Atlas Integration (UI Library)](./docs/features/design-atlas-integration.md)
 
 ### Contributing to Documentation
 
