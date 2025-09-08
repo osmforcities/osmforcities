@@ -22,13 +22,6 @@ async function getWatchedDatasets(userId: string) {
         include: {
           template: true,
           area: true,
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
-          },
           _count: {
             select: { watchers: true },
           },
@@ -76,23 +69,13 @@ export default async function Home() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Welcome Header Card */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-8">
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0">
-              <h1 className="text-3xl font-bold text-gray-900 mb-3">
-                {"Welcome back, "}{user.name || user.email?.split("@")[0]}{"!"}
-              </h1>
-              <p className="text-lg text-gray-600 mb-2">
-                {"Here are the datasets you're following"}
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <Button variant="outline" asChild>
-                <Link href="/public">{"Browse Public Datasets"}</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/my-datasets/create">{"Create Dataset"}</Link>
-              </Button>
-            </div>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-3xl font-bold text-gray-900 mb-3">
+              {"Dashboard"}
+            </h1>
+            <p className="text-lg text-gray-600 mb-2">
+              {"Here are the datasets you're following"}
+            </p>
           </div>
         </div>
 

@@ -2,13 +2,14 @@
 
 import { GridList, GridListItem } from "react-aria-components";
 import { Card, CardHeader, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
 import { getCategoryIcon } from "@/lib/category-icons";
 
 type Dataset = {
   id: string;
   cityName: string;
   isActive: boolean;
-  isPublic: boolean;
   dataCount: number;
   template: {
     name: string;
@@ -16,10 +17,6 @@ type Dataset = {
   };
   area: {
     countryCode: string | null;
-  };
-  user?: {
-    name: string | null;
-    email: string;
   };
   _count?: {
     watchers: number;
@@ -66,9 +63,14 @@ export function DashboardGrid({ datasets }: DashboardGridProps) {
             {"No datasets followed yet"}
           </h3>
           <p className="text-gray-600 max-w-md mb-6">
-            {"Start following datasets to see them here. Browse public"}
-            {" datasets or create your own."}
+            {"Start following datasets to see them here. "}
+            {"Search for cities to discover available datasets."}
           </p>
+          <div className="flex gap-3">
+            <Button size="sm" asChild>
+              <Link href="/search">{"Search Cities"}</Link>
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -94,7 +96,7 @@ export function DashboardGrid({ datasets }: DashboardGridProps) {
         {(dataset) => (
           <GridListItem key={dataset.id} className="group h-full">
             <Card
-              href={`/dataset/${dataset.id}`}
+              href={`/area/${dataset.area.id}/dataset/${dataset.template.id}`}
               description={`${dataset.template.category} dataset for ${dataset.cityName}`}
             >
               <CardHeader>
