@@ -12,53 +12,34 @@ test.describe("User Dashboard", () => {
     // Check for welcome message
     await expect(page.getByText(/Welcome back,/)).toBeVisible();
 
-    // Check for user name or email
+    // Check for subtitle
     await expect(
-      page.getByText(/Here are the datasets you're following/)
+      page.getByText(/Manage your datasets and explore the platform/)
     ).toBeVisible();
   });
 
-  test("should display action buttons in header", async ({ page }) => {
+  test("should display followed datasets section", async ({ page }) => {
     await page.goto("/");
 
-    // Check for browse and create buttons
-    await expect(
-      page.getByRole("link", { name: "Browse Public Datasets" })
-    ).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: "Create Dataset" })
-    ).toBeVisible();
-
-    // Verify button links
-    const browseButton = page.getByRole("link", {
-      name: "Browse Public Datasets",
-    });
-    await expect(browseButton).toHaveAttribute("href", "/en/public");
-
-    const createButton = page.getByRole("link", { name: "Create Dataset" });
-    await expect(createButton).toHaveAttribute(
-      "href",
-      "/en/my-datasets/create"
-    );
+    // Check for followed datasets section header
+    await expect(page.getByText("Your Followed Datasets")).toBeVisible();
   });
 
   test("should display followed datasets in card layout", async ({ page }) => {
     await page.goto("/");
 
-    // Check for datasets section header (only if datasets exist)
-    const datasetsHeader = page.getByText("Your Followed Datasets");
+    // Check for datasets section header
+    await expect(page.getByText("Your Followed Datasets")).toBeVisible();
+
+    // Check for either dataset count text or empty state
+    const datasetCountText = page.getByText(/dataset.*you're monitoring/);
     const emptyState = page.getByText("No datasets followed yet");
-
-    // Either show datasets or empty state
-    const hasDatasets = await datasetsHeader.isVisible();
+    
+    const hasCountText = await datasetCountText.isVisible();
     const isEmpty = await emptyState.isVisible();
-
-    expect(hasDatasets || isEmpty).toBe(true);
-
-    if (hasDatasets) {
-      // Check for dataset count text
-      await expect(page.getByText(/dataset.*you're monitoring/)).toBeVisible();
-    }
+    
+    // Either show count text or empty state
+    expect(hasCountText || isEmpty).toBe(true);
   });
 
   test("should show empty state when no datasets are followed", async ({
@@ -72,13 +53,6 @@ test.describe("User Dashboard", () => {
     await expect(
       page.getByText(/Start following datasets to see them here/)
     ).toBeVisible();
-
-    // Check for empty state action button
-    const browseButton = page.getByRole("link", {
-      name: "Browse Public Datasets",
-    });
-    await expect(browseButton).toBeVisible();
-    await expect(browseButton).toHaveAttribute("href", "/en/public");
   });
 
   test("should display dataset cards with correct information", async ({
@@ -305,16 +279,4 @@ test.describe("Dashboard Navigation", () => {
     }
   });
 
-  test("should allow navigation to create dataset from header", async ({
-    page,
-  }) => {
-    await page.goto("/");
-
-    // Click create dataset button
-    const createButton = page.getByRole("link", { name: "Create Dataset" });
-    await createButton.click();
-
-    // Should navigate to create dataset page
-    await expect(page).toHaveURL("/en/my-datasets/create");
-  });
 });

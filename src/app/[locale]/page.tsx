@@ -38,6 +38,7 @@ export default async function Home() {
   const session = await auth();
   const user = session?.user || null;
   const t = await getTranslations("Index");
+  const tabT = await getTranslations("TabLayout");
 
   if (!user) {
     return (
@@ -71,16 +72,19 @@ export default async function Home() {
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-8">
           <div className="flex-1 min-w-0">
             <h1 className="text-3xl font-bold text-gray-900 mb-3">
-              {"Dashboard"}
+              {tabT("welcomeBack")}{", "}{user.name || user.email}
             </h1>
             <p className="text-lg text-gray-600 mb-2">
-              {"Here are the datasets you're following"}
+              {tabT("manageDatasetsSubtitle")}
             </p>
           </div>
         </div>
 
         {/* Followed Datasets Section */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">
+            {"Your Followed Datasets"}
+          </h2>
           <DashboardGrid datasets={watchedDatasets} />
         </div>
       </div>

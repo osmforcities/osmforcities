@@ -12,10 +12,12 @@ type Dataset = {
   isActive: boolean;
   dataCount: number;
   template: {
+    id: string;
     name: string;
     category: string;
   };
   area: {
+    id: number;
     countryCode: string | null;
   };
   _count?: {
@@ -79,9 +81,6 @@ export function DashboardGrid({ datasets }: DashboardGridProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-          {"Your Followed Datasets"}
-        </h2>
         <p className="text-gray-600">
           {datasets.length} {"dataset"}
           {datasets.length !== 1 ? "s" : ""} {"you're monitoring"}
