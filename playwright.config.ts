@@ -23,12 +23,6 @@ export default defineConfig({
     url: "http://localhost:3000/api/health",
     reuseExistingServer: true,
     timeout: 120 * 1000,
-    env: {
-      NODE_ENV: "test",
-      DATABASE_URL:
-        process.env.DATABASE_URL ||
-        "postgresql://postgres@localhost:5433/osmforcities-test",
-    },
   },
   globalSetup: require.resolve("./tests/global-setup.ts"),
 });
