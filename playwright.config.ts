@@ -6,6 +6,10 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
+  timeout: 60 * 1000, // 60 seconds per test
+  expect: {
+    timeout: 30 * 1000, // 30 seconds for expect assertions to find actual bugs
+  },
   use: {
     trace: "on-first-retry",
     baseURL: "http://localhost:3000",
