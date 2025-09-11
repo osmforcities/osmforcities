@@ -2,11 +2,6 @@ import { Metadata } from "next";
 import LoginForm from "./login-form";
 import { setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
-import { routing } from "@/i18n/routing";
-
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -23,11 +18,8 @@ export default async function LoginPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // Only show this page in test or development environment
-  if (
-    process.env.NODE_ENV !== "test" &&
-    process.env.NODE_ENV !== "development"
-  ) {
+  // Only show this page when password authentication is enabled
+  if (process.env.ENABLE_PASSWORD_AUTH !== "true") {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -35,7 +27,7 @@ export default async function LoginPage({
             {"Not Found"}
           </h1>
           <p className="text-gray-600 mt-2">
-            {"This page is only available in test environment."}
+            {"Password authentication is not enabled."}
           </p>
         </div>
       </div>

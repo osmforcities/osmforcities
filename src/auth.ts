@@ -86,10 +86,9 @@ const {
         return createUserObject(user);
       },
     }),
-    // Password providers for test and development environments
-    // Note: Development mode is included for local testing convenience
-    ...(process.env.NODE_ENV === "test" ||
-    process.env.NODE_ENV === "development"
+    // Password providers enabled via ENABLE_PASSWORD_AUTH environment variable
+    // This allows password authentication in any environment (test, dev, or production builds)
+    ...(process.env.ENABLE_PASSWORD_AUTH === "true"
       ? [
           Credentials({
             id: "test-password",

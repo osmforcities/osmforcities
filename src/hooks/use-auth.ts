@@ -23,12 +23,11 @@ export function useAuth() {
   };
 
   const signup = async (email: string, password: string, name: string) => {
-    // Only allow in test or development environment
-    if (
-      process.env.NODE_ENV !== "test" &&
-      process.env.NODE_ENV !== "development"
-    ) {
-      throw new Error("Signup not available in production");
+    // Only allow when password authentication is enabled
+    if (process.env.ENABLE_PASSWORD_AUTH !== "true") {
+      throw new Error(
+        "Signup not available - password authentication disabled"
+      );
     }
 
     // Check if user already exists
