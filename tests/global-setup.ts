@@ -12,6 +12,9 @@ async function globalSetup() {
   // Load environment variables from .env.test
   const projectDir = process.cwd();
   loadEnvConfig(projectDir);
+  
+  // Ensure DATABASE_URL is set properly for CI
+  console.log("Using DATABASE_URL:", process.env.DATABASE_URL);
 
   try {
     console.log("Resetting test database...");
