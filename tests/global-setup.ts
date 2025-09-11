@@ -44,9 +44,10 @@ async function globalSetup() {
 
     console.log("🎉 Test database setup complete!");
   } catch (error) {
-    console.error("❌ Database setup failed at step:", error.message);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("❌ Database setup failed at step:", errorMessage);
     console.error("Full error details:", error);
-    throw new Error(`Database setup failed: ${error.message}`);
+    throw new Error(`Database setup failed: ${errorMessage}`);
   }
 }
 
