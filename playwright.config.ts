@@ -23,7 +23,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm dev:test",
+    command: "NODE_ENV=test ENABLE_PASSWORD_AUTH=true pnpm dev",
     url: "http://localhost:3000/api/health",
     reuseExistingServer: true,
     timeout: 120 * 1000,
