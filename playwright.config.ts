@@ -27,6 +27,8 @@ export default defineConfig({
     url: "http://localhost:3000/api/health",
     reuseExistingServer: true,
     timeout: 120 * 1000,
+    stdout: 'pipe',
+    stderr: 'pipe',
   },
   globalSetup: require.resolve("./tests/global-setup.ts"),
 });
