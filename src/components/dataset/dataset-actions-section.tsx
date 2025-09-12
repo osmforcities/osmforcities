@@ -50,7 +50,6 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
       const result = await refreshDataset(dataset.id);
       if (result.success) {
         // Optionally show success message or update UI
-        console.log("Dataset refreshed successfully");
       } else {
         console.error("Failed to refresh dataset:", result.error);
       }

@@ -63,7 +63,6 @@ export async function POST(req: NextRequest) {
 
     for (const dataset of datasetsToUpdate) {
       try {
-        console.log(`Updating dataset ${dataset.id} (${dataset.cityName})`);
 
         // Replace the OSM_RELATION_ID placeholder with the actual area ID
         const queryString = dataset.template.overpassQuery.replace(
@@ -97,7 +96,6 @@ export async function POST(req: NextRequest) {
         });
 
         results.successful++;
-        console.log(`✅ Successfully updated dataset ${dataset.id}`);
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error";
