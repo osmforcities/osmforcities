@@ -41,6 +41,13 @@
   --color-blue-500: var(--core-global-colors-blue-500);
   --color-blue-600: var(--core-global-colors-blue-600);
   --color-blue-700: var(--core-global-colors-blue-700);
+
+  /* Design Atlas Link Colors */
+  --color-link: var(--core-global-colors-blue-500);
+  --color-link-active: var(--core-global-colors-blue-600);
+  --color-link-visited: #7c3aed;
+  /* Purple 600 */
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -215,5 +222,13 @@
 
   .animate-slide-out {
     animation: slide-out 300ms ease-out;
+  }
+
+  /* Line clamp utilities for Design Atlas card patterns */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 }

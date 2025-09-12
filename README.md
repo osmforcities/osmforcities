@@ -114,6 +114,23 @@ pnpm i18n:check:fix
 
 The i18n check runs automatically in CI/CD and before commits when translation files are modified.
 
+## Documentation
+
+This project's documentation is an ongoing effort. You can find more detailed information on specific features in the `docs/` directory.
+
+- [Area Search Feature](./docs/features/area-search.md)
+- [Translation System](./docs/features/translation-system.md)
+- [Design Atlas Integration (UI Library)](./docs/features/design-atlas-integration.md)
+
+### Contributing to Documentation
+
+We welcome improvements to our documentation! If you notice something is missing, unclear, or incorrect, please feel free to open a pull request. To contribute:
+
+1. Create or edit the relevant Markdown file in the `docs/` directory.
+2. If you are documenting a new feature, please create a new file in `docs/features/`.
+3. Keep the language clear and concise.
+4. Submit a pull request with your changes.
+
 ## License
 
 MIT

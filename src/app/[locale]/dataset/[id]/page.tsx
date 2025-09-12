@@ -4,10 +4,10 @@ import { auth } from "@/auth";
 import { DatasetSchema, type Dataset } from "@/schemas/dataset";
 import type { FeatureCollection } from "geojson";
 import { DatasetMapWrapper } from "@/components/dataset/map-wrapper";
-import { DatasetInfoPanel } from "@/components/dataset/explorer/dataset-info-panel";
-import { DatasetStatsTable } from "@/components/dataset/explorer/dataset-stats-table";
-import { DatasetActionsSection } from "@/components/dataset/explorer/dataset-actions-section";
-import { ExplorerLayout } from "@/components/dataset/explorer/explorer-layout";
+import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
+import { DatasetStatsTable } from "@/components/dataset/dataset-stats-table";
+import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
+import { DatasetLayout } from "@/components/dataset/dataset-layout";
 
 async function getDataset(id: string): Promise<Dataset | null> {
   try {
@@ -73,7 +73,7 @@ export default async function DatasetPage({
   }
 
   return (
-    <ExplorerLayout
+    <DatasetLayout
       infoPanel={
         <div className="flex flex-col h-full">
           <div className="flex-1 overflow-y-auto space-y-6">

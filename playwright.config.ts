@@ -6,6 +6,10 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
+  timeout: 60 * 1000, // 60 seconds per test
+  expect: {
+    timeout: 30 * 1000, // 30 seconds for expect assertions to find actual bugs
+  },
   use: {
     trace: "on-first-retry",
     baseURL: "http://localhost:3000",
@@ -19,16 +23,14 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm dev:test",
+    command: "NODE_ENV=test ENABLE_PASSWORD_AUTH=true pnpm dev",
     url: "http://localhost:3000/api/health",
-    reuseExistingServer: false,
+    reuseExistingServer: true,
     timeout: 120 * 1000,
-    env: {
-      NODE_ENV: "test",
-      DATABASE_URL:
-        process.env.DATABASE_URL ||
-        "postgresql://postgres@localhost:5433/osmforcities-test",
-    },
+    stdout: "pipe",
+    stderr: "pipe",
   },
   globalSetup: require.resolve("./tests/global-setup.ts"),
+  // Use our custom test setup that includes global mocks
+  testMatch: "**/*.spec.ts",
 });

@@ -84,5 +84,8 @@
     "messages/*.json": [
       "i18n-check --locales messages --source en"
     ]
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

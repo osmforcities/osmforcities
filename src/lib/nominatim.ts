@@ -4,6 +4,15 @@ import {
 } from "@/schemas/nominatim";
 import { Area } from "@/types/area";
 
+// Safeguard to prevent external API calls in test mode
+function preventExternalCallsInTests() {
+  if (process.env.NODE_ENV === "test") {
+    throw new Error(
+      "External API calls are not allowed in test mode. Use mocked responses instead."
+    );
+  }
+}
+
 /**
  * Search for areas using Nominatim API
  * @param searchTerm - The search term to query
@@ -17,6 +26,8 @@ export async function searchAreasWithNominatim(
   if (searchTerm.length < 3) {
     return [];
   }
+
+  preventExternalCallsInTests();
 
   try {
     const response = await fetch(
@@ -89,6 +100,8 @@ export async function getAreaDetailsById(
   osmRelationId: number,
   language: string = "en"
 ): Promise<Area | null> {
+  preventExternalCallsInTests();
+
   try {
     const response = await fetch(
       `https://nominatim.openstreetmap.org/lookup?osm_ids=R${osmRelationId}&format=json&addressdetails=1&extratags=1`,

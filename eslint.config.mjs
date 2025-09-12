@@ -20,7 +20,7 @@ const eslintConfig = [
     rules: {
       "react/no-unescaped-entities": "off",
       "@typescript-eslint/no-unused-vars": "error",
-      // Avoid hardcoded labels in component markup
+      // Avoid hardcoded labels in component markup - only allow translation functions
       "react/jsx-no-literals": "error",
       // Consistently import navigation APIs from `@/i18n/navigation`
       "no-restricted-imports": [

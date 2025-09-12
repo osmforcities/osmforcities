@@ -37,9 +37,6 @@ export default function DatasetRefreshButton({
         onRefresh(result.dataCount);
       }
 
-      console.log(
-        `Dataset refreshed successfully. Found ${result.dataCount} items.`
-      );
     } catch (error) {
       console.error("Error refreshing dataset:", error);
       alert("Failed to refresh dataset data. Please try again.");

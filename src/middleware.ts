@@ -31,14 +31,26 @@ export default async function middleware(req: NextRequest) {
   };
 
   // Handle route protection first
-  const isProtectedRoute =
-    pathname.includes("/my-datasets") ||
-    pathname.includes("/preferences") ||
-    pathname.includes("/watched") ||
-    pathname.includes("/users");
+  // Define public routes that don't require authentication
+  const isPublicRoute = 
+    pathname === "/" || // Root path
+    pathname.match(/^\/[a-z]{2}$/) || // Locale-only paths like /en, /es
+    pathname.match(/^\/[a-z]{2}\/$/) || // Locale-only paths with trailing slash like /en/, /es/
+    pathname.includes("/about") || // About page
+    pathname.includes("/enter") || // Login/signup pages
+    pathname.includes("/login") ||
+    pathname.includes("/signup") ||
+    pathname.startsWith("/api/"); // API routes
 
-  if (isProtectedRoute && !isLoggedIn) {
-    const loginUrl = new URL("/enter", req.nextUrl.origin);
+  // Protect all routes except public ones
+  if (!isPublicRoute && !isLoggedIn) {
+    // Extract locale from pathname for redirect
+    const currentLocale = routing.locales.find(
+      (locale) =>
+        pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+    );
+    const localePrefix = currentLocale ? `/${currentLocale}` : "/en";
+    const loginUrl = new URL(`${localePrefix}/enter`, req.nextUrl.origin);
     const redirectResponse = NextResponse.redirect(loginUrl);
     redirectResponse.headers.set("X-Debug-Redirect", "login-redirect");
     return addDebugHeaders(redirectResponse);

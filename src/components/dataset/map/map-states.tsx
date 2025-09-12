@@ -9,7 +9,7 @@ type MapErrorStateProps = {
 
 export const MapErrorState = React.memo<MapErrorStateProps>(
   () => {
-    const t = useTranslations("DatasetExplorer");
+    const t = useTranslations("DatasetPage");
 
     return (
       <div className="h-full flex items-center justify-center">

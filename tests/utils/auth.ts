@@ -119,8 +119,8 @@ export async function setupAuthenticationWithLogin(
 
   await page.click('button[type="submit"]');
 
-  // Wait for redirect to watched page after successful login (authenticated users are redirected to /watched)
-  await page.waitForURL("http://localhost:3000/en/watched", { timeout: 10000 });
+  // Wait for redirect to dashboard after successful login (authenticated users are redirected to /)
+  await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
 
   return user;
 }

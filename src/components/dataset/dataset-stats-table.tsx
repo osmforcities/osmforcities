@@ -21,7 +21,7 @@ type TableRowData = {
 };
 
 export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
-  const t = useTranslations("DatasetExplorer");
+  const t = useTranslations("DatasetPage");
   const pageT = useTranslations("DatasetPage");
 
   const dataRows: TableRowData[] = [

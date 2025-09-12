@@ -6,33 +6,57 @@ import { Download, RefreshCw, Eye, EyeOff } from "lucide-react";
 import type { Dataset } from "@/schemas/dataset";
 import { useDatasetDownload } from "@/hooks/useDatasetDownload";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
+import { useState } from "react";
 
 type DatasetActionsSectionProps = {
   dataset: Dataset;
 };
 
 export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
-  const t = useTranslations("DatasetExplorer");
+  const t = useTranslations("DatasetPage");
   const { downloadDataset } = useDatasetDownload();
   const { watchDataset, unwatchDataset, refreshDataset, isLoading } =
     useDatasetActions();
-
-  const isWatched = dataset.isWatched || false;
+  
+  const [isWatched, setIsWatched] = useState(dataset.isWatched || false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const canWatch = dataset.isPublic;
 
   const handleToggleWatch = async () => {
-    if (isWatched) {
-      await unwatchDataset(dataset.id);
-    } else {
-      await watchDataset(dataset.id);
+    try {
+      if (isWatched) {
+        const result = await unwatchDataset(dataset.id);
+        if (result.success) {
+          setIsWatched(false);
+        } else {
+          console.error("Failed to unwatch dataset:", result.error);
+        }
+      } else {
+        const result = await watchDataset(dataset.id);
+        if (result.success) {
+          setIsWatched(true);
+        } else {
+          console.error("Failed to watch dataset:", result.error);
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling watch:", error);
     }
-    window.location.reload();
   };
 
   const handleRefresh = async () => {
-    const result = await refreshDataset(dataset.id);
-    if (result.success) {
-      window.location.reload();
+    setIsRefreshing(true);
+    try {
+      const result = await refreshDataset(dataset.id);
+      if (result.success) {
+        // Optionally show success message or update UI
+      } else {
+        console.error("Failed to refresh dataset:", result.error);
+      }
+    } catch (error) {
+      console.error("Error refreshing dataset:", error);
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -43,7 +67,7 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
         {/* Refresh Button */}
         <Button
           onClick={handleRefresh}
-          disabled={!dataset.isActive || isLoading}
+          disabled={!dataset.isActive || isRefreshing}
           className="flex items-center gap-2 w-full h-10"
           variant="outline"
           title={
@@ -52,8 +76,8 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
               : "Update dataset with latest OpenStreetMap data"
           }
         >
-          <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-          {isLoading ? t("refreshing") : t("refreshData")}
+          <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
+          {isRefreshing ? t("refreshing") : t("refreshData")}
         </Button>
 
         {/* Download Button */}
