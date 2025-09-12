@@ -4,6 +4,7 @@
 import { test as base, Page } from "@playwright/test";
 import { setupGlobalApiMocks } from "./mocks/external-apis";
 
+// Extend the base test to automatically setup mocks
 export const test = base.extend<object, { page: Page }>({
   page: async ({ page }, use) => {
     setupGlobalApiMocks(page);

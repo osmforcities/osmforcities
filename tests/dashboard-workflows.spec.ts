@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./test-setup";
 import { createTestUser, cleanupTestUser } from "./utils/auth";
 import { PrismaClient } from "@prisma/client";
 

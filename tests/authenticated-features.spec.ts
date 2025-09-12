@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./test-setup";
 import { setupAuthenticationWithSignup, cleanupTestUser } from "./utils/auth";
 import { getLocalizedPath } from "./config";
 
