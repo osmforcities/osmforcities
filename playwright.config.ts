@@ -31,4 +31,7 @@ export default defineConfig({
     stderr: "pipe",
   },
   globalSetup: require.resolve("./tests/global-setup.ts"),
+  // Use our custom test setup that includes global mocks
+  testMatch: "**/*.spec.ts",
+  setupFilesAfterEnv: ["./tests/test-setup.ts"],
 });

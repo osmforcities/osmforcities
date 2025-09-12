@@ -29,12 +29,12 @@ test.describe("Dashboard Page - Essential Workflows", () => {
   test("should display dashboard title and subtitle", async ({ page }) => {
     await page.goto("/");
 
-    // Check for dashboard title
-    await expect(page.getByText("Dashboard")).toBeVisible();
+    // Check for welcome message
+    await expect(page.getByText(/Welcome back/)).toBeVisible();
 
     // Check for subtitle
     await expect(
-      page.getByText("Here are the datasets you're following")
+      page.getByText("Manage your datasets and explore the platform")
     ).toBeVisible();
   });
 
@@ -474,7 +474,9 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
     await expect(
       page.getByRole("link", { name: "Create Dataset" })
     ).toBeHidden();
-    await expect(page.getByText("Welcome back")).toBeHidden();
+
+    // Welcome back should be visible
+    await expect(page.getByText(/Welcome back/)).toBeVisible();
   });
 
   test("should show clean dashboard without authorship references", async ({

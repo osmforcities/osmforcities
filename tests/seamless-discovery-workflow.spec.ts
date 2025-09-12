@@ -28,7 +28,7 @@ test.describe("Seamless Discovery Workflow", () => {
   }) => {
     // Start at dashboard
     await page.goto("/");
-    await expect(page.getByText("Dashboard")).toBeVisible();
+    await expect(page.getByText(/Welcome back/)).toBeVisible();
 
     // Should show empty state initially
     await expect(page.getByText("No datasets followed yet")).toBeVisible();

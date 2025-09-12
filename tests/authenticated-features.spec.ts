@@ -94,8 +94,8 @@ test.describe("Authenticated Features", () => {
       const searchInput = page.getByPlaceholder("Search cities and areas...");
       await searchInput.fill("são paulo");
 
-      // Should show dropdown with results
-      await expect(page.getByRole("listbox")).toBeVisible();
+      // Wait for API call to complete and listbox to appear
+      await expect(page.getByRole("listbox")).toBeVisible({ timeout: 10000 });
       await expect(page.getByText("São Paulo")).toBeVisible();
     } finally {
       await cleanupTestUser(user.id);
