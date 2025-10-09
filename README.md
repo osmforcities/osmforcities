@@ -34,10 +34,12 @@ openssl rand -hex 32
 Email configuration:
 
 **For Production:** Postmark credentials are required for magic link authentication
+
 - `POSTMARK_API_TOKEN` - Your Postmark API token
 - `POSTMARK_FROM_EMAIL` - Verified sender email (e.g., `noreply@yourdomain.com`)
 
 **For Development:** Postmark is optional
+
 - Without Postmark: Magic links are printed to console (clickable in most terminals)
 - With Postmark: Real emails sent automatically
 - `EMAIL_DISABLE=true` to disable all email sending

@@ -36,11 +36,11 @@ export async function POST(request: NextRequest) {
       // If email sending fails (e.g., Postmark not configured), print magic link to console
       if (process.env.NODE_ENV === "development") {
         console.log("\n🔗 Magic Link Authentication");
-        console.log("=" .repeat(50));
+        console.log("=".repeat(50));
         console.log("📧 Email:", email);
         console.log("🔗 Magic Link:", magicLink);
         console.log("💡 Click the link above to sign in");
-        console.log("=" .repeat(50));
+        console.log("=".repeat(50));
         console.log("");
       } else {
         // In production, re-throw the error
