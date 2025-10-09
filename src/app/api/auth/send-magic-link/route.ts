@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { findUserByEmail, createUser, createVerificationToken } from "@/auth";
-import { sendPostmarkEmail } from "@/lib/email/postmark-test";
+import { sendEmail } from "@/lib/email";
 import { getBaseUrl } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
@@ -24,12 +24,12 @@ export async function POST(request: NextRequest) {
     const baseUrl = getBaseUrl(request);
     const magicLink = `${baseUrl}/api/auth/verify?token=${verificationToken.token}`;
 
-    await sendPostmarkEmail(
-      email,
-      "Sign in to OSM for Cities",
-      `<p>Click <a href=\"${magicLink}\">here</a> to sign in.</p>`,
-      `Visit this link to sign in: ${magicLink}`
-    );
+    await sendEmail({
+      to: email,
+      subject: "Sign in to OSM for Cities",
+      html: `<p>Click <a href=\"${magicLink}\">here</a> to sign in.</p>`,
+      text: `Visit this link to sign in: ${magicLink}`,
+    });
 
     return NextResponse.json({
       message: "Magic link sent successfully",
