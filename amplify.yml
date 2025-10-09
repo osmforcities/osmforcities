@@ -6,10 +6,8 @@ env:
     AUTH_SECRET: ${AUTH_SECRET}
     AUTH_URL: ${AUTH_URL}
     AUTH_TRUST_HOST: true
-    EMAIL_SES_REGION: ${EMAIL_SES_REGION}
-    EMAIL_SES_ACCESS_KEY_ID: ${EMAIL_SES_ACCESS_KEY_ID}
-    EMAIL_SES_SECRET_ACCESS_KEY: ${EMAIL_SES_SECRET_ACCESS_KEY}
-    EMAIL_SES_FROM_EMAIL: ${EMAIL_SES_FROM_EMAIL}
+    POSTMARK_API_TOKEN: ${POSTMARK_API_TOKEN}
+    POSTMARK_FROM_EMAIL: ${POSTMARK_FROM_EMAIL}
 frontend:
   phases:
     preBuild:
@@ -26,7 +24,7 @@ frontend:
       commands:
         - env | grep -e DATABASE_URL >> .env.production
         - env | grep -e AUTH_ >> .env.production
-        - env | grep -e EMAIL_SES_ >> .env.production
+        - env | grep -e POSTMARK_ >> .env.production
         - env | grep -e CRON_ROUTE_SECRET >> .env.production
         - echo "Building Next.js application..."
         - pnpm run build

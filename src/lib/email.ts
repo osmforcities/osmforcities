@@ -43,9 +43,21 @@ export async function sendEmail(options: EmailOptions) {
 
   // Send real email using Postmark
   if (!postmarkClient) {
-    throw new Error(
-      "Postmark client not initialized. Check your POSTMARK_API_TOKEN environment variable."
-    );
+    if (process.env.NODE_ENV === "development") {
+      // In development, fall back to console logging instead of failing
+      console.log("\n📧 Email would be sent (Postmark not configured):");
+      console.log("To:", to);
+      console.log("Subject:", subject);
+      if (html) console.log("HTML:", html);
+      if (text) console.log("Text:", text);
+      console.log("---\n");
+      return;
+    } else {
+      // In production, fail fast with clear error message
+      throw new Error(
+        "Postmark client not initialized. Check your POSTMARK_API_TOKEN environment variable."
+      );
+    }
   }
 
   const fromEmail =
