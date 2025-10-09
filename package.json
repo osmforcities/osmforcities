@@ -44,6 +44,7 @@
     "next-auth": "5.0.0-beta.29",
     "next-intl": "^4.3.4",
     "osmtogeojson": "3.0.0-beta.5",
+    "postmark": "^4.0.5",
     "react": "^19.0.0",
     "react-aria-components": "^1.12.1",
     "react-dom": "^19.0.0",
