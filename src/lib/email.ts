@@ -8,12 +8,11 @@ type EmailOptions = {
 };
 
 const emailConfig = {
-  forceRealEmail: process.env.EMAIL_FORCE_REAL === "true",
   disableEmail: process.env.EMAIL_DISABLE === "true",
 };
 
 const postmarkClient =
-  (process.env.NODE_ENV === "production" || emailConfig.forceRealEmail) &&
+  process.env.NODE_ENV === "production" &&
   !emailConfig.disableEmail &&
   process.env.POSTMARK_API_TOKEN
     ? new ServerClient(process.env.POSTMARK_API_TOKEN)
@@ -31,33 +30,11 @@ export async function sendEmail(options: EmailOptions) {
     return;
   }
 
-  if (process.env.NODE_ENV === "development" && !emailConfig.forceRealEmail) {
-    console.log("\n📧 Email would be sent:");
-    console.log("To:", to);
-    console.log("Subject:", subject);
-    if (html) console.log("HTML:", html);
-    if (text) console.log("Text:", text);
-    console.log("---\n");
-    return;
-  }
-
   // Send real email using Postmark
   if (!postmarkClient) {
-    if (process.env.NODE_ENV === "development") {
-      // In development, fall back to console logging instead of failing
-      console.log("\n📧 Email would be sent (Postmark not configured):");
-      console.log("To:", to);
-      console.log("Subject:", subject);
-      if (html) console.log("HTML:", html);
-      if (text) console.log("Text:", text);
-      console.log("---\n");
-      return;
-    } else {
-      // In production, fail fast with clear error message
-      throw new Error(
-        "Postmark client not initialized. Check your POSTMARK_API_TOKEN environment variable."
-      );
-    }
+    throw new Error(
+      "Postmark client not initialized. Check your POSTMARK_API_TOKEN environment variable."
+    );
   }
 
   const fromEmail =
