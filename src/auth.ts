@@ -22,18 +22,16 @@ function generateSecureToken(length = 32) {
   );
 }
 
-// Helper function to create user object from database user
 function createUserObject(user: DatabaseUser) {
   return {
     id: user.id,
     email: user.email,
     name: user.name,
     isAdmin: user.isAdmin,
-    language: user.language || "en", // Default to "en" if null
+    language: user.language || "en",
   };
 }
 
-// Helper function to create test user object
 function createTestUserObject(
   id: string,
   email: string,
@@ -86,9 +84,7 @@ const {
         return createUserObject(user);
       },
     }),
-    // Password providers enabled via ENABLE_PASSWORD_AUTH environment variable
-    // This allows password authentication in any environment (test, dev, or production builds)
-    ...(process.env.ENABLE_PASSWORD_AUTH === "true"
+    ...(process.env.ENABLE_TEST_AUTH === "true"
       ? [
           Credentials({
             id: "test-password",
@@ -97,9 +93,7 @@ const {
               password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-              // Simple test credentials - any user with "test-password"
               if (credentials?.password === "test-password") {
-                // Return a mock test user
                 return createTestUserObject(
                   "test-user-id",
                   "test@example.com",
@@ -121,7 +115,6 @@ const {
                 return null;
               }
 
-              // Find user by email
               const user = await prisma.user.findUnique({
                 where: { email: credentials.email as string },
               });
@@ -130,7 +123,6 @@ const {
                 return null;
               }
 
-              // Verify hashed password for testing (secure even in test environment)
               const hashedPassword = (user as { password?: string }).password;
               if (
                 hashedPassword &&
@@ -188,7 +180,7 @@ export async function findUserByEmail(email: string) {
 
 export async function createVerificationToken(email: string) {
   const token = generateSecureToken();
-  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
   return await prisma.verificationToken.create({
     data: {
@@ -223,10 +215,8 @@ export async function verifyToken(token: string) {
   return { user, token: verificationToken };
 }
 
-// Custom auth function that supports test sessions
 export async function auth() {
-  // Check for test session in test environment
-  if (process.env.NODE_ENV === "test") {
+  if (process.env.ENABLE_TEST_AUTH === "true") {
     const { cookies } = await import("next/headers");
     const cookieStore = await cookies();
     const testSessionToken = cookieStore.get("test-auth-session")?.value;
@@ -241,12 +231,11 @@ export async function auth() {
           return sessionData;
         }
       } catch {
-        // Invalid token, fall back to regular auth
+        return originalAuth();
       }
     }
   }
 
-  // Fall back to regular NextAuth
   return originalAuth();
 }
 

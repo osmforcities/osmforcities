@@ -72,7 +72,6 @@ export async function sendPostmarkEmail(
       TextBody: text,
       MessageStream: "outbound",
       TrackOpens: false,
-      TrackLinks: "None",
     });
 
     console.log("✅ Postmark email sent successfully:", result);
