@@ -31,13 +31,20 @@ Example to generate a secret:
 openssl rand -hex 32
 ```
 
-Optional settings for email functionality:
+Email configuration:
 
-- AWS SES credentials (`EMAIL_SES_*`) for production email sending
-- `EMAIL_FORCE_REAL=true` to send real emails in development
+**For Production:** Postmark credentials are required for magic link authentication
+
+- `POSTMARK_API_TOKEN` - Your Postmark API token
+- `POSTMARK_FROM_EMAIL` - Verified sender email (e.g., `noreply@yourdomain.com`)
+
+**For Development:** Postmark is optional
+
+- Without Postmark: Magic links are printed to console (clickable in most terminals)
+- With Postmark: Real emails sent automatically
 - `EMAIL_DISABLE=true` to disable all email sending
 
-3. (Optional) Add AWS SES credentials for email functionality.
+3. (Optional) Add Postmark credentials for email functionality.
 
 ### Installation
 

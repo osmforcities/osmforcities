@@ -1,4 +1,4 @@
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import { ServerClient } from "postmark";
 
 type EmailOptions = {
   to: string;
@@ -8,20 +8,14 @@ type EmailOptions = {
 };
 
 const emailConfig = {
-  forceRealEmail: process.env.EMAIL_FORCE_REAL === "true",
   disableEmail: process.env.EMAIL_DISABLE === "true",
 };
 
-const ses =
-  (process.env.NODE_ENV === "production" || emailConfig.forceRealEmail) &&
-  !emailConfig.disableEmail
-    ? new SESClient({
-        region: process.env.EMAIL_SES_REGION,
-        credentials: {
-          accessKeyId: process.env.EMAIL_SES_ACCESS_KEY_ID!,
-          secretAccessKey: process.env.EMAIL_SES_SECRET_ACCESS_KEY!,
-        },
-      })
+const postmarkClient =
+  process.env.NODE_ENV === "production" &&
+  !emailConfig.disableEmail &&
+  process.env.POSTMARK_API_TOKEN
+    ? new ServerClient(process.env.POSTMARK_API_TOKEN)
     : null;
 
 export async function sendEmail(options: EmailOptions) {
@@ -36,37 +30,30 @@ export async function sendEmail(options: EmailOptions) {
     return;
   }
 
-  if (process.env.NODE_ENV === "development" && !emailConfig.forceRealEmail) {
-    console.log("\n📧 Email would be sent:");
-    console.log("To:", to);
-    console.log("Subject:", subject);
-    if (html) console.log("HTML:", html);
-    if (text) console.log("Text:", text);
-    console.log("---\n");
-    return;
-  }
-
-  // Send real email using SES
-  if (!ses) {
+  // Send real email using Postmark
+  if (!postmarkClient) {
     throw new Error(
-      "SES client not initialized. Check your environment configuration."
+      "Postmark client not initialized. Check your POSTMARK_API_TOKEN environment variable."
     );
   }
 
-  const params = {
-    Destination: {
-      ToAddresses: [to],
-    },
-    Message: {
-      Body: {
-        Html: { Charset: "UTF-8", Data: html || text || "" },
-        ...(text && { Text: { Charset: "UTF-8", Data: text } }),
-      },
-      Subject: { Charset: "UTF-8", Data: subject },
-    },
-    Source: `"OSM for Cities" <${process.env.EMAIL_SES_FROM_EMAIL!}>`,
-  };
+  const fromEmail =
+    process.env.POSTMARK_FROM_EMAIL || "noreply@mail.osmforcities.org";
 
-  const command = new SendEmailCommand(params);
-  return ses.send(command);
+  try {
+    const result = await postmarkClient.sendEmail({
+      From: `OSM for Cities <${fromEmail}>`,
+      To: to,
+      Subject: subject,
+      HtmlBody: html || text || "",
+      TextBody: text,
+      MessageStream: "outbound",
+      TrackOpens: false,
+    });
+
+    return result;
+  } catch (error) {
+    console.error("❌ Postmark email failed:", error);
+    throw error;
+  }
 }
