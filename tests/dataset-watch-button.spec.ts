@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import {
   createTestUser,
   cleanupTestUser,
+  setupAuthenticationWithLogin,
 } from "./utils/auth";
 import { PrismaClient } from "@prisma/client";
 
@@ -10,11 +11,9 @@ test.describe("Dataset Watch Button", () => {
   let testDataset: { id: string; template: { name: string } }
 
   test.beforeEach(async ({ page }) => {
-    // Create test user and dataset
     const prisma = new PrismaClient();
     testUser = await createTestUser(prisma);
 
-    // Create a test dataset
     const template = await prisma.template.findFirst();
 
     if (!template) {
@@ -23,8 +22,7 @@ test.describe("Dataset Watch Button", () => {
       );
     }
 
-    // Create a unique test area for each test
-    const randomId = Math.floor(Math.random() * 10000) + 1000; // Random ID between 1000-10999
+    const randomId = Math.floor(Math.random() * 10000) + 1000;
     const testArea = await prisma.area.create({
       data: {
         id: randomId,
@@ -42,7 +40,7 @@ test.describe("Dataset Watch Button", () => {
       data: {
         cityName: "Test City",
         isActive: true,
-        isPublic: true, // All datasets are public now
+        isPublic: true,
         dataCount: 10,
         templateId: template.id,
         areaId: testArea.id,
@@ -61,17 +59,7 @@ test.describe("Dataset Watch Button", () => {
 
     await prisma.$disconnect();
 
-    // Use direct login instead of signup to avoid duplicate user creation
-    await page.goto("http://localhost:3000/en/login");
-    await page.waitForLoadState("domcontentloaded");
-
-    await page.fill('input[name="email"]', testUser.email);
-    await page.fill('input[name="password"]', testUser.password!);
-
-    await page.click('button[type="submit"]');
-
-    // Wait for redirect to dashboard after successful login
-    await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+    await setupAuthenticationWithLogin(page, testUser);
   });
 
   test.afterEach(async () => {
@@ -146,17 +134,27 @@ test.describe("Dataset Watch Button", () => {
   });
 
   test("should handle watch button loading state", async ({ page }) => {
+    let resolveApiCall: () => void;
+    const apiCallPromise = new Promise<void>((resolve) => {
+      resolveApiCall = resolve;
+    });
+
+    await page.route("**/api/datasets/*/watch", async (route) => {
+      await apiCallPromise;
+      await route.continue();
+    });
+
     await page.goto(`/dataset/${testDataset.id}`);
 
     const watchButton = page.getByRole("button", { name: /watch/i });
 
-    // Click button and check it's disabled during loading
-    await watchButton.click();
+    const clickPromise = watchButton.click();
 
-    // Button should be disabled while loading
     await expect(watchButton).toBeDisabled();
 
-    // Wait for loading to complete
+    resolveApiCall!();
+    await clickPromise;
+
     await expect(watchButton).toBeEnabled();
   });
 
