@@ -44,13 +44,6 @@ async function getPublicDatasets() {
           description: true,
         },
       },
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      },
       area: {
         select: {
           id: true,

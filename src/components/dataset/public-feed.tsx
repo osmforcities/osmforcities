@@ -70,10 +70,6 @@ export default async function PublicDatasetsFeed() {
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right">
-                    <p>
-                      {t("by")}{" "}
-                      {dataset.user.name || dataset.user.email.split("@")[0]}
-                    </p>
                     <p className="text-xs">
                       {new Date(dataset.createdAt).toLocaleDateString()}
                     </p>

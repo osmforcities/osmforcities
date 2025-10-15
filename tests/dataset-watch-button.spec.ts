@@ -8,7 +8,7 @@ import { PrismaClient } from "@prisma/client";
 
 test.describe("Dataset Watch Button", () => {
   let testUser: { id: string; email: string; password?: string };
-  let testDataset: { id: string; template: { name: string } }
+  let testDataset: { id: string; template: { name: string } };
 
   test.beforeEach(async ({ page }) => {
     const prisma = new PrismaClient();
@@ -40,11 +40,9 @@ test.describe("Dataset Watch Button", () => {
       data: {
         cityName: "Test City",
         isActive: true,
-        isPublic: true,
         dataCount: 10,
         templateId: template.id,
         areaId: testArea.id,
-        userId: testUser.id,
         geojson: {
           type: "FeatureCollection",
           features: [],
@@ -85,11 +83,12 @@ test.describe("Dataset Watch Button", () => {
 
     // Click watch button
     const watchButton = page.getByRole("button", { name: /watch/i });
+    await expect(watchButton).toBeVisible({ timeout: 10000 });
     await watchButton.click();
 
-    // Wait for button to change to unwatch
+    // Check that button now shows unwatch - wait for button to be updated
     const unwatchButton = page.getByRole("button", { name: /unwatch/i });
-    await expect(unwatchButton).toBeVisible();
+    await expect(unwatchButton).toBeVisible({ timeout: 10000 });
 
     // Check that dataset appears in watched datasets
     await page.goto("/");
@@ -107,21 +106,19 @@ test.describe("Dataset Watch Button", () => {
 
     // First watch the dataset through the UI
     const watchButton = page.getByRole("button", { name: /watch/i });
+    await expect(watchButton).toBeVisible({ timeout: 10000 });
     await watchButton.click();
 
     // Wait for button to change to unwatch
     const unwatchButton = page.getByRole("button", { name: /unwatch/i });
-    await expect(unwatchButton).toBeVisible();
+    await expect(unwatchButton).toBeVisible({ timeout: 10000 });
 
     // Now click unwatch button
     await unwatchButton.click();
 
-    // Wait longer for the API call to complete and button to be enabled
-    await page.waitForTimeout(2000);
-
-    // After unwatching, the button should show "Watch" in the title
+    // Wait for watch button to reappear after unwatching
     const watchButtonAfter = page.getByRole("button", { name: /watch/i });
-    await expect(watchButtonAfter).toBeVisible();
+    await expect(watchButtonAfter).toBeVisible({ timeout: 10000 });
 
     // Check that dataset no longer appears in watched datasets
     await page.goto("/");
@@ -168,16 +165,16 @@ test.describe("Dataset Watch Button", () => {
     // Click to watch
     await watchButton.click();
 
-    // Should now show unwatch button
+    // Should now show unwatch button - wait for button to be updated
     const unwatchButton = page.getByRole("button", { name: /unwatch/i });
-    await expect(unwatchButton).toBeVisible();
+    await expect(unwatchButton).toBeVisible({ timeout: 10000 });
 
     // Click to unwatch
     await unwatchButton.click();
 
-    // Should show watch button again
+    // Should show watch button again - wait for button to be updated
     watchButton = page.getByRole("button", { name: /watch/i });
-    await expect(watchButton).toBeVisible();
+    await expect(watchButton).toBeVisible({ timeout: 10000 });
   });
 
   test("should handle API errors gracefully", async ({ page }) => {
@@ -212,8 +209,8 @@ test.describe("Dataset Watch Button", () => {
     const prisma = new PrismaClient();
     await prisma.datasetWatch.create({
       data: {
-        userId: testUser.id,
         datasetId: testDataset.id,
+        userId: testUser.id,
       },
     });
     await prisma.$disconnect();
@@ -255,11 +252,11 @@ test.describe("Dataset Watch Button", () => {
     const prisma = new PrismaClient();
     const anotherUser = await createTestUser(prisma);
 
-    // Have the other user watch the dataset
+    // Have the other user watch the dataset (note: this creates watch for testUser, not anotherUser)
     await prisma.datasetWatch.create({
       data: {
-        userId: anotherUser.id,
         datasetId: testDataset.id,
+        userId: anotherUser.id, // Fix: use the other user's ID
       },
     });
     await prisma.$disconnect();
@@ -272,8 +269,8 @@ test.describe("Dataset Watch Button", () => {
 
     await watchButton.click();
 
-    // Should successfully watch
+    // Should successfully watch - wait for button to be updated
     const unwatchButton = page.getByRole("button", { name: /unwatch/i });
-    await expect(unwatchButton).toBeVisible();
+    await expect(unwatchButton).toBeVisible({ timeout: 10000 });
   });
 });

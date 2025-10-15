@@ -17,10 +17,9 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
   const { downloadDataset } = useDatasetDownload();
   const { watchDataset, unwatchDataset, refreshDataset, isLoading } =
     useDatasetActions();
-  
+
   const [isWatched, setIsWatched] = useState(dataset.isWatched || false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const canWatch = dataset.isPublic;
 
   const handleToggleWatch = async () => {
     try {
@@ -76,7 +75,9 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
               : "Update dataset with latest OpenStreetMap data"
           }
         >
-          <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
+          <RefreshCw
+            className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+          />
           {isRefreshing ? t("refreshing") : t("refreshData")}
         </Button>
 
@@ -96,9 +97,8 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
           {t("downloadData")}
         </Button>
 
-        {/* Watch/Unwatch Button - Only show for public datasets */}
-        {canWatch && (
-          <Button
+        {/* Watch/Unwatch Button */}
+        <Button
             onClick={handleToggleWatch}
             disabled={isLoading}
             className="flex items-center gap-2 w-full h-10"
@@ -115,8 +115,7 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
               <Eye className="h-4 w-4" />
             )}
             {isWatched ? t("unwatch") : t("watch")}
-          </Button>
-        )}
+        </Button>
       </div>
     </div>
   );

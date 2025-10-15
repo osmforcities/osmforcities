@@ -50,9 +50,7 @@ async function getDataset(id: string): Promise<Dataset | null> {
       },
       isWatched: user ? rawDataset.watchers.length > 0 : false,
       watchersCount: rawDataset._count.watchers,
-      canDelete: user
-        ? user.id === rawDataset.user.id && rawDataset._count.watchers <= 1
-        : false,
+      canDelete: false, // Datasets are no longer owned by users, cleanup handled by cron job
     });
   } catch (error) {
     console.error("Error fetching dataset:", error);

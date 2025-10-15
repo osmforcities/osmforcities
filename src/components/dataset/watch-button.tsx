@@ -8,20 +8,16 @@ import { useDatasetActions } from "@/hooks/useDatasetActions";
 interface DatasetWatchButtonProps {
   datasetId: string;
   isWatched: boolean;
-  isPublic: boolean;
 }
 
 export default function DatasetWatchButton({
   datasetId,
   isWatched: initialIsWatched,
-  isPublic,
 }: DatasetWatchButtonProps) {
   const [isWatched, setIsWatched] = useState(initialIsWatched);
   const { watchDataset, unwatchDataset, isLoading } = useDatasetActions();
 
   const handleWatch = async () => {
-    if (!isPublic) return;
-
     const result = await watchDataset(datasetId);
     if (result.success) {
       setIsWatched(true);
@@ -39,20 +35,17 @@ export default function DatasetWatchButton({
     }
   };
 
-  if (!isPublic) {
-    return null;
-  }
-
   return (
     <Button
       variant={isWatched ? "default" : "outline"}
       size="sm"
       onClick={isWatched ? handleUnwatch : handleWatch}
       disabled={isLoading}
-      className="p-2"
+      className="px-3 py-2"
       title={isWatched ? "Unwatch" : "Watch"}
     >
-      {isWatched ? <Eye className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      <Eye className="h-4 w-4 mr-2" />
+      {isWatched ? "Unwatch" : "Watch"}
     </Button>
   );
 }
