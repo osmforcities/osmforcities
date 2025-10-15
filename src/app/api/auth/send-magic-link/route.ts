@@ -24,16 +24,33 @@ export async function POST(request: NextRequest) {
     const baseUrl = getBaseUrl(request);
     const magicLink = `${baseUrl}/api/auth/verify?token=${verificationToken.token}`;
 
-    await sendEmail({
-      to: email,
-      subject: "Sign in to OSM for Cities",
-      html: `<p>Click <a href=\"${magicLink}\">here</a> to sign in.</p>`,
-      text: `Visit this link to sign in: ${magicLink}`,
-    });
+    try {
+      // Try to send email via Postmark (if configured)
+      await sendEmail({
+        to: email,
+        subject: "Sign in to OSM for Cities",
+        html: `<p>Click <a href=\"${magicLink}\">here</a> to sign in.</p>`,
+        text: `Visit this link to sign in: ${magicLink}`,
+      });
+    } catch (error) {
+      // If email sending fails (e.g., Postmark not configured), print magic link to console
+      if (process.env.NODE_ENV === "development") {
+        console.log("\n🔗 Magic Link Authentication");
+        console.log("=".repeat(50));
+        console.log("📧 Email:", email);
+        console.log("🔗 Magic Link:", magicLink);
+        console.log("💡 Click the link above to sign in");
+        console.log("=".repeat(50));
+        console.log("");
+      } else {
+        // In production, re-throw the error
+        throw error;
+      }
+    }
 
     return NextResponse.json({
       message: "Magic link sent successfully",
-      // Only include magic link in development for easier testing
+      // Include magic link in development for easier testing
       ...(process.env.NODE_ENV === "development" && { magicLink }),
     });
   } catch (error) {

@@ -113,13 +113,6 @@ export function MapLayers({ geoJSONData }: MapLayersProps) {
     pointFeatures
   );
 
-  console.log("Layer counts:", {
-    polygons: polygonFeatures.length,
-    lines: lineFeatures.length,
-    points: pointFeatures.length,
-    simplified: simplifiedFeatures.length,
-    total: geoJSONData.features.length,
-  });
 
   return (
     <>

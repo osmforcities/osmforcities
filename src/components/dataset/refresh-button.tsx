@@ -37,9 +37,6 @@ export default function DatasetRefreshButton({
         onRefresh(result.dataCount);
       }
 
-      console.log(
-        `Dataset refreshed successfully. Found ${result.dataCount} items.`
-      );
     } catch (error) {
       console.error("Error refreshing dataset:", error);
       alert("Failed to refresh dataset data. Please try again.");
@@ -54,10 +51,10 @@ export default function DatasetRefreshButton({
       disabled={!isActive || isRefreshing}
       variant="outline"
       size="sm"
-      className="flex items-center gap-2"
+      className="p-2"
+      title={isRefreshing ? "Refreshing..." : "Refresh Data"}
     >
       <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
-      {isRefreshing ? "Refreshing..." : "Refresh Data"}
     </Button>
   );
 }

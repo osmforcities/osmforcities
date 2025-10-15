@@ -14,7 +14,7 @@ import { FeatureTooltip } from "./feature-tooltip";
 import { MapLayers } from "./layers";
 import { NoDataMessage } from "./no-data-message";
 import { AgeLegend } from "./age-legend";
-import { processOSMFeaturesForVisualization } from "../../lib/osm-data-processor";
+import { processOSMFeaturesForVisualization } from "../../../lib/osm-data-processor";
 import { useMapInteractions, useDateFilter } from "./hooks";
 
 type DatasetMapProps = {

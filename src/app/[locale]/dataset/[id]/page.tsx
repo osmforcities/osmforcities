@@ -1,23 +1,13 @@
-import { notFound } from "next/navigation";
-import { Link } from "@/i18n/navigation";
-import { Button } from "@/components/ui/button";
-import { getTranslations } from "next-intl/server";
-import {
-  ArrowLeft,
-  Users,
-  Activity,
-  Calendar,
-  BarChart3,
-  MapPin,
-  Database,
-} from "lucide-react";
-import DatasetRefreshButton from "@/components/dataset-refresh-button";
-import DatasetMap from "@/components/dataset-map";
-import DatasetWatchButton from "@/components/dataset-watch-button";
 import { prisma } from "@/lib/db";
+import { notFound } from "next/navigation";
+import { auth } from "@/auth";
 import { DatasetSchema, type Dataset } from "@/schemas/dataset";
 import type { FeatureCollection } from "geojson";
-import { auth } from "@/auth";
+import { DatasetMapWrapper } from "@/components/dataset/map-wrapper";
+import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
+import { DatasetStatsTable } from "@/components/dataset/dataset-stats-table";
+import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
+import { DatasetLayout } from "@/components/dataset/dataset-layout";
 
 async function getDataset(id: string): Promise<Dataset | null> {
   try {
@@ -28,6 +18,7 @@ async function getDataset(id: string): Promise<Dataset | null> {
       where: { id },
       include: {
         template: true,
+        area: true,
         user: {
           select: {
             id: true,
@@ -35,7 +26,6 @@ async function getDataset(id: string): Promise<Dataset | null> {
             email: true,
           },
         },
-        area: true,
         watchers: user
           ? {
               where: { userId: user.id },
@@ -70,20 +60,6 @@ async function getDataset(id: string): Promise<Dataset | null> {
   }
 }
 
-function getColorClasses(color: string) {
-  const colors = {
-    green: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-    yellow:
-      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-    blue: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-    red: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-    gray: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
-    purple:
-      "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  };
-  return colors[color as keyof typeof colors] || colors.gray;
-}
-
 export default async function DatasetPage({
   params,
 }: {
@@ -91,289 +67,23 @@ export default async function DatasetPage({
 }) {
   const { id } = await params;
   const dataset = await getDataset(id);
-  const t = await getTranslations("DatasetPage");
 
   if (!dataset) {
-    notFound();
+    return notFound();
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-4 mb-8">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/" className="flex items-center gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                {t("backToHome")}
-              </Link>
-            </Button>
+    <DatasetLayout
+      infoPanel={
+        <div className="flex flex-col h-full">
+          <div className="flex-1 overflow-y-auto space-y-6">
+            <DatasetInfoPanel dataset={dataset} />
+            <DatasetStatsTable dataset={dataset} />
           </div>
-
-          <div className="space-y-8">
-            <div className="border rounded-lg p-6">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <h1 className="text-3xl font-bold mb-2">
-                    {dataset.template.name}
-                  </h1>
-                  <div className="flex items-center gap-2 text-xl text-muted-foreground">
-                    <MapPin className="h-5 w-5" />
-                    {dataset.cityName}
-                    {dataset.area.countryCode &&
-                      ` (${dataset.area.countryCode})`}
-                  </div>
-                  {dataset.template.description && (
-                    <p className="text-muted-foreground mt-3">
-                      {dataset.template.description}
-                    </p>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  <DatasetWatchButton
-                    datasetId={dataset.id}
-                    isWatched={dataset.isWatched || false}
-                    isPublic={dataset.isPublic}
-                  />
-                  <DatasetRefreshButton
-                    datasetId={dataset.id}
-                    isActive={dataset.isActive}
-                  />
-                  <span
-                    className={`px-3 py-1 text-sm rounded-full ${
-                      dataset.isActive
-                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                        : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
-                    }`}
-                  >
-                    {dataset.isActive ? t("active") : t("inactive")}
-                  </span>
-                  <span
-                    className={`px-3 py-1 text-sm rounded-full capitalize ${
-                      dataset.isPublic
-                        ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                        : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-                    }`}
-                  >
-                    {dataset.isPublic ? t("public") : t("private")}
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <DatasetMap dataset={dataset} />
-              </div>
-
-              <div className="mt-6 relative overflow-hidden border-2 border-blue-200 dark:border-blue-800 rounded-xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/40 dark:via-indigo-950/40 dark:to-purple-950/40 shadow-lg">
-                <div className="relative px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <BarChart3 className="h-6 w-6" />
-                      <h2 className="text-xl font-bold">{t("datasetStats")}</h2>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-xs opacity-80">{t("category")}</div>
-                      <div className="text-sm font-semibold capitalize">
-                        {dataset.template.category}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
-                  <div className="absolute -right-8 -bottom-4 w-16 h-16 bg-white/5 rounded-full"></div>
-                </div>
-
-                <div className="p-6">
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-4 rounded-lg border border-blue-200/50 dark:border-blue-700/50 text-center hover:scale-105 transition-transform">
-                      <Database className="h-5 w-5 text-blue-600 mx-auto mb-2" />
-                      <div className="text-2xl font-bold text-blue-600 mb-1">
-                        {dataset.dataCount.toLocaleString()}
-                      </div>
-                      <div className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                        {t("totalFeatures")}
-                      </div>
-                    </div>
-
-                    <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-4 rounded-lg border border-green-200/50 dark:border-green-700/50 text-center hover:scale-105 transition-transform">
-                      <Users className="h-5 w-5 text-green-600 mx-auto mb-2" />
-                      <div className="text-2xl font-bold text-green-600 mb-1">
-                        {dataset.stats?.editorsCount?.toLocaleString() || 0}
-                      </div>
-                      <div className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                        {t("totalEditors")}
-                      </div>
-                    </div>
-
-                    <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-4 rounded-lg border border-purple-200/50 dark:border-purple-700/50 text-center hover:scale-105 transition-transform">
-                      <Activity className="h-5 w-5 text-purple-600 mx-auto mb-2" />
-                      <div className="text-2xl font-bold text-purple-600 mb-1">
-                        {dataset.stats?.changesetsCount?.toLocaleString() || 0}
-                      </div>
-                      <div className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                        {t("changesets")}
-                      </div>
-                    </div>
-
-                    {dataset.isPublic && (
-                      <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-4 rounded-lg border border-orange-200/50 dark:border-orange-700/50 text-center hover:scale-105 transition-transform">
-                        <Users className="h-5 w-5 text-orange-600 mx-auto mb-2" />
-                        <div className="text-2xl font-bold text-orange-600 mb-1">
-                          {dataset.watchersCount?.toLocaleString() || 0}
-                        </div>
-                        <div className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                          {t("watchers")}
-                        </div>
-                      </div>
-                    )}
-
-                    {dataset.stats?.averageElementAge && (
-                      <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-4 rounded-lg border border-indigo-200/50 dark:border-indigo-700/50 text-center hover:scale-105 transition-transform">
-                        <Calendar className="h-5 w-5 text-indigo-600 mx-auto mb-2" />
-                        <div className="text-2xl font-bold text-indigo-600 mb-1">
-                          {Math.round(dataset.stats.averageElementAge)}
-                        </div>
-                        <div className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                          {t("avgAgeDays")}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {dataset.stats?.recentActivity && (
-                    <div className="border-t border-blue-200/30 dark:border-blue-700/30 pt-6">
-                      <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-4 flex items-center gap-2">
-                        <Activity className="h-5 w-5" />
-                        {t("recentActivity")}
-                      </h3>
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/50 dark:to-blue-800/50 p-4 rounded-lg text-center">
-                          <div className="text-xl font-bold text-blue-700 dark:text-blue-300">
-                            {dataset.stats.recentActivity.elementsEdited.toLocaleString()}
-                          </div>
-                          <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                            {t("elementsEdited")}
-                          </div>
-                          {dataset.dataCount > 0 && (
-                            <div className="text-xs text-blue-500 dark:text-blue-400 mt-1">
-                              {(
-                                (dataset.stats.recentActivity.elementsEdited /
-                                  dataset.dataCount) *
-                                100
-                              ).toFixed(1)}
-                              {t("percentOfTotal")}
-                            </div>
-                          )}
-                        </div>
-                        <div className="bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/50 dark:to-green-800/50 p-4 rounded-lg text-center">
-                          <div className="text-xl font-bold text-green-700 dark:text-green-300">
-                            {dataset.stats.recentActivity.editors.toLocaleString()}
-                          </div>
-                          <div className="text-xs text-green-600 dark:text-green-400 font-medium">
-                            {t("activeEditors")}
-                          </div>
-                        </div>
-                        <div className="bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/50 dark:to-purple-800/50 p-4 rounded-lg text-center">
-                          <div className="text-xl font-bold text-purple-700 dark:text-purple-300">
-                            {dataset.stats.recentActivity.changesets.toLocaleString()}
-                          </div>
-                          <div className="text-xs text-purple-600 dark:text-purple-400 font-medium">
-                            {t("recentChangesets")}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {dataset.stats?.recentActivity && (
-                    <div className="border-t border-blue-200/30 dark:border-blue-700/30 pt-6 mt-6">
-                      <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-3">
-                        {t("overallAssessment")}
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {(() => {
-                          let activityLevel;
-                          if (
-                            dataset.stats.recentActivity.elementsEdited > 50
-                          ) {
-                            activityLevel = {
-                              label: t("veryActive"),
-                              color: "green",
-                            };
-                          } else if (
-                            dataset.stats.recentActivity.elementsEdited > 10
-                          ) {
-                            activityLevel = {
-                              label: t("active"),
-                              color: "yellow",
-                            };
-                          } else {
-                            activityLevel = {
-                              label: t("lowActivity"),
-                              color: "gray",
-                            };
-                          }
-                          return (
-                            <span
-                              className={`px-3 py-1 rounded-full text-xs font-bold ${getColorClasses(
-                                activityLevel.color
-                              )} flex items-center gap-1`}
-                            >
-                              <BarChart3 className="h-3 w-3" />
-                              {activityLevel.label}
-                            </span>
-                          );
-                        })()}
-
-                        {(() => {
-                          let communityStrength;
-                          if ((dataset.stats?.editorsCount || 0) > 5) {
-                            communityStrength = {
-                              label: t("strongCommunity"),
-                              color: "blue",
-                            };
-                          } else if ((dataset.stats?.editorsCount || 0) > 1) {
-                            communityStrength = {
-                              label: t("someContributors"),
-                              color: "yellow",
-                            };
-                          } else {
-                            communityStrength = {
-                              label: t("singleEditor"),
-                              color: "gray",
-                            };
-                          }
-                          return (
-                            <span
-                              className={`px-3 py-1 rounded-full text-xs font-bold ${getColorClasses(
-                                communityStrength.color
-                              )} flex items-center gap-1`}
-                            >
-                              <Users className="h-3 w-3" />
-                              {communityStrength.label}
-                            </span>
-                          );
-                        })()}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="border-t border-blue-200/30 dark:border-blue-700/30 pt-4 mt-6">
-                    <div className="flex justify-between items-center text-xs text-gray-600 dark:text-gray-400">
-                      {dataset.lastChecked && (
-                        <div className="flex items-center gap-1">
-                          <Activity className="h-3 w-3" />
-                          {t("lastChecked")}{" "}
-                          {new Date(dataset.lastChecked).toLocaleDateString()}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <DatasetActionsSection dataset={dataset} />
         </div>
-      </div>
-    </div>
+      }
+      mapPanel={<DatasetMapWrapper dataset={dataset} />}
+    />
   );
 }

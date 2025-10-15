@@ -4,6 +4,8 @@ import { bbox } from "@turf/bbox";
 import type { FeatureCollection, Feature } from "geojson";
 import { BboxSchema, type Bbox } from "@/types/geojson";
 import type { DateFilter } from "../types/geojson";
+import type { Area } from "@/types/area";
+import type { useTranslations } from "next-intl";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -104,3 +106,81 @@ export const filterFeaturesByDate = (
     return age <= maxAge;
   });
 };
+
+/**
+ * Get area characteristics as an array of strings for display
+ * @param item - The area item to get characteristics for
+ * @param translateAddressType - Function to translate address types
+ * @returns Array of characteristic strings
+ */
+export function getAreaCharacteristics(
+  item:
+    | Area
+    | {
+        id: string | number;
+        addresstype?: string;
+        type?: string;
+        country?: string;
+        countryCode?: string;
+      },
+  translateAddressType: ReturnType<typeof useTranslations<"AddressTypes">>
+): string[] {
+  if (typeof item.id === "string" && item.id === "no-results") return [];
+
+  const characteristics: string[] = [];
+
+  // Add address type
+  const addressType = item.addresstype || item.type;
+  if (addressType) {
+    try {
+      const translatedType = translateAddressType(addressType as never);
+
+      // If translation returns the same key, it means it's not translated
+      // Show the original value with a fallback format
+      if (translatedType === addressType) {
+        // Convert snake_case to Title Case for better display
+        const formattedType = addressType
+          .split("_")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+
+        characteristics.push(formattedType);
+
+        // Log untranslated address types for debugging
+        if (process.env.NODE_ENV === "development") {
+          console.warn(`Untranslated address type: ${addressType}`);
+        }
+      } else {
+        characteristics.push(translatedType);
+      }
+    } catch (error) {
+      // Fallback to formatted original value if translation fails
+      const formattedType = addressType
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+
+      characteristics.push(formattedType);
+
+      // Log translation errors for debugging
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          `Translation error for address type "${addressType}":`,
+          error
+        );
+      }
+    }
+  }
+
+  // Add country
+  if (item.country) {
+    characteristics.push(item.country);
+  } else if (item.countryCode) {
+    characteristics.push(item.countryCode.toUpperCase());
+  }
+
+  // Add relation ID
+  characteristics.push(`ID: ${item.id}`);
+
+  return characteristics;
+}

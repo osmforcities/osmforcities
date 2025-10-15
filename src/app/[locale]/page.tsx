@@ -2,8 +2,9 @@ import { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/auth";
-import { redirect } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
+import { prisma } from "@/lib/db";
+import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 
 export const dynamic = "force-dynamic";
 
@@ -13,10 +14,31 @@ export const metadata: Metadata = {
     "Track changes in OpenStreetMap datasets across cities worldwide.",
 };
 
+async function getWatchedDatasets(userId: string) {
+  const watchedDatasets = await prisma.datasetWatch.findMany({
+    where: { userId },
+    include: {
+      dataset: {
+        include: {
+          template: true,
+          area: true,
+          _count: {
+            select: { watchers: true },
+          },
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return watchedDatasets.map((watch) => watch.dataset);
+}
+
 export default async function Home() {
   const session = await auth();
   const user = session?.user || null;
   const t = await getTranslations("Index");
+  const tabT = await getTranslations("TabLayout");
 
   if (!user) {
     return (
@@ -41,6 +63,31 @@ export default async function Home() {
     );
   }
 
-  // Redirect to the watched tab by default
-  redirect({ href: "/watched", locale: "en" });
+  const watchedDatasets = await getWatchedDatasets(user.id);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Welcome Header Card */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-8">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-3xl font-bold text-gray-900 mb-3">
+              {tabT("welcomeBack")}{", "}{user.name || user.email}
+            </h1>
+            <p className="text-lg text-gray-600 mb-2">
+              {tabT("manageDatasetsSubtitle")}
+            </p>
+          </div>
+        </div>
+
+        {/* Followed Datasets Section */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">
+            {"Your Followed Datasets"}
+          </h2>
+          <DashboardGrid datasets={watchedDatasets} />
+        </div>
+      </div>
+    </div>
+  );
 }

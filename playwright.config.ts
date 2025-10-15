@@ -5,7 +5,11 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 1 : 2,
+  timeout: 60 * 1000,
+  expect: {
+    timeout: 30 * 1000,
+  },
   use: {
     trace: "on-first-retry",
     baseURL: "http://localhost:3000",
@@ -13,20 +17,19 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        ...devices["Desktop Chrome"],
+      },
     },
   ],
   webServer: {
-    command: "npm run dev",
+    command: "ENABLE_TEST_AUTH=true pnpm dev",
     url: "http://localhost:3000/api/health",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
     timeout: 120 * 1000,
-    env: {
-      NODE_ENV: "test",
-      DATABASE_URL:
-        process.env.DATABASE_URL ||
-        "postgresql://postgres@localhost:5433/osmforcities-test",
-    },
+    stdout: "pipe",
+    stderr: "pipe",
   },
   globalSetup: require.resolve("./tests/global-setup.ts"),
+  testMatch: "**/*.spec.ts",
 });

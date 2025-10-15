@@ -12,7 +12,18 @@ import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 const OVERPASS_API_URL =
   process.env.OVERPASS_API_URL || "https://overpass-api.de/api/interpreter";
 
+// Safeguard to prevent external API calls in test mode
+function preventExternalCallsInTests() {
+  if (process.env.NODE_ENV === "test") {
+    throw new Error(
+      "External API calls are not allowed in test mode. Use mocked responses instead."
+    );
+  }
+}
+
 export async function fetchOsmRelationData(relationId: number) {
+  preventExternalCallsInTests();
+
   const query = `
     [out:json][timeout:25];
     rel(${relationId});
@@ -56,6 +67,8 @@ export async function fetchOsmRelationData(relationId: number) {
 export async function executeOverpassQuery(
   queryString: string
 ): Promise<OverpassResponse> {
+  preventExternalCallsInTests();
+
   const response = await fetch(OVERPASS_API_URL, {
     method: "POST",
     headers: {

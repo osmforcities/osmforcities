@@ -1,9 +1,10 @@
 {
   "name": "osmforcities",
-  "version": "1.0.0-alpha.2",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:test": "NODE_ENV=test next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -14,11 +15,13 @@
     "test:playwright:ui": "NODE_ENV=test playwright test --ui",
     "prepare": "husky",
     "i18n:check": "i18n-check --locales messages --source en",
-    "i18n:check:fix": "i18n-check --locales messages --source en --fix"
+    "i18n:check:fix": "i18n-check --locales messages --source en --fix",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset version && git add ."
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
-    "@aws-sdk/client-ses": "^3.823.0",
     "@mdx-js/loader": "^3.1.0",
     "@next/env": "^15.3.5",
     "@next/mdx": "^15.5.2",
@@ -27,8 +30,10 @@
     "@tanstack/react-query": "^5.80.7",
     "@turf/bbox": "^7.2.0",
     "@turf/centroid": "^7.2.0",
+    "@types/bcryptjs": "^3.0.0",
     "@types/geojson": "^7946.0.16",
     "@types/osmtogeojson": "^2.2.34",
+    "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "html-to-text": "^9.0.5",
@@ -38,21 +43,22 @@
     "next-auth": "5.0.0-beta.29",
     "next-intl": "^4.3.4",
     "osmtogeojson": "3.0.0-beta.5",
+    "postmark": "^4.0.5",
     "react": "^19.0.0",
+    "react-aria-components": "^1.12.1",
     "react-dom": "^19.0.0",
     "react-map-gl": "^8.0.4",
+    "react-stately": "^3.41.0",
     "remark-frontmatter": "^5.0.0",
     "remark-mdx-frontmatter": "^5.2.0",
     "tailwind-merge": "^3.3.0",
     "zod": "^3.25.64"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.6",
     "@eslint/eslintrc": "^3",
     "@lingual/i18n-check": "^0.8.4",
     "@playwright/test": "^1.53.2",
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^11.0.5",
     "@tailwindcss/postcss": "^4",
     "@types/html-to-text": "^9.0.4",
     "@types/node": "^20",
@@ -66,7 +72,6 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.1.0",
     "prisma": "^6.11.1",
-    "semantic-release": "^24.2.7",
     "tailwindcss": "^4",
     "tsx": "^4.19.4",
     "tw-animate-css": "^1.3.4",
@@ -79,5 +84,8 @@
     "messages/*.json": [
       "i18n-check --locales messages --source en"
     ]
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

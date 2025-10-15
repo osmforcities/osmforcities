@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { redirect } from "@/i18n/navigation";
 import { prisma } from "@/lib/db";
 import TabLayout from "@/components/tab-layout";
-import DatasetList from "@/components/dataset-list";
+import DatasetList from "@/components/dataset/list";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
 import { routing } from "@/i18n/routing";

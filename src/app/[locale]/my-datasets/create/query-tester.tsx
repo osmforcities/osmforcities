@@ -10,11 +10,11 @@ import { Area } from "@/types/area";
 import { convertOverpassToGeoJSON } from "@/lib/osm";
 import { FeatureCollection } from "geojson";
 import { useTranslations } from "next-intl";
-import { MapLayers } from "@/components/dataset-map/layers";
+import { MapLayers } from "@/components/dataset/map/layers";
 import { processOSMFeaturesForVisualization } from "@/lib/osm-data-processor";
-import { DateFilterControls } from "@/components/dataset-map/date-filter-controls";
-import { AgeLegend } from "@/components/dataset-map/age-legend";
-import { NoDataMessage } from "@/components/dataset-map/no-data-message";
+import { DateFilterControls } from "@/components/dataset/map/date-filter-controls";
+import { AgeLegend } from "@/components/dataset/map/age-legend";
+import { NoDataMessage } from "@/components/dataset/map/no-data-message";
 
 type Template = {
   id: string;

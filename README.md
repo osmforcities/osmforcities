@@ -31,13 +31,20 @@ Example to generate a secret:
 openssl rand -hex 32
 ```
 
-Optional settings for email functionality:
+Email configuration:
 
-- AWS SES credentials (`EMAIL_SES_*`) for production email sending
-- `EMAIL_FORCE_REAL=true` to send real emails in development
+**For Production:** Postmark credentials are required for magic link authentication
+
+- `POSTMARK_API_TOKEN` - Your Postmark API token
+- `POSTMARK_FROM_EMAIL` - Verified sender email (e.g., `noreply@yourdomain.com`)
+
+**For Development:** Postmark is optional
+
+- Without Postmark: Magic links are printed to console (clickable in most terminals)
+- With Postmark: Real emails sent automatically
 - `EMAIL_DISABLE=true` to disable all email sending
 
-3. (Optional) Add AWS SES credentials for email functionality.
+3. (Optional) Add Postmark credentials for email functionality.
 
 ### Installation
 
@@ -113,6 +120,23 @@ pnpm i18n:check:fix
 ```
 
 The i18n check runs automatically in CI/CD and before commits when translation files are modified.
+
+## Documentation
+
+This project's documentation is an ongoing effort. You can find more detailed information on specific features in the `docs/` directory.
+
+- [Area Search Feature](./docs/features/area-search.md)
+- [Translation System](./docs/features/translation-system.md)
+- [Design Atlas Integration (UI Library)](./docs/features/design-atlas-integration.md)
+
+### Contributing to Documentation
+
+We welcome improvements to our documentation! If you notice something is missing, unclear, or incorrect, please feel free to open a pull request. To contribute:
+
+1. Create or edit the relevant Markdown file in the `docs/` directory.
+2. If you are documenting a new feature, please create a new file in `docs/features/`.
+3. Keep the language clear and concise.
+4. Submit a pull request with your changes.
 
 ## License
 
