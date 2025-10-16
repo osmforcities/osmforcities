@@ -32,7 +32,6 @@ export async function generateMetadata({
 async function getPublicDatasets() {
   const publicDatasets = await prisma.dataset.findMany({
     where: {
-      isPublic: true,
       isActive: true,
     },
     include: {

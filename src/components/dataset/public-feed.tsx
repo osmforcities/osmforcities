@@ -7,7 +7,7 @@ export default async function PublicDatasetsFeed() {
   const t = await getTranslations("PublicDatasetsFeed");
 
   const datasets = await prisma.dataset.findMany({
-    where: { isPublic: true },
+    where: { isActive: true },
     include: {
       template: true,
       user: true,
