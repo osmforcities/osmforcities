@@ -24,3 +24,6 @@ UPDATE "datasets"
 SET
   "userId" = NULL,
   "isPublic" = true;
+
+-- Remove isPublic column (all datasets are public by default now)
+ALTER TABLE "datasets" DROP COLUMN "isPublic";

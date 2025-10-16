@@ -10,7 +10,6 @@ type Dataset = {
   id: string;
   cityName: string;
   isActive: boolean;
-  isPublic: boolean;
   dataCount: number;
   template: {
     name: string;

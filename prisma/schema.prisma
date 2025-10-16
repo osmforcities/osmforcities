@@ -82,7 +82,6 @@ model Dataset {
   templateId  String
   cityName    String
   isActive    Boolean        @default(true)
-  isPublic    Boolean        @default(false)
   lastChecked DateTime?
   dataCount   Int            @default(0)
   geojson     Json?
@@ -96,7 +95,7 @@ model Dataset {
   template    Template       @relation(fields: [templateId], references: [id], onDelete: Cascade)
   user        User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, templateId, areaId])
+  @@unique([templateId, areaId])
   @@map("datasets")
 }
 
