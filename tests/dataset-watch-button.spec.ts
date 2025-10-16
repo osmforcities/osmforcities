@@ -8,9 +8,13 @@ import { PrismaClient } from "@prisma/client";
 
 test.describe("Dataset Watch Button", () => {
   test.describe.configure({ retries: 2 });
-  
+
   let testUser: { id: string; email: string; password?: string };
-  let testDataset: { id: string; template: { id: string; name: string }; area: { id: number } };
+  let testDataset: {
+    id: string;
+    template: { id: string; name: string };
+    area: { id: number };
+  };
 
   test.beforeEach(async ({ page }) => {
     const prisma = new PrismaClient();
@@ -70,7 +74,9 @@ test.describe("Dataset Watch Button", () => {
   });
 
   test("should display watch button for datasets", async ({ page }) => {
-    await page.goto(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`);
+    await page.goto(
+      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+    );
 
     // Check that watch button is visible
     const watchButton = page.getByRole("button", { name: /watch/i });
@@ -81,7 +87,9 @@ test.describe("Dataset Watch Button", () => {
   });
 
   test("should successfully watch a dataset", async ({ page }) => {
-    await page.goto(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`);
+    await page.goto(
+      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+    );
 
     // Click watch button
     const watchButton = page.getByRole("button", { name: /watch/i });
@@ -104,7 +112,9 @@ test.describe("Dataset Watch Button", () => {
   });
 
   test("should successfully unwatch a dataset", async ({ page }) => {
-    await page.goto(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`);
+    await page.goto(
+      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+    );
 
     // First watch the dataset through the UI
     const watchButton = page.getByRole("button", { name: /watch/i });
@@ -143,7 +153,9 @@ test.describe("Dataset Watch Button", () => {
       await route.continue();
     });
 
-    await page.goto(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`);
+    await page.goto(
+      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+    );
 
     const watchButton = page.getByRole("button", { name: /watch/i });
 
@@ -158,7 +170,9 @@ test.describe("Dataset Watch Button", () => {
   });
 
   test("should show correct button states", async ({ page }) => {
-    await page.goto(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`);
+    await page.goto(
+      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+    );
 
     // Initially should show watch button
     let watchButton = page.getByRole("button", { name: /watch/i });
@@ -189,7 +203,9 @@ test.describe("Dataset Watch Button", () => {
       });
     });
 
-    await page.goto(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`);
+    await page.goto(
+      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+    );
 
     const watchButton = page.getByRole("button", { name: /watch/i });
     await watchButton.click();
@@ -217,7 +233,9 @@ test.describe("Dataset Watch Button", () => {
     });
     await prisma.$disconnect();
 
-    await page.goto(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`);
+    await page.goto(
+      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+    );
 
     // Should show unwatch button initially
     const unwatchButton = page.getByRole("button", { name: /unwatch/i });
@@ -272,7 +290,9 @@ test.describe("Dataset Watch Button", () => {
     });
     await prisma.$disconnect();
 
-    await page.goto(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`);
+    await page.goto(
+      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+    );
 
     // Current user should still be able to watch
     const watchButton = page.getByRole("button", { name: /watch/i });
