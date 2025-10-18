@@ -1,5 +1,9 @@
 import { test, expect } from "./test-setup";
-import { createTestUser, cleanupTestUser } from "./utils/auth";
+import {
+  createTestUser,
+  cleanupTestUser,
+  setupAuthenticationWithLogin,
+} from "./utils/auth";
 import { PrismaClient } from "@prisma/client";
 
 test.describe("Seamless Discovery Workflow", () => {
@@ -10,11 +14,8 @@ test.describe("Seamless Discovery Workflow", () => {
     testUser = await createTestUser(prisma);
     await prisma.$disconnect();
 
-    await page.goto("http://localhost:3000/en/login");
-    await page.fill('input[name="email"]', testUser.email);
-    await page.fill('input[name="password"]', testUser.password!);
-    await page.click('button[type="submit"]');
-    await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+    // Use fast API-based authentication
+    await setupAuthenticationWithLogin(page, testUser);
   });
 
   test.afterEach(async () => {
@@ -117,11 +118,9 @@ test.describe("Seamless Discovery Workflow", () => {
       data: {
         cityName: "Test City",
         isActive: true,
-        isPublic: true,
         dataCount: 10,
         templateId: template.id,
         areaId: testArea.id,
-        userId: testUser.id,
         geojson: {
           type: "FeatureCollection",
           features: [],
@@ -131,8 +130,8 @@ test.describe("Seamless Discovery Workflow", () => {
 
     await prisma.datasetWatch.create({
       data: {
-        userId: testUser.id,
         datasetId: testDataset.id,
+        userId: testUser.id,
       },
     });
 
@@ -226,11 +225,9 @@ test.describe("Seamless Discovery Workflow", () => {
       data: {
         cityName: "Test City",
         isActive: true,
-        isPublic: true,
         dataCount: 10,
         templateId: template.id,
         areaId: testArea.id,
-        userId: testUser.id,
         geojson: {
           type: "FeatureCollection",
           features: [],
@@ -240,8 +237,8 @@ test.describe("Seamless Discovery Workflow", () => {
 
     await prisma.datasetWatch.create({
       data: {
-        userId: testUser.id,
         datasetId: testDataset.id,
+        userId: testUser.id,
       },
     });
 
@@ -316,11 +313,9 @@ test.describe("Seamless Discovery Workflow", () => {
         data: {
           cityName: `Test City ${i}`,
           isActive: true,
-          isPublic: true,
           dataCount: 10,
           templateId: templates[i].id,
           areaId: testArea.id,
-          userId: testUser.id,
           geojson: {
             type: "FeatureCollection",
             features: [],
@@ -330,8 +325,8 @@ test.describe("Seamless Discovery Workflow", () => {
 
       await prisma.datasetWatch.create({
         data: {
-          userId: testUser.id,
           datasetId: testDataset.id,
+          userId: testUser.id,
         },
       });
     }

@@ -66,8 +66,18 @@ export async function createTestUser(
 export async function cleanupTestUser(userId: string) {
   const prisma = new PrismaClient();
   try {
+    // Remove all dataset watches for this user
     await prisma.datasetWatch.deleteMany({ where: { userId } });
-    await prisma.dataset.deleteMany({ where: { userId } });
+
+    // Remove any datasets that have no watchers (test datasets)
+    await prisma.dataset.deleteMany({
+      where: {
+        watchers: {
+          none: {},
+        },
+      },
+    });
+
     await prisma.session.deleteMany({ where: { userId } });
     await prisma.verificationToken.deleteMany({
       where: { identifier: { contains: userId } },
@@ -106,21 +116,30 @@ export async function setupAuthenticationWithSignup(
 
 /**
  * Sets up authentication using direct login (when user already exists)
+ * Uses fast API-based authentication for tests
  */
 export async function setupAuthenticationWithLogin(
   page: Page,
   user: TestUser
 ): Promise<TestUser> {
-  await page.goto("http://localhost:3000/en/login");
+  // Use fast API-based authentication for tests
+  const response = await page.request.post(
+    "http://localhost:3000/api/auth/test-signin",
+    {
+      data: { email: user.email },
+    }
+  );
+
+  if (!response.ok()) {
+    throw new Error(
+      `Test sign-in failed: ${response.status()} ${response.statusText()}`
+    );
+  }
+
+  // The API endpoint sets the session cookie automatically
+  // Navigate to a page to verify authentication
+  await page.goto("http://localhost:3000/en");
   await page.waitForLoadState("domcontentloaded");
-
-  await page.fill('input[name="email"]', user.email);
-  await page.fill('input[name="password"]', user.password!);
-
-  await page.click('button[type="submit"]');
-
-  // Wait for redirect to dashboard after successful login (authenticated users are redirected to /)
-  await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
 
   return user;
 }

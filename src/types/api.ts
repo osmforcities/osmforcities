@@ -33,7 +33,6 @@ const RefreshResponseSchema = z.object({
 
 const UpdateDatasetSchema = z.object({
   isActive: z.boolean().optional(),
-  isPublic: z.boolean().optional(),
 });
 
 const UpdateDatasetResponseSchema = ApiResponseSchema;

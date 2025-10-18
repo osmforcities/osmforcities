@@ -27,13 +27,7 @@ export async function POST(
       return NextResponse.json({ error: "Dataset not found" }, { status: 404 });
     }
 
-    if (!dataset.isPublic) {
-      return NextResponse.json(
-        { error: "Cannot watch private dataset" },
-        { status: 403 }
-      );
-    }
-
+    
     const existingWatch = await prisma.datasetWatch.findUnique({
       where: {
         userId_datasetId: {

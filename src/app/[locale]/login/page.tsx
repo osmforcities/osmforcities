@@ -18,8 +18,7 @@ export default async function LoginPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // Only show this page when password authentication is enabled
-  if (process.env.ENABLE_PASSWORD_AUTH !== "true") {
+  if (process.env.ENABLE_TEST_AUTH !== "true") {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -27,14 +26,12 @@ export default async function LoginPage({
             {"Not Found"}
           </h1>
           <p className="text-gray-600 mt-2">
-            {"Password authentication is not enabled."}
+            {"Test authentication is not enabled."}
           </p>
         </div>
       </div>
     );
   }
-
-  // No translations needed for test environment
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">

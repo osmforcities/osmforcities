@@ -18,19 +18,16 @@ export function useAuth() {
       throw new Error("Invalid credentials");
     }
 
-    // Redirect to home page after successful login
     window.location.href = `/${locale}`;
   };
 
   const signup = async (email: string, password: string, name: string) => {
-    // Only allow when password authentication is enabled
-    if (process.env.ENABLE_PASSWORD_AUTH !== "true") {
+    if (process.env.ENABLE_TEST_AUTH !== "true") {
       throw new Error(
-        "Signup not available - password authentication disabled"
+        "Signup not available - test authentication disabled"
       );
     }
 
-    // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
@@ -39,22 +36,19 @@ export function useAuth() {
       throw new Error("User already exists");
     }
 
-    // Hash password before storing (secure even in test environment)
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create new user with hashed password (for test environment only)
     await prisma.user.create({
       data: {
         email,
         name,
-        password: hashedPassword, // Store hashed password securely
-        emailVerified: new Date(), // Auto-verify for testing
+        password: hashedPassword,
+        emailVerified: new Date(),
         reportsEnabled: true,
         reportsFrequency: "DAILY",
       },
     });
 
-    // Auto-login after successful signup
     const result = await signIn("password", {
       email,
       password,
@@ -62,10 +56,8 @@ export function useAuth() {
     });
 
     if (result?.error) {
-      // If auto-login fails, redirect to login page
       window.location.href = `/${locale}/login`;
     } else {
-      // Redirect to home page after successful login
       window.location.href = `/${locale}`;
     }
   };

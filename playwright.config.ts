@@ -5,10 +5,10 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
-  timeout: 60 * 1000, // 60 seconds per test
+  workers: process.env.CI ? 1 : 2,
+  timeout: 60 * 1000,
   expect: {
-    timeout: 30 * 1000, // 30 seconds for expect assertions to find actual bugs
+    timeout: 30 * 1000,
   },
   use: {
     trace: "on-first-retry",
@@ -23,7 +23,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "NODE_ENV=test ENABLE_PASSWORD_AUTH=true pnpm dev",
+    command: "ENABLE_TEST_AUTH=true pnpm dev",
     url: "http://localhost:3000/api/health",
     reuseExistingServer: true,
     timeout: 120 * 1000,
@@ -31,6 +31,5 @@ export default defineConfig({
     stderr: "pipe",
   },
   globalSetup: require.resolve("./tests/global-setup.ts"),
-  // Use our custom test setup that includes global mocks
   testMatch: "**/*.spec.ts",
 });

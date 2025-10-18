@@ -1,6 +1,6 @@
 {
   "name": "osmforcities",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
-    "@aws-sdk/client-ses": "^3.823.0",
     "@mdx-js/loader": "^3.1.0",
     "@next/env": "^15.3.5",
     "@next/mdx": "^15.5.2",
@@ -44,6 +43,7 @@
     "next-auth": "5.0.0-beta.29",
     "next-intl": "^4.3.4",
     "osmtogeojson": "3.0.0-beta.5",
+    "postmark": "^4.0.5",
     "react": "^19.0.0",
     "react-aria-components": "^1.12.1",
     "react-dom": "^19.0.0",
