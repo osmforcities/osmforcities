@@ -35,13 +35,13 @@ export default async function TemplatesPage() {
   }
 
   if (!user.isAdmin) {
-    return redirect({ href: "/watched", locale: "en" });
+    return redirect({ href: "/", locale: "en" });
   }
 
   const templates = await getTemplates();
 
   return (
-    <TabLayout activeTab="templates" isAdmin={user.isAdmin}>
+    <TabLayout activeTab="templates">
       <div>
         <div className="flex items-center gap-2 mb-4">
           <h2 className="text-xl font-semibold text-black dark:text-white">

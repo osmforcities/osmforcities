@@ -35,13 +35,13 @@ export default async function UsersPage() {
   }
 
   if (!user.isAdmin) {
-    return redirect({ href: "/watched", locale: "en" });
+    return redirect({ href: "/", locale: "en" });
   }
 
   const users = await getUsers();
 
   return (
-    <TabLayout activeTab="users" isAdmin={user.isAdmin}>
+    <TabLayout activeTab="users">
       <div>
         <div className="flex items-center gap-2 mb-4">
           <h2 className="text-xl font-semibold text-black dark:text-white">
