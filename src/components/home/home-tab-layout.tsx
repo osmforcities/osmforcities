@@ -161,7 +161,7 @@ export default function HomeTabLayout({
                   title={watchedT("title")}
                   emptyMessage={watchedT("emptyMessage")}
                   emptyActionText={watchedT("emptyActionText")}
-                  emptyActionHref="/public"
+                  emptyActionHref="/"
                   showCreator
                 />
               </div>

@@ -84,19 +84,19 @@ export default function TabLayout({
           <Tabs defaultValue={activeTab} value={activeTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
               <TabsTrigger value="watched">
-                <Link href="/watched" className="flex items-center gap-2">
+                <Link href="/" className="flex items-center gap-2">
                   <Eye className="h-4 w-4" />
                   {t("following")}
                 </Link>
               </TabsTrigger>
               <TabsTrigger value="my-datasets">
-                <Link href="/my-datasets" className="flex items-center gap-2">
+                <Link href="/" className="flex items-center gap-2">
                   <Plus className="h-4 w-4" />
                   {t("explore")}
                 </Link>
               </TabsTrigger>
               <TabsTrigger value="public">
-                <Link href="/public" className="flex items-center gap-2">
+                <Link href="/" className="flex items-center gap-2">
                   <Globe className="h-4 w-4" />
                   {t("explore")}
                 </Link>
