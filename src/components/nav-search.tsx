@@ -100,8 +100,7 @@ function NavSearch() {
       return [
         createSpecialSearchItem(
           "need-more-chars",
-          // @ts-expect-error - next-intl auto-generated types don't properly handle ICU plural format parameters
-          t("typeMoreChars", { count: charsNeeded })
+          t("typeMoreChars", { count: charsNeeded } as Parameters<typeof t>[1])
         ),
       ];
     }
@@ -174,11 +173,9 @@ function NavSearch() {
       <div aria-live="polite" aria-atomic="true" className="sr-only">
         {inputValue.length > 0 &&
           inputValue.length < MIN_SEARCH_CHARS &&
-          t(
-            "typeMoreChars",
-            // @ts-expect-error - next-intl auto-generated types don't properly handle ICU plural format parameters
-            { count: MIN_SEARCH_CHARS - inputValue.length }
-          )}
+          t("typeMoreChars", {
+            count: MIN_SEARCH_CHARS - inputValue.length,
+          } as Parameters<typeof t>[1])}
         {isLoading && "Searching for areas"}
         {error && "Search failed, please try again"}
         {areas.length > 0 &&
