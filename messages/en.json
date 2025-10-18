@@ -29,10 +29,13 @@
     "welcomeBack": "Welcome back",
     "manageDatasetsSubtitle": "Manage your datasets and explore the platform",
     "following": "Following",
-    "myDatasets": "My Datasets",
-    "publicDatasets": "Public Datasets",
+    "explore": "Explore",
     "templates": "Templates",
-    "users": "Users"
+    "users": "Users",
+    "myDatasetsEmptyMessage": "You haven't created any datasets yet.",
+    "myDatasetsEmptyAction": "Create Dataset",
+    "templatesComingSoon": "Template management coming soon...",
+    "usersComingSoon": "User management coming soon..."
   },
   "Public": {
     "metaTitle": "Public Datasets - OSM for Cities",

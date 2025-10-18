@@ -29,10 +29,13 @@
     "welcomeBack": "Bienvenido de vuelta",
     "manageDatasetsSubtitle": "Gestiona tus conjuntos de datos y explora la plataforma",
     "following": "Siguiendo",
-    "myDatasets": "Mis Conjuntos de Datos",
-    "publicDatasets": "Conjuntos de Datos Públicos",
+    "explore": "Explorar",
     "templates": "Plantillas",
-    "users": "Usuarios"
+    "users": "Usuarios",
+    "myDatasetsEmptyMessage": "Aún no has creado ningún conjunto de datos.",
+    "myDatasetsEmptyAction": "Crear Conjunto de Datos",
+    "templatesComingSoon": "Gestión de plantillas próximamente...",
+    "usersComingSoon": "Gestión de usuarios próximamente..."
   },
   "Public": {
     "metaTitle": "Conjuntos de Datos Públicos - OSM for Cities",

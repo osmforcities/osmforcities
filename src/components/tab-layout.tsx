@@ -92,13 +92,13 @@ export default function TabLayout({
               <TabsTrigger value="my-datasets">
                 <Link href="/my-datasets" className="flex items-center gap-2">
                   <Plus className="h-4 w-4" />
-                  {t("myDatasets")}
+                  {t("explore")}
                 </Link>
               </TabsTrigger>
               <TabsTrigger value="public">
                 <Link href="/public" className="flex items-center gap-2">
                   <Globe className="h-4 w-4" />
-                  {t("publicDatasets")}
+                  {t("explore")}
                 </Link>
               </TabsTrigger>
               {isAdmin && (
