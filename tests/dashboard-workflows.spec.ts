@@ -27,7 +27,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
   });
 
   test("should display dashboard title and subtitle", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/?tab=watched");
 
     // Check for welcome message
     await expect(page.getByText(/Welcome back/)).toBeVisible();
@@ -41,12 +41,12 @@ test.describe("Dashboard Page - Essential Workflows", () => {
   test("should show empty state when no datasets are followed", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto("/?tab=watched");
 
     // Check for empty state
     await expect(page.getByText("No datasets followed yet")).toBeVisible();
     await expect(
-      page.getByText(/Start following datasets to see them here/)
+      page.getByRole("link", { name: "Search Cities" })
     ).toBeVisible();
 
     // Check for empty state action button
@@ -109,10 +109,9 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto("/?tab=watched");
 
-    // Check for datasets section
-    await expect(page.getByText("Your Followed Datasets")).toBeVisible();
+    // Check for datasets section - no heading exists in new design
 
     // Check for dataset count
     await expect(page.getByText(/dataset.*you're monitoring/)).toBeVisible();
@@ -174,7 +173,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto("/?tab=watched");
 
     // Click on dataset card
     const datasetCard = page
@@ -238,7 +237,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto("/?tab=watched");
 
     // Check dataset card structure
     const datasetCard = page
@@ -308,7 +307,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto("/?tab=watched");
 
     // Check for watcher count
     await expect(page.getByText("1 watcher")).toBeVisible();
@@ -359,7 +358,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto("/?tab=watched");
 
     const datasetGrid = page.getByTestId("followed-datasets-grid");
 
@@ -424,7 +423,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto("/?tab=watched");
 
     // Check for plural form
     await expect(page.getByText("2 datasets you're monitoring")).toBeVisible();
@@ -453,7 +452,7 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
   });
 
   test("should not show old wizard workflow buttons", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/?tab=watched");
 
     // Should not show old buttons
     await expect(
@@ -470,7 +469,7 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
   test("should show clean dashboard without authorship references", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto("/?tab=watched");
 
     // Should not show authorship-related content
     await expect(page.getByText(/created by|author|owner/)).toBeHidden();
@@ -478,12 +477,12 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
   });
 
   test("should have proper empty state guidance", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/?tab=watched");
 
     // Check empty state guidance
     await expect(page.getByText("No datasets followed yet")).toBeVisible();
     await expect(
-      page.getByText(/Search for cities to discover available datasets/)
+      page.getByRole("link", { name: "Search Cities" })
     ).toBeVisible();
 
     // Should have search button in empty state

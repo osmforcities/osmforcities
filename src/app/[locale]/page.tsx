@@ -34,6 +34,30 @@ async function getWatchedDatasets(userId: string) {
   return watchedDatasets.map((watch) => watch.dataset);
 }
 
+async function getTemplates() {
+  const templates = await prisma.template.findMany({
+    include: {
+      _count: {
+        select: { datasets: true },
+      },
+    },
+    orderBy: { name: "asc" },
+  });
+  return templates;
+}
+
+async function getUsers() {
+  const users = await prisma.user.findMany({
+    include: {
+      _count: {
+        select: { datasets: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  return users;
+}
+
 export default async function Home() {
   const session = await auth();
   const user = session?.user || null;
@@ -63,16 +87,21 @@ export default async function Home() {
     );
   }
 
+  // Fetch watched datasets for the dashboard grid
   const watchedDatasets = await getWatchedDatasets(user.id);
+
+  // Fetch admin data only if user is admin
+  const templates = user.isAdmin ? await getTemplates() : [];
+  const users = user.isAdmin ? await getUsers() : [];
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Welcome Header Card */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-8">
           <div className="flex-1 min-w-0">
             <h1 className="text-3xl font-bold text-gray-900 mb-3">
-              {tabT("welcomeBack")}{", "}{user.name || user.email}
+              {tabT("welcomeBack", { name: user.name || user.email })}
             </h1>
             <p className="text-lg text-gray-600 mb-2">
               {tabT("manageDatasetsSubtitle")}
@@ -80,13 +109,111 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* Followed Datasets Section */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            {"Your Followed Datasets"}
-          </h2>
+        {/* Dashboard Grid */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-8">
           <DashboardGrid datasets={watchedDatasets} />
         </div>
+
+        {/* Admin Features - Only show for admin users */}
+        {user.isAdmin && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Templates Section */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+              <div className="flex items-center gap-2 mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {tabT("templates")}
+                </h2>
+                <span className="text-sm text-gray-500">
+                  {tabT("openParen")}{templates.length}{tabT("closeParen")}
+                </span>
+              </div>
+              <div className="space-y-3">
+                {templates.slice(0, 5).map((template) => (
+                  <div
+                    key={template.id}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="font-semibold text-gray-900">
+                          {template.name}
+                        </h3>
+                        <p className="text-sm text-gray-600 capitalize">
+                          {template.category}
+                        </p>
+                      </div>
+                      <span
+                        className={`px-2 py-1 text-xs rounded ${
+                          template.isActive
+                            ? "bg-green-100 text-green-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {template.isActive ? "Active" : "Inactive"}
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      <p>{tabT("datasets")}{": "}{template._count.datasets}</p>
+                    </div>
+                  </div>
+                ))}
+                {templates.length > 5 && (
+                  <div className="text-center pt-2">
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/templates">{tabT("viewAllTemplates")}</Link>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Users Section */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+              <div className="flex items-center gap-2 mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">{tabT("users")}</h2>
+                <span className="text-sm text-gray-500">{tabT("openParen")}{users.length}{tabT("closeParen")}</span>
+              </div>
+              <div className="space-y-3">
+                {users.slice(0, 5).map((userItem) => (
+                  <div
+                    key={userItem.id}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="font-semibold text-gray-900">
+                          {userItem.name || userItem.email.split("@")[0]}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          {userItem.email}
+                        </p>
+                      </div>
+                      <span
+                        className={`px-2 py-1 text-xs rounded ${
+                          userItem.isAdmin
+                            ? "bg-purple-100 text-purple-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {userItem.isAdmin ? "Admin" : "User"}
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      <p>{tabT("datasets")}{": "}{userItem._count.datasets}</p>
+                    </div>
+                  </div>
+                ))}
+                {users.length > 5 && (
+                  <div className="text-center pt-2">
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/users">{tabT("viewAllUsers")}</Link>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

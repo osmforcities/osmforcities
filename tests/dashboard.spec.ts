@@ -21,25 +21,29 @@ test.describe("User Dashboard", () => {
   test("should display followed datasets section", async ({ page }) => {
     await page.goto("/");
 
-    // Check for followed datasets section header
-    await expect(page.getByText("Your Followed Datasets")).toBeVisible();
+    // Check for dashboard grid (either with datasets or empty state)
+    const grid = page.getByTestId("followed-datasets-grid");
+    const emptyState = page.getByText("No datasets followed yet");
+
+    const hasGrid = await grid.isVisible();
+    const isEmpty = await emptyState.isVisible();
+
+    // Either show grid or empty state
+    expect(hasGrid || isEmpty).toBe(true);
   });
 
   test("should display followed datasets in card layout", async ({ page }) => {
     await page.goto("/");
 
-    // Check for datasets section header
-    await expect(page.getByText("Your Followed Datasets")).toBeVisible();
-
-    // Check for either dataset count text or empty state
-    const datasetCountText = page.getByText(/dataset.*you're monitoring/);
+    // Check for dashboard grid (either with datasets or empty state)
+    const grid = page.getByTestId("followed-datasets-grid");
     const emptyState = page.getByText("No datasets followed yet");
-    
-    const hasCountText = await datasetCountText.isVisible();
+
+    const hasGrid = await grid.isVisible();
     const isEmpty = await emptyState.isVisible();
-    
-    // Either show count text or empty state
-    expect(hasCountText || isEmpty).toBe(true);
+
+    // Either show grid or empty state
+    expect(hasGrid || isEmpty).toBe(true);
   });
 
   test("should show empty state when no datasets are followed", async ({
@@ -51,7 +55,7 @@ test.describe("User Dashboard", () => {
     // Check for empty state
     await expect(page.getByText("No datasets followed yet")).toBeVisible();
     await expect(
-      page.getByText(/Start following datasets to see them here/)
+      page.getByRole("link", { name: "Search Cities" })
     ).toBeVisible();
   });
 
@@ -113,7 +117,7 @@ test.describe("User Dashboard", () => {
       await datasetCards.first().click();
 
       // Should navigate to dataset page
-      await expect(page).toHaveURL(/\/en\/dataset\/[a-zA-Z0-9-]+/);
+      await expect(page).toHaveURL(/\/en\/area\/\d+\/dataset\/[a-zA-Z0-9-]+/);
     }
   });
 
@@ -122,7 +126,7 @@ test.describe("User Dashboard", () => {
 
     // Check for main layout structure
     await expect(page.locator(".min-h-screen.bg-gray-50")).toBeVisible();
-    await expect(page.locator(".max-w-4xl.mx-auto")).toBeVisible();
+    await expect(page.locator(".max-w-6xl.mx-auto")).toBeVisible();
 
     // Check for header card
     await expect(
@@ -264,19 +268,13 @@ test.describe("Dashboard Navigation", () => {
     await setupAuthenticationWithSignup(page);
   });
 
-  test("should allow navigation to public datasets from empty state", async ({
-    page,
-  }) => {
+  test("should show proper empty state guidance", async ({ page }) => {
     await page.goto("/");
 
-    // If empty state is shown, click browse button
-    const browseButton = page.getByRole("link", {
-      name: "Browse Public Datasets",
-    });
-    if (await browseButton.isVisible()) {
-      await browseButton.click();
-      await expect(page).toHaveURL("/en/public");
-    }
+    // Check for empty state guidance
+    await expect(page.getByText("No datasets followed yet")).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Search Cities" })
+    ).toBeVisible();
   });
-
 });

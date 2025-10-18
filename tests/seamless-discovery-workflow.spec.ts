@@ -85,7 +85,7 @@ test.describe("Seamless Discovery Workflow", () => {
       await page.goto("/");
 
       // Should now show the watched dataset
-      await expect(page.getByText("Your Followed Datasets")).toBeVisible();
+      // No heading exists in new design, just check for dataset count text
       await expect(page.getByText("1 dataset you're monitoring")).toBeVisible();
     }
   });
@@ -262,7 +262,7 @@ test.describe("Seamless Discovery Workflow", () => {
     await page.goto("/");
 
     // Should show the dataset in followed list
-    await expect(page.getByText("Your Followed Datasets")).toBeVisible();
+    // No heading exists in new design, just check for dataset count text
     await expect(page.getByText("1 dataset you're monitoring")).toBeVisible();
   });
 
@@ -336,7 +336,7 @@ test.describe("Seamless Discovery Workflow", () => {
     await page.goto("/");
 
     // Should show multiple datasets
-    await expect(page.getByText("Your Followed Datasets")).toBeVisible();
+    // No heading exists in new design, just check for dataset count text
     await expect(page.getByText("3 datasets you're monitoring")).toBeVisible();
 
     // Should show multiple dataset cards

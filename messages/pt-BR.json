@@ -26,13 +26,20 @@
     "viewOnGitHub": "Ver no GitHub"
   },
   "TabLayout": {
-    "welcomeBack": "Bem-vindo de volta",
+    "welcomeBack": "Bem-vindo de volta, {name}",
+    "welcomeBackGeneric": "Bem-vindo de volta",
     "manageDatasetsSubtitle": "Gerencie seus conjuntos de dados e explore a plataforma",
     "following": "Seguindo",
-    "myDatasets": "Meus Conjuntos de Dados",
-    "publicDatasets": "Conjuntos de Dados Públicos",
+    "explore": "Explorar",
     "templates": "Modelos",
-    "users": "Usuários"
+    "users": "Usuários",
+    "myDatasetsEmptyMessage": "Você ainda não criou nenhum conjunto de dados.",
+    "myDatasetsEmptyAction": "Criar Conjunto de Dados",
+    "openParen": "(",
+    "closeParen": ")",
+    "datasets": "Conjuntos de dados:",
+    "viewAllTemplates": "Ver Todos os Modelos",
+    "viewAllUsers": "Ver Todos os Usuários"
   },
   "Public": {
     "metaTitle": "Conjuntos de Dados Públicos - OSM for Cities",

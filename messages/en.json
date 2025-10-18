@@ -26,13 +26,20 @@
     "viewOnGitHub": "View on GitHub"
   },
   "TabLayout": {
-    "welcomeBack": "Welcome back",
+    "welcomeBack": "Welcome back, {name}",
+    "welcomeBackGeneric": "Welcome back",
     "manageDatasetsSubtitle": "Manage your datasets and explore the platform",
     "following": "Following",
-    "myDatasets": "My Datasets",
-    "publicDatasets": "Public Datasets",
+    "explore": "Explore",
     "templates": "Templates",
-    "users": "Users"
+    "users": "Users",
+    "myDatasetsEmptyMessage": "You haven't created any datasets yet.",
+    "myDatasetsEmptyAction": "Create Dataset",
+    "openParen": "(",
+    "closeParen": ")",
+    "datasets": "Datasets:",
+    "viewAllTemplates": "View All Templates",
+    "viewAllUsers": "View All Users"
   },
   "Public": {
     "metaTitle": "Public Datasets - OSM for Cities",
