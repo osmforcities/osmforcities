@@ -8,5 +8,5 @@ export default async function PublicPage({
 }) {
   const { locale } = await params;
   
-  return redirect({ href: "/?tab=explore", locale });
+  return redirect({ href: "/", locale });
 }

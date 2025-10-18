@@ -34,46 +34,6 @@ async function getWatchedDatasets(userId: string) {
   return watchedDatasets.map((watch) => watch.dataset);
 }
 
-async function getPublicDatasets() {
-  const publicDatasets = await prisma.dataset.findMany({
-    where: {
-      isActive: true,
-    },
-    include: {
-      template: {
-        select: {
-          id: true,
-          name: true,
-          category: true,
-          description: true,
-        },
-      },
-      area: {
-        select: {
-          id: true,
-          name: true,
-          countryCode: true,
-        },
-      },
-      user: {
-        select: {
-          name: true,
-          email: true,
-        },
-      },
-      _count: {
-        select: { watchers: true },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 50, // Limit to 50 most recent
-  });
-
-  return publicDatasets;
-}
-
 export default async function Home() {
   const session = await auth();
   const user = session?.user || null;
@@ -103,16 +63,12 @@ export default async function Home() {
   }
 
   // Fetch all data needed for tabs
-  const [watchedDatasets, publicDatasets] = await Promise.all([
-    getWatchedDatasets(user.id),
-    getPublicDatasets(),
-  ]);
+  const watchedDatasets = await getWatchedDatasets(user.id);
 
   return (
     <HomeTabLayout
       user={user}
       watchedDatasets={watchedDatasets}
-      publicDatasets={publicDatasets}
     />
   );
 }

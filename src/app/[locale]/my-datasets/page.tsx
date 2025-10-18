@@ -7,6 +7,6 @@ export default async function MyDatasetsPage({
   params: Promise<{ locale: Locale }>;
 }) {
   const { locale } = await params;
-
-  return redirect({ href: "/?tab=explore", locale });
+  
+  return redirect({ href: "/", locale });
 }

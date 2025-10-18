@@ -4,7 +4,7 @@ import React from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Eye, Users, FileText, Globe } from "lucide-react";
+import { Eye, Users, FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
 import DatasetList from "@/components/dataset/list";
 
@@ -66,7 +66,6 @@ type HomeTabLayoutProps = {
     isAdmin: boolean;
   };
   watchedDatasets: Dataset[];
-  publicDatasets?: Dataset[];
   templates?: Template[];
   users?: User[];
 };
@@ -74,7 +73,6 @@ type HomeTabLayoutProps = {
 export default function HomeTabLayout({
   user,
   watchedDatasets,
-  publicDatasets = [],
   templates = [],
   users = [],
 }: HomeTabLayoutProps) {
@@ -82,7 +80,6 @@ export default function HomeTabLayout({
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("TabLayout");
-  const publicT = useTranslations("Public");
   const watchedT = useTranslations("Watched");
 
   // Get tab from URL parameter, default to "watched"
@@ -118,22 +115,13 @@ export default function HomeTabLayout({
           onValueChange={handleTabChange}
           className="w-full"
         >
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-3">
             <TabsTrigger value="watched" className="flex items-center gap-2">
               <Eye className="h-4 w-4" />
               {t("following")}
               {watchedDatasets.length > 0 && (
                 <span className="hidden sm:inline-block text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">
                   {watchedDatasets.length}
-                </span>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="explore" className="flex items-center gap-2">
-              <Globe className="h-4 w-4" />
-              {t("explore")}
-              {publicDatasets.length > 0 && (
-                <span className="hidden sm:inline-block text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">
-                  {publicDatasets.length}
                 </span>
               )}
             </TabsTrigger>
@@ -179,18 +167,6 @@ export default function HomeTabLayout({
               </div>
             </TabsContent>
 
-            <TabsContent value="explore" className="space-y-4">
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
-                <DatasetList
-                  datasets={publicDatasets as unknown as Parameters<typeof DatasetList>[0]['datasets']}
-                  title={t("explore")}
-                  emptyMessage={publicT("emptyMessage")}
-                  emptyActionText={publicT("emptyActionText")}
-                  emptyActionHref="/my-datasets/create"
-                  showCreator
-                />
-              </div>
-            </TabsContent>
 
             {user.isAdmin && (
               <TabsContent value="templates" className="space-y-4">
