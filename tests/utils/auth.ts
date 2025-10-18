@@ -66,8 +66,18 @@ export async function createTestUser(
 export async function cleanupTestUser(userId: string) {
   const prisma = new PrismaClient();
   try {
+    // Remove all dataset watches for this user
     await prisma.datasetWatch.deleteMany({ where: { userId } });
-    await prisma.dataset.deleteMany({ where: { userId } });
+
+    // Remove any datasets that have no watchers (test datasets)
+    await prisma.dataset.deleteMany({
+      where: {
+        watchers: {
+          none: {},
+        },
+      },
+    });
+
     await prisma.session.deleteMany({ where: { userId } });
     await prisma.verificationToken.deleteMany({
       where: { identifier: { contains: userId } },

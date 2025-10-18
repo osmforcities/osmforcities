@@ -34,7 +34,6 @@ export const DatasetStatsSchema = z.object({
 export const CreateDatasetSchema = z.object({
   templateId: z.string(),
   osmRelationId: z.number(),
-  isPublic: z.boolean().optional(),
 });
 
 export const WatchDatasetSchema = z.object({
@@ -49,7 +48,6 @@ export const DatasetSchema = z.object({
   id: z.string(),
   cityName: z.string(),
   isActive: z.boolean(),
-  isPublic: z.boolean(),
   lastChecked: z.coerce.date().nullable(),
   dataCount: z.number(),
   stats: DatasetStatsSchema.nullable(),
@@ -63,11 +61,13 @@ export const DatasetSchema = z.object({
     category: z.string(),
     description: z.string().nullable(),
   }),
-  user: z.object({
-    id: z.string(),
-    name: z.string().nullable(),
-    email: z.string(),
-  }),
+  user: z
+    .object({
+      id: z.string(),
+      name: z.string().nullable(),
+      email: z.string(),
+    })
+    .nullable(),
   area: z.object({
     id: z.number(),
     name: z.string(),

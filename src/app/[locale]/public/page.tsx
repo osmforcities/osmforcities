@@ -32,7 +32,6 @@ export async function generateMetadata({
 async function getPublicDatasets() {
   const publicDatasets = await prisma.dataset.findMany({
     where: {
-      isPublic: true,
       isActive: true,
     },
     include: {
@@ -42,13 +41,6 @@ async function getPublicDatasets() {
           name: true,
           category: true,
           description: true,
-        },
-      },
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
         },
       },
       area: {

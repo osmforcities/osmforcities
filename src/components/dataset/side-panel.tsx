@@ -59,7 +59,6 @@ export async function DatasetSidePanel({ dataset }: DatasetSidePanelProps) {
         <DatasetWatchButton
           datasetId={dataset.id}
           isWatched={dataset.isWatched || false}
-          isPublic={dataset.isPublic}
         />
         <DatasetRefreshButton
           datasetId={dataset.id}
@@ -76,12 +75,12 @@ export async function DatasetSidePanel({ dataset }: DatasetSidePanelProps) {
         </span>
         <span
           className={`px-2 py-1 text-xs rounded-full capitalize ${
-            dataset.isPublic
+            true
               ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
               : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
           }`}
         >
-          {dataset.isPublic ? t("public") : t("private")}
+          {t("public")}
         </span>
       </div>
 
@@ -123,7 +122,7 @@ export async function DatasetSidePanel({ dataset }: DatasetSidePanelProps) {
             </div>
           </div>
 
-          {dataset.isPublic && (
+          {true && (
             <div className="bg-muted/50 p-3 rounded-lg text-center">
               <Users className="h-4 w-4 text-orange-600 mx-auto mb-1" />
               <div className="text-lg font-bold text-orange-600">

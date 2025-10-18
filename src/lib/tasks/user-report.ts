@@ -244,7 +244,6 @@ export async function generateNextUserReport(): Promise<{
   const recentDatasets = await prisma.dataset.findMany({
     where: {
       userId: user.id,
-      isPublic: true,
     },
     select: {
       id: true,

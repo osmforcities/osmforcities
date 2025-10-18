@@ -7,7 +7,6 @@ export async function GET() {
   try {
     const publicDatasets = await prisma.dataset.findMany({
       where: {
-        isPublic: true,
         isActive: true,
       },
       include: {

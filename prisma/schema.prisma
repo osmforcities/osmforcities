@@ -8,24 +8,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum ReportFrequency {
-  DAILY
-  WEEKLY
-}
-
 model User {
   id               String          @id @default(cuid())
   email            String          @unique
   name             String?
-  password         String?         // For test environment only
-  isAdmin          Boolean         @default(false)
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
+  isAdmin          Boolean         @default(false)
   lastReportSent   DateTime?
   reportsEnabled   Boolean         @default(false)
   reportsFrequency ReportFrequency @default(DAILY)
   language         String          @default("en")
   emailVerified    DateTime?
+  password         String?
   watchedDatasets  DatasetWatch[]
   datasets         Dataset[]
   sessions         Session[]
@@ -39,8 +34,7 @@ model Session {
   token     String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
 }
@@ -55,57 +49,53 @@ model VerificationToken {
 }
 
 model Template {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String
   description   String?
   overpassQuery String
   category      String
   tags          String[]
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  datasets Dataset[]
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  datasets      Dataset[]
 
   @@map("templates")
 }
 
 model Area {
-  id          Int      @id
+  id          Int       @id
   name        String
   countryCode String?
   bounds      String?
   geojson     Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  datasets Dataset[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  datasets    Dataset[]
 
   @@map("areas")
 }
 
 model Dataset {
-  id          String    @id @default(cuid())
-  userId      String
+  id          String         @id @default(cuid())
+  userId      String?
   templateId  String
-  areaId      Int
   cityName    String
-  isActive    Boolean   @default(true)
-  isPublic    Boolean   @default(false)
+  isActive    Boolean        @default(true)
   lastChecked DateTime?
-  dataCount   Int       @default(0)
+  dataCount   Int            @default(0)
   geojson     Json?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  areaId      Int
   bbox        Json?
   stats       Json?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  watchers    DatasetWatch[]
+  area        Area           @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  template    Template       @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  user        User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  template Template       @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  area     Area           @relation(fields: [areaId], references: [id], onDelete: Cascade)
-  watchers DatasetWatch[]
-
-  @@unique([userId, templateId, areaId])
+  @@unique([templateId, areaId])
   @@map("datasets")
 }
 
@@ -114,10 +104,14 @@ model DatasetWatch {
   userId    String
   datasetId String
   createdAt DateTime @default(now())
-
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  dataset Dataset @relation(fields: [datasetId], references: [id], onDelete: Cascade)
+  dataset   Dataset  @relation(fields: [datasetId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, datasetId])
   @@map("dataset_watches")
+}
+
+enum ReportFrequency {
+  DAILY
+  WEEKLY
 }
