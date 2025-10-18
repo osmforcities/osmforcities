@@ -16,7 +16,10 @@
     "preferences": "Preferences",
     "brandName": "OSM for Cities",
     "signIn": "Sign In",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "mainMenu": "Main navigation menu",
+    "menu": "Menu",
+    "close": "Close"
   },
   "Common": {
     "shareFeedback": "Share Feedback",
@@ -176,8 +179,11 @@
     "viewOnOpenStreetMap": "View on OpenStreetMap →"
   },
   "NavSearch": {
-    "searchPlaceholder": "Search cities and areas...",
-    "noAreasFound": "No areas found"
+    "searchPlaceholder": "Search cities and areas (min. 3 characters)...",
+    "noAreasFound": "No areas found",
+    "searching": "Searching...",
+    "typeMoreChars": "Type {count} more character{count, plural, one {} other {s}} to search",
+    "searchHint": "Try searching for cities, regions, or countries"
   },
   "AddressTypes": {
     "city": "City",
