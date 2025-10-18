@@ -44,9 +44,9 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     await page.goto("/?tab=watched");
 
     // Check for empty state
-    await expect(page.getByText("You're not following any datasets yet.")).toBeVisible();
+    await expect(page.getByText("No datasets followed yet")).toBeVisible();
     await expect(
-      page.getByRole("link", { name: "Browse Public Datasets" })
+      page.getByRole("link", { name: "Search Cities" })
     ).toBeVisible();
 
     // Check for empty state action button
@@ -111,8 +111,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await page.goto("/?tab=watched");
 
-    // Check for datasets section
-    await expect(page.getByRole("heading", { name: "Following" })).toBeVisible();
+    // Check for datasets section - no heading exists in new design
 
     // Check for dataset count
     await expect(page.getByText(/dataset.*you're monitoring/)).toBeVisible();
@@ -481,9 +480,9 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
     await page.goto("/?tab=watched");
 
     // Check empty state guidance
-    await expect(page.getByText("You're not following any datasets yet.")).toBeVisible();
+    await expect(page.getByText("No datasets followed yet")).toBeVisible();
     await expect(
-      page.getByRole("link", { name: "Browse Public Datasets" })
+      page.getByRole("link", { name: "Search Cities" })
     ).toBeVisible();
 
     // Should have search button in empty state

@@ -102,7 +102,8 @@ test.describe("Dataset Watch Button", () => {
 
     // Check that dataset appears in watched datasets
     await page.goto("/");
-    await expect(page.getByText("Your Followed Datasets")).toBeVisible();
+    // No heading exists in new design, just check for dataset count text
+    await expect(page.getByText(/dataset.*you're monitoring/)).toBeVisible();
 
     // Verify dataset appears in dashboard
     const datasetCard = page
@@ -225,6 +226,16 @@ test.describe("Dataset Watch Button", () => {
   test("should prevent watching already watched dataset", async ({ page }) => {
     // First watch the dataset
     const prisma = new PrismaClient();
+
+    // Ensure the dataset still exists
+    const existingDataset = await prisma.dataset.findUnique({
+      where: { id: testDataset.id },
+    });
+
+    if (!existingDataset) {
+      throw new Error("Test dataset not found - it may have been cleaned up");
+    }
+
     await prisma.datasetWatch.create({
       data: {
         datasetId: testDataset.id,
