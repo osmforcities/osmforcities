@@ -297,6 +297,8 @@
     "joined": "Entrou:"
   },
   "DatasetMap": {
+    "mapLabel": "Mapa interativo mostrando conjunto de dados",
+    "fullScreenMapLabel": "Mapa interativo em tela cheia mostrando conjunto de dados",
     "noDataAvailable": "Nenhum dado disponível. Os dados serão atualizados automaticamente quando você visitar esta página.",
     "noGeographicData": "Nenhum dado geográfico encontrado nos resultados do conjunto de dados.",
     "tags": "Tags",

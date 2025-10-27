@@ -4,6 +4,7 @@ import React, { useRef, useCallback, useEffect } from "react";
 import Map from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { useTranslations } from "next-intl";
 import type { Dataset } from "@/schemas/dataset";
 import { MapLayers } from "./map/layers";
 import { AgeLegend } from "./map/age-legend";
@@ -21,6 +22,7 @@ const MemoizedMapLayers = React.memo(MapLayers);
 const MemoizedMapDateFilterControl = React.memo(MapDateFilterControl);
 
 export function DatasetFullMap({ dataset }: DatasetFullMapProps) {
+  const t = useTranslations("DatasetMap");
   const mapRef = useRef<MapRef | null>(null);
 
   const { dateFilter, setDateFilter, updateFilterIfNeeded } = useDateFilter();
@@ -69,6 +71,7 @@ export function DatasetFullMap({ dataset }: DatasetFullMapProps) {
           <Map
             ref={mapRef}
             mapStyle="https://tiles.openfreemap.org/styles/positron"
+            aria-label={t('fullScreenMapLabel')}
             initialViewState={initialViewState}
             style={{ width: "100%", height: "100%" }}
             scrollZoom={true}

@@ -297,6 +297,8 @@
     "joined": "Joined:"
   },
   "DatasetMap": {
+    "mapLabel": "Interactive map showing dataset",
+    "fullScreenMapLabel": "Full screen interactive map showing dataset",
     "noDataAvailable": "No data available. Data will be automatically refreshed when you visit this page.",
     "noGeographicData": "No geographic data found in the dataset results.",
     "tags": "Tags",

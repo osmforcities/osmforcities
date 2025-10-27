@@ -296,6 +296,8 @@
     "joined": "Se unió:"
   },
   "DatasetMap": {
+    "mapLabel": "Mapa interactivo mostrando conjunto de datos",
+    "fullScreenMapLabel": "Mapa interactivo en pantalla completa mostrando conjunto de datos",
     "noDataAvailable": "No hay datos disponibles. Los datos se actualizarán automáticamente cuando visites esta página.",
     "noGeographicData": "No se encontraron datos geográficos en los resultados del conjunto de datos.",
     "tags": "Etiquetas",
