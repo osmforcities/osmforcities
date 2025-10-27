@@ -61,6 +61,16 @@ export async function createTestUser(
 }
 
 /**
+ * Creates a test admin user in the database
+ */
+export async function createAdminTestUser(
+  prisma: PrismaClient,
+  userData: Partial<TestUser> = {}
+): Promise<TestUser> {
+  return await createTestUser(prisma, { ...userData, isAdmin: true });
+}
+
+/**
  * Cleans up test user and related data
  */
 export async function cleanupTestUser(userId: string) {
