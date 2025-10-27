@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Area } from "@/types/area";
 import { useTranslations } from "next-intl";
+import { getUserAgent } from "@/lib/osm";
 
 type NominatimResult = {
   place_id: number;
@@ -105,7 +106,7 @@ export default function AreaSelector({
         {
           headers: {
             "Accept-Language": "en",
-            "User-Agent": "OSMForCities/1.0",
+            "User-Agent": getUserAgent(),
           },
         }
       );
