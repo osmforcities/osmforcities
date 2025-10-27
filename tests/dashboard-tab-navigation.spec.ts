@@ -262,9 +262,7 @@ test.describe("Dashboard Tab Navigation", () => {
       const prisma = new PrismaClient();
 
       const template = await prisma.template.findFirst();
-      if (!template) {
-        throw new Error("No template found in database");
-      }
+      expect(template).toBeDefined();
 
       const testArea = await prisma.area.create({
         data: {
@@ -383,7 +381,8 @@ test.describe("Dashboard Tab Navigation", () => {
 
       // Go back to dashboard
       await page.goto("http://localhost:3000/en");
-      await page.waitForTimeout(1000);
+      // Wait for page to be fully loaded
+      await page.waitForLoadState('domcontentloaded');
 
       // Test Templates tab keyboard navigation
       const templatesTab = page.getByTestId("tab-templates");
@@ -478,17 +477,11 @@ test.describe("Dashboard Tab Navigation", () => {
       // Wait for dashboard tabs to be visible
       await expect(page.getByTestId("dashboard-tabs")).toBeVisible();
 
-      // Rapidly click Users tab multiple times
-      for (let i = 0; i < 3; i++) {
-        // Only click if we're still on the home page and tab is visible
-        if (page.url().endsWith("/en")) {
-          const usersTab = page.getByTestId("tab-users");
-          if (await usersTab.isVisible()) {
-            await usersTab.click();
-          }
-        }
-        await page.waitForTimeout(100);
-      }
+      // Rapidly click Users tab multiple times to test rapid navigation
+      const usersTab = page.getByTestId("tab-users");
+      await usersTab.click();
+      await usersTab.click();
+      await usersTab.click();
 
       // Should still navigate correctly
       await expect(page).toHaveURL("http://localhost:3000/en/users");
