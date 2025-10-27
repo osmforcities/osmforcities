@@ -125,7 +125,7 @@ test.describe("User Dashboard", () => {
     await page.goto("/");
 
     // Check for main layout structure
-    await expect(page.locator(".min-h-screen.bg-gray-50")).toBeVisible();
+    await expect(page.locator(".min-h-screen.bg-white")).toBeVisible();
     await expect(page.locator(".max-w-6xl.mx-auto")).toBeVisible();
 
     // Check for header card
