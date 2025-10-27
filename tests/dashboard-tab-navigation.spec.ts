@@ -282,7 +282,7 @@ test.describe("Dashboard Tab Navigation", () => {
           cityName: "Test City",
           isActive: true,
           dataCount: 10,
-          templateId: template.id,
+          templateId: template!.id,
           areaId: testArea.id,
           geojson: {
             type: "FeatureCollection",
@@ -312,7 +312,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await expect(datasetGrid).toBeVisible();
 
       // Check for dataset content
-      await expect(page.getByText(template.name)).toBeVisible();
+      await expect(page.getByText(template!.name)).toBeVisible();
       await expect(page.getByText("Test City")).toBeVisible();
       await expect(page.getByText("(US)")).toBeVisible();
     });
