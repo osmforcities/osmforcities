@@ -47,7 +47,7 @@ export default async function UsersPage() {
         <div className="max-w-6xl mx-auto space-y-8">
           <div>
             <h1 className="text-3xl font-bold text-black dark:text-white">
-              {tabT("welcomeBackGeneric")}
+              {tabT("welcomeBack", { name: user.name || user.email })}
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1">
               {tabT("manageDatasetsSubtitle")}
