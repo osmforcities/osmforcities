@@ -40,9 +40,10 @@ test.describe("Dashboard Tab Navigation", () => {
       // Check that only Following tab is visible
       await expect(page.getByTestId("tab-following")).toBeVisible();
       await expect(page.getByTestId("tab-users")).toBeHidden();
+      await expect(page.getByTestId("tab-templates")).toBeHidden();
     });
 
-    test("should show both Following and Users tabs for admin users", async ({
+    test("should show all three tabs for admin users on dashboard", async ({
       page,
     }) => {
       // Login as admin user
@@ -52,12 +53,13 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.click('button[type="submit"]');
       await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
 
-      // Check that both tabs are visible
+      // Check that all three tabs are visible
       await expect(page.getByTestId("tab-following")).toBeVisible();
       await expect(page.getByTestId("tab-users")).toBeVisible();
+      await expect(page.getByTestId("tab-templates")).toBeVisible();
     });
 
-    test("should show Users tab with icon for admin users", async ({
+    test("should show Users and Templates tabs with icons for admin users", async ({
       page,
     }) => {
       // Login as admin user
@@ -69,8 +71,13 @@ test.describe("Dashboard Tab Navigation", () => {
 
       // Check that Users tab has an icon
       const usersTab = page.getByTestId("tab-users");
-      const icon = usersTab.locator("svg");
-      await expect(icon).toBeVisible();
+      const usersIcon = usersTab.locator("svg");
+      await expect(usersIcon).toBeVisible();
+
+      // Check that Templates tab has an icon
+      const templatesTab = page.getByTestId("tab-templates");
+      const templatesIcon = templatesTab.locator("svg");
+      await expect(templatesIcon).toBeVisible();
     });
   });
 
@@ -97,7 +104,27 @@ test.describe("Dashboard Tab Navigation", () => {
       ).toBeVisible();
     });
 
-    test("should show TabLayout on users page", async ({ page }) => {
+    test("should navigate to templates page when clicking Templates tab", async ({
+      page,
+    }) => {
+      // Login as admin user
+      await page.goto("http://localhost:3000/en/login");
+      await page.fill('input[name="email"]', adminUser.email);
+      await page.fill('input[name="password"]', adminUser.password!);
+      await page.click('button[type="submit"]');
+      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+
+      // Click Templates tab
+      await page.getByTestId("tab-templates").click();
+
+      // Should navigate to templates page
+      await expect(page).toHaveURL("http://localhost:3000/en/templates");
+
+      // Should see templates page content
+      await expect(page.getByRole("heading", { name: "Templates" })).toBeVisible();
+    });
+
+    test("should show DashboardTabs on users page with correct active tab", async ({ page }) => {
       // Login as admin user
       await page.goto("http://localhost:3000/en/login");
       await page.fill('input[name="email"]', adminUser.email);
@@ -108,11 +135,33 @@ test.describe("Dashboard Tab Navigation", () => {
       // Click Users tab
       await page.getByTestId("tab-users").click();
 
-      // Should see TabLayout with users and templates tabs
-      await expect(page.getByText("Templates")).toBeVisible();
+      // Should see DashboardTabs with all three tabs
+      await expect(page.getByTestId("tab-following")).toBeVisible();
+      await expect(page.getByTestId("tab-users")).toBeVisible();
+      await expect(page.getByTestId("tab-templates")).toBeVisible();
 
       // Should be on users page
       await expect(page).toHaveURL("http://localhost:3000/en/users");
+    });
+
+    test("should show DashboardTabs on templates page with correct active tab", async ({ page }) => {
+      // Login as admin user
+      await page.goto("http://localhost:3000/en/login");
+      await page.fill('input[name="email"]', adminUser.email);
+      await page.fill('input[name="password"]', adminUser.password!);
+      await page.click('button[type="submit"]');
+      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+
+      // Click Templates tab
+      await page.getByTestId("tab-templates").click();
+
+      // Should see DashboardTabs with all three tabs
+      await expect(page.getByTestId("tab-following")).toBeVisible();
+      await expect(page.getByTestId("tab-users")).toBeVisible();
+      await expect(page.getByTestId("tab-templates")).toBeVisible();
+
+      // Should be on templates page
+      await expect(page).toHaveURL("http://localhost:3000/en/templates");
     });
 
     test("should handle navigation back to home from users page", async ({
@@ -133,9 +182,35 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.getByRole("link", { name: "OSM for Cities" }).click();
       await expect(page).toHaveURL("http://localhost:3000/en");
 
-      // Should see home dashboard with tabs again
+      // Should see home dashboard with all tabs again
       await expect(page.getByTestId("tab-following")).toBeVisible();
       await expect(page.getByTestId("tab-users")).toBeVisible();
+      await expect(page.getByTestId("tab-templates")).toBeVisible();
+    });
+
+    test("should handle navigation between admin pages", async ({ page }) => {
+      // Login as admin user
+      await page.goto("http://localhost:3000/en/login");
+      await page.fill('input[name="email"]', adminUser.email);
+      await page.fill('input[name="password"]', adminUser.password!);
+      await page.click('button[type="submit"]');
+      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+
+      // Navigate to users page
+      await page.getByTestId("tab-users").click();
+      await expect(page).toHaveURL("http://localhost:3000/en/users");
+
+      // Navigate to templates page from users page
+      await page.getByTestId("tab-templates").click();
+      await expect(page).toHaveURL("http://localhost:3000/en/templates");
+
+      // Navigate back to users page from templates page
+      await page.getByTestId("tab-users").click();
+      await expect(page).toHaveURL("http://localhost:3000/en/users");
+
+      // Navigate back to dashboard from users page
+      await page.getByTestId("tab-following").click();
+      await expect(page).toHaveURL("http://localhost:3000/en");
     });
   });
 
@@ -288,7 +363,7 @@ test.describe("Dashboard Tab Navigation", () => {
   });
 
   test.describe("Accessibility", () => {
-    test("should support keyboard navigation", async ({ page }) => {
+    test("should support keyboard navigation for all tabs", async ({ page }) => {
       // Login as admin user
       await page.goto("http://localhost:3000/en/login");
       await page.fill('input[name="email"]', adminUser.email);
@@ -296,24 +371,29 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.click('button[type="submit"]');
       await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
 
-      // Wait for tabs to be visible
-      await expect(page.getByTestId("tab-users")).toBeVisible();
+      // Wait for all tabs to be visible
+      await expect(page.getByTestId("tab-templates")).toBeVisible();
 
-      // Focus directly on the Users tab
+      // Test Users tab keyboard navigation
       const usersTab = page.getByTestId("tab-users");
       await usersTab.focus();
-
-      // Verify the Users tab is focused
       await expect(usersTab).toBeFocused();
-
-      // Press Enter to activate
       await page.keyboard.press("Enter");
-
-      // Should navigate to users page
       await expect(page).toHaveURL("http://localhost:3000/en/users");
+
+      // Go back to dashboard
+      await page.goto("http://localhost:3000/en");
+      await page.waitForTimeout(1000);
+
+      // Test Templates tab keyboard navigation
+      const templatesTab = page.getByTestId("tab-templates");
+      await templatesTab.focus();
+      await expect(templatesTab).toBeFocused();
+      await page.keyboard.press("Enter");
+      await expect(page).toHaveURL("http://localhost:3000/en/templates");
     });
 
-    test("should have proper ARIA attributes", async ({ page }) => {
+    test("should have proper ARIA attributes for all tabs", async ({ page }) => {
       // Login as admin user
       await page.goto("http://localhost:3000/en/login");
       await page.fill('input[name="email"]', adminUser.email);
@@ -325,12 +405,19 @@ test.describe("Dashboard Tab Navigation", () => {
       const tabsList = page.locator('[role="tablist"]');
       await expect(tabsList).toBeVisible();
 
-      // Check for proper tab roles
+      // Check for proper tab roles for all tabs
       const followingTab = page.locator('[role="tab"]:has-text("Following")');
       const usersTab = page.locator('[role="tab"]:has-text("Users")');
+      const templatesTab = page.locator('[role="tab"]:has-text("Templates")');
 
       await expect(followingTab).toBeVisible();
       await expect(usersTab).toBeVisible();
+      await expect(templatesTab).toBeVisible();
+
+      // Check for aria-label attributes
+      await expect(page.getByTestId("tab-following")).toHaveAttribute("aria-label");
+      await expect(page.getByTestId("tab-users")).toHaveAttribute("aria-label");
+      await expect(page.getByTestId("tab-templates")).toHaveAttribute("aria-label");
     });
   });
 
@@ -343,13 +430,18 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.click('button[type="submit"]');
       await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
 
-      // Check tabs are visible
+      // Check all tabs are visible
       await expect(page.getByTestId("tab-following")).toBeVisible();
       await expect(page.getByTestId("tab-users")).toBeVisible();
+      await expect(page.getByTestId("tab-templates")).toBeVisible();
 
-      // Test navigation
+      // Test navigation to users page
       await page.getByTestId("tab-users").click();
       await expect(page).toHaveURL("http://localhost:3000/en/users");
+
+      // Test navigation to templates page
+      await page.getByTestId("tab-templates").click();
+      await expect(page).toHaveURL("http://localhost:3000/en/templates");
 
       console.log(`Tab navigation works correctly in ${browserName}`);
     });

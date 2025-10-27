@@ -35,6 +35,7 @@
     "templates": "Modelos",
     "users": "Usuários",
     "usersAriaLabel": "Usuários - Navegar para a página de gerenciamento de usuários",
+    "templatesAriaLabel": "Modelos - Navegar para a página de gerenciamento de modelos",
     "myDatasetsEmptyMessage": "Você ainda não criou nenhum conjunto de dados.",
     "myDatasetsEmptyAction": "Criar Conjunto de Dados",
     "openParen": "(",

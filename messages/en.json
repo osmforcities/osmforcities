@@ -35,6 +35,7 @@
     "templates": "Templates",
     "users": "Users",
     "usersAriaLabel": "Users - Navigate to users management page",
+    "templatesAriaLabel": "Templates - Navigate to templates management page",
     "myDatasetsEmptyMessage": "You haven't created any datasets yet.",
     "myDatasetsEmptyAction": "Create Dataset",
     "openParen": "(",

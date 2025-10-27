@@ -35,6 +35,7 @@
     "templates": "Plantillas",
     "users": "Usuarios",
     "usersAriaLabel": "Usuarios - Navegar a la página de gestión de usuarios",
+    "templatesAriaLabel": "Plantillas - Navegar a la página de gestión de plantillas",
     "myDatasetsEmptyMessage": "Aún no has creado ningún conjunto de datos.",
     "myDatasetsEmptyAction": "Crear Conjunto de Datos",
     "openParen": "(",
