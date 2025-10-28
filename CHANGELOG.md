@@ -1,5 +1,34 @@
 # osmforcities
 
+## 1.2.0
+
+### Minor Changes
+
+- ## Features
+
+  - Complete tab navigation layout consistency with accessibility improvements
+  - Simplify dashboard to focus on followed datasets
+  - Add consistent User-Agent headers for OSM API requests
+  - Remove deprecated area generation code
+
+  ## Fixes
+
+  - Remove logout noise and enable email sending in development
+  - Prevent immediate email when users enable or change email report preferences
+  - Update authentication variables and configuration
+
+  ## Infrastructure
+
+  - Complete Postmark email migration for improved deliverability
+  - Enhance deployment playbook with explicit branch checkout
+  - Seamless Area Discovery Migration for better UX
+
+  ## Developer Experience
+
+  - Remove hardcoded Overpass API URL
+  - Migrate navbar to React Aria with Design Atlas tokens
+  - Add age-based visual highlighting for better data visualization
+
 ## 1.1.0
 
 ### Minor Changes
