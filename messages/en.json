@@ -30,9 +30,12 @@
     "welcomeBackGeneric": "Welcome back",
     "manageDatasetsSubtitle": "Manage your datasets and explore the platform",
     "following": "Following",
+    "followingAriaLabel": "Following - View datasets you're following",
     "explore": "Explore",
     "templates": "Templates",
     "users": "Users",
+    "usersAriaLabel": "Users - Navigate to users management page",
+    "templatesAriaLabel": "Templates - Navigate to templates management page",
     "myDatasetsEmptyMessage": "You haven't created any datasets yet.",
     "myDatasetsEmptyAction": "Create Dataset",
     "openParen": "(",
@@ -294,6 +297,8 @@
     "joined": "Joined:"
   },
   "DatasetMap": {
+    "mapLabel": "Interactive map showing dataset",
+    "fullScreenMapLabel": "Full screen interactive map showing dataset",
     "noDataAvailable": "No data available. Data will be automatically refreshed when you visit this page.",
     "noGeographicData": "No geographic data found in the dataset results.",
     "tags": "Tags",

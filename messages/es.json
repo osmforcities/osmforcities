@@ -30,9 +30,12 @@
     "welcomeBackGeneric": "Bienvenido de vuelta",
     "manageDatasetsSubtitle": "Gestiona tus conjuntos de datos y explora la plataforma",
     "following": "Siguiendo",
+    "followingAriaLabel": "Siguiendo - Ver conjuntos de datos que estás siguiendo",
     "explore": "Explorar",
     "templates": "Plantillas",
     "users": "Usuarios",
+    "usersAriaLabel": "Usuarios - Navegar a la página de gestión de usuarios",
+    "templatesAriaLabel": "Plantillas - Navegar a la página de gestión de plantillas",
     "myDatasetsEmptyMessage": "Aún no has creado ningún conjunto de datos.",
     "myDatasetsEmptyAction": "Crear Conjunto de Datos",
     "openParen": "(",
@@ -293,6 +296,8 @@
     "joined": "Se unió:"
   },
   "DatasetMap": {
+    "mapLabel": "Mapa interactivo mostrando conjunto de datos",
+    "fullScreenMapLabel": "Mapa interactivo en pantalla completa mostrando conjunto de datos",
     "noDataAvailable": "No hay datos disponibles. Los datos se actualizarán automáticamente cuando visites esta página.",
     "noGeographicData": "No se encontraron datos geográficos en los resultados del conjunto de datos.",
     "tags": "Etiquetas",

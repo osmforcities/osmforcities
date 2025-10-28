@@ -49,8 +49,14 @@ interface TabsListProps {
 }
 
 export function TabsList({ children, className }: TabsListProps) {
+  const context = React.useContext(TabsContext);
+  if (!context) {
+    throw new Error("TabsList must be used within a Tabs component");
+  }
+
   return (
     <div
+      role="tablist"
       className={cn(
         "inline-flex h-10 items-center justify-center rounded-md bg-gray-100 dark:bg-gray-800 p-1 text-gray-500 dark:text-gray-400",
         className
@@ -65,9 +71,13 @@ interface TabsTriggerProps {
   value: string;
   children: React.ReactNode;
   className?: string;
+  onClick?: () => void;
+  onKeyDown?: (event: React.KeyboardEvent) => void;
+  "data-testid"?: string;
+  "aria-label"?: string;
 }
 
-export function TabsTrigger({ value, children, className }: TabsTriggerProps) {
+export function TabsTrigger({ value, children, className, onClick, onKeyDown, "data-testid": dataTestId, "aria-label": ariaLabel }: TabsTriggerProps) {
   const context = React.useContext(TabsContext);
   if (!context) {
     throw new Error("TabsTrigger must be used within a Tabs component");
@@ -75,8 +85,18 @@ export function TabsTrigger({ value, children, className }: TabsTriggerProps) {
 
   const isSelected = context.selectedTab === value;
 
+  const handleClick = () => {
+    context.setSelectedTab(value);
+    onClick?.();
+  };
+
   return (
     <button
+      role="tab"
+      value={value}
+      aria-selected={isSelected}
+      aria-label={ariaLabel}
+      tabIndex={isSelected ? 0 : -1}
       className={cn(
         "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-gray-950 dark:focus-visible:ring-gray-800",
         isSelected
@@ -84,7 +104,9 @@ export function TabsTrigger({ value, children, className }: TabsTriggerProps) {
           : "hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-50",
         className
       )}
-      onClick={() => context.setSelectedTab(value)}
+      onClick={handleClick}
+      onKeyDown={onKeyDown}
+      data-testid={dataTestId}
     >
       {children}
     </button>
