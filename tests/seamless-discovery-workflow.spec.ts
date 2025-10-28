@@ -85,7 +85,7 @@ test.describe("Seamless Discovery Workflow", () => {
       await page.goto("/");
 
       // Should now show the watched dataset
-      await expect(page.getByText("Your Followed Datasets")).toBeVisible();
+      // No heading exists in new design, just check for dataset count text
       await expect(page.getByText("1 dataset you're monitoring")).toBeVisible();
     }
   });
@@ -118,11 +118,9 @@ test.describe("Seamless Discovery Workflow", () => {
       data: {
         cityName: "Test City",
         isActive: true,
-        isPublic: true,
         dataCount: 10,
         templateId: template.id,
         areaId: testArea.id,
-        userId: testUser.id,
         geojson: {
           type: "FeatureCollection",
           features: [],
@@ -132,8 +130,8 @@ test.describe("Seamless Discovery Workflow", () => {
 
     await prisma.datasetWatch.create({
       data: {
-        userId: testUser.id,
         datasetId: testDataset.id,
+        userId: testUser.id,
       },
     });
 
@@ -227,11 +225,9 @@ test.describe("Seamless Discovery Workflow", () => {
       data: {
         cityName: "Test City",
         isActive: true,
-        isPublic: true,
         dataCount: 10,
         templateId: template.id,
         areaId: testArea.id,
-        userId: testUser.id,
         geojson: {
           type: "FeatureCollection",
           features: [],
@@ -241,8 +237,8 @@ test.describe("Seamless Discovery Workflow", () => {
 
     await prisma.datasetWatch.create({
       data: {
-        userId: testUser.id,
         datasetId: testDataset.id,
+        userId: testUser.id,
       },
     });
 
@@ -266,7 +262,7 @@ test.describe("Seamless Discovery Workflow", () => {
     await page.goto("/");
 
     // Should show the dataset in followed list
-    await expect(page.getByText("Your Followed Datasets")).toBeVisible();
+    // No heading exists in new design, just check for dataset count text
     await expect(page.getByText("1 dataset you're monitoring")).toBeVisible();
   });
 
@@ -317,11 +313,9 @@ test.describe("Seamless Discovery Workflow", () => {
         data: {
           cityName: `Test City ${i}`,
           isActive: true,
-          isPublic: true,
           dataCount: 10,
           templateId: templates[i].id,
           areaId: testArea.id,
-          userId: testUser.id,
           geojson: {
             type: "FeatureCollection",
             features: [],
@@ -331,8 +325,8 @@ test.describe("Seamless Discovery Workflow", () => {
 
       await prisma.datasetWatch.create({
         data: {
-          userId: testUser.id,
           datasetId: testDataset.id,
+          userId: testUser.id,
         },
       });
     }
@@ -342,7 +336,7 @@ test.describe("Seamless Discovery Workflow", () => {
     await page.goto("/");
 
     // Should show multiple datasets
-    await expect(page.getByText("Your Followed Datasets")).toBeVisible();
+    // No heading exists in new design, just check for dataset count text
     await expect(page.getByText("3 datasets you're monitoring")).toBeVisible();
 
     // Should show multiple dataset cards

@@ -36,6 +36,10 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     await expect(
       page.getByText("Manage your datasets and explore the platform")
     ).toBeVisible();
+
+    // Check for new tab navigation
+    await expect(page.getByTestId("tab-following")).toBeVisible();
+    await expect(page.getByTestId("tab-users")).toBeHidden(); // Regular user shouldn't see Users tab
   });
 
   test("should show empty state when no datasets are followed", async ({
@@ -46,12 +50,15 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     // Check for empty state
     await expect(page.getByText("No datasets followed yet")).toBeVisible();
     await expect(
-      page.getByText(/Start following datasets to see them here/)
+      page.getByRole("link", { name: "Search Cities" })
     ).toBeVisible();
 
     // Check for empty state action button
     const searchButton = page.getByRole("link", { name: "Search Cities" });
     await expect(searchButton).toBeVisible();
+
+    // Ensure tab navigation is still visible
+    await expect(page.getByTestId("tab-following")).toBeVisible();
   });
 
   test("should display followed datasets when user has watched datasets", async ({
@@ -85,11 +92,9 @@ test.describe("Dashboard Page - Essential Workflows", () => {
       data: {
         cityName: "Test City",
         isActive: true,
-        isPublic: true,
         dataCount: 10,
         templateId: template.id,
         areaId: testArea.id,
-        userId: testUser.id,
         geojson: {
           type: "FeatureCollection",
           features: [],
@@ -104,8 +109,8 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     // Watch the dataset
     await prisma.datasetWatch.create({
       data: {
-        userId: testUser.id,
         datasetId: testDataset.id,
+        userId: testUser.id,
       },
     });
 
@@ -113,8 +118,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await page.goto("/");
 
-    // Check for datasets section
-    await expect(page.getByText("Your Followed Datasets")).toBeVisible();
+    // Check for datasets section - no heading exists in new design
 
     // Check for dataset count
     await expect(page.getByText(/dataset.*you're monitoring/)).toBeVisible();
@@ -127,6 +131,9 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     await expect(page.getByText(template.name)).toBeVisible();
     await expect(page.getByText("Test City")).toBeVisible();
     await expect(page.getByText("(US)")).toBeVisible();
+
+    // Ensure tab navigation is still visible
+    await expect(page.getByTestId("tab-following")).toBeVisible();
   });
 
   test("should navigate to stable route when clicking dataset card", async ({
@@ -157,11 +164,9 @@ test.describe("Dashboard Page - Essential Workflows", () => {
       data: {
         cityName: "Test City",
         isActive: true,
-        isPublic: true,
         dataCount: 10,
         templateId: template.id,
         areaId: testArea.id,
-        userId: testUser.id,
         geojson: {
           type: "FeatureCollection",
           features: [],
@@ -171,8 +176,8 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.datasetWatch.create({
       data: {
-        userId: testUser.id,
         datasetId: testDataset.id,
+        userId: testUser.id,
       },
     });
 
@@ -219,11 +224,9 @@ test.describe("Dashboard Page - Essential Workflows", () => {
       data: {
         cityName: "Test City",
         isActive: true,
-        isPublic: true,
         dataCount: 10,
         templateId: template.id,
         areaId: testArea.id,
-        userId: testUser.id,
         geojson: {
           type: "FeatureCollection",
           features: [],
@@ -237,8 +240,8 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.datasetWatch.create({
       data: {
-        userId: testUser.id,
         datasetId: testDataset.id,
+        userId: testUser.id,
       },
     });
 
@@ -294,11 +297,9 @@ test.describe("Dashboard Page - Essential Workflows", () => {
       data: {
         cityName: "Test City",
         isActive: true,
-        isPublic: true,
         dataCount: 10,
         templateId: template.id,
         areaId: testArea.id,
-        userId: testUser.id,
         geojson: {
           type: "FeatureCollection",
           features: [],
@@ -309,8 +310,8 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     // Watch the dataset
     await prisma.datasetWatch.create({
       data: {
-        userId: testUser.id,
         datasetId: testDataset.id,
+        userId: testUser.id,
       },
     });
 
@@ -348,11 +349,9 @@ test.describe("Dashboard Page - Essential Workflows", () => {
       data: {
         cityName: "Test City",
         isActive: true,
-        isPublic: true,
         dataCount: 10,
         templateId: template.id,
         areaId: testArea.id,
-        userId: testUser.id,
         geojson: {
           type: "FeatureCollection",
           features: [],
@@ -362,8 +361,8 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.datasetWatch.create({
       data: {
-        userId: testUser.id,
         datasetId: testDataset.id,
+        userId: testUser.id,
       },
     });
 
@@ -414,11 +413,9 @@ test.describe("Dashboard Page - Essential Workflows", () => {
         data: {
           cityName: `Test City ${i}`,
           isActive: true,
-          isPublic: true,
           dataCount: 10,
           templateId: templates[i].id,
           areaId: testArea.id,
-          userId: testUser.id,
           geojson: {
             type: "FeatureCollection",
             features: [],
@@ -428,8 +425,8 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
       await prisma.datasetWatch.create({
         data: {
-          userId: testUser.id,
           datasetId: testDataset.id,
+          userId: testUser.id,
         },
       });
     }
@@ -495,11 +492,36 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
     // Check empty state guidance
     await expect(page.getByText("No datasets followed yet")).toBeVisible();
     await expect(
-      page.getByText(/Search for cities to discover available datasets/)
+      page.getByRole("link", { name: "Search Cities" })
     ).toBeVisible();
 
     // Should have search button in empty state
     const searchButton = page.getByRole("link", { name: "Search Cities" });
     await expect(searchButton).toBeVisible();
+  });
+
+  test("should display tab navigation without breaking existing functionality", async ({ page }) => {
+    await page.goto("/");
+
+    // Check that tab navigation is visible
+    await expect(page.getByTestId("tab-following")).toBeVisible();
+    await expect(page.getByTestId("tab-users")).toBeHidden(); // Regular user shouldn't see Users tab
+
+    // Check that existing dashboard functionality still works
+    await expect(page.getByText(/Welcome back/)).toBeVisible();
+
+    // Check for dashboard grid or empty state
+    const grid = page.getByTestId("followed-datasets-grid");
+    const emptyState = page.getByText("No datasets followed yet");
+
+    const hasGrid = await grid.isVisible();
+    const isEmpty = await emptyState.isVisible();
+
+    expect(hasGrid || isEmpty).toBe(true);
+
+    // Check that welcome message and subtitle are still present
+    await expect(
+      page.getByText("Manage your datasets and explore the platform")
+    ).toBeVisible();
   });
 });

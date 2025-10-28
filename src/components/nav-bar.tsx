@@ -38,6 +38,9 @@ export default async function NavBar() {
               preferences: t("preferences"),
               signOut: t("signOut"),
               signIn: t("signIn"),
+              mainMenu: "Main navigation menu",
+              menu: "Menu",
+              close: "Close",
             }}
           />
         </div>

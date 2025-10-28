@@ -153,16 +153,12 @@ async function createDatasetOnDemand(
     const geojsonData = convertOverpassToGeoJSON(overpassData);
     const bbox = calculateBbox(geojsonData);
     const datasetStats = extractDatasetStats(overpassData);
-    const systemUserId = await getOrCreateSystemUser();
-
     const dataset = await prisma.dataset.create({
       data: {
-        userId: systemUserId,
         templateId: template.id,
         areaId: area.id,
         cityName: area.name,
         isActive: true,
-        isPublic: true,
         geojson: JSON.parse(JSON.stringify(geojsonData)),
         bbox: bbox ? JSON.parse(JSON.stringify(bbox)) : null,
         dataCount: overpassData.elements.length,
@@ -234,26 +230,6 @@ async function createDatasetOnDemand(
       }`
     );
   }
-}
-
-async function getOrCreateSystemUser(): Promise<string> {
-  const systemEmail = "system@osmforcities.com";
-
-  let systemUser = await prisma.user.findUnique({
-    where: { email: systemEmail },
-  });
-
-  if (!systemUser) {
-    systemUser = await prisma.user.create({
-      data: {
-        email: systemEmail,
-        name: "System",
-        isAdmin: true,
-      },
-    });
-  }
-
-  return systemUser.id;
 }
 
 export async function datasetExists(

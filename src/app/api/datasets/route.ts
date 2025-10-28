@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { templateId, osmRelationId, isPublic } = parsed.data;
+  const { templateId, osmRelationId } = parsed.data;
 
   const template = await prisma.template.findUnique({
     where: { id: templateId },
@@ -80,11 +80,9 @@ export async function POST(req: NextRequest) {
 
     const dataset = await prisma.dataset.create({
       data: {
-        userId: user.id,
         templateId,
         areaId: area.id,
         cityName: area.name,
-        isPublic: isPublic ?? false,
         geojson: JSON.parse(JSON.stringify(geojsonData)),
         bbox: bbox ? JSON.parse(JSON.stringify(bbox)) : null,
         dataCount: overpassData.elements.length,

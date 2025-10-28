@@ -155,7 +155,7 @@ export function useDatasetActions() {
 
   const toggleField = async (
     datasetId: string,
-    field: "isActive" | "isPublic",
+    field: "isActive",
     currentValue: boolean,
     onSuccess?: () => void
   ): Promise<{ success: boolean; error?: string }> => {
@@ -200,7 +200,5 @@ export function useDatasetActions() {
     handleDelete,
     toggleActive: (id: string, value: boolean, onSuccess?: () => void) =>
       toggleField(id, "isActive", value, onSuccess),
-    togglePublic: (id: string, value: boolean, onSuccess?: () => void) =>
-      toggleField(id, "isPublic", value, onSuccess),
   };
 }

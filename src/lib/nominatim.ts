@@ -3,6 +3,7 @@ import {
   type NominatimResult,
 } from "@/schemas/nominatim";
 import { Area } from "@/types/area";
+import { getUserAgent } from "./osm";
 
 // Safeguard to prevent external API calls in test mode
 function preventExternalCallsInTests() {
@@ -37,7 +38,7 @@ export async function searchAreasWithNominatim(
       {
         headers: {
           "Accept-Language": language,
-          "User-Agent": "OSMForCities/1.0",
+          "User-Agent": getUserAgent(),
         },
       }
     );
@@ -108,7 +109,7 @@ export async function getAreaDetailsById(
       {
         headers: {
           "Accept-Language": language,
-          "User-Agent": "OSMForCities/1.0",
+          "User-Agent": getUserAgent(),
         },
       }
     );

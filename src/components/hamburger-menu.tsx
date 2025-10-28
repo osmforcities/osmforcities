@@ -20,6 +20,9 @@ interface HamburgerMenuProps {
     preferences: string;
     signOut: string;
     signIn: string;
+    mainMenu: string;
+    menu: string;
+    close: string;
   };
 }
 
@@ -64,18 +67,18 @@ export default function HamburgerMenu({
             >
               <Dialog className="h-full bg-white shadow-xl">
                 <Heading slot="title" className="sr-only">
-                  {"Main menu"}
+                  {translations.mainMenu}
                 </Heading>
 
                 <div className="flex flex-col h-full">
                   {/* Header */}
                   <div className="flex items-center justify-between p-4 border-b border-gray-200">
                     <h2 className="text-lg font-semibold text-gray-900">
-                      {"Menu"}
+                      {translations.menu}
                     </h2>
                     <Button
                       slot="close"
-                      aria-label="Close"
+                      aria-label={translations.close}
                       className="p-3 rounded text-gray-600 hover:text-gray-900 hover:bg-olive-100 focus:outline-none focus:ring-2 focus:ring-olive-500"
                     >
                       <X size={28} />

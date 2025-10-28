@@ -62,7 +62,9 @@ test.describe("Navbar", () => {
     await expect(page.getByText("Sign In")).toBeVisible();
 
     // Search input should be hidden for unauthenticated users
-    const searchInput = page.getByPlaceholder("Search cities and areas...");
+    const searchInput = page.getByPlaceholder(
+      "Search cities and areas (min. 3 characters)..."
+    );
     await expect(searchInput).toBeHidden();
   });
 
@@ -78,7 +80,9 @@ test.describe("Navbar", () => {
       await expect(page.getByText("Sign Out")).toBeVisible();
 
       // Search input should be visible for authenticated users
-      const searchInput = page.getByPlaceholder("Search cities and areas...");
+      const searchInput = page.getByPlaceholder(
+        "Search cities and areas (min. 3 characters)..."
+      );
       await expect(searchInput).toBeVisible();
       await expect(searchInput).toHaveAttribute("role", "combobox");
     } finally {
@@ -131,15 +135,20 @@ test.describe("Navbar", () => {
       }
     });
 
-    test("should not show dropdown for queries less than 3 characters", async ({
+    test("should show helpful message for queries less than 3 characters", async ({
       page,
     }) => {
-      const searchInput = page.getByPlaceholder("Search cities and areas...");
+      const searchInput = page.getByPlaceholder(
+        "Search cities and areas (min. 3 characters)..."
+      );
 
       await searchInput.fill("sa");
 
-      // Should not show any results
-      await expect(page.getByRole("listbox")).toBeHidden();
+      // Should show helpful message about needing more characters
+      await expect(page.getByRole("listbox")).toBeVisible();
+      await expect(
+        page.getByRole("option").getByText("Type 1 more character to search")
+      ).toBeVisible();
     });
 
     test("should show loading state during search", async ({ page }) => {
@@ -165,7 +174,9 @@ test.describe("Navbar", () => {
         }
       );
 
-      const searchInput = page.getByPlaceholder("Search cities and areas...");
+      const searchInput = page.getByPlaceholder(
+        "Search cities and areas (min. 3 characters)..."
+      );
 
       await searchInput.fill("são");
 
@@ -176,7 +187,9 @@ test.describe("Navbar", () => {
     });
 
     test("should show search results for valid query", async ({ page }) => {
-      const searchInput = page.getByPlaceholder("Search cities and areas...");
+      const searchInput = page.getByPlaceholder(
+        "Search cities and areas (min. 3 characters)..."
+      );
 
       await searchInput.fill("são");
 
@@ -205,7 +218,9 @@ test.describe("Navbar", () => {
     test("should show no results message for empty response", async ({
       page,
     }) => {
-      const searchInput = page.getByPlaceholder("Search cities and areas...");
+      const searchInput = page.getByPlaceholder(
+        "Search cities and areas (min. 3 characters)..."
+      );
 
       await searchInput.fill("xyz");
 
@@ -217,7 +232,9 @@ test.describe("Navbar", () => {
     test("should navigate through results with arrow keys", async ({
       page,
     }) => {
-      const searchInput = page.getByPlaceholder("Search cities and areas...");
+      const searchInput = page.getByPlaceholder(
+        "Search cities and areas (min. 3 characters)..."
+      );
 
       await searchInput.fill("são");
 
@@ -249,12 +266,19 @@ test.describe("Navbar", () => {
     test("should navigate to area page when pressing Enter on selected item", async ({
       page,
     }) => {
-      const searchInput = page.getByPlaceholder("Search cities and areas...");
+      const searchInput = page.getByPlaceholder(
+        "Search cities and areas (min. 3 characters)..."
+      );
 
       await searchInput.fill("são");
 
-      // Wait for API call to complete and listbox to appear
+      // Wait for debounced search to complete and API call to finish
       await expect(page.getByRole("listbox")).toBeVisible({ timeout: 10000 });
+      await expect(page.getByRole("option").first()).toBeVisible();
+
+      // Wait a bit more to ensure debounced search has completed
+      // eslint-disable-next-line playwright/no-wait-for-timeout
+      await page.waitForTimeout(600);
 
       // Focus first item with arrow key
       await searchInput.press("ArrowDown");
@@ -267,30 +291,43 @@ test.describe("Navbar", () => {
       await searchInput.press("Enter");
 
       // Should navigate to the area page
-      await expect(page).toHaveURL(getLocalizedPath("/area/54321"));
+      await expect(page).toHaveURL(getLocalizedPath("/area/54321"), {
+        timeout: 10000,
+      });
     });
 
     test("should navigate to area page when clicking on result", async ({
       page,
     }) => {
-      const searchInput = page.getByPlaceholder("Search cities and areas...");
+      const searchInput = page.getByPlaceholder(
+        "Search cities and areas (min. 3 characters)..."
+      );
 
       await searchInput.fill("são");
 
-      // Wait for API call to complete and listbox to appear
+      // Wait for debounced search to complete and API call to finish
       await expect(page.getByRole("listbox")).toBeVisible({ timeout: 10000 });
+      await expect(page.getByRole("option").first()).toBeVisible();
+
+      // Wait a bit more to ensure debounced search has completed
+      // eslint-disable-next-line playwright/no-wait-for-timeout
+      await page.waitForTimeout(600);
 
       // Click on first result
       await page.getByRole("option").first().click();
 
       // Should navigate to the area page
-      await expect(page).toHaveURL(getLocalizedPath("/area/54321"));
+      await expect(page).toHaveURL(getLocalizedPath("/area/54321"), {
+        timeout: 10000,
+      });
     });
 
     test("should close dropdown and clear search when pressing Escape", async ({
       page,
     }) => {
-      const searchInput = page.getByPlaceholder("Search cities and areas...");
+      const searchInput = page.getByPlaceholder(
+        "Search cities and areas (min. 3 characters)..."
+      );
 
       await searchInput.fill("são");
 
@@ -306,7 +343,9 @@ test.describe("Navbar", () => {
     });
 
     test("should close dropdown when clicking outside", async ({ page }) => {
-      const searchInput = page.getByPlaceholder("Search cities and areas...");
+      const searchInput = page.getByPlaceholder(
+        "Search cities and areas (min. 3 characters)..."
+      );
 
       await searchInput.fill("são");
 
@@ -333,7 +372,9 @@ test.describe("Navbar", () => {
         }
       );
 
-      const searchInput = page.getByPlaceholder("Search cities and areas...");
+      const searchInput = page.getByPlaceholder(
+        "Search cities and areas (min. 3 characters)..."
+      );
 
       await searchInput.fill("error");
 

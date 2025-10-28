@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/db";
 import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
+import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +34,7 @@ async function getWatchedDatasets(userId: string) {
 
   return watchedDatasets.map((watch) => watch.dataset);
 }
+
 
 export default async function Home() {
   const session = await auth();
@@ -63,29 +65,31 @@ export default async function Home() {
     );
   }
 
+  // Fetch watched datasets for the dashboard grid
   const watchedDatasets = await getWatchedDatasets(user.id);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Welcome Header Card */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-8">
-          <div className="flex-1 min-w-0">
-            <h1 className="text-3xl font-bold text-gray-900 mb-3">
-              {tabT("welcomeBack")}{", "}{user.name || user.email}
+    <div className="min-h-screen bg-white dark:bg-black">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto space-y-8">
+          <div>
+            <h1 className="text-3xl font-bold text-black dark:text-white">
+              {tabT("welcomeBack", { name: user.name || user.email })}
             </h1>
-            <p className="text-lg text-gray-600 mb-2">
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
               {tabT("manageDatasetsSubtitle")}
             </p>
           </div>
-        </div>
 
-        {/* Followed Datasets Section */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            {"Your Followed Datasets"}
-          </h2>
-          <DashboardGrid datasets={watchedDatasets} />
+          <DashboardTabs
+            isAdmin={user.isAdmin}
+            context="dashboard"
+            activeTab="following"
+          />
+
+          <div className="bg-white rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-8">
+            <DashboardGrid datasets={watchedDatasets} />
+          </div>
         </div>
       </div>
     </div>

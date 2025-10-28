@@ -12,6 +12,22 @@ import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 const OVERPASS_API_URL =
   process.env.OVERPASS_API_URL || "https://overpass-api.de/api/interpreter";
 
+/**
+ * Get the User-Agent string for OSM API requests
+ * @returns The User-Agent string to use in API requests
+ */
+export function getUserAgent(): string {
+  // Use environment variable if provided, otherwise generate default
+  if (process.env.OSM_USER_AGENT) {
+    return process.env.OSM_USER_AGENT;
+  }
+
+  // Generate default User-Agent with app URL
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://osmforcities.org";
+  const url = baseUrl.replace(/^https?:\/\//, ''); // Remove protocol
+  return `OSMForCities (+https://${url})`;
+}
+
 // Safeguard to prevent external API calls in test mode
 function preventExternalCallsInTests() {
   if (process.env.NODE_ENV === "test") {
@@ -32,7 +48,10 @@ export async function fetchOsmRelationData(relationId: number) {
 
   const res = await fetch(OVERPASS_API_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "User-Agent": getUserAgent(),
+    },
     body: `data=${encodeURIComponent(query)}`,
   });
 
@@ -73,6 +92,7 @@ export async function executeOverpassQuery(
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      "User-Agent": getUserAgent(),
     },
     body: `data=${encodeURIComponent(queryString)}`,
   });

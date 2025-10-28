@@ -61,13 +61,33 @@ export async function createTestUser(
 }
 
 /**
+ * Creates a test admin user in the database
+ */
+export async function createAdminTestUser(
+  prisma: PrismaClient,
+  userData: Partial<TestUser> = {}
+): Promise<TestUser> {
+  return await createTestUser(prisma, { ...userData, isAdmin: true });
+}
+
+/**
  * Cleans up test user and related data
  */
 export async function cleanupTestUser(userId: string) {
   const prisma = new PrismaClient();
   try {
+    // Remove all dataset watches for this user
     await prisma.datasetWatch.deleteMany({ where: { userId } });
-    await prisma.dataset.deleteMany({ where: { userId } });
+
+    // Remove any datasets that have no watchers (test datasets)
+    await prisma.dataset.deleteMany({
+      where: {
+        watchers: {
+          none: {},
+        },
+      },
+    });
+
     await prisma.session.deleteMany({ where: { userId } });
     await prisma.verificationToken.deleteMany({
       where: { identifier: { contains: userId } },

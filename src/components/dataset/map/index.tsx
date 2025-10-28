@@ -80,6 +80,7 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
             <Map
               ref={mapRef}
               mapStyle="https://tiles.openfreemap.org/styles/positron"
+              aria-label={t('mapLabel')}
               initialViewState={
                 dataBounds
                   ? {

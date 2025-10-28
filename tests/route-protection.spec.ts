@@ -19,12 +19,10 @@ test.describe("Route Protection", () => {
 
   test("should redirect protected routes to login when not authenticated", async ({ page }) => {
     const protectedRoutes = [
-      "/en/my-datasets",
-      "/en/preferences", 
+      "/en/preferences",
       "/en/watched",
       "/en/users",
       "/en/templates",
-      "/en/my-datasets/create",
       "/en/area/test-area",
       "/en/dataset/test-dataset",
       "/en/public"
@@ -44,9 +42,6 @@ test.describe("Route Protection", () => {
 
     try {
       // Test that protected routes are now accessible
-      await page.goto("/en/my-datasets");
-      await expect(page).toHaveURL("/en/my-datasets");
-
       await page.goto("/en/preferences");
       await expect(page).toHaveURL("/en/preferences");
 
@@ -59,11 +54,11 @@ test.describe("Route Protection", () => {
 
   test("should handle locale-specific route protection", async ({ page }) => {
     // Test Spanish locale
-    await page.goto("/es/my-datasets");
+    await page.goto("/es/preferences");
     await expect(page).toHaveURL(/\/es\/enter/);
 
-    // Test Portuguese locale  
-    await page.goto("/pt-BR/my-datasets");
+    // Test Portuguese locale
+    await page.goto("/pt-BR/preferences");
     await expect(page).toHaveURL(/\/pt-BR\/enter/);
   });
 });

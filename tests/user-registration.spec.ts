@@ -23,7 +23,7 @@ test.describe("User Registration and Authentication", () => {
       await page.waitForLoadState("domcontentloaded");
 
       // Search input should be visible for authenticated users
-      const searchInput = page.getByPlaceholder("Search cities and areas...");
+      const searchInput = page.getByPlaceholder("Search cities and areas (min. 3 characters)...");
       await expect(searchInput).toBeVisible();
 
       // Sign in button should NOT be visible (should show user menu instead)
@@ -45,7 +45,7 @@ test.describe("User Registration and Authentication", () => {
       await page.goto(getLocalizedPath("/"));
       await page.waitForLoadState("domcontentloaded");
 
-      const searchInput = page.getByPlaceholder("Search cities and areas...");
+      const searchInput = page.getByPlaceholder("Search cities and areas (min. 3 characters)...");
       await expect(searchInput).toBeVisible();
 
       const signInButton = page.getByText("Sign In");
@@ -64,7 +64,7 @@ test.describe("User Registration and Authentication", () => {
 
     try {
       // Test protected routes
-      const protectedRoutes = ["/watched", "/my-datasets", "/preferences"];
+      const protectedRoutes = ["/watched", "/preferences"];
 
       for (const route of protectedRoutes) {
         await page.goto(getLocalizedPath(route));

@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
 import { useTranslations } from "next-intl";
 
@@ -11,7 +10,6 @@ type Dataset = {
   id: string;
   cityName: string;
   isActive: boolean;
-  isPublic: boolean;
   dataCount: number;
   template: {
     name: string;
@@ -36,7 +34,6 @@ type DatasetListProps = {
   emptyMessage: string;
   emptyActionText: string;
   emptyActionHref: string;
-  showCreateButton?: boolean;
   isOwned?: boolean;
   showCreator?: boolean;
 };
@@ -47,12 +44,11 @@ export default function DatasetList({
   emptyMessage,
   emptyActionText,
   emptyActionHref,
-  showCreateButton = false,
   isOwned = false,
   showCreator = false,
 }: DatasetListProps) {
   const [localDatasets, setLocalDatasets] = useState(datasets);
-  const { deletingId, handleDelete, toggleActive, togglePublic } =
+  const { deletingId, handleDelete, toggleActive } =
     useDatasetActions();
   const t = useTranslations("DatasetList");
 
@@ -80,24 +76,6 @@ export default function DatasetList({
     });
   };
 
-  const handleTogglePublic = async (
-    datasetId: string,
-    currentValue: boolean
-  ) => {
-    // Optimistic update
-    setLocalDatasets((prev) =>
-      prev.map((dataset) =>
-        dataset.id === datasetId
-          ? { ...dataset, isPublic: !currentValue }
-          : dataset
-      )
-    );
-
-    // Call the API
-    await togglePublic(datasetId, currentValue, () => {
-      // Success callback - no need to reload since we already updated optimistically
-    });
-  };
 
   const handleDeleteDataset = async (datasetId: string) => {
     const result = await handleDelete(datasetId);
@@ -139,15 +117,6 @@ export default function DatasetList({
           >
             {dataset.isActive ? t("active") : t("inactive")}
           </span>
-          <span
-            className={`px-2 py-1 text-xs rounded ${
-              dataset.isPublic
-                ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-            }`}
-          >
-            {dataset.isPublic ? t("public") : t("private")}
-          </span>
         </div>
       </div>
 
@@ -173,12 +142,6 @@ export default function DatasetList({
               className="px-3 py-1 text-sm border border-black hover:bg-black hover:text-white transition-colors"
             >
               {dataset.isActive ? t("deactivate") : t("activate")}
-            </button>
-            <button
-              onClick={() => handleTogglePublic(dataset.id, dataset.isPublic)}
-              className="px-3 py-1 text-sm border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
-            >
-              {dataset.isPublic ? t("makePrivate") : t("makePublic")}
             </button>
             {dataset.canDelete ? (
               <button
@@ -220,17 +183,6 @@ export default function DatasetList({
             </span>
           )}
         </div>
-        {showCreateButton && (
-          <Button asChild>
-            <Link
-              href="/my-datasets/create"
-              className="flex items-center gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              {t("createDataset")}
-            </Link>
-          </Button>
-        )}
       </div>
 
       {localDatasets.length === 0 ? (

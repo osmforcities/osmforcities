@@ -17,6 +17,8 @@ import {
   AreaNotFoundError,
   DatasetCreationError,
 } from "@/components/ui/dataset-error-states";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/db";
 
 type DatasetPageProps = {
   params: Promise<{
@@ -63,10 +65,25 @@ async function AreaTemplateDatasetView({
   };
 }) {
   try {
-    const [result, areaInfo] = await Promise.all([
+    const [result, areaInfo, session] = await Promise.all([
       getOrCreateDataset(areaId, templateId),
       getAreaDetailsById(areaId),
+      auth(),
     ]);
+
+    // Check if current user is watching this dataset
+    let isWatched = false;
+    if (session?.user?.id) {
+      const watchRecord = await prisma.datasetWatch.findUnique({
+        where: {
+          userId_datasetId: {
+            userId: session.user.id,
+            datasetId: result.dataset.id,
+          },
+        },
+      });
+      isWatched = !!watchRecord;
+    }
 
     const dataset = DatasetSchema.parse({
       ...result.dataset,
@@ -76,7 +93,7 @@ async function AreaTemplateDatasetView({
         ...result.dataset.area,
         geojson: result.dataset.area.geojson as FeatureCollection | null,
       },
-      isWatched: false,
+      isWatched,
       watchersCount: result.dataset.watchers?.length || 0,
       canDelete: false,
     });

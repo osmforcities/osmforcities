@@ -34,7 +34,7 @@ export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
     },
     {
       label: t("visibility"),
-      value: dataset.isPublic ? pageT("public") : pageT("private"),
+      value: pageT("public"),
       isPill: true,
     },
   ];

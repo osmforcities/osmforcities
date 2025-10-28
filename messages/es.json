@@ -16,20 +16,33 @@
     "preferences": "Preferencias",
     "brandName": "OSM for Cities",
     "signIn": "Iniciar Sesión",
-    "signOut": "Cerrar Sesión"
+    "signOut": "Cerrar Sesión",
+    "mainMenu": "Menú de navegación principal",
+    "menu": "Menú",
+    "close": "Cerrar"
   },
   "Common": {
     "shareFeedback": "Compartir Comentarios",
     "viewOnGitHub": "Ver en GitHub"
   },
   "TabLayout": {
-    "welcomeBack": "Bienvenido de vuelta",
+    "welcomeBack": "Bienvenido de vuelta, {name}",
+    "welcomeBackGeneric": "Bienvenido de vuelta",
     "manageDatasetsSubtitle": "Gestiona tus conjuntos de datos y explora la plataforma",
     "following": "Siguiendo",
-    "myDatasets": "Mis Conjuntos de Datos",
-    "publicDatasets": "Conjuntos de Datos Públicos",
+    "followingAriaLabel": "Siguiendo - Ver conjuntos de datos que estás siguiendo",
+    "explore": "Explorar",
     "templates": "Plantillas",
-    "users": "Usuarios"
+    "users": "Usuarios",
+    "usersAriaLabel": "Usuarios - Navegar a la página de gestión de usuarios",
+    "templatesAriaLabel": "Plantillas - Navegar a la página de gestión de plantillas",
+    "myDatasetsEmptyMessage": "Aún no has creado ningún conjunto de datos.",
+    "myDatasetsEmptyAction": "Crear Conjunto de Datos",
+    "openParen": "(",
+    "closeParen": ")",
+    "datasets": "Conjuntos de datos:",
+    "viewAllTemplates": "Ver Todas las Plantillas",
+    "viewAllUsers": "Ver Todos los Usuarios"
   },
   "Public": {
     "metaTitle": "Conjuntos de Datos Públicos - OSM for Cities",
@@ -52,7 +65,6 @@
     "makePublic": "Hacer Público",
     "delete": "Eliminar",
     "deleting": "Eliminando...",
-    "createDataset": "Crear Conjunto de Datos",
     "by": "por",
     "cannotDeleteTooltip": "No se puede eliminar el conjunto de datos con {count, plural, =0 {ningún observador} one {# observador} other {# observadores}}. Hazlo privado primero o pide a los observadores que dejen de seguirlo.",
     "in": "en",
@@ -175,8 +187,11 @@
     "viewOnOpenStreetMap": "Ver en OpenStreetMap →"
   },
   "NavSearch": {
-    "searchPlaceholder": "Buscar ciudades y áreas...",
-    "noAreasFound": "No se encontraron áreas"
+    "searchPlaceholder": "Buscar ciudades y áreas (mín. 3 caracteres)...",
+    "noAreasFound": "No se encontraron áreas",
+    "searching": "Buscando...",
+    "typeMoreChars": "Escribe {count} carácter{count, plural, one {} other {es}} más para buscar",
+    "searchHint": "Prueba buscando ciudades, regiones o países"
   },
   "AddressTypes": {
     "city": "Ciudad",
@@ -280,6 +295,8 @@
     "joined": "Se unió:"
   },
   "DatasetMap": {
+    "mapLabel": "Mapa interactivo mostrando conjunto de datos",
+    "fullScreenMapLabel": "Mapa interactivo en pantalla completa mostrando conjunto de datos",
     "noDataAvailable": "No hay datos disponibles. Los datos se actualizarán automáticamente cuando visites esta página.",
     "noGeographicData": "No se encontraron datos geográficos en los resultados del conjunto de datos.",
     "tags": "Etiquetas",
