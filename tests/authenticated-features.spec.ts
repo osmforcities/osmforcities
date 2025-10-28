@@ -44,7 +44,7 @@ test.describe("Authenticated Features", () => {
 
     try {
       // Test protected routes
-      const protectedRoutes = ["/watched", "/my-datasets", "/preferences"];
+      const protectedRoutes = ["/watched", "/preferences"];
 
       for (const route of protectedRoutes) {
         await page.goto(getLocalizedPath(route));

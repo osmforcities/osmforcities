@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
 import { useTranslations } from "next-intl";
 
@@ -35,7 +34,6 @@ type DatasetListProps = {
   emptyMessage: string;
   emptyActionText: string;
   emptyActionHref: string;
-  showCreateButton?: boolean;
   isOwned?: boolean;
   showCreator?: boolean;
 };
@@ -46,7 +44,6 @@ export default function DatasetList({
   emptyMessage,
   emptyActionText,
   emptyActionHref,
-  showCreateButton = false,
   isOwned = false,
   showCreator = false,
 }: DatasetListProps) {
@@ -186,17 +183,6 @@ export default function DatasetList({
             </span>
           )}
         </div>
-        {showCreateButton && (
-          <Button asChild>
-            <Link
-              href="/my-datasets/create"
-              className="flex items-center gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              {t("createDataset")}
-            </Link>
-          </Button>
-        )}
       </div>
 
       {localDatasets.length === 0 ? (
