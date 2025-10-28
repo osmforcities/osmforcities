@@ -12,9 +12,7 @@ const emailConfig = {
 };
 
 const postmarkClient =
-  process.env.NODE_ENV === "production" &&
-  !emailConfig.disableEmail &&
-  process.env.POSTMARK_API_TOKEN
+  !emailConfig.disableEmail && process.env.POSTMARK_API_TOKEN
     ? new ServerClient(process.env.POSTMARK_API_TOKEN)
     : null;
 
