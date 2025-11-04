@@ -68,7 +68,7 @@ const {
 
   cookies: {
     sessionToken: {
-      name: `${isProduction ? "__Host-" : ""}next-auth.session-token`,
+      name: `${isProduction ? "__Secure-" : ""}next-auth.session-token`,
       options: {
         httpOnly: true,
         sameSite: "lax",
