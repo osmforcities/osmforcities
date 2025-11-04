@@ -243,7 +243,11 @@ export async function generateNextUserReport(): Promise<{
 
   const recentDatasets = await prisma.dataset.findMany({
     where: {
-      userId: user.id,
+      watchers: {
+        some: {
+          userId: user.id,
+        },
+      },
     },
     select: {
       id: true,
