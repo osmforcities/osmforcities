@@ -138,7 +138,7 @@ function generateEmailBodyWithChanges(
 function generateEmailBodyNoChanges(frequency: "DAILY" | "WEEKLY"): string {
   return `
     <p>There were no changes to your ${link(
-      `${getBaseUrl()}/watched`,
+      `${getBaseUrl()}/`,
       "watched datasets"
     )} in the last ${frequency === "DAILY" ? "day" : "week"}.</p>`;
 }
