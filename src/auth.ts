@@ -48,6 +48,8 @@ function createTestUserObject(
   };
 }
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const {
   handlers,
   auth: originalAuth,
@@ -55,10 +57,29 @@ const {
   signOut,
 } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
 
   pages: {
     signIn: "/enter",
+  },
+
+  cookies: {
+    sessionToken: {
+      name: `${isProduction ? "__Secure-" : ""}next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        // Secure cookies are only sent over HTTPS. In production, this must be true.
+        secure: isProduction,
+        // The domain is set to the root domain in production to allow authentication
+        // to persist across subdomains (e.g., www.osmforcities.org and osmforcities.org).
+        domain: isProduction ? ".osmforcities.org" : undefined,
+      },
+    },
   },
 
   providers: [
