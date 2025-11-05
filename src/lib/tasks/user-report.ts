@@ -198,6 +198,7 @@ export async function generateNextUserReport(): Promise<{
   const user = await prisma.user.findFirst({
     where: {
       reportsEnabled: true,
+      emailVerified: { not: null },
       OR: [
         { lastReportSent: null },
         {
