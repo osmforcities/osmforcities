@@ -138,7 +138,7 @@ function generateEmailBodyWithChanges(
 function generateEmailBodyNoChanges(frequency: "DAILY" | "WEEKLY"): string {
   return `
     <p>There were no changes to your ${link(
-      `${getBaseUrl()}/watched`,
+      `${getBaseUrl()}/`,
       "watched datasets"
     )} in the last ${frequency === "DAILY" ? "day" : "week"}.</p>`;
 }
@@ -198,6 +198,7 @@ export async function generateNextUserReport(): Promise<{
   const user = await prisma.user.findFirst({
     where: {
       reportsEnabled: true,
+      emailVerified: { not: null },
       OR: [
         { lastReportSent: null },
         {
@@ -243,7 +244,11 @@ export async function generateNextUserReport(): Promise<{
 
   const recentDatasets = await prisma.dataset.findMany({
     where: {
-      userId: user.id,
+      watchers: {
+        some: {
+          userId: user.id,
+        },
+      },
     },
     select: {
       id: true,

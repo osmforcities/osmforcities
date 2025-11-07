@@ -1,5 +1,20 @@
 # osmforcities
 
+## 1.3.0
+
+### Minor Changes
+
+- ## Features
+
+  - Enhanced session persistence and cross-domain authentication
+  - Require email verification for user reports
+
+  ## Fixes
+
+  - Fix user reports to include watched datasets instead of owned
+  - Update deprecated /watched link to dashboard in user reports
+  - Change cookie prefix from __Host- to __Secure- for better compatibility
+
 ## 1.2.0
 
 ### Minor Changes
