@@ -76,9 +76,9 @@ jobs:
             POSTMARK_EMAIL="${{ secrets.PRODUCTION_POSTMARK_FROM_EMAIL }}"
           fi
 
-          # Run deployment with secrets as Ansible extra variables
+          # Run simplified deployment
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key deploy@${{ steps.target.outputs.host }} \
-            "./deploy-wrapper.sh ${{ steps.target.outputs.ansible_env }} playbooks/app/deploy.yml -e target_branch=${{ steps.target.outputs.branch }} -e POSTMARK_API_TOKEN='${POSTMARK_TOKEN}' -e POSTMARK_FROM_EMAIL='${POSTMARK_EMAIL}'"
+            "./deploy-wrapper.sh ${{ steps.target.outputs.branch }}"
 
       - name: Health check - staging
         if: steps.target.outputs.environment == 'staging'
