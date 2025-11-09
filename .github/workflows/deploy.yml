@@ -17,7 +17,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    environment: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_environment || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
 
     steps:
       - name: Determine deployment target
