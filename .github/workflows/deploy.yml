@@ -68,8 +68,14 @@ jobs:
           POSTMARK_API_TOKEN: ${{ steps.target.outputs.environment == 'staging' && secrets.STAGING_POSTMARK_API_TOKEN || secrets.PRODUCTION_POSTMARK_API_TOKEN }}
           POSTMARK_FROM_EMAIL: ${{ steps.target.outputs.environment == 'staging' && secrets.STAGING_POSTMARK_FROM_EMAIL || secrets.PRODUCTION_POSTMARK_FROM_EMAIL }}
         run: |
+          # Write secrets to a temporary env file
+          echo "POSTMARK_API_TOKEN=${POSTMARK_API_TOKEN}" > .env.deploy
+          echo "POSTMARK_FROM_EMAIL=${POSTMARK_FROM_EMAIL}" >> .env.deploy
+          # Copy the env file to the remote server
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key .env.deploy deploy@${{ steps.target.outputs.host }}:/opt/osmforcities/.env.deploy
+          # Run the deployment script, sourcing the env file
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key deploy@${{ steps.target.outputs.host }} \
-            "cd /opt/osmforcities && POSTMARK_API_TOKEN='$POSTMARK_API_TOKEN' POSTMARK_FROM_EMAIL='$POSTMARK_FROM_EMAIL' ./deploy-wrapper.sh ${{ steps.target.outputs.branch }}"
+            "cd /opt/osmforcities && set -a && source .env.deploy && set +a && ./deploy-wrapper.sh ${{ steps.target.outputs.branch }} && rm -f .env.deploy"
 
       - name: Health check - staging
         if: steps.target.outputs.environment == 'staging'
