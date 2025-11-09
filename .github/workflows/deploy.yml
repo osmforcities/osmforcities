@@ -78,7 +78,7 @@ jobs:
 
           # Run simplified deployment
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key deploy@${{ steps.target.outputs.host }} \
-            "./deploy-wrapper.sh ${{ steps.target.outputs.branch }}"
+            ./deploy-wrapper.sh ${{ steps.target.outputs.branch }}
 
       - name: Health check - staging
         if: steps.target.outputs.environment == 'staging'
