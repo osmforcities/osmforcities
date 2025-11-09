@@ -38,10 +38,10 @@ jobs:
 
           if [ "$ENVIRONMENT" = "staging" ]; then
             BRANCH="develop"
-            HOST="91.98.175.185"
+            HOST="${{ secrets.STAGING_HOST }}"
           else
             BRANCH="main"
-            HOST="91.98.196.70"
+            HOST="${{ secrets.PRODUCTION_HOST }}"
           fi
 
           echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
