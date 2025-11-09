@@ -39,14 +39,17 @@ jobs:
           if [ "$ENVIRONMENT" = "staging" ]; then
             BRANCH="develop"
             HOST="${{ secrets.STAGING_HOST }}"
+            ANSIBLE_ENV="hetzner-staging"
           else
             BRANCH="main"
             HOST="${{ secrets.PRODUCTION_HOST }}"
+            ANSIBLE_ENV="hetzner-production"
           fi
 
           echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
           echo "host=$HOST" >> $GITHUB_OUTPUT
+          echo "ansible_env=$ANSIBLE_ENV" >> $GITHUB_OUTPUT
           echo "Deploying to $ENVIRONMENT environment with branch $BRANCH"
 
       - name: Setup staging environment
@@ -75,7 +78,7 @@ jobs:
           scp -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key .env.deploy deploy@${{ steps.target.outputs.host }}:/opt/osmforcities/.env.deploy
           # Run the deployment script, sourcing the env file
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key deploy@${{ steps.target.outputs.host }} \
-            "cd /opt/osmforcities && set -a && source .env.deploy && set +a && ./deploy-wrapper.sh ${{ steps.target.outputs.branch }} && rm -f .env.deploy"
+            "cd /opt/osmforcities && set -a && source .env.deploy && set +a && ./deploy-wrapper.sh ${{ steps.target.outputs.ansible_env }} playbooks/app/deploy.yml -e target_branch=${{ steps.target.outputs.branch }} && rm -f .env.deploy"
 
       - name: Health check - staging
         if: steps.target.outputs.environment == 'staging'
