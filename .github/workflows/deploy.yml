@@ -1,0 +1,140 @@
+name: Deploy OSM for Cities
+
+on:
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_environment || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
+
+    steps:
+      - name: Determine deployment target
+        id: target
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ENVIRONMENT="${{ github.event.inputs.target_environment }}"
+          else
+            if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+              ENVIRONMENT="staging"
+            elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+              ENVIRONMENT="production"
+            else
+              echo "Unsupported branch: ${{ github.ref }}"
+              exit 1
+            fi
+          fi
+
+          if [ "$ENVIRONMENT" = "staging" ]; then
+            BRANCH="develop"
+            HOST="${{ secrets.STAGING_HOST }}"
+            ANSIBLE_ENV="hetzner-staging"
+          else
+            BRANCH="main"
+            HOST="${{ secrets.PRODUCTION_HOST }}"
+            ANSIBLE_ENV="hetzner-production"
+          fi
+
+          echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "host=$HOST" >> $GITHUB_OUTPUT
+          echo "ansible_env=$ANSIBLE_ENV" >> $GITHUB_OUTPUT
+          echo "Deploying to $ENVIRONMENT environment with branch $BRANCH"
+
+      - name: Setup staging environment
+        if: steps.target.outputs.environment == 'staging'
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.STAGING_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+      - name: Setup production environment
+        if: steps.target.outputs.environment == 'production'
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PRODUCTION_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+      - name: Deploy to server
+        run: |
+          if [ "${{ steps.target.outputs.environment }}" = "staging" ]; then
+            POSTMARK_TOKEN="${{ secrets.STAGING_POSTMARK_API_TOKEN }}"
+            POSTMARK_EMAIL="${{ secrets.STAGING_POSTMARK_FROM_EMAIL }}"
+          else
+            POSTMARK_TOKEN="${{ secrets.PRODUCTION_POSTMARK_API_TOKEN }}"
+            POSTMARK_EMAIL="${{ secrets.PRODUCTION_POSTMARK_FROM_EMAIL }}"
+          fi
+
+          # Run simplified deployment
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key deploy@${{ steps.target.outputs.host }} \
+            ./deploy-wrapper.sh ${{ steps.target.outputs.branch }}
+
+      - name: Health check - staging
+        if: steps.target.outputs.environment == 'staging'
+        run: |
+          for i in {1..30}; do
+            if curl -f -s -o /dev/null -w "%{http_code}" https://staging.osmforcities.org/ | grep -E "^(200|307)$" > /dev/null; then
+              echo "✅ Staging health check passed"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "❌ Staging health check failed after 30 attempts"
+              exit 1
+            fi
+            echo "⏳ Waiting for staging to be ready... ($i/30)"
+            sleep 10
+          done
+
+      - name: Health check - production
+        if: steps.target.outputs.environment == 'production'
+        run: |
+          for i in {1..30}; do
+            if curl -f -s -o /dev/null -w "%{http_code}" https://osmforcities.org/ | grep -E "^(200|307)$" > /dev/null; then
+              echo "✅ Production health check passed"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "❌ Production health check failed after 30 attempts"
+              exit 1
+            fi
+            echo "⏳ Waiting for production to be ready... ($i/30)"
+            sleep 10
+          done
+
+      - name: Deployment summary
+        run: |
+          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ steps.target.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ steps.target.outputs.branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ✅ Success" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.target.outputs.environment }}" = "staging" ]; then
+            echo "**🔗 Staging URL:** https://staging.osmforcities.org" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**🔗 Production URL:** https://osmforcities.org" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "## ❌ Deployment Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ steps.target.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ steps.target.outputs.branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Check the job logs for details." >> $GITHUB_STEP_SUMMARY
