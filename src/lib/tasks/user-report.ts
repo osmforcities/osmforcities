@@ -294,6 +294,11 @@ export async function generateNextUserReport(): Promise<{
     }),
   };
 
+  // Don't send email if user has no watched datasets or no recent updates
+  if (datasetsWithRecentChanges.length === 0) {
+    return null;
+  }
+
   const emailContent = generateEmailContent(datasetStats);
   const latestChangeDate =
     datasetsWithRecentChanges.length > 0

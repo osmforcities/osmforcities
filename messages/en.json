@@ -270,7 +270,7 @@
   "PreferencesPage": {
     "emailPreferences": "Email Preferences",
     "reports": "Reports",
-    "reportsDescription": "Get a summary of your monitors and their activity."
+    "reportsDescription": "Receive email updates when your followed datasets have changes."
   },
   "PreferencesForm": {
     "enableReports": "Enable reports",
