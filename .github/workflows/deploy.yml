@@ -16,6 +16,7 @@ on:
 
 jobs:
   deploy:
+    needs: [checks, tests]
     runs-on: ubuntu-latest
     environment: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_environment || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
 
