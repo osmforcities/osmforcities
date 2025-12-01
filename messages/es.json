@@ -269,7 +269,7 @@
   "PreferencesPage": {
     "emailPreferences": "Preferencias de Email",
     "reports": "Reportes",
-    "reportsDescription": "Recibe un resumen de tus monitores y su actividad."
+    "reportsDescription": "Recibe actualizaciones por correo electrónico cuando tus datasets monitoreados tengan cambios."
   },
   "PreferencesForm": {
     "enableReports": "Habilitar reportes",
