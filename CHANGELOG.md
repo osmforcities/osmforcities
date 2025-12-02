@@ -1,5 +1,11 @@
 # osmforcities
 
+## 1.4.1
+
+### Patch Changes
+
+- Fix email subscription logic to prevent reports when no recent dataset activity
+
 ## 1.4.0
 
 ### Minor Changes
@@ -19,7 +25,7 @@
 
   - Fix user reports to include watched datasets instead of owned
   - Update deprecated /watched link to dashboard in user reports
-  - Change cookie prefix from __Host- to __Secure- for better compatibility
+  - Change cookie prefix from **Host- to **Secure- for better compatibility
 
 ## 1.2.0
 
