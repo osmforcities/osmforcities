@@ -1,5 +1,18 @@
 # osmforcities
 
+## 1.4.2
+
+### Patch Changes
+
+- Patch critical React Server Components security vulnerability (CVE-2025-55182)
+
+  - Upgrade Next.js 15.3.3 → 15.3.6
+  - Upgrade React 19.1.0 → 19.2.1
+  - Upgrade react-dom 19.1.0 → 19.2.1
+  - Upgrade eslint-config-next 15.3.3 → 15.3.6
+
+  Fixes unauthenticated remote code execution vulnerability (CVSS 10.0)
+
 ## 1.4.1
 
 ### Patch Changes
