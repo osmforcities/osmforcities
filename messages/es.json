@@ -330,5 +330,162 @@
     "in": "en",
     "colon": ":",
     "datasetTitle": "{templateName} en {cityName} ({countryCode})"
+  },
+  "Home": {
+    "hero": {
+      "title": "Comprende tu ciudad a través de datos abiertos",
+      "description": "OSM for Cities organiza los datos de OpenStreetMap en conjuntos de datos que puedes seguir. Rastrea escuelas, transporte, parques y clínicas a medida que cambian, recibe actualizaciones por correo electrónico y comprende cómo evoluciona tu ciudad con el tiempo.",
+      "seeHowItWorks": "Ver cómo funciona"
+    },
+    "features": {
+      "subtitle": "Características",
+      "title": "Cómo funciona OSM for Cities",
+      "description": "Sigue conjuntos de datos, rastrea cambios, explora datos visualmente y descarga para análisis",
+      "curate": {
+        "title": "Curate tus conjuntos de datos",
+        "description": "Elige lo que importa para tu ciudad. Sigue escuelas, transporte, parques, clínicas o cualquier conjunto de datos rastreado en OpenStreetMap. Construye una feed personalizada de la infraestructura que te importa."
+      },
+      "notifications": {
+        "title": "Recibe notificaciones de cambios",
+        "description": "Recibe alertas por correo cuando los conjuntos de datos que sigas se actualicen. Mantente informado sobre nuevas instalaciones, cambios de infraestructura y desarrollo urbano en tiempo real."
+      },
+      "inspect": {
+        "title": "Inspecciona datos en un mapa",
+        "description": "Explora conjuntos de datos visualmente en un mapa interactivo. Haz clic en características individuales para ver información detallada, comparar datos históricos y entender relaciones espaciales en tu ciudad."
+      },
+      "download": {
+        "title": "Descarga datos para análisis",
+        "description": "Exporta conjuntos de datos en formatos estándar para usar en herramientas externas, proyectos de investigación o análisis personalizados. Todos los datos están disponibles bajo licencias abiertas (ODbL).",
+        "licenseLink": "https://opendatacommons.org/licenses/odbl/"
+      }
+    },
+    "useCases": {
+      "subtitle": "Casos de uso",
+      "title": "Los mapas sirven muchos propósitos",
+      "description": "El mismo conjunto de datos cuenta diferentes historias dependiendo de quién lo lee y qué necesita saber.",
+      "planners": {
+        "category": "Planificadores",
+        "title": "Toma decisiones con datos actuales",
+        "description": "Monitorea escuelas, transporte y servicios en tu jurisdicción.",
+        "explore": "Explorar",
+        "view": "Ver"
+      },
+      "journalists": {
+        "category": "Periodistas",
+        "title": "Fundamenta historias con datos",
+        "description": "Rastrea cómo las ciudades se desarrollan y cambian con datos de mapeo compartidos.",
+        "view": "Ver"
+      },
+      "researchers": {
+        "category": "Investigadores",
+        "title": "Analiza tendencias urbanas",
+        "description": "Estudia patrones y cambios en la infraestructura de la ciudad a lo largo del tiempo.",
+        "view": "Ver"
+      },
+      "developers": {
+        "category": "Desarrolladores",
+        "title": "Construye con datos abiertos",
+        "description": "Accede a datos de ciudad confiables y actualizados para tus aplicaciones.",
+        "view": "Ver"
+      },
+      "urbanPlanners": {
+        "category": "Urbanistas",
+        "title": "Toma decisiones con datos actualizados",
+        "description": "Monitorea escuelas, transporte y servicios en tu jurisdicción para tomar decisiones informadas sobre el desarrollo urbano."
+      },
+      "journalists": {
+        "category": "Periodistas",
+        "title": "Fundamenta historias con datos",
+        "description": "Rastrea cómo las ciudades se desarrollan y cambian con datos de mapeo compartidos para crear reportajes basados en evidencia."
+      },
+      "researchers": {
+        "category": "Investigadores",
+        "title": "Analiza tendencias urbanas",
+        "description": "Estudia patrones y cambios en la infraestructura de la ciudad a lo largo del tiempo para investigaciones académicas."
+      },
+      "communityGroups": {
+        "category": "Grupos comunitarios",
+        "title": "Monitorea tu vecindario",
+        "description": "Sigue el desarrollo de infraestructura local y servicios en tu área para abogar por las necesidades de tu comunidad."
+      },
+      "publicInstitutions": {
+        "category": "Instituciones públicas",
+        "title": "Gestiona recursos públicos",
+        "description": "Planifica y coordina servicios públicos utilizando datos actualizados sobre infraestructura urbana."
+      },
+      "residents": {
+        "category": "Residentes",
+        "title": "Conoce tu ciudad",
+        "description": "Explora los datos de tu área para entender mejor los servicios disponibles y cambios en tu comunidad."
+      },
+      "businesses": {
+        "category": "Empresas",
+        "title": "Analiza ubicaciones",
+        "description": "Evalúa áreas para nuevos establecimientos utilizando datos sobre infraestructura y servicios urbanos."
+      }
+    },
+    "showcase": {
+      "subtitle": "Conjuntos de datos",
+      "title": "Qué se está rastreando",
+      "description": "Infraestructura real, tiempo real, datos reales",
+      "viewAll": "Ver todos",
+      "datasets": {
+        "healthcare": {
+          "category": "Salud",
+          "title": "Instalaciones médicas",
+          "description": "Monitorea clínicas y hospitales para comprender el acceso a la atención médica en tu región."
+        },
+        "transportation": {
+          "category": "Transporte",
+          "title": "Infraestructura de transporte",
+          "description": "Sigue redes de transporte público incluyendo autobuses, trenes y estaciones para analizar la conectividad urbana."
+        },
+        "education": {
+          "category": "Educación",
+          "title": "Instituciones educativas",
+          "description": "Sigue escuelas y universidades para rastrear cómo se desarrolla y expande la infraestructura educativa."
+        },
+        "leisure": {
+          "category": "Ocio",
+          "title": "Instalaciones de ocio",
+          "description": "Monitorea parques, centros deportivos y áreas recreativas para comprender las opciones de tiempo libre."
+        },
+        "amenities": {
+          "category": "Servicios",
+          "title": "Servicios públicos",
+          "description": "Rastrea servicios básicos como supermercados, farmacias y bancos para evaluar la accesibilidad."
+        },
+        "environment": {
+          "category": "Medio ambiente",
+          "title": "Recursos naturales",
+          "description": "Monitorea áreas verdes, espacios naturales y características geográficas para el análisis ambiental."
+        },
+        "tourism": {
+          "category": "Turismo",
+          "title": "Instalaciones turísticas",
+          "description": "Sigue hoteles, restaurantes y atracciones turísticas para entender la infraestructura de visitantes."
+        },
+        "culture": {
+          "category": "Cultura",
+          "title": "Instalaciones culturales",
+          "description": "Monitorea museos, teatros, bibliotecas y sitios culturales para preservar el patrimonio."
+        },
+        "social": {
+          "category": "Social",
+          "title": "Servicios sociales",
+          "description": "Rastrea centros comunitarios, instalaciones de cuidado y espacios de encuentro social."
+        }
+      }
+    },
+    "signup": {
+      "title": "Comenzar",
+      "description": "Crea una cuenta para seguir conjuntos de datos y recibir actualizaciones por correo cuando cambien los datos.",
+      "signUp": "Iniciar sesión"
+    },
+    "footer": {
+      "about": "Acerca de",
+      "contact": "Contacto",
+      "github": "GitHub"
+    }
   }
 }
