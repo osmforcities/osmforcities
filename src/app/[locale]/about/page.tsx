@@ -6,6 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
+import { GITHUB_REPO_URL, CONTACT_FORM_URL } from "@/lib/constants";
 
 // Import MDX content based on locale
 import EnAbout from "@/content/about/en.mdx";
@@ -97,7 +98,7 @@ const AboutPage = async ({
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <a
-                  href="https://forms.gle/RGZdZ1mzo4hZx5g27"
+                  href={CONTACT_FORM_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2"
@@ -109,7 +110,7 @@ const AboutPage = async ({
 
               <Button variant="outline" asChild>
                 <a
-                  href="https://github.com/osmforcities/osmforcities"
+                  href={GITHUB_REPO_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2"

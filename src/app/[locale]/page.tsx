@@ -1,11 +1,14 @@
 import { Metadata } from "next";
-import { Link } from "@/i18n/navigation";
-import { Button } from "@/components/ui/button";
 import { auth } from "@/auth";
 import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/db";
 import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
+import { Hero } from "@/components/home/sections/hero";
+import { Features } from "@/components/home/sections/features";
+import { DatasetShowcase } from "@/components/home/sections/dataset-showcase";
+import { UseCases } from "@/components/home/sections/use-cases";
+import { FinalCTA } from "@/components/home/sections/final-cta";
 
 export const dynamic = "force-dynamic";
 
@@ -35,32 +38,19 @@ async function getWatchedDatasets(userId: string) {
   return watchedDatasets.map((watch) => watch.dataset);
 }
 
-
 export default async function Home() {
   const session = await auth();
   const user = session?.user || null;
-  const t = await getTranslations("Index");
   const tabT = await getTranslations("TabLayout");
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
-        <div className="w-full max-w-2xl text-center p-4 space-y-8">
-          <h1 className="text-5xl font-bold text-black dark:text-white mb-4">
-            {t("title")}
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-            {t("description")}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" asChild>
-              <Link href="/about">{t("learnMore")}</Link>
-            </Button>
-            <Button size="lg" asChild>
-              <Link href="/enter">{t("enter")}</Link>
-            </Button>
-          </div>
-        </div>
+      <div className="min-h-screen bg-white dark:bg-black">
+        <Hero />
+        <Features />
+        <UseCases />
+        <DatasetShowcase />
+        <FinalCTA />
       </div>
     );
   }
@@ -70,6 +60,10 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
+      <Hero />
+      <Features />
+      <UseCases />
+      <DatasetShowcase />
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-8">
           <div>
