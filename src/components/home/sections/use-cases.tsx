@@ -5,7 +5,7 @@ import { SectionWrapper, SectionHeader } from "../shared/section-wrapper";
 import { GridWrapper } from "../shared/grid-wrapper";
 import { USE_CASE_ICONS } from "../shared/icon-config";
 import { UseCaseItem } from "../shared/types";
-import { CategoryCard } from "../shared/category-card";
+import { CategoryCard, useCaseColors } from "../shared";
 
 export function UseCases() {
   const t = useTranslations("Home.useCases");
@@ -80,14 +80,15 @@ export function UseCases() {
 
       {/* Use cases grid */}
       <GridWrapper columns={2} maxWidth="md">
-        {useCases.map((useCase) => (
+        {useCases.map((useCase, index) => (
           <CategoryCard
             key={useCase.id}
             icon={useCase.icon}
             category={useCase.category}
             title={useCase.title}
             description={useCase.description}
-            variant="default"
+            variant="compact"
+            colorVariant={useCaseColors[index]}
           />
         ))}
       </GridWrapper>

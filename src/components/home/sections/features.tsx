@@ -1,42 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Map } from "lucide-react";
 import { SectionWrapper, SectionHeader } from "../shared/section-wrapper";
 import { FEATURE_ICONS } from "../shared/icon-config";
 import { FeatureItem } from "../shared/types";
 import { TextWithLink } from "../shared/text-with-link";
-
-// Extracted visual component for reusability
-function FeaturesVisual() {
-  // Get all icons from our config
-  const iconComponents = Object.values(FEATURE_ICONS);
-
-  return (
-    <div className="w-full aspect-square bg-gray-50 dark:bg-gray-950 rounded-xl border border-gray-200 dark:border-gray-800 p-8">
-      <div className="w-full h-full flex items-center justify-center">
-        <div className="relative">
-          {/* Background grid pattern */}
-          <div className="absolute inset-0 -m-12 grid grid-cols-3 gap-8 opacity-20">
-            {iconComponents.map((Icon, index) => (
-              <Icon key={index} className="size-12 text-gray-600 dark:text-gray-400" />
-            ))}
-            {iconComponents.slice(0, 1).map((Icon, index) => (
-              <Icon key={`extra-${index}`} className="size-12 text-gray-600 dark:text-gray-400" />
-            ))}
-          </div>
-
-          {/* Central highlighted feature */}
-          <div className="relative flex items-center justify-center">
-            <div className="bg-white dark:bg-gray-900 rounded-full p-6 border-2 border-blue-600 shadow-lg">
-              <Map className="size-16 text-blue-600" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // Feature item component for consistent styling
 function FeatureItemComponent({
@@ -114,22 +82,16 @@ export function Features() {
         description={t("description")}
       />
 
-      <div className="grid grid-cols-1 items-center gap-16 lg:gap-x-20 lg:grid-cols-2">
-        {/* Fixed visual on the left */}
-        <div className="order-last flex items-center justify-center">
-          <FeaturesVisual />
-        </div>
-
-        {/* Feature list on the right */}
-        <div className="order-first space-y-8 lg:order-last">
-          {features.map((feature) => (
-            <FeatureItemComponent
-              key={feature.id}
-              feature={feature}
-              licenseLink={feature.id === "download" ? t("download.licenseLink") : undefined}
-            />
-          ))}
-        </div>
+      <div className="max-w-3xl mx-auto space-y-8">
+        {features.map((feature) => (
+          <FeatureItemComponent
+            key={feature.id}
+            feature={feature}
+            licenseLink={
+              feature.id === "download" ? t("download.licenseLink") : undefined
+            }
+          />
+        ))}
       </div>
     </SectionWrapper>
   );
