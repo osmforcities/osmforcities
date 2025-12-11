@@ -1,7 +1,4 @@
 // Component exports
-export { Card } from "./card";
-export { CardContent } from "./card-content";
-export { CategoryCard } from "./category-card";
 export { CTASection } from "./cta-section";
 export { GridWrapper } from "./grid-wrapper";
 export { HeroMap } from "./hero-map";

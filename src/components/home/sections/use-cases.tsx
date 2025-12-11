@@ -5,7 +5,8 @@ import { SectionWrapper, SectionHeader } from "../shared/section-wrapper";
 import { GridWrapper } from "../shared/grid-wrapper";
 import { USE_CASE_ICONS } from "../shared/icon-config";
 import { UseCaseItem } from "../shared/types";
-import { CategoryCard, useCaseColors } from "../shared";
+import { CategoryCard } from "@/components/ui/category-card";
+import { useCaseColors } from "../shared";
 
 export function UseCases() {
   const t = useTranslations("Home.useCases");

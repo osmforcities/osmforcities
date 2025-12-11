@@ -5,7 +5,8 @@ import { SectionWrapper, SectionHeader } from "../shared/section-wrapper";
 import { GridWrapper } from "../shared/grid-wrapper";
 import { DATASET_ICONS } from "../shared/icon-config";
 import { DatasetCategory } from "../shared/types";
-import { CategoryCard, categoryColors } from "../shared";
+import { CategoryCard } from "@/components/ui/category-card";
+import { categoryColors } from "../shared";
 
 export function DatasetShowcase() {
   const t = useTranslations("Home");
