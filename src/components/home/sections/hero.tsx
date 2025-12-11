@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Heading } from "@/components/ui/heading";
 import { ArrowDown } from "lucide-react";
 import { scrollToSection } from "../shared/scroll-to-section";
 import { HeroMap } from "../shared/hero-map";
@@ -14,9 +15,9 @@ export function Hero() {
       <div className="container mx-auto w-full">
         <div className="grid grid-cols-1 border border-gray-200 dark:border-gray-800 lg:grid-cols-2">
           <div className="flex flex-col justify-center p-8 md:p-12">
-            <h1 className="mb-5 text-5xl font-bold md:mb-6 md:text-6xl lg:text-7xl text-black dark:text-white">
+            <Heading as="h1" level="h1">
               {t("hero.title")}
-            </h1>
+            </Heading>
             <p className="text-lg text-gray-600 dark:text-gray-400">
               {t("hero.description")}
             </p>

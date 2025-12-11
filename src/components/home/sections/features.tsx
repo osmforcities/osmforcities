@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Heading } from "@/components/ui/heading";
 import { SectionWrapper, SectionHeader } from "../shared/section-wrapper";
 import { FEATURE_ICONS } from "../shared/icon-config";
 import { FeatureItem } from "../shared/types";
@@ -24,9 +25,9 @@ function FeatureItemComponent({
         </div>
       </div>
       <div className="space-y-1">
-        <h3 className="text-xl font-bold md:text-2xl text-black dark:text-white">
+        <Heading as="h3" level="h3" spacing="sm">
           {feature.title}
-        </h3>
+        </Heading>
         <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
           {licenseLink && feature.description.includes("(ODbL)") ? (
             <TextWithLink

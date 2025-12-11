@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Heading } from "@/components/ui/heading";
 import { Link } from "@/i18n/navigation";
 import { SectionWrapper } from "../shared/section-wrapper";
 
@@ -12,9 +13,9 @@ export function FinalCTA() {
     <SectionWrapper>
       <div className="flex flex-col items-center border border-gray-200 dark:border-gray-800 p-8 md:p-12 lg:p-16 rounded-lg">
         <div className="max-w-lg text-center">
-          <h2 className="mb-5 text-5xl font-bold md:mb-6 md:text-7xl lg:text-8xl text-black dark:text-white">
+          <Heading as="h2" level="h2-xl">
             {t("signup.title")}
-          </h2>
+          </Heading>
           <p className="text-base md:text-lg text-gray-600 dark:text-gray-400">
             {t("signup.description")}
           </p>

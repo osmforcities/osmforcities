@@ -1,4 +1,5 @@
 import { LucideIcon } from "lucide-react";
+import { Heading } from "@/components/ui/heading";
 import { ColorVariant, getColorClasses, DEFAULT_COLORS } from "./colors";
 
 interface CategoryCardProps {
@@ -40,9 +41,9 @@ export function CategoryCard({
 
         <div className="flex-1 p-6">
           <div className="space-y-3">
-            <h3 className="text-xl font-bold md:text-2xl text-black dark:text-white">
+            <Heading as="h3" level="h3" spacing="sm">
               {title}
-            </h3>
+            </Heading>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
               {description}
             </p>
@@ -69,9 +70,9 @@ export function CategoryCard({
               {category}
             </span>
           </div>
-          <h3 className="text-lg font-bold md:text-xl text-black dark:text-white mb-1">
+          <Heading as="h3" level="h3-compact" spacing="none" className="mb-1">
             {title}
-          </h3>
+          </Heading>
           <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
             {description}
           </p>
@@ -96,9 +97,9 @@ export function CategoryCard({
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-xl font-bold md:text-2xl text-black dark:text-white">
+        <Heading as="h3" level="h3" spacing="sm">
           {title}
-        </h3>
+        </Heading>
         <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
           {description}
         </p>
