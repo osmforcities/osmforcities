@@ -22,7 +22,7 @@ export function FinalCTA() {
         </div>
         <div className="mx-auto mt-6 max-w-sm w-full md:mt-8">
           <div className="flex justify-center">
-            <Button size="lg" asChild className="w-full sm:w-auto">
+            <Button variant="primary" size="lg" asChild className="w-full sm:w-auto">
               <Link href="/login">{t("signup.signUp")}</Link>
             </Button>
           </div>

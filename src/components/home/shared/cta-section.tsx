@@ -1,14 +1,17 @@
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
+import { Heading } from "@/components/ui/heading";
+
+type HeadingLevel = "h2" | "h2-xl";
 
 interface CTASectionProps {
   title: string;
   description: string;
   buttonText: string;
   buttonHref: string;
-  buttonVariant?: "default" | "outline";
+  buttonVariant?: "default" | "primary" | "secondary" | "outline" | "ghost" | "link";
   centered?: boolean;
-  size?: "sm" | "md" | "lg" | "xl";
+  headingLevel?: HeadingLevel;
 }
 
 export function CTASection({
@@ -18,21 +21,14 @@ export function CTASection({
   buttonHref,
   buttonVariant = "default",
   centered = true,
-  size = "md"
+  headingLevel = "h2"
 }: CTASectionProps) {
-  const sizeClasses = {
-    sm: "text-3xl md:text-4xl",
-    md: "text-4xl md:text-5xl",
-    lg: "text-5xl md:text-7xl",
-    xl: "text-5xl md:text-7xl lg:text-8xl"
-  };
-
   return (
     <div className={`${centered ? 'text-center' : ''} border border-gray-200 dark:border-gray-800 p-8 md:p-12 lg:p-16 rounded-lg`}>
       <div className={`${centered ? 'max-w-lg mx-auto' : ''}`}>
-        <h2 className={`mb-5 font-bold md:mb-6 ${sizeClasses[size]} text-black dark:text-white`}>
+        <Heading as="h2" level={headingLevel}>
           {title}
-        </h2>
+        </Heading>
         <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 mb-6 md:mb-8">
           {description}
         </p>

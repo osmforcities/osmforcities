@@ -24,7 +24,7 @@ export function Hero() {
             <div className="mt-6 flex flex-wrap items-center gap-4 md:mt-8">
               <Button
                 size="lg"
-                variant="outline"
+                variant="primary"
                 onClick={() => scrollToSection("features")}
                 className="gap-2"
               >
