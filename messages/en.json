@@ -336,7 +336,8 @@
     "hero": {
       "title": "Understand your city through open data",
       "description": "OSM for Cities organizes OpenStreetMap data into datasets you can follow. Track schools, transport, parks, and clinics as they change, receive updates by email, and understand how your city evolves over time.",
-      "seeHowItWorks": "See how it works"
+      "seeHowItWorks": "See how it works",
+      "osmAttribution": "© OpenStreetMap contributors"
     },
     "features": {
       "subtitle": "Features",

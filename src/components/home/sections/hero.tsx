@@ -4,8 +4,8 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { ArrowDown } from "lucide-react";
 import { SectionWrapper } from "../shared/section-wrapper";
-import { PlaceholderVisual } from "../shared/placeholder-visual";
 import { scrollToSection } from "../shared/scroll-to-section";
+import { HeroMap } from "../shared/hero-map";
 
 export function Hero() {
   const t = useTranslations("Home");
@@ -32,7 +32,7 @@ export function Hero() {
             </Button>
           </div>
         </div>
-        <PlaceholderVisual />
+        <HeroMap />
       </div>
     </SectionWrapper>
   );

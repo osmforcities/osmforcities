@@ -336,7 +336,8 @@
     "hero": {
       "title": "Compreenda sua cidade através de dados abertos",
       "description": "OSM for Cities organiza dados do OpenStreetMap em conjuntos de dados que você pode seguir. Acompanhe escolas, transporte, parques e clínicas conforme mudam, receba atualizações por e-mail e compreenda como sua cidade evolui ao longo do tempo.",
-      "seeHowItWorks": "Veja como funciona"
+      "seeHowItWorks": "Veja como funciona",
+      "osmAttribution": "© Colaboradores do OpenStreetMap"
     },
     "features": {
       "subtitle": "Recursos",
