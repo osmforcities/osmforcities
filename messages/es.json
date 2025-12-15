@@ -45,7 +45,7 @@
     "viewAllUsers": "Ver Todos los Usuarios",
     "noFollowedDatasetsTitle": "Aún no sigues ningún conjunto de datos",
     "noFollowedDatasetsDescription": "Busca arriba para comenzar.",
-    "datasetCount": "{count, plural, =1 {# conjunto de datos} other {# conjuntos de datos}} que estás monitoreando",
+    "datasetCount": "Siguiendo {count, plural, =1 {# conjunto de datos} other {# conjuntos de datos}}",
     "active": "Activo",
     "inactive": "Inactivo",
     "watcherCount": "{count, plural, =1 {# seguidor} other {# seguidores}}"
