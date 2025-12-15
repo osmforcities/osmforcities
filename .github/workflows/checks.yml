@@ -47,3 +47,6 @@ jobs:
 
       - name: i18n check
         run: pnpm i18n:check
+
+      - name: Build (Next.js production build)
+        run: pnpm build
