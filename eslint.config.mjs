@@ -34,6 +34,14 @@ const eslintConfig = [
           importNames: ["redirect", "permanentRedirect", "useRouter", "usePathname"],
           message: "Please import from `@/i18n/navigation` instead."
         }
+      ],
+      // Prevent untranslated string literals in JSX (e.g., {" "}, {""}, {' '})
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "JSXExpressionContainer[expression.type='Literal'][expression.value=/^\\s*$/]",
+          message: "Untranslated string literals like {' '} or {''} are not allowed. Include spacing in translation strings instead."
+        }
       ]
     },
   },

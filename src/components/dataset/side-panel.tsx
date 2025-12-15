@@ -231,8 +231,9 @@ export async function DatasetSidePanel({ dataset }: DatasetSidePanelProps) {
         <div className="text-xs text-muted-foreground text-center">
           <div className="flex items-center justify-center gap-1">
             <Activity className="h-3 w-3" />
-            {t("lastChecked")}{" "}
-            {new Date(dataset.lastChecked).toLocaleDateString()}
+            {t("lastCheckedWithDate", {
+              date: new Date(dataset.lastChecked).toLocaleDateString(),
+            })}
           </div>
         </div>
       )}
