@@ -42,7 +42,13 @@
     "closeParen": ")",
     "datasets": "Datasets:",
     "viewAllTemplates": "View All Templates",
-    "viewAllUsers": "View All Users"
+    "viewAllUsers": "View All Users",
+    "noFollowedDatasetsTitle": "No datasets followed yet",
+    "noFollowedDatasetsDescription": "Search above to get started.",
+    "datasetCount": "{count, plural, =1 {# dataset} other {# datasets}} you're monitoring",
+    "active": "Active",
+    "inactive": "Inactive",
+    "watcherCount": "{count, plural, =1 {# watcher} other {# watchers}}"
   },
   "Public": {
     "metaTitle": "Public Datasets - OSM for Cities",

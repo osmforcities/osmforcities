@@ -42,7 +42,13 @@
     "closeParen": ")",
     "datasets": "Conjuntos de dados:",
     "viewAllTemplates": "Ver Todos os Modelos",
-    "viewAllUsers": "Ver Todos os Usuários"
+    "viewAllUsers": "Ver Todos os Usuários",
+    "noFollowedDatasetsTitle": "Você ainda não segue nenhum conjunto de dados",
+    "noFollowedDatasetsDescription": "Pesquise acima para começar.",
+    "datasetCount": "{count, plural, =1 {# conjunto de dados} other {# conjuntos de dados}} que você está monitorando",
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "watcherCount": "{count, plural, =1 {# seguidor} other {# seguidores}}"
   },
   "Public": {
     "metaTitle": "Conjuntos de Dados Públicos - OSM for Cities",
