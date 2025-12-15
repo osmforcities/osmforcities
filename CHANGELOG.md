@@ -1,5 +1,17 @@
 # osmforcities
 
+## 1.4.3
+
+### Patch Changes
+
+- Fix React Server Components security vulnerabilities (CVE-2025-55183, CVE-2025-55184, CVE-2025-67779) and ensure Next.js production builds pass in CI.
+
+  - Upgrade Next.js 15.3.6 → 15.5.9
+  - Upgrade React 19.2.1 → 19.2.3
+  - Upgrade react-dom 19.2.1 → 19.2.3
+  - Fix [locale] layout type signature for Next 15.5.9 compatibility
+  - Add Next.js production build step to CI checks workflow
+
 ## 1.4.2
 
 ### Patch Changes
