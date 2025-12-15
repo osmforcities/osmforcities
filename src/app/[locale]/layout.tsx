@@ -32,17 +32,18 @@ export default async function LocaleLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: Locale }>;
+  params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  if (!hasLocale(routing.locales, locale)) {
+  const typedLocale = locale as Locale;
+  if (!hasLocale(routing.locales, typedLocale)) {
     notFound();
   }
 
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
+    <html lang={typedLocale}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
