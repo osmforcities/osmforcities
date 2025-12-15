@@ -29,7 +29,7 @@ test.describe("Authenticated Features", () => {
       await expect(searchInput).toHaveAttribute("role", "combobox");
 
       // Sign in button should NOT be visible (should show user menu instead)
-      const signInButton = page.getByText("Sign In");
+      const signInButton = page.getByTestId("navbar-sign-in");
       await expect(signInButton).toBeHidden();
     } finally {
       await cleanupTestUser(user.id);

@@ -8,6 +8,7 @@ interface NavLinkProps {
   children: React.ReactNode;
   isMobile?: boolean;
   variant?: "default" | "primary" | "destructive";
+  "data-testid"?: string;
 }
 
 const navLinkVariants = {
@@ -29,12 +30,13 @@ export function NavLink({
   children,
   isMobile = false,
   variant = "default",
+  "data-testid": dataTestId,
 }: NavLinkProps) {
   const baseClasses = isMobile ? navLinkSizes.mobile : navLinkSizes.desktop;
   const variantClasses = navLinkVariants[variant];
 
   return (
-    <Link href={href} className={cn(baseClasses, variantClasses)}>
+    <Link href={href} className={cn(baseClasses, variantClasses)} data-testid={dataTestId}>
       {children}
     </Link>
   );

@@ -60,10 +60,6 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
-      <Hero />
-      <Features />
-      <UseCases />
-      <DatasetShowcase />
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-8">
           <div>
