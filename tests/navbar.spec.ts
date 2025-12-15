@@ -58,8 +58,8 @@ test.describe("Navbar", () => {
     await page.context().clearCookies();
     await page.goto(getLocalizedPath("/"));
 
-    // Should show "Sign In" for unauthenticated users
-    await expect(page.getByText("Sign In")).toBeVisible();
+    // Should show "Sign In" for unauthenticated users (in navbar)
+    await expect(page.getByTestId("navbar-sign-in")).toBeVisible();
 
     // Search input should be hidden for unauthenticated users
     const searchInput = page.getByPlaceholder(

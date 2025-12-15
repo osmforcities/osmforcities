@@ -331,5 +331,142 @@
     "in": "in",
     "colon": ":",
     "datasetTitle": "{templateName} in {cityName} ({countryCode})"
+  },
+  "Home": {
+    "hero": {
+      "title": "Understand your city through open data",
+      "description": "OSM for Cities organizes OpenStreetMap data into datasets you can follow. Track schools, transport, parks, and clinics as they change, receive updates by email, and understand how your city evolves over time.",
+      "seeHowItWorks": "See how it works",
+      "osmAttribution": "© OpenStreetMap contributors"
+    },
+    "features": {
+      "subtitle": "Features",
+      "title": "How OSM for Cities works",
+      "description": "Follow datasets, track changes, explore data visually, and download for analysis",
+      "curate": {
+        "title": "Select your datasets",
+        "description": "Choose what matters to your city. Follow schools, transit, parks, clinics, or any dataset tracked in OpenStreetMap. Organize the infrastructure you care about."
+      },
+      "notifications": {
+        "title": "Get notified of changes",
+        "description": "Receive email alerts when datasets you follow are updated. Stay informed about new facilities, infrastructure changes, and urban development as OpenStreetMap contributors edit the map."
+      },
+      "inspect": {
+        "title": "Inspect data on a map",
+        "description": "Explore datasets visually on an interactive map. Click on individual features to see detailed information, compare historical data, and understand spatial relationships in your city."
+      },
+      "download": {
+        "title": "Download data for analysis",
+        "description": "Export datasets as GeoJSON for use in external tools, research projects, or custom analysis. All data is available under the Open Database License (ODbL).",
+        "licenseLink": "https://www.openstreetmap.org/copyright/"
+      }
+    },
+    "useCases": {
+      "subtitle": "Use cases",
+      "title": "Maps serve many purposes",
+      "description": "The same dataset tells different stories depending on who reads it and what they need to know.",
+      "urbanPlanners": {
+        "category": "Urban Planners",
+        "title": "Monitor infrastructure changes",
+        "description": "Follow schools, transit, healthcare, and other services across districts to understand coverage gaps and development patterns."
+      },
+      "journalists": {
+        "category": "Journalists",
+        "title": "Track urban development stories",
+        "description": "Monitor facility openings and closures, identify disparities across neighborhoods, and verify claims with current data."
+      },
+      "researchers": {
+        "category": "Researchers",
+        "title": "Study urban change patterns",
+        "description": "Access reliable data to analyze how services evolve over time and compare accessibility between different areas."
+      },
+      "developers": {
+        "category": "Civic Technologists",
+        "title": "Build with reliable data",
+        "description": "Access consistent, up-to-date urban datasets for applications, analysis tools, and community mapping projects."
+      },
+      "communityGroups": {
+        "category": "Community Groups",
+        "title": "Monitor local services",
+        "description": "Track essential facilities and services in your area to identify gaps and advocate for community needs."
+      },
+      "publicInstitutions": {
+        "category": "Public Institutions & NGOs",
+        "title": "Share service locations",
+        "description": "Provide transparent access to current facility locations and maintain awareness of available services."
+      },
+      "residents": {
+        "category": "Residents",
+        "title": "Stay informed locally",
+        "description": "Follow neighborhood changes and receive updates when new services open or existing ones relocate in your area."
+      },
+      "businesses": {
+        "category": "Businesses",
+        "title": "Monitor location accuracy",
+        "description": "Track how business locations appear in mapping data and ensure customers can find current services nearby."
+      }
+    },
+    "showcase": {
+      "subtitle": "Categories",
+      "title": "Explore dataset categories",
+      "description": "Browse different types of urban infrastructure tracked in OpenStreetMap",
+      "datasets": {
+        "healthcare": {
+          "category": "Healthcare",
+          "title": "Medical facilities & services",
+          "description": "Hospitals, clinics, pharmacies, and other healthcare facilities that provide essential medical services to communities."
+        },
+        "transportation": {
+          "category": "Transportation",
+          "title": "Transport infrastructure",
+          "description": "Bus stops, bike rentals, charging stations, and other facilities that keep cities moving and connected."
+        },
+        "education": {
+          "category": "Education",
+          "title": "Learning institutions",
+          "description": "Schools, universities, libraries, and kindergartens that provide educational opportunities across all age groups."
+        },
+        "leisure": {
+          "category": "Sports & Recreation",
+          "title": "Sports facilities & activities",
+          "description": "Sports venues, recreational areas, and facilities that promote active lifestyles and community engagement."
+        },
+        "environment": {
+          "category": "Environment",
+          "title": "Natural & environmental features",
+          "description": "Waterfalls, dams, tailings ponds, and other environmental features that impact local ecosystems."
+        },
+        "amenities": {
+          "category": "Public Amenities",
+          "title": "Essential public facilities",
+          "description": "Public toilets, drinking water, and community facilities that support daily urban life for residents and visitors."
+        },
+        "tourism": {
+          "category": "Tourism",
+          "title": "Hospitality & attractions",
+          "description": "Hotels, guest houses, and tourist attractions that welcome visitors and showcase local culture."
+        },
+        "culture": {
+          "category": "Culture & Heritage",
+          "title": "Cultural venues & landmarks",
+          "description": "Cinemas, monuments, galleries, and heritage sites that preserve and showcase local culture and history."
+        },
+        "social": {
+          "category": "Social Services",
+          "title": "Community & social facilities",
+          "description": "Social facilities, community centers, and services that support vulnerable populations and community welfare."
+        }
+      }
+    },
+    "signup": {
+      "title": "Get started",
+      "description": "Create an account to follow datasets and receive email updates when data changes.",
+      "signUp": "Create Account"
+    },
+    "footer": {
+      "about": "About",
+      "contact": "Contact",
+      "github": "GitHub"
+    }
   }
 }

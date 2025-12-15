@@ -49,7 +49,7 @@ export default function NavActions({
       <NavLink href="/about" isMobile={isMobile}>
         {translations.about}
       </NavLink>
-      <NavLink href="/enter" isMobile={isMobile} variant="primary">
+      <NavLink href="/enter" isMobile={isMobile} variant="primary" data-testid="navbar-sign-in">
         {translations.signIn}
       </NavLink>
     </div>
