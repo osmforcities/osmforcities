@@ -190,7 +190,9 @@ test.describe("Seamless Discovery Workflow", () => {
     const hasLoading = await page
       .getByTestId("dataset-loading-skeleton")
       .isVisible();
-    const hasError = await page.getByText(/error|not found/i).isVisible();
+    const hasError = await page
+      .getByTestId("dataset-creation-error")
+      .isVisible();
 
     // At least one of these should be true
     expect(hasDataset || hasLoading || hasError).toBe(true);
