@@ -27,22 +27,31 @@ const eslintConfig = [
         "error",
         {
           name: "next/link",
-          message: "Please import from `@/i18n/navigation` instead."
+          message: "Please import from `@/i18n/navigation` instead.",
         },
         {
           name: "next/navigation",
-          importNames: ["redirect", "permanentRedirect", "useRouter", "usePathname"],
-          message: "Please import from `@/i18n/navigation` instead."
-        }
+          importNames: [
+            "redirect",
+            "permanentRedirect",
+            "useRouter",
+            "usePathname",
+          ],
+          message: "Please import from `@/i18n/navigation` instead.",
+        },
       ],
-      // Prevent untranslated string literals in JSX (e.g., {" "}, {""}, {' '})
+      // Prevent untranslated string literals in JSX expression containers
+      // Catches: {" "}, {""}, {' '}, {"actual content"}, {'text'} - all string literals
+      // Excludes: JSX attributes (like d, viewBox, etc.) which are not user-facing text
       "no-restricted-syntax": [
         "error",
         {
-          selector: "JSXExpressionContainer[expression.type='Literal'][expression.value=/^\\s*$/]",
-          message: "Untranslated string literals like {' '} or {''} are not allowed. Include spacing in translation strings instead."
-        }
-      ]
+          selector:
+            "JSXExpressionContainer[expression.type='Literal'][parent.type!='JSXAttribute']",
+          message:
+            "Untranslated string literals like {' '}, {''}, or {'text'} are not allowed. Use translation functions (t()) instead, or include spacing in translation strings.",
+        },
+      ],
     },
   },
   {

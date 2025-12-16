@@ -161,11 +161,12 @@ export function DatasetCreationError({
           {isTooLarge && t("tooLargeDescription")}
           {!isTimeout && !isTooLarge && (
             <>
-              {t("creationErrorDescription")}
-              {templateName &&
-                areaName &&
-                ` ${t("creationErrorFor", { templateName, areaName })}`}
-              {"."}
+              {templateName && areaName
+                ? t("creationErrorDescriptionWithDetails", {
+                    templateName,
+                    areaName,
+                  })
+                : t("creationErrorDescription")}
             </>
           )}
         </p>

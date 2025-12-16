@@ -106,7 +106,13 @@
     "metaTitle": "Sign In - OSM for Cities",
     "metaDescription": "Sign in to monitor OpenStreetMap datasets",
     "signIn": "Sign In",
-    "enterEmailToStart": "Enter your email to get started"
+    "enterEmailToStart": "Enter your email to get started",
+    "notFound": "Not Found",
+    "testAuthNotEnabled": "Test authentication is not enabled.",
+    "signInWithEmailPassword": "Sign in with your email and password",
+    "createAccount": "Create Account",
+    "signupForTesting": "Sign up for testing purposes",
+    "testEnvOnly": "This page is only available in test environment."
   },
 
   "DatasetPage": {
@@ -475,6 +481,10 @@
       "github": "GitHub"
     }
   },
+  "DatasetLoading": {
+    "creatingDataset": "Creating Dataset",
+    "thisUsuallyTakesLessThan30Seconds": "This usually takes less than 30 seconds"
+  },
   "DatasetErrors": {
     "templateNotFoundTitle": "Dataset Template Not Found",
     "templateNotFoundDescription": "The dataset template \"{templateId}\" doesn't exist or is no longer available.",
@@ -492,6 +502,7 @@
     "timeoutDescription": "The request to create this dataset took too long. This usually happens with very large areas or during peak usage times.",
     "tooLargeDescription": "This area contains too much data for the selected template. Try choosing a smaller area or a more specific template.",
     "creationErrorDescription": "We encountered an error while creating the dataset",
+    "creationErrorDescriptionWithDetails": "We encountered an error while creating the dataset \"{templateName}\" for {areaName}.",
     "creationErrorFor": "\"{templateName}\" for {areaName}",
     "tryAgain": "Try Again",
     "retryCreation": "Retry Creation",

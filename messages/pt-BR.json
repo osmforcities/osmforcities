@@ -107,7 +107,13 @@
     "metaTitle": "Entrar - OSM for Cities",
     "metaDescription": "Entre para monitorar conjuntos de dados do OpenStreetMap",
     "signIn": "Entrar",
-    "enterEmailToStart": "Digite seu email para começar"
+    "enterEmailToStart": "Digite seu email para começar",
+    "notFound": "Não Encontrado",
+    "testAuthNotEnabled": "A autenticação de teste não está habilitada.",
+    "signInWithEmailPassword": "Entre com seu e-mail e senha",
+    "createAccount": "Criar Conta",
+    "signupForTesting": "Cadastre-se para fins de teste",
+    "testEnvOnly": "Esta página está disponível apenas no ambiente de teste."
   },
 
   "DatasetPage": {
@@ -496,6 +502,10 @@
       "github": "GitHub"
     }
   },
+  "DatasetLoading": {
+    "creatingDataset": "Criando Conjunto de Dados",
+    "thisUsuallyTakesLessThan30Seconds": "Isso geralmente leva menos de 30 segundos"
+  },
   "DatasetErrors": {
     "templateNotFoundTitle": "Modelo de Conjunto de Dados Não Encontrado",
     "templateNotFoundDescription": "O modelo de conjunto de dados \"{templateId}\" não existe ou não está mais disponível.",
@@ -513,6 +523,7 @@
     "timeoutDescription": "A solicitação para criar este conjunto de dados demorou muito. Isso geralmente acontece com áreas muito grandes ou durante horários de pico.",
     "tooLargeDescription": "Esta área contém muitos dados para o modelo selecionado. Tente escolher uma área menor ou um modelo mais específico.",
     "creationErrorDescription": "Encontramos um erro ao criar o conjunto de dados",
+    "creationErrorDescriptionWithDetails": "Encontramos um erro ao criar o conjunto de dados \"{templateName}\" para {areaName}.",
     "creationErrorFor": "\"{templateName}\" para {areaName}",
     "tryAgain": "Tentar Novamente",
     "retryCreation": "Tentar Criação Novamente",
