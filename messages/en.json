@@ -42,7 +42,13 @@
     "closeParen": ")",
     "datasets": "Datasets:",
     "viewAllTemplates": "View All Templates",
-    "viewAllUsers": "View All Users"
+    "viewAllUsers": "View All Users",
+    "noFollowedDatasetsTitle": "No datasets followed yet",
+    "noFollowedDatasetsDescription": "Search above to get started.",
+    "datasetCount": "Following {count, plural, =1 {# dataset} other {# datasets}}",
+    "watcherCount": "{count, plural, =1 {# watcher} other {# watchers}}",
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "Public": {
     "metaTitle": "Public Datasets - OSM for Cities",
@@ -121,7 +127,7 @@
     "activityLevel": "Activity Level",
     "communityStrength": "Community Strength",
     "communityActivity": "Community Activity",
-    "lastChecked": "Last Checked:",
+    "lastChecked": "Last Checked: {date}",
     "active": "Active",
     "inactive": "Inactive",
     "public": "Public",
@@ -293,7 +299,7 @@
     "closeParen": ")",
     "noUsersFound": "No users found.",
     "datasets": "Datasets:",
-    "joined": "Joined:"
+    "joined": "Joined: {date}"
   },
   "DatasetMap": {
     "mapLabel": "Interactive map showing dataset",
@@ -468,5 +474,34 @@
       "contact": "Contact",
       "github": "GitHub"
     }
+  },
+  "DatasetErrors": {
+    "templateNotFoundTitle": "Dataset Template Not Found",
+    "templateNotFoundDescription": "The dataset template \"{templateId}\" doesn't exist or is no longer available.",
+    "templateNotFoundForArea": "We couldn't find this dataset type for {areaName}.",
+    "viewAvailableDatasets": "View Available Datasets for {areaName}",
+    "browseAllTemplates": "Browse All Templates",
+    "backToHome": "Back to Home",
+    "areaNotFoundTitle": "Area Not Found",
+    "areaNotFoundDescription": "The area with ID \"{areaId}\" doesn't exist in OpenStreetMap or couldn't be found. Please check the area ID and try again.",
+    "searchForAreas": "Search for Areas",
+    "checkOnOSM": "Check on OpenStreetMap",
+    "requestTimedOutTitle": "Request Timed Out",
+    "datasetTooLargeTitle": "Dataset Too Large",
+    "datasetCreationFailedTitle": "Dataset Creation Failed",
+    "timeoutDescription": "The request to create this dataset took too long. This usually happens with very large areas or during peak usage times.",
+    "tooLargeDescription": "This area contains too much data for the selected template. Try choosing a smaller area or a more specific template.",
+    "creationErrorDescription": "We encountered an error while creating the dataset",
+    "creationErrorFor": "\"{templateName}\" for {areaName}",
+    "tryAgain": "Try Again",
+    "retryCreation": "Retry Creation",
+    "chooseDifferentTemplate": "Choose Different Template",
+    "suggestions": "Suggestions:",
+    "suggestionSmallerArea": "Try a smaller city or district instead of a large region",
+    "suggestionSpecificTemplate": "Use a more specific template (e.g., \"Primary Schools\" instead of \"All Schools\")",
+    "suggestionContactUs": "Contact us if you need data for large areas",
+    "somethingWentWrongTitle": "Something went wrong",
+    "unexpectedErrorDescription": "We encountered an unexpected error while loading the dataset. Please try again.",
+    "errorDetails": "Error Details"
   }
 }

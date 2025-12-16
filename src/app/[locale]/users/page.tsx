@@ -114,10 +114,8 @@ export default async function UsersPage() {
                         {t("datasets")} {userItem._count.datasets}
                       </span>
                       <span>
-                        {t("joinedWithDate", {
-                          date: new Date(
-                            userItem.createdAt
-                          ).toLocaleDateString(),
+                        {t("joined", {
+                          date: new Date(userItem.createdAt).toLocaleDateString(),
                         })}
                       </span>
                     </div>

@@ -66,7 +66,6 @@ export function TemplateNotFoundError({
 
 export function AreaNotFoundError({ areaId }: { areaId: string }) {
   const t = useTranslations("DatasetErrors");
-
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 max-w-md w-full mx-4 text-center">
@@ -163,7 +162,9 @@ export function DatasetCreationError({
           {!isTimeout && !isTooLarge && (
             <>
               {t("creationErrorDescription")}
-              {templateName && areaName && ` ${t("creationErrorFor", { templateName, areaName })}`}
+              {templateName &&
+                areaName &&
+                ` ${t("creationErrorFor", { templateName, areaName })}`}
               {"."}
             </>
           )}
@@ -204,7 +205,9 @@ export function DatasetCreationError({
 
         {isTooLarge && (
           <div className="mt-6 text-left">
-            <h3 className="font-medium text-gray-900 mb-2">{t("suggestions")}</h3>
+            <h3 className="font-medium text-gray-900 mb-2">
+              {t("suggestions")}
+            </h3>
             <ul className="text-sm text-gray-600 space-y-1 list-disc pl-4">
               <li>{t("suggestionSmallerArea")}</li>
               <li>{t("suggestionSpecificTemplate")}</li>
@@ -225,7 +228,6 @@ export function DatasetErrorBoundary({
   reset: () => void;
 }) {
   const t = useTranslations("DatasetErrors");
-
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 max-w-md w-full mx-4 text-center">
@@ -249,9 +251,7 @@ export function DatasetErrorBoundary({
           {t("somethingWentWrongTitle")}
         </h1>
 
-        <p className="text-gray-600 mb-6">
-          {t("unexpectedErrorDescription")}
-        </p>
+        <p className="text-gray-600 mb-6">{t("unexpectedErrorDescription")}</p>
 
         <div className="space-y-3">
           <button

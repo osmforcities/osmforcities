@@ -42,7 +42,13 @@
     "closeParen": ")",
     "datasets": "Conjuntos de dados:",
     "viewAllTemplates": "Ver Todos os Modelos",
-    "viewAllUsers": "Ver Todos os Usuários"
+    "viewAllUsers": "Ver Todos os Usuários",
+    "noFollowedDatasetsTitle": "Você ainda não segue nenhum conjunto de dados",
+    "noFollowedDatasetsDescription": "Pesquise acima para começar.",
+    "datasetCount": "Seguindo {count, plural, =1 {# conjunto de dados} other {# conjuntos de dados}}",
+    "watcherCount": "{count, plural, =1 {# seguidor} other {# seguidores}}",
+    "active": "Ativo",
+    "inactive": "Inativo"
   },
   "Public": {
     "metaTitle": "Conjuntos de Dados Públicos - OSM for Cities",
@@ -122,7 +128,7 @@
     "activityLevel": "Nível de Atividade",
     "communityStrength": "Força da Comunidade",
     "communityActivity": "Atividade da Comunidade",
-    "lastChecked": "Última Verificação:",
+    "lastChecked": "Última Verificação: {date}",
     "active": "Ativo",
     "inactive": "Inativo",
     "public": "Público",
@@ -293,7 +299,7 @@
     "closeParen": ")",
     "noUsersFound": "Nenhum usuário encontrado.",
     "datasets": "Conjuntos de Dados:",
-    "joined": "Entrou:"
+    "joined": "Entrou: {date}"
   },
   "DatasetMap": {
     "mapLabel": "Mapa interativo mostrando conjunto de dados",
@@ -489,5 +495,34 @@
       "contact": "Contato",
       "github": "GitHub"
     }
+  },
+  "DatasetErrors": {
+    "templateNotFoundTitle": "Modelo de Conjunto de Dados Não Encontrado",
+    "templateNotFoundDescription": "O modelo de conjunto de dados \"{templateId}\" não existe ou não está mais disponível.",
+    "templateNotFoundForArea": "Não conseguimos encontrar este tipo de conjunto de dados para {areaName}.",
+    "viewAvailableDatasets": "Ver Conjuntos de Dados Disponíveis para {areaName}",
+    "browseAllTemplates": "Explorar Todos os Modelos",
+    "backToHome": "Voltar ao Início",
+    "areaNotFoundTitle": "Área Não Encontrada",
+    "areaNotFoundDescription": "A área com ID \"{areaId}\" não existe no OpenStreetMap ou não pôde ser encontrada. Por favor verifique o ID da área e tente novamente.",
+    "searchForAreas": "Pesquisar Áreas",
+    "checkOnOSM": "Verificar no OpenStreetMap",
+    "requestTimedOutTitle": "Tempo de Espera Esgotado",
+    "datasetTooLargeTitle": "Conjunto de Dados Muito Grande",
+    "datasetCreationFailedTitle": "Criação de Conjunto de Dados Falhou",
+    "timeoutDescription": "A solicitação para criar este conjunto de dados demorou muito. Isso geralmente acontece com áreas muito grandes ou durante horários de pico.",
+    "tooLargeDescription": "Esta área contém muitos dados para o modelo selecionado. Tente escolher uma área menor ou um modelo mais específico.",
+    "creationErrorDescription": "Encontramos um erro ao criar o conjunto de dados",
+    "creationErrorFor": "\"{templateName}\" para {areaName}",
+    "tryAgain": "Tentar Novamente",
+    "retryCreation": "Tentar Criação Novamente",
+    "chooseDifferentTemplate": "Escolher Modelo Diferente",
+    "suggestions": "Sugestões:",
+    "suggestionSmallerArea": "Tente uma cidade ou distrito menor em vez de uma região grande",
+    "suggestionSpecificTemplate": "Use um modelo mais específico (ex., \"Escolas Primárias\" em vez de \"Todas as Escolas\")",
+    "suggestionContactUs": "Entre em contato se precisar de dados para áreas grandes",
+    "somethingWentWrongTitle": "Algo deu errado",
+    "unexpectedErrorDescription": "Encontramos um erro inesperado ao cargar o conjunto de dados. Por favor tente novamente.",
+    "errorDetails": "Detalhes do Erro"
   }
 }
