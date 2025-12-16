@@ -131,11 +131,6 @@ export function setupGlobalApiMocks(page: Page) {
       body: JSON.stringify({}),
     });
   });
-
-  page.route("**/https://**", async (route: Route) => {
-    console.warn(`🚫 Blocked external request to: ${route.request().url()}`);
-    await route.abort("blockedbyclient");
-  });
 }
 
 export function preventExternalCallsInTests() {
