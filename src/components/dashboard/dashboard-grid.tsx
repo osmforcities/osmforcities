@@ -1,9 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { GridList, GridListItem } from "react-aria-components";
 import { Card, CardHeader, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
 import { getCategoryIcon } from "@/lib/category-icons";
 
 type Dataset = {
@@ -36,9 +35,11 @@ type DashboardGridProps = {
  * <DashboardGrid datasets={watchedDatasets} />
  */
 export function DashboardGrid({ datasets }: DashboardGridProps) {
+  const t = useTranslations("TabLayout");
+
   if (datasets.length === 0) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12" data-testid="dashboard-empty-state">
         <div className="flex flex-col items-center justify-center">
           <div className="w-16 h-16 text-gray-300 mb-4">
             <svg
@@ -61,18 +62,18 @@ export function DashboardGrid({ datasets }: DashboardGridProps) {
               />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            {"No datasets followed yet"}
+          <h3
+            className="text-xl font-semibold text-gray-900 mb-2"
+            data-testid="dashboard-empty-state-title"
+          >
+            {t("noFollowedDatasetsTitle")}
           </h3>
-          <p className="text-gray-600 max-w-md mb-6">
-            {"Start following datasets to see them here. "}
-            {"Search for cities to discover available datasets."}
+          <p
+            className="text-gray-600 max-w-md"
+            data-testid="dashboard-empty-state-description"
+          >
+            {t("noFollowedDatasetsDescription")}
           </p>
-          <div className="flex gap-3">
-            <Button size="sm" asChild>
-              <Link href="/search">{"Search Cities"}</Link>
-            </Button>
-          </div>
         </div>
       </div>
     );
@@ -81,9 +82,8 @@ export function DashboardGrid({ datasets }: DashboardGridProps) {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-gray-600">
-          {datasets.length} {"dataset"}
-          {datasets.length !== 1 ? "s" : ""} {"you're monitoring"}
+        <p className="text-gray-600" data-testid="dashboard-dataset-count">
+          {t("datasetCount", { count: datasets.length })}
         </p>
       </div>
 
@@ -128,12 +128,11 @@ export function DashboardGrid({ datasets }: DashboardGridProps) {
                         : "bg-gray-100 text-gray-700"
                     }`}
                   >
-                    {dataset.isActive ? "Active" : "Inactive"}
+                    {dataset.isActive ? t("active") : t("inactive")}
                   </span>
                   {dataset._count && dataset._count.watchers > 0 && (
                     <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-700">
-                      {dataset._count.watchers} {"watcher"}
-                      {dataset._count.watchers !== 1 ? "s" : ""}
+                      {t("watcherCount", { count: dataset._count.watchers })}
                     </span>
                   )}
                 </div>

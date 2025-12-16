@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import LoginForm from "./login-form";
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Locale } from "next-intl";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -17,16 +17,17 @@ export default async function LoginPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations("EnterPage");
 
   if (process.env.ENABLE_TEST_AUTH !== "true") {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-semibold text-gray-900">
-            {"Not Found"}
+            {t("notFound")}
           </h1>
           <p className="text-gray-600 mt-2">
-            {"Test authentication is not enabled."}
+            {t("testAuthNotEnabled")}
           </p>
         </div>
       </div>
@@ -39,10 +40,10 @@ export default async function LoginPage({
         <div className="w-full max-w-sm space-y-8">
           <div className="text-center">
             <h1 className="text-2xl font-semibold text-black dark:text-white">
-              {"Sign In"}
+              {t("signIn")}
             </h1>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-              {"Sign in with your email and password"}
+              {t("signInWithEmailPassword")}
             </p>
           </div>
 

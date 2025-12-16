@@ -29,6 +29,9 @@ export default defineConfig({
     timeout: 120 * 1000,
     stdout: "pipe",
     stderr: "pipe",
+    env: {
+      OVERPASS_API_URL: "http://localhost:3000/api/mock-overpass",
+    },
   },
   globalSetup: require.resolve("./tests/global-setup.ts"),
   testMatch: "**/*.spec.ts",
