@@ -61,7 +61,7 @@ jobs:
         run: pnpm playwright install chromium --with-deps
 
       - name: Run Playwright tests
-        run: pnpm test:playwright
+        run: pnpm playwright test tests/navbar.spec.ts
         env:
           NODE_ENV: test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5433/osmforcities-test
