@@ -63,10 +63,16 @@ export default async function Home() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-8">
           <div>
-            <h1 className="text-3xl font-bold text-black dark:text-white">
+            <h1
+              className="text-3xl font-bold text-black dark:text-white"
+              data-testid="dashboard-welcome-message"
+            >
               {tabT("welcomeBack", { name: user.name || user.email })}
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
+            <p
+              className="text-gray-600 dark:text-gray-400 mt-1"
+              data-testid="dashboard-subtitle"
+            >
               {tabT("manageDatasetsSubtitle")}
             </p>
           </div>

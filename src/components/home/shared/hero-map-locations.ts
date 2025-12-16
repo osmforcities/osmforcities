@@ -166,3 +166,4 @@ export const HERO_LOCATIONS: HeroLocation[] = [
     zoom: 11,
   },
 ];
+

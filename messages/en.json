@@ -204,7 +204,8 @@
     "noAreasFound": "No areas found",
     "searching": "Searching...",
     "typeMoreChars": "Type {count} more character{count, plural, one {} other {s}} to search",
-    "searchHint": "Try searching for cities, regions, or countries"
+    "searchHint": "Try searching for cities, regions, or countries",
+    "idLabel": "ID: "
   },
   "AddressTypes": {
     "city": "City",

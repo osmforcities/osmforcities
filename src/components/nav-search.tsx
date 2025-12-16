@@ -282,7 +282,7 @@ function NavSearch() {
                                 : item.state || item.country || ""}
                             </p>
                             <p className="text-xs text-gray-400 mt-1">
-                              {"ID: "}
+                              {t("idLabel")}
                               {item.id}
                             </p>
                           </>

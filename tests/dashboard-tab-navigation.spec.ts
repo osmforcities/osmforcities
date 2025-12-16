@@ -226,11 +226,11 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
 
       // Check welcome message
-      await expect(page.getByText(/Welcome back/)).toBeVisible();
+      await expect(page.getByTestId("dashboard-welcome-message")).toBeVisible();
 
       // Check dashboard grid
       const grid = page.getByTestId("followed-datasets-grid");
-      const emptyState = page.getByText("No datasets followed yet");
+      const emptyState = page.getByTestId("dashboard-empty-state");
 
       const hasGrid = await grid.isVisible();
       const isEmpty = await emptyState.isVisible();
@@ -249,9 +249,12 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
 
       // Check empty state
-      await expect(page.getByText("No datasets followed yet")).toBeVisible();
+      await expect(page.getByTestId("dashboard-empty-state")).toBeVisible();
       await expect(
-        page.getByRole("link", { name: "Search Cities" })
+        page.getByTestId("dashboard-empty-state-title")
+      ).toBeVisible();
+      await expect(
+        page.getByTestId("dashboard-empty-state-description")
       ).toBeVisible();
     });
 

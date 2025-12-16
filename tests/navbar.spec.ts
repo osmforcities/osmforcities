@@ -237,6 +237,8 @@ test.describe("Navbar", () => {
       );
 
       await searchInput.fill("são");
+      // Wait for debounced search (500ms)
+      await page.waitForTimeout(600);
 
       // Wait for API call to complete and listbox to appear
       await expect(page.getByRole("listbox")).toBeVisible({ timeout: 10000 });

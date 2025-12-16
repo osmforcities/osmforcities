@@ -39,7 +39,7 @@ export function DashboardGrid({ datasets }: DashboardGridProps) {
 
   if (datasets.length === 0) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12" data-testid="dashboard-empty-state">
         <div className="flex flex-col items-center justify-center">
           <div className="w-16 h-16 text-gray-300 mb-4">
             <svg
@@ -62,10 +62,16 @@ export function DashboardGrid({ datasets }: DashboardGridProps) {
               />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <h3
+            className="text-xl font-semibold text-gray-900 mb-2"
+            data-testid="dashboard-empty-state-title"
+          >
             {t("noFollowedDatasetsTitle")}
           </h3>
-          <p className="text-gray-600 max-w-md">
+          <p
+            className="text-gray-600 max-w-md"
+            data-testid="dashboard-empty-state-description"
+          >
             {t("noFollowedDatasetsDescription")}
           </p>
         </div>
@@ -76,7 +82,7 @@ export function DashboardGrid({ datasets }: DashboardGridProps) {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-gray-600">
+        <p className="text-gray-600" data-testid="dashboard-dataset-count">
           {t("datasetCount", { count: datasets.length })}
         </p>
       </div>

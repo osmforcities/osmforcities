@@ -204,7 +204,8 @@
     "noAreasFound": "Nenhuma área encontrada",
     "searching": "Buscando...",
     "typeMoreChars": "Digite {count} caractere{count, plural, one {} other {s}} a mais para buscar",
-    "searchHint": "Tente buscar por cidades, regiões ou países"
+    "searchHint": "Tente buscar por cidades, regiões ou países",
+    "idLabel": "ID: "
   },
   "AddressTypes": {
     "city": "Cidade",

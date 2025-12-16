@@ -29,19 +29,12 @@ test.describe("Seamless Discovery Workflow", () => {
   }) => {
     // Start at dashboard
     await page.goto("/");
-    await expect(page.getByText(/Welcome back/)).toBeVisible();
+    await expect(page.getByTestId("dashboard-welcome-message")).toBeVisible();
 
     // Should show empty state initially
-    await expect(page.getByText("No datasets followed yet")).toBeVisible();
+    await expect(page.getByTestId("dashboard-empty-state-title")).toBeVisible();
 
-    // Click search button in empty state
-    const searchButton = page.getByRole("link", { name: "Search Cities" });
-    await searchButton.click();
-
-    // Should navigate to search page
-    await expect(page).toHaveURL("/en/search");
-
-    // Search for a city (assuming search functionality exists)
+    // Use navbar search to find a city (no separate search page)
     const searchInput = page.getByPlaceholder(/search.*city|city.*search/i);
     if (await searchInput.isVisible()) {
       await searchInput.fill("New York");
@@ -70,23 +63,25 @@ test.describe("Seamless Discovery Workflow", () => {
       await expect(page).toHaveURL(/\/en\/area\/\d+\/dataset\/[a-zA-Z0-9-]+/);
 
       // Should show dataset page with watch button
-      const watchButton = page.getByRole("button", { name: /watch/i });
+      const watchButton = page.getByTestId("dataset-watch-button");
       await expect(watchButton).toBeVisible();
 
       // Click watch button
       await watchButton.click();
 
       // Should show unwatch button
-      await expect(
-        page.getByRole("button", { name: /unwatch/i })
-      ).toBeVisible();
+      const unwatchButton = page.getByTestId("dataset-unwatch-button");
+      await expect(unwatchButton).toBeVisible();
 
       // Navigate back to dashboard
       await page.goto("/");
 
       // Should now show the watched dataset
       // No heading exists in new design, just check for dataset count text
-      await expect(page.getByText("1 dataset you're monitoring")).toBeVisible();
+      await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
+      await expect(page.getByTestId("dashboard-dataset-count")).toContainText(
+        "Following 1 dataset"
+      );
     }
   });
 
@@ -192,7 +187,9 @@ test.describe("Seamless Discovery Workflow", () => {
     const hasDataset = await page
       .getByRole("heading", { name: new RegExp(template.name) })
       .isVisible();
-    const hasLoading = await page.getByText(/loading|creating/i).isVisible();
+    const hasLoading = await page
+      .getByTestId("dataset-loading-skeleton")
+      .isVisible();
     const hasError = await page.getByText(/error|not found/i).isVisible();
 
     // At least one of these should be true
@@ -248,36 +245,29 @@ test.describe("Seamless Discovery Workflow", () => {
     const stableUrl = `/en/area/${testArea.id}/dataset/${template.id}`;
     await page.goto(stableUrl);
 
-    // Should show unwatch button (already watching) or watch button
-    const unwatchButton = page.getByRole("button", { name: /unwatch/i });
-    const watchButton = page.getByRole("button", { name: /watch/i });
-
-    const hasUnwatch = await unwatchButton.isVisible();
-    const hasWatch = await watchButton.isVisible();
-
-    // Should show either unwatch (if already watching) or watch button
-    expect(hasUnwatch || hasWatch).toBe(true);
+    // Should show unwatch button (already watching) since we created a watch record
+    // Wait for page to load and button to appear
+    const unwatchButton = page.getByTestId("dataset-unwatch-button");
+    await expect(unwatchButton).toBeVisible({ timeout: 10000 });
 
     // Navigate back to dashboard
     await page.goto("/");
 
     // Should show the dataset in followed list
-    // No heading exists in new design, just check for dataset count text
-    await expect(page.getByText("1 dataset you're monitoring")).toBeVisible();
+    await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
+    await expect(page.getByTestId("dashboard-dataset-count")).toContainText(
+      "Following 1 dataset"
+    );
   });
 
   test("should handle empty dashboard state correctly", async ({ page }) => {
     await page.goto("/");
 
     // Should show empty state
-    await expect(page.getByText("No datasets followed yet")).toBeVisible();
+    await expect(page.getByTestId("dashboard-empty-state-title")).toBeVisible();
     await expect(
-      page.getByText(/Start following datasets to see them here/)
+      page.getByTestId("dashboard-empty-state-description")
     ).toBeVisible();
-
-    // Should have search button
-    const searchButton = page.getByRole("link", { name: "Search Cities" });
-    await expect(searchButton).toBeVisible();
 
     // Should not show any dataset cards
     const datasetGrid = page.getByTestId("followed-datasets-grid");
@@ -336,8 +326,10 @@ test.describe("Seamless Discovery Workflow", () => {
     await page.goto("/");
 
     // Should show multiple datasets
-    // No heading exists in new design, just check for dataset count text
-    await expect(page.getByText("3 datasets you're monitoring")).toBeVisible();
+    await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
+    await expect(page.getByTestId("dashboard-dataset-count")).toContainText(
+      "Following 3 datasets"
+    );
 
     // Should show multiple dataset cards
     const datasetCards = page
