@@ -1,3 +1,5 @@
+"use client";
+
 export function DatasetLoadingSkeleton() {
   return (
     <div className="bg-gray-50" data-testid="dataset-loading-skeleton">
@@ -104,11 +106,14 @@ export function DatasetLoadingSkeleton() {
   );
 }
 
+import { useTranslations } from "next-intl";
+
 export function DatasetCreationLoader({
   stage = "preparing",
 }: {
   stage?: string;
 }) {
+  const t = useTranslations("DatasetLoading");
   const stages = {
     preparing: "Preparing dataset creation...",
     fetching_area: "Fetching area information...",
@@ -127,14 +132,14 @@ export function DatasetCreationLoader({
           </div>
 
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            {"Creating Dataset"}
+            {t("creatingDataset")}
           </h3>
           <p className="text-gray-600 mb-4">
             {stages[stage as keyof typeof stages] || "Processing..."}
           </p>
 
           <p className="text-sm text-gray-500">
-            {"This usually takes less than 30 seconds"}
+            {t("thisUsuallyTakesLessThan30Seconds")}
           </p>
 
           <div className="mt-6 w-full bg-gray-200 rounded-full h-2">

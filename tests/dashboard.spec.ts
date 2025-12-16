@@ -10,7 +10,7 @@ test.describe("User Dashboard", () => {
     await page.goto("/");
 
     // Check for welcome message
-    await expect(page.getByText(/Welcome back,/)).toBeVisible();
+    await expect(page.getByTestId("dashboard-welcome-message")).toBeVisible();
 
     // Check for subtitle
     await expect(
@@ -23,7 +23,7 @@ test.describe("User Dashboard", () => {
 
     // Check for dashboard grid (either with datasets or empty state)
     const grid = page.getByTestId("followed-datasets-grid");
-    const emptyState = page.getByText("No datasets followed yet");
+    const emptyState = page.getByTestId("dashboard-empty-state");
 
     const hasGrid = await grid.isVisible();
     const isEmpty = await emptyState.isVisible();
@@ -37,7 +37,7 @@ test.describe("User Dashboard", () => {
 
     // Check for dashboard grid (either with datasets or empty state)
     const grid = page.getByTestId("followed-datasets-grid");
-    const emptyState = page.getByText("No datasets followed yet");
+    const emptyState = page.getByTestId("dashboard-empty-state");
 
     const hasGrid = await grid.isVisible();
     const isEmpty = await emptyState.isVisible();
@@ -53,9 +53,12 @@ test.describe("User Dashboard", () => {
     await page.goto("/");
 
     // Check for empty state
-    await expect(page.getByText("No datasets followed yet")).toBeVisible();
+    await expect(page.getByTestId("dashboard-empty-state")).toBeVisible();
     await expect(
-      page.getByRole("link", { name: "Search Cities" })
+      page.getByTestId("dashboard-empty-state-title")
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("dashboard-empty-state-description")
     ).toBeVisible();
   });
 
@@ -67,7 +70,7 @@ test.describe("User Dashboard", () => {
 
     // Check if there are any dataset cards or empty state
     const datasetGrid = page.getByTestId("followed-datasets-grid");
-    const emptyState = page.getByText("No datasets followed yet");
+    const emptyState = page.getByTestId("dashboard-empty-state");
 
     const hasGrid = await datasetGrid.isVisible();
     const isEmpty = await emptyState.isVisible();
@@ -190,7 +193,7 @@ test.describe("User Dashboard", () => {
 
     // Check if there's a dataset grid or empty state
     const datasetGrid = page.getByTestId("followed-datasets-grid");
-    const emptyState = page.getByText("No datasets followed yet");
+    const emptyState = page.getByTestId("dashboard-empty-state");
 
     const hasGrid = await datasetGrid.isVisible();
     const isEmpty = await emptyState.isVisible();
@@ -225,11 +228,11 @@ test.describe("User Dashboard", () => {
     await page.goto("/");
 
     // Check for proper pluralization in dataset count text (only if datasets exist)
-    const countText = page.getByText(/dataset.*you're monitoring/);
-    const emptyState = page.getByText("No datasets followed yet");
+    const countText = page.getByTestId("dashboard-dataset-count");
+    const emptyState = page.getByTestId("dashboard-empty-state");
 
-    const hasCountText = await countText.isVisible();
-    const isEmpty = await emptyState.isVisible();
+    const hasCountText = await countText.isVisible().catch(() => false);
+    const isEmpty = await emptyState.isVisible().catch(() => false);
 
     // Either show count text or empty state
     expect(hasCountText || isEmpty).toBe(true);
@@ -237,7 +240,7 @@ test.describe("User Dashboard", () => {
     if (hasCountText) {
       // The text should handle both singular and plural forms
       const text = await countText.textContent();
-      expect(text).toMatch(/dataset(s)? you're monitoring/);
+      expect(text).toMatch(/Following \d+ dataset(s)?/);
     }
   });
 
@@ -272,9 +275,12 @@ test.describe("Dashboard Navigation", () => {
     await page.goto("/");
 
     // Check for empty state guidance
-    await expect(page.getByText("No datasets followed yet")).toBeVisible();
+    await expect(page.getByTestId("dashboard-empty-state")).toBeVisible();
     await expect(
-      page.getByRole("link", { name: "Search Cities" })
+      page.getByTestId("dashboard-empty-state-title")
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("dashboard-empty-state-description")
     ).toBeVisible();
   });
 });

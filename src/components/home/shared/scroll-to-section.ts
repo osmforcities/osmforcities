@@ -4,3 +4,4 @@ export function scrollToSection(sectionId: string) {
     section.scrollIntoView({ behavior: "smooth" });
   }
 }
+

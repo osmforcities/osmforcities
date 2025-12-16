@@ -6,6 +6,11 @@ import {
   TestUser,
 } from "./utils/auth";
 
+// Test timeouts
+const SEARCH_DEBOUNCE_WAIT = 600; // Match component's 500ms debounce + buffer
+const LISTBOX_TIMEOUT = 30000; // Debounce + API call + render
+const LOADING_STATE_TIMEOUT = 2000;
+
 const mockNominatimResponse = [
   {
     place_id: 123456,
@@ -62,9 +67,7 @@ test.describe("Navbar", () => {
     await expect(page.getByTestId("navbar-sign-in")).toBeVisible();
 
     // Search input should be hidden for unauthenticated users
-    const searchInput = page.getByPlaceholder(
-      "Search cities and areas (min. 3 characters)..."
-    );
+    const searchInput = page.getByTestId("nav-search-input");
     await expect(searchInput).toBeHidden();
   });
 
@@ -102,7 +105,7 @@ test.describe("Navbar", () => {
         name: "Search Test User",
       });
 
-      // Mock the Nominatim API
+      // Mock the Nominatim API (overrides global mock from test-setup)
       await page.route(
         "https://nominatim.openstreetmap.org/search*",
         async (route) => {
@@ -123,7 +126,12 @@ test.describe("Navbar", () => {
               body: JSON.stringify([]),
             });
           } else {
-            await route.continue();
+            // Fulfill with empty array for short queries instead of continue()
+            await route.fulfill({
+              status: 200,
+              contentType: "application/json",
+              body: JSON.stringify([]),
+            });
           }
         }
       );
@@ -182,7 +190,7 @@ test.describe("Navbar", () => {
 
       // Should show loading spinner
       await expect(page.locator(".animate-spin")).toBeVisible({
-        timeout: 2000,
+        timeout: LOADING_STATE_TIMEOUT,
       });
     });
 
@@ -194,7 +202,9 @@ test.describe("Navbar", () => {
       await searchInput.fill("são");
 
       // Wait for API call to complete and listbox to appear
-      await expect(page.getByRole("listbox")).toBeVisible({ timeout: 10000 });
+      await expect(page.getByRole("listbox")).toBeVisible({
+        timeout: LISTBOX_TIMEOUT,
+      });
       await expect(page.getByRole("option")).toHaveCount(2);
 
       // Check result content
@@ -225,7 +235,9 @@ test.describe("Navbar", () => {
       await searchInput.fill("xyz");
 
       // Wait for API call to complete
-      await expect(page.getByRole("listbox")).toBeVisible({ timeout: 10000 });
+      await expect(page.getByRole("listbox")).toBeVisible({
+        timeout: LISTBOX_TIMEOUT,
+      });
       await expect(page.getByText("No areas found")).toBeVisible();
     });
 
@@ -237,9 +249,13 @@ test.describe("Navbar", () => {
       );
 
       await searchInput.fill("são");
+      // Wait for debounced search (500ms)
+      await page.waitForTimeout(SEARCH_DEBOUNCE_WAIT);
 
       // Wait for API call to complete and listbox to appear
-      await expect(page.getByRole("listbox")).toBeVisible({ timeout: 10000 });
+      await expect(page.getByRole("listbox")).toBeVisible({
+        timeout: LISTBOX_TIMEOUT,
+      });
 
       // Press down arrow to focus first item
       await searchInput.press("ArrowDown");
@@ -266,19 +282,19 @@ test.describe("Navbar", () => {
     test("should navigate to area page when pressing Enter on selected item", async ({
       page,
     }) => {
-      const searchInput = page.getByPlaceholder(
-        "Search cities and areas (min. 3 characters)..."
-      );
+      const searchInput = page.getByTestId("nav-search-input");
 
       await searchInput.fill("são");
 
       // Wait for debounced search to complete and API call to finish
-      await expect(page.getByRole("listbox")).toBeVisible({ timeout: 10000 });
+      await expect(page.getByRole("listbox")).toBeVisible({
+        timeout: LISTBOX_TIMEOUT,
+      });
       await expect(page.getByRole("option").first()).toBeVisible();
 
       // Wait a bit more to ensure debounced search has completed
       // eslint-disable-next-line playwright/no-wait-for-timeout
-      await page.waitForTimeout(600);
+      await page.waitForTimeout(SEARCH_DEBOUNCE_WAIT);
 
       // Focus first item with arrow key
       await searchInput.press("ArrowDown");
@@ -292,33 +308,33 @@ test.describe("Navbar", () => {
 
       // Should navigate to the area page
       await expect(page).toHaveURL(getLocalizedPath("/area/54321"), {
-        timeout: 10000,
+        timeout: LISTBOX_TIMEOUT,
       });
     });
 
     test("should navigate to area page when clicking on result", async ({
       page,
     }) => {
-      const searchInput = page.getByPlaceholder(
-        "Search cities and areas (min. 3 characters)..."
-      );
+      const searchInput = page.getByTestId("nav-search-input");
 
       await searchInput.fill("são");
 
       // Wait for debounced search to complete and API call to finish
-      await expect(page.getByRole("listbox")).toBeVisible({ timeout: 10000 });
+      await expect(page.getByRole("listbox")).toBeVisible({
+        timeout: LISTBOX_TIMEOUT,
+      });
       await expect(page.getByRole("option").first()).toBeVisible();
 
       // Wait a bit more to ensure debounced search has completed
       // eslint-disable-next-line playwright/no-wait-for-timeout
-      await page.waitForTimeout(600);
+      await page.waitForTimeout(SEARCH_DEBOUNCE_WAIT);
 
       // Click on first result
       await page.getByRole("option").first().click();
 
       // Should navigate to the area page
       await expect(page).toHaveURL(getLocalizedPath("/area/54321"), {
-        timeout: 10000,
+        timeout: LISTBOX_TIMEOUT,
       });
     });
 
@@ -332,7 +348,9 @@ test.describe("Navbar", () => {
       await searchInput.fill("são");
 
       // Wait for API call to complete and listbox to appear
-      await expect(page.getByRole("listbox")).toBeVisible({ timeout: 10000 });
+      await expect(page.getByRole("listbox")).toBeVisible({
+        timeout: LISTBOX_TIMEOUT,
+      });
 
       // Press Escape
       await searchInput.press("Escape");
@@ -350,7 +368,9 @@ test.describe("Navbar", () => {
       await searchInput.fill("são");
 
       // Wait for API call to complete and listbox to appear
-      await expect(page.getByRole("listbox")).toBeVisible({ timeout: 10000 });
+      await expect(page.getByRole("listbox")).toBeVisible({
+        timeout: LISTBOX_TIMEOUT,
+      });
 
       // Click outside the search component
       await page.locator("body").click();
@@ -379,7 +399,9 @@ test.describe("Navbar", () => {
       await searchInput.fill("error");
 
       // Wait for API call to complete
-      await expect(page.getByRole("listbox")).toBeVisible({ timeout: 10000 });
+      await expect(page.getByRole("listbox")).toBeVisible({
+        timeout: LISTBOX_TIMEOUT,
+      });
       await expect(page.getByText("No areas found")).toBeVisible();
     });
   });

@@ -69,6 +69,7 @@ jobs:
           AUTH_URL: http://localhost:3000
           CRON_ROUTE_SECRET: test-cron-secret
           ENABLE_TEST_AUTH: true
+          NEXT_TELEMETRY_DISABLED: 1
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}

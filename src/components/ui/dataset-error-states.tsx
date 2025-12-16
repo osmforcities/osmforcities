@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { Link } from "@/components/ui/link";
 
 export function TemplateNotFoundError({
@@ -7,6 +10,7 @@ export function TemplateNotFoundError({
   templateId: string;
   areaName?: string;
 }) {
+  const t = useTranslations("DatasetErrors");
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 max-w-md w-full mx-4 text-center">
@@ -27,12 +31,12 @@ export function TemplateNotFoundError({
         </div>
 
         <h1 className="text-xl font-semibold text-gray-900 mb-3">
-          {"Dataset Template Not Found"}
+          {t("templateNotFoundTitle")}
         </h1>
 
         <p className="text-gray-600 mb-6">
-          {`The dataset template "${templateId}" doesn't exist or is no longer available.`}
-          {areaName && ` We couldn't find this dataset type for ${areaName}.`}
+          {t("templateNotFoundDescription", { templateId })}
+          {areaName && ` ${t("templateNotFoundForArea", { areaName })}`}
         </p>
 
         <div className="space-y-3">
@@ -43,16 +47,16 @@ export function TemplateNotFoundError({
               )}`}
               className="block w-full"
             >
-              {`View Available Datasets for ${areaName}`}
+              {t("viewAvailableDatasets", { areaName })}
             </Link>
           )}
 
           <Link href="/templates" className="block w-full" variant="underline">
-            {"Browse All Templates"}
+            {t("browseAllTemplates")}
           </Link>
 
           <Link href="/" className="block w-full">
-            {"Back to Home"}
+            {t("backToHome")}
           </Link>
         </div>
       </div>
@@ -61,6 +65,7 @@ export function TemplateNotFoundError({
 }
 
 export function AreaNotFoundError({ areaId }: { areaId: string }) {
+  const t = useTranslations("DatasetErrors");
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 max-w-md w-full mx-4 text-center">
@@ -81,16 +86,16 @@ export function AreaNotFoundError({ areaId }: { areaId: string }) {
         </div>
 
         <h1 className="text-xl font-semibold text-gray-900 mb-3">
-          {"Area Not Found"}
+          {t("areaNotFoundTitle")}
         </h1>
 
         <p className="text-gray-600 mb-6">
-          {`The area with ID "${areaId}" doesn't exist in OpenStreetMap or couldn't be found. Please check the area ID and try again.`}
+          {t("areaNotFoundDescription", { areaId })}
         </p>
 
         <div className="space-y-3">
           <Link href="/" className="block w-full">
-            {"Search for Areas"}
+            {t("searchForAreas")}
           </Link>
 
           <Link
@@ -99,7 +104,7 @@ export function AreaNotFoundError({ areaId }: { areaId: string }) {
             className="block w-full"
             variant="underline"
           >
-            {"Check on OpenStreetMap"}
+            {t("checkOnOSM")}
           </Link>
         </div>
       </div>
@@ -118,13 +123,14 @@ export function DatasetCreationError({
   templateName?: string;
   onRetry?: () => void;
 }) {
+  const t = useTranslations("DatasetErrors");
   const isTimeout = error.toLowerCase().includes("timeout");
   const isTooLarge =
     error.toLowerCase().includes("too large") ||
     error.toLowerCase().includes("memory");
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center" data-testid="dataset-creation-error">
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 max-w-lg w-full mx-4 text-center">
         <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg
@@ -144,32 +150,23 @@ export function DatasetCreationError({
 
         <h1 className="text-xl font-semibold text-gray-900 mb-3">
           {isTimeout
-            ? "Request Timed Out"
+            ? t("requestTimedOutTitle")
             : isTooLarge
-            ? "Dataset Too Large"
-            : "Dataset Creation Failed"}
+            ? t("datasetTooLargeTitle")
+            : t("datasetCreationFailedTitle")}
         </h1>
 
         <p className="text-gray-600 mb-6">
-          {isTimeout && (
-            <>
-              {
-                "The request to create this dataset took too long. This usually happens with very large areas or during peak usage times."
-              }
-            </>
-          )}
-          {isTooLarge && (
-            <>
-              {
-                "This area contains too much data for the selected template. Try choosing a smaller area or a more specific template."
-              }
-            </>
-          )}
+          {isTimeout && t("timeoutDescription")}
+          {isTooLarge && t("tooLargeDescription")}
           {!isTimeout && !isTooLarge && (
             <>
-              {"We encountered an error while creating the dataset"}
-              {templateName && areaName && ` "${templateName}" for ${areaName}`}
-              {"."}
+              {templateName && areaName
+                ? t("creationErrorDescriptionWithDetails", {
+                    templateName,
+                    areaName,
+                  })
+                : t("creationErrorDescription")}
             </>
           )}
         </p>
@@ -186,7 +183,7 @@ export function DatasetCreationError({
               onClick={onRetry}
               className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
             >
-              {isTimeout ? "Try Again" : "Retry Creation"}
+              {isTimeout ? t("tryAgain") : t("retryCreation")}
             </button>
           )}
 
@@ -198,28 +195,24 @@ export function DatasetCreationError({
               className="block w-full"
               variant="underline"
             >
-              {"Choose Different Template"}
+              {t("chooseDifferentTemplate")}
             </Link>
           )}
 
           <Link href="/" className="block w-full">
-            {"Back to Home"}
+            {t("backToHome")}
           </Link>
         </div>
 
         {isTooLarge && (
           <div className="mt-6 text-left">
-            <h3 className="font-medium text-gray-900 mb-2">{"Suggestions:"}</h3>
-            <ul className="text-sm text-gray-600 space-y-1">
-              <li>
-                {"• Try a smaller city or district instead of a large region"}
-              </li>
-              <li>
-                {
-                  '• Use a more specific template (e.g., "Primary Schools" instead of "All Schools")'
-                }
-              </li>
-              <li>{"• Contact us if you need data for large areas"}</li>
+            <h3 className="font-medium text-gray-900 mb-2">
+              {t("suggestions")}
+            </h3>
+            <ul className="text-sm text-gray-600 space-y-1 list-disc pl-4">
+              <li>{t("suggestionSmallerArea")}</li>
+              <li>{t("suggestionSpecificTemplate")}</li>
+              <li>{t("suggestionContactUs")}</li>
             </ul>
           </div>
         )}
@@ -235,6 +228,7 @@ export function DatasetErrorBoundary({
   error: Error;
   reset: () => void;
 }) {
+  const t = useTranslations("DatasetErrors");
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 max-w-md w-full mx-4 text-center">
@@ -255,32 +249,28 @@ export function DatasetErrorBoundary({
         </div>
 
         <h1 className="text-xl font-semibold text-gray-900 mb-3">
-          {"Something went wrong"}
+          {t("somethingWentWrongTitle")}
         </h1>
 
-        <p className="text-gray-600 mb-6">
-          {
-            "We encountered an unexpected error while loading the dataset. Please try again or contact support if the problem persists."
-          }
-        </p>
+        <p className="text-gray-600 mb-6">{t("unexpectedErrorDescription")}</p>
 
         <div className="space-y-3">
           <button
             onClick={reset}
             className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            {"Try Again"}
+            {t("tryAgain")}
           </button>
 
           <Link href="/" className="block w-full" variant="underline">
-            {"Back to Home"}
+            {t("backToHome")}
           </Link>
         </div>
 
         {process.env.NODE_ENV === "development" && (
           <details className="mt-6 text-left">
             <summary className="text-sm text-gray-500 cursor-pointer">
-              {"Error Details"}
+              {t("errorDetails")}
             </summary>
             <pre className="mt-2 text-xs text-gray-600 bg-gray-50 p-2 rounded overflow-auto">
               {error.message}

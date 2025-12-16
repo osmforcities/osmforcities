@@ -200,6 +200,7 @@ function NavSearch() {
           <Input
             placeholder={t("searchPlaceholder")}
             aria-label={t("searchPlaceholder")}
+            data-testid="nav-search-input"
             onKeyDown={handleKeyDown}
             className={`w-full px-3 py-1.5 text-sm border-0 rounded-l focus:outline-none bg-white transition-all duration-150 ${
               inputValue.length > 0 && inputValue.length < MIN_SEARCH_CHARS
@@ -282,7 +283,7 @@ function NavSearch() {
                                 : item.state || item.country || ""}
                             </p>
                             <p className="text-xs text-gray-400 mt-1">
-                              {"ID: "}
+                              {t("idLabel")}
                               {item.id}
                             </p>
                           </>

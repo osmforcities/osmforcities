@@ -24,13 +24,29 @@ export function getUserAgent(): string {
 
   // Generate default User-Agent with app URL
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://osmforcities.org";
-  const url = baseUrl.replace(/^https?:\/\//, ''); // Remove protocol
+  const url = baseUrl.replace(/^https?:\/\//, ""); // Remove protocol
   return `OSMForCities (+https://${url})`;
 }
 
-// Safeguard to prevent external API calls in test mode
+function isLocalOverpass(url: string | undefined) {
+  if (!url) {
+    return false;
+  }
+
+  try {
+    const parsed = new URL(url);
+    return (
+      parsed.hostname === "localhost" ||
+      parsed.hostname === "127.0.0.1" ||
+      parsed.hostname.endsWith(".localhost")
+    );
+  } catch {
+    return false;
+  }
+}
+
 function preventExternalCallsInTests() {
-  if (process.env.NODE_ENV === "test") {
+  if (process.env.NODE_ENV === "test" && !isLocalOverpass(OVERPASS_API_URL)) {
     throw new Error(
       "External API calls are not allowed in test mode. Use mocked responses instead."
     );
