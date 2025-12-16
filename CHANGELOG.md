@@ -1,5 +1,11 @@
 # osmforcities
 
+## 1.5.0
+
+### Minor Changes
+
+- Revamp homepage with hero section, features showcase, dataset showcase, use cases, and final CTA sections. Add reusable Heading component with typography scale and CategoryCard component. Integrate Design Atlas tokens for consistent styling. Improve dashboard empty state with search functionality. Fix translation/i18n issues including date placeholders, spacing, and missing translations. Enhance test infrastructure with Playwright improvements and CI stability fixes.
+
 ## 1.4.3
 
 ### Patch Changes

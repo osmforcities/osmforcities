@@ -1,6 +1,6 @@
 {
   "name": "osmforcities",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "private": true,
   "scripts": {
     "dev": "COMMIT_HASH=$(git rev-parse HEAD 2>/dev/null || echo 'unknown') next dev",
