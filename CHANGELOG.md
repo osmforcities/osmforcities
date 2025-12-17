@@ -1,5 +1,11 @@
 # osmforcities
 
+## 1.5.1
+
+### Patch Changes
+
+- Fix Create Account button to link to /enter route
+
 ## 1.5.0
 
 ### Minor Changes
