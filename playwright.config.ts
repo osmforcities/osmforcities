@@ -23,7 +23,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "ENABLE_TEST_AUTH=true pnpm dev",
+    command: process.env.CI
+      ? "ENABLE_TEST_AUTH=true pnpm start"
+      : "ENABLE_TEST_AUTH=true pnpm dev",
     url: "http://localhost:3000/api/health",
     reuseExistingServer: true,
     timeout: 120 * 1000,
