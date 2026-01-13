@@ -1,3 +1,8 @@
+/**
+ * Navigation bar component
+ * Brand link: /dashboard when authenticated, / when unauthenticated
+ */
+
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { getTranslations } from "next-intl/server";
@@ -15,7 +20,7 @@ export default async function NavBar() {
       <div className="w-full max-w-7xl mx-auto px-2 md:px-4">
         <div className="flex h-16 items-center justify-between">
           <Link
-            href="/"
+            href={user ? "/dashboard" : "/"}
             className="flex items-center text-lg md:text-xl font-bold text-gray-900 transition-colors hover:text-gray-700"
             aria-label={t("brandName")}
           >
