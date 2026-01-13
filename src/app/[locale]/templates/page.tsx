@@ -32,11 +32,11 @@ export default async function TemplatesPage() {
   const tabT = await getTranslations("TabLayout");
 
   if (!user) {
-    return redirect({ href: "/", locale: "en" });
+    return redirect({ href: "/enter", locale: "en" });
   }
 
   if (!user.isAdmin) {
-    return redirect({ href: "/", locale: "en" });
+    return redirect({ href: "/dashboard", locale: "en" });
   }
 
   const templates = await getTemplates();

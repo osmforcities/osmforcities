@@ -32,11 +32,11 @@ export default async function UsersPage() {
   const tabT = await getTranslations("TabLayout");
 
   if (!user) {
-    return redirect({ href: "/", locale: "en" });
+    return redirect({ href: "/enter", locale: "en" });
   }
 
   if (!user.isAdmin) {
-    return redirect({ href: "/", locale: "en" });
+    return redirect({ href: "/dashboard", locale: "en" });
   }
 
   const users = await getUsers();

@@ -7,6 +7,7 @@ import { Locale } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import { GITHUB_REPO_URL, CONTACT_FORM_URL } from "@/lib/constants";
+import { auth } from "@/auth";
 
 // Import MDX content based on locale
 import EnAbout from "@/content/about/en.mdx";
@@ -72,6 +73,8 @@ const AboutPage = async ({
   const { locale } = await params;
   setRequestLocale(locale);
 
+  const session = await auth();
+  const user = session?.user || null;
   const tDataset = await getTranslations("DatasetList");
   const tCommon = await getTranslations("Common");
   const AboutContent = getMdxComponent(locale);
@@ -82,7 +85,7 @@ const AboutPage = async ({
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-4 mb-8">
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/" className="flex items-center gap-2">
+              <Link href={user ? "/dashboard" : "/"} className="flex items-center gap-2">
                 <ArrowLeft className="h-4 w-4" />
                 {tDataset("backToHome")}
               </Link>
