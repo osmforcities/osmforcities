@@ -101,7 +101,7 @@ test.describe("Dataset Watch Button", () => {
     await expect(unwatchButton).toBeVisible({ timeout: 10000 });
 
     // Check that dataset appears in watched datasets
-    await page.goto("/");
+    await page.goto("/dashboard");
     // Check for dataset count text
     await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
 
@@ -144,7 +144,7 @@ test.describe("Dataset Watch Button", () => {
     await expect(watchButtonAfter).toBeVisible({ timeout: 10000 });
 
     // Check that dataset no longer appears in watched datasets
-    await page.goto("/");
+    await page.goto("/dashboard");
 
     // Should show empty state or not show this dataset
     const datasetCard = page

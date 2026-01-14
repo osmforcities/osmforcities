@@ -178,8 +178,8 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.getByTestId("tab-users").click();
       await expect(page).toHaveURL("http://localhost:3000/en/users");
 
-      // Navigate back to dashboard (use getByLabel to target navbar link specifically, avoiding footer link)
-      await page.getByLabel("OSM for Cities").click();
+      // Navigate back to dashboard using Dashboard link in navbar
+      await page.getByRole("link", { name: "Dashboard" }).click();
       await expect(page).toHaveURL("http://localhost:3000/en/dashboard");
 
       // Should see home dashboard with all tabs again

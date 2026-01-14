@@ -28,7 +28,7 @@ test.describe("Seamless Discovery Workflow", () => {
     page,
   }) => {
     // Start at dashboard
-    await page.goto("/");
+    await page.goto("/dashboard");
     await expect(page.getByTestId("dashboard-welcome-message")).toBeVisible();
 
     // Should show empty state initially
@@ -74,7 +74,7 @@ test.describe("Seamless Discovery Workflow", () => {
       await expect(unwatchButton).toBeVisible();
 
       // Navigate back to dashboard
-      await page.goto("/");
+      await page.goto("/dashboard");
 
       // Should now show the watched dataset
       // No heading exists in new design, just check for dataset count text
@@ -132,7 +132,7 @@ test.describe("Seamless Discovery Workflow", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto("/dashboard");
 
     // Click on dataset card
     const datasetCard = page
@@ -253,7 +253,7 @@ test.describe("Seamless Discovery Workflow", () => {
     await expect(unwatchButton).toBeVisible({ timeout: 10000 });
 
     // Navigate back to dashboard
-    await page.goto("/");
+    await page.goto("/dashboard");
 
     // Should show the dataset in followed list
     await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
@@ -263,7 +263,7 @@ test.describe("Seamless Discovery Workflow", () => {
   });
 
   test("should handle empty dashboard state correctly", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/dashboard");
 
     // Should show empty state
     await expect(page.getByTestId("dashboard-empty-state-title")).toBeVisible();
@@ -325,7 +325,7 @@ test.describe("Seamless Discovery Workflow", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto("/dashboard");
 
     // Should show multiple datasets
     await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();

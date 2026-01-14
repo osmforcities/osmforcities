@@ -1,6 +1,6 @@
 /**
  * Navigation bar component
- * Brand link: /dashboard when authenticated, / when unauthenticated
+ * Brand link: always goes to / (home/landing page)
  */
 
 import { Link } from "@/i18n/navigation";
@@ -20,7 +20,7 @@ export default async function NavBar() {
       <div className="w-full max-w-7xl mx-auto px-2 md:px-4">
         <div className="flex h-16 items-center justify-between">
           <Link
-            href={user ? "/dashboard" : "/"}
+            href="/"
             className="flex items-center text-lg md:text-xl font-bold text-gray-900 transition-colors hover:text-gray-700"
             aria-label={t("brandName")}
           >
@@ -36,18 +36,7 @@ export default async function NavBar() {
             {user && <NavSearch />}
           </div>
 
-          <HamburgerMenu
-            isLoggedIn={!!user}
-            translations={{
-              about: t("about"),
-              preferences: t("preferences"),
-              signOut: t("signOut"),
-              signIn: t("signIn"),
-              mainMenu: "Main navigation menu",
-              menu: "Menu",
-              close: "Close",
-            }}
-          />
+          <HamburgerMenu isLoggedIn={!!user} />
         </div>
       </div>
     </nav>
