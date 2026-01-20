@@ -5,6 +5,7 @@
  */
 
 import { Metadata } from "next";
+import { auth } from "@/auth";
 import { Hero } from "@/components/home/sections/hero";
 import { Features } from "@/components/home/sections/features";
 import { DatasetShowcase } from "@/components/home/sections/dataset-showcase";
@@ -20,13 +21,16 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
+  const session = await auth();
+  const isAuthenticated = !!session?.user;
+
   return (
     <div className="min-h-screen bg-white dark:bg-black">
       <Hero />
       <Features />
       <UseCases />
       <DatasetShowcase />
-      <FinalCTA />
+      {!isAuthenticated && <FinalCTA />}
     </div>
   );
 }
