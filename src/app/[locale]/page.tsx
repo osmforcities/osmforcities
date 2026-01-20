@@ -20,6 +20,9 @@ export const metadata: Metadata = {
     "Track changes in OpenStreetMap datasets across cities worldwide.",
 };
 
+/**
+ * Landing page component - always shows public marketing content
+ */
 export default async function Home() {
   const session = await auth();
   const isAuthenticated = !!session?.user;

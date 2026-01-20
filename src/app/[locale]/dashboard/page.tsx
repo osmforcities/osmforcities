@@ -39,6 +39,9 @@ async function getWatchedDatasets(userId: string) {
   return watchedDatasets.map((watch) => watch.dataset);
 }
 
+/**
+ * Dashboard page component - displays user's watched datasets
+ */
 export default async function Dashboard() {
   const session = await auth();
   const user = session?.user || null;

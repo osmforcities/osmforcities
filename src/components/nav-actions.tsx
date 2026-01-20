@@ -14,6 +14,9 @@ interface NavActionsProps {
   isMobile?: boolean;
 }
 
+/**
+ * Navigation action links - Dashboard, About, Preferences, Sign Out (logged in) or About, Sign In (logged out)
+ */
 export default function NavActions({
   isLoggedIn,
   translations,

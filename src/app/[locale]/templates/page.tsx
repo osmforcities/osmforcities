@@ -25,6 +25,9 @@ async function getTemplates() {
   return templates;
 }
 
+/**
+ * Templates admin page - redirects to /dashboard if not admin, /enter if not authenticated
+ */
 export default async function TemplatesPage() {
   const session = await auth();
   const user = session?.user || null;

@@ -18,6 +18,9 @@ interface ClientMenuProps {
   isLoggedIn: boolean;
 }
 
+/**
+ * Mobile navigation menu - slide-in modal with navigation links
+ */
 export default function ClientMenu({ isLoggedIn }: ClientMenuProps) {
   const t = useTranslations("Navigation");
 
@@ -77,6 +80,9 @@ export default function ClientMenu({ isLoggedIn }: ClientMenuProps) {
   );
 }
 
+/**
+ * Closes mobile menu when navigation link is clicked
+ */
 function CloseOnNav({ children }: { children: React.ReactNode }) {
   const state = useContext(OverlayTriggerStateContext)!;
   return (
