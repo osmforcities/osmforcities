@@ -7,7 +7,7 @@ import {
 
 const prisma = new PrismaClient();
 
-const SUPPORTED_LOCALES = ["en", "pt-BR"] as const;
+const SUPPORTED_LOCALES = ["en", "pt-BR", "es"] as const;
 
 // Map app locale to YML file locale key (YML uses 'pt' not 'pt-BR')
 const YML_LOCALE_MAP: Record<string, string> = {

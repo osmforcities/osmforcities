@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { DatasetSchema } from "@/schemas/dataset";
 import type { FeatureCollection } from "geojson";
 import { DatasetMapWrapper } from "@/components/dataset/map-wrapper";
@@ -61,9 +61,11 @@ async function AreaTemplateDatasetView({
   templateId: string;
   navT: TranslationFunction;
 }) {
+  const locale = await getLocale();
+
   try {
     const [result, areaInfo, session] = await Promise.all([
-      getOrCreateDataset(areaId, templateId),
+      getOrCreateDataset(areaId, templateId, locale),
       getAreaDetailsById(areaId),
       auth(),
     ]);
