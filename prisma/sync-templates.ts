@@ -7,7 +7,7 @@
  * 3. Templates re-added to YAML have deprecatesAt cleared
  * 4. Templates past deprecation date are deleted
  *
- * Run: pnpm db:sync-templates
+ * Run: pnpm db:sync
  */
 
 import { PrismaClient } from "@prisma/client";

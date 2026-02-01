@@ -4,12 +4,29 @@
 
 import { test, expect } from "@playwright/test";
 import { PrismaClient } from "@prisma/client";
+import {
+  createTestUser,
+  cleanupTestUser,
+  setupAuthenticationWithLogin,
+} from "./utils/auth";
 
 test.describe("Template Deprecation", () => {
+  let testUser: { id: string; email: string; password?: string };
+
+  test.afterEach(async () => {
+    if (testUser) {
+      await cleanupTestUser(testUser.id);
+    }
+  });
+
   test("deprecated template route returns 404", async ({ page }) => {
     const prisma = new PrismaClient();
 
     try {
+      // Create and sign in test user
+      testUser = await createTestUser(prisma);
+      await setupAuthenticationWithLogin(page, testUser);
+
       // Clean up
       await prisma.template.deleteMany({ where: { id: "test-deprecated" } });
 
@@ -31,7 +48,7 @@ test.describe("Template Deprecation", () => {
       await page.goto("/area/3039/dataset/test-deprecated"); // SF area ID
 
       // Should show template not found error
-      await expect(page.locator("text=Template Not Found")).toBeVisible();
+      await expect(page.locator("text=Dataset Template Not Found")).toBeVisible();
     } finally {
       await prisma.$disconnect();
     }
@@ -41,6 +58,10 @@ test.describe("Template Deprecation", () => {
     const prisma = new PrismaClient();
 
     try {
+      // Create and sign in test user
+      testUser = await createTestUser(prisma);
+      await setupAuthenticationWithLogin(page, testUser);
+
       // Create a non-deprecated template
       await prisma.template.upsert({
         where: { id: "test-active" },
@@ -63,7 +84,7 @@ test.describe("Template Deprecation", () => {
       await page.goto("/area/3039/dataset/test-active");
 
       // Should not show template not found error (may show other errors for area/data)
-      const templateNotFound = page.locator("text=Template Not Found");
+      const templateNotFound = page.locator("text=Dataset Template Not Found");
       const isVisible = await templateNotFound.isVisible().catch(() => false);
       expect(isVisible).toBe(false);
     } finally {
