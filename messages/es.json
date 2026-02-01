@@ -507,7 +507,9 @@
     "generatedAt": "Este reporte se generó en {timestamp}Z. Todas las fechas mostradas están en UTC.",
     "unsubscribe": "Para cancelar la suscripción a estos reportes, visita {preferencesLink}.",
     "datasetsOne": "conjunto de datos",
-    "datasetsOther": "conjuntos de datos"
+    "datasetsOther": "conjuntos de datos",
+    "templateDeprecated": "Esta plantilla fue eliminada del catálogo.",
+    "templateDeprecatedDaysRemaining": "Tienes {days} días restantes antes de que este conjunto de datos sea eliminado."
   },
   "DatasetErrors": {
     "templateNotFoundTitle": "Plantilla de Conjunto de Datos No Encontrada",

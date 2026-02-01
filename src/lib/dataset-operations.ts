@@ -30,6 +30,10 @@ export async function getOrCreateDataset(
     throw new Error(`Template is not active: ${templateIdentifier}`);
   }
 
+  if (template.deprecatesAt) {
+    throw new Error(`Template is deprecated: ${templateIdentifier}`);
+  }
+
   let dataset = await getDatasetWithDetails(areaId, template.id, locale);
 
   if (dataset) {

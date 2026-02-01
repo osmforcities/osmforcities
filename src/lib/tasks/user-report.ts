@@ -2,7 +2,7 @@ import { prisma } from "@/lib/db";
 import { htmlToText } from "html-to-text";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import {
-  EMAIL_LINK_STYLE,
+  createEmailLink,
   getEmailTranslations,
   interpolateEmail,
   type Locale,
@@ -32,11 +32,8 @@ interface DatasetStats {
     name: string;
     templateName: string;
     lastChanged: Date | null;
+    daysRemaining?: number;
   }>;
-}
-
-function link(url: string, text: string): string {
-  return `<a href="${url}" ${EMAIL_LINK_STYLE}>${text}</a>`;
 }
 
 function getBaseUrl(): string {
@@ -46,13 +43,6 @@ function getBaseUrl(): string {
 function formatUTCDate(date: Date | null): string {
   if (!date) return "Unknown";
   return date.toISOString().split("T")[0];
-}
-
-function getFrequencyWord(
-  frequency: "DAILY" | "WEEKLY",
-  translations: EmailTranslations
-): string {
-  return frequency === "DAILY" ? translations.day : translations.week;
 }
 
 function getLatestChangeDate(datasets: Array<{ stats?: DatasetStatsData }>): string | null {
@@ -67,7 +57,7 @@ function generateEmailSubject(
   frequency: "DAILY" | "WEEKLY",
   translations: EmailTranslations
 ): string {
-  const freqWord = getFrequencyWord(frequency, translations);
+  const freqWord = frequency === "DAILY" ? translations.day : translations.week;
   if (count === 0) {
     return `No changes in the last ${freqWord}`;
   }
@@ -82,9 +72,11 @@ function generateEmailBodyWithChanges(
     name: string;
     templateName: string;
     lastChanged: Date | null;
+    daysRemaining?: number;
   }>,
   frequency: "DAILY" | "WEEKLY",
-  changedText: string
+  changedText: string,
+  deprecationText?: string
 ): string {
   const datasetsByDay = new Map<
     string,
@@ -118,7 +110,7 @@ function generateEmailBodyWithChanges(
       const datasetsList = datasets
         .map(
           (ds) =>
-            `${link(
+            `${createEmailLink(
               `${getBaseUrl()}/dataset/${ds.id}`,
               `${ds.templateName} - ${ds.name}`
             )}`
@@ -129,9 +121,15 @@ function generateEmailBodyWithChanges(
     })
     .join("<br><br>");
 
+  let deprecationNotice = "";
+  if (deprecationText) {
+    deprecationNotice = `<div style="background: #fff3cd; padding: 15px; border-radius: 5px; border: 1px solid #ffc107; margin-bottom: 20px;">${deprecationText}</div>`;
+  }
+
   return `
     <p>${changedText}</p>
 
+    ${deprecationNotice}
     <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">${datasetsList}</div>`;
 }
 
@@ -148,13 +146,24 @@ async function generateEmailContent(
   // Generate subject
   const subject = generateEmailSubject(count, frequency, translations);
 
+  // Check if any datasets use deprecated templates
+  const deprecatedDatasets = recentDatasets.filter((ds) => ds.daysRemaining !== undefined);
+  let deprecationNotice: string | undefined;
+  if (deprecatedDatasets.length > 0) {
+    const ds = deprecatedDatasets[0];
+    deprecationNotice = interpolateEmail(translations.templateDeprecatedDaysRemaining, {
+      days: ds.daysRemaining!,
+    });
+  }
+
   // Generate body
-  const freqValue = getFrequencyWord(frequency, translations);
+  const freqValue = frequency === "DAILY" ? translations.day : translations.week;
   const emailBody = count > 0
     ? generateEmailBodyWithChanges(
         recentDatasets,
         frequency,
-        translations.reportChanged.replace("{frequency}", freqValue)
+        translations.reportChanged.replace("{frequency}", freqValue),
+        deprecationNotice
       )
     : interpolateEmail(translations.reportNoChanges, {
         frequency: freqValue,
@@ -268,6 +277,7 @@ export async function generateNextUserReport(): Promise<{
         select: {
           name: true,
           description: true,
+          deprecatesAt: true,
           translations: {
             select: {
               locale: true,
@@ -311,11 +321,21 @@ export async function generateNextUserReport(): Promise<{
         userLocale
       );
 
+      // Calculate days remaining if template is deprecated
+      let daysRemaining: number | undefined;
+      if (dataset.template.deprecatesAt) {
+        daysRemaining = Math.ceil(
+          (new Date(dataset.template.deprecatesAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000)
+        );
+        if (daysRemaining < 0) daysRemaining = 0;
+      }
+
       return {
         id: dataset.id,
         name: dataset.cityName,
         templateName: resolvedTemplate.name,
         lastChanged: mostRecentElement ? new Date(mostRecentElement) : null,
+        daysRemaining,
       };
     }),
   };

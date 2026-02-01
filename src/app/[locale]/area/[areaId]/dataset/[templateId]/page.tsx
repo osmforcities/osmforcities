@@ -153,6 +153,10 @@ async function AreaTemplateDatasetView({
         return <TemplateNotFoundError templateId={templateId} />;
       }
 
+      if (error.message.includes("Template is deprecated:")) {
+        return <TemplateNotFoundError templateId={templateId} />;
+      }
+
       return (
         <DatasetCreationError
           error={error.message}

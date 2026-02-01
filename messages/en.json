@@ -500,7 +500,9 @@
     "generatedAt": "This report was generated at {timestamp}Z. All dates shown are in UTC.",
     "unsubscribe": "To unsubscribe from these reports, visit {preferencesLink}.",
     "datasetsOne": "dataset",
-    "datasetsOther": "datasets"
+    "datasetsOther": "datasets",
+    "templateDeprecated": "This template was removed from the catalog.",
+    "templateDeprecatedDaysRemaining": "You have {days} days remaining before this dataset is deleted."
   },
   "DatasetErrors": {
     "templateNotFoundTitle": "Dataset Template Not Found",
