@@ -1,0 +1,299 @@
+# Template definitions for OSM for Cities (logic only)
+# Format: [id, query, category, icon?]
+# Composite queries: ; = OR, & = AND. Example: highway=footway;highway=path&surface=paved
+
+templates:
+# Transportation
+  - ["bicycle-parking","amenity=bicycle_parking","transportation","Bike"]
+  - ["bicycle-rental","amenity=bicycle_rental","transportation","Bike"]
+  - ["bicycle-shop","shop=bicycle","transportation","Bike"]
+  - ["bus-stops","highway=bus_stop","transportation","Bus"]
+  - ["ev-charging","amenity=charging_station","transportation","Zap"]
+  - ["railway-stations","railway=station","transportation","Train"]
+  - ["tram-stops","railway=tram_stop","transportation","Train"]
+  - ["subway-entrances","railway=subway_entrance","transportation","Train"]
+  - ["ferry-terminals","amenity=ferry_terminal","transportation","Ship"]
+  - ["taxi-ranks","amenity=taxi","transportation","Car"]
+  - ["parking","amenity=parking;amenity=parking_space","transportation","Car"]
+# Financial
+  - ["atms","amenity=atm","financial","DollarSign"]
+  - ["banks","amenity=bank","financial","Building2"]
+# Amenities
+  - ["public-toilets","amenity=toilets","amenities","Toilet"]
+  - ["drinking-water","amenity=drinking_water","amenities","Droplet"]
+  - ["post-offices","amenity=post_office","amenities","Mail"]
+  - ["parcel-lockers","amenity=parcel_locker","amenities","Package"]
+# Healthcare
+  - ["hospitals","amenity=hospital","healthcare"]
+  - ["clinics","amenity=clinic","healthcare"]
+  - ["doctors","amenity=doctors","healthcare"]
+  - ["dentists","amenity=dentist","healthcare"]
+  - ["pharmacies","amenity=pharmacy","healthcare"]
+  - ["health-post","amenity=health_post","healthcare"]
+  - ["nursing-home","amenity=nursing_home","healthcare"]
+  - ["veterinary","amenity=veterinary","healthcare"]
+# Education
+  - ["schools","amenity=school","education"]
+  - ["universities","amenity=university","education"]
+  - ["libraries","amenity=library","education"]
+  - ["kindergarten","amenity=kindergarten","education"]
+  - ["college","amenity=college","education"]
+# Tourism
+  - ["attractions","tourism=attraction","tourism"]
+  - ["viewpoints","tourism=viewpoint","tourism"]
+  - ["campsites","tourism=camp_site","tourism"]
+  - ["alpine-huts","tourism=alpine_hut","tourism"]
+  - ["caravan-sites","tourism=caravan_site","tourism"]
+  - ["chalets","tourism=chalet","tourism"]
+  - ["wilderness-huts","tourism=wilderness_hut","tourism"]
+# Culture
+  - ["cinemas","amenity=cinema","culture"]
+  - ["monuments","historic=monument","culture"]
+  - ["arts-centre","amenity=arts_centre","culture"]
+  - ["gallery","tourism=gallery","culture"]
+  - ["memorials","historic=memorial","culture"]
+  - ["museums","tourism=museum","culture"]
+  - ["theatres","amenity=theatre","culture"]
+# Social
+  - ["social-facility","amenity=social_facility","social"]
+  - ["community-centre","amenity=community_centre","social"]
+  - ["town-halls","amenity=townhall","social"]
+  - ["senior-centers","amenity=senior centre","social"]
+# Government
+  - ["government-office","office=government","government"]
+  - ["courts","amenity=court","government"]
+  - ["police-stations","amenity=police","government"]
+  - ["prisons","amenity=prison","government"]
+# Emergency
+  - ["fire-stations","amenity=fire_station","emergency"]
+  - ["ambulance-stations","amenity=ambulance_station","emergency"]
+  - ["emergency-phones","emergency=phone","emergency"]
+# Environment
+  - ["waterfall","waterway=waterfall","environment"]
+  - ["dam","waterway=dam","environment"]
+# Services
+  - ["recycling","amenity=recycling","services"]
+  - ["waste-disposal","amenity=waste_disposal","services"]
+  - ["benches","amenity=bench","services"]
+  - ["telephones","amenity=telephone","services"]
+  - ["internet-access","amenity=internet_access","services"]
+# Shops
+  - ["supermarkets","shop=supermarket","shops"]
+  - ["bakeries","shop=bakery","shops"]
+  - ["convenience","shop=convenience","shops"]
+  - ["butchers","shop=butcher","shops"]
+  - ["greengrocers","shop=greengrocer","shops"]
+  - ["department-stores","shop=department_store","shops"]
+  - ["shopping-malls","shop=mall","shops"]
+  - ["clothes","shop=clothes","shops"]
+  - ["chemist","shop=chemist","shops"]
+  - ["fuel","amenity=fuel","shops"]
+  - ["hardware","shop=hardware","shops"]
+  - ["diy","shop=doityourself","shops"]
+  - ["furniture","shop=furniture","shops"]
+  - ["electronics","shop=electronics","shops"]
+  - ["mobile-phone","shop=mobile_phone","shops"]
+  - ["optician","shop=optician","shops"]
+  - ["shoes","shop=shoes","shops"]
+  - ["jewelry","shop=jewelry","shops"]
+# Food
+  - ["restaurants","amenity=restaurant","food"]
+  - ["cafes","amenity=cafe","food"]
+  - ["fast-food","amenity=fast_food","food"]
+  - ["bars","amenity=bar","food"]
+  - ["pubs","amenity=pub","food"]
+  - ["ice-cream","amenity=ice_cream","food"]
+# Leisure
+  - ["parks","leisure=park","leisure"]
+  - ["playgrounds","leisure=playground","leisure"]
+  - ["gardens","leisure=garden","leisure"]
+  - ["fitness-centers","leisure=fitness_center","leisure"]
+  - ["swimming-pools","leisure=swimming_pool","leisure"]
+  - ["sports-centres","leisure=sports_centre","leisure"]
+  - ["stadiums","leisure=stadium","leisure"]
+  - ["pitches","leisure=pitch","leisure"]
+  - ["golf-courses","leisure=golf_course","leisure"]
+  - ["nature-reserves","leisure=nature_reserve","leisure"]
+  - ["marinas","leisure=marina","leisure"]
+  - ["dog-parks","leisure=dog_park","leisure"]
+# Nature
+  # Core urban tree structure
+  - ["urban-trees","natural=tree;natural=tree_row","nature","TreePine"]
+  # Street-focused arborization (maintenance & shading context)
+  - ["street-trees","natural=tree_row","nature","Route"]
+  # Managed green spaces (planned landscaping)
+  - ["managed-green","leisure=park;leisure=garden;landuse=orchard","nature","Leaf"]
+  # Natural / spontaneous vegetation
+  - ["natural-vegetation","natural=wood;natural=grassland;landuse=forest","nature","Trees"]
+
+  - ["forests","landuse=forest","nature"]
+  - ["woods","natural=wood","nature"]
+  - ["orchards","landuse=orchard","nature"]
+  - ["grasslands","natural=grassland","nature"]
+  - ["wetlands","natural=wetland","nature"]
+  - ["beaches","natural=beach","nature"]
+  - ["peaks","natural=peak","nature"]
+  - ["cliffs","natural=cliff","nature"]
+  - ["caves","natural=cave_entrance","nature"]
+  - ["water","natural=water;natural=lake;natural=pond","nature","Droplet"]
+  - ["coastlines","natural=coastline","nature"]
+  - ["springs","natural=spring","nature"]
+  - ["hot-springs","natural=hot_spring","nature"]
+  - ["geyser","natural=geyser","nature"]
+  - ["glaciers","natural=glacier","nature"]
+  - ["natural-surfaces","natural=scrub;natural=heath;natural=moor;natural=fell;natural=rock;natural=stone;natural=sand;natural=shingle;natural=mud","nature","Mountain"]
+  - ["scrub","natural=scrub","nature"]
+  - ["heath","natural=heath","nature"]
+  - ["moor","natural=moor","nature"]
+  - ["fell","natural=fell","nature"]
+  - ["rock","natural=rock","nature"]
+  - ["stone","natural=stone","nature"]
+  - ["sand","natural=sand","nature"]
+  - ["shingle","natural=shingle","nature"]
+  - ["mud","natural=mud","nature"]
+# Infrastructure
+  - ["street-lamps","highway=street_lamp","infrastructure","Lightbulb"]
+  - ["surveillance","man_made=surveillance","infrastructure","Camera"]
+  - ["tailings-pond","man_made=tailings_pond","infrastructure"]
+  - ["tower","man_made=tower","infrastructure","Tower"]
+  - ["communications-tower","man_made=communications_tower","infrastructure","Radio"]
+  - ["water-tower","man_made=water_tower","infrastructure","Droplet"]
+  - ["storage-tanks","man_made=storage_tank","infrastructure","Fuel"]
+  - ["chimney","man_made=chimney","infrastructure","Flame"]
+  - ["pipeline","man_made=pipeline","infrastructure"]
+  - ["mast","man_made=mast","infrastructure"]
+  - ["water-works","man_made=water_works","infrastructure"]
+  - ["wastewater-plant","man_made=wastewater_plant","infrastructure"]
+  - ["pumping-station","man_made=pumping_station","infrastructure"]
+  - ["utility-pole","man_made=utility_pole","infrastructure"]
+# Transport infrastructure
+  - ["roads","highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=unclassified","transport_infrastructure","Route"]
+  - ["footways","highway=footway;highway=path","transport_infrastructure","Footprints"]
+  - ["cycleways","highway=cycleway","transport_infrastructure","Bike"]
+  - ["bridges","man_made=bridge","transport_infrastructure"]
+  - ["tunnels","tunnel=yes;tunnel=building_passage","transport_infrastructure"]
+  - ["crossings","highway=crossing","transport_infrastructure","Crosshair"]
+# Traffic
+  - ["traffic-signs","traffic_sign=*","traffic","Signpost"]
+  - ["traffic-lights","highway=traffic_signals","traffic","Lightbulb"]
+  - ["speed-cameras","man_made=speed_camera","traffic","Camera"]
+  - ["traffic-calming","traffic_calming=*","traffic","TrafficCone"]
+# Housing
+  - ["apartments","building=apartments","housing","Building2"]
+  - ["houses","building=house;building=detached;building=semidetached_house;building=terrace","housing","Home"]
+  - ["residential","landuse=residential","housing","Building2"]
+  - ["dormitories","building=dormitory","housing","Briefcase"]
+  - ["hotel-guesthouse","tourism=hotel;tourism=guest_house;tourism=hostel","housing","Building2"]
+# Sports facilities
+  - ["football","sport=soccer","sports","Goal"]
+  - ["basketball","sport=basketball","sports"]
+  - ["tennis","sport=tennis","sports"]
+  - ["swimming","sport=swimming","sports"]
+  - ["golf","sport=golf","sports"]
+  - ["skiing","sport=skiing","sports"]
+  - ["ice-skating","sport=ice_skating","sports"]
+  - ["ice-hockey","sport=ice_hockey","sports"]
+  - ["baseball","sport=baseball","sports"]
+  - ["athletics","sport=athletics","sports"]
+  - ["gymnasiums","sport=gymnastics","sports"]
+  - ["multi-sport","sport=multi","sports"]
+  - ["shooting","sport=shooting","sports"]
+  - ["archery","sport=archery","sports"]
+  - ["climbing","sport=climbing","sports"]
+  - ["equestrian","sport=equestrian","sports"]
+# Public facilities
+  - ["fountains","amenity=fountain","public"]
+  - ["clocks","amenity=clock","public"]
+  - ["guideposts","tourism=guidepost","public"]
+  - ["information-boards","tourism=information","public"]
+  - ["markers","tourism=information;tourism=guidepost","public"]
+# Religion
+  - ["places-of-worship","amenity=place_of_worship","religion","Building2"]
+  - ["church","religion=christian","religion","Building2"]
+  - ["mosque","religion=islam","religion"]
+  - ["synagogue","religion=jewish","religion"]
+  - ["temple","religion=buddhist;religion=hindu;religion=sikh;religion=taoist","religion"]
+  - ["shrine","religion=shinto","religion"]
+# Barriers
+  - ["walls","barrier=wall","barriers"]
+  - ["fences","barrier=fence","barriers"]
+  - ["hedges","barrier=hedge","barriers"]
+  - ["gates","barrier=gate","barriers"]
+# =========================
+  # Agricultural and agro-industrial infrastructure
+  # =========================
+  # Note: These tags map observable physical infrastructure and land use only.
+  # They do not characterize pollution, contamination, or environmental impact.
+  # Naming aligns with OpenStreetMap wiki documentation.
+
+  # Agricultural land use
+  - ["farmland","landuse=farmland","agriculture","Wheat"]
+  - ["farmyards","landuse=farmyard","agriculture","Building2"]
+  - ["meadows","landuse=meadow","agriculture","Leaf"]
+  - ["animal-keeping","landuse=animal_keeping","agriculture","PawPrint"]
+  # Specialized farmyard types (feedlots, stockyards, poultry, dairy)
+  - ["feedlots","farmyard=feedlot","agriculture","Wheat"]
+  - ["stockyards","farmyard=stockyard","agriculture","Square"]
+  - ["poultry-yards","farmyard=poultry","agriculture","Wheat"]
+  - ["dairy-yards","farmyard=dairy","agriculture","Wheat"]
+  # Agricultural buildings
+  - ["barns","building=barn","agriculture","Warehouse"]
+  - ["agricultural-buildings","building=agricultural","agriculture","Building2"]
+  - ["farm-auxiliary","building=farm_auxiliary","agriculture","Wrench"]
+  - ["greenhouses","building=greenhouse","agriculture","Sun"]
+  # Livestock housing
+  - ["livestock-buildings","building=livestock","agriculture","PawPrint"]
+  - ["cowsheds","building=cowshed","agriculture","PawPrint"]
+  - ["pig-sties","building=sty","agriculture","PawPrint"]
+  - ["stables","building=stable","agriculture","PawPrint"]
+  # Agricultural storage
+  - ["silos","building=silo;man_made=silo","agriculture","Package"]
+  - ["bunker-silos","man_made=bunker_silo","agriculture","Warehouse"]
+  - ["agricultural-tanks","man_made=storage_tank","agriculture","Fuel"]
+  # Organic fertilizer storage (slurry/manure infrastructure)
+  - ["slurry-basins","man_made=slurry_basin","agriculture","Droplet"]
+  - ["slurry-tanks","building=slurry_tank;man_made=slurry_tank","agriculture","Droplet"]
+  - ["manure-storage","man_made=storage_tank&content=manure","agriculture","Package"]
+  # Horticulture and plant production
+  - ["greenhouse-horticulture","landuse=greenhouse_horticulture","agriculture","Sun"]
+  - ["plant-nurseries","landuse=plant_nursery","agriculture","Sprout"]
+# =========================
+  # Advanced landscaping datasets
+  # =========================
+  # Trees with species information (advanced)
+  - ["trees-with-species","natural=tree&species=*","nature","Leaf"]
+  # Irrigated green areas (where mapped)
+  - ["irrigated-green","irrigation=yes","nature","Droplet"]
+# =========================
+  # Climate / emergency context
+  # =========================
+  # Vegetation requiring attention during extreme weather events
+  - ["vegetation-risk-context","natural=tree;natural=tree_row;natural=wood","emergency","AlertTriangle"]
+# Category to icon mapping (fallback for templates without icon)
+categories:
+  transportation: Car
+  transport: Car
+  transport_infrastructure: Route
+  financial: DollarSign
+  amenities: Heart
+  healthcare: Hospital
+  education: School
+  tourism: Camera
+  culture: Palette
+  social: Users
+  government: Shield
+  environment: Leaf
+  shops: ShoppingBag
+  food: Utensils
+  leisure: TreePine
+  emergency: ShieldAlert
+  services: Wrench
+  nature: Leaf
+  infrastructure: Gauge
+  traffic: TrafficCone
+  housing: Building2
+  sports: Trophy
+  public: Info
+  religion: Building2
+  barriers: Square
+  agriculture: Wheat

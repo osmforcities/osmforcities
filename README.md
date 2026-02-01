@@ -107,14 +107,20 @@ curl -X POST "https://yourdomain.com/api/tasks/update-datasets" \
 
 ## Internationalization (i18n)
 
-This project uses [next-intl](https://next-intl.com/) for internationalization. Translation files are in the `messages/` directory.
+This project uses two translation systems:
+
+1. **UI translations** ([next-intl](https://next-intl.com/)) for interface text in `messages/` directory
+2. **Template translations** (database-based) for dataset template names/descriptions
+
+See [docs/features/translation-system.md](./docs/features/translation-system.md) for complete documentation including user preference behavior.
 
 ### Checking Translations
 
 ```bash
-
 pnpm i18n:check
+```
 
+```bash
 # Check and automatically fix issues (when possible)
 pnpm i18n:check:fix
 ```

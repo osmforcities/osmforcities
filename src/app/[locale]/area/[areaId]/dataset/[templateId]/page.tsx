@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { DatasetSchema } from "@/schemas/dataset";
 import type { FeatureCollection } from "geojson";
 import { DatasetMapWrapper } from "@/components/dataset/map-wrapper";
@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dataset-error-states";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import type { TranslationFunction } from "@/lib/types";
 
 type DatasetPageProps = {
   params: Promise<{
@@ -29,7 +30,6 @@ type DatasetPageProps = {
 
 export default async function DatasetPage({ params }: DatasetPageProps) {
   const { areaId, templateId } = await params;
-  const t = await getTranslations("DatasetPage");
   const navT = await getTranslations("Navigation");
 
   const osmRelationId = parseInt(areaId, 10);
@@ -46,7 +46,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
       <AreaTemplateDatasetView
         areaId={osmRelationId}
         templateId={templateId}
-        translations={{ t, navT }}
+        navT={navT}
       />
     </Suspense>
   );
@@ -55,18 +55,17 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
 async function AreaTemplateDatasetView({
   areaId,
   templateId,
-  translations,
+  navT,
 }: {
   areaId: number;
   templateId: string;
-  translations: {
-    t: Awaited<ReturnType<typeof getTranslations>>;
-    navT: Awaited<ReturnType<typeof getTranslations>>;
-  };
+  navT: TranslationFunction;
 }) {
+  const locale = await getLocale();
+
   try {
     const [result, areaInfo, session] = await Promise.all([
-      getOrCreateDataset(areaId, templateId),
+      getOrCreateDataset(areaId, templateId, locale),
       getAreaDetailsById(areaId),
       auth(),
     ]);
@@ -99,7 +98,7 @@ async function AreaTemplateDatasetView({
     });
 
     const breadcrumbItems = [
-      { label: translations.navT("home"), href: "/" },
+      { label: navT("home"), href: "/" },
       { label: areaInfo?.country || "Area" },
       ...(areaInfo?.state ? [{ label: areaInfo.state }] : []),
       { label: areaInfo?.name || dataset.area.name, href: `/area/${areaId}` },
@@ -110,7 +109,7 @@ async function AreaTemplateDatasetView({
       <div className="bg-gray-50">
         <div
           className="max-w-7xl mx-auto px-4 py-8 flex flex-col"
-          style={{ height: "calc(100vh - var(--nav-height))" }}
+          style={{ minHeight: "calc(100vh - var(--nav-height))" }}
         >
           <div className="mb-8 flex-shrink-0">
             <BreadcrumbNav items={breadcrumbItems} />

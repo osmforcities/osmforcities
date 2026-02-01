@@ -114,7 +114,6 @@
     "signupForTesting": "Regístrate para propósitos de prueba",
     "testEnvOnly": "Esta página solo está disponible en el entorno de prueba."
   },
-
   "DatasetPage": {
     "backToHome": "Volver al Inicio",
     "datasetStats": "Estadísticas del Conjunto de Datos",
@@ -387,14 +386,12 @@
       "journalists": {
         "category": "Periodistas",
         "title": "Fundamenta historias con datos",
-        "description": "Rastrea cómo las ciudades se desarrollan y cambian con datos de mapeo compartidos.",
-        "view": "Ver"
+        "description": "Rastrea cómo las ciudades se desarrollan y cambian con datos de mapeo compartidos para crear reportajes basados en evidencia."
       },
       "researchers": {
         "category": "Investigadores",
         "title": "Analiza tendencias urbanas",
-        "description": "Estudia patrones y cambios en la infraestructura de la ciudad a lo largo del tiempo.",
-        "view": "Ver"
+        "description": "Estudia patrones y cambios en la infraestructura de la ciudad a lo largo del tiempo para investigaciones académicas."
       },
       "developers": {
         "category": "Desarrolladores",
@@ -406,16 +403,6 @@
         "category": "Urbanistas",
         "title": "Toma decisiones con datos actualizados",
         "description": "Monitorea escuelas, transporte y servicios en tu jurisdicción para tomar decisiones informadas sobre el desarrollo urbano."
-      },
-      "journalists": {
-        "category": "Periodistas",
-        "title": "Fundamenta historias con datos",
-        "description": "Rastrea cómo las ciudades se desarrollan y cambian con datos de mapeo compartidos para crear reportajes basados en evidencia."
-      },
-      "researchers": {
-        "category": "Investigadores",
-        "title": "Analiza tendencias urbanas",
-        "description": "Estudia patrones y cambios en la infraestructura de la ciudad a lo largo del tiempo para investigaciones académicas."
       },
       "communityGroups": {
         "category": "Grupos comunitarios",
