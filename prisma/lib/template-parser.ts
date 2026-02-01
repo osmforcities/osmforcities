@@ -40,8 +40,8 @@ export interface LogicConfig {
  * I18n data from templates.i18n.yml (used only by seed)
  */
 export interface TemplatesI18n {
-  name: { en: string; pt: string };
-  desc: { en: string; pt: string };
+  name: Record<string, string>;
+  desc: Record<string, string>;
 }
 
 export interface I18nConfig {
