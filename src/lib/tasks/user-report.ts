@@ -281,17 +281,19 @@ export async function generateNextUserReport(): Promise<{
     orderBy: { updatedAt: "desc" },
   });
 
-  const datasetsWithRecentChanges = recentDatasets.filter((dataset) => {
-    if (!dataset.stats || typeof dataset.stats !== "object") return false;
+  const datasetsWithRecentChanges = recentDatasets
+    .filter((dataset) => {
+      if (!dataset.stats || typeof dataset.stats !== "object") return false;
 
-    const stats = dataset.stats as DatasetStatsData;
-    const mostRecentElement = stats.mostRecentElement;
+      const stats = dataset.stats as DatasetStatsData;
+      const mostRecentElement = stats.mostRecentElement;
 
-    if (!mostRecentElement) return false;
+      if (!mostRecentElement) return false;
 
-    const lastChangeDate = new Date(mostRecentElement);
-    return lastChangeDate >= since;
-  });
+      const lastChangeDate = new Date(mostRecentElement);
+      return lastChangeDate >= since;
+    })
+    .map((d) => ({ ...d, stats: d.stats as DatasetStatsData }));
 
   const datasetStats: DatasetStats = {
     user: {
@@ -301,8 +303,7 @@ export async function generateNextUserReport(): Promise<{
       language: user.language,
     },
     recentDatasets: datasetsWithRecentChanges.map((dataset) => {
-      const stats = dataset.stats as DatasetStatsData;
-      const mostRecentElement = stats.mostRecentElement;
+      const mostRecentElement = dataset.stats.mostRecentElement;
 
       // Resolve template name for user's locale
       const resolvedTemplate = resolveTemplateForLocale(
