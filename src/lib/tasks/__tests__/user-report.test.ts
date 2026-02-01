@@ -31,7 +31,7 @@ import { prisma } from "@/lib/db";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getEmailTranslations, interpolateEmail } from "@/lib/email-i18n";
 
-const mockPrisma = prisma as {
+const mockPrisma = prisma as unknown as {
   user: { findFirst: ReturnType<typeof vi.fn> };
   dataset: { findMany: ReturnType<typeof vi.fn> };
 };
