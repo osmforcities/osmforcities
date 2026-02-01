@@ -109,7 +109,7 @@ async function AreaTemplateDatasetView({
       <div className="bg-gray-50">
         <div
           className="max-w-7xl mx-auto px-4 py-8 flex flex-col"
-          style={{ height: "calc(100vh - var(--nav-height))" }}
+          style={{ minHeight: "calc(100vh - var(--nav-height))" }}
         >
           <div className="mb-8 flex-shrink-0">
             <BreadcrumbNav items={breadcrumbItems} />
