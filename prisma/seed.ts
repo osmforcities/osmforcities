@@ -7,7 +7,14 @@ import {
 
 const prisma = new PrismaClient();
 
-const SUPPORTED_LOCALES = ["en", "pt"] as const;
+const SUPPORTED_LOCALES = ["en", "pt-BR"] as const;
+
+// Map app locale to YML file locale key (YML uses 'pt' not 'pt-BR')
+const YML_LOCALE_MAP: Record<string, string> = {
+  "pt-BR": "pt",
+  "en": "en",
+  "es": "es",
+};
 
 /**
  * Seed templates and template translations to database.
@@ -78,10 +85,11 @@ async function main() {
     for (const t of batch) {
       const i18n = i18nConfig?.templates?.[t.id];
       for (const locale of SUPPORTED_LOCALES) {
+        const ymlLocale = YML_LOCALE_MAP[locale] ?? locale;
         const name =
-          i18n?.name?.[locale] ?? (locale === "en" ? t.name : t.name);
+          i18n?.name?.[ymlLocale] ?? (locale === "en" ? t.name : t.name);
         const desc =
-          i18n?.desc?.[locale] ??
+          i18n?.desc?.[ymlLocale] ??
           (locale === "en" ? (t.description ?? null) : (t.description ?? null));
         translationRows.push({
           templateId: t.id,
