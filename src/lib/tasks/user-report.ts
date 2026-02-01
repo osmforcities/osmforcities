@@ -2,9 +2,11 @@ import { prisma } from "@/lib/db";
 import { htmlToText } from "html-to-text";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import {
+  EMAIL_LINK_STYLE,
   getEmailTranslations,
   interpolateEmail,
   type Locale,
+  type EmailTranslations,
 } from "@/lib/email-i18n";
 
 /** Email with subject line, HTML body, and plain text fallback. */
@@ -16,23 +18,6 @@ export interface EmailContent {
 
 interface DatasetStatsData {
   mostRecentElement?: string;
-  editorsCount?: number;
-  elementVersionsCount?: number;
-  changesetsCount?: number;
-  oldestElement?: string;
-  averageElementAge?: number;
-  averageElementVersion?: number;
-  recentActivity?: {
-    elementsEdited: number;
-    changesets: number;
-    editors: number;
-  };
-  qualityMetrics?: {
-    staleElementsCount: number;
-    recentlyUpdatedElementsCount: number;
-    staleElementsPercentage: number;
-    recentlyUpdatedElementsPercentage: number;
-  };
 }
 
 interface DatasetStats {
@@ -51,7 +36,7 @@ interface DatasetStats {
 }
 
 function link(url: string, text: string): string {
-  return `<a href="${url}" style="color: #007bff; text-decoration: none;">${text}</a>`;
+  return `<a href="${url}" ${EMAIL_LINK_STYLE}>${text}</a>`;
 }
 
 function getBaseUrl(): string {
@@ -63,20 +48,31 @@ function formatUTCDate(date: Date | null): string {
   return date.toISOString().split("T")[0];
 }
 
+function getFrequencyWord(
+  frequency: "DAILY" | "WEEKLY",
+  translations: EmailTranslations
+): string {
+  return frequency === "DAILY" ? translations.day : translations.week;
+}
+
+function getLatestChangeDate(datasets: Array<{ stats?: DatasetStatsData }>): string | null {
+  const stats = datasets[0]?.stats as DatasetStatsData | undefined;
+  return stats?.mostRecentElement
+    ? new Date(stats.mostRecentElement).toLocaleDateString()
+    : null;
+}
+
 function generateEmailSubject(
   count: number,
   frequency: "DAILY" | "WEEKLY",
-  datasetsOne: string,
-  datasetsOther: string,
-  day: string,
-  week: string
+  translations: EmailTranslations
 ): string {
+  const freqWord = getFrequencyWord(frequency, translations);
   if (count === 0) {
-    return `No changes in the last ${frequency === "DAILY" ? day : week}`;
+    return `No changes in the last ${freqWord}`;
   }
 
-  const datasetsWord = count === 1 ? datasetsOne : datasetsOther;
-  const freqWord = frequency === "DAILY" ? day : week;
+  const datasetsWord = count === 1 ? translations.datasetsOne : translations.datasetsOther;
   return `${count} ${datasetsWord} changed in the last ${freqWord}`;
 }
 
@@ -150,17 +146,10 @@ async function generateEmailContent(
   const translations = await getEmailTranslations(userLocale);
 
   // Generate subject
-  const subject = generateEmailSubject(
-    count,
-    frequency,
-    translations.datasetsOne,
-    translations.datasetsOther,
-    translations.day,
-    translations.week
-  );
+  const subject = generateEmailSubject(count, frequency, translations);
 
   // Generate body
-  const freqValue = frequency === "DAILY" ? translations.day : translations.week;
+  const freqValue = getFrequencyWord(frequency, translations);
   const emailBody = count > 0
     ? generateEmailBodyWithChanges(
         recentDatasets,
@@ -259,13 +248,9 @@ export async function generateNextUserReport(): Promise<{
   }
 
   const userLocale = (user.language || "en") as Locale;
-  const now = new Date();
-  let since: Date;
-  if (user.reportsFrequency === "DAILY") {
-    since = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-  } else {
-    since = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  }
+  const since = new Date(
+    Date.now() - (user.reportsFrequency === "DAILY" ? 24 : 7 * 24) * 60 * 60 * 1000
+  );
 
   const recentDatasets = await prisma.dataset.findMany({
     where: {
@@ -340,19 +325,7 @@ export async function generateNextUserReport(): Promise<{
   }
 
   const emailContent = await generateEmailContent(datasetStats, userLocale);
-  const latestChangeDate =
-    datasetsWithRecentChanges.length > 0
-      ? datasetsWithRecentChanges[0].stats &&
-        typeof datasetsWithRecentChanges[0].stats === "object"
-        ? (() => {
-            const stats = datasetsWithRecentChanges[0]
-              .stats as DatasetStatsData;
-            return stats.mostRecentElement
-              ? new Date(stats.mostRecentElement).toLocaleDateString()
-              : null;
-          })()
-        : null
-      : null;
+  const latestChangeDate = getLatestChangeDate(datasetsWithRecentChanges);
 
   return {
     userId: user.id,

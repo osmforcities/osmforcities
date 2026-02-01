@@ -9,6 +9,8 @@ vi.mock("@/lib/db", () => ({
 }));
 
 vi.mock("@/lib/email-i18n", () => ({
+  EMAIL_LINK_STYLE: 'style="color: #007bff; text-decoration: none;"',
+  createEmailLink: vi.fn((url: string, text: string) => `<a href="${url}" style="color: #007bff; text-decoration: none;">${text}</a>`),
   getEmailTranslations: vi.fn(),
   interpolateEmail: vi.fn(),
   formatEmail: vi.fn(),

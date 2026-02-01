@@ -9,6 +9,14 @@ import path from "path";
 /** Supported locales for emails. */
 export type Locale = "en" | "pt-BR" | "es";
 
+/** Shared HTML style for email links. */
+export const EMAIL_LINK_STYLE = 'style="color: #007bff; text-decoration: none;"';
+
+/** Creates an HTML link with consistent styling. */
+export function createEmailLink(url: string, text: string): string {
+  return `<a href="${url}" ${EMAIL_LINK_STYLE}>${text}</a>`;
+}
+
 /** Email template strings with {placeholder} marks for dynamic values. */
 export interface EmailTranslations {
   magicLinkSubject: string;
@@ -109,28 +117,19 @@ export function interpolateEmail(
 
   // Replace magic link
   if (values.magicLink) {
-    result = result.replace(
-      "{magicLink}",
-      `<a href="${values.magicLink}" style="color: #007bff; text-decoration: none;">link</a>`
-    );
+    result = result.replace("{magicLink}", createEmailLink(values.magicLink, "link"));
   }
 
   // Replace watched datasets link with URL and text from values
   if (values.watchedDatasetsUrl) {
     const text = values.watchedDatasetsText || "watched datasets";
-    result = result.replace(
-      "{watchedDatasetsLink}",
-      `<a href="${values.watchedDatasetsUrl}" style="color: #007bff; text-decoration: none;">${text}</a>`
-    );
+    result = result.replace("{watchedDatasetsLink}", createEmailLink(values.watchedDatasetsUrl, text));
   }
 
   // Replace preferences link with URL and text from values
   if (values.preferencesUrl) {
     const text = values.preferencesText || "preferences page";
-    result = result.replace(
-      "{preferencesLink}",
-      `<a href="${values.preferencesUrl}" style="color: #007bff; text-decoration: none;">${text}</a>`
-    );
+    result = result.replace("{preferencesLink}", createEmailLink(values.preferencesUrl, text));
   }
 
   // Replace simple placeholders
