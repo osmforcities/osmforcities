@@ -1,7 +1,8 @@
 import { Metadata } from "next";
 import { auth } from "@/auth";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/db";
+import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
 import { Hero } from "@/components/home/sections/hero";
@@ -18,29 +19,32 @@ export const metadata: Metadata = {
     "Track changes in OpenStreetMap datasets across cities worldwide.",
 };
 
-async function getWatchedDatasets(userId: string) {
-  const watchedDatasets = await prisma.datasetWatch.findMany({
+async function getWatchedDatasets(userId: string, locale: string) {
+  const result = await prisma.datasetWatch.findMany({
     where: { userId },
     include: {
       dataset: {
         include: {
-          template: true,
+          template: { include: { translations: true } },
           area: true,
-          _count: {
-            select: { watchers: true },
-          },
+          _count: { select: { watchers: true } },
         },
       },
     },
     orderBy: { createdAt: "desc" },
   });
 
-  return watchedDatasets.map((watch) => watch.dataset);
+  return result.map((watch) => {
+    const d = watch.dataset;
+    const resolvedTemplate = resolveTemplateForLocale(d.template, locale);
+    return { ...d, template: resolvedTemplate };
+  });
 }
 
 export default async function Home() {
   const session = await auth();
   const user = session?.user || null;
+  const locale = await getLocale();
   const tabT = await getTranslations("TabLayout");
 
   if (!user) {
@@ -55,8 +59,7 @@ export default async function Home() {
     );
   }
 
-  // Fetch watched datasets for the dashboard grid
-  const watchedDatasets = await getWatchedDatasets(user.id);
+  const watchedDatasets = await getWatchedDatasets(user.id, locale);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">

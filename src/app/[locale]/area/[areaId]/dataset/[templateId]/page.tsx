@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dataset-error-states";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import type { TranslationFunction } from "@/lib/types";
 
 type DatasetPageProps = {
   params: Promise<{
@@ -29,7 +30,6 @@ type DatasetPageProps = {
 
 export default async function DatasetPage({ params }: DatasetPageProps) {
   const { areaId, templateId } = await params;
-  const t = await getTranslations("DatasetPage");
   const navT = await getTranslations("Navigation");
 
   const osmRelationId = parseInt(areaId, 10);
@@ -46,7 +46,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
       <AreaTemplateDatasetView
         areaId={osmRelationId}
         templateId={templateId}
-        translations={{ t, navT }}
+        navT={navT}
       />
     </Suspense>
   );
@@ -55,14 +55,11 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
 async function AreaTemplateDatasetView({
   areaId,
   templateId,
-  translations,
+  navT,
 }: {
   areaId: number;
   templateId: string;
-  translations: {
-    t: Awaited<ReturnType<typeof getTranslations>>;
-    navT: Awaited<ReturnType<typeof getTranslations>>;
-  };
+  navT: TranslationFunction;
 }) {
   try {
     const [result, areaInfo, session] = await Promise.all([
@@ -99,7 +96,7 @@ async function AreaTemplateDatasetView({
     });
 
     const breadcrumbItems = [
-      { label: translations.navT("home"), href: "/" },
+      { label: navT("home"), href: "/" },
       { label: areaInfo?.country || "Area" },
       ...(areaInfo?.state ? [{ label: areaInfo.state }] : []),
       { label: areaInfo?.name || dataset.area.name, href: `/area/${areaId}` },
