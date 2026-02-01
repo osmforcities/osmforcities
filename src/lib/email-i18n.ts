@@ -1,13 +1,15 @@
 /**
  * Email internationalization utilities.
- * Loads translation messages from JSON files for server-side email generation.
+ * Uses {placeholder} syntax for dynamic values and HTML links.
  */
 
 import { promises as fs } from "fs";
 import path from "path";
 
+/** Supported locales for emails. */
 export type Locale = "en" | "pt-BR" | "es";
 
+/** Email template strings with {placeholder} marks for dynamic values. */
 export interface EmailTranslations {
   magicLinkSubject: string;
   magicLinkBody: string;
@@ -16,14 +18,27 @@ export interface EmailTranslations {
   reportChanged: string;
   reportNoChanges: string;
   reportFollowed: string;
+  preferencesPage: string;
   day: string;
   week: string;
   generatedAt: string;
   unsubscribe: string;
-  visitPreferences: string;
   datasetsOne: string;
   datasetsOther: string;
-  changedLast: string;
+}
+
+/** Dynamic values to interpolate into email templates. */
+export interface EmailValues {
+  magicLink?: string;
+  watchedDatasetsUrl?: string;
+  watchedDatasetsText?: string;
+  preferencesUrl?: string;
+  preferencesText?: string;
+  count?: number;
+  frequency?: string;
+  timestamp?: string;
+  datasetsOne?: string;
+  datasetsOther?: string;
 }
 
 const messageCache = new Map<Locale, Record<string, unknown>>();
@@ -59,6 +74,7 @@ function get<T>(
   return typeof current === "string" ? current : fallback ?? key;
 }
 
+/** Loads email translations for a locale from messages/{locale}.json. */
 export async function getEmailTranslations(
   locale: Locale
 ): Promise<EmailTranslations> {
@@ -68,57 +84,78 @@ export async function getEmailTranslations(
 
   return {
     magicLinkSubject: get(email, "magicLinkSubject", "Sign in to OSM for Cities") as string,
-    magicLinkBody: get(email, "magicLinkBody", "Click <link>here</link> to sign in.") as string,
+    magicLinkBody: get(email, "magicLinkBody", "Click {magicLink} to sign in.") as string,
     reportSubjectChanged: get(email, "reportSubjectChanged", "{count} {datasets, plural, =1 {dataset} other {datasets}} changed in the last {frequency}") as string,
     reportSubjectNoChanges: get(email, "reportSubjectNoChanges", "No changes in the last {frequency}") as string,
-    reportChanged: get(email, "reportChanged", "The following {followed} were updated in the last {frequency}:") as string,
-    reportNoChanges: get(email, "reportNoChanges", "There were no changes to your {followed} in the last {frequency}.") as string,
-    reportFollowed: get(email, "reportFollowed", "<link>watched datasets</link>") as string,
+    reportChanged: get(email, "reportChanged", "The following datasets were updated in the last {frequency}:") as string,
+    reportNoChanges: get(email, "reportNoChanges", "There were no changes to your {watchedDatasetsUrl} in the last {frequency}.") as string,
+    reportFollowed: get(email, "reportFollowed", "watched datasets") as string,
+    preferencesPage: get(email, "preferencesPage", "preferences page") as string,
     day: get(email, "day", "day") as string,
     week: get(email, "week", "week") as string,
     generatedAt: get(email, "generatedAt", "This report was generated at {timestamp}Z. All dates shown are in UTC.") as string,
-    unsubscribe: get(email, "unsubscribe", "To unsubscribe from these reports, {action}.") as string,
-    visitPreferences: get(email, "visitPreferences", "<link>visit your preferences page</link>") as string,
+    unsubscribe: get(email, "unsubscribe", "To unsubscribe from these reports, visit {preferencesUrl}.") as string,
     datasetsOne: get(email, "datasetsOne", "dataset") as string,
     datasetsOther: get(email, "datasetsOther", "datasets") as string,
-    changedLast: get(email, "changedLast", "{count, plural, =1 {# dataset} other {# datasets}} changed in the last {frequency}") as string,
   };
 }
 
-export interface LinkReplacement {
-  placeholder: string;
-  url: string;
-  text: string;
-}
-
-/**
- * Replace HTML link tags in translated strings.
- * Converts <link>text</link> to <a href="url">text</a>
- */
-export function replaceHtmlTags(
-  html: string,
-  replacements: LinkReplacement[]
+/** Replaces {placeholders} with HTML links or text values. */
+export function interpolateEmail(
+  template: string,
+  values: EmailValues & { datasets?: string }
 ): string {
-  let result = html;
+  let result = template;
 
-  for (const replacement of replacements) {
-    const { placeholder, url, text } = replacement;
-    const tag = `<link>${placeholder}</link>`;
-    const anchorTag = `<a href="${url}" style="color: #007bff; text-decoration: none;">${text}</a>`;
-    result = result.replace(tag, anchorTag);
+  // Replace magic link
+  if (values.magicLink) {
+    result = result.replace(
+      "{magicLink}",
+      `<a href="${values.magicLink}" style="color: #007bff; text-decoration: none;">link</a>`
+    );
+  }
+
+  // Replace watched datasets link with URL and text from values
+  if (values.watchedDatasetsUrl) {
+    const text = values.watchedDatasetsText || "watched datasets";
+    result = result.replace(
+      "{watchedDatasetsLink}",
+      `<a href="${values.watchedDatasetsUrl}" style="color: #007bff; text-decoration: none;">${text}</a>`
+    );
+  }
+
+  // Replace preferences link with URL and text from values
+  if (values.preferencesUrl) {
+    const text = values.preferencesText || "preferences page";
+    result = result.replace(
+      "{preferencesLink}",
+      `<a href="${values.preferencesUrl}" style="color: #007bff; text-decoration: none;">${text}</a>`
+    );
+  }
+
+  // Replace simple placeholders
+  if (values.count !== undefined && values.datasetsOne && values.datasetsOther) {
+    const word = values.count === 1 ? values.datasetsOne : values.datasetsOther;
+    result = result.replace("{count}", values.count.toString());
+    result = result.replace("{datasets}", word);
+  }
+  if (values.frequency) {
+    result = result.replace(/{frequency}/g, values.frequency);
+  }
+  if (values.timestamp) {
+    result = result.replace("{timestamp}", values.timestamp);
   }
 
   return result;
 }
 
-/**
- * Format pluralized strings for email content.
- * Simple pluralization handler for server-side email generation.
- */
-export function pluralize(
-  count: number,
-  one: string,
-  other: string
-): string {
-  return count === 1 ? one : other;
+/** Loads translation and interpolates values for a locale. */
+export async function formatEmail(
+  locale: Locale,
+  key: keyof EmailTranslations,
+  values: EmailValues & { datasets?: string }
+): Promise<string> {
+  const translations = await getEmailTranslations(locale);
+  const template = translations[key];
+  return interpolateEmail(template, values);
 }

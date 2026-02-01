@@ -3,9 +3,11 @@ import { htmlToText } from "html-to-text";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import {
   getEmailTranslations,
+  interpolateEmail,
   type Locale,
 } from "@/lib/email-i18n";
 
+/** Email with subject line, HTML body, and plain text fallback. */
 export interface EmailContent {
   subject: string;
   html: string;
@@ -64,19 +66,18 @@ function formatUTCDate(date: Date | null): string {
 function generateEmailSubject(
   count: number,
   frequency: "DAILY" | "WEEKLY",
-  t: Awaited<ReturnType<typeof getEmailTranslations>>
+  datasetsOne: string,
+  datasetsOther: string,
+  day: string,
+  week: string
 ): string {
   if (count === 0) {
-    const freqKey = frequency === "DAILY" ? t.day : t.week;
-    return t.reportSubjectNoChanges.replace("{frequency}", freqKey);
+    return `No changes in the last ${frequency === "DAILY" ? day : week}`;
   }
 
-  const datasetsWord = count === 1 ? t.datasetsOne : t.datasetsOther;
-  const freqKey = frequency === "DAILY" ? t.day : t.week;
-  return t.reportSubjectChanged
-    .replace("{count}", count.toString())
-    .replace("{datasets}", datasetsWord)
-    .replace("{frequency}", freqKey);
+  const datasetsWord = count === 1 ? datasetsOne : datasetsOther;
+  const freqWord = frequency === "DAILY" ? day : week;
+  return `${count} ${datasetsWord} changed in the last ${freqWord}`;
 }
 
 function generateEmailBodyWithChanges(
@@ -87,7 +88,7 @@ function generateEmailBodyWithChanges(
     lastChanged: Date | null;
   }>,
   frequency: "DAILY" | "WEEKLY",
-  t: Awaited<ReturnType<typeof getEmailTranslations>>
+  changedText: string
 ): string {
   const datasetsByDay = new Map<
     string,
@@ -132,30 +133,10 @@ function generateEmailBodyWithChanges(
     })
     .join("<br><br>");
 
-  const freqKey = frequency === "DAILY" ? t.day : t.week;
-  const changedText = t.reportChanged.replace("{frequency}", freqKey);
-
   return `
     <p>${changedText}</p>
 
     <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">${datasetsList}</div>`;
-}
-
-function generateEmailBodyNoChanges(
-  frequency: "DAILY" | "WEEKLY",
-  t: Awaited<ReturnType<typeof getEmailTranslations>>
-): string {
-  const freqKey = frequency === "DAILY" ? t.day : t.week;
-  let noChangesText = t.reportNoChanges.replace("{frequency}", freqKey);
-
-  // Replace the watched datasets link
-  const watchedDatasetsLink = link(`${getBaseUrl()}/`, "watched datasets");
-  noChangesText = noChangesText.replace(
-    '<link>watched datasets</link>',
-    watchedDatasetsLink
-  );
-
-  return `<p>${noChangesText}</p>`;
 }
 
 async function generateEmailContent(
@@ -168,21 +149,40 @@ async function generateEmailContent(
 
   const translations = await getEmailTranslations(userLocale);
 
-  const subject = generateEmailSubject(count, frequency, translations);
-
-  const emailBody = count > 0
-    ? generateEmailBodyWithChanges(recentDatasets, frequency, translations)
-    : generateEmailBodyNoChanges(frequency, translations);
-
-  const timestamp = new Date().toISOString().split(".")[0];
-  const generatedAtText = translations.generatedAt.replace("{timestamp}", timestamp);
-
-  // Replace unsubscribe link
-  const preferencesLink = link(`${getBaseUrl()}/preferences`, "visit your preferences page");
-  const unsubscribeText = translations.unsubscribe.replace(
-    '<link>visit your preferences page</link>',
-    preferencesLink
+  // Generate subject
+  const subject = generateEmailSubject(
+    count,
+    frequency,
+    translations.datasetsOne,
+    translations.datasetsOther,
+    translations.day,
+    translations.week
   );
+
+  // Generate body
+  const freqValue = frequency === "DAILY" ? translations.day : translations.week;
+  const emailBody = count > 0
+    ? generateEmailBodyWithChanges(
+        recentDatasets,
+        frequency,
+        translations.reportChanged.replace("{frequency}", freqValue)
+      )
+    : interpolateEmail(translations.reportNoChanges, {
+        frequency: freqValue,
+        watchedDatasetsUrl: `${getBaseUrl()}/`,
+        watchedDatasetsText: translations.reportFollowed,
+      });
+
+  // Generate footer
+  const timestamp = new Date().toISOString().split(".")[0];
+  const generatedAtText = translations.generatedAt.replace(
+    "{timestamp}",
+    timestamp
+  );
+  const unsubscribeText = interpolateEmail(translations.unsubscribe, {
+    preferencesUrl: `${getBaseUrl()}/preferences`,
+    preferencesText: translations.preferencesPage,
+  });
 
   const htmlContent = `
     <p>Hi!</p>
@@ -205,6 +205,7 @@ async function generateEmailContent(
   };
 }
 
+/** Generates next due user report email. Returns null if no user is due. */
 export async function generateNextUserReport(): Promise<{
   userId: string;
   userEmail: string;

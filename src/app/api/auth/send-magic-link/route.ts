@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { findUserByEmail, createUser, createVerificationToken } from "@/auth";
 import { sendEmail } from "@/lib/email";
 import { getBaseUrl } from "@/lib/utils";
-import { getEmailTranslations, replaceHtmlTags, type Locale } from "@/lib/email-i18n";
+import { formatEmail, type Locale } from "@/lib/email-i18n";
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,16 +29,16 @@ export async function POST(request: NextRequest) {
     const userLocale = (user.language || "en") as Locale;
 
     try {
-      // Get translated email content
-      const translations = await getEmailTranslations(userLocale);
-      const htmlBody = replaceHtmlTags(translations.magicLinkBody, [
-        { placeholder: "here", url: magicLink, text: "here" },
-      ]);
+      // Get translated email content with magic link
+      const htmlBody = await formatEmail(userLocale, "magicLinkBody", {
+        magicLink,
+      });
+      const subject = await formatEmail(userLocale, "magicLinkSubject", {});
 
       // Try to send email via Postmark (if configured)
       await sendEmail({
         to: email,
-        subject: translations.magicLinkSubject,
+        subject,
         html: `<p>${htmlBody}</p>`,
         text: `Visit this link to sign in: ${magicLink}`,
       });
