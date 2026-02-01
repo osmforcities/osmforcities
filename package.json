@@ -11,6 +11,7 @@
     "lint:fix": "eslint --fix .",
     "type-check": "tsc --noEmit",
     "db:seed": "tsx prisma/seed.ts",
+    "db:sync-templates": "tsx prisma/sync-templates.ts",
     "generate-icons": "tsx prisma/generate-icons.ts",
     "translate-todos": "tsx prisma/translate-todos.ts",
     "test:unit": "vitest",

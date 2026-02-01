@@ -58,6 +58,7 @@ describe("user-report email generation", () => {
     template: {
       name: "schools",
       description: "Schools and education",
+      deprecatedAt: null,
       translations: [
         { locale: "en", name: "Schools", description: "Schools" },
         { locale: "pt-BR", name: "Escolas", description: "Escolas" },
@@ -82,6 +83,8 @@ describe("user-report email generation", () => {
       unsubscribe: "Unsubscribe: {preferencesLink}",
       datasetsOne: "dataset",
       datasetsOther: "datasets",
+      templateDeprecated: "This template was removed from the catalog.",
+      templateDeprecatedDaysRemaining: "You have {days} days remaining before this dataset is deleted.",
     });
     vi.mocked(resolveTemplateForLocale).mockReturnValue({
       name: "Schools",
@@ -119,6 +122,8 @@ describe("user-report email generation", () => {
       unsubscribe: "Cancelar: {preferencesLink}",
       datasetsOne: "conjunto de dados",
       datasetsOther: "conjuntos de dados",
+      templateDeprecated: "Este modelo foi removido do catálogo.",
+      templateDeprecatedDaysRemaining: "Você tem {days} dias restantes antes que este conjunto de dados seja excluído.",
     });
     vi.mocked(resolveTemplateForLocale).mockReturnValue({
       name: "Escolas",
@@ -156,6 +161,8 @@ describe("user-report email generation", () => {
       unsubscribe: "Cancelar: {preferencesLink}",
       datasetsOne: "conjunto de datos",
       datasetsOther: "conjuntos de datos",
+      templateDeprecated: "Esta plantilla fue eliminada del catálogo.",
+      templateDeprecatedDaysRemaining: "Tienes {days} días restantes antes de que este conjunto de datos sea eliminado.",
     });
     vi.mocked(resolveTemplateForLocale).mockReturnValue({
       name: "Escuelas",
@@ -192,6 +199,8 @@ describe("user-report email generation", () => {
       unsubscribe: "Unsubscribe: {preferencesLink}",
       datasetsOne: "dataset",
       datasetsOther: "datasets",
+      templateDeprecated: "This template was removed from the catalog.",
+      templateDeprecatedDaysRemaining: "You have {days} days remaining before this dataset is deleted.",
     });
     vi.mocked(resolveTemplateForLocale).mockReturnValue({
       name: "Schools",
@@ -226,6 +235,8 @@ describe("user-report email generation", () => {
       unsubscribe: "Unsubscribe: {preferencesLink}",
       datasetsOne: "dataset",
       datasetsOther: "datasets",
+      templateDeprecated: "This template was removed from the catalog.",
+      templateDeprecatedDaysRemaining: "You have {days} days remaining before this dataset is deleted.",
     });
     vi.mocked(resolveTemplateForLocale).mockReturnValue({
       name: "Schools",
@@ -266,6 +277,8 @@ describe("user-report email generation", () => {
       unsubscribe: "Unsubscribe: {preferencesLink}",
       datasetsOne: "dataset",
       datasetsOther: "datasets",
+      templateDeprecated: "This template was removed from the catalog.",
+      templateDeprecatedDaysRemaining: "You have {days} days remaining before this dataset is deleted.",
     });
     vi.mocked(resolveTemplateForLocale).mockReturnValue({
       name: "Schools",

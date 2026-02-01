@@ -33,6 +33,8 @@ export interface EmailTranslations {
   unsubscribe: string;
   datasetsOne: string;
   datasetsOther: string;
+  templateDeprecated: string;
+  templateDeprecatedDaysRemaining: string;
 }
 
 /** Dynamic values to interpolate into email templates. */
@@ -47,6 +49,7 @@ export interface EmailValues {
   timestamp?: string;
   datasetsOne?: string;
   datasetsOther?: string;
+  days?: number;
 }
 
 const messageCache = new Map<Locale, Record<string, unknown>>();
@@ -105,6 +108,8 @@ export async function getEmailTranslations(
     unsubscribe: get(email, "unsubscribe", "To unsubscribe from these reports, visit {preferencesUrl}.") as string,
     datasetsOne: get(email, "datasetsOne", "dataset") as string,
     datasetsOther: get(email, "datasetsOther", "datasets") as string,
+    templateDeprecated: get(email, "templateDeprecated", "This template was removed from the catalog.") as string,
+    templateDeprecatedDaysRemaining: get(email, "templateDeprecatedDaysRemaining", "You have {days} days remaining before this dataset is deleted.") as string,
   };
 }
 
@@ -143,6 +148,9 @@ export function interpolateEmail(
   }
   if (values.timestamp) {
     result = result.replace("{timestamp}", values.timestamp);
+  }
+  if (values.days !== undefined) {
+    result = result.replace("{days}", values.days.toString());
   }
 
   return result;
