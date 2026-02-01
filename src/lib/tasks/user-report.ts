@@ -2,7 +2,7 @@ import { prisma } from "@/lib/db";
 import { htmlToText } from "html-to-text";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import {
-  EMAIL_LINK_STYLE,
+  createEmailLink,
   getEmailTranslations,
   interpolateEmail,
   type Locale,
@@ -36,10 +36,6 @@ interface DatasetStats {
   }>;
 }
 
-function link(url: string, text: string): string {
-  return `<a href="${url}" ${EMAIL_LINK_STYLE}>${text}</a>`;
-}
-
 function getBaseUrl(): string {
   return process.env.AUTH_URL || "https://osmforcities.com";
 }
@@ -47,13 +43,6 @@ function getBaseUrl(): string {
 function formatUTCDate(date: Date | null): string {
   if (!date) return "Unknown";
   return date.toISOString().split("T")[0];
-}
-
-function getFrequencyWord(
-  frequency: "DAILY" | "WEEKLY",
-  translations: EmailTranslations
-): string {
-  return frequency === "DAILY" ? translations.day : translations.week;
 }
 
 function getLatestChangeDate(datasets: Array<{ stats?: DatasetStatsData }>): string | null {
@@ -68,7 +57,7 @@ function generateEmailSubject(
   frequency: "DAILY" | "WEEKLY",
   translations: EmailTranslations
 ): string {
-  const freqWord = getFrequencyWord(frequency, translations);
+  const freqWord = frequency === "DAILY" ? translations.day : translations.week;
   if (count === 0) {
     return `No changes in the last ${freqWord}`;
   }
@@ -121,7 +110,7 @@ function generateEmailBodyWithChanges(
       const datasetsList = datasets
         .map(
           (ds) =>
-            `${link(
+            `${createEmailLink(
               `${getBaseUrl()}/dataset/${ds.id}`,
               `${ds.templateName} - ${ds.name}`
             )}`
@@ -168,7 +157,7 @@ async function generateEmailContent(
   }
 
   // Generate body
-  const freqValue = getFrequencyWord(frequency, translations);
+  const freqValue = frequency === "DAILY" ? translations.day : translations.week;
   const emailBody = count > 0
     ? generateEmailBodyWithChanges(
         recentDatasets,
@@ -288,7 +277,7 @@ export async function generateNextUserReport(): Promise<{
         select: {
           name: true,
           description: true,
-          deprecatedAt: true,
+          deprecatesAt: true,
           translations: {
             select: {
               locale: true,
@@ -334,9 +323,9 @@ export async function generateNextUserReport(): Promise<{
 
       // Calculate days remaining if template is deprecated
       let daysRemaining: number | undefined;
-      if (dataset.template.deprecatedAt) {
-        daysRemaining = 30 - Math.floor(
-          (Date.now() - new Date(dataset.template.deprecatedAt).getTime()) / (24 * 60 * 60 * 1000)
+      if (dataset.template.deprecatesAt) {
+        daysRemaining = Math.ceil(
+          (new Date(dataset.template.deprecatesAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000)
         );
         if (daysRemaining < 0) daysRemaining = 0;
       }

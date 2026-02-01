@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { SUPPORTED_LOCALES, YML_LOCALE_MAP } from "../src/lib/constants";
 import {
   loadTemplatesI18n,
   loadTemplatesYaml,
@@ -6,15 +7,6 @@ import {
 } from "./lib/template-parser";
 
 const prisma = new PrismaClient();
-
-const SUPPORTED_LOCALES = ["en", "pt-BR", "es"] as const;
-
-// Map app locale to YML file locale key (YML uses 'pt' not 'pt-BR')
-const YML_LOCALE_MAP: Record<string, string> = {
-  "pt-BR": "pt",
-  "en": "en",
-  "es": "es",
-};
 
 /**
  * Seed templates and template translations to database.

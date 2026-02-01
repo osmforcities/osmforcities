@@ -23,7 +23,7 @@ test.describe("Template Deprecation", () => {
           category: "test",
           tags: ["amenity"],
           isActive: true,
-          deprecatedAt: new Date(),
+          deprecatesAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         },
       });
 
@@ -55,7 +55,7 @@ test.describe("Template Deprecation", () => {
         },
         update: {
           isActive: true,
-          deprecatedAt: null,
+          deprecatesAt: null,
         },
       });
 

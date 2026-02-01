@@ -58,7 +58,7 @@ describe("user-report email generation", () => {
     template: {
       name: "schools",
       description: "Schools and education",
-      deprecatedAt: null,
+      deprecatesAt: null,
       translations: [
         { locale: "en", name: "Schools", description: "Schools" },
         { locale: "pt-BR", name: "Escolas", description: "Escolas" },

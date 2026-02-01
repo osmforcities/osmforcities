@@ -3,14 +3,19 @@
  *
  * On each sync:
  * 1. Templates in YAML are upserted (created or updated)
- * 2. Templates in DB but not in YAML are marked as deprecated (deprecatedAt = now())
- * 3. Templates re-added to YAML have deprecatedAt cleared
- * 4. Templates deprecated > 30 days are deleted
+ * 2. Templates in DB but not in YAML are marked for deprecation (deprecatesAt = now() + DEPRECATION_DAYS)
+ * 3. Templates re-added to YAML have deprecatesAt cleared
+ * 4. Templates past deprecation date are deleted
  *
  * Run: pnpm db:sync-templates
  */
 
 import { PrismaClient } from "@prisma/client";
+import {
+  DEPRECATION_DAYS,
+  SUPPORTED_LOCALES,
+  YML_LOCALE_MAP,
+} from "../src/lib/constants";
 import {
   loadTemplatesI18n,
   loadTemplatesYaml,
@@ -18,16 +23,6 @@ import {
 } from "./lib/template-parser";
 
 const prisma = new PrismaClient();
-
-const SUPPORTED_LOCALES = ["en", "pt-BR", "es"] as const;
-
-const YML_LOCALE_MAP: Record<string, string> = {
-  "pt-BR": "pt",
-  en: "en",
-  es: "es",
-};
-
-const DELETION_DAYS = 30;
 
 async function main() {
   console.log("Syncing templates from YAML...");
@@ -50,51 +45,51 @@ async function main() {
 
   // Get all existing templates from DB
   const existingTemplates = await prisma.template.findMany({
-    select: { id: true, deprecatedAt: true },
+    select: { id: true, deprecatesAt: true },
   });
 
-  // Find templates to deprecate (in DB but not in YAML)
+  // Find templates to deprecate (in DB but not in YAML, not already marked)
   const toDeprecate = existingTemplates.filter(
-    (t) => !yamlTemplateIds.has(t.id) && t.deprecatedAt === null
+    (t) => !yamlTemplateIds.has(t.id) && t.deprecatesAt === null
   );
 
   // Find templates to undeprecate (back in YAML)
   const toUndeprecate = existingTemplates.filter(
-    (t) => yamlTemplateIds.has(t.id) && t.deprecatedAt !== null
+    (t) => yamlTemplateIds.has(t.id) && t.deprecatesAt !== null
   );
 
-  // Find templates to delete (deprecated > 30 days)
-  const deletionCutoff = new Date(
-    Date.now() - DELETION_DAYS * 24 * 60 * 60 * 1000
-  );
+  // Find templates to delete (past deprecation date)
+  const now = new Date();
   const toDelete = existingTemplates.filter(
-    (t) => t.deprecatedAt && t.deprecatedAt < deletionCutoff
+    (t) => t.deprecatesAt && t.deprecatesAt < now
   );
 
-  // Delete old deprecated templates
+  // Delete templates past deprecation date
   if (toDelete.length > 0) {
     const deleteIds = toDelete.map((t) => t.id);
     await prisma.template.deleteMany({
       where: { id: { in: deleteIds } },
     });
-    console.log(`Deleted ${toDelete.length} templates deprecated > ${DELETION_DAYS} days`);
+    console.log(`Deleted ${toDelete.length} templates past deprecation date`);
   }
 
-  // Mark templates as deprecated
+  // Mark templates for deprecation
   if (toDeprecate.length > 0) {
-    const now = new Date();
+    const deprecationDate = new Date(
+      Date.now() + DEPRECATION_DAYS * 24 * 60 * 60 * 1000
+    );
     await prisma.template.updateMany({
       where: { id: { in: toDeprecate.map((t) => t.id) } },
-      data: { deprecatedAt: now },
+      data: { deprecatesAt: deprecationDate },
     });
-    console.log(`Deprecated ${toDeprecate.length} templates removed from YAML`);
+    console.log(`Marked ${toDeprecate.length} templates for deprecation in ${DEPRECATION_DAYS} days`);
   }
 
-  // Undeprecate templates (clear deprecatedAt)
+  // Undeprecate templates (clear deprecatesAt)
   if (toUndeprecate.length > 0) {
     await prisma.template.updateMany({
       where: { id: { in: toUndeprecate.map((t) => t.id) } },
-      data: { deprecatedAt: null },
+      data: { deprecatesAt: null },
     });
     console.log(`Undeprecated ${toUndeprecate.length} templates re-added to YAML`);
   }

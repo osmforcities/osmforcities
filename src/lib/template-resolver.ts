@@ -13,7 +13,7 @@ export async function resolveTemplate(identifier: TemplateIdentifier) {
       tags: true,
       overpassQuery: true,
       isActive: true,
-      deprecatedAt: true,
+      deprecatesAt: true,
     },
   });
 
