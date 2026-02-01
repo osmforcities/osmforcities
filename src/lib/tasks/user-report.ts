@@ -1,5 +1,10 @@
 import { prisma } from "@/lib/db";
 import { htmlToText } from "html-to-text";
+import { resolveTemplateForLocale } from "@/lib/template-locale";
+import {
+  getEmailTranslations,
+  type Locale,
+} from "@/lib/email-i18n";
 
 export interface EmailContent {
   subject: string;
@@ -33,6 +38,7 @@ interface DatasetStats {
     id: string;
     email: string;
     reportsFrequency: "DAILY" | "WEEKLY";
+    language: string | null;
   };
   recentDatasets: Array<{
     id: string;
@@ -52,27 +58,25 @@ function getBaseUrl(): string {
 
 function formatUTCDate(date: Date | null): string {
   if (!date) return "Unknown";
-
   return date.toISOString().split("T")[0];
 }
 
 function generateEmailSubject(
-  hasRecentChanges: boolean,
-  recentDatasets: Array<{
-    id: string;
-    name: string;
-    templateName: string;
-    lastChanged: Date | null;
-  }>,
-  frequency: "DAILY" | "WEEKLY"
+  count: number,
+  frequency: "DAILY" | "WEEKLY",
+  t: Awaited<ReturnType<typeof getEmailTranslations>>
 ): string {
-  if (hasRecentChanges) {
-    return `${recentDatasets.length} dataset${
-      recentDatasets.length === 1 ? "" : "s"
-    } changed in the last ${frequency === "DAILY" ? "day" : "week"}`;
+  if (count === 0) {
+    const freqKey = frequency === "DAILY" ? t.day : t.week;
+    return t.reportSubjectNoChanges.replace("{frequency}", freqKey);
   }
 
-  return `No changes in the last ${frequency === "DAILY" ? "day" : "week"}`;
+  const datasetsWord = count === 1 ? t.datasetsOne : t.datasetsOther;
+  const freqKey = frequency === "DAILY" ? t.day : t.week;
+  return t.reportSubjectChanged
+    .replace("{count}", count.toString())
+    .replace("{datasets}", datasetsWord)
+    .replace("{frequency}", freqKey);
 }
 
 function generateEmailBodyWithChanges(
@@ -82,7 +86,8 @@ function generateEmailBodyWithChanges(
     templateName: string;
     lastChanged: Date | null;
   }>,
-  frequency: "DAILY" | "WEEKLY"
+  frequency: "DAILY" | "WEEKLY",
+  t: Awaited<ReturnType<typeof getEmailTranslations>>
 ): string {
   const datasetsByDay = new Map<
     string,
@@ -127,53 +132,69 @@ function generateEmailBodyWithChanges(
     })
     .join("<br><br>");
 
+  const freqKey = frequency === "DAILY" ? t.day : t.week;
+  const changedText = t.reportChanged.replace("{frequency}", freqKey);
+
   return `
-    <p>The following datasets were updated in the last ${
-      frequency === "DAILY" ? "day" : "week"
-    }:</p>
-    
+    <p>${changedText}</p>
+
     <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">${datasetsList}</div>`;
 }
 
-function generateEmailBodyNoChanges(frequency: "DAILY" | "WEEKLY"): string {
-  return `
-    <p>There were no changes to your ${link(
-      `${getBaseUrl()}/`,
-      "watched datasets"
-    )} in the last ${frequency === "DAILY" ? "day" : "week"}.</p>`;
-}
+function generateEmailBodyNoChanges(
+  frequency: "DAILY" | "WEEKLY",
+  t: Awaited<ReturnType<typeof getEmailTranslations>>
+): string {
+  const freqKey = frequency === "DAILY" ? t.day : t.week;
+  let noChangesText = t.reportNoChanges.replace("{frequency}", freqKey);
 
-function generateEmailContent(data: DatasetStats): EmailContent {
-  const { user, recentDatasets } = data;
-  const frequency = user.reportsFrequency;
-  const hasRecentChanges = recentDatasets.length > 0;
-
-  const subject = generateEmailSubject(
-    hasRecentChanges,
-    recentDatasets,
-    frequency
+  // Replace the watched datasets link
+  const watchedDatasetsLink = link(`${getBaseUrl()}/`, "watched datasets");
+  noChangesText = noChangesText.replace(
+    '<link>watched datasets</link>',
+    watchedDatasetsLink
   );
 
-  const emailBody = hasRecentChanges
-    ? generateEmailBodyWithChanges(recentDatasets, frequency)
-    : generateEmailBodyNoChanges(frequency);
+  return `<p>${noChangesText}</p>`;
+}
+
+async function generateEmailContent(
+  data: DatasetStats,
+  userLocale: Locale
+): Promise<EmailContent> {
+  const { user, recentDatasets } = data;
+  const frequency = user.reportsFrequency;
+  const count = recentDatasets.length;
+
+  const translations = await getEmailTranslations(userLocale);
+
+  const subject = generateEmailSubject(count, frequency, translations);
+
+  const emailBody = count > 0
+    ? generateEmailBodyWithChanges(recentDatasets, frequency, translations)
+    : generateEmailBodyNoChanges(frequency, translations);
+
+  const timestamp = new Date().toISOString().split(".")[0];
+  const generatedAtText = translations.generatedAt.replace("{timestamp}", timestamp);
+
+  // Replace unsubscribe link
+  const preferencesLink = link(`${getBaseUrl()}/preferences`, "visit your preferences page");
+  const unsubscribeText = translations.unsubscribe.replace(
+    '<link>visit your preferences page</link>',
+    preferencesLink
+  );
 
   const htmlContent = `
     <p>Hi!</p>
-  
+
     ${emailBody}
-    
+
     <p style="color: #999; font-size: 12px;">
-      This report was generated at ${
-        new Date().toISOString().split(".")[0]
-      }Z. All dates shown are in UTC.
+      ${generatedAtText}
     </p>
     <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0;">
     <p style="color: #666; font-size: 14px;">
-      To unsubscribe from these reports, ${link(
-        `${getBaseUrl()}/preferences`,
-        "visit your preferences page"
-      )}.
+      ${unsubscribeText}
     </p>
   `;
 
@@ -187,6 +208,7 @@ function generateEmailContent(data: DatasetStats): EmailContent {
 export async function generateNextUserReport(): Promise<{
   userId: string;
   userEmail: string;
+  userLanguage: Locale;
   emailContent: EmailContent;
   reportData: {
     reportsFrequency: "DAILY" | "WEEKLY";
@@ -227,6 +249,7 @@ export async function generateNextUserReport(): Promise<{
       id: true,
       email: true,
       reportsFrequency: true,
+      language: true,
     },
   });
 
@@ -234,6 +257,7 @@ export async function generateNextUserReport(): Promise<{
     return null;
   }
 
+  const userLocale = (user.language || "en") as Locale;
   const now = new Date();
   let since: Date;
   if (user.reportsFrequency === "DAILY") {
@@ -257,6 +281,14 @@ export async function generateNextUserReport(): Promise<{
       template: {
         select: {
           name: true,
+          description: true,
+          translations: {
+            select: {
+              locale: true,
+              name: true,
+              description: true,
+            },
+          },
         },
       },
     },
@@ -280,15 +312,22 @@ export async function generateNextUserReport(): Promise<{
       id: user.id,
       email: user.email,
       reportsFrequency: user.reportsFrequency,
+      language: user.language,
     },
     recentDatasets: datasetsWithRecentChanges.map((dataset) => {
       const stats = dataset.stats as DatasetStatsData;
       const mostRecentElement = stats.mostRecentElement;
 
+      // Resolve template name for user's locale
+      const resolvedTemplate = resolveTemplateForLocale(
+        dataset.template,
+        userLocale
+      );
+
       return {
         id: dataset.id,
         name: dataset.cityName,
-        templateName: dataset.template.name,
+        templateName: resolvedTemplate.name,
         lastChanged: mostRecentElement ? new Date(mostRecentElement) : null,
       };
     }),
@@ -299,7 +338,7 @@ export async function generateNextUserReport(): Promise<{
     return null;
   }
 
-  const emailContent = generateEmailContent(datasetStats);
+  const emailContent = await generateEmailContent(datasetStats, userLocale);
   const latestChangeDate =
     datasetsWithRecentChanges.length > 0
       ? datasetsWithRecentChanges[0].stats &&
@@ -317,6 +356,7 @@ export async function generateNextUserReport(): Promise<{
   return {
     userId: user.id,
     userEmail: user.email,
+    userLanguage: userLocale,
     emailContent,
     reportData: {
       reportsFrequency: user.reportsFrequency,

@@ -493,6 +493,20 @@
     "creatingDataset": "Creando Conjunto de Datos",
     "thisUsuallyTakesLessThan30Seconds": "Esto generalmente toma menos de 30 segundos"
   },
+  "Email": {
+    "magicLinkSubject": "Iniciar sesión en OSM for Cities",
+    "magicLinkBody": "Haz clic <link>aquí</link> para iniciar sesión.",
+    "reportSubjectChanged": "{count, plural, =1 {# conjunto de datos} other {# conjuntos de datos}} cambió en la última {frequency}",
+    "reportSubjectNoChanges": "Sin cambios en la última {frequency}",
+    "reportChanged": "Los siguientes conjuntos de datos se actualizaron en la última {frequency}:",
+    "reportNoChanges": "No hubo cambios en tus <link>conjuntos de datos monitoreados</link> en la última {frequency}.",
+    "day": "día",
+    "week": "semana",
+    "generatedAt": "Este reporte se generó en {timestamp}Z. Todas las fechas mostradas están en UTC.",
+    "unsubscribe": "Para cancelar la suscripción a estos reportes, <link>visita tu página de preferencias</link>.",
+    "datasetsOne": "conjunto de datos",
+    "datasetsOther": "conjuntos de datos"
+  },
   "DatasetErrors": {
     "templateNotFoundTitle": "Plantilla de Conjunto de Datos No Encontrada",
     "templateNotFoundDescription": "La plantilla de conjunto de datos \"{templateId}\" no existe o ya no está disponible.",

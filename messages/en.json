@@ -486,6 +486,20 @@
     "creatingDataset": "Creating Dataset",
     "thisUsuallyTakesLessThan30Seconds": "This usually takes less than 30 seconds"
   },
+  "Email": {
+    "magicLinkSubject": "Sign in to OSM for Cities",
+    "magicLinkBody": "Click <link>here</link> to sign in.",
+    "reportSubjectChanged": "{count, plural, =1 {# dataset} other {# datasets}} changed in the last {frequency}",
+    "reportSubjectNoChanges": "No changes in the last {frequency}",
+    "reportChanged": "The following datasets were updated in the last {frequency}:",
+    "reportNoChanges": "There were no changes to your <link>watched datasets</link> in the last {frequency}.",
+    "day": "day",
+    "week": "week",
+    "generatedAt": "This report was generated at {timestamp}Z. All dates shown are in UTC.",
+    "unsubscribe": "To unsubscribe from these reports, <link>visit your preferences page</link>.",
+    "datasetsOne": "dataset",
+    "datasetsOther": "datasets"
+  },
   "DatasetErrors": {
     "templateNotFoundTitle": "Dataset Template Not Found",
     "templateNotFoundDescription": "The dataset template \"{templateId}\" doesn't exist or is no longer available.",

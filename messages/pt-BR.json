@@ -493,6 +493,20 @@
     "creatingDataset": "Criando Conjunto de Dados",
     "thisUsuallyTakesLessThan30Seconds": "Isso geralmente leva menos de 30 segundos"
   },
+  "Email": {
+    "magicLinkSubject": "Entrar no OSM for Cities",
+    "magicLinkBody": "Clique <link>aqui</link> para entrar.",
+    "reportSubjectChanged": "{count, plural, =1 {# conjunto de dados} other {# conjuntos de dados}} mudou na última {frequency}",
+    "reportSubjectNoChanges": "Sem mudanças na última {frequency}",
+    "reportChanged": "Os seguintes conjuntos de dados foram atualizados na última {frequency}:",
+    "reportNoChanges": "Não houve mudanças nos seus <link>conjuntos de dados observados</link> na última {frequency}.",
+    "day": "dia",
+    "week": "semana",
+    "generatedAt": "Este relatório foi gerado em {timestamp}Z. Todas as datas mostradas estão em UTC.",
+    "unsubscribe": "Para cancelar a inscrição nestes relatórios, <link>visite sua página de preferências</link>.",
+    "datasetsOne": "conjunto de dados",
+    "datasetsOther": "conjuntos de dados"
+  },
   "DatasetErrors": {
     "templateNotFoundTitle": "Modelo de Conjunto de Dados Não Encontrado",
     "templateNotFoundDescription": "O modelo de conjunto de dados \"{templateId}\" não existe ou não está mais disponível.",
