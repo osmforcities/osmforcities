@@ -509,7 +509,8 @@
     "datasetsOne": "conjunto de dados",
     "datasetsOther": "conjuntos de dados",
     "templateDeprecated": "Este modelo foi removido do catálogo.",
-    "templateDeprecatedDaysRemaining": "Você tem {days} dias restantes antes que este conjunto de dados seja excluído."
+    "templateDeprecatedDaysRemaining": "Você tem {days} dia{days, plural, =1 {} other {s}} restantes antes que este conjunto de dados seja excluído.",
+    "greeting": "Olá!"
   },
   "DatasetErrors": {
     "templateNotFoundTitle": "Modelo de Conjunto de Dados Não Encontrado",

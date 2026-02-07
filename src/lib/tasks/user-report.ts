@@ -6,7 +6,6 @@ import {
   getEmailTranslations,
   interpolateEmail,
   type Locale,
-  type EmailTranslations,
 } from "@/lib/email-i18n";
 
 /** Email with subject line, HTML body, and plain text fallback. */
@@ -50,20 +49,6 @@ function getLatestChangeDate(datasets: Array<{ stats?: DatasetStatsData }>): str
   return stats?.mostRecentElement
     ? new Date(stats.mostRecentElement).toLocaleDateString()
     : null;
-}
-
-function generateEmailSubject(
-  count: number,
-  frequency: "DAILY" | "WEEKLY",
-  translations: EmailTranslations
-): string {
-  const freqWord = frequency === "DAILY" ? translations.day : translations.week;
-  if (count === 0) {
-    return `No changes in the last ${freqWord}`;
-  }
-
-  const datasetsWord = count === 1 ? translations.datasetsOne : translations.datasetsOther;
-  return `${count} ${datasetsWord} changed in the last ${freqWord}`;
 }
 
 function generateEmailBodyWithChanges(
@@ -143,8 +128,16 @@ async function generateEmailContent(
 
   const translations = await getEmailTranslations(userLocale);
 
-  // Generate subject
-  const subject = generateEmailSubject(count, frequency, translations);
+  // Generate subject using ICU plural format
+  const freqValue = frequency === "DAILY" ? translations.day : translations.week;
+  const subjectKey = count === 0 ? "reportSubjectNoChanges" : "reportSubjectChanged";
+  const subjectTemplate = translations[subjectKey];
+  const subject = interpolateEmail(subjectTemplate, {
+    count,
+    frequency: freqValue,
+    datasetsOne: translations.datasetsOne,
+    datasetsOther: translations.datasetsOther,
+  });
 
   // Check if any datasets use deprecated templates
   const deprecatedDatasets = recentDatasets.filter((ds) => ds.daysRemaining !== undefined);
@@ -157,7 +150,6 @@ async function generateEmailContent(
   }
 
   // Generate body
-  const freqValue = frequency === "DAILY" ? translations.day : translations.week;
   const emailBody = count > 0
     ? generateEmailBodyWithChanges(
         recentDatasets,
@@ -183,7 +175,7 @@ async function generateEmailContent(
   });
 
   const htmlContent = `
-    <p>Hi!</p>
+    <p>${translations.greeting}</p>
 
     ${emailBody}
 
