@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return NextResponse.json(
       { error: "Missing or invalid authorization header" },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     console.error("CRON_ROUTE_SECRET environment variable not set");
     return NextResponse.json(
       { error: "Server configuration error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -53,12 +53,21 @@ export async function POST(req: NextRequest) {
         data: { lastReportSent: new Date() },
       });
     } catch (dbError) {
-      console.error("Database update failed, skipping email to prevent spam:", dbError);
-      return NextResponse.json({
-        success: false,
-        error: "Database update failed, email skipped to prevent spam",
-        details: dbError instanceof Error ? dbError.message : "Unknown database error",
-      }, { status: 500 });
+      console.error(
+        "Database update failed, skipping email to prevent spam:",
+        dbError,
+      );
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Database update failed, email skipped to prevent spam",
+          details:
+            dbError instanceof Error
+              ? dbError.message
+              : "Unknown database error",
+        },
+        { status: 500 },
+      );
     }
 
     // Only send email AFTER successful database update
@@ -88,7 +97,7 @@ export async function POST(req: NextRequest) {
         error: "Failed to execute send-user-reports task",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

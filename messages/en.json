@@ -502,7 +502,8 @@
     "datasetsOne": "dataset",
     "datasetsOther": "datasets",
     "templateDeprecated": "This template was removed from the catalog.",
-    "templateDeprecatedDaysRemaining": "You have {days} days remaining before this dataset is deleted."
+    "templateDeprecatedDaysRemaining": "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
+    "greeting": "Hi!"
   },
   "DatasetErrors": {
     "templateNotFoundTitle": "Dataset Template Not Found",

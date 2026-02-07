@@ -509,7 +509,8 @@
     "datasetsOne": "conjunto de datos",
     "datasetsOther": "conjuntos de datos",
     "templateDeprecated": "Esta plantilla fue eliminada del catálogo.",
-    "templateDeprecatedDaysRemaining": "Tienes {days} días restantes antes de que este conjunto de datos sea eliminado."
+    "templateDeprecatedDaysRemaining": "Tienes {days} día{days, plural, =1 {} other {s}} restantes antes de que este conjunto de datos sea eliminado.",
+    "greeting": "¡Hola!"
   },
   "DatasetErrors": {
     "templateNotFoundTitle": "Plantilla de Conjunto de Datos No Encontrada",
