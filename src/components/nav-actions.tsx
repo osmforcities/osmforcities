@@ -29,7 +29,7 @@ export default function NavActions({
   if (isLoggedIn) {
     return (
       <div className={containerClass}>
-        <NavLink href="/dashboard" isMobile={isMobile}>
+        <NavLink href="/dashboard" isMobile={isMobile} data-testid="navbar-dashboard">
           {translations.dashboard}
         </NavLink>
         <NavLink href="/about" isMobile={isMobile}>

@@ -179,7 +179,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await expect(page).toHaveURL("http://localhost:3000/en/users");
 
       // Navigate back to dashboard using Dashboard link in navbar
-      await page.getByRole("link", { name: "Dashboard" }).click();
+      await page.getByTestId("navbar-dashboard").click();
       await expect(page).toHaveURL("http://localhost:3000/en/dashboard");
 
       // Should see home dashboard with all tabs again

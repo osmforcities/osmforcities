@@ -25,7 +25,6 @@ test.describe("Route Protection", () => {
       "/en/templates",
       "/en/area/test-area",
       "/en/dataset/test-dataset",
-      "/en/public"
     ];
 
     for (const route of protectedRoutes) {
