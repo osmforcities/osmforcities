@@ -94,7 +94,8 @@ test.describe("Navbar", () => {
     }
   });
 
-  test.describe("Search functionality for authenticated users", () => {
+  // TODO: Re-enable after fixing API mocking - https://github.com/osmforcities/osmforcities/issues/177
+  test.describe.skip("Search functionality for authenticated users", () => {
     let testUser: TestUser;
 
     test.beforeEach(async ({ page }) => {
