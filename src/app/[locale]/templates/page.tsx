@@ -3,7 +3,8 @@ import { auth } from "@/auth";
 import { redirect } from "@/i18n/navigation";
 import { prisma } from "@/lib/db";
 import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
+import { resolveTemplateForLocale } from "@/lib/template-locale";
 
 export const dynamic = "force-dynamic";
 
@@ -12,17 +13,21 @@ export const metadata: Metadata = {
   description: "Data templates",
 };
 
-async function getTemplates() {
-  const templates = await prisma.template.findMany({
+async function getTemplates(locale: string) {
+  const rows = await prisma.template.findMany({
     include: {
-      _count: {
-        select: { datasets: true },
-      },
+      translations: true,
+      _count: { select: { datasets: true } },
     },
     orderBy: { name: "asc" },
   });
-
-  return templates;
+  return rows.map((t) => {
+    const resolved = resolveTemplateForLocale(t, locale);
+    return {
+      ...resolved,
+      _count: t._count,
+    };
+  });
 }
 
 /**
@@ -31,6 +36,7 @@ async function getTemplates() {
 export default async function TemplatesPage() {
   const session = await auth();
   const user = session?.user || null;
+  const locale = await getLocale();
   const t = await getTranslations("TemplatesPage");
   const tabT = await getTranslations("TabLayout");
 
@@ -42,7 +48,7 @@ export default async function TemplatesPage() {
     return redirect({ href: "/dashboard", locale: "en" });
   }
 
-  const templates = await getTemplates();
+  const templates = await getTemplates(locale);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">

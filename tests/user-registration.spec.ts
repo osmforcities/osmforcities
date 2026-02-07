@@ -64,7 +64,7 @@ test.describe("User Registration and Authentication", () => {
 
     try {
       // Test protected routes
-      const protectedRoutes = ["/watched", "/preferences"];
+      const protectedRoutes = ["/dashboard", "/preferences"];
 
       for (const route of protectedRoutes) {
         await page.goto(getLocalizedPath(route));

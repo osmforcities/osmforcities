@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { prisma } from "@/lib/db";
+import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { DatasetGrid } from "@/components/ui/template-grid";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { Link } from "@/components/ui/link";
@@ -12,26 +13,29 @@ type AreaPageProps = {
   }>;
 };
 
-async function getActiveTemplates() {
-  return await prisma.template.findMany({
-    where: {
-      isActive: true,
+async function getActiveTemplates(locale: string) {
+  const rows = await prisma.template.findMany({
+    where: { isActive: true },
+    include: {
+      translations: true,
     },
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      category: true,
-      tags: true,
-    },
-    orderBy: {
-      name: "asc",
-    },
+    orderBy: { name: "asc" },
+  });
+  return rows.map((t) => {
+    const resolved = resolveTemplateForLocale(t, locale);
+    return {
+      id: resolved.id,
+      name: resolved.name,
+      description: resolved.description,
+      category: resolved.category,
+      tags: resolved.tags,
+    };
   });
 }
 
 export default async function AreaPage({ params }: AreaPageProps) {
   const { areaId } = await params;
+  const locale = await getLocale();
   const t = await getTranslations("AreaPage");
   const navT = await getTranslations("Navigation");
 
@@ -42,7 +46,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
 
   const [areaInfo, templates] = await Promise.all([
     getAreaDetailsById(osmRelationId),
-    getActiveTemplates(),
+    getActiveTemplates(locale),
   ]);
 
   if (!areaInfo) {
