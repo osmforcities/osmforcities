@@ -7,6 +7,7 @@
   },
   "Navigation": {
     "home": "Home",
+    "dashboard": "Dashboard",
     "about": "About",
     "myDatasets": "My Datasets",
     "public": "Public",
@@ -485,6 +486,45 @@
   "DatasetLoading": {
     "creatingDataset": "Creating Dataset",
     "thisUsuallyTakesLessThan30Seconds": "This usually takes less than 30 seconds"
+  },
+  "Email": {
+    "magicLinkSubject": "Sign in to OSM for Cities",
+    "magicLinkBody": "Click {magicLink} to sign in.",
+    "reportSubjectChanged": "{count} {datasets, plural, =1 {dataset} other {datasets}} changed in the last {frequency}",
+    "reportSubjectNoChanges": "No changes in the last {frequency}",
+    "reportChanged": "The following datasets were updated in the last {frequency}:",
+    "reportNoChanges": "There were no changes to your {watchedDatasetsLink} in the last {frequency}.",
+    "reportFollowed": "watched datasets",
+    "preferencesPage": "preferences page",
+    "day": "day",
+    "week": "week",
+    "generatedAt": "This report was generated at {timestamp}Z. All dates shown are in UTC.",
+    "unsubscribe": "To unsubscribe from these reports, visit {preferencesLink}.",
+    "datasetsOne": "dataset",
+    "datasetsOther": "datasets",
+    "templateDeprecated": "This template was removed from the catalog.",
+    "templateDeprecatedDaysRemaining": "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
+    "greeting": "Hi!"
+  },
+  "AboutPage": {
+    "metaTitle": "About - OSM for Cities",
+    "metaDescription": "Learn about OSM for Cities - Daily updated datasets from OpenStreetMap",
+    "title": "About the project",
+    "description1": "**OSM for Cities** is a platform to explore and follow updates from OpenStreetMap — a free, open map of the world built by volunteers. Every day, people add and improve data about streets, buildings, schools, parks, transport, and more. This project gives you a way to track those changes in places you care about.",
+    "description2": "You might want to keep an eye on edits to schools in your region, or monitor how crosswalks, bus stops, or bike racks are being added to your city. Maybe you're just curious about how your neighborhood park is evolving. Whether it's a dataset for urban planning or something more personal and informal, the platform lets you create and follow it.",
+    "featuresTitle": "Feature Highlights",
+    "features": {
+      "create": "Create custom datasets by selecting a place and a topic",
+      "follow": "Follow datasets and receive daily or weekly update summaries",
+      "activity": "See contributor activity and edit frequency for each dataset"
+    },
+    "projectTitle": "The Project",
+    "projectDescription1": "OSM for Cities was created by",
+    "projectDescription2": "and incubated in a",
+    "projectDescription3": "Labs cycle. It's an open experiment in surfacing OSM data in useful, accessible ways — designed for cities, but flexible enough to serve as a generic OSM tracker.",
+    "projectEvolution": "Its direction will evolve with community use and feedback.",
+    "getInvolvedTitle": "Get Involved",
+    "getInvolvedDescription": "Your feedback helps shape this project. Whether you have ideas for new features, found something that doesn't work quite right, or just want to share how you're using it — we'd love to hear from you."
   },
   "DatasetErrors": {
     "templateNotFoundTitle": "Dataset Template Not Found",

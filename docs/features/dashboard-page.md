@@ -8,19 +8,21 @@ The dashboard page serves as the main landing page for authenticated users, prov
 
 ### Page Structure
 
-**File**: `src/app/[locale]/page.tsx`
+**Dashboard File**: `src/app/[locale]/dashboard/page.tsx`
+**Landing File**: `src/app/[locale]/page.tsx` (public, always shows landing)
+
+Dashboard is now at `/dashboard` - authenticated users can access both the landing page (`/`) and their dashboard (`/dashboard`).
 
 ```typescript
-// Server component with data fetching
-export default async function Home() {
+// Dashboard page - only for authenticated users
+export default async function Dashboard() {
   const session = await auth();
   const user = session?.user || null;
-  
+
   if (!user) {
-    // Landing page for unauthenticated users
-    return <LandingPage />;
+    redirect({ href: "/enter", locale: "en" });
   }
-  
+
   const watchedDatasets = await getWatchedDatasets(user.id);
   return <DashboardPage datasets={watchedDatasets} />;
 }
@@ -117,6 +119,8 @@ UNIQUE ("templateId", "areaId");
 ### Route Structure
 
 **Required Routes**:
+- `/` - Public landing page (Hero, Features, Use Cases, etc.)
+- `/dashboard` - Authenticated users' followed datasets
 - `/area/[areaId]/page.tsx` - Area overview with available datasets
 - `/area/[areaId]/dataset/[templateId]/page.tsx` - Dataset view with on-demand creation
 

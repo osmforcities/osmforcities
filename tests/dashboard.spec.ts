@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { setupAuthenticationWithSignup } from "./utils/auth";
+import { getLocalizedPath } from "./config";
 
 test.describe("User Dashboard", () => {
   test.beforeEach(async ({ page }) => {
@@ -7,7 +8,7 @@ test.describe("User Dashboard", () => {
   });
 
   test("should display welcome message and user name", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for welcome message
     await expect(page.getByTestId("dashboard-welcome-message")).toBeVisible();
@@ -19,7 +20,7 @@ test.describe("User Dashboard", () => {
   });
 
   test("should display followed datasets section", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for dashboard grid (either with datasets or empty state)
     const grid = page.getByTestId("followed-datasets-grid");
@@ -33,7 +34,7 @@ test.describe("User Dashboard", () => {
   });
 
   test("should display followed datasets in card layout", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for dashboard grid (either with datasets or empty state)
     const grid = page.getByTestId("followed-datasets-grid");
@@ -50,7 +51,7 @@ test.describe("User Dashboard", () => {
     page,
   }) => {
     // This test assumes the user has no followed datasets
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for empty state
     await expect(page.getByTestId("dashboard-empty-state")).toBeVisible();
@@ -66,7 +67,7 @@ test.describe("User Dashboard", () => {
     page,
   }) => {
     // This test assumes the user has followed datasets
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check if there are any dataset cards or empty state
     const datasetGrid = page.getByTestId("followed-datasets-grid");
@@ -107,7 +108,7 @@ test.describe("User Dashboard", () => {
   test("should navigate to dataset page when clicking dataset card", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check if there are any dataset cards
     const datasetCards = page.locator(
@@ -125,7 +126,7 @@ test.describe("User Dashboard", () => {
   });
 
   test("should have consistent layout with area page", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for main layout structure
     await expect(page.locator(".min-h-screen.bg-white")).toBeVisible();
@@ -148,7 +149,7 @@ test.describe("User Dashboard", () => {
   test("should display watcher count badges when available", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for watcher count badges in dataset cards
     const watcherBadges = page.getByText(/watcher/);
@@ -163,7 +164,7 @@ test.describe("User Dashboard", () => {
   test("should show correct status badges for active/inactive datasets", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for status badges
     const statusBadges = page.getByText(/Active|Inactive/);
@@ -189,7 +190,7 @@ test.describe("User Dashboard", () => {
   });
 
   test("should be responsive on different screen sizes", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check if there's a dataset grid or empty state
     const datasetGrid = page.getByTestId("followed-datasets-grid");
@@ -225,7 +226,7 @@ test.describe("User Dashboard", () => {
   test("should handle dataset count pluralization correctly", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for proper pluralization in dataset count text (only if datasets exist)
     const countText = page.getByTestId("dashboard-dataset-count");
@@ -245,7 +246,7 @@ test.describe("User Dashboard", () => {
   });
 
   test("should display country codes when available", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for country codes in dataset cards
     const datasetCards = page.locator(
@@ -272,7 +273,7 @@ test.describe("Dashboard Navigation", () => {
   });
 
   test("should show proper empty state guidance", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for empty state guidance
     await expect(page.getByTestId("dashboard-empty-state")).toBeVisible();

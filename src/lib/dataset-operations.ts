@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { resolveTemplate } from "@/lib/template-resolver";
+import { resolveTemplateForLocale } from "@/lib/template-locale";
 import {
   fetchOsmRelationData,
   executeOverpassQuery,
@@ -17,7 +18,8 @@ export type DatasetCreationResult = {
 
 export async function getOrCreateDataset(
   areaId: number,
-  templateIdentifier: string
+  templateIdentifier: string,
+  locale: string
 ): Promise<DatasetCreationResult> {
   const template = await resolveTemplate(templateIdentifier);
   if (!template) {
@@ -28,18 +30,22 @@ export async function getOrCreateDataset(
     throw new Error(`Template is not active: ${templateIdentifier}`);
   }
 
-  let dataset = await getDatasetWithDetails(areaId, template.id);
+  if (template.deprecatesAt) {
+    throw new Error(`Template is deprecated: ${templateIdentifier}`);
+  }
+
+  let dataset = await getDatasetWithDetails(areaId, template.id, locale);
 
   if (dataset) {
     return { dataset, wasCreated: false };
   }
 
-  dataset = await createDatasetOnDemand(areaId, template);
+  dataset = await createDatasetOnDemand(areaId, template, locale);
   return { dataset, wasCreated: true };
 }
 
-async function getDatasetWithDetails(areaId: number, templateId: string) {
-  return await prisma.dataset.findFirst({
+async function getDatasetWithDetails(areaId: number, templateId: string, locale: string) {
+  const dataset = await prisma.dataset.findFirst({
     where: {
       areaId,
       templateId,
@@ -53,6 +59,7 @@ async function getDatasetWithDetails(areaId: number, templateId: string) {
           description: true,
           category: true,
           tags: true,
+          translations: true,
         },
       },
       area: {
@@ -80,11 +87,24 @@ async function getDatasetWithDetails(areaId: number, templateId: string) {
       },
     },
   });
+
+  if (!dataset) {
+    return null;
+  }
+
+  // Resolve template translations for the given locale
+  const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+
+  return {
+    ...dataset,
+    template: resolvedTemplate,
+  };
 }
 
 async function createDatasetOnDemand(
   areaId: number,
-  template: NonNullable<Awaited<ReturnType<typeof resolveTemplate>>>
+  template: NonNullable<Awaited<ReturnType<typeof resolveTemplate>>>,
+  locale: string
 ) {
   let area = await prisma.area.findUnique({
     where: { id: areaId },
@@ -173,6 +193,7 @@ async function createDatasetOnDemand(
             description: true,
             category: true,
             tags: true,
+            translations: true,
           },
         },
         area: {
@@ -201,7 +222,13 @@ async function createDatasetOnDemand(
       },
     });
 
-    return dataset;
+    // Resolve template translations for the given locale
+    const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+
+    return {
+      ...dataset,
+      template: resolvedTemplate,
+    };
   } catch (error) {
     console.error("Failed to fetch Overpass data:", error);
 
@@ -254,14 +281,15 @@ export async function datasetExists(
 
 export async function getDatasetMetadata(
   areaId: number,
-  templateIdentifier: string
+  templateIdentifier: string,
+  locale: string
 ) {
   const template = await resolveTemplate(templateIdentifier);
   if (!template) {
     return null;
   }
 
-  return await prisma.dataset.findFirst({
+  const dataset = await prisma.dataset.findFirst({
     where: {
       areaId,
       templateId: template.id,
@@ -280,6 +308,8 @@ export async function getDatasetMetadata(
           name: true,
           description: true,
           category: true,
+          tags: true,
+          translations: true,
         },
       },
       area: {
@@ -296,4 +326,16 @@ export async function getDatasetMetadata(
       },
     },
   });
+
+  if (!dataset) {
+    return null;
+  }
+
+  // Resolve template translations for the given locale
+  const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+
+  return {
+    ...dataset,
+    template: resolvedTemplate,
+  };
 }
