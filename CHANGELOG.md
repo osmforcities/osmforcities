@@ -1,5 +1,20 @@
 # osmforcities
 
+## 1.6.0
+
+### Minor Changes
+
+- Release v1.6.0
+
+  - Move dashboard to /dashboard route with locale-aware navigation (#156)
+  - Add Storybook v10 with component testing (#157)
+  - Localize email notifications with ICU plural format (#176)
+  - Add email notification translations (#174)
+  - Add template sync and 30-day soft deprecation (#172)
+  - Add template translations (#160)
+  - Fix auth redirects, search input, CI deploy workflow
+  - Require tests to pass before deployment
+
 ## 1.5.1
 
 ### Patch Changes
