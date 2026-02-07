@@ -95,7 +95,6 @@
     "communityActivity": "Atividade da Comunidade",
     "lastChecked": "Última Verificação:"
   },
-
   "Watched": {
     "metaTitle": "Seguindo - OSM for Cities",
     "metaDescription": "Conjuntos de dados que você segue",
@@ -115,7 +114,6 @@
     "signupForTesting": "Cadastre-se para fins de teste",
     "testEnvOnly": "Esta página está disponível apenas no ambiente de teste."
   },
-
   "DatasetPage": {
     "backToHome": "Voltar ao Início",
     "datasetStats": "Estatísticas do Conjunto de Dados",
@@ -388,14 +386,12 @@
       "journalists": {
         "category": "Jornalistas",
         "title": "Fundamente histórias com dados",
-        "description": "Acompanhe como as cidades se desenvolvem e mudam com dados de mapeamento compartilhados.",
-        "view": "Ver"
+        "description": "Acompanhe como as cidades se desenvolvem e mudam com dados de mapeamento compartilhados para criar reportagens baseadas em evidências."
       },
       "researchers": {
         "category": "Pesquisadores",
         "title": "Analise tendências urbanas",
-        "description": "Estude padrões e mudanças na infraestrutura da cidade ao longo do tempo.",
-        "view": "Ver"
+        "description": "Estude padrões e mudanças na infraestrutura da cidade ao longo do tempo para pesquisas acadêmicas."
       },
       "developers": {
         "category": "Desenvolvedores",
@@ -407,16 +403,6 @@
         "category": "Urbanistas",
         "title": "Tome decisões com dados atualizados",
         "description": "Monitore escolas, transporte e serviços em sua jurisdição para tomar decisões informadas sobre o desenvolvimento urbano."
-      },
-      "journalists": {
-        "category": "Jornalistas",
-        "title": "Fundamente histórias com dados",
-        "description": "Acompanhe como as cidades se desenvolvem e mudam com dados de mapeamento compartilhados para criar reportagens baseadas em evidências."
-      },
-      "researchers": {
-        "category": "Pesquisadores",
-        "title": "Analise tendências urbanas",
-        "description": "Estude padrões e mudanças na infraestrutura da cidade ao longo do tempo para pesquisas acadêmicas."
       },
       "communityGroups": {
         "category": "Grupos comunitários",
@@ -506,6 +492,25 @@
   "DatasetLoading": {
     "creatingDataset": "Criando Conjunto de Dados",
     "thisUsuallyTakesLessThan30Seconds": "Isso geralmente leva menos de 30 segundos"
+  },
+  "Email": {
+    "magicLinkSubject": "Entrar no OSM for Cities",
+    "magicLinkBody": "Clique {magicLink} para entrar.",
+    "reportSubjectChanged": "{count} {datasets, plural, =1 {conjunto de dados} other {conjuntos de dados}} mudaram na última {frequency}",
+    "reportSubjectNoChanges": "Sem mudanças na última {frequency}",
+    "reportChanged": "Os seguintes conjuntos de dados foram atualizados na última {frequency}:",
+    "reportNoChanges": "Não houve mudanças nos seus {watchedDatasetsLink} na última {frequency}.",
+    "reportFollowed": "conjuntos de dados observados",
+    "preferencesPage": "página de preferências",
+    "day": "dia",
+    "week": "semana",
+    "generatedAt": "Este relatório foi gerado em {timestamp}Z. Todas as datas mostradas estão em UTC.",
+    "unsubscribe": "Para cancelar a inscrição nestes relatórios, visite {preferencesLink}.",
+    "datasetsOne": "conjunto de dados",
+    "datasetsOther": "conjuntos de dados",
+    "templateDeprecated": "Este modelo foi removido do catálogo.",
+    "templateDeprecatedDaysRemaining": "Você tem {days} dia{days, plural, =1 {} other {s}} restantes antes que este conjunto de dados seja excluído.",
+    "greeting": "Olá!"
   },
   "DatasetErrors": {
     "templateNotFoundTitle": "Modelo de Conjunto de Dados Não Encontrado",

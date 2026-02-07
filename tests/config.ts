@@ -12,19 +12,20 @@ if (!dbUrl.pathname.slice(1).includes("-test")) {
 
 export const locale = routing.defaultLocale;
 
-export const getLocalizedPath = (path: string) => {
+export const getLocalizedPath = (path: string, localeParam?: string) => {
   if (path.startsWith("/api")) {
     return path;
   }
 
+  const targetLocale = localeParam ?? locale;
   const [pathname, search] = path.split("?");
 
   // Handle root path specially
   if (pathname === "/") {
-    const localizedPath = `/${locale}`;
+    const localizedPath = `/${targetLocale}`;
     return search ? `${localizedPath}?${search}` : localizedPath;
   }
 
-  const localizedPath = `/${locale}${pathname}`;
+  const localizedPath = `/${targetLocale}${pathname}`;
   return search ? `${localizedPath}?${search}` : localizedPath;
 };

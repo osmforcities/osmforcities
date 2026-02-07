@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
+import { getLocale } from "next-intl/server";
+import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { DatasetSchema, type Dataset } from "@/schemas/dataset";
 import type { FeatureCollection } from "geojson";
 import { DatasetMapWrapper } from "@/components/dataset/map-wrapper";
@@ -9,7 +11,7 @@ import { DatasetStatsTable } from "@/components/dataset/dataset-stats-table";
 import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
 import { DatasetLayout } from "@/components/dataset/dataset-layout";
 
-async function getDataset(id: string): Promise<Dataset | null> {
+async function getDataset(id: string, locale: string): Promise<Dataset | null> {
   try {
     const session = await auth();
     const user = session?.user || null;
@@ -17,7 +19,7 @@ async function getDataset(id: string): Promise<Dataset | null> {
     const rawDataset = await prisma.dataset.findUnique({
       where: { id },
       include: {
-        template: true,
+        template: { include: { translations: true } },
         area: true,
         user: {
           select: {
@@ -40,8 +42,14 @@ async function getDataset(id: string): Promise<Dataset | null> {
 
     if (!rawDataset) return null;
 
+    const resolvedTemplate = resolveTemplateForLocale(
+      rawDataset.template,
+      locale,
+    );
+
     return DatasetSchema.parse({
       ...rawDataset,
+      template: resolvedTemplate,
       geojson: rawDataset.geojson as FeatureCollection | null,
       bbox: rawDataset.bbox as number[] | null,
       area: {
@@ -50,7 +58,7 @@ async function getDataset(id: string): Promise<Dataset | null> {
       },
       isWatched: user ? rawDataset.watchers.length > 0 : false,
       watchersCount: rawDataset._count.watchers,
-      canDelete: false, // Datasets are no longer owned by users, cleanup handled by cron job
+      canDelete: false,
     });
   } catch (error) {
     console.error("Error fetching dataset:", error);
@@ -64,7 +72,8 @@ export default async function DatasetPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const dataset = await getDataset(id);
+  const locale = await getLocale();
+  const dataset = await getDataset(id, locale);
 
   if (!dataset) {
     return notFound();

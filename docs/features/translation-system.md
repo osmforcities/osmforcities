@@ -44,6 +44,32 @@ tail -20 messages/en.json
 head -10 messages/en.json
 ```
 
+## Two Translation Systems
+
+### UI Translations (next-intl)
+- Files: `messages/en.json`, `messages/pt-BR.json`, `messages/es.json`
+- Content: Interface text, labels, buttons, navigation
+- Usage: `getTranslations()`, `useTranslations()`
+
+### Template Translations (Database)
+- Source: `prisma/templates.i18n.yml`
+- Table: `template_translations` (`locale`, `templateId`, `name`, `description`)
+- Code: `src/lib/template-locale.ts` → `resolveTemplateForLocale()`
+- Content: Dataset template names and descriptions
+
+Both use the URL locale (`/en/...`, `/pt-BR/...`, `/es/...`).
+
+## Using Template Translations
+
+```tsx
+import { getLocale } from "next-intl/server";
+import { getOrCreateDataset } from "@/lib/dataset-operations";
+
+const locale = await getLocale();
+const { dataset } = await getOrCreateDataset(areaId, templateId, locale);
+// dataset.template.name and description are now localized
+```
+
 ## Translation Keys Structure
 
 Translations are organized by feature/page sections:
