@@ -30,7 +30,6 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
-    "@mdx-js/loader": "^3.1.0",
     "@next/env": "^15.5.9",
     "@next/mdx": "^15.5.9",
     "@prisma/client": "^6.9.0",
@@ -58,8 +57,6 @@
     "react-dom": "^19.2.3",
     "react-map-gl": "^8.0.4",
     "react-stately": "^3.41.0",
-    "remark-frontmatter": "^5.0.0",
-    "remark-mdx-frontmatter": "^5.2.0",
     "tailwind-merge": "^3.3.0",
     "zod": "^3.25.64"
   },

@@ -59,6 +59,14 @@ const eslintConfig = [
     },
   },
   {
+    files: ["src/components/about-content/**", "src/components/about-content.tsx"],
+    rules: {
+      "react/no-unescaped-entities": "off",
+      "react/jsx-no-literals": "off",
+      "no-restricted-syntax": "off",
+    },
+  },
+  {
     files: ["src/**/*.stories.tsx"],
     rules: {
       "react/no-unescaped-entities": "off",

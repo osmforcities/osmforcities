@@ -512,6 +512,26 @@
     "templateDeprecatedDaysRemaining": "Tienes {days} día{days, plural, =1 {} other {s}} restantes antes de que este conjunto de datos sea eliminado.",
     "greeting": "¡Hola!"
   },
+  "AboutPage": {
+    "metaTitle": "Acerca de - OSM for Cities",
+    "metaDescription": "Conoce OSM for Cities - Conjuntos de datos actualizados diariamente de OpenStreetMap",
+    "title": "Acerca del proyecto",
+    "description1": "**OSM for Cities** es una plataforma para explorar y seguir actualizaciones de OpenStreetMap — un mapa abierto y gratuito del mundo construido por voluntarios. Todos los días, personas agregan y mejoran datos sobre calles, edificios, escuelas, parques, transportes y mucho más. Este proyecto te ofrece una forma de seguir esos cambios en los lugares que te importan.",
+    "description2": "Puedes querer seguir ediciones en escuelas de tu región, o monitorear cómo se agregan cruces peatonales, paradas de autobús o aparcamientos de bicicletas en tu ciudad. Tal vez solo tengas curiosidad por cómo evoluciona el parque de tu barrio. Ya sea para planificación urbana o para algo más personal e informal, la plataforma te permite crear y seguir conjuntos de datos.",
+    "featuresTitle": "Características principales",
+    "features": {
+      "create": "Crea conjuntos de datos personalizados seleccionando un lugar y un tema",
+      "follow": "Sigue conjuntos de datos y recibe resúmenes de actualizaciones diarias o semanales",
+      "activity": "Consulta la actividad de colaboradores y la frecuencia de ediciones en cada conjunto de datos"
+    },
+    "projectTitle": "El proyecto",
+    "projectDescription1": "OSM for Cities fue creado por",
+    "projectDescription2": "e incubado en un ciclo Labs de",
+    "projectDescription3": ". Es un experimento abierto para presentar datos de OSM de maneras útiles y accesibles — diseñado para ciudades, pero lo bastante flexible como para funcionar como un rastreador genérico de OSM.",
+    "projectEvolution": "El rumo del proyecto evolucionará con el uso y la retroalimentación de la comunidad.",
+    "getInvolvedTitle": "Involúcrate",
+    "getInvolvedDescription": "Tu retroalimentación ayuda a dar forma a este proyecto. Puede ser una idea para nuevas funcionalidades, algo que no funciona bien, o simplemente compartir cómo lo estás usando — nos encantaría saber de ti."
+  },
   "DatasetErrors": {
     "templateNotFoundTitle": "Plantilla de Conjunto de Datos No Encontrada",
     "templateNotFoundDescription": "La plantilla de conjunto de datos \"{templateId}\" no existe o ya no está disponible.",
