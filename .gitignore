@@ -62,3 +62,7 @@ node_modules/
 
 # next-intl generated message declarations
 messages/*.d.json.ts
+
+# Storybook
+storybook-static/
+.playwright-mcp/

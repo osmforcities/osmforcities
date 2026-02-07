@@ -84,17 +84,26 @@ describe("user-report email generation", () => {
       datasetsOne: "dataset",
       datasetsOther: "datasets",
       templateDeprecated: "This template was removed from the catalog.",
-      templateDeprecatedDaysRemaining: "You have {days} days remaining before this dataset is deleted.",
+      templateDeprecatedDaysRemaining: "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
+      greeting: "Hi!",
     });
     vi.mocked(resolveTemplateForLocale).mockReturnValue({
       name: "Schools",
       description: "Schools",
     });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) =>
-      t.replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
+    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
+      let result = t
+        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-    );
+        .replace("{frequency}", v.frequency || "");
+      // Handle {count} and {datasets} placeholders for subject line
+      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
+        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
+        result = result.replace("{count}", v.count.toString());
+        result = result.replace("{datasets}", word);
+      }
+      return result;
+    });
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
@@ -123,17 +132,26 @@ describe("user-report email generation", () => {
       datasetsOne: "conjunto de dados",
       datasetsOther: "conjuntos de dados",
       templateDeprecated: "Este modelo foi removido do catálogo.",
-      templateDeprecatedDaysRemaining: "Você tem {days} dias restantes antes que este conjunto de dados seja excluído.",
+      templateDeprecatedDaysRemaining: "Você tem {days} dia{days, plural, =1 {} other {s}} restantes antes que este conjunto de dados seja excluído.",
+      greeting: "Olá!",
     });
     vi.mocked(resolveTemplateForLocale).mockReturnValue({
       name: "Escolas",
       description: "Escolas",
     });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) =>
-      t.replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
+    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
+      let result = t
+        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-    );
+        .replace("{frequency}", v.frequency || "");
+      // Handle {count} and {datasets} placeholders for subject line
+      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
+        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
+        result = result.replace("{count}", v.count.toString());
+        result = result.replace("{datasets}", word);
+      }
+      return result;
+    });
     mockPrisma.user.findFirst.mockResolvedValue(ptUser);
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
@@ -162,17 +180,26 @@ describe("user-report email generation", () => {
       datasetsOne: "conjunto de datos",
       datasetsOther: "conjuntos de datos",
       templateDeprecated: "Esta plantilla fue eliminada del catálogo.",
-      templateDeprecatedDaysRemaining: "Tienes {days} días restantes antes de que este conjunto de datos sea eliminado.",
+      templateDeprecatedDaysRemaining: "Tienes {days} día{days, plural, =1 {} other {s}} restantes antes de que este conjunto de datos sea eliminado.",
+      greeting: "¡Hola!",
     });
     vi.mocked(resolveTemplateForLocale).mockReturnValue({
       name: "Escuelas",
       description: "Escuelas",
     });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) =>
-      t.replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
+    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
+      let result = t
+        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-    );
+        .replace("{frequency}", v.frequency || "");
+      // Handle {count} and {datasets} placeholders for subject line
+      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
+        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
+        result = result.replace("{count}", v.count.toString());
+        result = result.replace("{datasets}", word);
+      }
+      return result;
+    });
     mockPrisma.user.findFirst.mockResolvedValue(esUser);
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
@@ -200,17 +227,26 @@ describe("user-report email generation", () => {
       datasetsOne: "dataset",
       datasetsOther: "datasets",
       templateDeprecated: "This template was removed from the catalog.",
-      templateDeprecatedDaysRemaining: "You have {days} days remaining before this dataset is deleted.",
+      templateDeprecatedDaysRemaining: "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
+      greeting: "Hi!",
     });
     vi.mocked(resolveTemplateForLocale).mockReturnValue({
       name: "Schools",
       description: "Schools",
     });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) =>
-      t.replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
+    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
+      let result = t
+        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-    );
+        .replace("{frequency}", v.frequency || "");
+      // Handle {count} and {datasets} placeholders for subject line
+      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
+        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
+        result = result.replace("{count}", v.count.toString());
+        result = result.replace("{datasets}", word);
+      }
+      return result;
+    });
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
@@ -236,17 +272,26 @@ describe("user-report email generation", () => {
       datasetsOne: "dataset",
       datasetsOther: "datasets",
       templateDeprecated: "This template was removed from the catalog.",
-      templateDeprecatedDaysRemaining: "You have {days} days remaining before this dataset is deleted.",
+      templateDeprecatedDaysRemaining: "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
+      greeting: "Hi!",
     });
     vi.mocked(resolveTemplateForLocale).mockReturnValue({
       name: "Schools",
       description: "Schools",
     });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) =>
-      t.replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
+    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
+      let result = t
+        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-    );
+        .replace("{frequency}", v.frequency || "");
+      // Handle {count} and {datasets} placeholders for subject line
+      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
+        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
+        result = result.replace("{count}", v.count.toString());
+        result = result.replace("{datasets}", word);
+      }
+      return result;
+    });
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
 
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
@@ -278,17 +323,26 @@ describe("user-report email generation", () => {
       datasetsOne: "dataset",
       datasetsOther: "datasets",
       templateDeprecated: "This template was removed from the catalog.",
-      templateDeprecatedDaysRemaining: "You have {days} days remaining before this dataset is deleted.",
+      templateDeprecatedDaysRemaining: "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
+      greeting: "Hi!",
     });
     vi.mocked(resolveTemplateForLocale).mockReturnValue({
       name: "Schools",
       description: "Schools",
     });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) =>
-      t.replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
+    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
+      let result = t
+        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-    );
+        .replace("{frequency}", v.frequency || "");
+      // Handle {count} and {datasets} placeholders for subject line
+      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
+        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
+        result = result.replace("{count}", v.count.toString());
+        result = result.replace("{datasets}", word);
+      }
+      return result;
+    });
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
     mockPrisma.user.findFirst.mockResolvedValue({
