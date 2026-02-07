@@ -1,3 +1,8 @@
+/**
+ * Dashboard tabs component - navigation between Following/Users/Templates
+ * Following tab links to /dashboard, Users to /users, Templates to /templates
+ */
+
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
@@ -28,7 +33,7 @@ export function DashboardTabs({
   };
 
   const handleFollowingTabClick = () => {
-    router.push("/");
+    router.push("/dashboard");
   };
 
   // Determine which tabs to show and which is active

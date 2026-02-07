@@ -1,6 +1,7 @@
 import { test, expect } from "./test-setup";
 import { createTestUser, cleanupTestUser } from "./utils/auth";
 import { PrismaClient } from "@prisma/client";
+import { getLocalizedPath } from "./config";
 
 test.describe("Dashboard Page - Essential Workflows", () => {
   let testUser: { id: string; email: string; password?: string };
@@ -16,7 +17,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     await page.fill('input[name="email"]', testUser.email);
     await page.fill('input[name="password"]', testUser.password!);
     await page.click('button[type="submit"]');
-    await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+    await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
   });
 
   test.afterEach(async () => {
@@ -27,7 +28,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
   });
 
   test("should display dashboard title and subtitle", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for welcome message
     await expect(page.getByTestId("dashboard-welcome-message")).toBeVisible();
@@ -43,7 +44,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
   test("should show empty state when no datasets are followed", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for empty state
     await expect(page.getByTestId("dashboard-empty-state")).toBeVisible();
@@ -113,7 +114,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for datasets section - no heading exists in new design
 
@@ -180,7 +181,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Click on dataset card
     const datasetCard = page
@@ -244,7 +245,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check dataset card structure
     const datasetCard = page
@@ -314,7 +315,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for watcher count
     await expect(page.getByText("1 watcher")).toBeVisible();
@@ -365,7 +366,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     const datasetGrid = page.getByTestId("followed-datasets-grid");
 
@@ -430,7 +431,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for plural form
     await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
@@ -452,7 +453,7 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
     await page.fill('input[name="email"]', testUser.email);
     await page.fill('input[name="password"]', testUser.password!);
     await page.click('button[type="submit"]');
-    await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+    await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
   });
 
   test.afterEach(async () => {
@@ -462,7 +463,7 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
   });
 
   test("should not show old wizard workflow buttons", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Should not show old buttons
     await expect(
@@ -479,7 +480,7 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
   test("should show clean dashboard without authorship references", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Should not show authorship-related content
     await expect(page.getByText(/created by|author|owner/)).toBeHidden();
@@ -487,7 +488,7 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
   });
 
   test("should have proper empty state guidance", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check empty state guidance
     await expect(page.getByTestId("dashboard-empty-state")).toBeVisible();
@@ -500,7 +501,7 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
   });
 
   test("should display tab navigation without breaking existing functionality", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check that tab navigation is visible
     await expect(page.getByTestId("tab-following")).toBeVisible();

@@ -35,7 +35,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', regularUser.email);
       await page.fill('input[name="password"]', regularUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Check that only Following tab is visible
       await expect(page.getByTestId("tab-following")).toBeVisible();
@@ -51,7 +51,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', adminUser.email);
       await page.fill('input[name="password"]', adminUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Check that all three tabs are visible
       await expect(page.getByTestId("tab-following")).toBeVisible();
@@ -67,7 +67,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', adminUser.email);
       await page.fill('input[name="password"]', adminUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Check that Users tab has an icon
       const usersTab = page.getByTestId("tab-users");
@@ -90,7 +90,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', adminUser.email);
       await page.fill('input[name="password"]', adminUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Click Users tab
       await page.getByTestId("tab-users").click();
@@ -112,7 +112,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', adminUser.email);
       await page.fill('input[name="password"]', adminUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Click Templates tab
       await page.getByTestId("tab-templates").click();
@@ -130,7 +130,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', adminUser.email);
       await page.fill('input[name="password"]', adminUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Click Users tab
       await page.getByTestId("tab-users").click();
@@ -150,7 +150,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', adminUser.email);
       await page.fill('input[name="password"]', adminUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Click Templates tab
       await page.getByTestId("tab-templates").click();
@@ -172,15 +172,15 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', adminUser.email);
       await page.fill('input[name="password"]', adminUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Click Users tab
       await page.getByTestId("tab-users").click();
       await expect(page).toHaveURL("http://localhost:3000/en/users");
 
-      // Navigate back to home (use getByLabel to target navbar link specifically, avoiding footer link)
-      await page.getByLabel("OSM for Cities").click();
-      await expect(page).toHaveURL("http://localhost:3000/en");
+      // Navigate back to dashboard using Dashboard link in navbar
+      await page.getByTestId("navbar-dashboard").click();
+      await expect(page).toHaveURL("http://localhost:3000/en/dashboard");
 
       // Should see home dashboard with all tabs again
       await expect(page.getByTestId("tab-following")).toBeVisible();
@@ -194,7 +194,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', adminUser.email);
       await page.fill('input[name="password"]', adminUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Navigate to users page
       await page.getByTestId("tab-users").click();
@@ -210,7 +210,7 @@ test.describe("Dashboard Tab Navigation", () => {
 
       // Navigate back to dashboard from users page
       await page.getByTestId("tab-following").click();
-      await expect(page).toHaveURL("http://localhost:3000/en");
+      await expect(page).toHaveURL("http://localhost:3000/en/dashboard");
     });
   });
 
@@ -223,7 +223,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', regularUser.email);
       await page.fill('input[name="password"]', regularUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Check welcome message
       await expect(page.getByTestId("dashboard-welcome-message")).toBeVisible();
@@ -246,7 +246,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', regularUser.email);
       await page.fill('input[name="password"]', regularUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Check empty state
       await expect(page.getByTestId("dashboard-empty-state")).toBeVisible();
@@ -308,7 +308,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', regularUser.email);
       await page.fill('input[name="password"]', regularUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Check for dataset grid
       const datasetGrid = page.getByTestId("followed-datasets-grid");
@@ -328,7 +328,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', adminUser.email);
       await page.fill('input[name="password"]', adminUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Set mobile viewport
       await page.setViewportSize({ width: 375, height: 667 });
@@ -348,7 +348,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', adminUser.email);
       await page.fill('input[name="password"]', adminUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Set tablet viewport
       await page.setViewportSize({ width: 768, height: 1024 });
@@ -370,7 +370,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', adminUser.email);
       await page.fill('input[name="password"]', adminUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Wait for all tabs to be visible
       await expect(page.getByTestId("tab-templates")).toBeVisible();
@@ -383,7 +383,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await expect(page).toHaveURL("http://localhost:3000/en/users");
 
       // Go back to dashboard
-      await page.goto("http://localhost:3000/en");
+      await page.goto("http://localhost:3000/en/dashboard");
       // Wait for page to be fully loaded
       await page.waitForLoadState('domcontentloaded');
 
@@ -401,7 +401,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', adminUser.email);
       await page.fill('input[name="password"]', adminUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Check for proper tablist role
       const tabsList = page.locator('[role="tablist"]');
@@ -430,7 +430,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', adminUser.email);
       await page.fill('input[name="password"]', adminUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Check all tabs are visible
       await expect(page.getByTestId("tab-following")).toBeVisible();
@@ -456,7 +456,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', adminUser.email);
       await page.fill('input[name="password"]', adminUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Mock network failure for navigation
       await page.route("**/users", (route) => route.abort());
@@ -475,7 +475,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.fill('input[name="email"]', adminUser.email);
       await page.fill('input[name="password"]', adminUser.password!);
       await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Wait for dashboard tabs to be visible
       await expect(page.getByTestId("dashboard-tabs")).toBeVisible();

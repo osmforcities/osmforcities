@@ -30,6 +30,9 @@ async function getTemplates(locale: string) {
   });
 }
 
+/**
+ * Templates admin page - redirects to /dashboard if not admin, /enter if not authenticated
+ */
 export default async function TemplatesPage() {
   const session = await auth();
   const user = session?.user || null;
@@ -38,11 +41,11 @@ export default async function TemplatesPage() {
   const tabT = await getTranslations("TabLayout");
 
   if (!user) {
-    return redirect({ href: "/", locale: "en" });
+    return redirect({ href: "/enter", locale });
   }
 
   if (!user.isAdmin) {
-    return redirect({ href: "/", locale: "en" });
+    return redirect({ href: "/dashboard", locale });
   }
 
   const templates = await getTemplates(locale);

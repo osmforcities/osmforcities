@@ -44,7 +44,7 @@ test.describe("Authenticated Features", () => {
 
     try {
       // Test protected routes
-      const protectedRoutes = ["/watched", "/preferences"];
+      const protectedRoutes = ["/dashboard", "/preferences"];
 
       for (const route of protectedRoutes) {
         await page.goto(getLocalizedPath(route));
@@ -92,6 +92,7 @@ test.describe("Authenticated Features", () => {
       await page.goto(getLocalizedPath("/"));
 
       const searchInput = page.getByPlaceholder("Search cities and areas (min. 3 characters)...");
+      await searchInput.click();
       await searchInput.fill("são paulo");
 
       // Wait for API call to complete and listbox to appear

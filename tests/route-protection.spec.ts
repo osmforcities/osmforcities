@@ -19,13 +19,12 @@ test.describe("Route Protection", () => {
 
   test("should redirect protected routes to login when not authenticated", async ({ page }) => {
     const protectedRoutes = [
+      "/en/dashboard",
       "/en/preferences",
-      "/en/watched",
       "/en/users",
       "/en/templates",
       "/en/area/test-area",
       "/en/dataset/test-dataset",
-      "/en/public"
     ];
 
     for (const route of protectedRoutes) {
@@ -45,8 +44,8 @@ test.describe("Route Protection", () => {
       await page.goto("/en/preferences");
       await expect(page).toHaveURL("/en/preferences");
 
-      await page.goto("/en/watched");
-      await expect(page).toHaveURL("/en/watched");
+      await page.goto("/en/dashboard");
+      await expect(page).toHaveURL("/en/dashboard");
     } finally {
       await cleanupTestUser(user.id);
     }
