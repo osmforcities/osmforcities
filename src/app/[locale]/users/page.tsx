@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { redirect } from "@/i18n/navigation";
 import { prisma } from "@/lib/db";
 import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
@@ -31,15 +31,16 @@ async function getUsers() {
 export default async function UsersPage() {
   const session = await auth();
   const user = session?.user || null;
+  const locale = await getLocale();
   const t = await getTranslations("UsersPage");
   const tabT = await getTranslations("TabLayout");
 
   if (!user) {
-    return redirect({ href: "/enter", locale: "en" });
+    return redirect({ href: "/enter", locale });
   }
 
   if (!user.isAdmin) {
-    return redirect({ href: "/dashboard", locale: "en" });
+    return redirect({ href: "/dashboard", locale });
   }
 
   const users = await getUsers();

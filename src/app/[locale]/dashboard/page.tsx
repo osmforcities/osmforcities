@@ -6,7 +6,7 @@
 import { Metadata } from "next";
 import { auth } from "@/auth";
 import { redirect } from "@/i18n/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { prisma } from "@/lib/db";
 import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
@@ -45,9 +45,10 @@ async function getWatchedDatasets(userId: string) {
 export default async function Dashboard() {
   const session = await auth();
   const user = session?.user || null;
+  const locale = await getLocale();
 
   if (!user) {
-    redirect({ href: "/enter", locale: "en" });
+    redirect({ href: "/enter", locale });
   }
 
   const tabT = await getTranslations("TabLayout");
