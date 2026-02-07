@@ -6,6 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { GITHUB_REPO_URL, CONTACT_FORM_URL } from "@/lib/constants";
+import { auth } from "@/auth";
 import AboutContent from "@/components/about-content";
 
 const metadataMap = {
