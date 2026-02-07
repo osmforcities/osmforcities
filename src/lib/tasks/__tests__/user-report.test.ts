@@ -91,11 +91,19 @@ describe("user-report email generation", () => {
       name: "Schools",
       description: "Schools",
     });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) =>
-      t.replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
+    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
+      let result = t
+        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-    );
+        .replace("{frequency}", v.frequency || "");
+      // Handle {count} and {datasets} placeholders for subject line
+      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
+        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
+        result = result.replace("{count}", v.count.toString());
+        result = result.replace("{datasets}", word);
+      }
+      return result;
+    });
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
@@ -131,11 +139,19 @@ describe("user-report email generation", () => {
       name: "Escolas",
       description: "Escolas",
     });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) =>
-      t.replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
+    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
+      let result = t
+        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-    );
+        .replace("{frequency}", v.frequency || "");
+      // Handle {count} and {datasets} placeholders for subject line
+      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
+        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
+        result = result.replace("{count}", v.count.toString());
+        result = result.replace("{datasets}", word);
+      }
+      return result;
+    });
     mockPrisma.user.findFirst.mockResolvedValue(ptUser);
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
@@ -171,11 +187,19 @@ describe("user-report email generation", () => {
       name: "Escuelas",
       description: "Escuelas",
     });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) =>
-      t.replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
+    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
+      let result = t
+        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-    );
+        .replace("{frequency}", v.frequency || "");
+      // Handle {count} and {datasets} placeholders for subject line
+      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
+        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
+        result = result.replace("{count}", v.count.toString());
+        result = result.replace("{datasets}", word);
+      }
+      return result;
+    });
     mockPrisma.user.findFirst.mockResolvedValue(esUser);
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
@@ -210,11 +234,19 @@ describe("user-report email generation", () => {
       name: "Schools",
       description: "Schools",
     });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) =>
-      t.replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
+    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
+      let result = t
+        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-    );
+        .replace("{frequency}", v.frequency || "");
+      // Handle {count} and {datasets} placeholders for subject line
+      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
+        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
+        result = result.replace("{count}", v.count.toString());
+        result = result.replace("{datasets}", word);
+      }
+      return result;
+    });
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
@@ -247,11 +279,19 @@ describe("user-report email generation", () => {
       name: "Schools",
       description: "Schools",
     });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) =>
-      t.replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
+    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
+      let result = t
+        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-    );
+        .replace("{frequency}", v.frequency || "");
+      // Handle {count} and {datasets} placeholders for subject line
+      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
+        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
+        result = result.replace("{count}", v.count.toString());
+        result = result.replace("{datasets}", word);
+      }
+      return result;
+    });
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
 
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
@@ -290,11 +330,19 @@ describe("user-report email generation", () => {
       name: "Schools",
       description: "Schools",
     });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) =>
-      t.replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
+    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
+      let result = t
+        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-    );
+        .replace("{frequency}", v.frequency || "");
+      // Handle {count} and {datasets} placeholders for subject line
+      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
+        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
+        result = result.replace("{count}", v.count.toString());
+        result = result.replace("{datasets}", word);
+      }
+      return result;
+    });
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
     mockPrisma.user.findFirst.mockResolvedValue({

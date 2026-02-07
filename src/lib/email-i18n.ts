@@ -150,6 +150,8 @@ export function interpolateEmail(
     const word = values.count === 1 ? values.datasetsOne : values.datasetsOther;
     result = result.replace("{count}", values.count.toString());
     result = result.replace("{datasets}", word);
+    // Handle ICU plural format for datasets: {datasets, plural, =1 {...} other {...}}
+    result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
   }
   if (values.frequency) {
     result = result.replace(/{frequency}/g, values.frequency);
