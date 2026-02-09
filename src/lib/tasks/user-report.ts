@@ -212,6 +212,7 @@ export async function generateNextUserReport(): Promise<{
     where: {
       reportsEnabled: true,
       emailVerified: { not: null },
+      watchedDatasets: { some: {} },
       OR: [
         { lastReportSent: null },
         {
@@ -297,6 +298,16 @@ export async function generateNextUserReport(): Promise<{
     })
     .map((d) => ({ ...d, stats: d.stats as DatasetStatsData }));
 
+  // Don't send email if no recent updates, but DO update lastReportSent
+  // Note: Users with no watched datasets are excluded by the query filter
+  if (datasetsWithRecentChanges.length === 0) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastReportSent: new Date() },
+    });
+    return null;
+  }
+
   const datasetStats: DatasetStats = {
     user: {
       id: user.id,
@@ -332,11 +343,6 @@ export async function generateNextUserReport(): Promise<{
     }),
   };
 
-  // Don't send email if user has no watched datasets or no recent updates
-  if (datasetsWithRecentChanges.length === 0) {
-    return null;
-  }
-
   const emailContent = await generateEmailContent(datasetStats, userLocale);
   const latestChangeDate = getLatestChangeDate(datasetsWithRecentChanges);
 
@@ -352,4 +358,21 @@ export async function generateNextUserReport(): Promise<{
       latestChangeDate,
     },
   };
+}
+
+/** Checks if user exists and can be updated (dry-run for markReportSent). */
+export async function canUpdateReportSent(userId: string): Promise<boolean> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true },
+  });
+  return user !== null;
+}
+
+/** Updates lastReportSent timestamp for a user. Call after successful email send. */
+export async function markReportSent(userId: string): Promise<void> {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { lastReportSent: new Date() },
+  });
 }
