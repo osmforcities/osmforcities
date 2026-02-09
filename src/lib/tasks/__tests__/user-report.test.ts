@@ -618,4 +618,58 @@ describe("report status tracking helpers", () => {
       expect(timestamp.getTime()).toBeGreaterThanOrEqual(beforeDate.getTime());
     });
   });
+
+  it("does not update lastReportSent when generating report with recent changes", async () => {
+    vi.mocked(getEmailTranslations).mockResolvedValue({
+      magicLinkSubject: "Sign in",
+      magicLinkBody: "Click {magicLink}",
+      reportSubjectChanged: "{count} {datasets} changed",
+      reportSubjectNoChanges: "No changes",
+      reportChanged: "Datasets updated:",
+      reportNoChanges: "No changes to {watchedDatasetsLink}",
+      reportFollowed: "watched datasets",
+      preferencesPage: "preferences page",
+      day: "day",
+      week: "week",
+      generatedAt: "Generated at {timestamp}",
+      unsubscribe: "Unsubscribe: {preferencesLink}",
+      datasetsOne: "dataset",
+      datasetsOther: "datasets",
+      templateDeprecated: "This template was removed from the catalog.",
+      templateDeprecatedDaysRemaining: "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
+      greeting: "Hi!",
+    });
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({
+      name: "Schools",
+      description: "Schools",
+    });
+    vi.mocked(interpolateEmail).mockImplementation((t) => t);
+
+    mockPrisma.user.findFirst.mockResolvedValue({
+      id: "user-1",
+      email: "user@example.com",
+      reportsFrequency: "DAILY" as const,
+      language: "en",
+    });
+    mockPrisma.dataset.findMany.mockResolvedValue([
+      {
+        id: "ds-1",
+        cityName: "Sao Paulo",
+        stats: {
+          mostRecentElement: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+        },
+        template: {
+          name: "schools",
+          description: "Schools and education",
+          deprecatesAt: null,
+          translations: [{ locale: "en", name: "Schools", description: "Schools" }],
+        },
+      },
+    ]);
+
+    const result = await generateNextUserReport();
+
+    expect(result).not.toBeNull();
+    expect(mockPrisma.user.update).not.toHaveBeenCalled();
+  });
 });

@@ -346,13 +346,6 @@ export async function generateNextUserReport(): Promise<{
   const emailContent = await generateEmailContent(datasetStats, userLocale);
   const latestChangeDate = getLatestChangeDate(datasetsWithRecentChanges);
 
-  // Update lastReportSent before returning (email will be sent by route handler)
-  // This is done here rather than in the route to consolidate the update logic
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { lastReportSent: new Date() },
-  });
-
   return {
     userId: user.id,
     userEmail: user.email,
