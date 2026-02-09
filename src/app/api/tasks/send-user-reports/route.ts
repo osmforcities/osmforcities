@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email";
-import { prisma } from "@/lib/db";
 import { generateNextUserReport } from "@/lib/tasks/user-report";
 
 export async function POST(req: NextRequest) {
@@ -43,34 +42,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const { userId, userEmail, emailContent, reportData } = report;
+    const { userEmail, emailContent, reportData } = report;
 
-    // DEFENSIVE: Update database FIRST to prevent spam if schema issues exist
-    // Better to miss one email than spam the user
-    try {
-      await prisma.user.update({
-        where: { id: userId },
-        data: { lastReportSent: new Date() },
-      });
-    } catch (dbError) {
-      console.error(
-        "Database update failed, skipping email to prevent spam:",
-        dbError,
-      );
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Database update failed, email skipped to prevent spam",
-          details:
-            dbError instanceof Error
-              ? dbError.message
-              : "Unknown database error",
-        },
-        { status: 500 },
-      );
-    }
-
-    // Only send email AFTER successful database update
     await sendEmail({
       to: userEmail,
       subject: emailContent.subject,
