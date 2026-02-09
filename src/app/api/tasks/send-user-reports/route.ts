@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email";
-import { generateNextUserReport } from "@/lib/tasks/user-report";
+import { generateNextUserReport, markReportSent } from "@/lib/tasks/user-report";
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
@@ -28,9 +28,11 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    console.log("[send-user-reports] Starting report generation");
     const report = await generateNextUserReport();
 
     if (!report) {
+      console.log("[send-user-reports] No users due for report");
       return NextResponse.json({
         success: true,
         message: "No users need notification at this time",
@@ -42,14 +44,32 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const { userEmail, emailContent, reportData } = report;
+    const { userId, userEmail, emailContent, reportData } = report;
+    console.log(
+      `[send-user-reports] Generated report for user ${userId} (${userEmail}), ` +
+      `${reportData.totalDatasets} datasets changed`
+    );
 
+    console.log(`[send-user-reports] Sending email to ${userEmail}`);
     await sendEmail({
       to: userEmail,
       subject: emailContent.subject,
       html: emailContent.html,
       text: emailContent.text,
     });
+    console.log(`[send-user-reports] Email sent successfully to ${userEmail}`);
+
+    try {
+      await markReportSent(userId);
+      console.log(
+        `[send-user-reports] Updated lastReportSent for user ${userId}`
+      );
+    } catch (dbError) {
+      console.error(
+        `[send-user-reports] WARNING: Email sent to ${userEmail} but failed to update lastReportSent:`,
+        dbError
+      );
+    }
 
     return NextResponse.json({
       success: true,
@@ -64,7 +84,7 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error in send-user-reports task:", error);
+    console.error("[send-user-reports] Error:", error);
     return NextResponse.json(
       {
         error: "Failed to execute send-user-reports task",
