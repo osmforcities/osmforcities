@@ -101,6 +101,8 @@ describe("user-report email generation", () => {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
+        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
+        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
     });
@@ -119,7 +121,7 @@ describe("user-report email generation", () => {
     vi.mocked(getEmailTranslations).mockResolvedValue({
       magicLinkSubject: "Entrar",
       magicLinkBody: "Clique {magicLink}",
-      reportSubjectChanged: "{count} {datasets} mudaram",
+      reportSubjectChanged: "{count} {datasets, plural, =1 {conjunto de dados} other {conjuntos de dados}} mudaram na última {frequency}",
       reportSubjectNoChanges: "Sem mudanças",
       reportChanged: "Conjuntos atualizados:",
       reportNoChanges: "Sem mudanças em {watchedDatasetsLink}",
@@ -149,6 +151,8 @@ describe("user-report email generation", () => {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
+        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
+        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
     });
@@ -160,6 +164,7 @@ describe("user-report email generation", () => {
     expect(result).not.toBeNull();
     expect(result?.userLanguage).toBe("pt-BR");
     expect(result?.emailContent.html).toContain("Escolas - Sao Paulo");
+    expect(result?.emailContent.subject).toContain("conjunto de dados");
   });
 
   it("Spanish user gets Spanish template names", async () => {
@@ -167,7 +172,7 @@ describe("user-report email generation", () => {
     vi.mocked(getEmailTranslations).mockResolvedValue({
       magicLinkSubject: "Entrar",
       magicLinkBody: "Haz clic {magicLink}",
-      reportSubjectChanged: "{count} {datasets} cambiaron",
+      reportSubjectChanged: "{count} {datasets, plural, =1 {conjunto de datos} other {conjuntos de datos}} cambiaron en la última {frequency}",
       reportSubjectNoChanges: "Sin cambios",
       reportChanged: "Conjuntos actualizados:",
       reportNoChanges: "Sin cambios en {watchedDatasetsLink}",
@@ -197,6 +202,8 @@ describe("user-report email generation", () => {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
+        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
+        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
     });
@@ -208,6 +215,7 @@ describe("user-report email generation", () => {
     expect(result).not.toBeNull();
     expect(result?.userLanguage).toBe("es");
     expect(result?.emailContent.html).toContain("Escuelas - Sao Paulo");
+    expect(result?.emailContent.subject).toContain("conjunto de datos");
   });
 
   it("falls back to English when translation missing", async () => {
@@ -244,6 +252,8 @@ describe("user-report email generation", () => {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
+        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
+        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
     });
@@ -289,6 +299,8 @@ describe("user-report email generation", () => {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
+        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
+        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
     });
@@ -340,6 +352,8 @@ describe("user-report email generation", () => {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
+        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
+        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
     });
@@ -432,7 +446,10 @@ describe("deadlock scenario", () => {
       name: "Schools",
       description: "Schools",
     });
-    vi.mocked(interpolateEmail).mockImplementation((t) => t);
+    vi.mocked(interpolateEmail).mockImplementation((t) => {
+      // Simple pass-through for this test (no ICU plural in mockTranslations)
+      return t;
+    });
 
     mockPrisma.user.findFirst.mockResolvedValue(userWithWatches);
     // Dataset with old changes (48h ago, older than DAILY frequency)
@@ -470,6 +487,8 @@ describe("deadlock scenario", () => {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
+        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
+        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
     });
@@ -509,7 +528,10 @@ describe("deadlock scenario", () => {
       name: "Schools",
       description: "Schools",
     });
-    vi.mocked(interpolateEmail).mockImplementation((t) => t);
+    vi.mocked(interpolateEmail).mockImplementation((t) => {
+      // Simple pass-through for this test (no ICU plural in mockTranslations)
+      return t;
+    });
 
     // User with lastReportSent 23h ago (DAILY) - should be selected
     const user23hAgo = {
@@ -530,7 +552,10 @@ describe("deadlock scenario", () => {
       name: "Schools",
       description: "Schools",
     });
-    vi.mocked(interpolateEmail).mockImplementation((t) => t);
+    vi.mocked(interpolateEmail).mockImplementation((t) => {
+      // Simple pass-through for this test (no ICU plural in mockTranslations)
+      return t;
+    });
 
     // User with WEEKLY frequency and lastReportSent 6 days ago
     const weeklyUser = {
