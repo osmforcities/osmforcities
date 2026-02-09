@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 // Mock all dependencies before imports
 vi.mock("@/lib/db", () => ({
   prisma: {
-    user: { findFirst: vi.fn(), update: vi.fn() },
+    user: { findFirst: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
     dataset: { findMany: vi.fn() },
   },
 }));
@@ -26,13 +26,19 @@ vi.mock("html-to-text", () => ({
 
 import {
   generateNextUserReport,
+  canUpdateReportSent,
+  markReportSent,
 } from "../user-report";
 import { prisma } from "@/lib/db";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getEmailTranslations, interpolateEmail } from "@/lib/email-i18n";
 
 const mockPrisma = prisma as unknown as {
-  user: { findFirst: ReturnType<typeof vi.fn>; update: ReturnType<typeof vi.fn> };
+  user: {
+    findFirst: ReturnType<typeof vi.fn>;
+    findUnique: ReturnType<typeof vi.fn>;
+    update: ReturnType<typeof vi.fn>;
+  };
   dataset: { findMany: ReturnType<typeof vi.fn> };
 };
 
@@ -570,5 +576,46 @@ describe("deadlock scenario", () => {
     const result = await generateNextUserReport();
     expect(result).not.toBeNull();
     expect(result?.reportData.reportsFrequency).toBe("WEEKLY");
+  });
+});
+
+describe("report status tracking helpers", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe("canUpdateReportSent", () => {
+    it("returns true when user exists", async () => {
+      mockPrisma.user.findUnique.mockResolvedValue({ id: "user-1" });
+      const result = await canUpdateReportSent("user-1");
+      expect(result).toBe(true);
+      expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
+        where: { id: "user-1" },
+        select: { id: true },
+      });
+    });
+
+    it("returns false when user not found", async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+      const result = await canUpdateReportSent("nonexistent-user");
+      expect(result).toBe(false);
+    });
+  });
+
+  describe("markReportSent", () => {
+    it("updates lastReportSent timestamp", async () => {
+      const beforeDate = new Date();
+      mockPrisma.user.update.mockResolvedValue({ id: "user-1" });
+
+      await markReportSent("user-1");
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: "user-1" },
+        data: { lastReportSent: expect.any(Date) },
+      });
+      const updateCall = mockPrisma.user.update.mock.calls[0];
+      const timestamp = updateCall[0].data.lastReportSent as Date;
+      expect(timestamp.getTime()).toBeGreaterThanOrEqual(beforeDate.getTime());
+    });
   });
 });

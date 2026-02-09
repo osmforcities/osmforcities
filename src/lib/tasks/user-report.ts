@@ -346,6 +346,13 @@ export async function generateNextUserReport(): Promise<{
   const emailContent = await generateEmailContent(datasetStats, userLocale);
   const latestChangeDate = getLatestChangeDate(datasetsWithRecentChanges);
 
+  // Update lastReportSent before returning (email will be sent by route handler)
+  // This is done here rather than in the route to consolidate the update logic
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { lastReportSent: new Date() },
+  });
+
   return {
     userId: user.id,
     userEmail: user.email,
@@ -358,4 +365,21 @@ export async function generateNextUserReport(): Promise<{
       latestChangeDate,
     },
   };
+}
+
+/** Checks if user exists and can be updated (dry-run for markReportSent). */
+export async function canUpdateReportSent(userId: string): Promise<boolean> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true },
+  });
+  return user !== null;
+}
+
+/** Updates lastReportSent timestamp for a user. Call after successful email send. */
+export async function markReportSent(userId: string): Promise<void> {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { lastReportSent: new Date() },
+  });
 }
