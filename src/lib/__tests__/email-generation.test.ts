@@ -175,6 +175,50 @@ describe("email-generation integration tests", () => {
 
       expect(result).toBe("Hello {name}!");
     });
+
+    it("handles ICU plural format for datasets in subject line", () => {
+      // Spanish subject line with ICU plural format
+      const esSubject = "{count} {datasets, plural, =1 {conjunto de datos} other {conjuntos de datos}} cambiaron en la última {frequency}";
+      const result1 = interpolateEmail(esSubject, {
+        count: 1,
+        datasetsOne: "conjunto de datos",
+        datasetsOther: "conjuntos de datos",
+        frequency: "semana",
+      });
+
+      expect(result1).toBe("1 conjunto de datos cambiaron en la última semana");
+      expect(result1).not.toContain("{datasets, plural");
+
+      const result2 = interpolateEmail(esSubject, {
+        count: 2,
+        datasetsOne: "conjunto de datos",
+        datasetsOther: "conjuntos de datos",
+        frequency: "semana",
+      });
+
+      expect(result2).toBe("2 conjuntos de datos cambiaron en la última semana");
+    });
+
+    it("handles Portuguese ICU plural format for datasets in subject line", () => {
+      const ptSubject = "{count} {datasets, plural, =1 {conjunto de dados} other {conjuntos de dados}} mudaram na última {frequency}";
+      const result1 = interpolateEmail(ptSubject, {
+        count: 1,
+        datasetsOne: "conjunto de dados",
+        datasetsOther: "conjuntos de dados",
+        frequency: "semana",
+      });
+
+      expect(result1).toBe("1 conjunto de dados mudaram na última semana");
+
+      const result2 = interpolateEmail(ptSubject, {
+        count: 5,
+        datasetsOne: "conjunto de dados",
+        datasetsOther: "conjuntos de dados",
+        frequency: "semana",
+      });
+
+      expect(result2).toBe("5 conjuntos de dados mudaram na última semana");
+    });
   });
 
   describe("formatEmail integration", () => {

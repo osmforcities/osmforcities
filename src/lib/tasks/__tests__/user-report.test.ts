@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 // Mock all dependencies before imports
 vi.mock("@/lib/db", () => ({
   prisma: {
-    user: { findFirst: vi.fn() },
+    user: { findFirst: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
     dataset: { findMany: vi.fn() },
   },
 }));
@@ -26,13 +26,19 @@ vi.mock("html-to-text", () => ({
 
 import {
   generateNextUserReport,
+  canUpdateReportSent,
+  markReportSent,
 } from "../user-report";
 import { prisma } from "@/lib/db";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getEmailTranslations, interpolateEmail } from "@/lib/email-i18n";
 
 const mockPrisma = prisma as unknown as {
-  user: { findFirst: ReturnType<typeof vi.fn> };
+  user: {
+    findFirst: ReturnType<typeof vi.fn>;
+    findUnique: ReturnType<typeof vi.fn>;
+    update: ReturnType<typeof vi.fn>;
+  };
   dataset: { findMany: ReturnType<typeof vi.fn> };
 };
 
@@ -101,6 +107,8 @@ describe("user-report email generation", () => {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
+        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
+        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
     });
@@ -119,7 +127,7 @@ describe("user-report email generation", () => {
     vi.mocked(getEmailTranslations).mockResolvedValue({
       magicLinkSubject: "Entrar",
       magicLinkBody: "Clique {magicLink}",
-      reportSubjectChanged: "{count} {datasets} mudaram",
+      reportSubjectChanged: "{count} {datasets, plural, =1 {conjunto de dados} other {conjuntos de dados}} mudaram na última {frequency}",
       reportSubjectNoChanges: "Sem mudanças",
       reportChanged: "Conjuntos atualizados:",
       reportNoChanges: "Sem mudanças em {watchedDatasetsLink}",
@@ -149,6 +157,8 @@ describe("user-report email generation", () => {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
+        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
+        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
     });
@@ -160,6 +170,7 @@ describe("user-report email generation", () => {
     expect(result).not.toBeNull();
     expect(result?.userLanguage).toBe("pt-BR");
     expect(result?.emailContent.html).toContain("Escolas - Sao Paulo");
+    expect(result?.emailContent.subject).toContain("conjunto de dados");
   });
 
   it("Spanish user gets Spanish template names", async () => {
@@ -167,7 +178,7 @@ describe("user-report email generation", () => {
     vi.mocked(getEmailTranslations).mockResolvedValue({
       magicLinkSubject: "Entrar",
       magicLinkBody: "Haz clic {magicLink}",
-      reportSubjectChanged: "{count} {datasets} cambiaron",
+      reportSubjectChanged: "{count} {datasets, plural, =1 {conjunto de datos} other {conjuntos de datos}} cambiaron en la última {frequency}",
       reportSubjectNoChanges: "Sin cambios",
       reportChanged: "Conjuntos actualizados:",
       reportNoChanges: "Sin cambios en {watchedDatasetsLink}",
@@ -197,6 +208,8 @@ describe("user-report email generation", () => {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
+        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
+        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
     });
@@ -208,6 +221,7 @@ describe("user-report email generation", () => {
     expect(result).not.toBeNull();
     expect(result?.userLanguage).toBe("es");
     expect(result?.emailContent.html).toContain("Escuelas - Sao Paulo");
+    expect(result?.emailContent.subject).toContain("conjunto de datos");
   });
 
   it("falls back to English when translation missing", async () => {
@@ -244,6 +258,8 @@ describe("user-report email generation", () => {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
+        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
+        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
     });
@@ -289,6 +305,8 @@ describe("user-report email generation", () => {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
+        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
+        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
     });
@@ -340,6 +358,8 @@ describe("user-report email generation", () => {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
+        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
+        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
     });
@@ -373,5 +393,283 @@ describe("user-report email generation", () => {
     mockPrisma.dataset.findMany.mockResolvedValue([]);
     const result = await generateNextUserReport();
     expect(result).toBeNull();
+  });
+});
+
+describe("deadlock scenario", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    process.env.AUTH_URL = "https://osmforcities.com";
+  });
+
+  const userWithWatches = {
+    id: "user-with-watches",
+    email: "user@example.com",
+    reportsFrequency: "DAILY" as const,
+    language: "en",
+    lastReportSent: null,
+  };
+
+  const mockDatasetWithChanges = {
+    id: "ds-1",
+    cityName: "Sao Paulo",
+    stats: {
+      mostRecentElement: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+    },
+    template: {
+      name: "schools",
+      description: "Schools and education",
+      deprecatesAt: null,
+      translations: [
+        { locale: "en", name: "Schools", description: "Schools" },
+      ],
+    },
+  };
+
+  const mockTranslations = {
+    magicLinkSubject: "Sign in",
+    magicLinkBody: "Click {magicLink}",
+    reportSubjectChanged: "{count} {datasets} changed",
+    reportSubjectNoChanges: "No changes",
+    reportChanged: "Datasets updated:",
+    reportNoChanges: "No changes to {watchedDatasetsLink}",
+    reportFollowed: "watched datasets",
+    preferencesPage: "preferences page",
+    day: "day",
+    week: "week",
+    generatedAt: "Generated at {timestamp}",
+    unsubscribe: "Unsubscribe: {preferencesLink}",
+    datasetsOne: "dataset",
+    datasetsOther: "datasets",
+    templateDeprecated: "This template was removed from the catalog.",
+    templateDeprecatedDaysRemaining: "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
+    greeting: "Hi!",
+  };
+
+  it("updates lastReportSent when user has watches but datasets have no recent changes", async () => {
+    vi.mocked(getEmailTranslations).mockResolvedValue(mockTranslations);
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({
+      name: "Schools",
+      description: "Schools",
+    });
+    vi.mocked(interpolateEmail).mockImplementation((t) => {
+      // Simple pass-through for this test (no ICU plural in mockTranslations)
+      return t;
+    });
+
+    mockPrisma.user.findFirst.mockResolvedValue(userWithWatches);
+    // Dataset with old changes (48h ago, older than DAILY frequency)
+    const oldDataset = {
+      ...mockDatasetWithChanges,
+      stats: {
+        mostRecentElement: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+      },
+    };
+    mockPrisma.dataset.findMany.mockResolvedValue([oldDataset]);
+    mockPrisma.user.update.mockResolvedValue(userWithWatches);
+
+    const result = await generateNextUserReport();
+
+    // User has watches but no recent changes - should update lastReportSent and return null
+    expect(result).toBeNull();
+    expect(mockPrisma.user.update).toHaveBeenCalledTimes(1);
+    expect(mockPrisma.user.update).toHaveBeenCalledWith({
+      where: { id: "user-with-watches" },
+      data: { lastReportSent: expect.any(Date) },
+    });
+  });
+
+  it("processes multiple users correctly in sequence", async () => {
+    vi.mocked(getEmailTranslations).mockResolvedValue(mockTranslations);
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({
+      name: "Schools",
+      description: "Schools",
+    });
+    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
+      let result = t.replace("{watchedDatasetsLink}", `${v.watchedDatasetsUrl}`)
+        .replace("{preferencesLink}", `${v.preferencesUrl}`)
+        .replace("{frequency}", v.frequency || "");
+      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
+        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
+        result = result.replace("{count}", v.count.toString());
+        result = result.replace("{datasets}", word);
+        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
+        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
+      }
+      return result;
+    });
+
+    // First call: user with watches but no recent changes
+    mockPrisma.user.findFirst.mockResolvedValueOnce(userWithWatches);
+    const oldDataset = {
+      ...mockDatasetWithChanges,
+      stats: {
+        mostRecentElement: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+      },
+    };
+    mockPrisma.dataset.findMany.mockResolvedValueOnce([oldDataset]);
+    mockPrisma.user.update.mockResolvedValue(userWithWatches);
+
+    const result1 = await generateNextUserReport();
+    expect(result1).toBeNull();
+    expect(mockPrisma.user.update).toHaveBeenCalledWith({
+      where: { id: "user-with-watches" },
+      data: { lastReportSent: expect.any(Date) },
+    });
+
+    // Second call: valid user with recent changes
+    const validUser = { ...userWithWatches, id: "valid-user" };
+    mockPrisma.user.findFirst.mockResolvedValueOnce(validUser);
+    mockPrisma.dataset.findMany.mockResolvedValueOnce([mockDatasetWithChanges]);
+    mockPrisma.user.update.mockResolvedValue(validUser);
+
+    const result2 = await generateNextUserReport();
+    expect(result2).not.toBeNull();
+    expect(result2?.userId).toBe("valid-user");
+  });
+
+  it("correctly filters by DAILY frequency timing", async () => {
+    vi.mocked(getEmailTranslations).mockResolvedValue(mockTranslations);
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({
+      name: "Schools",
+      description: "Schools",
+    });
+    vi.mocked(interpolateEmail).mockImplementation((t) => {
+      // Simple pass-through for this test (no ICU plural in mockTranslations)
+      return t;
+    });
+
+    // User with lastReportSent 23h ago (DAILY) - should be selected
+    const user23hAgo = {
+      ...userWithWatches,
+      lastReportSent: new Date(Date.now() - 23 * 60 * 60 * 1000),
+    };
+    mockPrisma.user.findFirst.mockResolvedValue(user23hAgo);
+    mockPrisma.dataset.findMany.mockResolvedValue([mockDatasetWithChanges]);
+    mockPrisma.user.update.mockResolvedValue(user23hAgo);
+
+    const result = await generateNextUserReport();
+    expect(result).not.toBeNull();
+  });
+
+  it("correctly filters by WEEKLY frequency timing", async () => {
+    vi.mocked(getEmailTranslations).mockResolvedValue(mockTranslations);
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({
+      name: "Schools",
+      description: "Schools",
+    });
+    vi.mocked(interpolateEmail).mockImplementation((t) => {
+      // Simple pass-through for this test (no ICU plural in mockTranslations)
+      return t;
+    });
+
+    // User with WEEKLY frequency and lastReportSent 6 days ago
+    const weeklyUser = {
+      ...userWithWatches,
+      reportsFrequency: "WEEKLY" as const,
+      lastReportSent: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
+    };
+    mockPrisma.user.findFirst.mockResolvedValue(weeklyUser);
+    mockPrisma.dataset.findMany.mockResolvedValue([mockDatasetWithChanges]);
+    mockPrisma.user.update.mockResolvedValue(weeklyUser);
+
+    const result = await generateNextUserReport();
+    expect(result).not.toBeNull();
+    expect(result?.reportData.reportsFrequency).toBe("WEEKLY");
+  });
+});
+
+describe("report status tracking helpers", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe("canUpdateReportSent", () => {
+    it("returns true when user exists", async () => {
+      mockPrisma.user.findUnique.mockResolvedValue({ id: "user-1" });
+      const result = await canUpdateReportSent("user-1");
+      expect(result).toBe(true);
+      expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
+        where: { id: "user-1" },
+        select: { id: true },
+      });
+    });
+
+    it("returns false when user not found", async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+      const result = await canUpdateReportSent("nonexistent-user");
+      expect(result).toBe(false);
+    });
+  });
+
+  describe("markReportSent", () => {
+    it("updates lastReportSent timestamp", async () => {
+      const beforeDate = new Date();
+      mockPrisma.user.update.mockResolvedValue({ id: "user-1" });
+
+      await markReportSent("user-1");
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: "user-1" },
+        data: { lastReportSent: expect.any(Date) },
+      });
+      const updateCall = mockPrisma.user.update.mock.calls[0];
+      const timestamp = updateCall[0].data.lastReportSent as Date;
+      expect(timestamp.getTime()).toBeGreaterThanOrEqual(beforeDate.getTime());
+    });
+  });
+
+  it("does not update lastReportSent when generating report with recent changes", async () => {
+    vi.mocked(getEmailTranslations).mockResolvedValue({
+      magicLinkSubject: "Sign in",
+      magicLinkBody: "Click {magicLink}",
+      reportSubjectChanged: "{count} {datasets} changed",
+      reportSubjectNoChanges: "No changes",
+      reportChanged: "Datasets updated:",
+      reportNoChanges: "No changes to {watchedDatasetsLink}",
+      reportFollowed: "watched datasets",
+      preferencesPage: "preferences page",
+      day: "day",
+      week: "week",
+      generatedAt: "Generated at {timestamp}",
+      unsubscribe: "Unsubscribe: {preferencesLink}",
+      datasetsOne: "dataset",
+      datasetsOther: "datasets",
+      templateDeprecated: "This template was removed from the catalog.",
+      templateDeprecatedDaysRemaining: "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
+      greeting: "Hi!",
+    });
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({
+      name: "Schools",
+      description: "Schools",
+    });
+    vi.mocked(interpolateEmail).mockImplementation((t) => t);
+
+    mockPrisma.user.findFirst.mockResolvedValue({
+      id: "user-1",
+      email: "user@example.com",
+      reportsFrequency: "DAILY" as const,
+      language: "en",
+    });
+    mockPrisma.dataset.findMany.mockResolvedValue([
+      {
+        id: "ds-1",
+        cityName: "Sao Paulo",
+        stats: {
+          mostRecentElement: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+        },
+        template: {
+          name: "schools",
+          description: "Schools and education",
+          deprecatesAt: null,
+          translations: [{ locale: "en", name: "Schools", description: "Schools" }],
+        },
+      },
+    ]);
+
+    const result = await generateNextUserReport();
+
+    expect(result).not.toBeNull();
+    expect(mockPrisma.user.update).not.toHaveBeenCalled();
   });
 });

@@ -1,5 +1,11 @@
 # osmforcities
 
+## 1.6.1
+
+### Patch Changes
+
+- Fix user report submission concurrency issues
+
 ## 1.6.0
 
 ### Minor Changes
