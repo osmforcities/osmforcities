@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 // Mock all dependencies before imports
 vi.mock("@/lib/db", () => ({
   prisma: {
-    user: { findFirst: vi.fn() },
+    user: { findFirst: vi.fn(), update: vi.fn() },
     dataset: { findMany: vi.fn() },
   },
 }));
@@ -32,7 +32,7 @@ import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getEmailTranslations, interpolateEmail } from "@/lib/email-i18n";
 
 const mockPrisma = prisma as unknown as {
-  user: { findFirst: ReturnType<typeof vi.fn> };
+  user: { findFirst: ReturnType<typeof vi.fn>; update: ReturnType<typeof vi.fn> };
   dataset: { findMany: ReturnType<typeof vi.fn> };
 };
 
@@ -373,5 +373,177 @@ describe("user-report email generation", () => {
     mockPrisma.dataset.findMany.mockResolvedValue([]);
     const result = await generateNextUserReport();
     expect(result).toBeNull();
+  });
+});
+
+describe("deadlock scenario", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    process.env.AUTH_URL = "https://osmforcities.com";
+  });
+
+  const userWithWatches = {
+    id: "user-with-watches",
+    email: "user@example.com",
+    reportsFrequency: "DAILY" as const,
+    language: "en",
+    lastReportSent: null,
+  };
+
+  const mockDatasetWithChanges = {
+    id: "ds-1",
+    cityName: "Sao Paulo",
+    stats: {
+      mostRecentElement: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+    },
+    template: {
+      name: "schools",
+      description: "Schools and education",
+      deprecatesAt: null,
+      translations: [
+        { locale: "en", name: "Schools", description: "Schools" },
+      ],
+    },
+  };
+
+  const mockTranslations = {
+    magicLinkSubject: "Sign in",
+    magicLinkBody: "Click {magicLink}",
+    reportSubjectChanged: "{count} {datasets} changed",
+    reportSubjectNoChanges: "No changes",
+    reportChanged: "Datasets updated:",
+    reportNoChanges: "No changes to {watchedDatasetsLink}",
+    reportFollowed: "watched datasets",
+    preferencesPage: "preferences page",
+    day: "day",
+    week: "week",
+    generatedAt: "Generated at {timestamp}",
+    unsubscribe: "Unsubscribe: {preferencesLink}",
+    datasetsOne: "dataset",
+    datasetsOther: "datasets",
+    templateDeprecated: "This template was removed from the catalog.",
+    templateDeprecatedDaysRemaining: "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
+    greeting: "Hi!",
+  };
+
+  it("updates lastReportSent when user has watches but datasets have no recent changes", async () => {
+    vi.mocked(getEmailTranslations).mockResolvedValue(mockTranslations);
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({
+      name: "Schools",
+      description: "Schools",
+    });
+    vi.mocked(interpolateEmail).mockImplementation((t) => t);
+
+    mockPrisma.user.findFirst.mockResolvedValue(userWithWatches);
+    // Dataset with old changes (48h ago, older than DAILY frequency)
+    const oldDataset = {
+      ...mockDatasetWithChanges,
+      stats: {
+        mostRecentElement: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+      },
+    };
+    mockPrisma.dataset.findMany.mockResolvedValue([oldDataset]);
+    mockPrisma.user.update.mockResolvedValue(userWithWatches);
+
+    const result = await generateNextUserReport();
+
+    // User has watches but no recent changes - should update lastReportSent and return null
+    expect(result).toBeNull();
+    expect(mockPrisma.user.update).toHaveBeenCalledTimes(1);
+    expect(mockPrisma.user.update).toHaveBeenCalledWith({
+      where: { id: "user-with-watches" },
+      data: { lastReportSent: expect.any(Date) },
+    });
+  });
+
+  it("processes multiple users correctly in sequence", async () => {
+    vi.mocked(getEmailTranslations).mockResolvedValue(mockTranslations);
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({
+      name: "Schools",
+      description: "Schools",
+    });
+    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
+      let result = t.replace("{watchedDatasetsLink}", `${v.watchedDatasetsUrl}`)
+        .replace("{preferencesLink}", `${v.preferencesUrl}`)
+        .replace("{frequency}", v.frequency || "");
+      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
+        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
+        result = result.replace("{count}", v.count.toString());
+        result = result.replace("{datasets}", word);
+      }
+      return result;
+    });
+
+    // First call: user with watches but no recent changes
+    mockPrisma.user.findFirst.mockResolvedValueOnce(userWithWatches);
+    const oldDataset = {
+      ...mockDatasetWithChanges,
+      stats: {
+        mostRecentElement: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+      },
+    };
+    mockPrisma.dataset.findMany.mockResolvedValueOnce([oldDataset]);
+    mockPrisma.user.update.mockResolvedValue(userWithWatches);
+
+    const result1 = await generateNextUserReport();
+    expect(result1).toBeNull();
+    expect(mockPrisma.user.update).toHaveBeenCalledWith({
+      where: { id: "user-with-watches" },
+      data: { lastReportSent: expect.any(Date) },
+    });
+
+    // Second call: valid user with recent changes
+    const validUser = { ...userWithWatches, id: "valid-user" };
+    mockPrisma.user.findFirst.mockResolvedValueOnce(validUser);
+    mockPrisma.dataset.findMany.mockResolvedValueOnce([mockDatasetWithChanges]);
+    mockPrisma.user.update.mockResolvedValue(validUser);
+
+    const result2 = await generateNextUserReport();
+    expect(result2).not.toBeNull();
+    expect(result2?.userId).toBe("valid-user");
+  });
+
+  it("correctly filters by DAILY frequency timing", async () => {
+    vi.mocked(getEmailTranslations).mockResolvedValue(mockTranslations);
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({
+      name: "Schools",
+      description: "Schools",
+    });
+    vi.mocked(interpolateEmail).mockImplementation((t) => t);
+
+    // User with lastReportSent 23h ago (DAILY) - should be selected
+    const user23hAgo = {
+      ...userWithWatches,
+      lastReportSent: new Date(Date.now() - 23 * 60 * 60 * 1000),
+    };
+    mockPrisma.user.findFirst.mockResolvedValue(user23hAgo);
+    mockPrisma.dataset.findMany.mockResolvedValue([mockDatasetWithChanges]);
+    mockPrisma.user.update.mockResolvedValue(user23hAgo);
+
+    const result = await generateNextUserReport();
+    expect(result).not.toBeNull();
+  });
+
+  it("correctly filters by WEEKLY frequency timing", async () => {
+    vi.mocked(getEmailTranslations).mockResolvedValue(mockTranslations);
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({
+      name: "Schools",
+      description: "Schools",
+    });
+    vi.mocked(interpolateEmail).mockImplementation((t) => t);
+
+    // User with WEEKLY frequency and lastReportSent 6 days ago
+    const weeklyUser = {
+      ...userWithWatches,
+      reportsFrequency: "WEEKLY" as const,
+      lastReportSent: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
+    };
+    mockPrisma.user.findFirst.mockResolvedValue(weeklyUser);
+    mockPrisma.dataset.findMany.mockResolvedValue([mockDatasetWithChanges]);
+    mockPrisma.user.update.mockResolvedValue(weeklyUser);
+
+    const result = await generateNextUserReport();
+    expect(result).not.toBeNull();
+    expect(result?.reportData.reportsFrequency).toBe("WEEKLY");
   });
 });
