@@ -58,6 +58,7 @@
     "react-map-gl": "^8.0.4",
     "react-stately": "^3.41.0",
     "tailwind-merge": "^3.3.0",
+    "winston": "^3.19.0",
     "zod": "^3.25.64"
   },
   "devDependencies": {
@@ -65,7 +66,6 @@
     "@eslint/eslintrc": "^3",
     "@lingual/i18n-check": "^0.8.4",
     "@playwright/test": "^1.58.0",
-    "playwright": "^1.58.0",
     "@storybook/addon-a11y": "^10.2.0",
     "@storybook/addon-docs": "^10.2.0",
     "@storybook/addon-vitest": "^10.2.0",
@@ -87,6 +87,7 @@
     "eslint-plugin-storybook": "10.2.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.0",
+    "playwright": "^1.58.0",
     "prisma": "^6.11.1",
     "storybook": "^10.2.0",
     "tailwindcss": "^4",
