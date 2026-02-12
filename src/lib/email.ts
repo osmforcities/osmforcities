@@ -1,4 +1,7 @@
 import { ServerClient } from "postmark";
+import { createLogger } from "@/lib/logger";
+
+const log = createLogger("email");
 
 type EmailOptions = {
   to: string;
@@ -18,7 +21,7 @@ const postmarkClient =
 
 export async function sendEmail(options: EmailOptions) {
   if (emailConfig.disableEmail) {
-    console.log("📧 Email sending is disabled");
+    log.debug("Email sending is disabled", { to: options.to });
     return;
   }
 
@@ -28,8 +31,8 @@ export async function sendEmail(options: EmailOptions) {
     return;
   }
 
-  // Send real email using Postmark
   if (!postmarkClient) {
+    log.error("Postmark client not initialized", { to });
     throw new Error(
       "Postmark client not initialized. Check your POSTMARK_API_TOKEN environment variable."
     );
@@ -49,9 +52,14 @@ export async function sendEmail(options: EmailOptions) {
       TrackOpens: false,
     });
 
+    log.info("Email sent via Postmark", { to, subject, messageId: result.MessageID });
     return result;
   } catch (error) {
-    console.error("❌ Postmark email failed:", error);
+    log.error("Postmark email failed", {
+      to,
+      subject,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
     throw error;
   }
 }

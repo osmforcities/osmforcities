@@ -2,6 +2,16 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { POST } from "../route";
 import type { NextRequest } from "next/server";
 
+// Mock logger before other dependencies
+vi.mock("@/lib/logger", () => ({
+  createLogger: vi.fn(() => ({
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  })),
+}));
+
 // Mock dependencies
 vi.mock("@/lib/email", () => ({
   sendEmail: vi.fn(),
