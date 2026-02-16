@@ -1,5 +1,11 @@
 # osmforcities
 
+## 1.6.2
+
+### Patch Changes
+
+- Fix email gender agreement - use correct grammatical gender based on user profile setting
+
 ## 1.6.1
 
 ### Patch Changes
