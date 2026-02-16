@@ -27,8 +27,8 @@ export interface EmailTranslations {
   reportNoChanges: string;
   reportFollowed: string;
   preferencesPage: string;
-  day: string;
-  week: string;
+  lastPeriodDay: string;
+  lastPeriodWeek: string;
   generatedAt: string;
   unsubscribe: string;
   datasetsOne: string;
@@ -47,6 +47,7 @@ export interface EmailValues {
   preferencesText?: string;
   count?: number;
   frequency?: string;
+  lastPeriod?: string;
   timestamp?: string;
   datasetsOne?: string;
   datasetsOther?: string;
@@ -98,14 +99,14 @@ export async function getEmailTranslations(
   return {
     magicLinkSubject: get(email, "magicLinkSubject", "Sign in to OSM for Cities") as string,
     magicLinkBody: get(email, "magicLinkBody", "Click {magicLink} to sign in.") as string,
-    reportSubjectChanged: get(email, "reportSubjectChanged", "{count} {datasets, plural, =1 {dataset} other {datasets}} changed in the last {frequency}") as string,
-    reportSubjectNoChanges: get(email, "reportSubjectNoChanges", "No changes in the last {frequency}") as string,
-    reportChanged: get(email, "reportChanged", "The following datasets were updated in the last {frequency}:") as string,
-    reportNoChanges: get(email, "reportNoChanges", "There were no changes to your {watchedDatasetsUrl} in the last {frequency}.") as string,
+    reportSubjectChanged: get(email, "reportSubjectChanged", "{count} {datasets, plural, =1 {dataset} other {datasets}} changed {lastPeriod}") as string,
+    reportSubjectNoChanges: get(email, "reportSubjectNoChanges", "No changes {lastPeriod}") as string,
+    reportChanged: get(email, "reportChanged", "The following datasets were updated {lastPeriod}:") as string,
+    reportNoChanges: get(email, "reportNoChanges", "There were no changes to your {watchedDatasetsUrl} {lastPeriod}.") as string,
     reportFollowed: get(email, "reportFollowed", "watched datasets") as string,
     preferencesPage: get(email, "preferencesPage", "preferences page") as string,
-    day: get(email, "day", "day") as string,
-    week: get(email, "week", "week") as string,
+    lastPeriodDay: get(email, "lastPeriodDay", "in the last day") as string,
+    lastPeriodWeek: get(email, "lastPeriodWeek", "in the last week") as string,
     generatedAt: get(email, "generatedAt", "This report was generated at {timestamp}Z. All dates shown are in UTC.") as string,
     unsubscribe: get(email, "unsubscribe", "To unsubscribe from these reports, visit {preferencesUrl}.") as string,
     datasetsOne: get(email, "datasetsOne", "dataset") as string,
@@ -155,6 +156,9 @@ export function interpolateEmail(
   }
   if (values.frequency) {
     result = result.replace(/{frequency}/g, values.frequency);
+  }
+  if (values.lastPeriod) {
+    result = result.replace(/{lastPeriod}/g, values.lastPeriod);
   }
   if (values.timestamp) {
     result = result.replace("{timestamp}", values.timestamp);
