@@ -127,14 +127,14 @@ async function generateEmailContent(
   const count = recentDatasets.length;
 
   const translations = await getEmailTranslations(userLocale);
+  const lastPeriod =
+    frequency === "DAILY" ? translations.lastPeriodDay : translations.lastPeriodWeek;
 
-  // Generate subject using ICU plural format
-  const freqValue = frequency === "DAILY" ? translations.day : translations.week;
   const subjectKey = count === 0 ? "reportSubjectNoChanges" : "reportSubjectChanged";
   const subjectTemplate = translations[subjectKey];
   const subject = interpolateEmail(subjectTemplate, {
     count,
-    frequency: freqValue,
+    lastPeriod,
     datasetsOne: translations.datasetsOne,
     datasetsOther: translations.datasetsOther,
   });
@@ -149,16 +149,18 @@ async function generateEmailContent(
     });
   }
 
-  // Generate body
+  const reportChangedText = interpolateEmail(translations.reportChanged, {
+    lastPeriod,
+  });
   const emailBody = count > 0
     ? generateEmailBodyWithChanges(
         recentDatasets,
         frequency,
-        translations.reportChanged.replace("{frequency}", freqValue),
+        reportChangedText,
         deprecationNotice
       )
     : interpolateEmail(translations.reportNoChanges, {
-        frequency: freqValue,
+        lastPeriod,
         watchedDatasetsUrl: `${getBaseUrl()}/`,
         watchedDatasetsText: translations.reportFollowed,
       });
