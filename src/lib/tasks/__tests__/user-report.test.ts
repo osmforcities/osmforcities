@@ -83,8 +83,8 @@ describe("user-report email generation", () => {
       reportNoChanges: "No changes to {watchedDatasetsLink}",
       reportFollowed: "watched datasets",
       preferencesPage: "preferences page",
-      day: "day",
-      week: "week",
+      lastPeriodDay: "in the last day",
+      lastPeriodWeek: "in the last week",
       generatedAt: "Generated at {timestamp}",
       unsubscribe: "Unsubscribe: {preferencesLink}",
       datasetsOne: "dataset",
@@ -101,13 +101,12 @@ describe("user-report email generation", () => {
       let result = t
         .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "");
-      // Handle {count} and {datasets} placeholders for subject line
+        .replace("{frequency}", v.frequency || "")
+        .replace(/{lastPeriod}/g, v.lastPeriod || "");
       if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
-        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
         result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
@@ -127,14 +126,14 @@ describe("user-report email generation", () => {
     vi.mocked(getEmailTranslations).mockResolvedValue({
       magicLinkSubject: "Entrar",
       magicLinkBody: "Clique {magicLink}",
-      reportSubjectChanged: "{count} {datasets, plural, =1 {conjunto de dados} other {conjuntos de dados}} mudaram na última {frequency}",
+      reportSubjectChanged: "{count} {datasets, plural, =1 {conjunto de dados} other {conjuntos de dados}} mudaram {lastPeriod}",
       reportSubjectNoChanges: "Sem mudanças",
       reportChanged: "Conjuntos atualizados:",
       reportNoChanges: "Sem mudanças em {watchedDatasetsLink}",
       reportFollowed: "conjuntos de dados observados",
       preferencesPage: "página de preferências",
-      day: "dia",
-      week: "semana",
+      lastPeriodDay: "no último dia",
+      lastPeriodWeek: "na última semana",
       generatedAt: "Gerado em {timestamp}",
       unsubscribe: "Cancelar: {preferencesLink}",
       datasetsOne: "conjunto de dados",
@@ -151,13 +150,12 @@ describe("user-report email generation", () => {
       let result = t
         .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "");
-      // Handle {count} and {datasets} placeholders for subject line
+        .replace("{frequency}", v.frequency || "")
+        .replace(/{lastPeriod}/g, v.lastPeriod || "");
       if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
-        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
         result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
@@ -178,14 +176,14 @@ describe("user-report email generation", () => {
     vi.mocked(getEmailTranslations).mockResolvedValue({
       magicLinkSubject: "Entrar",
       magicLinkBody: "Haz clic {magicLink}",
-      reportSubjectChanged: "{count} {datasets, plural, =1 {conjunto de datos} other {conjuntos de datos}} cambiaron en la última {frequency}",
+      reportSubjectChanged: "{count} {datasets, plural, =1 {conjunto de datos} other {conjuntos de datos}} cambiaron {lastPeriod}",
       reportSubjectNoChanges: "Sin cambios",
       reportChanged: "Conjuntos actualizados:",
       reportNoChanges: "Sin cambios en {watchedDatasetsLink}",
       reportFollowed: "conjuntos de datos monitoreados",
       preferencesPage: "página de preferencias",
-      day: "día",
-      week: "semana",
+      lastPeriodDay: "en el último día",
+      lastPeriodWeek: "en la última semana",
       generatedAt: "Generado en {timestamp}",
       unsubscribe: "Cancelar: {preferencesLink}",
       datasetsOne: "conjunto de datos",
@@ -202,13 +200,12 @@ describe("user-report email generation", () => {
       let result = t
         .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "");
-      // Handle {count} and {datasets} placeholders for subject line
+        .replace("{frequency}", v.frequency || "")
+        .replace(/{lastPeriod}/g, v.lastPeriod || "");
       if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
-        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
         result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
@@ -234,8 +231,8 @@ describe("user-report email generation", () => {
       reportNoChanges: "No changes to {watchedDatasetsLink}",
       reportFollowed: "watched datasets",
       preferencesPage: "preferences page",
-      day: "day",
-      week: "week",
+      lastPeriodDay: "in the last day",
+      lastPeriodWeek: "in the last week",
       generatedAt: "Generated at {timestamp}",
       unsubscribe: "Unsubscribe: {preferencesLink}",
       datasetsOne: "dataset",
@@ -252,13 +249,12 @@ describe("user-report email generation", () => {
       let result = t
         .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "");
-      // Handle {count} and {datasets} placeholders for subject line
+        .replace("{frequency}", v.frequency || "")
+        .replace(/{lastPeriod}/g, v.lastPeriod || "");
       if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
-        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
         result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
@@ -281,8 +277,8 @@ describe("user-report email generation", () => {
       reportNoChanges: "No changes to {watchedDatasetsLink}",
       reportFollowed: "watched datasets",
       preferencesPage: "preferences page",
-      day: "day",
-      week: "week",
+      lastPeriodDay: "in the last day",
+      lastPeriodWeek: "in the last week",
       generatedAt: "Generated at {timestamp}",
       unsubscribe: "Unsubscribe: {preferencesLink}",
       datasetsOne: "dataset",
@@ -299,13 +295,12 @@ describe("user-report email generation", () => {
       let result = t
         .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "");
-      // Handle {count} and {datasets} placeholders for subject line
+        .replace("{frequency}", v.frequency || "")
+        .replace(/{lastPeriod}/g, v.lastPeriod || "");
       if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
-        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
         result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
@@ -328,14 +323,14 @@ describe("user-report email generation", () => {
     vi.mocked(getEmailTranslations).mockResolvedValue({
       magicLinkSubject: "Sign in",
       magicLinkBody: "Click {magicLink}",
-      reportSubjectChanged: "{count} {datasets} changed in the last {frequency}",
+      reportSubjectChanged: "{count} {datasets} changed {lastPeriod}",
       reportSubjectNoChanges: "No changes",
       reportChanged: "Datasets updated:",
       reportNoChanges: "No changes to {watchedDatasetsLink}",
       reportFollowed: "watched datasets",
       preferencesPage: "preferences page",
-      day: "day",
-      week: "week",
+      lastPeriodDay: "in the last day",
+      lastPeriodWeek: "in the last week",
       generatedAt: "Generated at {timestamp}",
       unsubscribe: "Unsubscribe: {preferencesLink}",
       datasetsOne: "dataset",
@@ -352,13 +347,12 @@ describe("user-report email generation", () => {
       let result = t
         .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
         .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "");
-      // Handle {count} and {datasets} placeholders for subject line
+        .replace("{frequency}", v.frequency || "")
+        .replace(/{lastPeriod}/g, v.lastPeriod || "");
       if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
-        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
         result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
@@ -435,8 +429,8 @@ describe("deadlock scenario", () => {
     reportNoChanges: "No changes to {watchedDatasetsLink}",
     reportFollowed: "watched datasets",
     preferencesPage: "preferences page",
-    day: "day",
-    week: "week",
+    lastPeriodDay: "in the last day",
+    lastPeriodWeek: "in the last week",
     generatedAt: "Generated at {timestamp}",
     unsubscribe: "Unsubscribe: {preferencesLink}",
     datasetsOne: "dataset",
@@ -488,12 +482,12 @@ describe("deadlock scenario", () => {
     vi.mocked(interpolateEmail).mockImplementation((t, v) => {
       let result = t.replace("{watchedDatasetsLink}", `${v.watchedDatasetsUrl}`)
         .replace("{preferencesLink}", `${v.preferencesUrl}`)
-        .replace("{frequency}", v.frequency || "");
+        .replace("{frequency}", v.frequency || "")
+        .replace(/{lastPeriod}/g, v.lastPeriod || "");
       if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
         const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
         result = result.replace("{count}", v.count.toString());
         result = result.replace("{datasets}", word);
-        // Handle ICU plural format: {datasets, plural, =1 {...} other {...}}
         result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
       }
       return result;
@@ -629,8 +623,8 @@ describe("report status tracking helpers", () => {
       reportNoChanges: "No changes to {watchedDatasetsLink}",
       reportFollowed: "watched datasets",
       preferencesPage: "preferences page",
-      day: "day",
-      week: "week",
+      lastPeriodDay: "in the last day",
+      lastPeriodWeek: "in the last week",
       generatedAt: "Generated at {timestamp}",
       unsubscribe: "Unsubscribe: {preferencesLink}",
       datasetsOne: "dataset",

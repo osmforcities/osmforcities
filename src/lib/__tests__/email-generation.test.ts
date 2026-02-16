@@ -25,14 +25,14 @@ describe("email-generation integration tests", () => {
     Email: {
       magicLinkSubject: "Sign in to OSM for Cities",
       magicLinkBody: "Click {magicLink} to sign in.",
-      reportSubjectChanged: "{count} {datasets, plural, =1 {dataset} other {datasets}} changed in the last {frequency}",
-      reportSubjectNoChanges: "No changes in the last {frequency}",
-      reportChanged: "The following datasets were updated in the last {frequency}:",
-      reportNoChanges: "There were no changes to your {watchedDatasetsLink} in the last {frequency}.",
+      reportSubjectChanged: "{count} {datasets, plural, =1 {dataset} other {datasets}} changed {lastPeriod}",
+      reportSubjectNoChanges: "No changes {lastPeriod}",
+      reportChanged: "The following datasets were updated {lastPeriod}:",
+      reportNoChanges: "There were no changes to your {watchedDatasetsLink} {lastPeriod}.",
       reportFollowed: "watched datasets",
       preferencesPage: "preferences page",
-      day: "day",
-      week: "week",
+      lastPeriodDay: "in the last day",
+      lastPeriodWeek: "in the last week",
       generatedAt: "This report was generated at {timestamp}Z. All dates shown are in UTC.",
       unsubscribe: "To unsubscribe from these reports, visit {preferencesLink}.",
       datasetsOne: "dataset",
@@ -44,14 +44,14 @@ describe("email-generation integration tests", () => {
     Email: {
       magicLinkSubject: "Entrar no OSM for Cities",
       magicLinkBody: "Clique {magicLink} para entrar.",
-      reportSubjectChanged: "{count} {datasets, plural, =1 {conjunto de dados} other {conjuntos de dados}} mudaram na última {frequency}",
-      reportSubjectNoChanges: "Sem mudanças na última {frequency}",
-      reportChanged: "Os seguintes conjuntos de dados foram atualizados na última {frequency}:",
-      reportNoChanges: "Não houve mudanças nos seus {watchedDatasetsLink} na última {frequency}.",
+      reportSubjectChanged: "{count} {datasets, plural, =1 {conjunto de dados} other {conjuntos de dados}} mudaram {lastPeriod}",
+      reportSubjectNoChanges: "Sem mudanças {lastPeriod}",
+      reportChanged: "Os seguintes conjuntos de dados foram atualizados {lastPeriod}:",
+      reportNoChanges: "Não houve mudanças nos seus {watchedDatasetsLink} {lastPeriod}.",
       reportFollowed: "conjuntos de dados observados",
       preferencesPage: "página de preferências",
-      day: "dia",
-      week: "semana",
+      lastPeriodDay: "no último dia",
+      lastPeriodWeek: "na última semana",
       generatedAt: "Este relatório foi gerado em {timestamp}Z. Todas as datas mostradas estão em UTC.",
       unsubscribe: "Para cancelar a inscrição nestes relatórios, visite {preferencesLink}.",
       datasetsOne: "conjunto de dados",
@@ -63,14 +63,14 @@ describe("email-generation integration tests", () => {
     Email: {
       magicLinkSubject: "Iniciar sesión en OSM for Cities",
       magicLinkBody: "Haz clic {magicLink} para iniciar sesión.",
-      reportSubjectChanged: "{count} {datasets, plural, =1 {conjunto de datos} other {conjuntos de datos}} cambiaron en la última {frequency}",
-      reportSubjectNoChanges: "Sin cambios en la última {frequency}",
-      reportChanged: "Los siguientes conjuntos de datos se actualizaron en la última {frequency}:",
-      reportNoChanges: "No hubo cambios en tus {watchedDatasetsLink} en la última {frequency}.",
+      reportSubjectChanged: "{count} {datasets, plural, =1 {conjunto de datos} other {conjuntos de datos}} cambiaron {lastPeriod}",
+      reportSubjectNoChanges: "Sin cambios {lastPeriod}",
+      reportChanged: "Los siguientes conjuntos de datos se actualizaron {lastPeriod}:",
+      reportNoChanges: "No hubo cambios en tus {watchedDatasetsLink} {lastPeriod}.",
       reportFollowed: "conjuntos de datos monitoreados",
       preferencesPage: "página de preferencias",
-      day: "día",
-      week: "semana",
+      lastPeriodDay: "en el último día",
+      lastPeriodWeek: "en la última semana",
       generatedAt: "Este reporte se generó en {timestamp}Z. Todas las fechas mostradas están en UTC.",
       unsubscribe: "Para cancelar la suscripción a estos reportes, visita {preferencesLink}.",
       datasetsOne: "conjunto de datos",
@@ -85,28 +85,28 @@ describe("email-generation integration tests", () => {
       const t = await getEmailTranslations("en");
 
       expect(t.magicLinkBody).toBe("Click {magicLink} to sign in.");
-      expect(t.day).toBe("day");
-      expect(t.week).toBe("week");
+      expect(t.lastPeriodDay).toBe("in the last day");
+      expect(t.lastPeriodWeek).toBe("in the last week");
     });
 
-    it("returns Portuguese translations", async () => {
+    it("returns Portuguese translations with gender-correct last period phrases", async () => {
       vi.mocked(fs.readFile).mockResolvedValueOnce(JSON.stringify(ptTranslations));
 
       const t = await getEmailTranslations("pt-BR" as Locale);
 
       expect(t.magicLinkBody).toBe("Clique {magicLink} para entrar.");
-      expect(t.day).toBe("dia");
-      expect(t.week).toBe("semana");
+      expect(t.lastPeriodDay).toBe("no último dia");
+      expect(t.lastPeriodWeek).toBe("na última semana");
     });
 
-    it("returns Spanish translations", async () => {
+    it("returns Spanish translations with gender-correct last period phrases", async () => {
       vi.mocked(fs.readFile).mockResolvedValueOnce(JSON.stringify(esTranslations));
 
       const t = await getEmailTranslations("es" as Locale);
 
       expect(t.magicLinkBody).toBe("Haz clic {magicLink} para iniciar sesión.");
-      expect(t.day).toBe("día");
-      expect(t.week).toBe("semana");
+      expect(t.lastPeriodDay).toBe("en el último día");
+      expect(t.lastPeriodWeek).toBe("en la última semana");
     });
   });
 
@@ -122,13 +122,13 @@ describe("email-generation integration tests", () => {
       expect(result).not.toContain("{magicLink}");
     });
 
-    it("replaces watchedDatasetsLink placeholder with HTML link", () => {
+    it("replaces watchedDatasetsLink and lastPeriod placeholders", () => {
       const result = interpolateEmail(
-        "There were no changes to your {watchedDatasetsLink} in the last {frequency}.",
+        "There were no changes to your {watchedDatasetsLink} {lastPeriod}.",
         {
           watchedDatasetsUrl: "http://localhost:3000/",
           watchedDatasetsText: "watched datasets",
-          frequency: "week",
+          lastPeriod: "in the last week",
         }
       );
 
@@ -136,6 +136,7 @@ describe("email-generation integration tests", () => {
       expect(result).toContain(">watched datasets</a>");
       expect(result).toContain("in the last week");
       expect(result).not.toContain("{watchedDatasetsLink}");
+      expect(result).not.toContain("{lastPeriod}");
     });
 
     it("replaces preferencesLink placeholder with HTML link", () => {
@@ -176,14 +177,13 @@ describe("email-generation integration tests", () => {
       expect(result).toBe("Hello {name}!");
     });
 
-    it("handles ICU plural format for datasets in subject line", () => {
-      // Spanish subject line with ICU plural format
-      const esSubject = "{count} {datasets, plural, =1 {conjunto de datos} other {conjuntos de datos}} cambiaron en la última {frequency}";
+    it("handles ICU plural format for datasets in subject line with lastPeriod", () => {
+      const esSubject = "{count} {datasets, plural, =1 {conjunto de datos} other {conjuntos de datos}} cambiaron {lastPeriod}";
       const result1 = interpolateEmail(esSubject, {
         count: 1,
         datasetsOne: "conjunto de datos",
         datasetsOther: "conjuntos de datos",
-        frequency: "semana",
+        lastPeriod: "en la última semana",
       });
 
       expect(result1).toBe("1 conjunto de datos cambiaron en la última semana");
@@ -193,31 +193,29 @@ describe("email-generation integration tests", () => {
         count: 2,
         datasetsOne: "conjunto de datos",
         datasetsOther: "conjuntos de datos",
-        frequency: "semana",
+        lastPeriod: "en la última semana",
       });
 
       expect(result2).toBe("2 conjuntos de datos cambiaron en la última semana");
     });
 
-    it("handles Portuguese ICU plural format for datasets in subject line", () => {
-      const ptSubject = "{count} {datasets, plural, =1 {conjunto de dados} other {conjuntos de dados}} mudaram na última {frequency}";
-      const result1 = interpolateEmail(ptSubject, {
+    it("handles Portuguese ICU plural format with gender-correct lastPeriod (day vs week)", () => {
+      const ptSubject = "{count} {datasets, plural, =1 {conjunto de dados} other {conjuntos de dados}} mudaram {lastPeriod}";
+      const resultDay = interpolateEmail(ptSubject, {
         count: 1,
         datasetsOne: "conjunto de dados",
         datasetsOther: "conjuntos de dados",
-        frequency: "semana",
+        lastPeriod: "no último dia",
       });
+      expect(resultDay).toBe("1 conjunto de dados mudaram no último dia");
 
-      expect(result1).toBe("1 conjunto de dados mudaram na última semana");
-
-      const result2 = interpolateEmail(ptSubject, {
+      const resultWeek = interpolateEmail(ptSubject, {
         count: 5,
         datasetsOne: "conjunto de dados",
         datasetsOther: "conjuntos de dados",
-        frequency: "semana",
+        lastPeriod: "na última semana",
       });
-
-      expect(result2).toBe("5 conjuntos de dados mudaram na última semana");
+      expect(resultWeek).toBe("5 conjuntos de dados mudaram na última semana");
     });
   });
 
@@ -263,14 +261,11 @@ describe("email-generation integration tests", () => {
       const t = await getEmailTranslations("en");
       const baseUrl = "http://localhost:3000";
 
-      // Simulate the generateEmailBodyNoChanges logic
-      const freqKey = "week";
-      let noChangesText = t.reportNoChanges.replace("{frequency}", freqKey);
-      noChangesText = interpolateEmail(noChangesText, {
+      const noChangesText = interpolateEmail(t.reportNoChanges, {
         watchedDatasetsUrl: `${baseUrl}/`,
+        lastPeriod: t.lastPeriodWeek,
       });
 
-      // Verify the link was replaced
       expect(noChangesText).toContain('<a href="http://localhost:3000/"');
       expect(noChangesText).toContain(">watched datasets</a>");
       expect(noChangesText).toContain("in the last week");
@@ -283,15 +278,12 @@ describe("email-generation integration tests", () => {
       const t = await getEmailTranslations("pt-BR" as Locale);
       const baseUrl = "http://localhost:3000";
 
-      // Simulate email generation
-      const freqKey = "semana";
-      let noChangesText = t.reportNoChanges.replace("{frequency}", freqKey);
-      noChangesText = interpolateEmail(noChangesText, {
+      const noChangesText = interpolateEmail(t.reportNoChanges, {
         watchedDatasetsUrl: `${baseUrl}/`,
         watchedDatasetsText: t.reportFollowed,
+        lastPeriod: t.lastPeriodWeek,
       });
 
-      // Verify the link was replaced
       expect(noChangesText).toContain('<a href="http://localhost:3000/"');
       expect(noChangesText).toContain(">conjuntos de dados observados</a>");
       expect(noChangesText).toContain("na última semana");
