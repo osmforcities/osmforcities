@@ -10,7 +10,8 @@ import { OSMElementSchema, type OSMRelation } from "@/types/osm";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 
 const OVERPASS_API_URL =
-  process.env.OVERPASS_API_URL || "https://overpass-api.de/api/interpreter";
+  process.env.OVERPASS_API_URL ||
+  "https://maps.mail.ru/osm/tools/overpass/api/interpreter";
 
 /**
  * Get the User-Agent string for OSM API requests
