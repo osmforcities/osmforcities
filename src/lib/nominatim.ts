@@ -38,7 +38,7 @@ export async function searchAreasWithNominatim(
       {
         headers: {
           "Accept-Language": language,
-          ...(getUserAgent() && { "User-Agent": getUserAgent()! }),
+          "User-Agent": getUserAgent(),
         },
       }
     );
@@ -109,7 +109,7 @@ export async function getAreaDetailsById(
       {
         headers: {
           "Accept-Language": language,
-          ...(getUserAgent() && { "User-Agent": getUserAgent()! }),
+          "User-Agent": getUserAgent(),
         },
       }
     );

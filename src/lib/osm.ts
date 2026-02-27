@@ -14,11 +14,19 @@ const OVERPASS_API_URL =
   "https://maps.mail.ru/osm/tools/overpass/api/interpreter";
 
 /**
- * Get the User-Agent string for OSM API requests.
- * Only returns a value when OSM_USER_AGENT is explicitly configured.
+ * Get the User-Agent string for OSM API requests
+ * @returns The User-Agent string to use in API requests
  */
-export function getUserAgent(): string | undefined {
-  return process.env.OSM_USER_AGENT || undefined;
+export function getUserAgent(): string {
+  // Use environment variable if provided, otherwise generate default
+  if (process.env.OSM_USER_AGENT) {
+    return process.env.OSM_USER_AGENT;
+  }
+
+  // Generate default User-Agent with app URL
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://osmforcities.org";
+  const url = baseUrl.replace(/^https?:\/\//, ""); // Remove protocol
+  return `OSMForCities (+https://${url})`;
 }
 
 function isLocalOverpass(url: string | undefined) {
@@ -55,12 +63,11 @@ export async function fetchOsmRelationData(relationId: number) {
     out bb tags;
   `;
 
-  const userAgent = getUserAgent();
   const res = await fetch(OVERPASS_API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
-      ...(userAgent && { "User-Agent": userAgent }),
+      "User-Agent": getUserAgent(),
     },
     body: `data=${encodeURIComponent(query)}`,
   });
@@ -98,12 +105,11 @@ export async function executeOverpassQuery(
 ): Promise<OverpassResponse> {
   preventExternalCallsInTests();
 
-  const userAgent = getUserAgent();
   const response = await fetch(OVERPASS_API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
-      ...(userAgent && { "User-Agent": userAgent }),
+      "User-Agent": getUserAgent(),
     },
     body: `data=${encodeURIComponent(queryString)}`,
   });
