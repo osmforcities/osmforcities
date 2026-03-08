@@ -3,8 +3,8 @@ import { htmlToText } from "html-to-text";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import {
   createEmailLink,
-  getEmailTranslations,
-  interpolateEmail,
+  getEmailT,
+  isRTL,
   type Locale,
 } from "@/lib/email-i18n";
 
@@ -126,68 +126,57 @@ async function generateEmailContent(
   const frequency = user.reportsFrequency;
   const count = recentDatasets.length;
 
-  const translations = await getEmailTranslations(userLocale);
-  const lastPeriod =
-    frequency === "DAILY" ? translations.lastPeriodDay : translations.lastPeriodWeek;
+  const t = await getEmailT(userLocale);
+  const dir = isRTL(userLocale) ? "rtl" : "ltr";
 
-  const subjectKey = count === 0 ? "reportSubjectNoChanges" : "reportSubjectChanged";
-  const subjectTemplate = translations[subjectKey];
-  const subject = interpolateEmail(subjectTemplate, {
-    count,
-    lastPeriod,
-    datasetsOne: translations.datasetsOne,
-    datasetsOther: translations.datasetsOther,
-  });
+  const lastPeriod = frequency === "DAILY" ? t("lastPeriodDay") : t("lastPeriodWeek");
+
+  const datasets = count === 1 ? t("datasetsOne") : t("datasetsOther");
+  const subject =
+    count === 0
+      ? t("reportSubjectNoChanges", { lastPeriod })
+      : t("reportSubjectChanged", { count, datasets, lastPeriod });
 
   // Check if any datasets use deprecated templates
   const deprecatedDatasets = recentDatasets.filter((ds) => ds.daysRemaining !== undefined);
   let deprecationNotice: string | undefined;
   if (deprecatedDatasets.length > 0) {
     const ds = deprecatedDatasets[0];
-    deprecationNotice = interpolateEmail(translations.templateDeprecatedDaysRemaining, {
-      days: ds.daysRemaining!,
-    });
+    deprecationNotice = t("templateDeprecatedDaysRemaining", { days: ds.daysRemaining! });
   }
 
-  const reportChangedText = interpolateEmail(translations.reportChanged, {
-    lastPeriod,
-  });
-  const emailBody = count > 0
-    ? generateEmailBodyWithChanges(
-        recentDatasets,
-        frequency,
-        reportChangedText,
-        deprecationNotice
-      )
-    : interpolateEmail(translations.reportNoChanges, {
-        lastPeriod,
-        watchedDatasetsUrl: `${getBaseUrl()}/`,
-        watchedDatasetsText: translations.reportFollowed,
-      });
+  const reportChangedText = t("reportChanged", { lastPeriod });
+  const watchedDatasetsLink = createEmailLink(`${getBaseUrl()}/`, t("reportFollowed"));
+  const emailBody =
+    count > 0
+      ? generateEmailBodyWithChanges(
+          recentDatasets,
+          frequency,
+          reportChangedText,
+          deprecationNotice
+        )
+      : t("reportNoChanges", { watchedDatasetsLink, lastPeriod });
 
   // Generate footer
   const timestamp = new Date().toISOString().split(".")[0];
-  const generatedAtText = translations.generatedAt.replace(
-    "{timestamp}",
-    timestamp
-  );
-  const unsubscribeText = interpolateEmail(translations.unsubscribe, {
-    preferencesUrl: `${getBaseUrl()}/preferences`,
-    preferencesText: translations.preferencesPage,
-  });
+  const generatedAtText = t("generatedAt", { timestamp });
+  const preferencesLink = createEmailLink(`${getBaseUrl()}/preferences`, t("preferencesPage"));
+  const unsubscribeText = t("unsubscribe", { preferencesLink });
 
   const htmlContent = `
-    <p>${translations.greeting}</p>
+    <div lang="${userLocale}" dir="${dir}">
+      <p>${t("greeting")}</p>
 
-    ${emailBody}
+      ${emailBody}
 
-    <p style="color: #999; font-size: 12px;">
-      ${generatedAtText}
-    </p>
-    <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0;">
-    <p style="color: #666; font-size: 14px;">
-      ${unsubscribeText}
-    </p>
+      <p style="color: #999; font-size: 12px;">
+        ${generatedAtText}
+      </p>
+      <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0;">
+      <p style="color: #666; font-size: 14px;">
+        ${unsubscribeText}
+      </p>
+    </div>
   `;
 
   return {
