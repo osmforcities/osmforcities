@@ -13,6 +13,13 @@ vi.mock("@/lib/email-i18n", () => ({
   createEmailLink: vi.fn((url: string, text: string) => `<a href="${url}" style="color: #007bff; text-decoration: none;">${text}</a>`),
   isRTL: vi.fn(() => false),
   getEmailT: vi.fn(),
+  formatEmailMarkup: vi.fn((locale: string, key: string, values: Record<string, (chunks: string) => string>) => {
+    let result = key;
+    for (const [k, v] of Object.entries(values)) {
+      result = result.replace(new RegExp(`\\{${k}\\}`, "g"), v(k));
+    }
+    return result;
+  }),
 }));
 
 vi.mock("@/lib/template-locale", () => ({

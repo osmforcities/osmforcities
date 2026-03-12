@@ -54,3 +54,17 @@ export async function formatEmail(
   const t = await getEmailT(locale);
   return t(key as Parameters<typeof t>[0], values);
 }
+
+/**
+ * Formats translation with HTML markup support.
+ * Pass transform functions for each placeholder that returns HTML.
+ * Example: formatEmailMarkup('en', 'key', { link: (c) => `<a>${c}</a>` })
+ */
+export async function formatEmailMarkup(
+  locale: Locale,
+  key: string,
+  values: Record<string, (chunks: string) => string>
+): Promise<string> {
+  const t = await getEmailT(locale);
+  return t.markup(key as Parameters<typeof t.markup>[0], values);
+}

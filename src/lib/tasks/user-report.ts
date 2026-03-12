@@ -5,6 +5,7 @@ import {
   createEmailLink,
   getEmailT,
   isRTL,
+  formatEmailMarkup,
   type Locale,
 } from "@/lib/email-i18n";
 
@@ -146,7 +147,6 @@ async function generateEmailContent(
   }
 
   const reportChangedText = t("reportChanged", { lastPeriod });
-  const watchedDatasetsLink = createEmailLink(`${getBaseUrl()}/`, t("reportFollowed"));
   const emailBody =
     count > 0
       ? generateEmailBodyWithChanges(
@@ -155,13 +155,17 @@ async function generateEmailContent(
           reportChangedText,
           deprecationNotice
         )
-      : t("reportNoChanges", { watchedDatasetsLink, lastPeriod });
+      : await formatEmailMarkup(userLocale, "reportNoChanges", {
+          watchedDatasetsLink: (chunks) => createEmailLink(`${getBaseUrl()}/`, chunks),
+          lastPeriod,
+        });
 
   // Generate footer
   const timestamp = new Date().toISOString().split(".")[0];
   const generatedAtText = t("generatedAt", { timestamp });
-  const preferencesLink = createEmailLink(`${getBaseUrl()}/preferences`, t("preferencesPage"));
-  const unsubscribeText = t("unsubscribe", { preferencesLink });
+  const unsubscribeText = await formatEmailMarkup(userLocale, "unsubscribe", {
+    preferencesLink: (chunks) => createEmailLink(`${getBaseUrl()}/preferences`, chunks),
+  });
 
   const htmlContent = `
     <div lang="${userLocale}" dir="${dir}">
