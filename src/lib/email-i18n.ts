@@ -57,13 +57,13 @@ export async function formatEmail(
 
 /**
  * Formats translation with HTML markup support.
- * Pass transform functions for each placeholder that returns HTML.
- * Example: formatEmailMarkup('en', 'key', { link: (c) => `<a>${c}</a>` })
+ * Pass transform functions for HTML placeholders, primitive values for text.
+ * Example: formatEmailMarkup('en', 'key', { link: (c) => `<a>${c}</a>`, count: 5 })
  */
 export async function formatEmailMarkup(
   locale: Locale,
   key: string,
-  values: Record<string, (chunks: string) => string>
+  values: Record<string, ((chunks: string) => string) | string | number | Date>
 ): Promise<string> {
   const t = await getEmailT(locale);
   return t.markup(key as Parameters<typeof t.markup>[0], values);
