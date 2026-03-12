@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import { clearMessageCache } from "@/lib/email-i18n";
 
 // Mock all dependencies before imports
 vi.mock("@/lib/db", () => ({
@@ -13,6 +14,7 @@ vi.mock("@/lib/email-i18n", () => ({
   createEmailLink: vi.fn((url: string, text: string) => `<a href="${url}" style="color: #007bff; text-decoration: none;">${text}</a>`),
   isRTL: vi.fn(() => false),
   getEmailT: vi.fn(),
+  clearMessageCache: vi.fn(),
   formatEmail: vi.fn((locale: string, key: string, values?: Record<string, string | number>) => {
     let result = key;
     if (values) {
@@ -89,6 +91,7 @@ const enMessages = {
 
 describe("user-report email generation", () => {
   beforeEach(() => {
+    clearMessageCache();
     vi.clearAllMocks();
     process.env.AUTH_URL = "https://osmforcities.com";
   });
@@ -237,6 +240,7 @@ describe("user-report email generation", () => {
 
 describe("deadlock scenario", () => {
   beforeEach(() => {
+    clearMessageCache();
     vi.clearAllMocks();
     process.env.AUTH_URL = "https://osmforcities.com";
   });
@@ -353,6 +357,7 @@ describe("deadlock scenario", () => {
 
 describe("report status tracking helpers", () => {
   beforeEach(() => {
+    clearMessageCache();
     vi.clearAllMocks();
   });
 

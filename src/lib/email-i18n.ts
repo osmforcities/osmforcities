@@ -26,6 +26,10 @@ export function isRTL(locale: string): boolean {
 
 const messageCache = new Map<Locale, Record<string, unknown>>();
 
+export function clearMessageCache(): void {
+  messageCache.clear();
+}
+
 async function loadMessages(locale: Locale): Promise<Record<string, unknown>> {
   if (messageCache.has(locale)) {
     return messageCache.get(locale)!;

@@ -4,6 +4,7 @@ import {
   getEmailT,
   formatEmail,
   createEmailLink,
+  clearMessageCache,
   type Locale,
 } from "../email-i18n";
 
@@ -104,6 +105,7 @@ describe("isRTL", () => {
 
 describe("getEmailT", () => {
   beforeEach(() => {
+    clearMessageCache();
     vi.resetAllMocks();
   });
 
@@ -217,6 +219,7 @@ describe("getEmailT", () => {
 
 describe("formatEmail", () => {
   beforeEach(() => {
+    clearMessageCache();
     vi.resetAllMocks();
   });
 
