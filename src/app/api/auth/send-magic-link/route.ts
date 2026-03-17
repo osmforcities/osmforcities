@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { findUserByEmail, createUser, createVerificationToken } from "@/auth";
 import { sendEmail } from "@/lib/email";
 import { getBaseUrl } from "@/lib/utils";
-import { formatEmail, type Locale } from "@/lib/email-i18n";
+import { formatEmail, createEmailLink, type Locale } from "@/lib/email-i18n";
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     try {
       // Get translated email content with magic link
       const htmlBody = await formatEmail(userLocale, "magicLinkBody", {
-        magicLink,
+        magicLink: createEmailLink(magicLink, "link"),
       });
       const subject = await formatEmail(userLocale, "magicLinkSubject", {});
 

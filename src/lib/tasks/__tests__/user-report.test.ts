@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import { clearMessageCache } from "@/lib/email-i18n";
 
 // Mock all dependencies before imports
 vi.mock("@/lib/db", () => ({
@@ -11,9 +12,18 @@ vi.mock("@/lib/db", () => ({
 vi.mock("@/lib/email-i18n", () => ({
   EMAIL_LINK_STYLE: 'style="color: #007bff; text-decoration: none;"',
   createEmailLink: vi.fn((url: string, text: string) => `<a href="${url}" style="color: #007bff; text-decoration: none;">${text}</a>`),
-  getEmailTranslations: vi.fn(),
-  interpolateEmail: vi.fn(),
-  formatEmail: vi.fn(),
+  isRTL: vi.fn(() => false),
+  getEmailT: vi.fn(),
+  clearMessageCache: vi.fn(),
+  formatEmail: vi.fn((locale: string, key: string, values?: Record<string, string | number>) => {
+    let result = key;
+    if (values) {
+      for (const [k, v] of Object.entries(values)) {
+        result = result.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
+      }
+    }
+    return result;
+  }),
 }));
 
 vi.mock("@/lib/template-locale", () => ({
@@ -31,7 +41,7 @@ import {
 } from "../user-report";
 import { prisma } from "@/lib/db";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
-import { getEmailTranslations, interpolateEmail } from "@/lib/email-i18n";
+import { getEmailT } from "@/lib/email-i18n";
 
 const mockPrisma = prisma as unknown as {
   user: {
@@ -42,8 +52,46 @@ const mockPrisma = prisma as unknown as {
   dataset: { findMany: ReturnType<typeof vi.fn> };
 };
 
+/** Builds a simple ICU-like translator from a messages lookup. */
+function createMockT(messages: Record<string, string>) {
+  const fn = (key: string, values?: Record<string, string | number>) => {
+    let result = messages[key] ?? key;
+    if (values) {
+      for (const [k, v] of Object.entries(values)) {
+        result = result.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
+      }
+    }
+    return result;
+  };
+  return Object.assign(vi.fn(fn), {
+    rich: vi.fn(),
+    markup: vi.fn(),
+    raw: vi.fn(),
+    has: vi.fn(() => true),
+  }) as unknown as Awaited<ReturnType<typeof getEmailT>>;
+}
+
+const enMessages = {
+  lastPeriodDay: "in the last day",
+  lastPeriodWeek: "in the last week",
+  datasetsOne: "dataset",
+  datasetsOther: "datasets",
+  reportSubjectChanged: "{count} {datasets} changed {lastPeriod}",
+  reportSubjectNoChanges: "No changes",
+  reportChanged: "Datasets updated:",
+  reportNoChanges: "No changes to {watchedDatasetsLink} {lastPeriod}",
+  reportFollowed: "watched datasets",
+  preferencesPage: "preferences page",
+  generatedAt: "Generated at {timestamp}Z. All dates shown are in UTC.",
+  unsubscribe: "Unsubscribe: {preferencesLink}",
+  templateDeprecatedDaysRemaining: "You have {days} days remaining.",
+  templateDeprecated: "This template was removed from the catalog.",
+  greeting: "Hi!",
+};
+
 describe("user-report email generation", () => {
   beforeEach(() => {
+    clearMessageCache();
     vi.clearAllMocks();
     process.env.AUTH_URL = "https://osmforcities.com";
   });
@@ -74,43 +122,8 @@ describe("user-report email generation", () => {
   };
 
   it("English user gets English template names", async () => {
-    vi.mocked(getEmailTranslations).mockResolvedValue({
-      magicLinkSubject: "Sign in",
-      magicLinkBody: "Click {magicLink}",
-      reportSubjectChanged: "{count} {datasets} changed",
-      reportSubjectNoChanges: "No changes",
-      reportChanged: "Datasets updated:",
-      reportNoChanges: "No changes to {watchedDatasetsLink}",
-      reportFollowed: "watched datasets",
-      preferencesPage: "preferences page",
-      lastPeriodDay: "in the last day",
-      lastPeriodWeek: "in the last week",
-      generatedAt: "Generated at {timestamp}",
-      unsubscribe: "Unsubscribe: {preferencesLink}",
-      datasetsOne: "dataset",
-      datasetsOther: "datasets",
-      templateDeprecated: "This template was removed from the catalog.",
-      templateDeprecatedDaysRemaining: "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
-      greeting: "Hi!",
-    });
-    vi.mocked(resolveTemplateForLocale).mockReturnValue({
-      name: "Schools",
-      description: "Schools",
-    });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
-      let result = t
-        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
-        .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-        .replace(/{lastPeriod}/g, v.lastPeriod || "");
-      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
-        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
-        result = result.replace("{count}", v.count.toString());
-        result = result.replace("{datasets}", word);
-        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
-      }
-      return result;
-    });
+    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
@@ -123,43 +136,16 @@ describe("user-report email generation", () => {
 
   it("Portuguese user gets Portuguese template names", async () => {
     const ptUser = { ...mockUser, language: "pt-BR" };
-    vi.mocked(getEmailTranslations).mockResolvedValue({
-      magicLinkSubject: "Entrar",
-      magicLinkBody: "Clique {magicLink}",
-      reportSubjectChanged: "{count} {datasets, plural, =1 {conjunto de dados} other {conjuntos de dados}} mudaram {lastPeriod}",
-      reportSubjectNoChanges: "Sem mudanças",
-      reportChanged: "Conjuntos atualizados:",
-      reportNoChanges: "Sem mudanças em {watchedDatasetsLink}",
-      reportFollowed: "conjuntos de dados observados",
-      preferencesPage: "página de preferências",
+    const ptMessages = {
+      ...enMessages,
       lastPeriodDay: "no último dia",
       lastPeriodWeek: "na última semana",
-      generatedAt: "Gerado em {timestamp}",
-      unsubscribe: "Cancelar: {preferencesLink}",
       datasetsOne: "conjunto de dados",
       datasetsOther: "conjuntos de dados",
-      templateDeprecated: "Este modelo foi removido do catálogo.",
-      templateDeprecatedDaysRemaining: "Você tem {days} dia{days, plural, =1 {} other {s}} restantes antes que este conjunto de dados seja excluído.",
-      greeting: "Olá!",
-    });
-    vi.mocked(resolveTemplateForLocale).mockReturnValue({
-      name: "Escolas",
-      description: "Escolas",
-    });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
-      let result = t
-        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
-        .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-        .replace(/{lastPeriod}/g, v.lastPeriod || "");
-      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
-        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
-        result = result.replace("{count}", v.count.toString());
-        result = result.replace("{datasets}", word);
-        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
-      }
-      return result;
-    });
+      reportSubjectChanged: "{count} {datasets} mudaram {lastPeriod}",
+    };
+    vi.mocked(getEmailT).mockResolvedValue(createMockT(ptMessages));
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Escolas", description: "Escolas" });
     mockPrisma.user.findFirst.mockResolvedValue(ptUser);
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
@@ -173,43 +159,16 @@ describe("user-report email generation", () => {
 
   it("Spanish user gets Spanish template names", async () => {
     const esUser = { ...mockUser, language: "es" };
-    vi.mocked(getEmailTranslations).mockResolvedValue({
-      magicLinkSubject: "Entrar",
-      magicLinkBody: "Haz clic {magicLink}",
-      reportSubjectChanged: "{count} {datasets, plural, =1 {conjunto de datos} other {conjuntos de datos}} cambiaron {lastPeriod}",
-      reportSubjectNoChanges: "Sin cambios",
-      reportChanged: "Conjuntos actualizados:",
-      reportNoChanges: "Sin cambios en {watchedDatasetsLink}",
-      reportFollowed: "conjuntos de datos monitoreados",
-      preferencesPage: "página de preferencias",
+    const esMessages = {
+      ...enMessages,
       lastPeriodDay: "en el último día",
       lastPeriodWeek: "en la última semana",
-      generatedAt: "Generado en {timestamp}",
-      unsubscribe: "Cancelar: {preferencesLink}",
       datasetsOne: "conjunto de datos",
       datasetsOther: "conjuntos de datos",
-      templateDeprecated: "Esta plantilla fue eliminada del catálogo.",
-      templateDeprecatedDaysRemaining: "Tienes {days} día{days, plural, =1 {} other {s}} restantes antes de que este conjunto de datos sea eliminado.",
-      greeting: "¡Hola!",
-    });
-    vi.mocked(resolveTemplateForLocale).mockReturnValue({
-      name: "Escuelas",
-      description: "Escuelas",
-    });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
-      let result = t
-        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
-        .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-        .replace(/{lastPeriod}/g, v.lastPeriod || "");
-      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
-        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
-        result = result.replace("{count}", v.count.toString());
-        result = result.replace("{datasets}", word);
-        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
-      }
-      return result;
-    });
+      reportSubjectChanged: "{count} {datasets} cambiaron {lastPeriod}",
+    };
+    vi.mocked(getEmailT).mockResolvedValue(createMockT(esMessages));
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Escuelas", description: "Escuelas" });
     mockPrisma.user.findFirst.mockResolvedValue(esUser);
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
@@ -222,43 +181,8 @@ describe("user-report email generation", () => {
   });
 
   it("falls back to English when translation missing", async () => {
-    vi.mocked(getEmailTranslations).mockResolvedValue({
-      magicLinkSubject: "Sign in",
-      magicLinkBody: "Click {magicLink}",
-      reportSubjectChanged: "{count} {datasets} changed",
-      reportSubjectNoChanges: "No changes",
-      reportChanged: "Datasets updated:",
-      reportNoChanges: "No changes to {watchedDatasetsLink}",
-      reportFollowed: "watched datasets",
-      preferencesPage: "preferences page",
-      lastPeriodDay: "in the last day",
-      lastPeriodWeek: "in the last week",
-      generatedAt: "Generated at {timestamp}",
-      unsubscribe: "Unsubscribe: {preferencesLink}",
-      datasetsOne: "dataset",
-      datasetsOther: "datasets",
-      templateDeprecated: "This template was removed from the catalog.",
-      templateDeprecatedDaysRemaining: "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
-      greeting: "Hi!",
-    });
-    vi.mocked(resolveTemplateForLocale).mockReturnValue({
-      name: "Schools",
-      description: "Schools",
-    });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
-      let result = t
-        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
-        .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-        .replace(/{lastPeriod}/g, v.lastPeriod || "");
-      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
-        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
-        result = result.replace("{count}", v.count.toString());
-        result = result.replace("{datasets}", word);
-        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
-      }
-      return result;
-    });
+    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
@@ -268,43 +192,8 @@ describe("user-report email generation", () => {
   });
 
   it("pluralizes correctly for 1 vs multiple datasets", async () => {
-    vi.mocked(getEmailTranslations).mockResolvedValue({
-      magicLinkSubject: "Sign in",
-      magicLinkBody: "Click {magicLink}",
-      reportSubjectChanged: "{count} {datasets} changed",
-      reportSubjectNoChanges: "No changes",
-      reportChanged: "Datasets updated:",
-      reportNoChanges: "No changes to {watchedDatasetsLink}",
-      reportFollowed: "watched datasets",
-      preferencesPage: "preferences page",
-      lastPeriodDay: "in the last day",
-      lastPeriodWeek: "in the last week",
-      generatedAt: "Generated at {timestamp}",
-      unsubscribe: "Unsubscribe: {preferencesLink}",
-      datasetsOne: "dataset",
-      datasetsOther: "datasets",
-      templateDeprecated: "This template was removed from the catalog.",
-      templateDeprecatedDaysRemaining: "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
-      greeting: "Hi!",
-    });
-    vi.mocked(resolveTemplateForLocale).mockReturnValue({
-      name: "Schools",
-      description: "Schools",
-    });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
-      let result = t
-        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
-        .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-        .replace(/{lastPeriod}/g, v.lastPeriod || "");
-      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
-        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
-        result = result.replace("{count}", v.count.toString());
-        result = result.replace("{datasets}", word);
-        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
-      }
-      return result;
-    });
+    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
 
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
@@ -320,60 +209,66 @@ describe("user-report email generation", () => {
   });
 
   it("uses correct frequency term for daily vs weekly", async () => {
-    vi.mocked(getEmailTranslations).mockResolvedValue({
-      magicLinkSubject: "Sign in",
-      magicLinkBody: "Click {magicLink}",
-      reportSubjectChanged: "{count} {datasets} changed {lastPeriod}",
-      reportSubjectNoChanges: "No changes",
-      reportChanged: "Datasets updated:",
-      reportNoChanges: "No changes to {watchedDatasetsLink}",
-      reportFollowed: "watched datasets",
-      preferencesPage: "preferences page",
-      lastPeriodDay: "in the last day",
-      lastPeriodWeek: "in the last week",
-      generatedAt: "Generated at {timestamp}",
-      unsubscribe: "Unsubscribe: {preferencesLink}",
-      datasetsOne: "dataset",
-      datasetsOther: "datasets",
-      templateDeprecated: "This template was removed from the catalog.",
-      templateDeprecatedDaysRemaining: "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
-      greeting: "Hi!",
-    });
-    vi.mocked(resolveTemplateForLocale).mockReturnValue({
-      name: "Schools",
-      description: "Schools",
-    });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
-      let result = t
-        .replace("{watchedDatasetsLink}", `<a href="${v.watchedDatasetsUrl}">${v.watchedDatasetsText}</a>`)
-        .replace("{preferencesLink}", `<a href="${v.preferencesUrl}">${v.preferencesText}</a>`)
-        .replace("{frequency}", v.frequency || "")
-        .replace(/{lastPeriod}/g, v.lastPeriod || "");
-      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
-        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
-        result = result.replace("{count}", v.count.toString());
-        result = result.replace("{datasets}", word);
-        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
-      }
-      return result;
-    });
+    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
-    mockPrisma.user.findFirst.mockResolvedValue({
-      ...mockUser,
-      reportsFrequency: "WEEKLY",
-    });
+    mockPrisma.user.findFirst.mockResolvedValue({ ...mockUser, reportsFrequency: "WEEKLY" });
     const weeklyResult = await generateNextUserReport();
     expect(weeklyResult?.reportData.reportsFrequency).toBe("WEEKLY");
     expect(weeklyResult?.emailContent.subject).toContain("in the last week");
 
-    mockPrisma.user.findFirst.mockResolvedValue({
-      ...mockUser,
-      reportsFrequency: "DAILY",
-    });
+    mockPrisma.user.findFirst.mockResolvedValue({ ...mockUser, reportsFrequency: "DAILY" });
     const dailyResult = await generateNextUserReport();
     expect(dailyResult?.reportData.reportsFrequency).toBe("DAILY");
     expect(dailyResult?.emailContent.subject).toContain("in the last day");
+  });
+
+  it("uses templateDeprecated (not daysRemaining) when deprecatesAt is in the past", async () => {
+    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
+    mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+
+    const expiredDataset = {
+      ...mockDataset,
+      template: {
+        ...mockDataset.template,
+        deprecatesAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // yesterday
+      },
+    };
+    mockPrisma.dataset.findMany.mockResolvedValue([expiredDataset]);
+
+    const result = await generateNextUserReport();
+
+    expect(result).not.toBeNull();
+    expect(result?.emailContent.html).toContain("This template was removed from the catalog.");
+    expect(result?.emailContent.html).not.toContain("0 days remaining");
+  });
+
+  it("shows deprecation notices for all deprecated datasets", async () => {
+    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
+    mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+
+    const futureDate = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
+    const deprecatedDataset1 = {
+      ...mockDataset,
+      id: "ds-1",
+      template: { ...mockDataset.template, deprecatesAt: futureDate },
+    };
+    const deprecatedDataset2 = {
+      ...mockDataset,
+      id: "ds-2",
+      cityName: "Rio",
+      template: { ...mockDataset.template, deprecatesAt: futureDate },
+    };
+    mockPrisma.dataset.findMany.mockResolvedValue([deprecatedDataset1, deprecatedDataset2]);
+
+    const result = await generateNextUserReport();
+
+    expect(result).not.toBeNull();
+    const occurrences = (result?.emailContent.html.match(/days remaining/g) ?? []).length;
+    expect(occurrences).toBe(2);
   });
 
   it("returns null when no user due for report", async () => {
@@ -392,6 +287,7 @@ describe("user-report email generation", () => {
 
 describe("deadlock scenario", () => {
   beforeEach(() => {
+    clearMessageCache();
     vi.clearAllMocks();
     process.env.AUTH_URL = "https://osmforcities.com";
   });
@@ -414,57 +310,24 @@ describe("deadlock scenario", () => {
       name: "schools",
       description: "Schools and education",
       deprecatesAt: null,
-      translations: [
-        { locale: "en", name: "Schools", description: "Schools" },
-      ],
+      translations: [{ locale: "en", name: "Schools", description: "Schools" }],
     },
   };
 
-  const mockTranslations = {
-    magicLinkSubject: "Sign in",
-    magicLinkBody: "Click {magicLink}",
-    reportSubjectChanged: "{count} {datasets} changed",
-    reportSubjectNoChanges: "No changes",
-    reportChanged: "Datasets updated:",
-    reportNoChanges: "No changes to {watchedDatasetsLink}",
-    reportFollowed: "watched datasets",
-    preferencesPage: "preferences page",
-    lastPeriodDay: "in the last day",
-    lastPeriodWeek: "in the last week",
-    generatedAt: "Generated at {timestamp}",
-    unsubscribe: "Unsubscribe: {preferencesLink}",
-    datasetsOne: "dataset",
-    datasetsOther: "datasets",
-    templateDeprecated: "This template was removed from the catalog.",
-    templateDeprecatedDaysRemaining: "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
-    greeting: "Hi!",
-  };
-
   it("updates lastReportSent when user has watches but datasets have no recent changes", async () => {
-    vi.mocked(getEmailTranslations).mockResolvedValue(mockTranslations);
-    vi.mocked(resolveTemplateForLocale).mockReturnValue({
-      name: "Schools",
-      description: "Schools",
-    });
-    vi.mocked(interpolateEmail).mockImplementation((t) => {
-      // Simple pass-through for this test (no ICU plural in mockTranslations)
-      return t;
-    });
+    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
 
     mockPrisma.user.findFirst.mockResolvedValue(userWithWatches);
-    // Dataset with old changes (48h ago, older than DAILY frequency)
     const oldDataset = {
       ...mockDatasetWithChanges,
-      stats: {
-        mostRecentElement: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-      },
+      stats: { mostRecentElement: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString() },
     };
     mockPrisma.dataset.findMany.mockResolvedValue([oldDataset]);
     mockPrisma.user.update.mockResolvedValue(userWithWatches);
 
     const result = await generateNextUserReport();
 
-    // User has watches but no recent changes - should update lastReportSent and return null
     expect(result).toBeNull();
     expect(mockPrisma.user.update).toHaveBeenCalledTimes(1);
     expect(mockPrisma.user.update).toHaveBeenCalledWith({
@@ -474,32 +337,14 @@ describe("deadlock scenario", () => {
   });
 
   it("processes multiple users correctly in sequence", async () => {
-    vi.mocked(getEmailTranslations).mockResolvedValue(mockTranslations);
-    vi.mocked(resolveTemplateForLocale).mockReturnValue({
-      name: "Schools",
-      description: "Schools",
-    });
-    vi.mocked(interpolateEmail).mockImplementation((t, v) => {
-      let result = t.replace("{watchedDatasetsLink}", `${v.watchedDatasetsUrl}`)
-        .replace("{preferencesLink}", `${v.preferencesUrl}`)
-        .replace("{frequency}", v.frequency || "")
-        .replace(/{lastPeriod}/g, v.lastPeriod || "");
-      if (v.count !== undefined && v.datasetsOne && v.datasetsOther) {
-        const word = v.count === 1 ? v.datasetsOne : v.datasetsOther;
-        result = result.replace("{count}", v.count.toString());
-        result = result.replace("{datasets}", word);
-        result = result.replace(/\{datasets, plural, =1 \{[^}]*\} other \{[^}]*\}\}/g, word);
-      }
-      return result;
-    });
+    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
 
     // First call: user with watches but no recent changes
     mockPrisma.user.findFirst.mockResolvedValueOnce(userWithWatches);
     const oldDataset = {
       ...mockDatasetWithChanges,
-      stats: {
-        mostRecentElement: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-      },
+      stats: { mostRecentElement: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString() },
     };
     mockPrisma.dataset.findMany.mockResolvedValueOnce([oldDataset]);
     mockPrisma.user.update.mockResolvedValue(userWithWatches);
@@ -523,17 +368,9 @@ describe("deadlock scenario", () => {
   });
 
   it("correctly filters by DAILY frequency timing", async () => {
-    vi.mocked(getEmailTranslations).mockResolvedValue(mockTranslations);
-    vi.mocked(resolveTemplateForLocale).mockReturnValue({
-      name: "Schools",
-      description: "Schools",
-    });
-    vi.mocked(interpolateEmail).mockImplementation((t) => {
-      // Simple pass-through for this test (no ICU plural in mockTranslations)
-      return t;
-    });
+    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
 
-    // User with lastReportSent 23h ago (DAILY) - should be selected
     const user23hAgo = {
       ...userWithWatches,
       lastReportSent: new Date(Date.now() - 23 * 60 * 60 * 1000),
@@ -547,17 +384,9 @@ describe("deadlock scenario", () => {
   });
 
   it("correctly filters by WEEKLY frequency timing", async () => {
-    vi.mocked(getEmailTranslations).mockResolvedValue(mockTranslations);
-    vi.mocked(resolveTemplateForLocale).mockReturnValue({
-      name: "Schools",
-      description: "Schools",
-    });
-    vi.mocked(interpolateEmail).mockImplementation((t) => {
-      // Simple pass-through for this test (no ICU plural in mockTranslations)
-      return t;
-    });
+    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
 
-    // User with WEEKLY frequency and lastReportSent 6 days ago
     const weeklyUser = {
       ...userWithWatches,
       reportsFrequency: "WEEKLY" as const,
@@ -575,6 +404,7 @@ describe("deadlock scenario", () => {
 
 describe("report status tracking helpers", () => {
   beforeEach(() => {
+    clearMessageCache();
     vi.clearAllMocks();
   });
 
@@ -614,30 +444,8 @@ describe("report status tracking helpers", () => {
   });
 
   it("does not update lastReportSent when generating report with recent changes", async () => {
-    vi.mocked(getEmailTranslations).mockResolvedValue({
-      magicLinkSubject: "Sign in",
-      magicLinkBody: "Click {magicLink}",
-      reportSubjectChanged: "{count} {datasets} changed",
-      reportSubjectNoChanges: "No changes",
-      reportChanged: "Datasets updated:",
-      reportNoChanges: "No changes to {watchedDatasetsLink}",
-      reportFollowed: "watched datasets",
-      preferencesPage: "preferences page",
-      lastPeriodDay: "in the last day",
-      lastPeriodWeek: "in the last week",
-      generatedAt: "Generated at {timestamp}",
-      unsubscribe: "Unsubscribe: {preferencesLink}",
-      datasetsOne: "dataset",
-      datasetsOther: "datasets",
-      templateDeprecated: "This template was removed from the catalog.",
-      templateDeprecatedDaysRemaining: "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
-      greeting: "Hi!",
-    });
-    vi.mocked(resolveTemplateForLocale).mockReturnValue({
-      name: "Schools",
-      description: "Schools",
-    });
-    vi.mocked(interpolateEmail).mockImplementation((t) => t);
+    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
 
     mockPrisma.user.findFirst.mockResolvedValue({
       id: "user-1",
@@ -649,9 +457,7 @@ describe("report status tracking helpers", () => {
       {
         id: "ds-1",
         cityName: "Sao Paulo",
-        stats: {
-          mostRecentElement: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-        },
+        stats: { mostRecentElement: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString() },
         template: {
           name: "schools",
           description: "Schools and education",

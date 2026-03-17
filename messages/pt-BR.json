@@ -497,7 +497,7 @@
   "Email": {
     "magicLinkSubject": "Entrar no OSM for Cities",
     "magicLinkBody": "Clique {magicLink} para entrar.",
-    "reportSubjectChanged": "{count} {datasets, plural, =1 {conjunto de dados} other {conjuntos de dados}} mudaram {lastPeriod}",
+    "reportSubjectChanged": "{count} {datasets} mudaram {lastPeriod}",
     "reportSubjectNoChanges": "Sem mudanças {lastPeriod}",
     "reportChanged": "Os seguintes conjuntos de dados foram atualizados {lastPeriod}:",
     "reportNoChanges": "Não houve mudanças nos seus {watchedDatasetsLink} {lastPeriod}.",
