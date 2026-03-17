@@ -224,6 +224,53 @@ describe("user-report email generation", () => {
     expect(dailyResult?.emailContent.subject).toContain("in the last day");
   });
 
+  it("uses templateDeprecated (not daysRemaining) when deprecatesAt is in the past", async () => {
+    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
+    mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+
+    const expiredDataset = {
+      ...mockDataset,
+      template: {
+        ...mockDataset.template,
+        deprecatesAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // yesterday
+      },
+    };
+    mockPrisma.dataset.findMany.mockResolvedValue([expiredDataset]);
+
+    const result = await generateNextUserReport();
+
+    expect(result).not.toBeNull();
+    expect(result?.emailContent.html).toContain("This template was removed from the catalog.");
+    expect(result?.emailContent.html).not.toContain("0 days remaining");
+  });
+
+  it("shows deprecation notices for all deprecated datasets", async () => {
+    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
+    mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+
+    const futureDate = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
+    const deprecatedDataset1 = {
+      ...mockDataset,
+      id: "ds-1",
+      template: { ...mockDataset.template, deprecatesAt: futureDate },
+    };
+    const deprecatedDataset2 = {
+      ...mockDataset,
+      id: "ds-2",
+      cityName: "Rio",
+      template: { ...mockDataset.template, deprecatesAt: futureDate },
+    };
+    mockPrisma.dataset.findMany.mockResolvedValue([deprecatedDataset1, deprecatedDataset2]);
+
+    const result = await generateNextUserReport();
+
+    expect(result).not.toBeNull();
+    const occurrences = (result?.emailContent.html.match(/days remaining/g) ?? []).length;
+    expect(occurrences).toBe(2);
+  });
+
   it("returns null when no user due for report", async () => {
     mockPrisma.user.findFirst.mockResolvedValue(null);
     const result = await generateNextUserReport();

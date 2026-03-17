@@ -49,7 +49,14 @@ export async function getEmailT(locale: Locale) {
   return createTranslator({ locale, messages });
 }
 
-/** Loads translation and interpolates values for a locale. */
+/**
+ * Loads translation and interpolates values for a locale.
+ * HTML strings (e.g. anchor tags) can be passed as values — use-intl/core does not
+ * HTML-escape values in string mode. This is intentional and verified by tests.
+ * t.markup() was evaluated and reverted (commit 5e643e2) due to tag-vs-placeholder
+ * syntax incompatibility. If this breaks on a library upgrade, switch to t.markup()
+ * with <tag>inner</tag> syntax in the message strings.
+ */
 export async function formatEmail(
   locale: Locale,
   key: string,

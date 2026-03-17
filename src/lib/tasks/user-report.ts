@@ -132,6 +132,10 @@ async function generateEmailContent(
 
   const lastPeriod = frequency === "DAILY" ? t("lastPeriodDay") : t("lastPeriodWeek");
 
+  // Pre-resolves plural form. Safe for current supported locales (en, pt-BR, es) which
+  // all use binary one/other forms. If a language with more plural categories is added
+  // (e.g. Arabic has 6 forms), this must switch to ICU plural syntax in the message string.
+  // See GitHub issue for tracking: epic #80.
   const datasets = count === 1 ? t("datasetsOne") : t("datasetsOther");
   const subject =
     count === 0
@@ -142,8 +146,12 @@ async function generateEmailContent(
   const deprecatedDatasets = recentDatasets.filter((ds) => ds.daysRemaining !== undefined);
   let deprecationNotice: string | undefined;
   if (deprecatedDatasets.length > 0) {
-    const ds = deprecatedDatasets[0];
-    deprecationNotice = t("templateDeprecatedDaysRemaining", { days: ds.daysRemaining! });
+    const notices = deprecatedDatasets.map((ds) =>
+      ds.daysRemaining === 0
+        ? t("templateDeprecated")
+        : t("templateDeprecatedDaysRemaining", { days: ds.daysRemaining! })
+    );
+    deprecationNotice = notices.join("<br>");
   }
 
   const reportChangedText = t("reportChanged", { lastPeriod });
