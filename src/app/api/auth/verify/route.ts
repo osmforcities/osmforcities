@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken, signIn } from "@/auth";
 import { getBaseUrl } from "@/lib/utils";
 import { prisma } from "@/lib/db";
+import { trackEvent } from "@/lib/umami";
 
 export async function GET(request: NextRequest) {
   const baseUrl = getBaseUrl(request);
@@ -19,6 +20,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(
         new URL("/?error=invalid-or-expired-token", baseUrl)
       );
+    }
+
+    if (!verificationResult.user.emailVerified) {
+      trackEvent("sign_up", "/sign-up");
     }
 
     await prisma.user.update({
