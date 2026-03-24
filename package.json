@@ -1,6 +1,6 @@
 {
   "name": "osmforcities",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "private": true,
   "scripts": {
     "dev": "COMMIT_HASH=$(git rev-parse HEAD 2>/dev/null || echo 'unknown') next dev",
@@ -58,6 +58,7 @@
     "react-map-gl": "^8.0.4",
     "react-stately": "^3.41.0",
     "tailwind-merge": "^3.3.0",
+    "use-intl": "^4.8.3",
     "winston": "^3.19.0",
     "zod": "^3.25.64"
   },

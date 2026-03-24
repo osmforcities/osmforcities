@@ -1,5 +1,20 @@
 # osmforcities
 
+## 1.6.3
+
+### Patch Changes
+
+### Changed
+
+- Refactor email internationalization to use `use-intl/core` translator APIs.
+- Switch default Overpass API endpoint to VK Maps with opt-in User-Agent behavior.
+
+### Fixed
+
+- Fix email formatting and translation interpolation issues introduced during i18n refactor.
+- Fix deprecated dataset notice handling in user reports (correct template at `daysRemaining = 0` and include all deprecated dataset notices).
+- Improve email test stability by clearing translation message cache between test runs.
+
 ## 1.6.2
 
 ### Patch Changes

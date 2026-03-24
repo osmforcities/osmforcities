@@ -490,7 +490,7 @@
   "Email": {
     "magicLinkSubject": "Sign in to OSM for Cities",
     "magicLinkBody": "Click {magicLink} to sign in.",
-    "reportSubjectChanged": "{count} {datasets, plural, =1 {dataset} other {datasets}} changed {lastPeriod}",
+    "reportSubjectChanged": "{count} {datasets} changed {lastPeriod}",
     "reportSubjectNoChanges": "No changes {lastPeriod}",
     "reportChanged": "The following datasets were updated {lastPeriod}:",
     "reportNoChanges": "There were no changes to your {watchedDatasetsLink} {lastPeriod}.",
