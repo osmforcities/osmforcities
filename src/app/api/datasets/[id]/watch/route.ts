@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { WatchDatasetSchema, UnwatchDatasetSchema } from "@/schemas/dataset";
+import { trackEvent } from "@/lib/umami";
 
 export async function POST(
   request: NextRequest,
@@ -50,6 +51,8 @@ export async function POST(
         datasetId: validatedData.datasetId,
       },
     });
+
+    trackEvent("follow", `/datasets/${datasetId}/follow`);
 
     return NextResponse.json({ success: true, watch });
   } catch (error) {

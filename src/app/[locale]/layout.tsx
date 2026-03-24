@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import NavBar from "@/components/nav-bar";
@@ -48,6 +49,14 @@ export default async function LocaleLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID &&
+          process.env.NEXT_PUBLIC_UMAMI_URL && (
+            <Script
+              src={`${process.env.NEXT_PUBLIC_UMAMI_URL}/script.js`}
+              data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+              strategy="afterInteractive"
+            />
+          )}
         <QueryProvider>
           <NextIntlClientProvider messages={messages}>
             <div className="min-h-screen flex flex-col">
