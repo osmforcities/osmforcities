@@ -4,6 +4,8 @@
 
 ### Patch Changes
 
+- Emit additional server-side Umami events for dataset lifecycle (create, follow, unfollow, user refresh, cron refresh), page views (area template discovery, dataset detail, watched dashboard), and GeoJSON download via `GET /api/datasets/[id]/export`.
+
 ### Fixed
 
 - Fix session cookie domain isolation between staging and production (#201)
