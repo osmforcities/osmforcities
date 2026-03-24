@@ -8,6 +8,7 @@
 
 ### Fixed
 
+- Dataset GeoJSON download falls back to client-side blob when the export API returns a non-success response (#205).
 - Fix session cookie domain isolation between staging and production (#201)
 
 ## 1.6.3

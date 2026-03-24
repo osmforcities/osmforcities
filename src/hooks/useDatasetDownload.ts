@@ -9,7 +9,9 @@ export function useDatasetDownload() {
 
     try {
       const response = await fetch(`/api/datasets/${dataset.id}/export`);
-      if (!response.ok) return;
+      if (!response.ok) {
+        throw new Error(`Export API error: ${response.status}`);
+      }
 
       const blob = await response.blob();
       const contentDisposition = response.headers.get("Content-Disposition");
