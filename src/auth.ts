@@ -88,9 +88,6 @@ const {
         path: "/",
         // Secure cookies are only sent over HTTPS. In production, this must be true.
         secure: isProduction,
-        // The domain is set to the root domain in production to allow authentication
-        // to persist across subdomains (e.g., www.osmforcities.org and osmforcities.org).
-        domain: isProduction ? ".osmforcities.org" : undefined,
       },
     },
   },
