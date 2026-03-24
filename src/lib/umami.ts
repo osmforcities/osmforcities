@@ -7,16 +7,20 @@ import { logger } from "@/lib/logger";
 export function trackEvent(name: string, url: string) {
   const umamiUrl = process.env.NEXT_PUBLIC_UMAMI_URL;
   const websiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
   if (!umamiUrl || !websiteId) return;
 
   fetch(`${umamiUrl}/api/send`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "User-Agent": "osmforcities-server/1.0",
+    },
     body: JSON.stringify({
       type: "event",
       payload: {
         website: websiteId,
-        hostname: new URL(umamiUrl).hostname,
+        hostname: appUrl ? new URL(appUrl).hostname : "",
         url,
         name,
       },
