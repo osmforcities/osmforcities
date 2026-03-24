@@ -1,5 +1,13 @@
 # osmforcities
 
+## 1.6.4
+
+### Patch Changes
+
+### Fixed
+
+- Fix session cookie domain isolation between staging and production (#201)
+
 ## 1.6.3
 
 ### Patch Changes
