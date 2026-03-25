@@ -28,7 +28,6 @@ export async function POST(
       return NextResponse.json({ error: "Dataset not found" }, { status: 404 });
     }
 
-    
     const existingWatch = await prisma.datasetWatch.findUnique({
       where: {
         userId_datasetId: {
@@ -52,7 +51,7 @@ export async function POST(
       },
     });
 
-    trackEvent("follow", `/datasets/${datasetId}/follow`);
+    trackEvent("dataset_follow", `/datasets/${datasetId}/follow`);
 
     return NextResponse.json({ success: true, watch });
   } catch (error) {
@@ -104,6 +103,8 @@ export async function DELETE(
         },
       },
     });
+
+    trackEvent("dataset_unfollow", `/datasets/${datasetId}/unfollow`);
 
     return NextResponse.json({ success: true });
   } catch (error) {

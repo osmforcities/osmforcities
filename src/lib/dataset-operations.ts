@@ -10,6 +10,7 @@ import {
 } from "@/lib/osm";
 import { calculateBbox } from "@/lib/utils";
 import { Prisma } from "@prisma/client";
+import { trackEvent } from "@/lib/umami";
 
 export type DatasetCreationResult = {
   dataset: NonNullable<Awaited<ReturnType<typeof getDatasetWithDetails>>>;
@@ -221,6 +222,8 @@ async function createDatasetOnDemand(
         },
       },
     });
+
+    trackEvent("dataset_create", `/datasets/${dataset.id}/create`);
 
     // Resolve template translations for the given locale
     const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);

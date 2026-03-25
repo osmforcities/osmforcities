@@ -6,6 +6,7 @@ import {
   extractDatasetStats,
 } from "@/lib/osm";
 import { calculateBbox } from "@/lib/utils";
+import { trackEvent } from "@/lib/umami";
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
@@ -94,6 +95,8 @@ export async function POST(req: NextRequest) {
             updatedAt: new Date(),
           },
         });
+
+        trackEvent("dataset_refresh_job", `/jobs/datasets/${dataset.id}/refresh`);
 
         results.successful++;
       } catch (error) {

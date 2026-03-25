@@ -6,6 +6,7 @@ import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { DatasetGrid } from "@/components/ui/template-grid";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { Link } from "@/components/ui/link";
+import { trackEvent } from "@/lib/umami";
 
 type AreaPageProps = {
   params: Promise<{
@@ -52,6 +53,8 @@ export default async function AreaPage({ params }: AreaPageProps) {
   if (!areaInfo) {
     notFound();
   }
+
+  trackEvent("datasets_list_view", "/datasets/list/view");
 
   const breadcrumbItems = [
     { label: navT("home"), href: "/" },

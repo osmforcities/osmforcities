@@ -7,6 +7,7 @@ import {
   extractDatasetStats,
 } from "@/lib/osm";
 import { calculateBbox } from "@/lib/utils";
+import { trackEvent } from "@/lib/umami";
 
 export async function POST(
   request: NextRequest,
@@ -79,6 +80,8 @@ export async function POST(
         },
       },
     });
+
+    trackEvent("dataset_refresh", `/datasets/${datasetId}/refresh`);
 
     return NextResponse.json({
       success: true,

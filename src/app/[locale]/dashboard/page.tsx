@@ -10,6 +10,7 @@ import { getTranslations, getLocale } from "next-intl/server";
 import { prisma } from "@/lib/db";
 import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
+import { trackEvent } from "@/lib/umami";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +54,8 @@ export default async function Dashboard() {
 
   const tabT = await getTranslations("TabLayout");
   const watchedDatasets = await getWatchedDatasets(user.id);
+
+  trackEvent("watched_datasets_view", "/datasets/watched/view");
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
