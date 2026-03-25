@@ -1,5 +1,8 @@
 export const GITHUB_REPO_URL = "https://github.com/osmforcities/osmforcities";
 
+/** Maximum number of datasets a user can follow */
+export const MAX_FOLLOWS_PER_USER = 10;
+
 export const CONTACT_FORM_URL = "https://forms.gle/RGZdZ1mzo4hZx5g27";
 
 /** Days before a deprecated template is deleted */

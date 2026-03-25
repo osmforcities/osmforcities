@@ -6,6 +6,7 @@ import {
 } from "./utils/auth";
 import { PrismaClient } from "@prisma/client";
 import { getLocalizedPath } from "./config";
+import { MAX_FOLLOWS_PER_USER } from "../src/lib/constants";
 
 test.describe("Dataset Watch Button", () => {
   test.describe.configure({ retries: 2 });
@@ -306,15 +307,16 @@ test.describe("Dataset Watch Button", () => {
   test("should return 403 when user has reached the follow limit", async ({
     page,
   }) => {
-    const prisma = new PrismaClient();
+    const seedPrisma = new PrismaClient();
 
-    const template = await prisma.template.findFirst();
+    const template = await seedPrisma.template.findFirst();
     if (!template) throw new Error("No template found");
 
-    // Seed 10 watches for testUser against 10 different datasets
-    for (let i = 0; i < 10; i++) {
+    // Seed MAX_FOLLOWS_PER_USER watches for testUser against different datasets
+    const seededAreaIds: number[] = [];
+    for (let i = 0; i < MAX_FOLLOWS_PER_USER; i++) {
       const randomId = Math.floor(Math.random() * 1000000) + 100000;
-      const area = await prisma.area.create({
+      const area = await seedPrisma.area.create({
         data: {
           id: randomId,
           name: `Cap Test Area ${i}`,
@@ -323,7 +325,8 @@ test.describe("Dataset Watch Button", () => {
           geojson: { type: "FeatureCollection", features: [] },
         },
       });
-      const dataset = await prisma.dataset.create({
+      seededAreaIds.push(area.id);
+      const dataset = await seedPrisma.dataset.create({
         data: {
           cityName: `Cap Test City ${i}`,
           isActive: true,
@@ -333,26 +336,11 @@ test.describe("Dataset Watch Button", () => {
           geojson: { type: "FeatureCollection", features: [] },
         },
       });
-      await prisma.datasetWatch.create({
+      await seedPrisma.datasetWatch.create({
         data: { userId: testUser.id, datasetId: dataset.id },
       });
     }
-    await prisma.$disconnect();
-
-    // Intercept the watch POST and capture the response
-    let responseStatus: number | undefined;
-    let responseBody: Record<string, unknown> | undefined;
-
-    await page.route("**/api/datasets/*/watch", async (route) => {
-      if (route.request().method() === "POST") {
-        const response = await route.fetch();
-        responseStatus = response.status();
-        responseBody = await response.json();
-        await route.fulfill({ response });
-      } else {
-        await route.continue();
-      }
-    });
+    await seedPrisma.$disconnect();
 
     await page.goto(
       `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
@@ -360,15 +348,30 @@ test.describe("Dataset Watch Button", () => {
 
     const watchButton = page.getByTestId("dataset-watch-button");
     await expect(watchButton).toBeVisible({ timeout: 10000 });
-    await watchButton.click();
 
-    await page.waitForTimeout(500);
+    const responsePromise = page.waitForResponse(
+      (resp) =>
+        /\/api\/datasets\/.+\/watch/.test(resp.url()) &&
+        resp.request().method() === "POST"
+    );
+    await watchButton.click();
+    const response = await responsePromise;
+    const responseStatus = response.status();
+    const responseBody = await response.json();
 
     expect(responseStatus).toBe(403);
-    expect(responseBody).toMatchObject({ error: "follow_limit_reached", limit: 10 });
+    expect(responseBody).toMatchObject({
+      error: "follow_limit_reached",
+      limit: MAX_FOLLOWS_PER_USER,
+    });
 
     // Button should remain in watch state (error not followed)
     await expect(watchButton).toBeVisible();
+
+    // Clean up seeded areas (datasets handled by cleanupTestUser)
+    const cleanupPrisma = new PrismaClient();
+    await cleanupPrisma.area.deleteMany({ where: { id: { in: seededAreaIds } } });
+    await cleanupPrisma.$disconnect();
   });
 
   test("should work with multiple users watching same dataset", async ({

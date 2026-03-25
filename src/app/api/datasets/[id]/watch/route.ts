@@ -3,8 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { WatchDatasetSchema, UnwatchDatasetSchema } from "@/schemas/dataset";
 import { trackEvent } from "@/lib/umami";
-
-const MAX_FOLLOWS_PER_USER = 10;
+import { MAX_FOLLOWS_PER_USER } from "@/lib/constants";
 
 export async function POST(
   request: NextRequest,
@@ -30,17 +29,6 @@ export async function POST(
       return NextResponse.json({ error: "Dataset not found" }, { status: 404 });
     }
 
-    const followCount = await prisma.datasetWatch.count({
-      where: { userId: user.id },
-    });
-
-    if (followCount >= MAX_FOLLOWS_PER_USER) {
-      return NextResponse.json(
-        { error: "follow_limit_reached", limit: MAX_FOLLOWS_PER_USER },
-        { status: 403 }
-      );
-    }
-
     const existingWatch = await prisma.datasetWatch.findUnique({
       where: {
         userId_datasetId: {
@@ -57,12 +45,25 @@ export async function POST(
       );
     }
 
-    const watch = await prisma.datasetWatch.create({
-      data: {
-        userId: user.id,
-        datasetId: validatedData.datasetId,
-      },
+    const watch = await prisma.$transaction(async (tx) => {
+      const count = await tx.datasetWatch.count({
+        where: { userId: user.id },
+      });
+      if (count >= MAX_FOLLOWS_PER_USER) return null;
+      return tx.datasetWatch.create({
+        data: {
+          userId: user.id,
+          datasetId: validatedData.datasetId,
+        },
+      });
     });
+
+    if (!watch) {
+      return NextResponse.json(
+        { error: "follow_limit_reached", limit: MAX_FOLLOWS_PER_USER },
+        { status: 403 }
+      );
+    }
 
     trackEvent("follow", `/datasets/${datasetId}/follow`);
 
