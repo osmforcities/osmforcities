@@ -3,10 +3,11 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { WatchDatasetSchema, UnwatchDatasetSchema } from "@/schemas/dataset";
 import { trackEvent } from "@/lib/umami";
+import { MAX_FOLLOWS_PER_USER } from "@/lib/constants";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
@@ -40,16 +41,29 @@ export async function POST(
     if (existingWatch) {
       return NextResponse.json(
         { error: "Already watching this dataset" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const watch = await prisma.datasetWatch.create({
-      data: {
-        userId: user.id,
-        datasetId: validatedData.datasetId,
-      },
+    const watch = await prisma.$transaction(async (tx) => {
+      const count = await tx.datasetWatch.count({
+        where: { userId: user.id },
+      });
+      if (count >= MAX_FOLLOWS_PER_USER) return null;
+      return tx.datasetWatch.create({
+        data: {
+          userId: user.id,
+          datasetId: validatedData.datasetId,
+        },
+      });
     });
+
+    if (!watch) {
+      return NextResponse.json(
+        { error: "follow_limit_reached", limit: MAX_FOLLOWS_PER_USER },
+        { status: 403 },
+      );
+    }
 
     trackEvent("dataset_follow", `/datasets/${datasetId}/follow`);
 
@@ -58,14 +72,14 @@ export async function POST(
     console.error("Error watching dataset:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
@@ -91,7 +105,7 @@ export async function DELETE(
     if (!existingWatch) {
       return NextResponse.json(
         { error: "Not watching this dataset" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -111,7 +125,7 @@ export async function DELETE(
     console.error("Error unwatching dataset:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
