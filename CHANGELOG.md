@@ -1,11 +1,34 @@
 # osmforcities
 
+## 1.6.5
+
+### Patch Changes
+
+### Added
+
+- Self-hosted Umami analytics with server-side event tracking:
+  - User funnel: sign-up, follow
+  - Dataset lifecycle: refresh, data count change, deprecation
+  - Dataset engagement: map view, GeoJSON export
+- MIT license
+
+### Changed
+
+- Cap max follows per user at 10; returns 403 with `follow_limit_reached` on excess
+
+### Fixed
+
+- Use app hostname (not analytics server) in Umami payload
+
 ## 1.6.4
 
 ### Patch Changes
 
+- Emit additional server-side Umami events for dataset lifecycle (create, follow, unfollow, user refresh, cron refresh), page views (area template discovery, dataset detail, watched dashboard), and GeoJSON download via `GET /api/datasets/[id]/export`.
+
 ### Fixed
 
+- Dataset GeoJSON download falls back to client-side blob when the export API returns a non-success response (#205).
 - Fix session cookie domain isolation between staging and production (#201)
 
 ## 1.6.3

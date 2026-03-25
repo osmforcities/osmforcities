@@ -10,6 +10,7 @@ import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
 import { DatasetStatsTable } from "@/components/dataset/dataset-stats-table";
 import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
 import { DatasetLayout } from "@/components/dataset/dataset-layout";
+import { trackEvent } from "@/lib/umami";
 
 async function getDataset(id: string, locale: string): Promise<Dataset | null> {
   try {
@@ -78,6 +79,8 @@ export default async function DatasetPage({
   if (!dataset) {
     return notFound();
   }
+
+  trackEvent("dataset_detail_view", `/datasets/${id}/view`);
 
   return (
     <DatasetLayout

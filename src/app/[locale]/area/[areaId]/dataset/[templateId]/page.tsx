@@ -20,6 +20,7 @@ import {
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import type { TranslationFunction } from "@/lib/types";
+import { trackEvent } from "@/lib/umami";
 
 type DatasetPageProps = {
   params: Promise<{
@@ -96,6 +97,11 @@ async function AreaTemplateDatasetView({
       watchersCount: result.dataset.watchers?.length || 0,
       canDelete: false,
     });
+
+    trackEvent(
+      "dataset_detail_view",
+      `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/view`
+    );
 
     const breadcrumbItems = [
       { label: navT("home"), href: "/" },
