@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { WatchDatasetSchema, UnwatchDatasetSchema } from "@/schemas/dataset";
 import { trackEvent } from "@/lib/umami";
 
+const MAX_FOLLOWS_PER_USER = 10;
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -28,7 +30,17 @@ export async function POST(
       return NextResponse.json({ error: "Dataset not found" }, { status: 404 });
     }
 
-    
+    const followCount = await prisma.datasetWatch.count({
+      where: { userId: user.id },
+    });
+
+    if (followCount >= MAX_FOLLOWS_PER_USER) {
+      return NextResponse.json(
+        { error: "follow_limit_reached", limit: MAX_FOLLOWS_PER_USER },
+        { status: 403 }
+      );
+    }
+
     const existingWatch = await prisma.datasetWatch.findUnique({
       where: {
         userId_datasetId: {

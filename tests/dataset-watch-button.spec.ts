@@ -303,6 +303,74 @@ test.describe("Dataset Watch Button", () => {
     await expect(watchButton).toBeVisible();
   });
 
+  test("should return 403 when user has reached the follow limit", async ({
+    page,
+  }) => {
+    const prisma = new PrismaClient();
+
+    const template = await prisma.template.findFirst();
+    if (!template) throw new Error("No template found");
+
+    // Seed 10 watches for testUser against 10 different datasets
+    for (let i = 0; i < 10; i++) {
+      const randomId = Math.floor(Math.random() * 1000000) + 100000;
+      const area = await prisma.area.create({
+        data: {
+          id: randomId,
+          name: `Cap Test Area ${i}`,
+          countryCode: "US",
+          bounds: "40.4774,-74.2591,40.9176,-73.7004",
+          geojson: { type: "FeatureCollection", features: [] },
+        },
+      });
+      const dataset = await prisma.dataset.create({
+        data: {
+          cityName: `Cap Test City ${i}`,
+          isActive: true,
+          dataCount: 0,
+          templateId: template.id,
+          areaId: area.id,
+          geojson: { type: "FeatureCollection", features: [] },
+        },
+      });
+      await prisma.datasetWatch.create({
+        data: { userId: testUser.id, datasetId: dataset.id },
+      });
+    }
+    await prisma.$disconnect();
+
+    // Intercept the watch POST and capture the response
+    let responseStatus: number | undefined;
+    let responseBody: Record<string, unknown> | undefined;
+
+    await page.route("**/api/datasets/*/watch", async (route) => {
+      if (route.request().method() === "POST") {
+        const response = await route.fetch();
+        responseStatus = response.status();
+        responseBody = await response.json();
+        await route.fulfill({ response });
+      } else {
+        await route.continue();
+      }
+    });
+
+    await page.goto(
+      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+    );
+
+    const watchButton = page.getByTestId("dataset-watch-button");
+    await expect(watchButton).toBeVisible({ timeout: 10000 });
+    await watchButton.click();
+
+    await page.waitForTimeout(500);
+
+    expect(responseStatus).toBe(403);
+    expect(responseBody).toMatchObject({ error: "follow_limit_reached", limit: 10 });
+
+    // Button should remain in watch state (error not followed)
+    await expect(watchButton).toBeVisible();
+  });
+
   test("should work with multiple users watching same dataset", async ({
     page,
   }) => {
