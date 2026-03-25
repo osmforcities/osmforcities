@@ -1,5 +1,25 @@
 # osmforcities
 
+## 1.6.5
+
+### Patch Changes
+
+### Added
+
+- Self-hosted Umami analytics with server-side event tracking:
+  - User funnel: sign-up, follow
+  - Dataset lifecycle: refresh, data count change, deprecation
+  - Dataset engagement: map view, GeoJSON export
+- MIT license
+
+### Changed
+
+- Cap max follows per user at 10; returns 403 with `follow_limit_reached` on excess
+
+### Fixed
+
+- Use app hostname (not analytics server) in Umami payload
+
 ## 1.6.4
 
 ### Patch Changes
