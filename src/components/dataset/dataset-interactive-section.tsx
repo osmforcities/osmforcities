@@ -20,7 +20,8 @@ export function DatasetInteractiveSection({
   const mapRef = useRef<DatasetFullMapHandle>(null);
 
   useEffect(() => {
-    if (process.env.NODE_ENV === "test") {
+    // Expose test hook in test mode or development
+    if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "development") {
       (window as unknown as Record<string, unknown>).__triggerFeatureSelect =
         setSelectedFeature;
       return () => {
