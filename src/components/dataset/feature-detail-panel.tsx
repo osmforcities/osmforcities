@@ -3,6 +3,22 @@
 import { useTranslations } from "next-intl";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import type { Feature } from "geojson";
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  Row,
+  Cell,
+  Column,
+} from "react-aria-components";
+
+const DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
+  dateStyle: "medium",
+});
+
+const KEY_CELL_CLASSES =
+  "py-1.5 pr-3 text-sm font-medium text-gray-500 align-top whitespace-nowrap";
+const VALUE_CELL_CLASSES = "py-1.5 text-sm text-gray-800 break-all";
 
 type FeatureDetailPanelProps = {
   feature: Feature;
@@ -10,7 +26,8 @@ type FeatureDetailPanelProps = {
   onBack: () => void;
 };
 
-const INTERNAL_KEYS = new Set(["ageCategory"]);
+const INTERNAL_KEYS = new Set(["ageCategory", "uid"]);
+const METADATA_KEYS = new Set(["user", "timestamp", "version", "changeset"]);
 
 export function FeatureDetailPanel({
   feature,
@@ -28,16 +45,33 @@ export function FeatureDetailPanel({
       : [undefined, undefined];
 
   let name: string | undefined;
+  let osmUser: string | undefined;
+  let osmTimestamp: string | undefined;
   const displayTags: [string, string][] = [];
+
   Object.entries(properties).forEach(([key, value]) => {
     if (key === "id" || key.startsWith("@") || INTERNAL_KEYS.has(key)) return;
     if (key === "name") { name = String(value); return; }
+    if (METADATA_KEYS.has(key)) {
+      if (key === "user") osmUser = String(value);
+      if (key === "timestamp") osmTimestamp = String(value);
+      return;
+    }
     displayTags.push([key, String(value)]);
   });
+
   const osmUrl =
     osmType && osmId
       ? `https://www.openstreetmap.org/${osmType}/${osmId}`
       : null;
+
+  const osmUserUrl = osmUser
+    ? `https://www.openstreetmap.org/user/${encodeURIComponent(osmUser)}`
+    : null;
+
+  const formattedDate = osmTimestamp
+    ? DATE_FORMATTER.format(new Date(osmTimestamp))
+    : null;
 
   return (
     <div className="flex flex-col h-full" data-testid="feature-detail-panel">
@@ -65,22 +99,50 @@ export function FeatureDetailPanel({
           )}
         </div>
 
-        {/* OSM tags */}
         {displayTags.length > 0 && (
-          <div className="space-y-1.5">
-            {displayTags.map(([key, value]) => (
-              <div key={key} className="flex gap-2 text-sm leading-snug">
-                <span className="font-medium text-gray-500 shrink-0 min-w-0">
-                  {key}
-                </span>
-                <span className="text-gray-800 break-all">{value}</span>
-              </div>
-            ))}
-          </div>
+          <Table aria-label={t("tags")} className="w-full">
+            <TableHeader>
+              <Column isRowHeader className="sr-only">
+                {t("key")}
+              </Column>
+              <Column className="sr-only">{t("value")}</Column>
+            </TableHeader>
+            <TableBody>
+              {displayTags.map(([key, value]) => (
+                <Row
+                  key={key}
+                  className="border-b border-gray-200 last:border-b-0"
+                >
+                  <Cell className={KEY_CELL_CLASSES}>{key}</Cell>
+                  <Cell className={VALUE_CELL_CLASSES}>{value}</Cell>
+                </Row>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+
+        {(osmUser || formattedDate) && (
+          <p className="text-xs text-gray-400">
+            {osmUser && osmUserUrl
+              ? t.rich("lastEditedBy", {
+                  user: osmUser,
+                  link: (chunks) => (
+                    <a
+                      href={osmUserUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:underline"
+                    >
+                      {chunks}
+                    </a>
+                  ),
+                })
+              : null}
+            {formattedDate ? ` · ${formattedDate}` : null}
+          </p>
         )}
       </div>
 
-      {/* OSM link */}
       {osmUrl && (
         <a
           href={osmUrl}

@@ -13,6 +13,11 @@ const bicycleParkingFeature: Feature = {
     capacity: "12",
     covered: "yes",
     access: "yes",
+    user: "johndoe",
+    uid: 789,
+    timestamp: "2024-06-15T10:30:00Z",
+    version: 3,
+    changeset: 456789,
     ageCategory: "recent",
   },
 };
@@ -66,6 +71,9 @@ export const Default: Story = {
     await expect(
       canvas.getByRole("button", { name: /Back/i })
     ).toBeInTheDocument();
+    // metadata: user shown, uid hidden
+    await expect(canvas.getByRole("link", { name: "johndoe" })).toBeInTheDocument();
+    await expect(canvas.queryByText("789")).not.toBeInTheDocument();
   },
 };
 
