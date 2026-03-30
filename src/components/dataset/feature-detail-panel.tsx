@@ -22,7 +22,6 @@ const VALUE_CELL_CLASSES = "py-1.5 text-sm text-gray-800 break-all";
 
 type FeatureDetailPanelProps = {
   feature: Feature;
-  activeField?: string;
   onBack: () => void;
 };
 
@@ -31,7 +30,6 @@ const METADATA_KEYS = new Set(["user", "timestamp", "version", "changeset"]);
 
 export function FeatureDetailPanel({
   feature,
-  activeField,
   onBack,
 }: FeatureDetailPanelProps) {
   const t = useTranslations("DatasetMap");
@@ -88,37 +86,37 @@ export function FeatureDetailPanel({
           {name ? (
             <h2 className="text-base font-semibold text-gray-900">{name}</h2>
           ) : (
-            <h2 className="text-base font-medium text-gray-400 italic">
-              {osmType && osmId ? `${osmType}/${osmId}` : t("noAdditionalInfo")}
+            <h2 className="text-base font-semibold text-gray-900">
+              {osmType && osmId
+                ? `${osmType.charAt(0).toUpperCase() + osmType.slice(1)} ${osmId}`
+                : t("noAdditionalInfo")}
             </h2>
-          )}
-          {activeField && (
-            <span className="inline-flex mt-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-full px-2 py-0.5">
-              {activeField}
-            </span>
           )}
         </div>
 
         {displayTags.length > 0 && (
-          <Table aria-label={t("tags")} className="w-full">
-            <TableHeader>
-              <Column isRowHeader className="sr-only">
-                {t("key")}
-              </Column>
-              <Column className="sr-only">{t("value")}</Column>
-            </TableHeader>
-            <TableBody>
-              {displayTags.map(([key, value]) => (
-                <Row
-                  key={key}
-                  className="border-b border-gray-200 last:border-b-0"
-                >
-                  <Cell className={KEY_CELL_CLASSES}>{key}</Cell>
-                  <Cell className={VALUE_CELL_CLASSES}>{value}</Cell>
-                </Row>
-              ))}
-            </TableBody>
-          </Table>
+          <>
+            <h3 className="text-sm font-semibold text-gray-900">{t("tags")}</h3>
+            <Table aria-label={t("tags")} className="w-full">
+              <TableHeader>
+                <Column isRowHeader className="sr-only">
+                  {t("key")}
+                </Column>
+                <Column className="sr-only">{t("value")}</Column>
+              </TableHeader>
+              <TableBody>
+                {displayTags.map(([key, value]) => (
+                  <Row
+                    key={key}
+                    className="border-b border-gray-200 last:border-b-0"
+                  >
+                    <Cell className={KEY_CELL_CLASSES}>{key}</Cell>
+                    <Cell className={VALUE_CELL_CLASSES}>{value}</Cell>
+                  </Row>
+                ))}
+              </TableBody>
+            </Table>
+          </>
         )}
 
         {(osmUser || formattedDate) && (

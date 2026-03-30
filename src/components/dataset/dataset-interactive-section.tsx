@@ -35,7 +35,6 @@ export function DatasetInteractiveSection({
             {selectedFeature ? (
               <FeatureDetailPanel
                 feature={selectedFeature}
-                activeField={dataset.template.category}
                 onBack={() => setSelectedFeature(null)}
               />
             ) : (

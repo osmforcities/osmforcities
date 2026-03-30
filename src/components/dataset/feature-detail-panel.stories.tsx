@@ -57,7 +57,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     feature: bicycleParkingFeature,
-    activeField: "bicycle_parking",
     onBack: fn(),
   },
   play: async ({ canvas }) => {
@@ -80,12 +79,11 @@ export const Default: Story = {
 export const NoName: Story = {
   args: {
     feature: noNameFeature,
-    activeField: "bicycle_parking",
     onBack: fn(),
   },
   play: async ({ canvas }) => {
-    // No name tag — fallback heading shows osm type/id
-    await expect(canvas.getByRole("heading")).toBeInTheDocument();
+    // No name tag — fallback heading shows capitalized OSM type and ID
+    await expect(canvas.getByRole("heading", { name: "Node 789012" })).toBeInTheDocument();
     await expect(canvas.getByText("wall_loops")).toBeInTheDocument();
   },
 };
@@ -108,7 +106,6 @@ export const NoOsmId: Story = {
 export const OnBackClick: Story = {
   args: {
     feature: bicycleParkingFeature,
-    activeField: "bicycle_parking",
     onBack: fn(),
   },
   play: async ({ canvas, args, userEvent }) => {
