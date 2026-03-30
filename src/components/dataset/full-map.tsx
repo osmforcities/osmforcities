@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useCallback, useEffect } from "react";
-import Map from "react-map-gl/maplibre";
+import Map, { Source, Layer } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useTranslations } from "next-intl";
@@ -28,7 +28,7 @@ export function DatasetFullMap({ dataset, onFeatureSelect }: DatasetFullMapProps
   const mapRef = useRef<MapRef | null>(null);
 
   const { dateFilter, setDateFilter, updateFilterIfNeeded } = useDateFilter();
-  const { handleFeatureClick, handleMouseEnter, handleMouseLeave, cursor } = useFeatureSelection(onFeatureSelect);
+  const { selectedFeature, handleFeatureClick, handleMouseEnter, handleMouseLeave, cursor } = useFeatureSelection(onFeatureSelect);
   const { processedData, initialViewState, hasFilteredData } = useMapData({
     dataset,
     dateFilter,
@@ -95,6 +95,45 @@ export function DatasetFullMap({ dataset, onFeatureSelect }: DatasetFullMapProps
             touchZoomRotate={true}
           >
             <MemoizedMapLayers geoJSONData={processedData} />
+            {selectedFeature && (
+              <Source
+                id="highlight-feature"
+                type="geojson"
+                data={{
+                  type: "Feature",
+                  geometry: selectedFeature.geometry,
+                  properties: selectedFeature.properties,
+                }}
+              >
+                <Layer
+                  id="highlight-fill"
+                  type="fill"
+                  paint={{
+                    "fill-color": "#0b4ad8",
+                    "fill-opacity": 0.3,
+                  }}
+                />
+                <Layer
+                  id="highlight-stroke"
+                  type="line"
+                  paint={{
+                    "line-color": "#0b4ad8",
+                    "line-width": 3,
+                    "line-opacity": 1,
+                  }}
+                />
+                <Layer
+                  id="highlight-point"
+                  type="circle"
+                  paint={{
+                    "circle-radius": 6,
+                    "circle-color": "#0b4ad8",
+                    "circle-stroke-width": 2,
+                    "circle-stroke-color": "#06256d",
+                  }}
+                />
+              </Source>
+            )}
             <MemoizedMapDateFilterControl
               availableTimeframes={processedData.availableTimeframes}
               dateFilter={dateFilter}
