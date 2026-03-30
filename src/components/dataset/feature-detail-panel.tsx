@@ -96,14 +96,16 @@ export function FeatureDetailPanel({
         </div>
 
         {displayTags.length > 0 && (
-          <>
+          <div className="space-y-2">
             <h3 className="text-sm font-semibold text-gray-900">{t("tags")}</h3>
             <Table aria-label={t("tags")} className="w-full">
               <TableHeader>
-                <Column isRowHeader className="sr-only">
+                <Column isRowHeader className="w-1/2 text-left py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t("key")}
                 </Column>
-                <Column className="sr-only">{t("value")}</Column>
+                <Column className="w-1/2 text-left py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t("value")}
+                </Column>
               </TableHeader>
               <TableBody>
                 {displayTags.map(([key, value]) => (
@@ -117,7 +119,7 @@ export function FeatureDetailPanel({
                 ))}
               </TableBody>
             </Table>
-          </>
+          </div>
         )}
 
         {(osmUser || formattedDate) && (
