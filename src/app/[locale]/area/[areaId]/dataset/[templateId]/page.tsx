@@ -3,10 +3,7 @@ import { notFound } from "next/navigation";
 import { getTranslations, getLocale } from "next-intl/server";
 import { DatasetSchema } from "@/schemas/dataset";
 import type { FeatureCollection } from "geojson";
-import { DatasetMapWrapper } from "@/components/dataset/map-wrapper";
-import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
-import { DatasetStatsTable } from "@/components/dataset/dataset-stats-table";
-import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
+import { DatasetInteractiveSection } from "@/components/dataset/dataset-interactive-section";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import { getAreaDetailsById } from "@/lib/nominatim";
@@ -121,27 +118,7 @@ async function AreaTemplateDatasetView({
             <BreadcrumbNav items={breadcrumbItems} />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1 min-h-0">
-            {/* Side Panel */}
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 h-full">
-                <div className="flex flex-col h-full">
-                  <div className="flex-1 overflow-y-auto space-y-6">
-                    <DatasetInfoPanel dataset={dataset} />
-                    <DatasetStatsTable dataset={dataset} />
-                  </div>
-                  <DatasetActionsSection dataset={dataset} />
-                </div>
-              </div>
-            </div>
-
-            {/* Map Panel */}
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden h-full">
-                <DatasetMapWrapper dataset={dataset} />
-              </div>
-            </div>
-          </div>
+          <DatasetInteractiveSection dataset={dataset} />
         </div>
       </div>
     );

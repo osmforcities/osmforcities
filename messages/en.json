@@ -310,6 +310,8 @@
     "joined": "Joined: {date}"
   },
   "DatasetMap": {
+    "back": "Back",
+    "openInOsm": "Open in OpenStreetMap",
     "mapLabel": "Interactive map showing dataset",
     "fullScreenMapLabel": "Full screen interactive map showing dataset",
     "noDataAvailable": "No data available. Data will be automatically refreshed when you visit this page.",

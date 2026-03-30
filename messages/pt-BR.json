@@ -308,6 +308,8 @@
     "joined": "Entrou: {date}"
   },
   "DatasetMap": {
+    "back": "Voltar",
+    "openInOsm": "Abrir no OpenStreetMap",
     "mapLabel": "Mapa interativo mostrando conjunto de dados",
     "fullScreenMapLabel": "Mapa interativo em tela cheia mostrando conjunto de dados",
     "noDataAvailable": "Nenhum dado disponível. Os dados serão atualizados automaticamente quando você visitar esta página.",

@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./test-setup";
 import { createTestUser, setupAuthenticationWithLogin } from "./utils/auth";
 import { PrismaClient } from "@prisma/client";
 
@@ -44,5 +44,26 @@ test.describe("Dataset Page", () => {
 
     // Should show breadcrumb navigation
     await expect(page.locator("[data-testid='breadcrumb-nav']")).toBeVisible();
+  });
+});
+
+test.describe("Feature detail panel", () => {
+  test.beforeEach(async ({ page }) => {
+    const prisma = new PrismaClient();
+    const user = await createTestUser(prisma);
+    await prisma.$disconnect();
+    await setupAuthenticationWithLogin(page, user);
+  });
+
+  test("sidebar shows dataset info by default", async ({ page }) => {
+    await page.goto("/en/area/271110/dataset/bicycle-parking");
+    await page.waitForLoadState("domcontentloaded");
+
+    await expect(
+      page.locator("[data-testid='dataset-sidebar-default']")
+    ).toBeVisible();
+    await expect(
+      page.locator("[data-testid='feature-detail-panel']")
+    ).toBeHidden();
   });
 });

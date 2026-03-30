@@ -9,23 +9,26 @@ import type { Dataset } from "@/schemas/dataset";
 import { MapLayers } from "./map/layers";
 import { AgeLegend } from "./map/age-legend";
 import { MapDateFilterControl } from "./map/map-date-filter-control";
-import { useDateFilter, useMapData } from "./map/hooks";
+import { useDateFilter, useMapData, useFeatureSelection } from "./map/hooks";
+import type { Feature } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
 import type { DateFilter } from "@/types/geojson";
 
 type DatasetFullMapProps = {
   dataset: Dataset;
+  onFeatureSelect?: (feature: Feature | null) => void;
 };
 
 // Only memoize heavy components that actually benefit from it
 const MemoizedMapLayers = React.memo(MapLayers);
 const MemoizedMapDateFilterControl = React.memo(MapDateFilterControl);
 
-export function DatasetFullMap({ dataset }: DatasetFullMapProps) {
+export function DatasetFullMap({ dataset, onFeatureSelect }: DatasetFullMapProps) {
   const t = useTranslations("DatasetMap");
   const mapRef = useRef<MapRef | null>(null);
 
   const { dateFilter, setDateFilter, updateFilterIfNeeded } = useDateFilter();
+  const { handleFeatureClick } = useFeatureSelection(onFeatureSelect);
   const { processedData, initialViewState, hasFilteredData } = useMapData({
     dataset,
     dateFilter,
@@ -74,6 +77,13 @@ export function DatasetFullMap({ dataset }: DatasetFullMapProps) {
             aria-label={t('fullScreenMapLabel')}
             initialViewState={initialViewState}
             style={{ width: "100%", height: "100%" }}
+            onClick={handleFeatureClick}
+            interactiveLayerIds={[
+              "simplified-features",
+              "detailed-polygons",
+              "detailed-lines",
+              "detailed-points",
+            ]}
             scrollZoom={true}
             dragPan={true}
             dragRotate={false}
