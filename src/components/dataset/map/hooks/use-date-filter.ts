@@ -41,6 +41,9 @@ export function useFeatureSelection(
       if (feature) {
         setSelectedFeature(feature);
         onFeatureSelect?.(feature);
+      } else {
+        setSelectedFeature(null);
+        onFeatureSelect?.(null);
       }
     },
     [onFeatureSelect]

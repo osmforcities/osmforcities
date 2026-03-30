@@ -20,11 +20,13 @@ export function DatasetInteractiveSection({
   const mapRef = useRef<DatasetFullMapHandle>(null);
 
   useEffect(() => {
-    (window as unknown as Record<string, unknown>).__triggerFeatureSelect =
-      setSelectedFeature;
-    return () => {
-      delete (window as unknown as Record<string, unknown>).__triggerFeatureSelect;
-    };
+    if (process.env.NODE_ENV === "test") {
+      (window as unknown as Record<string, unknown>).__triggerFeatureSelect =
+        setSelectedFeature;
+      return () => {
+        delete (window as unknown as Record<string, unknown>).__triggerFeatureSelect;
+      };
+    }
   }, []);
 
   return (
