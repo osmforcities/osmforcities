@@ -48,16 +48,18 @@ export function FeatureDetailPanel({
   let osmTimestamp: string | undefined;
   const displayTags: [string, string][] = [];
 
-  Object.entries(properties).forEach(([key, value]) => {
-    if (key === "id" || key.startsWith("@") || INTERNAL_KEYS.has(key)) return;
-    if (key === "name") { name = String(value); return; }
-    if (METADATA_KEYS.has(key)) {
-      if (key === "user") osmUser = String(value);
-      if (key === "timestamp") osmTimestamp = String(value);
-      return;
-    }
-    displayTags.push([key, String(value)]);
-  });
+  Object.entries(properties)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .forEach(([key, value]) => {
+      if (key === "id" || key.startsWith("@") || INTERNAL_KEYS.has(key)) return;
+      if (key === "name") { name = String(value); return; }
+      if (METADATA_KEYS.has(key)) {
+        if (key === "user") osmUser = String(value);
+        if (key === "timestamp") osmTimestamp = String(value);
+        return;
+      }
+      displayTags.push([key, String(value)]);
+    });
 
   const osmUrl =
     osmType && osmId
