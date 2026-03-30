@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useCallback, useEffect } from "react";
+import React, { useRef, useCallback, useEffect, useImperativeHandle, forwardRef } from "react";
 import Map, { Source, Layer } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -14,6 +14,10 @@ import type { Feature } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
 import type { DateFilter } from "@/types/geojson";
 
+export interface DatasetFullMapHandle {
+  deselectFeature: () => void;
+}
+
 type DatasetFullMapProps = {
   dataset: Dataset;
   onFeatureSelect?: (feature: Feature | null) => void;
@@ -23,12 +27,18 @@ type DatasetFullMapProps = {
 const MemoizedMapLayers = React.memo(MapLayers);
 const MemoizedMapDateFilterControl = React.memo(MapDateFilterControl);
 
-export function DatasetFullMap({ dataset, onFeatureSelect }: DatasetFullMapProps) {
-  const t = useTranslations("DatasetMap");
-  const mapRef = useRef<MapRef | null>(null);
+export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapProps>(
+  ({ dataset, onFeatureSelect }, ref) => {
+    const t = useTranslations("DatasetMap");
+    const mapRef = useRef<MapRef | null>(null);
 
-  const { dateFilter, setDateFilter, updateFilterIfNeeded } = useDateFilter();
-  const { selectedFeature, handleFeatureClick, handleMouseEnter, handleMouseLeave, cursor } = useFeatureSelection(onFeatureSelect);
+    const { dateFilter, setDateFilter, updateFilterIfNeeded } = useDateFilter();
+    const { selectedFeature, handleFeatureClick, handleMouseEnter, handleMouseLeave, handleDeselect, cursor } = useFeatureSelection(onFeatureSelect);
+
+    // Expose deselect function to parent
+    useImperativeHandle(ref, () => ({
+      deselectFeature: handleDeselect,
+    }), [handleDeselect]);
   const { processedData, initialViewState, hasFilteredData } = useMapData({
     dataset,
     dateFilter,
@@ -146,4 +156,6 @@ export function DatasetFullMap({ dataset, onFeatureSelect }: DatasetFullMapProps
       </div>
     </div>
   );
-}
+});
+
+DatasetFullMap.displayName = "DatasetFullMap";

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { Feature } from "geojson";
 import type { Dataset } from "@/schemas/dataset";
-import { DatasetMapWrapper } from "@/components/dataset/map-wrapper";
+import { DatasetMapWrapper, type DatasetFullMapHandle } from "@/components/dataset/map-wrapper";
 import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
 import { DatasetStatsTable } from "@/components/dataset/dataset-stats-table";
 import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
@@ -17,6 +17,7 @@ export function DatasetInteractiveSection({
   dataset,
 }: DatasetInteractiveSectionProps) {
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
+  const mapRef = useRef<DatasetFullMapHandle>(null);
 
   useEffect(() => {
     (window as unknown as Record<string, unknown>).__triggerFeatureSelect =
@@ -35,7 +36,10 @@ export function DatasetInteractiveSection({
             {selectedFeature ? (
               <FeatureDetailPanel
                 feature={selectedFeature}
-                onBack={() => setSelectedFeature(null)}
+                onBack={() => {
+                  setSelectedFeature(null);
+                  mapRef.current?.deselectFeature();
+                }}
               />
             ) : (
               <>
@@ -54,6 +58,7 @@ export function DatasetInteractiveSection({
       <div className="lg:col-span-2">
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden h-full">
           <DatasetMapWrapper
+            ref={mapRef}
             dataset={dataset}
             onFeatureSelect={setSelectedFeature}
           />

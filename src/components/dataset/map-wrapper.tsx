@@ -1,6 +1,7 @@
 "use client";
 
-import { DatasetFullMap } from "@/components/dataset/full-map";
+import { forwardRef } from "react";
+import { DatasetFullMap, type DatasetFullMapHandle } from "@/components/dataset/full-map";
 import type { Dataset } from "@/schemas/dataset";
 import type { Feature } from "geojson";
 
@@ -9,6 +10,12 @@ type DatasetMapWrapperProps = {
   onFeatureSelect?: (feature: Feature | null) => void;
 };
 
-export function DatasetMapWrapper({ dataset, onFeatureSelect }: DatasetMapWrapperProps) {
-  return <DatasetFullMap dataset={dataset} onFeatureSelect={onFeatureSelect} />;
-}
+export type { DatasetFullMapHandle };
+
+export const DatasetMapWrapper = forwardRef<DatasetFullMapHandle, DatasetMapWrapperProps>(
+  ({ dataset, onFeatureSelect }, ref) => {
+    return <DatasetFullMap ref={ref} dataset={dataset} onFeatureSelect={onFeatureSelect} />;
+  }
+);
+
+DatasetMapWrapper.displayName = "DatasetMapWrapper";
