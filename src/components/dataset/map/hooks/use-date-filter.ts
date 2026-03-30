@@ -33,6 +33,7 @@ export function useFeatureSelection(
   onFeatureSelect?: (feature: Feature | null) => void
 ) {
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
+  const [cursor, setCursor] = useState<string>("grab");
 
   const handleFeatureClick = useCallback(
     (event: MapLayerMouseEvent) => {
@@ -45,6 +46,9 @@ export function useFeatureSelection(
     [onFeatureSelect]
   );
 
+  const handleMouseEnter = useCallback(() => setCursor("pointer"), []);
+  const handleMouseLeave = useCallback(() => setCursor("grab"), []);
+
   const handleDeselect = useCallback(() => {
     setSelectedFeature(null);
     onFeatureSelect?.(null);
@@ -53,7 +57,10 @@ export function useFeatureSelection(
   return {
     selectedFeature,
     handleFeatureClick,
+    handleMouseEnter,
+    handleMouseLeave,
     handleDeselect,
+    cursor,
   };
 }
 

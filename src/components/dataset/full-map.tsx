@@ -28,7 +28,7 @@ export function DatasetFullMap({ dataset, onFeatureSelect }: DatasetFullMapProps
   const mapRef = useRef<MapRef | null>(null);
 
   const { dateFilter, setDateFilter, updateFilterIfNeeded } = useDateFilter();
-  const { handleFeatureClick } = useFeatureSelection(onFeatureSelect);
+  const { handleFeatureClick, handleMouseEnter, handleMouseLeave, cursor } = useFeatureSelection(onFeatureSelect);
   const { processedData, initialViewState, hasFilteredData } = useMapData({
     dataset,
     dateFilter,
@@ -77,7 +77,10 @@ export function DatasetFullMap({ dataset, onFeatureSelect }: DatasetFullMapProps
             aria-label={t('fullScreenMapLabel')}
             initialViewState={initialViewState}
             style={{ width: "100%", height: "100%" }}
+            cursor={cursor}
             onClick={handleFeatureClick}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             interactiveLayerIds={[
               "simplified-features",
               "detailed-polygons",
