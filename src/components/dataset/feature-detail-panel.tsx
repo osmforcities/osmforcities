@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import type { Feature } from "geojson";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -142,15 +143,20 @@ export function FeatureDetailPanel({
       </div>
 
       {osmUrl && (
-        <a
-          href={osmUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg"
+        <Button
+          asChild
+          variant="outline"
+          className="w-full h-10"
         >
-          {t("openInOsm")}
-          <ExternalLink className="size-4" />
-        </a>
+          <a
+            href={osmUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t("openInOsm")}
+            <ExternalLink className="h-4 w-4" />
+          </a>
+        </Button>
       )}
     </div>
   );
