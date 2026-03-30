@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Feature } from "geojson";
 import type { Dataset } from "@/schemas/dataset";
 import { DatasetMapWrapper } from "@/components/dataset/map-wrapper";
@@ -17,6 +17,14 @@ export function DatasetInteractiveSection({
   dataset,
 }: DatasetInteractiveSectionProps) {
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
+
+  useEffect(() => {
+    (window as unknown as Record<string, unknown>).__triggerFeatureSelect =
+      setSelectedFeature;
+    return () => {
+      delete (window as unknown as Record<string, unknown>).__triggerFeatureSelect;
+    };
+  }, []);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1 min-h-0">

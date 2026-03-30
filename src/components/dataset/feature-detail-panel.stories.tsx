@@ -7,13 +7,13 @@ const bicycleParkingFeature: Feature = {
   type: "Feature",
   geometry: { type: "Point", coordinates: [-46.63, -23.55] },
   properties: {
-    "@type": "node",
-    "@id": "123456",
+    id: "node/123456",
     name: "Bicycle Parking Central",
     bicycle_parking: "stands",
     capacity: "12",
     covered: "yes",
     access: "yes",
+    ageCategory: "recent",
   },
 };
 
@@ -21,10 +21,10 @@ const noNameFeature: Feature = {
   type: "Feature",
   geometry: { type: "Point", coordinates: [-46.63, -23.55] },
   properties: {
-    "@type": "node",
-    "@id": "789012",
+    id: "node/789012",
     bicycle_parking: "wall_loops",
     capacity: "6",
+    ageCategory: "medium",
   },
 };
 
@@ -34,6 +34,7 @@ const noOsmIdFeature: Feature = {
   properties: {
     name: "Some Feature",
     bicycle_parking: "stands",
+    ageCategory: "older",
   },
 };
 
@@ -75,9 +76,8 @@ export const NoName: Story = {
     onBack: fn(),
   },
   play: async ({ canvas }) => {
-    await expect(
-      canvas.queryByRole("heading")
-    ).not.toBeInTheDocument();
+    // No name tag — fallback heading shows osm type/id
+    await expect(canvas.getByRole("heading")).toBeInTheDocument();
     await expect(canvas.getByText("wall_loops")).toBeInTheDocument();
   },
 };
