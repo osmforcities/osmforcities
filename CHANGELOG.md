@@ -1,5 +1,15 @@
 # osmforcities
 
+## 1.7.0
+
+### Minor Changes
+
+### Added
+
+- Feature detail panel on dataset map: click a map feature to open a panel showing its OSM tags and metadata (#208)
+- Highlight selected feature on the map while detail panel is open
+- Pointer cursor on hoverable map features
+
 ## 1.6.5
 
 ### Patch Changes
