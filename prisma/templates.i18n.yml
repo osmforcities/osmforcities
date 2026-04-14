@@ -270,6 +270,15 @@ templates:
       en: College
       pt: Faculdades
       es: Facultades
+  hotels:
+    name:
+      en: Hotels
+      pt: Hotéis
+      es: Hoteles
+    desc:
+      en: Hotels
+      pt: Hotéis
+      es: Hoteles
   attractions:
     name:
       en: Attractions
