@@ -43,6 +43,35 @@ export function calculateBbox(geojson: FeatureCollection): Bbox | null {
   }
 }
 
+/**
+ * Parse area bounds from database format to GeoJSON bbox format.
+ * Database stores bounds as comma-separated string: "minLat,minLon,maxLat,maxLon"
+ * GeoJSON expects bbox as array: [minLon, minLat, maxLon, maxLat]
+ * @param area - Area object with bounds property
+ * @returns Bbox if valid, null otherwise
+ */
+export function parseAreaBounds(area: Pick<Area, "bounds">): Bbox | null {
+  if (!area?.bounds) return null;
+
+  try {
+    const parts = area.bounds.split(',');
+    if (parts.length !== 4) return null;
+
+    const values = parts.map((p) => parseFloat(p));
+    if (values.some((v) => isNaN(v))) return null;
+
+    // Database format: [minLat, minLon, maxLat, maxLon]
+    // GeoJSON bbox format: [minLon, minLat, maxLon, maxLat]
+    const [minLat, minLon, maxLat, maxLon] = values;
+    const bounds: Bbox = [minLon, minLat, maxLon, maxLat];
+
+    const result = BboxSchema.safeParse(bounds);
+    return result.success ? bounds : null;
+  } catch {
+    return null;
+  }
+}
+
 export const getAvailableTimeframes = (features: Feature[]): DateFilter[] => {
   const availableTimeframes: DateFilter[] = ["all"];
 

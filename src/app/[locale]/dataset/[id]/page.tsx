@@ -11,6 +11,8 @@ import { DatasetStatsTable } from "@/components/dataset/dataset-stats-table";
 import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
 import { DatasetLayout } from "@/components/dataset/dataset-layout";
 import { trackEvent } from "@/lib/umami";
+import { getAreaBoundary } from "@/lib/area-boundary";
+import { Suspense } from "react";
 
 async function getDataset(id: string, locale: string): Promise<Dataset | null> {
   try {
@@ -80,6 +82,8 @@ export default async function DatasetPage({
     return notFound();
   }
 
+  const boundary = await getAreaBoundary(dataset.area.id);
+
   trackEvent("dataset_detail_view", `/datasets/${id}/view`);
 
   return (
@@ -93,7 +97,20 @@ export default async function DatasetPage({
           <DatasetActionsSection dataset={dataset} />
         </div>
       }
-      mapPanel={<DatasetMapWrapper dataset={dataset} />}
+      mapPanel={
+        <Suspense fallback={<MapLoadingState />}>
+          <DatasetMapWrapper dataset={dataset} boundary={boundary} />
+        </Suspense>
+      }
     />
+  );
+}
+
+function MapLoadingState() {
+  const t = useTranslations("DatasetMap");
+  return (
+    <div className="flex items-center justify-center h-full bg-gray-100 rounded-lg">
+      <div className="text-center text-gray-500">{t("loadingMap")}</div>
+    </div>
   );
 }

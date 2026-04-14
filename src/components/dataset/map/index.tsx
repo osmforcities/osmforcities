@@ -1,32 +1,69 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import Map, { Popup } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { FeatureCollection } from "geojson";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 import type { Dataset } from "@/schemas/dataset";
-import { calculateBbox } from "@/lib/utils";
+import { calculateBbox, parseAreaBounds } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { DateFilterControls } from "./date-filter-controls";
 import { FeatureTooltip } from "./feature-tooltip";
 import { MapLayers } from "./layers";
+import { AoiBoundaryLayer } from "./aoi-boundary-layer";
 import { NoDataMessage } from "./no-data-message";
 import { AgeLegend } from "./age-legend";
 import { processOSMFeaturesForVisualization } from "../../../lib/osm-data-processor";
 import { useMapInteractions, useDateFilter } from "./hooks";
 
+
 type DatasetMapProps = {
   dataset: Dataset;
+  boundary?: FeatureCollection | null;
 };
 
-export default function DatasetMap({ dataset }: DatasetMapProps) {
+export default function DatasetMap({ dataset, boundary }: DatasetMapProps) {
   const t = useTranslations("DatasetMap");
   const mapRef = useRef<MapRef | null>(null);
 
   const { tooltipInfo, handleHover, handleMouseLeave } = useMapInteractions();
   const { dateFilter, setDateFilter, updateFilterIfNeeded } = useDateFilter();
+
+  // Calculate initial view state before any conditional returns
+  const initialViewState = useMemo(() => {
+    const areaBounds = parseAreaBounds(dataset.area);
+
+    if (areaBounds) {
+      return {
+        bounds: areaBounds,
+        fitBoundsOptions: { padding: 20 },
+      };
+    }
+
+    if (dataset.geojson) {
+      const rawGeoJSONData = GeoJSONFeatureCollectionSchema.parse(
+        dataset.geojson
+      ) as FeatureCollection;
+
+      const geoJSONData = processOSMFeaturesForVisualization(
+        rawGeoJSONData,
+        dateFilter
+      );
+
+      const dataBounds = calculateBbox(geoJSONData);
+
+      if (dataBounds) {
+        return {
+          bounds: dataBounds,
+          fitBoundsOptions: { padding: 20 },
+        };
+      }
+    }
+
+    return undefined;
+  }, [dataset.area, dataset.geojson, dateFilter]);
 
   if (!dataset.geojson) {
     return (
@@ -59,8 +96,6 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
 
   const hasFilteredData = geoJSONData.features.length > 0;
 
-  const dataBounds = calculateBbox(geoJSONData);
-
   return (
     <div className="space-y-4">
       <DateFilterControls
@@ -81,19 +116,7 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
               ref={mapRef}
               mapStyle="https://tiles.openfreemap.org/styles/positron"
               aria-label={t('mapLabel')}
-              initialViewState={
-                dataBounds
-                  ? {
-                      bounds: [
-                        dataBounds[0],
-                        dataBounds[1],
-                        dataBounds[2],
-                        dataBounds[3],
-                      ],
-                      fitBoundsOptions: { padding: 20 },
-                    }
-                  : undefined
-              }
+              initialViewState={initialViewState}
               interactiveLayerIds={[
                 "simplified-features",
                 "detailed-polygons",
@@ -103,8 +126,8 @@ export default function DatasetMap({ dataset }: DatasetMapProps) {
               onMouseMove={handleHover}
               onMouseLeave={handleMouseLeave}
             >
+              {boundary && <AoiBoundaryLayer boundary={boundary} />}
               {geoJSONData && <MapLayers geoJSONData={geoJSONData} />}
-
               {tooltipInfo && (
                 <Popup
                   longitude={tooltipInfo.longitude}
