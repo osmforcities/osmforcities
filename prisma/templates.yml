@@ -184,7 +184,7 @@ templates:
   - ["houses","building=house;building=detached;building=semidetached_house;building=terrace","housing","Home"]
   - ["residential","landuse=residential","housing","Building2"]
   - ["dormitories","building=dormitory","housing","Briefcase"]
-  - ["hotel-guesthouse","tourism=hotel;tourism=guest_house;tourism=hostel","housing","Building2"]
+  - ["hotel-guesthouse","tourism=guest_house;tourism=hostel","housing","Building2"]
 # Sports facilities
   - ["football","sport=soccer","sports","Goal"]
   - ["basketball","sport=basketball","sports"]
