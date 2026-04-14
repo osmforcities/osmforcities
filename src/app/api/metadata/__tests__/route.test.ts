@@ -35,7 +35,7 @@ describe("/api/metadata", () => {
     }
   });
 
-  it("returns commit hash from build-time env", async () => {
+  it("returns commit hash from env", async () => {
     process.env.COMMIT_HASH = "test-build-hash";
 
     const response = await GET();
