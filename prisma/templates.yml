@@ -39,6 +39,7 @@ templates:
   - ["kindergarten","amenity=kindergarten","education"]
   - ["college","amenity=college","education"]
 # Tourism
+  - ["hotels","tourism=hotel","tourism","Building2"]
   - ["attractions","tourism=attraction","tourism"]
   - ["viewpoints","tourism=viewpoint","tourism"]
   - ["campsites","tourism=camp_site","tourism"]
