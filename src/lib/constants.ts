@@ -8,6 +8,9 @@ export const CONTACT_FORM_URL = "https://forms.gle/RGZdZ1mzo4hZx5g27";
 /** Days before a deprecated template is deleted */
 export const DEPRECATION_DAYS = 30;
 
+/** Simplification tolerance for area boundaries (reduces coordinate count while preserving detail) */
+export const BOUNDARY_SIMPLIFICATION_TOLERANCE = 0.00001;
+
 /** Supported locales for translations */
 export const SUPPORTED_LOCALES = ["en", "pt-BR", "es"] as const;
 
