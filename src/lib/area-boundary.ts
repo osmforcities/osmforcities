@@ -2,7 +2,10 @@ import { prisma } from "@/lib/db";
 import simplify from "@turf/simplify";
 import { executeOverpassQuery, convertOverpassToGeoJSON } from "@/lib/osm";
 import { BOUNDARY_SIMPLIFICATION_TOLERANCE } from "@/lib/constants";
+import { createLogger } from "@/lib/logger";
 import type { FeatureCollection } from "geojson";
+
+const log = createLogger("area-boundary");
 
 /**
  * Check if a GeoJSON feature collection contains a real polygon boundary.
@@ -40,7 +43,13 @@ export async function getAreaBoundary(areaId: number): Promise<FeatureCollection
   }
 
   const queryString = `[out:json][timeout:60];rel(${areaId});out geom;`;
-  const overpassData = await executeOverpassQuery(queryString);
+  let overpassData;
+  try {
+    overpassData = await executeOverpassQuery(queryString);
+  } catch (error) {
+    log.warn("Overpass query failed", { areaId, error });
+    return null;
+  }
   const geojson = convertOverpassToGeoJSON(overpassData);
 
   const relationFeature = geojson.features.find(
