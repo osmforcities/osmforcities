@@ -37,6 +37,7 @@
     "@tanstack/react-query": "^5.80.7",
     "@turf/bbox": "^7.2.0",
     "@turf/centroid": "^7.2.0",
+    "@turf/simplify": "^7.3.4",
     "@types/bcryptjs": "^3.0.0",
     "@types/geojson": "^7946.0.16",
     "@types/osmtogeojson": "^2.2.34",

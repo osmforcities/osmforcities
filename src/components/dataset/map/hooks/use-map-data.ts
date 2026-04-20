@@ -2,16 +2,16 @@ import { useMemo } from "react";
 import { FeatureCollection } from "geojson";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 import { processOSMFeaturesForVisualization } from "../../../../lib/osm-data-processor";
-import { calculateBbox } from "../../../../lib/utils";
+import { calculateBbox, parseAreaBounds } from "../../../../lib/utils";
 import type { DateFilter } from "@/types/geojson";
+import type { Dataset } from "@/schemas/dataset";
 
 type UseMapDataProps = {
-  dataset: { geojson: unknown };
+  dataset: Dataset;
   dateFilter: DateFilter;
 };
 
 export function useMapData({ dataset, dateFilter }: UseMapDataProps) {
-  // Memoize data processing to avoid unnecessary recalculations
   const processedData = useMemo(() => {
     if (!dataset.geojson) return null;
 
@@ -27,32 +27,34 @@ export function useMapData({ dataset, dateFilter }: UseMapDataProps) {
     }
   }, [dataset.geojson, dateFilter]);
 
-  // Memoize bounds calculation
   const dataBounds = useMemo(() => {
     if (!processedData?.features?.length) return null;
     return calculateBbox(processedData);
   }, [processedData]);
 
-  // Memoize initial view state
   const initialViewState = useMemo(() => {
-    if (!dataBounds) {
+    const areaBounds = parseAreaBounds(dataset.area);
+
+    if (areaBounds) {
       return {
-        longitude: 0,
-        latitude: 0,
-        zoom: 2,
+        bounds: areaBounds,
+        fitBoundsOptions: { padding: 20 },
+      };
+    }
+
+    if (dataBounds) {
+      return {
+        bounds: dataBounds,
+        fitBoundsOptions: { padding: 20 },
       };
     }
 
     return {
-      bounds: [dataBounds[0], dataBounds[1], dataBounds[2], dataBounds[3]] as [
-        number,
-        number,
-        number,
-        number
-      ],
-      fitBoundsOptions: { padding: 20 },
+      longitude: 0,
+      latitude: 0,
+      zoom: 2,
     };
-  }, [dataBounds]);
+  }, [dataset.area, dataBounds]);
 
   const hasFilteredData = Boolean(processedData?.features?.length);
 
