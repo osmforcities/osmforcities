@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
-import { useTranslations } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { DatasetSchema, type Dataset } from "@/schemas/dataset";
@@ -13,7 +12,6 @@ import { DatasetActionsSection } from "@/components/dataset/dataset-actions-sect
 import { DatasetLayout } from "@/components/dataset/dataset-layout";
 import { trackEvent } from "@/lib/umami";
 import { getAreaBoundary } from "@/lib/area-boundary";
-import { Suspense } from "react";
 
 async function getDataset(id: string, locale: string): Promise<Dataset | null> {
   try {
@@ -98,20 +96,7 @@ export default async function DatasetPage({
           <DatasetActionsSection dataset={dataset} />
         </div>
       }
-      mapPanel={
-        <Suspense fallback={<MapLoadingState />}>
-          <DatasetMapWrapper dataset={dataset} boundary={boundary} />
-        </Suspense>
-      }
+      mapPanel={<DatasetMapWrapper dataset={dataset} boundary={boundary} />}
     />
-  );
-}
-
-function MapLoadingState() {
-  const t = useTranslations("DatasetMap");
-  return (
-    <div className="flex items-center justify-center h-full bg-gray-100 rounded-lg">
-      <div className="text-center text-gray-500">{t("loadingMap")}</div>
-    </div>
   );
 }
