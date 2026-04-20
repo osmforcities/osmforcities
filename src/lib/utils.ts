@@ -50,7 +50,7 @@ export function calculateBbox(geojson: FeatureCollection): Bbox | null {
  * @param area - Area object with bounds property
  * @returns Bbox if valid, null otherwise
  */
-export function parseAreaBounds(area: Pick<Area, "bounds">): Bbox | null {
+export function parseAreaBounds(area: Pick<Area, "bounds"> | { bounds: string | null }): Bbox | null {
   if (!area?.bounds) return null;
 
   try {

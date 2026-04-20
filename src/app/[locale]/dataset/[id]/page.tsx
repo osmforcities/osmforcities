@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
+import { useTranslations } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { DatasetSchema, type Dataset } from "@/schemas/dataset";
