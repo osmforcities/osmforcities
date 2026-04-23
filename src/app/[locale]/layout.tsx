@@ -23,6 +23,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "OSM for Cities",
   description: "Monitor OpenStreetMap datasets across cities",
+  // Note: Using official OpenStreetMap logo as placeholder until project has own logo
   manifest: '/site.webmanifest',
   icons: {
     icon: [
