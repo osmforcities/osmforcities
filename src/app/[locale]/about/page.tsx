@@ -44,6 +44,7 @@ const AboutPage = async ({
   const tDataset = await getTranslations("DatasetList");
   const tCommon = await getTranslations("Common");
   const t = await getTranslations("SEO");
+  const tNav = await getTranslations("Navigation");
   const siteUrl = DEFAULT_SEO.siteUrl;
 
   return (
@@ -72,13 +73,13 @@ const AboutPage = async ({
             {
               "@type": "ListItem",
               position: 1,
-              name: "Home",
+              name: tNav("home"),
               item: `${siteUrl}/${locale}/`,
             },
             {
               "@type": "ListItem",
               position: 2,
-              name: "About",
+              name: tNav("about"),
               item: `${siteUrl}/${locale}/about`,
             },
           ],
