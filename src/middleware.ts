@@ -2,6 +2,7 @@ import createMiddleware from "next-intl/middleware";
 import { routing, type Locale } from "./i18n/routing";
 import { auth } from "./auth";
 import { NextResponse, type NextRequest } from "next/server";
+import { PUBLIC_ROUTES } from "./lib/protected-routes";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -30,17 +31,15 @@ export default async function middleware(req: NextRequest) {
     return response;
   };
 
-  // Handle route protection first
-  // Define public routes that don't require authentication
-  const isPublicRoute = 
-    pathname === "/" || // Root path
-    pathname.match(/^\/[a-z]{2}$/) || // Locale-only paths like /en, /es
-    pathname.match(/^\/[a-z]{2}\/$/) || // Locale-only paths with trailing slash like /en/, /es/
-    pathname.includes("/about") || // About page
-    pathname.includes("/enter") || // Login/signup pages
-    pathname.includes("/login") ||
-    pathname.includes("/signup") ||
-    pathname.startsWith("/api/"); // API routes
+  // Handle route protection using PUBLIC_ROUTES constant
+  const isPublicRoute = PUBLIC_ROUTES.some(route =>
+    pathname === route ||
+    pathname.startsWith(`${route}/`) ||
+    pathname.includes(route)
+  ) ||
+  pathname.match(/^\/[a-z]{2}$/) || // Locale-only paths like /en, /es
+  pathname.match(/^\/[a-z]{2}\/$/) || // Locale-only paths with trailing slash like /en/, /es/
+  pathname.startsWith("/api/"); // API routes
 
   // Protect all routes except public ones
   if (!isPublicRoute && !isLoggedIn) {
