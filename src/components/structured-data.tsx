@@ -1,5 +1,3 @@
-import Script from "next/script";
-
 type StructuredDataSchema = {
   "@context": string;
   "@type": string;
@@ -19,7 +17,7 @@ export function StructuredData({
   id?: string;
 }) {
   return (
-    <Script
+    <script
       id={id || `structured-data-${schema["@type"]}`}
       type="application/ld+json"
       dangerouslySetInnerHTML={{
