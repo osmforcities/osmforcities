@@ -6,6 +6,7 @@ import { BboxSchema, type Bbox } from "@/types/geojson";
 import type { DateFilter } from "../types/geojson";
 import type { Area } from "@/types/area";
 import type { useTranslations } from "next-intl";
+import { SUPPORTED_LOCALES } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -212,4 +213,17 @@ export function getAreaCharacteristics(
   characteristics.push(`ID: ${item.id}`);
 
   return characteristics;
+}
+
+/**
+ * Build localized URLs for all supported locales
+ * Used for hreflang links and sitemap alternates
+ */
+export function buildLocaleUrls(siteUrl: string, path?: string): Record<string, string> {
+  return Object.fromEntries(
+    SUPPORTED_LOCALES.map((locale) => [
+      locale,
+      path ? `${siteUrl}/${locale}${path}` : `${siteUrl}/${locale}`,
+    ])
+  );
 }

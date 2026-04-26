@@ -561,5 +561,23 @@
     "somethingWentWrongTitle": "Something went wrong",
     "unexpectedErrorDescription": "We encountered an unexpected error while loading the dataset. Please try again.",
     "errorDetails": "Error Details"
+  },
+  "SEO": {
+    "home": {
+      "title": "OSM for Cities - Monitor OpenStreetMap Datasets",
+      "description": "Track changes in OpenStreetMap datasets across cities worldwide."
+    },
+    "about": {
+      "title": "About - OSM for Cities",
+      "description": "Learn about OSM for Cities - Daily updated datasets from OpenStreetMap"
+    },
+    "dataset": {
+      "title": "{template} in {area} - OSM for Cities",
+      "description": "{description} dataset for {area}"
+    },
+    "area": {
+      "title": "{area} - Datasets - OSM for Cities",
+      "description": "Explore OpenStreetMap datasets for {area}"
+    }
   }
 }

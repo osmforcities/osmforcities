@@ -2,6 +2,7 @@ import createMiddleware from "next-intl/middleware";
 import { routing, type Locale } from "./i18n/routing";
 import { auth } from "./auth";
 import { NextResponse, type NextRequest } from "next/server";
+import { PROTECTED_ROUTES } from "./lib/protected-routes";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -30,20 +31,17 @@ export default async function middleware(req: NextRequest) {
     return response;
   };
 
-  // Handle route protection first
-  // Define public routes that don't require authentication
-  const isPublicRoute = 
-    pathname === "/" || // Root path
-    pathname.match(/^\/[a-z]{2}$/) || // Locale-only paths like /en, /es
-    pathname.match(/^\/[a-z]{2}\/$/) || // Locale-only paths with trailing slash like /en/, /es/
-    pathname.includes("/about") || // About page
-    pathname.includes("/enter") || // Login/signup pages
-    pathname.includes("/login") ||
-    pathname.includes("/signup") ||
-    pathname.startsWith("/api/"); // API routes
+  // Handle route protection by checking for protected routes
+  // Normalize path to prevent traversal attacks (e.g., /about/../dashboard)
+  const normalizedPathname = new URL(pathname, "http://localhost").pathname;
+  const pathAfterLocale = normalizedPathname.replace(/^\/[a-z]{2}(-[A-Z]{2})?/, "") || "/";
 
-  // Protect all routes except public ones
-  if (!isPublicRoute && !isLoggedIn) {
+  const isProtectedRoute = PROTECTED_ROUTES.some(route =>
+    pathAfterLocale === route || pathAfterLocale.startsWith(`${route}/`)
+  );
+
+  // Protect only routes that are explicitly marked as protected
+  if (isProtectedRoute && !isLoggedIn) {
     // Extract locale from pathname for redirect
     const currentLocale = routing.locales.find(
       (locale) =>
