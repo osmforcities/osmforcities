@@ -568,5 +568,23 @@
     "somethingWentWrongTitle": "Algo deu errado",
     "unexpectedErrorDescription": "Encontramos um erro inesperado ao cargar o conjunto de dados. Por favor tente novamente.",
     "errorDetails": "Detalhes do Erro"
+  },
+  "SEO": {
+    "home": {
+      "title": "OSM for Cities - Monitorar Conjuntos de Dados do OpenStreetMap",
+      "description": "Acompanhe mudanças em conjuntos de dados do OpenStreetMap em cidades do mundo todo."
+    },
+    "about": {
+      "title": "Sobre - OSM for Cities",
+      "description": "Saiba mais sobre OSM for Cities - Conjuntos de dados atualizados diariamente do OpenStreetMap"
+    },
+    "dataset": {
+      "title": "{template} em {area} - OSM for Cities",
+      "description": "Conjunto de dados {description} para {area}"
+    },
+    "area": {
+      "title": "{area} - Conjuntos de Dados - OSM for Cities",
+      "description": "Explore conjuntos de dados do OpenStreetMap para {area}"
+    }
   }
 }
