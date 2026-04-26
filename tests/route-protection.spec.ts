@@ -26,9 +26,40 @@ test.describe("Route Protection", () => {
     ];
 
     for (const route of protectedRoutes) {
+      // Verify redirect happens
       await page.goto(route);
       await expect(page).toHaveURL(/\/en\/enter/);
+
+      // Verify we're NOT on the protected route (security check)
+      await expect(page).not.toHaveURL(route);
     }
+  });
+
+  test("should verify middleware is actively protecting routes", async ({ page }) => {
+    // This test reinforces that protected routes redirect to login
+    // The original bug (pathname.includes("/")) made all routes public
+
+    // Test dashboard - should redirect to login
+    await page.goto("/en/dashboard");
+    const url = page.url();
+    expect(url).toContain("/en/enter");
+    expect(url).not.toContain("/dashboard");
+
+    // Test another protected route - should also redirect
+    await page.goto("/en/users");
+    const usersUrl = page.url();
+    expect(usersUrl).toContain("/en/enter");
+    expect(usersUrl).not.toContain("/users");
+  });
+
+  test("should block path traversal attacks", async ({ page }) => {
+    // This test ensures path normalization prevents traversal attacks
+    // Attackers trying /en/about/../dashboard should still be blocked
+
+    await page.goto("/en/about/../dashboard");
+    const url = page.url();
+    expect(url).toContain("/en/enter");
+    expect(url).not.toContain("/dashboard");
   });
 
   test("should allow access to protected routes when authenticated", async ({ page }) => {
