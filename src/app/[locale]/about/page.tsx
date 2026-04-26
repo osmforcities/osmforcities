@@ -22,6 +22,7 @@ export async function generateMetadata({
   params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations("SEO");
 
   return getLocalizedMetadata(locale, {

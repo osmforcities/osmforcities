@@ -11,7 +11,7 @@ import { Features } from "@/components/home/sections/features";
 import { DatasetShowcase } from "@/components/home/sections/dataset-showcase";
 import { UseCases } from "@/components/home/sections/use-cases";
 import { FinalCTA } from "@/components/home/sections/final-cta";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getLocalizedMetadata } from "@/lib/metadata";
 import { StructuredData } from "@/components/structured-data";
 import type { Locale } from "@/i18n/routing";
@@ -25,6 +25,7 @@ export async function generateMetadata({
   params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations("SEO");
 
   return getLocalizedMetadata(locale, {
