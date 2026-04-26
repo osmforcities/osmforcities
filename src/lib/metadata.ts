@@ -35,17 +35,21 @@ export function getLocalizedMetadata(
     ? [{ url: `${DEFAULT_SEO.siteUrl}${pageConfig.ogImage}`, width: 1200, height: 630, alt: title }]
     : [{ url: `${DEFAULT_SEO.siteUrl}${DEFAULT_SEO.ogImage}`, width: 1200, height: 630, alt: DEFAULT_SEO.title }];
 
+  // Build hreflang links for all supported locales
+  const languages: Record<string, string> = {};
+  for (const supportedLocale of SUPPORTED_LOCALES) {
+    languages[supportedLocale] = path
+      ? `${DEFAULT_SEO.siteUrl}/${supportedLocale}${path}`
+      : `${DEFAULT_SEO.siteUrl}/${supportedLocale}`;
+  }
+
   return {
     title,
     description,
     metadataBase: new URL(DEFAULT_SEO.siteUrl),
     alternates: {
       canonical: url,
-      languages: {
-        en: path ? `${DEFAULT_SEO.siteUrl}/en${path}` : `${DEFAULT_SEO.siteUrl}/en`,
-        "pt-BR": path ? `${DEFAULT_SEO.siteUrl}/pt-BR${path}` : `${DEFAULT_SEO.siteUrl}/pt-BR`,
-        es: path ? `${DEFAULT_SEO.siteUrl}/es${path}` : `${DEFAULT_SEO.siteUrl}/es`,
-      },
+      languages,
     },
     openGraph: {
       type: "website",
