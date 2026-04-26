@@ -9,6 +9,8 @@ import { NextIntlClientProvider, hasLocale, Locale } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { StructuredData } from "@/components/structured-data";
+import { DEFAULT_SEO } from "@/lib/metadata";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,22 +22,25 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "OSM for Cities",
-  description: "Monitor OpenStreetMap datasets across cities",
-  // Note: Using official OpenStreetMap logo as placeholder until project has own logo
-  manifest: '/site.webmanifest',
-  icons: {
-    icon: [
-      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-    ],
-    apple: '/apple-touch-icon.png',
-  },
-  openGraph: {
-    images: "/og-image.png",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: DEFAULT_SEO.title,
+    description: DEFAULT_SEO.description,
+    manifest: '/site.webmanifest',
+    icons: {
+      icon: [
+        { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+        { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      ],
+      apple: '/apple-touch-icon.png',
+    },
+    openGraph: {
+      title: DEFAULT_SEO.title,
+      description: DEFAULT_SEO.description,
+      images: "/og-image.png",
+    },
+  };
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -58,6 +63,26 @@ export default async function LocaleLayout({
 
   return (
     <html lang={typedLocale}>
+      <head>
+        <StructuredData
+          id="structured-data-organization"
+          schema={{
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: DEFAULT_SEO.title,
+            url: DEFAULT_SEO.siteUrl,
+            description: DEFAULT_SEO.description,
+            logo: {
+              "@type": "ImageObject",
+              url: `${DEFAULT_SEO.siteUrl}/icon-512.png`,
+            },
+            sameAs: [
+              "https://github.com/osmforcities/osmforcities",
+              "https://www.openstreetmap.org/",
+            ],
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

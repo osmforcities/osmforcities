@@ -11,29 +11,81 @@ import { Features } from "@/components/home/sections/features";
 import { DatasetShowcase } from "@/components/home/sections/dataset-showcase";
 import { UseCases } from "@/components/home/sections/use-cases";
 import { FinalCTA } from "@/components/home/sections/final-cta";
+import { getTranslations } from "next-intl/server";
+import { getLocalizedMetadata } from "@/lib/metadata";
+import { StructuredData } from "@/components/structured-data";
+import type { Locale } from "@/i18n/routing";
+import { DEFAULT_SEO } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "OSM for Cities - Monitor OpenStreetMap Datasets",
-  description:
-    "Track changes in OpenStreetMap datasets across cities worldwide.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations("SEO");
+
+  return getLocalizedMetadata(locale, {
+    title: t("home.title"),
+    description: t("home.description"),
+    path: "/",
+  });
+}
 
 /**
  * Landing page component - always shows public marketing content
  */
-export default async function Home() {
+export default async function Home({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>;
+}) {
   const session = await auth();
   const isAuthenticated = !!session?.user;
+  const { locale } = await params;
+  const siteUrl = DEFAULT_SEO.siteUrl;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
-      <Hero />
-      <Features />
-      <UseCases />
-      <DatasetShowcase />
-      {!isAuthenticated && <FinalCTA />}
-    </div>
+    <>
+      <StructuredData
+        id="structured-data-webpage"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          name: "OSM for Cities - Monitor OpenStreetMap Datasets",
+          description: "Track changes in OpenStreetMap datasets across cities worldwide.",
+          url: `${siteUrl}/${locale}/`,
+          inLanguage: locale,
+          isPartOf: {
+            "@type": "WebSite",
+            url: siteUrl,
+          },
+        }}
+      />
+      <StructuredData
+        id="structured-data-breadcrumb"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: `${siteUrl}/${locale}/`,
+            },
+          ],
+        }}
+      />
+      <div className="min-h-screen bg-white dark:bg-black">
+        <Hero />
+        <Features />
+        <UseCases />
+        <DatasetShowcase />
+        {!isAuthenticated && <FinalCTA />}
+      </div>
+    </>
   );
 }
