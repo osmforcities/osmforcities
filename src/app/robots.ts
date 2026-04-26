@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
 import { PROTECTED_ROUTES } from "@/lib/protected-routes";
 import { routing } from "@/i18n/routing";
+import { DEFAULT_SEO } from "@/lib/metadata";
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://osmforcities.org";
+const siteUrl = DEFAULT_SEO.siteUrl;
 
 // Generate disallow rules for protected routes across all locales
 const disallowProtected = routing.locales.flatMap((locale) =>

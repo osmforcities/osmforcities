@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
 import { SUPPORTED_LOCALES } from "@/lib/constants";
 import { buildLocaleUrls } from "@/lib/utils";
+import { DEFAULT_SEO } from "@/lib/metadata";
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://osmforcities.org";
+const siteUrl = DEFAULT_SEO.siteUrl;
 const BUILD_TIME = process.env.BUILD_TIME || new Date().toISOString();
 
 const PUBLIC_ROUTES = ["/", "/about"];
