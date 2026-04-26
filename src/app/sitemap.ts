@@ -3,6 +3,7 @@ import { SUPPORTED_LOCALES } from "@/lib/constants";
 import { buildLocaleUrls } from "@/lib/utils";
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://osmforcities.org";
+const BUILD_TIME = process.env.BUILD_TIME || new Date().toISOString();
 
 const PUBLIC_ROUTES = ["/", "/about"];
 
@@ -17,7 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     for (const route of PUBLIC_ROUTES) {
       staticPages.push({
         url: `${siteUrl}/${locale}${route}`,
-        lastModified: new Date(),
+        lastModified: new Date(BUILD_TIME),
         changeFrequency: "weekly" as const,
         priority: route === "/" ? 1 : 0.8,
         alternates: {

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "COMMIT_HASH=$(git rev-parse HEAD 2>/dev/null || echo 'unknown') next dev",
     "dev:test": "NODE_ENV=test next dev",
-    "build": "COMMIT_HASH=$(git rev-parse HEAD) next build",
+    "build": "BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) COMMIT_HASH=$(git rev-parse HEAD 2>/dev/null || echo 'unknown') next build",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
