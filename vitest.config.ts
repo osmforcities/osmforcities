@@ -46,11 +46,6 @@ export default defineConfig({
           environment: 'node',
           include: ['src/**/__tests__/**/*.test.ts'],
           exclude: ['**/node_modules/**', '**/tests/**'],
-          resolve: {
-            alias: {
-              '@': path.resolve(dirname, 'src'),
-            },
-          },
         },
       }),
     ],
