@@ -14,8 +14,7 @@ export const DEFAULT_SEO = {
   title: "OSM for Cities",
   description: "Monitor OpenStreetMap datasets across cities",
   siteUrl: process.env.NEXT_PUBLIC_APP_URL || "https://osmforcities.org",
-  ogImage: "/og-image.png", // TODO: Separate PR
-  twitterCreator: "@osmforcities", // TODO: Add when exists
+  ogImage: "/og-image.png",
 };
 
 /**
@@ -57,13 +56,6 @@ export function getLocalizedMetadata(
       images,
       locale,
       alternateLocale: SUPPORTED_LOCALES.filter((l) => l !== locale) as Locale[],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: images.map((img) => img.url),
-      creator: DEFAULT_SEO.twitterCreator,
     },
     robots: {
       index: !noIndex,
