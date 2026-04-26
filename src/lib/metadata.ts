@@ -26,7 +26,12 @@ export function getLocalizedMetadata(
   pageConfig: PageMetadata,
 ): Metadata {
   const { title, description, path, noIndex } = pageConfig;
-  const url = path ? `${DEFAULT_SEO.siteUrl}${path}` : DEFAULT_SEO.siteUrl;
+
+  // Include locale prefix in URL construction
+  const url = path
+    ? `${DEFAULT_SEO.siteUrl}/${locale}${path}`
+    : `${DEFAULT_SEO.siteUrl}/${locale}`;
+
   const images = pageConfig.ogImage
     ? [{ url: `${DEFAULT_SEO.siteUrl}${pageConfig.ogImage}`, width: 1200, height: 630, alt: title }]
     : [{ url: `${DEFAULT_SEO.siteUrl}${DEFAULT_SEO.ogImage}`, width: 1200, height: 630, alt: DEFAULT_SEO.title }];
@@ -34,9 +39,14 @@ export function getLocalizedMetadata(
   return {
     title,
     description,
+    metadataBase: new URL(DEFAULT_SEO.siteUrl),
     alternates: {
       canonical: url,
-      languages: generateAlternateLinks(path || "/"),
+      languages: {
+        en: path ? `${DEFAULT_SEO.siteUrl}/en${path}` : `${DEFAULT_SEO.siteUrl}/en`,
+        "pt-BR": path ? `${DEFAULT_SEO.siteUrl}/pt-BR${path}` : `${DEFAULT_SEO.siteUrl}/pt-BR`,
+        es: path ? `${DEFAULT_SEO.siteUrl}/es${path}` : `${DEFAULT_SEO.siteUrl}/es`,
+      },
     },
     openGraph: {
       type: "website",
@@ -60,16 +70,4 @@ export function getLocalizedMetadata(
       follow: !noIndex,
     },
   };
-}
-
-/**
- * Generate alternate language links for hreflang
- */
-function generateAlternateLinks(path: string): Record<string, string> {
-  const links: Record<string, string> = {};
-  for (const locale of SUPPORTED_LOCALES) {
-    links[locale] = `${DEFAULT_SEO.siteUrl}/${locale}${path}`;
-  }
-  links["x-default"] = `${DEFAULT_SEO.siteUrl}/en${path}`;
-  return links;
 }
