@@ -63,7 +63,10 @@ export default async function LocaleLayout({
 
   return (
     <html lang={typedLocale}>
-      <head>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        {/* Organization structured data */}
         <StructuredData
           id="structured-data-organization"
           schema={{
@@ -82,10 +85,7 @@ export default async function LocaleLayout({
             ],
           }}
         />
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+
         {process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID &&
           process.env.NEXT_PUBLIC_UMAMI_URL && (
             <Script
