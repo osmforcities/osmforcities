@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SUPPORTED_LOCALES } from "@/lib/constants";
+import { buildLocaleUrls } from "@/lib/utils";
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://osmforcities.org";
 
@@ -20,11 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         changeFrequency: "weekly" as const,
         priority: route === "/" ? 1 : 0.8,
         alternates: {
-          languages: {
-            en: `${siteUrl}/en${route}`,
-            "pt-BR": `${siteUrl}/pt-BR${route}`,
-            es: `${siteUrl}/es${route}`,
-          },
+          languages: buildLocaleUrls(siteUrl, route),
         },
       });
     }

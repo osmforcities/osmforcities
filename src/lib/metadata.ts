@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { Locale } from "@/i18n/routing";
 import { SUPPORTED_LOCALES } from "./constants";
+import { buildLocaleUrls } from "./utils";
 
 export interface PageMetadata {
   title: string;
@@ -16,6 +17,8 @@ export const DEFAULT_SEO = {
   siteUrl: process.env.NEXT_PUBLIC_APP_URL || "https://osmforcities.org",
   ogImage: "/og-image.png",
 };
+
+const SITE_URL = new URL(DEFAULT_SEO.siteUrl);
 
 /**
  * Generate localized metadata with full SEO support
@@ -35,21 +38,13 @@ export function getLocalizedMetadata(
     ? [{ url: `${DEFAULT_SEO.siteUrl}${pageConfig.ogImage}`, width: 1200, height: 630, alt: title }]
     : [{ url: `${DEFAULT_SEO.siteUrl}${DEFAULT_SEO.ogImage}`, width: 1200, height: 630, alt: DEFAULT_SEO.title }];
 
-  // Build hreflang links for all supported locales
-  const languages: Record<string, string> = {};
-  for (const supportedLocale of SUPPORTED_LOCALES) {
-    languages[supportedLocale] = path
-      ? `${DEFAULT_SEO.siteUrl}/${supportedLocale}${path}`
-      : `${DEFAULT_SEO.siteUrl}/${supportedLocale}`;
-  }
-
   return {
     title,
     description,
-    metadataBase: new URL(DEFAULT_SEO.siteUrl),
+    metadataBase: SITE_URL,
     alternates: {
       canonical: url,
-      languages,
+      languages: buildLocaleUrls(DEFAULT_SEO.siteUrl, path),
     },
     openGraph: {
       type: "website",
