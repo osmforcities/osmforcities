@@ -1,13 +1,23 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { getLocalizedMetadata } from "../metadata";
 import type { Locale } from "@/i18n/routing";
 
+// Mock DEFAULT_SEO to control siteUrl in tests
+vi.mock("../metadata", async () => {
+  const actual = await vi.importActual("../metadata");
+  const originalModule = actual as typeof import("../metadata");
+  return {
+    ...originalModule,
+    DEFAULT_SEO: {
+      ...originalModule.DEFAULT_SEO,
+      siteUrl: "https://osmforcities.org",
+    },
+    getLocalizedMetadata: originalModule.getLocalizedMetadata,
+  };
+});
+
 describe("getLocalizedMetadata", () => {
   const siteUrl = "https://osmforcities.org";
-
-  beforeEach(() => {
-    process.env.NEXT_PUBLIC_APP_URL = siteUrl;
-  });
 
   describe("canonical URL construction", () => {
     it("should include locale prefix for English", () => {

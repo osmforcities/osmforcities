@@ -46,6 +46,8 @@ export default async function Home({
   const isAuthenticated = !!session?.user;
   const { locale } = await params;
   const siteUrl = DEFAULT_SEO.siteUrl;
+  const t = await getTranslations("SEO");
+  const tNav = await getTranslations("Navigation");
 
   return (
     <>
@@ -54,8 +56,8 @@ export default async function Home({
         schema={{
           "@context": "https://schema.org",
           "@type": "WebPage",
-          name: "OSM for Cities - Monitor OpenStreetMap Datasets",
-          description: "Track changes in OpenStreetMap datasets across cities worldwide.",
+          name: t("home.title"),
+          description: t("home.description"),
           url: `${siteUrl}/${locale}/`,
           inLanguage: locale,
           isPartOf: {
@@ -73,7 +75,7 @@ export default async function Home({
             {
               "@type": "ListItem",
               position: 1,
-              name: "Home",
+              name: tNav("home"),
               item: `${siteUrl}/${locale}/`,
             },
           ],
