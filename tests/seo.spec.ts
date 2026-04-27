@@ -10,7 +10,7 @@ test.describe("SEO Implementation", () => {
       const metaDescription = page
         .locator('meta[name="description"]')
         ;
-      await expect(metaDescription).toHaveAttribute("content", );
+      await expect(metaDescription).toHaveAttribute("content", /Search any city, browse 200\+ urban infrastructure categories/);
 
       // Canonical URL with locale prefix (may have trailing slash)
       const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
@@ -68,7 +68,7 @@ test.describe("SEO Implementation", () => {
       const metaDescription = page
         .locator('meta[name="description"]')
         ;
-      await expect(metaDescription).toHaveAttribute("content", );
+      await expect(metaDescription).toHaveAttribute("content", /Pesquise qualquer cidade, navegue por 200\+ categorias de infraestrutura urbana/);
 
       // Canonical URL with locale prefix (may have trailing slash)
       const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");

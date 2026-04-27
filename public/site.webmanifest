@@ -1,7 +1,7 @@
 {
   "name": "OSM for Cities",
-  "short_name": "OSM4Cities",
-  "description": "Monitor OpenStreetMap datasets across cities",
+  "short_name": "OSMforCities",
+  "description": "Browse and download OpenStreetMap city data",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

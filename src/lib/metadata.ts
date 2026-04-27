@@ -13,7 +13,7 @@ export interface PageMetadata {
 
 export const DEFAULT_SEO = {
   title: "OSM for Cities",
-  description: "Monitor OpenStreetMap datasets across cities",
+  description: "Search any city, browse 200+ urban infrastructure categories, and download data as GeoJSON. Built on OpenStreetMap.",
   siteUrl: process.env.NEXT_PUBLIC_APP_URL || "https://osmforcities.org",
   ogImage: "/og-image.png",
 };
