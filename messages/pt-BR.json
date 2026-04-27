@@ -571,12 +571,12 @@
   },
   "SEO": {
     "home": {
-      "title": "OSM for Cities - Monitorar Conjuntos de Dados do OpenStreetMap",
-      "description": "Acompanhe mudanças em conjuntos de dados do OpenStreetMap em cidades do mundo todo."
+      "title": "OSM for Cities - Navegar e Baixar Dados de Cidades",
+      "description": "Pesquise qualquer cidade, navegue por 200+ categorias de infraestrutura urbana e baixe dados como GeoJSON. Baseado em OpenStreetMap."
     },
     "about": {
       "title": "Sobre - OSM for Cities",
-      "description": "Saiba mais sobre OSM for Cities - Conjuntos de dados atualizados diariamente do OpenStreetMap"
+      "description": "OSM for Cities torna dados do OpenStreetMap acessíveis. Navegue por 200+ categorias e baixe dados de cidades."
     },
     "dataset": {
       "title": "{template} em {area} - OSM for Cities",
