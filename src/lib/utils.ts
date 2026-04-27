@@ -6,6 +6,7 @@ import { BboxSchema, type Bbox } from "@/types/geojson";
 import type { DateFilter } from "../types/geojson";
 import type { Area } from "@/types/area";
 import type { useTranslations } from "next-intl";
+import { SUPPORTED_LOCALES } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -39,6 +40,35 @@ export function calculateBbox(geojson: FeatureCollection): Bbox | null {
     return result.success ? bboxArray : null;
   } catch (error) {
     console.error("Error calculating bbox:", error);
+    return null;
+  }
+}
+
+/**
+ * Parse area bounds from database format to GeoJSON bbox format.
+ * Database stores bounds as comma-separated string: "minLat,minLon,maxLat,maxLon"
+ * GeoJSON expects bbox as array: [minLon, minLat, maxLon, maxLat]
+ * @param area - Area object with bounds property
+ * @returns Bbox if valid, null otherwise
+ */
+export function parseAreaBounds(area: Pick<Area, "bounds"> | { bounds: string | null }): Bbox | null {
+  if (!area?.bounds) return null;
+
+  try {
+    const parts = area.bounds.split(',');
+    if (parts.length !== 4) return null;
+
+    const values = parts.map((p) => parseFloat(p));
+    if (values.some((v) => isNaN(v))) return null;
+
+    // Database format: [minLat, minLon, maxLat, maxLon]
+    // GeoJSON bbox format: [minLon, minLat, maxLon, maxLat]
+    const [minLat, minLon, maxLat, maxLon] = values;
+    const bounds: Bbox = [minLon, minLat, maxLon, maxLat];
+
+    const result = BboxSchema.safeParse(bounds);
+    return result.success ? bounds : null;
+  } catch {
     return null;
   }
 }
@@ -183,4 +213,17 @@ export function getAreaCharacteristics(
   characteristics.push(`ID: ${item.id}`);
 
   return characteristics;
+}
+
+/**
+ * Build localized URLs for all supported locales
+ * Used for hreflang links and sitemap alternates
+ */
+export function buildLocaleUrls(siteUrl: string, path?: string): Record<string, string> {
+  return Object.fromEntries(
+    SUPPORTED_LOCALES.map((locale) => [
+      locale,
+      path ? `${siteUrl}/${locale}${path}` : `${siteUrl}/${locale}`,
+    ])
+  );
 }

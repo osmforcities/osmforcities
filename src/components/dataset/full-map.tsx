@@ -7,10 +7,11 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useTranslations } from "next-intl";
 import type { Dataset } from "@/schemas/dataset";
 import { MapLayers } from "./map/layers";
+import { AoiBoundaryLayer } from "./map/aoi-boundary-layer";
 import { AgeLegend } from "./map/age-legend";
 import { MapDateFilterControl } from "./map/map-date-filter-control";
 import { useDateFilter, useMapData, useFeatureSelection } from "./map/hooks";
-import type { Feature } from "geojson";
+import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
 import type { DateFilter } from "@/types/geojson";
 
@@ -20,6 +21,7 @@ export interface DatasetFullMapHandle {
 
 type DatasetFullMapProps = {
   dataset: Dataset;
+  boundary: FeatureCollection | null;
   onFeatureSelect?: (feature: Feature | null) => void;
 };
 
@@ -28,7 +30,7 @@ const MemoizedMapLayers = React.memo(MapLayers);
 const MemoizedMapDateFilterControl = React.memo(MapDateFilterControl);
 
 export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapProps>(
-  ({ dataset, onFeatureSelect }, ref) => {
+  ({ dataset, boundary, onFeatureSelect }, ref) => {
     const t = useTranslations("DatasetMap");
     const mapRef = useRef<MapRef | null>(null);
 
@@ -104,6 +106,7 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
             doubleClickZoom={true}
             touchZoomRotate={true}
           >
+            {boundary && <AoiBoundaryLayer boundary={boundary} />}
             <MemoizedMapLayers geoJSONData={processedData} />
             {selectedFeature && (
               <Source

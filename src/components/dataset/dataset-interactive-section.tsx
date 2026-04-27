@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import type { Feature } from "geojson";
+import type { Feature, FeatureCollection } from "geojson";
 import type { Dataset } from "@/schemas/dataset";
 import { DatasetMapWrapper, type DatasetFullMapHandle } from "@/components/dataset/map-wrapper";
 import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
@@ -11,10 +11,12 @@ import { FeatureDetailPanel } from "@/components/dataset/feature-detail-panel";
 
 type DatasetInteractiveSectionProps = {
   dataset: Dataset;
+  boundary: FeatureCollection | null;
 };
 
 export function DatasetInteractiveSection({
   dataset,
+  boundary,
 }: DatasetInteractiveSectionProps) {
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
   const mapRef = useRef<DatasetFullMapHandle>(null);
@@ -63,6 +65,7 @@ export function DatasetInteractiveSection({
           <DatasetMapWrapper
             ref={mapRef}
             dataset={dataset}
+            boundary={boundary}
             onFeatureSelect={setSelectedFeature}
           />
         </div>

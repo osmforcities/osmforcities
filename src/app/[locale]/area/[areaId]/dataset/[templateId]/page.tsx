@@ -18,6 +18,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import type { TranslationFunction } from "@/lib/types";
 import { trackEvent } from "@/lib/umami";
+import { getAreaBoundary } from "@/lib/area-boundary";
 
 type DatasetPageProps = {
   params: Promise<{
@@ -100,6 +101,8 @@ async function AreaTemplateDatasetView({
       `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/view`
     );
 
+    const boundary = await getAreaBoundary(areaId);
+
     const breadcrumbItems = [
       { label: navT("home"), href: "/" },
       { label: areaInfo?.country || "Area" },
@@ -118,7 +121,7 @@ async function AreaTemplateDatasetView({
             <BreadcrumbNav items={breadcrumbItems} />
           </div>
 
-          <DatasetInteractiveSection dataset={dataset} />
+          <DatasetInteractiveSection dataset={dataset} boundary={boundary} />
         </div>
       </div>
     );

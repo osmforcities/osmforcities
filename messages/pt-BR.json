@@ -315,6 +315,7 @@
     "lastEditedBy": "Última edição por <link>{user}</link>",
     "mapLabel": "Mapa interativo mostrando conjunto de dados",
     "fullScreenMapLabel": "Mapa interativo em tela cheia mostrando conjunto de dados",
+    "loadingMap": "Carregando mapa...",
     "noDataAvailable": "Nenhum dado disponível. Os dados serão atualizados automaticamente quando você visitar esta página.",
     "noGeographicData": "Nenhum dado geográfico encontrado nos resultados do conjunto de dados.",
     "tags": "Tags",
@@ -567,5 +568,23 @@
     "somethingWentWrongTitle": "Algo deu errado",
     "unexpectedErrorDescription": "Encontramos um erro inesperado ao cargar o conjunto de dados. Por favor tente novamente.",
     "errorDetails": "Detalhes do Erro"
+  },
+  "SEO": {
+    "home": {
+      "title": "OSM for Cities - Navegar e Baixar Dados de Cidades",
+      "description": "Pesquise qualquer cidade, navegue por 200+ categorias de infraestrutura urbana e baixe dados como GeoJSON. Baseado em OpenStreetMap."
+    },
+    "about": {
+      "title": "Sobre - OSM for Cities",
+      "description": "OSM for Cities torna dados do OpenStreetMap acessíveis. Navegue por 200+ categorias e baixe dados de cidades."
+    },
+    "dataset": {
+      "title": "{template} em {area} - OSM for Cities",
+      "description": "Conjunto de dados {description} para {area}"
+    },
+    "area": {
+      "title": "{area} - Conjuntos de Dados - OSM for Cities",
+      "description": "Explore conjuntos de dados do OpenStreetMap para {area}"
+    }
   }
 }

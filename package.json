@@ -1,11 +1,11 @@
 {
   "name": "osmforcities",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "private": true,
   "scripts": {
     "dev": "COMMIT_HASH=$(git rev-parse HEAD 2>/dev/null || echo 'unknown') next dev",
     "dev:test": "NODE_ENV=test next dev",
-    "build": "COMMIT_HASH=$(git rev-parse HEAD) next build",
+    "build": "BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) COMMIT_HASH=$(git rev-parse HEAD 2>/dev/null || echo 'unknown') next build",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
@@ -37,6 +37,7 @@
     "@tanstack/react-query": "^5.80.7",
     "@turf/bbox": "^7.2.0",
     "@turf/centroid": "^7.2.0",
+    "@turf/simplify": "^7.3.4",
     "@types/bcryptjs": "^3.0.0",
     "@types/geojson": "^7946.0.16",
     "@types/osmtogeojson": "^2.2.34",
