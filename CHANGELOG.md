@@ -1,5 +1,18 @@
 # osmforcities
 
+## 1.8.0
+
+### Added
+
+- SEO infrastructure: meta tags, structured data (JSON-LD), sitemap.xml, robots.txt (#168, #223)
+- Branding assets: favicons, Apple touch icon, PWA icons, OG image, PWA manifest (#222)
+- AOI bounds display on dataset pages with boundary API endpoint (#221)
+- Hotels template (tourism=hotel) with translations (#219)
+
+### Changed
+
+- Reposition SEO from "monitor changes" to "browse and download city data" across all locales (#224)
+
 ## 1.7.0
 
 ### Minor Changes
