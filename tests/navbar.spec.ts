@@ -27,9 +27,9 @@ test.describe("Navbar", () => {
     // Should show "Sign In" for unauthenticated users (in navbar)
     await expect(page.getByTestId("navbar-sign-in")).toBeVisible();
 
-    // Search input should be hidden for unauthenticated users
+    // Search input is visible for all users (public discovery feature)
     const searchInput = page.getByTestId("nav-search-input");
-    await expect(searchInput).toBeHidden();
+    await expect(searchInput).toBeVisible();
   });
 
   test("shows correct content for authenticated users", async ({ page }) => {

@@ -7,13 +7,17 @@ import { DatasetInteractiveSection } from "@/components/dataset/dataset-interact
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import { getAreaDetailsById } from "@/lib/nominatim";
-import { isValidTemplateIdentifier } from "@/lib/template-resolver";
+import {
+  isValidTemplateIdentifier,
+  resolveTemplate,
+} from "@/lib/template-resolver";
 import { DatasetLoadingSkeleton } from "@/components/ui/dataset-loading-skeleton";
 import {
   TemplateNotFoundError,
   AreaNotFoundError,
   DatasetCreationError,
 } from "@/components/ui/dataset-error-states";
+import { DatasetUpsellPage } from "@/components/dataset/dataset-upsell-page";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import type { TranslationFunction } from "@/lib/types";
@@ -40,12 +44,41 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
     return <TemplateNotFoundError templateId={templateId} />;
   }
 
+  const session = await auth();
+  if (!session?.user) {
+    const [template, areaInfo] = await Promise.all([
+      resolveTemplate(templateId),
+      getAreaDetailsById(osmRelationId),
+    ]);
+
+    if (!template) {
+      return <TemplateNotFoundError templateId={templateId} />;
+    }
+    if (!areaInfo) {
+      return <AreaNotFoundError areaId={areaId} />;
+    }
+
+    trackEvent(
+      "dataset_upsell_view",
+      `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/upsell`
+    );
+
+    return (
+      <DatasetUpsellPage
+        datasetName={template.name}
+        areaName={areaInfo.name}
+        areaId={areaId}
+      />
+    );
+  }
+
   return (
     <Suspense fallback={<DatasetLoadingSkeleton />}>
       <AreaTemplateDatasetView
         areaId={osmRelationId}
         templateId={templateId}
         navT={navT}
+        session={session}
       />
     </Suspense>
   );
@@ -55,18 +88,19 @@ async function AreaTemplateDatasetView({
   areaId,
   templateId,
   navT,
+  session,
 }: {
   areaId: number;
   templateId: string;
   navT: TranslationFunction;
+  session: Awaited<ReturnType<typeof auth>> | null;
 }) {
   const locale = await getLocale();
 
   try {
-    const [result, areaInfo, session] = await Promise.all([
+    const [result, areaInfo] = await Promise.all([
       getOrCreateDataset(areaId, templateId, locale),
       getAreaDetailsById(areaId),
-      auth(),
     ]);
 
     // Check if current user is watching this dataset
