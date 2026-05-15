@@ -1,5 +1,11 @@
 # osmforcities
 
+## 1.9.0
+
+### Minor Changes
+
+- Public discovery: search and area pages now accessible without authentication. Logged-out users see dataset upsell CTA.
+
 ## 1.8.0
 
 ### Added
