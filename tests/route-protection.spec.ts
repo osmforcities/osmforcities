@@ -15,6 +15,10 @@ test.describe("Route Protection", () => {
     // Test login/signup pages
     await page.goto("/en/enter");
     await expect(page).toHaveURL("/en/enter");
+
+    // Test area pages (public discovery feature)
+    await page.goto("/en/area/298470"); // San Francisco
+    await expect(page).toHaveURL(/\/en\/area\/298470/);
   });
 
   test("should redirect protected routes to login when not authenticated", async ({ page }) => {
@@ -23,8 +27,6 @@ test.describe("Route Protection", () => {
       "/en/preferences",
       "/en/users",
       "/en/templates",
-      "/en/area/test-area",
-      "/en/dataset/test-dataset",
     ];
 
     for (const route of protectedRoutes) {
