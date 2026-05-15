@@ -58,6 +58,11 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
       return <AreaNotFoundError areaId={areaId} />;
     }
 
+    trackEvent(
+      "dataset_upsell_view",
+      `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/upsell`
+    );
+
     return (
       <DatasetUpsellPage
         datasetName={template.name}
