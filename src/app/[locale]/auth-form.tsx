@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 
 export default function AuthForm() {
   const [email, setEmail] = useState("");
@@ -9,6 +10,8 @@ export default function AuthForm() {
   const [step, setStep] = useState<"email" | "sent">("email");
   const [error, setError] = useState("");
   const t = useTranslations("AuthForm");
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +24,7 @@ export default function AuthForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, callbackUrl: callbackUrl || "/" }),
       });
 
       const data = await response.json();

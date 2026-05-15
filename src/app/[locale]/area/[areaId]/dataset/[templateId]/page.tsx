@@ -78,6 +78,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
         areaId={osmRelationId}
         templateId={templateId}
         navT={navT}
+        session={session}
       />
     </Suspense>
   );
@@ -87,18 +88,19 @@ async function AreaTemplateDatasetView({
   areaId,
   templateId,
   navT,
+  session,
 }: {
   areaId: number;
   templateId: string;
   navT: TranslationFunction;
+  session: Awaited<ReturnType<typeof auth>> | null;
 }) {
   const locale = await getLocale();
 
   try {
-    const [result, areaInfo, session] = await Promise.all([
+    const [result, areaInfo] = await Promise.all([
       getOrCreateDataset(areaId, templateId, locale),
       getAreaDetailsById(areaId),
-      auth(),
     ]);
 
     // Check if current user is watching this dataset
