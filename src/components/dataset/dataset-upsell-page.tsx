@@ -2,6 +2,8 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PageShell } from "@/components/ui/page-shell";
+import { InfoCard } from "@/components/ui/info-card";
 
 interface DatasetUpsellPageProps {
   datasetName: string;
@@ -17,7 +19,7 @@ export function DatasetUpsellPage({
   const t = useTranslations("DatasetUpsell");
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-8">
+    <PageShell placement="top">
       <div className="w-full max-w-md mx-auto">
         <Link
           href={`/area/${areaId}`}
@@ -27,7 +29,7 @@ export function DatasetUpsellPage({
           {t("back")}
         </Link>
 
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+        <InfoCard>
           <h1 className="text-xl font-medium text-gray-900 mb-4">
             {t("accountRequired")}
           </h1>
@@ -47,8 +49,8 @@ export function DatasetUpsellPage({
               {t("continueWithEmail")}
             </Button>
           </Link>
-        </div>
+        </InfoCard>
       </div>
-    </div>
+    </PageShell>
   );
 }
