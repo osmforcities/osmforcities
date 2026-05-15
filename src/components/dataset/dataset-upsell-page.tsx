@@ -44,10 +44,7 @@ export function DatasetUpsellPage({
             })}
           </p>
 
-          <Link
-            href={`/enter?callbackUrl=/area/${areaId}/dataset/${encodeURIComponent(datasetName)}`}
-            className="w-full"
-          >
+          <Link href="/enter" className="w-full">
             <Button variant="primary" size="lg" className="w-full">
               {t("continueWithEmail")}
             </Button>

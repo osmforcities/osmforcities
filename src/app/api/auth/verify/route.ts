@@ -36,9 +36,7 @@ export async function GET(request: NextRequest) {
       redirect: false,
     });
 
-    const callbackUrl = searchParams.get("callbackUrl");
-    const redirectTarget = callbackUrl || "/";
-    const redirectUrl = new URL(redirectTarget, baseUrl);
+    const redirectUrl = new URL("/", baseUrl);
     return NextResponse.redirect(redirectUrl);
   } catch {
     // Use baseUrl for error redirect as well

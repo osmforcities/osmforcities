@@ -6,7 +6,7 @@ import { formatEmail, createEmailLink, type Locale } from "@/lib/email-i18n";
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, callbackUrl } = await request.json();
+    const { email } = await request.json();
 
     if (!email || !email.includes("@")) {
       return NextResponse.json(
@@ -23,8 +23,7 @@ export async function POST(request: NextRequest) {
     const verificationToken = await createVerificationToken(email);
 
     const baseUrl = getBaseUrl(request);
-    const callbackParam = callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : "";
-    const magicLink = `${baseUrl}/api/auth/verify?token=${verificationToken.token}${callbackParam}`;
+    const magicLink = `${baseUrl}/api/auth/verify?token=${verificationToken.token}`;
 
     // Get user's language preference, default to 'en'
     const userLocale = (user.language || "en") as Locale;
