@@ -569,6 +569,12 @@
     "unexpectedErrorDescription": "Encontramos un error inesperado al cargar el conjunto de datos. Por favor intenta nuevamente.",
     "errorDetails": "Detalles del Error"
   },
+  "DatasetUpsell": {
+    "accountRequired": "Inicia sesión para ver",
+    "signInToBrowse": "Explora el mapa de <strong>{dataset} en {area}</strong>, creado por la comunidad de OpenStreetMap.",
+    "continueWithEmail": "Continuar con email",
+    "back": "Volver"
+  },
   "SEO": {
     "home": {
       "title": "OSM for Cities - Explorar y Descargar Datos de Ciudades",

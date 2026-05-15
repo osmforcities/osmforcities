@@ -7,13 +7,17 @@ import { DatasetInteractiveSection } from "@/components/dataset/dataset-interact
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import { getAreaDetailsById } from "@/lib/nominatim";
-import { isValidTemplateIdentifier } from "@/lib/template-resolver";
+import {
+  isValidTemplateIdentifier,
+  resolveTemplate,
+} from "@/lib/template-resolver";
 import { DatasetLoadingSkeleton } from "@/components/ui/dataset-loading-skeleton";
 import {
   TemplateNotFoundError,
   AreaNotFoundError,
   DatasetCreationError,
 } from "@/components/ui/dataset-error-states";
+import { DatasetUpsellPage } from "@/components/dataset/dataset-upsell-page";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import type { TranslationFunction } from "@/lib/types";
@@ -38,6 +42,29 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
 
   if (!isValidTemplateIdentifier(templateId)) {
     return <TemplateNotFoundError templateId={templateId} />;
+  }
+
+  const session = await auth();
+  if (!session?.user) {
+    const [template, areaInfo] = await Promise.all([
+      resolveTemplate(templateId),
+      getAreaDetailsById(osmRelationId),
+    ]);
+
+    if (!template) {
+      return <TemplateNotFoundError templateId={templateId} />;
+    }
+    if (!areaInfo) {
+      return <AreaNotFoundError areaId={areaId} />;
+    }
+
+    return (
+      <DatasetUpsellPage
+        datasetName={template.name}
+        areaName={areaInfo.name}
+        areaId={areaId}
+      />
+    );
   }
 
   return (

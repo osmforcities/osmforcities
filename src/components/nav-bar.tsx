@@ -33,7 +33,7 @@ export default async function NavBar() {
           </Link>
 
           <div className="flex items-center gap-4 flex-1 justify-center max-w-md mx-2 md:mx-8">
-            {user && <NavSearch />}
+            <NavSearch />
           </div>
 
           <HamburgerMenu isLoggedIn={!!user} />
