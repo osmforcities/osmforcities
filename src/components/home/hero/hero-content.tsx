@@ -9,7 +9,7 @@ export function HeroContent() {
   const t = useTranslations("Home");
 
   return (
-    <div className="flex flex-col justify-center md:border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black relative md:py-16 md:px-14 py-4 px-3 md:flex-shrink-0 flex-auto md:min-h-0">
+    <div className="flex flex-col justify-center md:border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black relative md:py-16 md:px-14 py-4 px-3 md:flex-shrink-0 md:min-h-0">
       <div style={{ maxWidth: '480px' }}>
         <h1
           className="font-medium text-neutral-900 dark:text-neutral-100 md:mb-6 mb-1"

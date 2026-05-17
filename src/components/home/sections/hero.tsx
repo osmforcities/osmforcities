@@ -1,5 +1,3 @@
-"use client";
-
 import { HeroLayout, HeroContent } from "../hero";
 import { HeroMap } from "../shared/hero-map";
 
