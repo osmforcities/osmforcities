@@ -60,6 +60,7 @@ function NavSearch() {
 
   const [inputValue, setInputValue] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Debounce the search term with 500ms delay
@@ -198,9 +199,11 @@ function NavSearch() {
       >
         <div className="relative flex rounded border border-border focus-within:border-olive-500 focus-within:ring-2 focus-within:ring-olive-500/20">
           <Input
-            placeholder={t("searchPlaceholder")}
+            placeholder={isFocused ? t("searchPlaceholder") : ""}
             aria-label={t("searchPlaceholder")}
             data-testid="nav-search-input"
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             onKeyDown={handleKeyDown}
             className={`w-full px-3 py-1.5 text-sm border-0 rounded-l focus:outline-none bg-white transition-all duration-150 ${
               inputValue.length > 0 && inputValue.length < MIN_SEARCH_CHARS

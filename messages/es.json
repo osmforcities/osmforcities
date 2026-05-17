@@ -199,7 +199,7 @@
     "viewOnOpenStreetMap": "Ver en OpenStreetMap →"
   },
   "NavSearch": {
-    "searchPlaceholder": "Buscar ciudades y áreas (mín. 3 caracteres)...",
+    "searchPlaceholder": "Buscar ciudades y áreas...",
     "noAreasFound": "No se encontraron áreas",
     "searching": "Buscando...",
     "typeMoreChars": "Escribe {count} carácter{count, plural, one {} other {es}} más para buscar",

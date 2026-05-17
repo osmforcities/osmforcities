@@ -44,9 +44,7 @@ test.describe("Navbar", () => {
       await expect(page.getByText("Sign Out")).toBeVisible();
 
       // Search input should be visible for authenticated users
-      const searchInput = page.getByPlaceholder(
-        "Search cities and areas (min. 3 characters)..."
-      );
+      const searchInput = page.getByTestId("nav-search-input");
       await expect(searchInput).toBeVisible();
       await expect(searchInput).toHaveAttribute("role", "combobox");
     } finally {
@@ -77,9 +75,7 @@ test.describe("Navbar", () => {
     test("should show helpful message for queries less than 3 characters", async ({
       page,
     }) => {
-      const searchInput = page.getByPlaceholder(
-        "Search cities and areas (min. 3 characters)..."
-      );
+      const searchInput = page.getByTestId("nav-search-input");
 
       await searchInput.click();
       await searchInput.fill("sa");
@@ -135,9 +131,7 @@ test.describe("Navbar", () => {
         }
       });
 
-      const searchInput = page.getByPlaceholder(
-        "Search cities and areas (min. 3 characters)..."
-      );
+      const searchInput = page.getByTestId("nav-search-input");
 
       await searchInput.click();
       await searchInput.fill("são");
@@ -153,9 +147,7 @@ test.describe("Navbar", () => {
     });
 
     test("should show search results for valid query", async ({ page }) => {
-      const searchInput = page.getByPlaceholder(
-        "Search cities and areas (min. 3 characters)..."
-      );
+      const searchInput = page.getByTestId("nav-search-input");
 
       await searchInput.click();
       await searchInput.fill("são");
@@ -181,9 +173,7 @@ test.describe("Navbar", () => {
     test("should show no results message for empty response", async ({
       page,
     }) => {
-      const searchInput = page.getByPlaceholder(
-        "Search cities and areas (min. 3 characters)..."
-      );
+      const searchInput = page.getByTestId("nav-search-input");
 
       await searchInput.click();
       await searchInput.fill("xyz");
@@ -198,9 +188,7 @@ test.describe("Navbar", () => {
     test("should navigate through results with arrow keys", async ({
       page,
     }) => {
-      const searchInput = page.getByPlaceholder(
-        "Search cities and areas (min. 3 characters)..."
-      );
+      const searchInput = page.getByTestId("nav-search-input");
 
       await searchInput.click();
       await searchInput.fill("são");
@@ -299,9 +287,7 @@ test.describe("Navbar", () => {
     test("should close dropdown and clear search when pressing Escape", async ({
       page,
     }) => {
-      const searchInput = page.getByPlaceholder(
-        "Search cities and areas (min. 3 characters)..."
-      );
+      const searchInput = page.getByTestId("nav-search-input");
 
       await searchInput.click();
       await searchInput.fill("são");
@@ -320,9 +306,7 @@ test.describe("Navbar", () => {
     });
 
     test("should close dropdown when clicking outside", async ({ page }) => {
-      const searchInput = page.getByPlaceholder(
-        "Search cities and areas (min. 3 characters)..."
-      );
+      const searchInput = page.getByTestId("nav-search-input");
 
       await searchInput.click();
       await searchInput.fill("são");
@@ -342,9 +326,7 @@ test.describe("Navbar", () => {
 
     test("should handle API errors gracefully", async ({ page }) => {
       // Global mock already handles "error" query with 500 response
-      const searchInput = page.getByPlaceholder(
-        "Search cities and areas (min. 3 characters)..."
-      );
+      const searchInput = page.getByTestId("nav-search-input");
 
       await searchInput.click();
       await searchInput.fill("error");
