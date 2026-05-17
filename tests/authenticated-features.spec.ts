@@ -24,7 +24,7 @@ test.describe("Authenticated Features", () => {
       await page.waitForLoadState("domcontentloaded");
 
       // Search input should be visible for authenticated users
-      const searchInput = page.getByPlaceholder("Search cities and areas (min. 3 characters)...");
+      const searchInput = page.getByTestId("nav-search-input");
       await expect(searchInput).toBeVisible();
       await expect(searchInput).toHaveAttribute("role", "combobox");
 
@@ -91,7 +91,7 @@ test.describe("Authenticated Features", () => {
 
       await page.goto(getLocalizedPath("/"));
 
-      const searchInput = page.getByPlaceholder("Search cities and areas (min. 3 characters)...");
+      const searchInput = page.getByTestId("nav-search-input");
       await searchInput.click();
       await searchInput.fill("são paulo");
 
