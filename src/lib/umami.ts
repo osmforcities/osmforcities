@@ -28,7 +28,7 @@ export function trackEvent(
       hostname: appUrl ? new URL(appUrl).hostname : "",
       url,
       name,
-      language: options?.language || "en",
+      ...(options?.language ? { language: options.language } : {}),
       referrer: options?.referrer,
     },
   };

@@ -60,7 +60,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
     }
 
     trackEvent(
-      "dataset_upsell_view",
+      ANALYTICS_EVENTS.DATASET_UPSELL_VIEW,
       `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/upsell`
     );
 
