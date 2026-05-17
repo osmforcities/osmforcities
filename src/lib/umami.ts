@@ -8,10 +8,12 @@ export interface UmamiEventOptions {
   referrer?: string;
 }
 
-export function getClientInfo(request: NextRequest): Pick<UmamiEventOptions, "ip" | "userAgent"> {
+export function getClientInfo(request: NextRequest): Pick<UmamiEventOptions, "ip" | "userAgent" | "language" | "referrer"> {
   return {
     ip: request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined,
     userAgent: request.headers.get("user-agent") || undefined,
+    language: request.headers.get("accept-language") || undefined,
+    referrer: request.headers.get("referer") || undefined,
   };
 }
 
