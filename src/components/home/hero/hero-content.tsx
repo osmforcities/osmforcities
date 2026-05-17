@@ -23,7 +23,7 @@ export function HeroContent() {
           {t("hero.title")}
         </h1>
         <p
-          className="text-neutral-600 dark:text-neutral-400 md:mb-8 mb-4"
+          className="text-neutral-600 dark:text-neutral-400"
           style={{
             fontSize: 'clamp(13px, 2.5vw, 15px)',
             lineHeight: '1.5',
