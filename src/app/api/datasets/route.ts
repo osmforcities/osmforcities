@@ -10,7 +10,7 @@ import {
   extractDatasetStats,
 } from "@/lib/osm";
 import { calculateBbox } from "@/lib/utils";
-import { trackEvent } from "@/lib/umami";
+import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 export async function POST(req: NextRequest) {
@@ -94,10 +94,7 @@ export async function POST(req: NextRequest) {
       include: { template: true },
     });
 
-    const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || undefined;
-    const userAgent = req.headers.get("user-agent") || undefined;
-
-    trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`, { ip, userAgent });
+    trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`, getClientInfo(req));
 
     return NextResponse.json(dataset, { status: 201 });
   } catch (err) {

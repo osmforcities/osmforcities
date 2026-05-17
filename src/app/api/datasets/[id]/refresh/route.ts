@@ -7,7 +7,7 @@ import {
   extractDatasetStats,
 } from "@/lib/osm";
 import { calculateBbox } from "@/lib/utils";
-import { trackEvent } from "@/lib/umami";
+import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 export async function POST(
@@ -82,10 +82,7 @@ export async function POST(
       },
     });
 
-    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined;
-    const userAgent = request.headers.get("user-agent") || undefined;
-
-    trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, { ip, userAgent });
+    trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
 
     return NextResponse.json({
       success: true,

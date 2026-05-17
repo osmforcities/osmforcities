@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { WatchDatasetSchema, UnwatchDatasetSchema } from "@/schemas/dataset";
-import { trackEvent } from "@/lib/umami";
+import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { MAX_FOLLOWS_PER_USER } from "@/lib/constants";
 
@@ -66,10 +66,7 @@ export async function POST(
       );
     }
 
-    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined;
-    const userAgent = request.headers.get("user-agent") || undefined;
-
-    trackEvent(ANALYTICS_EVENTS.DATASET_FOLLOW, `/datasets/${datasetId}/follow`, { ip, userAgent });
+    trackEvent(ANALYTICS_EVENTS.DATASET_FOLLOW, `/datasets/${datasetId}/follow`, getClientInfo(request));
 
     return NextResponse.json({ success: true, watch });
   } catch (error) {
@@ -122,10 +119,7 @@ export async function DELETE(
       },
     });
 
-    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined;
-    const userAgent = request.headers.get("user-agent") || undefined;
-
-    trackEvent(ANALYTICS_EVENTS.DATASET_UNFOLLOW, `/datasets/${datasetId}/unfollow`, { ip, userAgent });
+    trackEvent(ANALYTICS_EVENTS.DATASET_UNFOLLOW, `/datasets/${datasetId}/unfollow`, getClientInfo(request));
 
     return NextResponse.json({ success: true });
   } catch (error) {

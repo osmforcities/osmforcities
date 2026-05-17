@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { trackEvent } from "@/lib/umami";
+import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 export async function GET(
@@ -27,10 +27,7 @@ export async function GET(
       );
     }
 
-    const ip = _request.headers.get("x-forwarded-for") || _request.headers.get("x-real-ip") || undefined;
-    const userAgent = _request.headers.get("user-agent") || undefined;
-
-    trackEvent(ANALYTICS_EVENTS.DATASET_DOWNLOAD, `/datasets/${id}/download`, { ip, userAgent });
+    trackEvent(ANALYTICS_EVENTS.DATASET_DOWNLOAD, `/datasets/${id}/download`, getClientInfo(_request));
 
     const safeName = `${dataset.template.name}-${dataset.cityName}.geojson`.replace(
       /[^\w.\-]+/g,

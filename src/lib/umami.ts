@@ -1,10 +1,18 @@
 import { logger } from "@/lib/logger";
+import type { NextRequest } from "next/server";
 
 export interface UmamiEventOptions {
   userAgent?: string;
   ip?: string;
   language?: string;
   referrer?: string;
+}
+
+export function getClientInfo(request: NextRequest): Pick<UmamiEventOptions, "ip" | "userAgent"> {
+  return {
+    ip: request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined,
+    userAgent: request.headers.get("user-agent") || undefined,
+  };
 }
 
 /**
@@ -29,7 +37,7 @@ export function trackEvent(
       url,
       name,
       ...(options?.language ? { language: options.language } : {}),
-      referrer: options?.referrer,
+      ...(options?.referrer ? { referrer: options.referrer } : {}),
     },
   };
 
