@@ -27,7 +27,10 @@ export async function GET(
       );
     }
 
-    trackEvent(ANALYTICS_EVENTS.DATASET_DOWNLOAD, `/datasets/${id}/download`);
+    const ip = _request.headers.get("x-forwarded-for") || _request.headers.get("x-real-ip") || undefined;
+    const userAgent = _request.headers.get("user-agent") || undefined;
+
+    trackEvent(ANALYTICS_EVENTS.DATASET_DOWNLOAD, `/datasets/${id}/download`, { ip, userAgent });
 
     const safeName = `${dataset.template.name}-${dataset.cityName}.geojson`.replace(
       /[^\w.\-]+/g,

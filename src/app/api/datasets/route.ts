@@ -94,7 +94,10 @@ export async function POST(req: NextRequest) {
       include: { template: true },
     });
 
-    trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`);
+    const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || undefined;
+    const userAgent = req.headers.get("user-agent") || undefined;
+
+    trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`, { ip, userAgent });
 
     return NextResponse.json(dataset, { status: 201 });
   } catch (err) {

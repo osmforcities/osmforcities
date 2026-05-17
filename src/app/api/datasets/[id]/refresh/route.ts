@@ -82,7 +82,10 @@ export async function POST(
       },
     });
 
-    trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`);
+    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined;
+    const userAgent = request.headers.get("user-agent") || undefined;
+
+    trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, { ip, userAgent });
 
     return NextResponse.json({
       success: true,

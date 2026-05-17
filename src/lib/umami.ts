@@ -28,7 +28,6 @@ export function trackEvent(
       hostname: appUrl ? new URL(appUrl).hostname : "",
       url,
       name,
-      userAgent: options?.userAgent || "osmforcities-server/1.0",
       language: options?.language || "en",
       referrer: options?.referrer,
     },
@@ -36,12 +35,18 @@ export function trackEvent(
 
   logger.debug("Umami event", { name, payload });
 
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    "User-Agent": options?.userAgent || "osmforcities-server/1.0",
+  };
+
+  if (options?.ip) {
+    headers["X-Forwarded-For"] = options.ip;
+  }
+
   fetch(`${umamiUrl}/api/send`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "User-Agent": options?.userAgent || "osmforcities-server/1.0",
-    },
+    headers,
     body: JSON.stringify(payload),
   })
     .then(async (res) => {

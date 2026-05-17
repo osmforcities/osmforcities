@@ -66,7 +66,10 @@ export async function POST(
       );
     }
 
-    trackEvent(ANALYTICS_EVENTS.DATASET_FOLLOW, `/datasets/${datasetId}/follow`);
+    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined;
+    const userAgent = request.headers.get("user-agent") || undefined;
+
+    trackEvent(ANALYTICS_EVENTS.DATASET_FOLLOW, `/datasets/${datasetId}/follow`, { ip, userAgent });
 
     return NextResponse.json({ success: true, watch });
   } catch (error) {
@@ -119,7 +122,10 @@ export async function DELETE(
       },
     });
 
-    trackEvent(ANALYTICS_EVENTS.DATASET_UNFOLLOW, `/datasets/${datasetId}/unfollow`);
+    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined;
+    const userAgent = request.headers.get("user-agent") || undefined;
+
+    trackEvent(ANALYTICS_EVENTS.DATASET_UNFOLLOW, `/datasets/${datasetId}/unfollow`, { ip, userAgent });
 
     return NextResponse.json({ success: true });
   } catch (error) {
