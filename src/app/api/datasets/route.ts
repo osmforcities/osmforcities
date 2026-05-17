@@ -10,7 +10,8 @@ import {
   extractDatasetStats,
 } from "@/lib/osm";
 import { calculateBbox } from "@/lib/utils";
-import { trackEvent } from "@/lib/umami";
+import { trackEvent, getClientInfo } from "@/lib/umami";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -93,7 +94,7 @@ export async function POST(req: NextRequest) {
       include: { template: true },
     });
 
-    trackEvent("dataset_create", `/datasets/${dataset.id}/create`);
+    trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`, getClientInfo(req));
 
     return NextResponse.json(dataset, { status: 201 });
   } catch (err) {
