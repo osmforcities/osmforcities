@@ -21,7 +21,7 @@ import { DatasetUpsellPage } from "@/components/dataset/dataset-upsell-page";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import type { TranslationFunction } from "@/lib/types";
-import { trackEvent } from "@/lib/umami";
+import { trackEvent, getClientInfoFromHeaders } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { getAreaBoundary } from "@/lib/area-boundary";
 
@@ -61,7 +61,8 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
 
     trackEvent(
       ANALYTICS_EVENTS.DATASET_UPSELL_VIEW,
-      `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/upsell`
+      `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/upsell`,
+      await getClientInfoFromHeaders()
     );
 
     return (

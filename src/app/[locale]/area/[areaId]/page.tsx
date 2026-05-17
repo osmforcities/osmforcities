@@ -6,7 +6,7 @@ import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { DatasetGrid } from "@/components/ui/template-grid";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { Link } from "@/components/ui/link";
-import { trackEvent } from "@/lib/umami";
+import { trackEvent, getClientInfoFromHeaders } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { auth } from "@/auth";
 
@@ -61,7 +61,8 @@ export default async function AreaPage({ params }: AreaPageProps) {
     session?.user
       ? ANALYTICS_EVENTS.AREA_VIEW_LOGGED_IN
       : ANALYTICS_EVENTS.AREA_VIEW_LOGGED_OUT,
-    `/area/${areaId}/view`
+    `/area/${areaId}/view`,
+    await getClientInfoFromHeaders()
   );
 
   const breadcrumbItems = [

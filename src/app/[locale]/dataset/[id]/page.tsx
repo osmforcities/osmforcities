@@ -10,7 +10,7 @@ import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
 import { DatasetStatsTable } from "@/components/dataset/dataset-stats-table";
 import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
 import { DatasetLayout } from "@/components/dataset/dataset-layout";
-import { trackEvent } from "@/lib/umami";
+import { trackEvent, getClientInfoFromHeaders } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { getAreaBoundary } from "@/lib/area-boundary";
 
@@ -84,7 +84,7 @@ export default async function DatasetPage({
 
   const boundary = await getAreaBoundary(dataset.area.id);
 
-  trackEvent(ANALYTICS_EVENTS.DATASET_DETAIL_VIEW, `/datasets/${id}/view`);
+  trackEvent(ANALYTICS_EVENTS.DATASET_DETAIL_VIEW, `/datasets/${id}/view`, await getClientInfoFromHeaders());
 
   return (
     <DatasetLayout

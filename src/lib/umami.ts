@@ -1,5 +1,6 @@
 import { logger } from "@/lib/logger";
 import type { NextRequest } from "next/server";
+import { headers } from "next/headers";
 
 export interface UmamiEventOptions {
   userAgent?: string;
@@ -8,12 +9,30 @@ export interface UmamiEventOptions {
   referrer?: string;
 }
 
-export function getClientInfo(request: NextRequest): Pick<UmamiEventOptions, "ip" | "userAgent" | "language" | "referrer"> {
+type ClientInfo = Pick<UmamiEventOptions, "ip" | "userAgent" | "language" | "referrer">;
+
+export function getClientInfo(request: NextRequest): ClientInfo {
+  const acceptLanguage = request.headers.get("accept-language");
+  const language = acceptLanguage?.split(",")[0]?.split(";")[0]?.trim();
+
   return {
     ip: request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined,
     userAgent: request.headers.get("user-agent") || undefined,
-    language: request.headers.get("accept-language") || undefined,
+    language: language || undefined,
     referrer: request.headers.get("referer") || undefined,
+  };
+}
+
+export async function getClientInfoFromHeaders(): Promise<ClientInfo> {
+  const headersList = await headers();
+  const acceptLanguage = headersList.get("accept-language");
+  const language = acceptLanguage?.split(",")[0]?.split(";")[0]?.trim();
+
+  return {
+    ip: headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || undefined,
+    userAgent: headersList.get("user-agent") || undefined,
+    language: language || undefined,
+    referrer: headersList.get("referer") || undefined,
   };
 }
 
