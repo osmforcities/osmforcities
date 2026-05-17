@@ -22,6 +22,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import type { TranslationFunction } from "@/lib/types";
 import { trackEvent } from "@/lib/umami";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { getAreaBoundary } from "@/lib/area-boundary";
 
 type DatasetPageProps = {
@@ -131,7 +132,7 @@ async function AreaTemplateDatasetView({
     });
 
     trackEvent(
-      "dataset_detail_view",
+      ANALYTICS_EVENTS.DATASET_DETAIL_VIEW,
       `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/view`
     );
 

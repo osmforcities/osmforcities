@@ -11,6 +11,7 @@ import { DatasetStatsTable } from "@/components/dataset/dataset-stats-table";
 import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
 import { DatasetLayout } from "@/components/dataset/dataset-layout";
 import { trackEvent } from "@/lib/umami";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { getAreaBoundary } from "@/lib/area-boundary";
 
 async function getDataset(id: string, locale: string): Promise<Dataset | null> {
@@ -83,7 +84,7 @@ export default async function DatasetPage({
 
   const boundary = await getAreaBoundary(dataset.area.id);
 
-  trackEvent("dataset_detail_view", `/datasets/${id}/view`);
+  trackEvent(ANALYTICS_EVENTS.DATASET_DETAIL_VIEW, `/datasets/${id}/view`);
 
   return (
     <DatasetLayout

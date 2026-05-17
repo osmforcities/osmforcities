@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { WatchDatasetSchema, UnwatchDatasetSchema } from "@/schemas/dataset";
 import { trackEvent } from "@/lib/umami";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { MAX_FOLLOWS_PER_USER } from "@/lib/constants";
 
 export async function POST(
@@ -65,7 +66,7 @@ export async function POST(
       );
     }
 
-    trackEvent("dataset_follow", `/datasets/${datasetId}/follow`);
+    trackEvent(ANALYTICS_EVENTS.DATASET_FOLLOW, `/datasets/${datasetId}/follow`);
 
     return NextResponse.json({ success: true, watch });
   } catch (error) {
@@ -118,7 +119,7 @@ export async function DELETE(
       },
     });
 
-    trackEvent("dataset_unfollow", `/datasets/${datasetId}/unfollow`);
+    trackEvent(ANALYTICS_EVENTS.DATASET_UNFOLLOW, `/datasets/${datasetId}/unfollow`);
 
     return NextResponse.json({ success: true });
   } catch (error) {
