@@ -134,7 +134,8 @@ async function AreaTemplateDatasetView({
 
     trackEvent(
       ANALYTICS_EVENTS.DATASET_DETAIL_VIEW,
-      `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/view`
+      `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/view`,
+      await getClientInfoFromHeaders()
     );
 
     const boundary = await getAreaBoundary(areaId);
