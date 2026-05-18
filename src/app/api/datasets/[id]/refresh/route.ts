@@ -7,7 +7,8 @@ import {
   extractDatasetStats,
 } from "@/lib/osm";
 import { calculateBbox } from "@/lib/utils";
-import { trackEvent } from "@/lib/umami";
+import { trackEvent, getClientInfo } from "@/lib/umami";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 export async function POST(
   request: NextRequest,
@@ -81,7 +82,7 @@ export async function POST(
       },
     });
 
-    trackEvent("dataset_refresh", `/datasets/${datasetId}/refresh`);
+    trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
 
     return NextResponse.json({
       success: true,

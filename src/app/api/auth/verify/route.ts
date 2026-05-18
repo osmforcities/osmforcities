@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken, signIn } from "@/auth";
 import { getBaseUrl } from "@/lib/utils";
 import { prisma } from "@/lib/db";
-import { trackEvent } from "@/lib/umami";
+import { trackEvent, getClientInfo } from "@/lib/umami";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 export async function GET(request: NextRequest) {
   const baseUrl = getBaseUrl(request);
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (!verificationResult.user.emailVerified) {
-      trackEvent("sign_up", "/sign-up");
+      trackEvent(ANALYTICS_EVENTS.SIGN_UP, "/sign-up", getClientInfo(request));
     }
 
     await prisma.user.update({

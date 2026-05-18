@@ -11,6 +11,7 @@ import {
 import { calculateBbox } from "@/lib/utils";
 import { Prisma } from "@prisma/client";
 import { trackEvent } from "@/lib/umami";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 export type DatasetCreationResult = {
   dataset: NonNullable<Awaited<ReturnType<typeof getDatasetWithDetails>>>;
@@ -223,7 +224,7 @@ async function createDatasetOnDemand(
       },
     });
 
-    trackEvent("dataset_create", `/datasets/${dataset.id}/create`);
+    trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`);
 
     // Resolve template translations for the given locale
     const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);

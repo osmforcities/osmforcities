@@ -201,7 +201,7 @@
     "viewOnOpenStreetMap": "View on OpenStreetMap →"
   },
   "NavSearch": {
-    "searchPlaceholder": "Search cities and areas (min. 3 characters)...",
+    "searchPlaceholder": "Search cities and areas...",
     "noAreasFound": "No areas found",
     "searching": "Searching...",
     "typeMoreChars": "Type {count} more character{count, plural, one {} other {s}} to search",
