@@ -3,7 +3,6 @@ export const PROTECTED_ROUTES = [
   "/preferences",
   "/templates",
   "/users",
-  "/area",
   "/dataset",
 ] as const;
 

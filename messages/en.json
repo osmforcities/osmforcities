@@ -562,6 +562,12 @@
     "unexpectedErrorDescription": "We encountered an unexpected error while loading the dataset. Please try again.",
     "errorDetails": "Error Details"
   },
+  "DatasetUpsell": {
+    "accountRequired": "Sign in to view",
+    "signInToBrowse": "Explore the map of <strong>{dataset} in {area}</strong>, made by the OpenStreetMap community.",
+    "continueWithEmail": "Continue with email",
+    "back": "Back"
+  },
   "SEO": {
     "home": {
       "title": "OSM for Cities - Browse and Download City Data",

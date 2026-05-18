@@ -7,6 +7,7 @@ import { DatasetGrid } from "@/components/ui/template-grid";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { Link } from "@/components/ui/link";
 import { trackEvent } from "@/lib/umami";
+import { auth } from "@/auth";
 
 type AreaPageProps = {
   params: Promise<{
@@ -45,16 +46,20 @@ export default async function AreaPage({ params }: AreaPageProps) {
     notFound();
   }
 
-  const [areaInfo, templates] = await Promise.all([
+  const [areaInfo, templates, session] = await Promise.all([
     getAreaDetailsById(osmRelationId),
     getActiveTemplates(locale),
+    auth(),
   ]);
 
   if (!areaInfo) {
     notFound();
   }
 
-  trackEvent("datasets_list_view", "/datasets/list/view");
+  trackEvent(
+    session?.user ? "area_view_logged_in" : "area_view_logged_out",
+    `/area/${areaId}/view`
+  );
 
   const breadcrumbItems = [
     { label: navT("home"), href: "/" },
