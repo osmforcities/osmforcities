@@ -64,18 +64,18 @@ export function trackEvent(
 
   logger.debug("Umami event", { name, payload });
 
-  const headers: Record<string, string> = {
+  const requestHeaders: Record<string, string> = {
     "Content-Type": "application/json",
     "User-Agent": options?.userAgent || "osmforcities-server/1.0",
   };
 
   if (options?.ip) {
-    headers["X-Forwarded-For"] = options.ip;
+    requestHeaders["X-Forwarded-For"] = options.ip;
   }
 
   fetch(`${umamiUrl}/api/send`, {
     method: "POST",
-    headers,
+    headers: requestHeaders,
     body: JSON.stringify(payload),
   })
     .then(async (res) => {
