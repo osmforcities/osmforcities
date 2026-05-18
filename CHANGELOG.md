@@ -1,5 +1,16 @@
 # osmforcities
 
+## 1.9.1
+
+### Added
+
+- Responsive mobile layout for hero section with scaled typography (#229)
+
+### Changed
+
+- Centralize analytics event constants and enhance Umami tracking with client info (#230)
+- Cleaner search placeholder behavior (#228)
+
 ## 1.9.0
 
 ### Minor Changes
