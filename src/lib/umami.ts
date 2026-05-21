@@ -1,90 +1,89 @@
-import { logger } from "@/lib/logger";
-import type { NextRequest } from "next/server";
 import { headers } from "next/headers";
+import { NextRequest } from "next/server";
+import { logger } from "@/lib/logger";
 
-export interface UmamiEventOptions {
-  userAgent?: string;
+export type ClientInfo = {
   ip?: string;
+  userAgent?: string;
   language?: string;
   referrer?: string;
-}
-
-type ClientInfo = Pick<UmamiEventOptions, "ip" | "userAgent" | "language" | "referrer">;
+};
 
 export function getClientInfo(request: NextRequest): ClientInfo {
-  const acceptLanguage = request.headers.get("accept-language");
-  const language = acceptLanguage?.split(",")[0]?.split(";")[0]?.trim();
-
   return {
-    ip: request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined,
+    ip:
+      request.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+      request.headers.get("x-real-ip") ||
+      undefined,
     userAgent: request.headers.get("user-agent") || undefined,
-    language: language || undefined,
+    language:
+      request.headers
+        .get("accept-language")
+        ?.split(",")[0]
+        .split(";")[0]
+        .trim() || undefined,
     referrer: request.headers.get("referer") || undefined,
   };
 }
 
 export async function getClientInfoFromHeaders(): Promise<ClientInfo> {
-  const headersList = await headers();
-  const acceptLanguage = headersList.get("accept-language");
-  const language = acceptLanguage?.split(",")[0]?.split(";")[0]?.trim();
-
+  const h = await headers();
   return {
-    ip: headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || undefined,
-    userAgent: headersList.get("user-agent") || undefined,
-    language: language || undefined,
-    referrer: headersList.get("referer") || undefined,
+    ip:
+      h.get("x-forwarded-for")?.split(",")[0].trim() ||
+      h.get("x-real-ip") ||
+      undefined,
+    userAgent: h.get("user-agent") || undefined,
+    language:
+      h.get("accept-language")?.split(",")[0].split(";")[0].trim() ||
+      undefined,
+    referrer: h.get("referer") || undefined,
   };
 }
 
-/**
- * Fire-and-forget server-side event tracking via Umami.
- * No-ops if NEXT_PUBLIC_UMAMI_URL or NEXT_PUBLIC_UMAMI_WEBSITE_ID are unset.
- */
 export function trackEvent(
-  name: string,
+  eventName: string,
   url: string,
-  options?: UmamiEventOptions
-) {
-  const umamiUrl = process.env.NEXT_PUBLIC_UMAMI_URL;
+  clientInfo?: ClientInfo,
+): void {
   const websiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-  if (!umamiUrl || !websiteId) return;
+  const umamiUrl = process.env.NEXT_PUBLIC_UMAMI_URL;
 
-  const payload = {
-    type: "event",
-    payload: {
-      website: websiteId,
-      hostname: appUrl ? new URL(appUrl).hostname : "",
-      url,
-      name,
-      ...(options?.language ? { language: options.language } : {}),
-      ...(options?.referrer ? { referrer: options.referrer } : {}),
-    },
-  };
+  if (!websiteId || !umamiUrl) return;
 
-  logger.debug("Umami event", { name, payload });
-
-  const requestHeaders: Record<string, string> = {
+  const fetchHeaders: Record<string, string> = {
     "Content-Type": "application/json",
-    "User-Agent": options?.userAgent || "osmforcities-server/1.0",
   };
 
-  if (options?.ip) {
-    requestHeaders["X-Forwarded-For"] = options.ip;
-  }
+  if (clientInfo?.ip) fetchHeaders["x-forwarded-for"] = clientInfo.ip;
+  if (clientInfo?.userAgent) fetchHeaders["user-agent"] = clientInfo.userAgent;
 
   fetch(`${umamiUrl}/api/send`, {
     method: "POST",
-    headers: requestHeaders,
-    body: JSON.stringify(payload),
+    headers: fetchHeaders,
+    body: JSON.stringify({
+      type: "event",
+      payload: {
+        website: websiteId,
+        url,
+        name: eventName,
+        hostname: process.env.NEXT_PUBLIC_APP_URL
+          ? new URL(process.env.NEXT_PUBLIC_APP_URL).hostname
+          : "",
+        language: clientInfo?.language ?? "",
+        referrer: clientInfo?.referrer ?? "",
+      },
+    }),
   })
     .then(async (res) => {
-      const data = await res.json().catch(() => ({ status: res.status }));
       if (!res.ok) {
-        logger.warn("Umami event failed", { name, status: res.status, data });
+        const data = await res.json().catch(() => ({ status: res.status }));
+        logger.warn("Umami event failed", { event: eventName, status: res.status, data });
       } else {
-        logger.debug("Umami event sent", { name, data });
+        logger.debug("Umami event sent", { event: eventName, url });
       }
     })
-    .catch((err) => logger.warn("Umami event error", { name, err }));
+    .catch((err) => {
+      logger.warn("Umami event error", { event: eventName, err });
+    });
 }
