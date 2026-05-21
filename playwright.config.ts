@@ -26,7 +26,7 @@ export default defineConfig({
     command: process.env.CI
       ? "ENABLE_TEST_AUTH=true pnpm start"
       : "NODE_ENV=test ENABLE_TEST_AUTH=true pnpm dev",
-    url: "http://localhost:3000/api/health",
+    url: "http://localhost:3000",
     reuseExistingServer: true,
     timeout: process.env.CI ? 300 * 1000 : 120 * 1000,
     stdout: "pipe",
