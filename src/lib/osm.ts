@@ -8,6 +8,8 @@ import {
 } from "@/types/overpass";
 import { OSMElementSchema, type OSMRelation } from "@/types/osm";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
+import type { Bbox } from "@/types/geojson";
+import { calculateBbox } from "@/lib/utils";
 
 const OVERPASS_API_URL =
   process.env.OVERPASS_API_URL ||
@@ -335,3 +337,27 @@ export type {
   OverpassError,
   OverpassData,
 } from "@/types/overpass";
+
+export interface DatasetSnapshot {
+  geojson: FeatureCollection;
+  stats: DatasetStats;
+  bbox: Bbox | null;
+  dataCount: number;
+}
+
+export async function fetchDatasetSnapshot(
+  areaId: number,
+  rawQuery: string
+): Promise<DatasetSnapshot> {
+  const queryString = rawQuery.replace(/\{OSM_RELATION_ID\}/g, areaId.toString());
+  const overpassData = await executeOverpassQuery(queryString);
+  const geojson = convertOverpassToGeoJSON(overpassData);
+  const stats = extractDatasetStats(overpassData);
+  const bbox = calculateBbox(geojson);
+  return {
+    geojson,
+    stats,
+    bbox,
+    dataCount: overpassData.elements.length,
+  };
+}
