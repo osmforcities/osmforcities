@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { NextRequest } from "next/server";
+import { logger } from "@/lib/logger";
 
 export type ClientInfo = {
   ip?: string;
@@ -69,15 +70,20 @@ export function trackEvent(
         hostname: process.env.NEXT_PUBLIC_APP_URL
           ? new URL(process.env.NEXT_PUBLIC_APP_URL).hostname
           : "",
-        language: clientInfo?.language ?? "en",
+        language: clientInfo?.language ?? "",
         referrer: clientInfo?.referrer ?? "",
       },
     }),
   })
-    .then(() => {
-      console.log(JSON.stringify({ msg: "Umami event sent", event: eventName, url }));
+    .then(async (res) => {
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({ status: res.status }));
+        logger.warn("Umami event failed", { event: eventName, status: res.status, data });
+      } else {
+        logger.debug("Umami event sent", { event: eventName, url });
+      }
     })
     .catch((err) => {
-      console.error(JSON.stringify({ msg: "Umami event failed", event: eventName, error: String(err) }));
+      logger.warn("Umami event error", { event: eventName, err });
     });
 }
