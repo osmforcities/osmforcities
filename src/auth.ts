@@ -1,3 +1,14 @@
+/**
+ * NextAuth configuration
+ *
+ * IMPORTANT: Post-login redirects are handled client-side in src/hooks/use-auth.ts
+ * The login flow uses `signIn()` with `redirect: false`, then does `window.location.href`.
+ * Do NOT add a `redirect` callback here - it won't be used by our current login flow.
+ *
+ * Test auth: uses test-auth-session cookie (see test utils)
+ * Production auth: uses magic links (email) or password
+ */
+
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
@@ -22,6 +33,7 @@ function generateSecureToken(length = 32) {
   );
 }
 
+/** Creates a user object for NextAuth session from database user */
 function createUserObject(user: DatabaseUser) {
   return {
     id: user.id,
@@ -32,6 +44,7 @@ function createUserObject(user: DatabaseUser) {
   };
 }
 
+/** Creates a test user object for test authentication */
 function createTestUserObject(
   id: string,
   email: string,
@@ -75,9 +88,6 @@ const {
         path: "/",
         // Secure cookies are only sent over HTTPS. In production, this must be true.
         secure: isProduction,
-        // The domain is set to the root domain in production to allow authentication
-        // to persist across subdomains (e.g., www.osmforcities.org and osmforcities.org).
-        domain: isProduction ? ".osmforcities.org" : undefined,
       },
     },
   },
@@ -236,6 +246,12 @@ export async function verifyToken(token: string) {
   return { user, token: verificationToken };
 }
 
+/**
+ * Gets the current session.
+ *
+ * Test mode: checks test-auth-session cookie first (for playwright tests)
+ * Normal mode: uses NextAuth session from JWT cookie
+ */
 export async function auth() {
   if (process.env.ENABLE_TEST_AUTH === "true") {
     const { cookies } = await import("next/headers");

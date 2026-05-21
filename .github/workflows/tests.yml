@@ -77,6 +77,7 @@ jobs:
           AUTH_URL: http://localhost:3000
           CRON_ROUTE_SECRET: test-cron-secret
           ENABLE_TEST_AUTH: true
+          NEXT_TELEMETRY_DISABLED: 1
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
@@ -84,3 +85,36 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+
+  storybook-tests:
+    if: github.event.pull_request.draft == false
+    needs: checks
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read .nvmrc
+        id: node-version
+        run: echo "version=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.node-version.outputs.version }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Generate Prisma Client
+        run: pnpm prisma generate
+
+      - name: Install Playwright Browsers
+        run: pnpm playwright install chromium --with-deps
+
+      - name: Run Storybook tests
+        run: pnpm test-storybook

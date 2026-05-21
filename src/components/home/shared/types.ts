@@ -27,3 +27,4 @@ export interface GridConfig {
   maxWidth?: "sm" | "md" | "lg" | "xl" | "full";
   gap?: "sm" | "md" | "lg";
 }
+

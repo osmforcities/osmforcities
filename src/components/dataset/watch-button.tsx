@@ -43,6 +43,7 @@ export default function DatasetWatchButton({
       disabled={isLoading}
       className="px-3 py-2"
       title={isWatched ? "Unwatch" : "Watch"}
+      data-testid={isWatched ? "dataset-unwatch-button" : "dataset-watch-button"}
     >
       <Eye className="h-4 w-4 mr-2" />
       {isWatched ? "Unwatch" : "Watch"}

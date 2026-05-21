@@ -148,4 +148,54 @@ test.describe("Area Page", () => {
     // Should redirect to 404 or show error
     await expect(page.locator("text=404")).toBeVisible({ timeout: 10000 });
   });
+
+  test("should display templates in Portuguese (pt-BR)", async ({ page }) => {
+    // Mock Nominatim response for area details
+    await page.route(
+      "**/nominatim.openstreetmap.org/lookup*",
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify([
+            {
+              place_id: 123456,
+              osm_type: "relation",
+              osm_id: 298470,
+              display_name: "São Paulo, State of São Paulo, Brazil",
+              name: "São Paulo",
+              class: "place",
+              type: "city",
+              boundingbox: ["-23.8", "-23.3", "-46.8", "-46.1"],
+              lat: "-23.5",
+              lon: "-46.6",
+              address: {
+                country_code: "br",
+                country: "Brazil",
+                state: "State of São Paulo",
+                type: "city",
+              },
+            },
+          ]),
+        });
+      }
+    );
+
+    // Create user with pt-BR language and authenticate
+    testUser = await setupAuthenticationWithSignup(page, { language: "pt-BR" });
+
+    // Navigate to pt-BR locale - the middleware will redirect from /en to /pt-BR
+    // due to user's language preference, so we go directly to the area page
+    await page.goto(getLocalizedPath("/area/298470", "pt-BR"));
+    await page.waitForLoadState("domcontentloaded");
+
+    // Wait for templates to load
+    await expect(page.locator("[data-testid='template-grid']")).toBeVisible();
+
+    // Verify Portuguese translations appear
+    await expect(
+      page.locator("text=Estacionamento para bicicletas")
+    ).toBeVisible();
+    await expect(page.locator("text=Pontos de ônibus")).toBeVisible();
+  });
 });

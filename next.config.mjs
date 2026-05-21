@@ -1,29 +1,27 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import createNextIntlPlugin from "next-intl/plugin";
-import createMDX from "@next/mdx";
-import remarkFrontmatter from "remark-frontmatter";
-import remarkMdxFrontmatter from "remark-mdx-frontmatter";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const commitHash =
+  [
+    process.env.COMMIT_HASH,
+    process.env.VERCEL_GIT_COMMIT_SHA,
+    process.env.GITHUB_SHA,
+  ].find((value) => value && value !== "undefined") ?? "unknown";
 
 const nextConfig = {
-  // Allow .mdx extensions for files
-  pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
+  outputFileTracingRoot: __dirname,
+  env: {
+    COMMIT_HASH: commitHash,
+  },
 };
 
 const withNextIntl = createNextIntlPlugin({
   experimental: {
-    // Provide the path to the messages that you're using in `AppConfig`
     createMessagesDeclaration: "./messages/en.json",
   },
 });
 
-const withMDX = createMDX({
-  // Add markdown plugins here, as desired
-  options: {
-    remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter],
-    rehypePlugins: [],
-    // Ensure frontmatter is properly parsed
-    format: "mdx",
-  },
-});
-
-// Combine MDX and Next.js config
-export default withMDX(withNextIntl(nextConfig));
+export default withNextIntl(nextConfig);

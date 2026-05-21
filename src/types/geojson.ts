@@ -27,11 +27,9 @@ export const GeoJSONFeatureCollectionSchema = z.object({
 }) as z.ZodType<FeatureCollection>;
 
 export const BboxSchema = z
-  .array(z.number())
-  .length(4)
+  .tuple([z.number(), z.number(), z.number(), z.number()])
   .refine(
-    (bbox) => {
-      const [minLng, minLat, maxLng, maxLat] = bbox;
+    ([minLng, minLat, maxLng, maxLat]) => {
       return minLng <= maxLng && minLat <= maxLat;
     },
     {

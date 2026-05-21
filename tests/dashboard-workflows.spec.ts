@@ -1,6 +1,7 @@
 import { test, expect } from "./test-setup";
 import { createTestUser, cleanupTestUser } from "./utils/auth";
 import { PrismaClient } from "@prisma/client";
+import { getLocalizedPath } from "./config";
 
 test.describe("Dashboard Page - Essential Workflows", () => {
   let testUser: { id: string; email: string; password?: string };
@@ -16,7 +17,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     await page.fill('input[name="email"]', testUser.email);
     await page.fill('input[name="password"]', testUser.password!);
     await page.click('button[type="submit"]');
-    await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+    await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
   });
 
   test.afterEach(async () => {
@@ -27,15 +28,13 @@ test.describe("Dashboard Page - Essential Workflows", () => {
   });
 
   test("should display dashboard title and subtitle", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for welcome message
-    await expect(page.getByText(/Welcome back/)).toBeVisible();
+    await expect(page.getByTestId("dashboard-welcome-message")).toBeVisible();
 
     // Check for subtitle
-    await expect(
-      page.getByText("Manage your datasets and explore the platform")
-    ).toBeVisible();
+    await expect(page.getByTestId("dashboard-subtitle")).toBeVisible();
 
     // Check for new tab navigation
     await expect(page.getByTestId("tab-following")).toBeVisible();
@@ -45,17 +44,16 @@ test.describe("Dashboard Page - Essential Workflows", () => {
   test("should show empty state when no datasets are followed", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for empty state
-    await expect(page.getByText("No datasets followed yet")).toBeVisible();
+    await expect(page.getByTestId("dashboard-empty-state")).toBeVisible();
     await expect(
-      page.getByRole("link", { name: "Search Cities" })
+      page.getByTestId("dashboard-empty-state-title")
     ).toBeVisible();
-
-    // Check for empty state action button
-    const searchButton = page.getByRole("link", { name: "Search Cities" });
-    await expect(searchButton).toBeVisible();
+    await expect(
+      page.getByTestId("dashboard-empty-state-description")
+    ).toBeVisible();
 
     // Ensure tab navigation is still visible
     await expect(page.getByTestId("tab-following")).toBeVisible();
@@ -116,12 +114,12 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for datasets section - no heading exists in new design
 
     // Check for dataset count
-    await expect(page.getByText(/dataset.*you're monitoring/)).toBeVisible();
+    await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
 
     // Check for dataset card
     const datasetGrid = page.getByTestId("followed-datasets-grid");
@@ -183,7 +181,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Click on dataset card
     const datasetCard = page
@@ -247,7 +245,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check dataset card structure
     const datasetCard = page
@@ -317,7 +315,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for watcher count
     await expect(page.getByText("1 watcher")).toBeVisible();
@@ -368,7 +366,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     const datasetGrid = page.getByTestId("followed-datasets-grid");
 
@@ -433,10 +431,13 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await prisma.$disconnect();
 
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for plural form
-    await expect(page.getByText("2 datasets you're monitoring")).toBeVisible();
+    await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
+    await expect(
+      page.getByTestId("dashboard-dataset-count")
+    ).toContainText("Following 2 datasets");
   });
 });
 
@@ -452,7 +453,7 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
     await page.fill('input[name="email"]', testUser.email);
     await page.fill('input[name="password"]', testUser.password!);
     await page.click('button[type="submit"]');
-    await page.waitForURL("http://localhost:3000/en", { timeout: 10000 });
+    await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
   });
 
   test.afterEach(async () => {
@@ -462,7 +463,7 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
   });
 
   test("should not show old wizard workflow buttons", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Should not show old buttons
     await expect(
@@ -473,13 +474,13 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
     ).toBeHidden();
 
     // Welcome back should be visible
-    await expect(page.getByText(/Welcome back/)).toBeVisible();
+    await expect(page.getByTestId("dashboard-welcome-message")).toBeVisible();
   });
 
   test("should show clean dashboard without authorship references", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Should not show authorship-related content
     await expect(page.getByText(/created by|author|owner/)).toBeHidden();
@@ -487,32 +488,31 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
   });
 
   test("should have proper empty state guidance", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check empty state guidance
-    await expect(page.getByText("No datasets followed yet")).toBeVisible();
+    await expect(page.getByTestId("dashboard-empty-state")).toBeVisible();
     await expect(
-      page.getByRole("link", { name: "Search Cities" })
+      page.getByTestId("dashboard-empty-state-title")
     ).toBeVisible();
-
-    // Should have search button in empty state
-    const searchButton = page.getByRole("link", { name: "Search Cities" });
-    await expect(searchButton).toBeVisible();
+    await expect(
+      page.getByTestId("dashboard-empty-state-description")
+    ).toBeVisible();
   });
 
   test("should display tab navigation without breaking existing functionality", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(getLocalizedPath("/dashboard"));
 
     // Check that tab navigation is visible
     await expect(page.getByTestId("tab-following")).toBeVisible();
     await expect(page.getByTestId("tab-users")).toBeHidden(); // Regular user shouldn't see Users tab
 
     // Check that existing dashboard functionality still works
-    await expect(page.getByText(/Welcome back/)).toBeVisible();
+    await expect(page.getByTestId("dashboard-welcome-message")).toBeVisible();
 
     // Check for dashboard grid or empty state
     const grid = page.getByTestId("followed-datasets-grid");
-    const emptyState = page.getByText("No datasets followed yet");
+    const emptyState = page.getByTestId("dashboard-empty-state");
 
     const hasGrid = await grid.isVisible();
     const isEmpty = await emptyState.isVisible();

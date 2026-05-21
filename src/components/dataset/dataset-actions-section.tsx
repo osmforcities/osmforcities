@@ -108,6 +108,7 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
                 ? "Stop receiving updates about this dataset"
                 : "Get notified when this dataset is updated"
             }
+            data-testid={isWatched ? "dataset-unwatch-button" : "dataset-watch-button"}
           >
             {isWatched ? (
               <EyeOff className="h-4 w-4" />

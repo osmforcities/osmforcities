@@ -1,6 +1,15 @@
 import { prisma } from "@/lib/db";
 import { htmlToText } from "html-to-text";
+import { resolveTemplateForLocale } from "@/lib/template-locale";
+import {
+  createEmailLink,
+  getEmailT,
+  isRTL,
+  formatEmail,
+  type Locale,
+} from "@/lib/email-i18n";
 
+/** Email with subject line, HTML body, and plain text fallback. */
 export interface EmailContent {
   subject: string;
   html: string;
@@ -9,23 +18,6 @@ export interface EmailContent {
 
 interface DatasetStatsData {
   mostRecentElement?: string;
-  editorsCount?: number;
-  elementVersionsCount?: number;
-  changesetsCount?: number;
-  oldestElement?: string;
-  averageElementAge?: number;
-  averageElementVersion?: number;
-  recentActivity?: {
-    elementsEdited: number;
-    changesets: number;
-    editors: number;
-  };
-  qualityMetrics?: {
-    staleElementsCount: number;
-    recentlyUpdatedElementsCount: number;
-    staleElementsPercentage: number;
-    recentlyUpdatedElementsPercentage: number;
-  };
 }
 
 interface DatasetStats {
@@ -33,17 +25,15 @@ interface DatasetStats {
     id: string;
     email: string;
     reportsFrequency: "DAILY" | "WEEKLY";
+    language: string | null;
   };
   recentDatasets: Array<{
     id: string;
     name: string;
     templateName: string;
     lastChanged: Date | null;
+    daysRemaining?: number;
   }>;
-}
-
-function link(url: string, text: string): string {
-  return `<a href="${url}" style="color: #007bff; text-decoration: none;">${text}</a>`;
 }
 
 function getBaseUrl(): string {
@@ -52,27 +42,14 @@ function getBaseUrl(): string {
 
 function formatUTCDate(date: Date | null): string {
   if (!date) return "Unknown";
-
   return date.toISOString().split("T")[0];
 }
 
-function generateEmailSubject(
-  hasRecentChanges: boolean,
-  recentDatasets: Array<{
-    id: string;
-    name: string;
-    templateName: string;
-    lastChanged: Date | null;
-  }>,
-  frequency: "DAILY" | "WEEKLY"
-): string {
-  if (hasRecentChanges) {
-    return `${recentDatasets.length} dataset${
-      recentDatasets.length === 1 ? "" : "s"
-    } changed in the last ${frequency === "DAILY" ? "day" : "week"}`;
-  }
-
-  return `No changes in the last ${frequency === "DAILY" ? "day" : "week"}`;
+function getLatestChangeDate(datasets: Array<{ stats?: DatasetStatsData }>): string | null {
+  const stats = datasets[0]?.stats as DatasetStatsData | undefined;
+  return stats?.mostRecentElement
+    ? new Date(stats.mostRecentElement).toLocaleDateString()
+    : null;
 }
 
 function generateEmailBodyWithChanges(
@@ -81,8 +58,11 @@ function generateEmailBodyWithChanges(
     name: string;
     templateName: string;
     lastChanged: Date | null;
+    daysRemaining?: number;
   }>,
-  frequency: "DAILY" | "WEEKLY"
+  frequency: "DAILY" | "WEEKLY",
+  changedText: string,
+  deprecationText?: string
 ): string {
   const datasetsByDay = new Map<
     string,
@@ -116,7 +96,7 @@ function generateEmailBodyWithChanges(
       const datasetsList = datasets
         .map(
           (ds) =>
-            `${link(
+            `${createEmailLink(
               `${getBaseUrl()}/dataset/${ds.id}`,
               `${ds.templateName} - ${ds.name}`
             )}`
@@ -127,54 +107,90 @@ function generateEmailBodyWithChanges(
     })
     .join("<br><br>");
 
+  let deprecationNotice = "";
+  if (deprecationText) {
+    deprecationNotice = `<div style="background: #fff3cd; padding: 15px; border-radius: 5px; border: 1px solid #ffc107; margin-bottom: 20px;">${deprecationText}</div>`;
+  }
+
   return `
-    <p>The following datasets were updated in the last ${
-      frequency === "DAILY" ? "day" : "week"
-    }:</p>
-    
+    <p>${changedText}</p>
+
+    ${deprecationNotice}
     <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">${datasetsList}</div>`;
 }
 
-function generateEmailBodyNoChanges(frequency: "DAILY" | "WEEKLY"): string {
-  return `
-    <p>There were no changes to your ${link(
-      `${getBaseUrl()}/`,
-      "watched datasets"
-    )} in the last ${frequency === "DAILY" ? "day" : "week"}.</p>`;
-}
-
-function generateEmailContent(data: DatasetStats): EmailContent {
+async function generateEmailContent(
+  data: DatasetStats,
+  userLocale: Locale
+): Promise<EmailContent> {
   const { user, recentDatasets } = data;
   const frequency = user.reportsFrequency;
-  const hasRecentChanges = recentDatasets.length > 0;
+  const count = recentDatasets.length;
 
-  const subject = generateEmailSubject(
-    hasRecentChanges,
-    recentDatasets,
-    frequency
-  );
+  const t = await getEmailT(userLocale);
+  const dir = isRTL(userLocale) ? "rtl" : "ltr";
 
-  const emailBody = hasRecentChanges
-    ? generateEmailBodyWithChanges(recentDatasets, frequency)
-    : generateEmailBodyNoChanges(frequency);
+  const lastPeriod = frequency === "DAILY" ? t("lastPeriodDay") : t("lastPeriodWeek");
+
+  // Pre-resolves plural form. Safe for current supported locales (en, pt-BR, es) which
+  // all use binary one/other forms. If a language with more plural categories is added
+  // (e.g. Arabic has 6 forms), this must switch to ICU plural syntax in the message string.
+  // See GitHub issue for tracking: epic #80.
+  const datasets = count === 1 ? t("datasetsOne") : t("datasetsOther");
+  const subject =
+    count === 0
+      ? t("reportSubjectNoChanges", { lastPeriod })
+      : t("reportSubjectChanged", { count, datasets, lastPeriod });
+
+  // Check if any datasets use deprecated templates
+  const deprecatedDatasets = recentDatasets.filter((ds) => ds.daysRemaining !== undefined);
+  let deprecationNotice: string | undefined;
+  if (deprecatedDatasets.length > 0) {
+    const notices = deprecatedDatasets.map((ds) =>
+      ds.daysRemaining === 0
+        ? t("templateDeprecated")
+        : t("templateDeprecatedDaysRemaining", { days: ds.daysRemaining! })
+    );
+    deprecationNotice = notices.join("<br>");
+  }
+
+  const reportChangedText = t("reportChanged", { lastPeriod });
+  const watchedDatasetsLink = createEmailLink(`${getBaseUrl()}/`, t("reportFollowed"));
+  const emailBody =
+    count > 0
+      ? generateEmailBodyWithChanges(
+          recentDatasets,
+          frequency,
+          reportChangedText,
+          deprecationNotice
+        )
+      : await formatEmail(userLocale, "reportNoChanges", {
+          watchedDatasetsLink,
+          lastPeriod,
+        });
+
+  // Generate footer
+  const timestamp = new Date().toISOString().split(".")[0];
+  const generatedAtText = t("generatedAt", { timestamp });
+  const preferencesLink = createEmailLink(`${getBaseUrl()}/preferences`, t("preferencesPage"));
+  const unsubscribeText = await formatEmail(userLocale, "unsubscribe", {
+    preferencesLink,
+  });
 
   const htmlContent = `
-    <p>Hi!</p>
-  
-    ${emailBody}
-    
-    <p style="color: #999; font-size: 12px;">
-      This report was generated at ${
-        new Date().toISOString().split(".")[0]
-      }Z. All dates shown are in UTC.
-    </p>
-    <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0;">
-    <p style="color: #666; font-size: 14px;">
-      To unsubscribe from these reports, ${link(
-        `${getBaseUrl()}/preferences`,
-        "visit your preferences page"
-      )}.
-    </p>
+    <div lang="${userLocale}" dir="${dir}">
+      <p>${t("greeting")}</p>
+
+      ${emailBody}
+
+      <p style="color: #999; font-size: 12px;">
+        ${generatedAtText}
+      </p>
+      <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0;">
+      <p style="color: #666; font-size: 14px;">
+        ${unsubscribeText}
+      </p>
+    </div>
   `;
 
   return {
@@ -184,9 +200,11 @@ function generateEmailContent(data: DatasetStats): EmailContent {
   };
 }
 
+/** Generates next due user report email. Returns null if no user is due. */
 export async function generateNextUserReport(): Promise<{
   userId: string;
   userEmail: string;
+  userLanguage: Locale;
   emailContent: EmailContent;
   reportData: {
     reportsFrequency: "DAILY" | "WEEKLY";
@@ -199,6 +217,7 @@ export async function generateNextUserReport(): Promise<{
     where: {
       reportsEnabled: true,
       emailVerified: { not: null },
+      watchedDatasets: { some: {} },
       OR: [
         { lastReportSent: null },
         {
@@ -227,6 +246,7 @@ export async function generateNextUserReport(): Promise<{
       id: true,
       email: true,
       reportsFrequency: true,
+      language: true,
     },
   });
 
@@ -234,13 +254,10 @@ export async function generateNextUserReport(): Promise<{
     return null;
   }
 
-  const now = new Date();
-  let since: Date;
-  if (user.reportsFrequency === "DAILY") {
-    since = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-  } else {
-    since = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  }
+  const userLocale = (user.language || "en") as Locale;
+  const since = new Date(
+    Date.now() - (user.reportsFrequency === "DAILY" ? 24 : 7 * 24) * 60 * 60 * 1000
+  );
 
   const recentDatasets = await prisma.dataset.findMany({
     where: {
@@ -257,66 +274,87 @@ export async function generateNextUserReport(): Promise<{
       template: {
         select: {
           name: true,
+          description: true,
+          deprecatesAt: true,
+          translations: {
+            select: {
+              locale: true,
+              name: true,
+              description: true,
+            },
+          },
         },
       },
     },
     orderBy: { updatedAt: "desc" },
   });
 
-  const datasetsWithRecentChanges = recentDatasets.filter((dataset) => {
-    if (!dataset.stats || typeof dataset.stats !== "object") return false;
+  const datasetsWithRecentChanges = recentDatasets
+    .filter((dataset) => {
+      if (!dataset.stats || typeof dataset.stats !== "object") return false;
 
-    const stats = dataset.stats as DatasetStatsData;
-    const mostRecentElement = stats.mostRecentElement;
+      const stats = dataset.stats as DatasetStatsData;
+      const mostRecentElement = stats.mostRecentElement;
 
-    if (!mostRecentElement) return false;
+      if (!mostRecentElement) return false;
 
-    const lastChangeDate = new Date(mostRecentElement);
-    return lastChangeDate >= since;
-  });
+      const lastChangeDate = new Date(mostRecentElement);
+      return lastChangeDate >= since;
+    })
+    .map((d) => ({ ...d, stats: d.stats as DatasetStatsData }));
+
+  // Don't send email if no recent updates, but DO update lastReportSent
+  // Note: Users with no watched datasets are excluded by the query filter
+  if (datasetsWithRecentChanges.length === 0) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastReportSent: new Date() },
+    });
+    return null;
+  }
 
   const datasetStats: DatasetStats = {
     user: {
       id: user.id,
       email: user.email,
       reportsFrequency: user.reportsFrequency,
+      language: user.language,
     },
     recentDatasets: datasetsWithRecentChanges.map((dataset) => {
-      const stats = dataset.stats as DatasetStatsData;
-      const mostRecentElement = stats.mostRecentElement;
+      const mostRecentElement = dataset.stats.mostRecentElement;
+
+      // Resolve template name for user's locale
+      const resolvedTemplate = resolveTemplateForLocale(
+        dataset.template,
+        userLocale
+      );
+
+      // Calculate days remaining if template is deprecated
+      let daysRemaining: number | undefined;
+      if (dataset.template.deprecatesAt) {
+        daysRemaining = Math.ceil(
+          (new Date(dataset.template.deprecatesAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000)
+        );
+        if (daysRemaining < 0) daysRemaining = 0;
+      }
 
       return {
         id: dataset.id,
         name: dataset.cityName,
-        templateName: dataset.template.name,
+        templateName: resolvedTemplate.name,
         lastChanged: mostRecentElement ? new Date(mostRecentElement) : null,
+        daysRemaining,
       };
     }),
   };
 
-  // Don't send email if user has no watched datasets or no recent updates
-  if (datasetsWithRecentChanges.length === 0) {
-    return null;
-  }
-
-  const emailContent = generateEmailContent(datasetStats);
-  const latestChangeDate =
-    datasetsWithRecentChanges.length > 0
-      ? datasetsWithRecentChanges[0].stats &&
-        typeof datasetsWithRecentChanges[0].stats === "object"
-        ? (() => {
-            const stats = datasetsWithRecentChanges[0]
-              .stats as DatasetStatsData;
-            return stats.mostRecentElement
-              ? new Date(stats.mostRecentElement).toLocaleDateString()
-              : null;
-          })()
-        : null
-      : null;
+  const emailContent = await generateEmailContent(datasetStats, userLocale);
+  const latestChangeDate = getLatestChangeDate(datasetsWithRecentChanges);
 
   return {
     userId: user.id,
     userEmail: user.email,
+    userLanguage: userLocale,
     emailContent,
     reportData: {
       reportsFrequency: user.reportsFrequency,
@@ -325,4 +363,21 @@ export async function generateNextUserReport(): Promise<{
       latestChangeDate,
     },
   };
+}
+
+/** Checks if user exists and can be updated (dry-run for markReportSent). */
+export async function canUpdateReportSent(userId: string): Promise<boolean> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true },
+  });
+  return user !== null;
+}
+
+/** Updates lastReportSent timestamp for a user. Call after successful email send. */
+export async function markReportSent(userId: string): Promise<void> {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { lastReportSent: new Date() },
+  });
 }

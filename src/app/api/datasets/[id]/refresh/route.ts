@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import {
-  executeOverpassQuery,
-  convertOverpassToGeoJSON,
-  extractDatasetStats,
-} from "@/lib/osm";
-import { calculateBbox } from "@/lib/utils";
+import { fetchDatasetSnapshot } from "@/lib/osm";
+import { trackEvent, getClientInfo } from "@/lib/umami";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 export async function POST(
   request: NextRequest,
@@ -44,28 +41,21 @@ export async function POST(
       );
     }
 
-    const queryString = dataset.template.overpassQuery.replace(
-      /\{OSM_RELATION_ID\}/g,
-      dataset.areaId.toString()
+    const snapshot = await fetchDatasetSnapshot(
+      dataset.areaId,
+      dataset.template.overpassQuery
     );
-
-    const overpassData = await executeOverpassQuery(queryString);
-
-    const geojsonData = convertOverpassToGeoJSON(overpassData);
-
-    const bbox = calculateBbox(geojsonData);
-    const datasetStats = extractDatasetStats(overpassData);
 
     const updatedDataset = await prisma.dataset.update({
       where: {
         id: datasetId,
       },
       data: {
-        dataCount: overpassData.elements.length,
+        dataCount: snapshot.dataCount,
         lastChecked: new Date(),
-        stats: JSON.parse(JSON.stringify(datasetStats)),
-        geojson: JSON.parse(JSON.stringify(geojsonData)),
-        bbox: bbox ? JSON.parse(JSON.stringify(bbox)) : null,
+        stats: JSON.parse(JSON.stringify(snapshot.stats)),
+        geojson: JSON.parse(JSON.stringify(snapshot.geojson)),
+        bbox: snapshot.bbox ? JSON.parse(JSON.stringify(snapshot.bbox)) : null,
         updatedAt: new Date(),
       },
       include: {
@@ -80,10 +70,12 @@ export async function POST(
       },
     });
 
+    trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
+
     return NextResponse.json({
       success: true,
       dataset: updatedDataset,
-      dataCount: overpassData.elements.length,
+      dataCount: snapshot.dataCount,
     });
   } catch (error) {
     console.error("Error refreshing dataset:", error);

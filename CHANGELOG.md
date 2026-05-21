@@ -1,5 +1,130 @@
 # osmforcities
 
+## 1.9.1
+
+### Added
+
+- Responsive mobile layout for hero section with scaled typography (#229)
+
+### Changed
+
+- Centralize analytics event constants and enhance Umami tracking with client info (#230)
+- Cleaner search placeholder behavior (#228)
+
+## 1.9.0
+
+### Minor Changes
+
+- Public discovery: search and area pages now accessible without authentication. Logged-out users see dataset upsell CTA.
+
+## 1.8.0
+
+### Added
+
+- SEO infrastructure: meta tags, structured data (JSON-LD), sitemap.xml, robots.txt (#168, #223)
+- Branding assets: favicons, Apple touch icon, PWA icons, OG image, PWA manifest (#222)
+- AOI bounds display on dataset pages with boundary API endpoint (#221)
+- Hotels template (tourism=hotel) with translations (#219)
+
+### Changed
+
+- Reposition SEO from "monitor changes" to "browse and download city data" across all locales (#224)
+
+## 1.7.0
+
+### Minor Changes
+
+### Added
+
+- Feature detail panel on dataset map: click a map feature to open a panel showing its OSM tags and metadata (#208)
+- Highlight selected feature on the map while detail panel is open
+- Pointer cursor on hoverable map features
+
+## 1.6.5
+
+### Patch Changes
+
+### Added
+
+- Self-hosted Umami analytics with server-side event tracking:
+  - User funnel: sign-up, follow
+  - Dataset lifecycle: refresh, data count change, deprecation
+  - Dataset engagement: map view, GeoJSON export
+- MIT license
+
+### Changed
+
+- Cap max follows per user at 10; returns 403 with `follow_limit_reached` on excess
+
+### Fixed
+
+- Use app hostname (not analytics server) in Umami payload
+
+## 1.6.4
+
+### Patch Changes
+
+- Emit additional server-side Umami events for dataset lifecycle (create, follow, unfollow, user refresh, cron refresh), page views (area template discovery, dataset detail, watched dashboard), and GeoJSON download via `GET /api/datasets/[id]/export`.
+
+### Fixed
+
+- Dataset GeoJSON download falls back to client-side blob when the export API returns a non-success response (#205).
+- Fix session cookie domain isolation between staging and production (#201)
+
+## 1.6.3
+
+### Patch Changes
+
+### Changed
+
+- Refactor email internationalization to use `use-intl/core` translator APIs.
+- Switch default Overpass API endpoint to VK Maps with opt-in User-Agent behavior.
+
+### Fixed
+
+- Fix email formatting and translation interpolation issues introduced during i18n refactor.
+- Fix deprecated dataset notice handling in user reports (correct template at `daysRemaining = 0` and include all deprecated dataset notices).
+- Improve email test stability by clearing translation message cache between test runs.
+
+## 1.6.2
+
+### Patch Changes
+
+- Fix email gender agreement - use correct grammatical gender based on user profile setting
+
+## 1.6.1
+
+### Patch Changes
+
+- Fix user report submission concurrency issues
+
+## 1.6.0
+
+### Minor Changes
+
+- Release v1.6.0
+
+  - Move dashboard to /dashboard route with locale-aware navigation (#156)
+  - Add Storybook v10 with component testing (#157)
+  - Localize email notifications with ICU plural format (#176)
+  - Add email notification translations (#174)
+  - Add template sync and 30-day soft deprecation (#172)
+  - Add template translations (#160)
+  - Fix auth redirects, search input, CI deploy workflow
+  - Require tests to pass before deployment
+
+## 1.5.1
+
+### Patch Changes
+
+- Fix Create Account button to link to /enter route
+
+## 1.5.0
+
+### Minor Changes
+
+- Revamp homepage with hero section, features showcase, dataset showcase, use cases, and final CTA sections. Add reusable Heading component with typography scale and CategoryCard component. Integrate Design Atlas tokens for consistent styling. Improve dashboard empty state with search functionality. Fix translation/i18n issues including date placeholders, spacing, and missing translations. Enhance test infrastructure with Playwright improvements and CI stability fixes.
+
 ## 1.4.3
 
 ### Patch Changes

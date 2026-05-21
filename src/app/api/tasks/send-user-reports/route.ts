@@ -1,15 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email";
-import { prisma } from "@/lib/db";
-import { generateNextUserReport } from "@/lib/tasks/user-report";
+import { generateNextUserReport, markReportSent } from "@/lib/tasks/user-report";
+import { createLogger } from "@/lib/logger";
+
+const log = createLogger("send-user-reports");
 
 export async function POST(req: NextRequest) {
+  const startTime = Date.now();
   const authHeader = req.headers.get("authorization");
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    log.warn("Missing or invalid authorization header");
     return NextResponse.json(
       { error: "Missing or invalid authorization header" },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -17,21 +21,24 @@ export async function POST(req: NextRequest) {
   const expectedSecret = process.env.CRON_ROUTE_SECRET;
 
   if (!expectedSecret) {
-    console.error("CRON_ROUTE_SECRET environment variable not set");
+    log.error("CRON_ROUTE_SECRET environment variable not set");
     return NextResponse.json(
       { error: "Server configuration error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
   if (token !== expectedSecret) {
+    log.warn("Invalid cron secret provided");
     return NextResponse.json({ error: "Invalid secret" }, { status: 401 });
   }
 
   try {
+    log.info("Starting report generation");
     const report = await generateNextUserReport();
 
     if (!report) {
+      log.info("No users due for report", { duration: Date.now() - startTime });
       return NextResponse.json({
         success: true,
         message: "No users need notification at this time",
@@ -44,29 +51,37 @@ export async function POST(req: NextRequest) {
     }
 
     const { userId, userEmail, emailContent, reportData } = report;
+    log.info("Generated report", {
+      userId,
+      userEmail,
+      totalDatasets: reportData.totalDatasets,
+    });
 
-    // DEFENSIVE: Update database FIRST to prevent spam if schema issues exist
-    // Better to miss one email than spam the user
-    try {
-      await prisma.user.update({
-        where: { id: userId },
-        data: { lastReportSent: new Date() },
-      });
-    } catch (dbError) {
-      console.error("Database update failed, skipping email to prevent spam:", dbError);
-      return NextResponse.json({
-        success: false,
-        error: "Database update failed, email skipped to prevent spam",
-        details: dbError instanceof Error ? dbError.message : "Unknown database error",
-      }, { status: 500 });
-    }
-
-    // Only send email AFTER successful database update
+    log.info("Sending email", { userId, userEmail });
     await sendEmail({
       to: userEmail,
       subject: emailContent.subject,
       html: emailContent.html,
       text: emailContent.text,
+    });
+    log.info("Email sent successfully", { userId, userEmail });
+
+    try {
+      await markReportSent(userId);
+      log.info("Updated lastReportSent", { userId });
+    } catch (dbError) {
+      log.error("Email sent but failed to update lastReportSent", {
+        userId,
+        userEmail,
+        error: dbError instanceof Error ? dbError.message : "Unknown error",
+      });
+    }
+
+    log.info("Report completed", {
+      userId,
+      userEmail,
+      duration: Date.now() - startTime,
+      datasets: reportData.totalDatasets,
     });
 
     return NextResponse.json({
@@ -82,13 +97,17 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error in send-user-reports task:", error);
+    log.error("Report generation failed", {
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+      duration: Date.now() - startTime,
+    });
     return NextResponse.json(
       {
         error: "Failed to execute send-user-reports task",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

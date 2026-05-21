@@ -61,6 +61,15 @@ This project uses [Changesets](https://github.com/changesets/changesets) to mana
 - **minor**: New features (backward compatible)
 - **major**: Breaking changes
 
+## Changelog Writing Convention
+
+Use `CHANGELOG.md` as a curated, human-readable release log.
+
+- Follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) structure and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+- Group changes by type when practical: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`.
+- Summarize user-visible impact, not individual commits.
+- Keep newest versions first and formatting consistent across releases.
+
 ## Example Changeset
 
 When you run `pnpm changeset`, you'll create a file like:

@@ -1,14 +1,11 @@
 import { prisma } from "@/lib/db";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { resolveTemplate } from "@/lib/template-resolver";
-import {
-  fetchOsmRelationData,
-  executeOverpassQuery,
-  convertOverpassToGeoJSON,
-  extractDatasetStats,
-} from "@/lib/osm";
-import { calculateBbox } from "@/lib/utils";
+import { resolveTemplateForLocale } from "@/lib/template-locale";
+import { fetchOsmRelationData, fetchDatasetSnapshot } from "@/lib/osm";
 import { Prisma } from "@prisma/client";
+import { trackEvent } from "@/lib/umami";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 export type DatasetCreationResult = {
   dataset: NonNullable<Awaited<ReturnType<typeof getDatasetWithDetails>>>;
@@ -17,7 +14,8 @@ export type DatasetCreationResult = {
 
 export async function getOrCreateDataset(
   areaId: number,
-  templateIdentifier: string
+  templateIdentifier: string,
+  locale: string
 ): Promise<DatasetCreationResult> {
   const template = await resolveTemplate(templateIdentifier);
   if (!template) {
@@ -28,18 +26,22 @@ export async function getOrCreateDataset(
     throw new Error(`Template is not active: ${templateIdentifier}`);
   }
 
-  let dataset = await getDatasetWithDetails(areaId, template.id);
+  if (template.deprecatesAt) {
+    throw new Error(`Template is deprecated: ${templateIdentifier}`);
+  }
+
+  let dataset = await getDatasetWithDetails(areaId, template.id, locale);
 
   if (dataset) {
     return { dataset, wasCreated: false };
   }
 
-  dataset = await createDatasetOnDemand(areaId, template);
+  dataset = await createDatasetOnDemand(areaId, template, locale);
   return { dataset, wasCreated: true };
 }
 
-async function getDatasetWithDetails(areaId: number, templateId: string) {
-  return await prisma.dataset.findFirst({
+async function getDatasetWithDetails(areaId: number, templateId: string, locale: string) {
+  const dataset = await prisma.dataset.findFirst({
     where: {
       areaId,
       templateId,
@@ -53,6 +55,7 @@ async function getDatasetWithDetails(areaId: number, templateId: string) {
           description: true,
           category: true,
           tags: true,
+          translations: true,
         },
       },
       area: {
@@ -80,11 +83,24 @@ async function getDatasetWithDetails(areaId: number, templateId: string) {
       },
     },
   });
+
+  if (!dataset) {
+    return null;
+  }
+
+  // Resolve template translations for the given locale
+  const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+
+  return {
+    ...dataset,
+    template: resolvedTemplate,
+  };
 }
 
 async function createDatasetOnDemand(
   areaId: number,
-  template: NonNullable<Awaited<ReturnType<typeof resolveTemplate>>>
+  template: NonNullable<Awaited<ReturnType<typeof resolveTemplate>>>,
+  locale: string
 ) {
   let area = await prisma.area.findUnique({
     where: { id: areaId },
@@ -144,26 +160,18 @@ async function createDatasetOnDemand(
   }
 
   try {
-    const queryString = template.overpassQuery.replace(
-      /\{OSM_RELATION_ID\}/g,
-      areaId.toString()
-    );
-
-    const overpassData = await executeOverpassQuery(queryString);
-    const geojsonData = convertOverpassToGeoJSON(overpassData);
-    const bbox = calculateBbox(geojsonData);
-    const datasetStats = extractDatasetStats(overpassData);
+    const snapshot = await fetchDatasetSnapshot(area.id, template.overpassQuery);
     const dataset = await prisma.dataset.create({
       data: {
         templateId: template.id,
         areaId: area.id,
         cityName: area.name,
         isActive: true,
-        geojson: JSON.parse(JSON.stringify(geojsonData)),
-        bbox: bbox ? JSON.parse(JSON.stringify(bbox)) : null,
-        dataCount: overpassData.elements.length,
+        geojson: JSON.parse(JSON.stringify(snapshot.geojson)),
+        bbox: snapshot.bbox ? JSON.parse(JSON.stringify(snapshot.bbox)) : null,
+        dataCount: snapshot.dataCount,
         lastChecked: new Date(),
-        stats: JSON.parse(JSON.stringify(datasetStats)),
+        stats: JSON.parse(JSON.stringify(snapshot.stats)),
       },
       include: {
         template: {
@@ -173,6 +181,7 @@ async function createDatasetOnDemand(
             description: true,
             category: true,
             tags: true,
+            translations: true,
           },
         },
         area: {
@@ -201,7 +210,15 @@ async function createDatasetOnDemand(
       },
     });
 
-    return dataset;
+    trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`);
+
+    // Resolve template translations for the given locale
+    const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+
+    return {
+      ...dataset,
+      template: resolvedTemplate,
+    };
   } catch (error) {
     console.error("Failed to fetch Overpass data:", error);
 
@@ -254,14 +271,15 @@ export async function datasetExists(
 
 export async function getDatasetMetadata(
   areaId: number,
-  templateIdentifier: string
+  templateIdentifier: string,
+  locale: string
 ) {
   const template = await resolveTemplate(templateIdentifier);
   if (!template) {
     return null;
   }
 
-  return await prisma.dataset.findFirst({
+  const dataset = await prisma.dataset.findFirst({
     where: {
       areaId,
       templateId: template.id,
@@ -280,6 +298,8 @@ export async function getDatasetMetadata(
           name: true,
           description: true,
           category: true,
+          tags: true,
+          translations: true,
         },
       },
       area: {
@@ -296,4 +316,16 @@ export async function getDatasetMetadata(
       },
     },
   });
+
+  if (!dataset) {
+    return null;
+  }
+
+  // Resolve template translations for the given locale
+  const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+
+  return {
+    ...dataset,
+    template: resolvedTemplate,
+  };
 }

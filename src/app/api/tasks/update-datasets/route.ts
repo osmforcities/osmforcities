@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import {
-  executeOverpassQuery,
-  convertOverpassToGeoJSON,
-  extractDatasetStats,
-} from "@/lib/osm";
-import { calculateBbox } from "@/lib/utils";
+import { fetchDatasetSnapshot } from "@/lib/osm";
+import { trackEvent } from "@/lib/umami";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
@@ -64,36 +61,24 @@ export async function POST(req: NextRequest) {
     for (const dataset of datasetsToUpdate) {
       try {
 
-        // Replace the OSM_RELATION_ID placeholder with the actual area ID
-        const queryString = dataset.template.overpassQuery.replace(
-          /\{OSM_RELATION_ID\}/g,
-          dataset.areaId.toString()
+        const snapshot = await fetchDatasetSnapshot(
+          dataset.areaId,
+          dataset.template.overpassQuery
         );
 
-        // Execute the Overpass query for this dataset
-        const overpassResponse = await executeOverpassQuery(queryString);
-
-        // Convert to GeoJSON
-        const geojson = convertOverpassToGeoJSON(overpassResponse);
-
-        // Extract statistics
-        const stats = extractDatasetStats(overpassResponse);
-
-        // Calculate bounding box from GeoJSON features
-        const bbox = calculateBbox(geojson);
-
-        // Update the dataset
         await prisma.dataset.update({
           where: { id: dataset.id },
           data: {
-            geojson: JSON.parse(JSON.stringify(geojson)),
-            bbox: bbox ? JSON.parse(JSON.stringify(bbox)) : null,
-            stats: JSON.parse(JSON.stringify(stats)),
-            dataCount: geojson.features.length,
+            geojson: JSON.parse(JSON.stringify(snapshot.geojson)),
+            bbox: snapshot.bbox ? JSON.parse(JSON.stringify(snapshot.bbox)) : null,
+            stats: JSON.parse(JSON.stringify(snapshot.stats)),
+            dataCount: snapshot.dataCount,
             lastChecked: new Date(),
             updatedAt: new Date(),
           },
         });
+
+        trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH_JOB, `/jobs/datasets/${dataset.id}/refresh`);
 
         results.successful++;
       } catch (error) {

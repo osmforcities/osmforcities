@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { redirect } from "@/i18n/navigation";
 import { prisma } from "@/lib/db";
 import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
@@ -25,18 +25,22 @@ async function getUsers() {
   return users;
 }
 
+/**
+ * Users admin page - redirects to /dashboard if not admin, /enter if not authenticated
+ */
 export default async function UsersPage() {
   const session = await auth();
   const user = session?.user || null;
+  const locale = await getLocale();
   const t = await getTranslations("UsersPage");
   const tabT = await getTranslations("TabLayout");
 
   if (!user) {
-    return redirect({ href: "/", locale: "en" });
+    return redirect({ href: "/enter", locale });
   }
 
   if (!user.isAdmin) {
-    return redirect({ href: "/", locale: "en" });
+    return redirect({ href: "/dashboard", locale });
   }
 
   const users = await getUsers();
@@ -114,8 +118,9 @@ export default async function UsersPage() {
                         {t("datasets")} {userItem._count.datasets}
                       </span>
                       <span>
-                        {t("joined")}{" "}
-                        {new Date(userItem.createdAt).toLocaleDateString()}
+                        {t("joined", {
+                          date: new Date(userItem.createdAt).toLocaleDateString(),
+                        })}
                       </span>
                     </div>
                   </div>

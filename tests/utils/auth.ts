@@ -113,6 +113,10 @@ export async function setupAuthenticationWithSignup(
     email: userData.email || `test-${timestamp}-${random}@example.com`,
     name: userData.name || "Test User",
     password: userData.password || `test-password-${random}`,
+    language: userData.language,
+    isAdmin: userData.isAdmin,
+    reportsEnabled: userData.reportsEnabled,
+    reportsFrequency: userData.reportsFrequency,
   };
 
   // First, create the user in the database to get the ID
@@ -147,8 +151,9 @@ export async function setupAuthenticationWithLogin(
   }
 
   // The API endpoint sets the session cookie automatically
-  // Navigate to a page to verify authentication
-  await page.goto("http://localhost:3000/en");
+  // Navigate to user's preferred locale to avoid middleware redirect
+  const locale = user.language || "en";
+  await page.goto(`http://localhost:3000/${locale}`);
   await page.waitForLoadState("domcontentloaded");
 
   return user;

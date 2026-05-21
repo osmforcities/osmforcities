@@ -7,6 +7,7 @@
   },
   "Navigation": {
     "home": "Home",
+    "dashboard": "Dashboard",
     "about": "About",
     "myDatasets": "My Datasets",
     "public": "Public",
@@ -42,7 +43,13 @@
     "closeParen": ")",
     "datasets": "Datasets:",
     "viewAllTemplates": "View All Templates",
-    "viewAllUsers": "View All Users"
+    "viewAllUsers": "View All Users",
+    "noFollowedDatasetsTitle": "No datasets followed yet",
+    "noFollowedDatasetsDescription": "Search above to get started.",
+    "datasetCount": "Following {count, plural, =1 {# dataset} other {# datasets}}",
+    "watcherCount": "{count, plural, =1 {# watcher} other {# watchers}}",
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "Public": {
     "metaTitle": "Public Datasets - OSM for Cities",
@@ -100,7 +107,13 @@
     "metaTitle": "Sign In - OSM for Cities",
     "metaDescription": "Sign in to monitor OpenStreetMap datasets",
     "signIn": "Sign In",
-    "enterEmailToStart": "Enter your email to get started"
+    "enterEmailToStart": "Enter your email to get started",
+    "notFound": "Not Found",
+    "testAuthNotEnabled": "Test authentication is not enabled.",
+    "signInWithEmailPassword": "Sign in with your email and password",
+    "createAccount": "Create Account",
+    "signupForTesting": "Sign up for testing purposes",
+    "testEnvOnly": "This page is only available in test environment."
   },
 
   "DatasetPage": {
@@ -121,7 +134,7 @@
     "activityLevel": "Activity Level",
     "communityStrength": "Community Strength",
     "communityActivity": "Community Activity",
-    "lastChecked": "Last Checked:",
+    "lastChecked": "Last Checked: {date}",
     "active": "Active",
     "inactive": "Inactive",
     "public": "Public",
@@ -188,11 +201,12 @@
     "viewOnOpenStreetMap": "View on OpenStreetMap →"
   },
   "NavSearch": {
-    "searchPlaceholder": "Search cities and areas (min. 3 characters)...",
+    "searchPlaceholder": "Search cities and areas...",
     "noAreasFound": "No areas found",
     "searching": "Searching...",
     "typeMoreChars": "Type {count} more character{count, plural, one {} other {s}} to search",
-    "searchHint": "Try searching for cities, regions, or countries"
+    "searchHint": "Try searching for cities, regions, or countries",
+    "idLabel": "ID: "
   },
   "AddressTypes": {
     "city": "City",
@@ -293,11 +307,17 @@
     "closeParen": ")",
     "noUsersFound": "No users found.",
     "datasets": "Datasets:",
-    "joined": "Joined:"
+    "joined": "Joined: {date}"
   },
   "DatasetMap": {
+    "back": "Back",
+    "openInOsm": "Open in OpenStreetMap",
+    "key": "Key",
+    "value": "Value",
+    "lastEditedBy": "Last edited by <link>{user}</link>",
     "mapLabel": "Interactive map showing dataset",
     "fullScreenMapLabel": "Full screen interactive map showing dataset",
+    "loadingMap": "Loading map...",
     "noDataAvailable": "No data available. Data will be automatically refreshed when you visit this page.",
     "noGeographicData": "No geographic data found in the dataset results.",
     "tags": "Tags",
@@ -467,6 +487,103 @@
       "about": "About",
       "contact": "Contact",
       "github": "GitHub"
+    }
+  },
+  "DatasetLoading": {
+    "creatingDataset": "Creating Dataset",
+    "thisUsuallyTakesLessThan30Seconds": "This usually takes less than 30 seconds"
+  },
+  "Email": {
+    "magicLinkSubject": "Sign in to OSM for Cities",
+    "magicLinkBody": "Click {magicLink} to sign in.",
+    "reportSubjectChanged": "{count} {datasets} changed {lastPeriod}",
+    "reportSubjectNoChanges": "No changes {lastPeriod}",
+    "reportChanged": "The following datasets were updated {lastPeriod}:",
+    "reportNoChanges": "There were no changes to your {watchedDatasetsLink} {lastPeriod}.",
+    "reportFollowed": "watched datasets",
+    "preferencesPage": "preferences page",
+    "lastPeriodDay": "in the last day",
+    "lastPeriodWeek": "in the last week",
+    "generatedAt": "This report was generated at {timestamp}Z. All dates shown are in UTC.",
+    "unsubscribe": "To unsubscribe from these reports, visit {preferencesLink}.",
+    "datasetsOne": "dataset",
+    "datasetsOther": "datasets",
+    "templateDeprecated": "This template was removed from the catalog.",
+    "templateDeprecatedDaysRemaining": "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
+    "greeting": "Hi!"
+  },
+  "AboutPage": {
+    "metaTitle": "About - OSM for Cities",
+    "metaDescription": "Learn about OSM for Cities - Daily updated datasets from OpenStreetMap",
+    "title": "About the project",
+    "description1": "**OSM for Cities** is a platform to explore and follow updates from OpenStreetMap — a free, open map of the world built by volunteers. Every day, people add and improve data about streets, buildings, schools, parks, transport, and more. This project gives you a way to track those changes in places you care about.",
+    "description2": "You might want to keep an eye on edits to schools in your region, or monitor how crosswalks, bus stops, or bike racks are being added to your city. Maybe you're just curious about how your neighborhood park is evolving. Whether it's a dataset for urban planning or something more personal and informal, the platform lets you create and follow it.",
+    "featuresTitle": "Feature Highlights",
+    "features": {
+      "create": "Create custom datasets by selecting a place and a topic",
+      "follow": "Follow datasets and receive daily or weekly update summaries",
+      "activity": "See contributor activity and edit frequency for each dataset"
+    },
+    "projectTitle": "The Project",
+    "projectDescription1": "OSM for Cities was created by",
+    "projectDescription2": "and incubated in a",
+    "projectDescription3": "Labs cycle. It's an open experiment in surfacing OSM data in useful, accessible ways — designed for cities, but flexible enough to serve as a generic OSM tracker.",
+    "projectEvolution": "Its direction will evolve with community use and feedback.",
+    "getInvolvedTitle": "Get Involved",
+    "getInvolvedDescription": "Your feedback helps shape this project. Whether you have ideas for new features, found something that doesn't work quite right, or just want to share how you're using it — we'd love to hear from you."
+  },
+  "DatasetErrors": {
+    "templateNotFoundTitle": "Dataset Template Not Found",
+    "templateNotFoundDescription": "The dataset template \"{templateId}\" doesn't exist or is no longer available.",
+    "templateNotFoundForArea": "We couldn't find this dataset type for {areaName}.",
+    "viewAvailableDatasets": "View Available Datasets for {areaName}",
+    "browseAllTemplates": "Browse All Templates",
+    "backToHome": "Back to Home",
+    "areaNotFoundTitle": "Area Not Found",
+    "areaNotFoundDescription": "The area with ID \"{areaId}\" doesn't exist in OpenStreetMap or couldn't be found. Please check the area ID and try again.",
+    "searchForAreas": "Search for Areas",
+    "checkOnOSM": "Check on OpenStreetMap",
+    "requestTimedOutTitle": "Request Timed Out",
+    "datasetTooLargeTitle": "Dataset Too Large",
+    "datasetCreationFailedTitle": "Dataset Creation Failed",
+    "timeoutDescription": "The request to create this dataset took too long. This usually happens with very large areas or during peak usage times.",
+    "tooLargeDescription": "This area contains too much data for the selected template. Try choosing a smaller area or a more specific template.",
+    "creationErrorDescription": "We encountered an error while creating the dataset",
+    "creationErrorDescriptionWithDetails": "We encountered an error while creating the dataset \"{templateName}\" for {areaName}.",
+    "creationErrorFor": "\"{templateName}\" for {areaName}",
+    "tryAgain": "Try Again",
+    "retryCreation": "Retry Creation",
+    "chooseDifferentTemplate": "Choose Different Template",
+    "suggestions": "Suggestions:",
+    "suggestionSmallerArea": "Try a smaller city or district instead of a large region",
+    "suggestionSpecificTemplate": "Use a more specific template (e.g., \"Primary Schools\" instead of \"All Schools\")",
+    "suggestionContactUs": "Contact us if you need data for large areas",
+    "somethingWentWrongTitle": "Something went wrong",
+    "unexpectedErrorDescription": "We encountered an unexpected error while loading the dataset. Please try again.",
+    "errorDetails": "Error Details"
+  },
+  "DatasetUpsell": {
+    "accountRequired": "Sign in to view",
+    "signInToBrowse": "Explore the map of <strong>{dataset} in {area}</strong>, made by the OpenStreetMap community.",
+    "continueWithEmail": "Continue with email",
+    "back": "Back"
+  },
+  "SEO": {
+    "home": {
+      "title": "OSM for Cities - Browse and Download City Data",
+      "description": "Search any city, browse 200+ urban infrastructure categories, and download data as GeoJSON. Built on OpenStreetMap."
+    },
+    "about": {
+      "title": "About - OSM for Cities",
+      "description": "OSM for Cities makes OpenStreetMap data accessible. Browse 200+ categories and download city data."
+    },
+    "dataset": {
+      "title": "{template} in {area} - OSM for Cities",
+      "description": "{description} dataset for {area}"
+    },
+    "area": {
+      "title": "{area} - Datasets - OSM for Cities",
+      "description": "Explore OpenStreetMap datasets for {area}"
     }
   }
 }

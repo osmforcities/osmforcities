@@ -1,3 +1,8 @@
+/**
+ * Navigation bar component
+ * Brand link: always goes to / (home/landing page)
+ */
+
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { getTranslations } from "next-intl/server";
@@ -28,21 +33,10 @@ export default async function NavBar() {
           </Link>
 
           <div className="flex items-center gap-4 flex-1 justify-center max-w-md mx-2 md:mx-8">
-            {user && <NavSearch />}
+            <NavSearch />
           </div>
 
-          <HamburgerMenu
-            isLoggedIn={!!user}
-            translations={{
-              about: t("about"),
-              preferences: t("preferences"),
-              signOut: t("signOut"),
-              signIn: t("signIn"),
-              mainMenu: "Main navigation menu",
-              menu: "Menu",
-              close: "Close",
-            }}
-          />
+          <HamburgerMenu isLoggedIn={!!user} />
         </div>
       </div>
     </nav>

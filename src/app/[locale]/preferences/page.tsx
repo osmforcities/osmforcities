@@ -1,16 +1,17 @@
 import { auth } from "@/auth";
 import { redirect } from "@/i18n/navigation";
 import { PreferencesForm } from "./preferences-form";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { prisma } from "@/lib/db";
 
 export default async function PreferencesPage() {
   const session = await auth();
   const user = session?.user || null;
+  const locale = await getLocale();
   const t = await getTranslations("PreferencesPage");
 
   if (!user) {
-    return redirect({ href: "/enter", locale: "en" });
+    return redirect({ href: "/enter", locale });
   }
 
   // Fetch user preferences from database
@@ -24,7 +25,7 @@ export default async function PreferencesPage() {
   });
 
   if (!userPreferences) {
-    return redirect({ href: "/enter", locale: "en" });
+    return redirect({ href: "/enter", locale });
   }
 
   return (

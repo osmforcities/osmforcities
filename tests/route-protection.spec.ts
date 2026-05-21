@@ -15,23 +15,55 @@ test.describe("Route Protection", () => {
     // Test login/signup pages
     await page.goto("/en/enter");
     await expect(page).toHaveURL("/en/enter");
+
+    // Test area pages (public discovery feature)
+    await page.goto("/en/area/298470"); // San Francisco
+    await expect(page).toHaveURL(/\/en\/area\/298470/);
   });
 
   test("should redirect protected routes to login when not authenticated", async ({ page }) => {
     const protectedRoutes = [
+      "/en/dashboard",
       "/en/preferences",
-      "/en/watched",
       "/en/users",
       "/en/templates",
-      "/en/area/test-area",
-      "/en/dataset/test-dataset",
-      "/en/public"
     ];
 
     for (const route of protectedRoutes) {
+      // Verify redirect happens
       await page.goto(route);
       await expect(page).toHaveURL(/\/en\/enter/);
+
+      // Verify we're NOT on the protected route (security check)
+      await expect(page).not.toHaveURL(route);
     }
+  });
+
+  test("should verify middleware is actively protecting routes", async ({ page }) => {
+    // This test reinforces that protected routes redirect to login
+    // The original bug (pathname.includes("/")) made all routes public
+
+    // Test dashboard - should redirect to login
+    await page.goto("/en/dashboard");
+    const url = page.url();
+    expect(url).toContain("/en/enter");
+    expect(url).not.toContain("/dashboard");
+
+    // Test another protected route - should also redirect
+    await page.goto("/en/users");
+    const usersUrl = page.url();
+    expect(usersUrl).toContain("/en/enter");
+    expect(usersUrl).not.toContain("/users");
+  });
+
+  test("should block path traversal attacks", async ({ page }) => {
+    // This test ensures path normalization prevents traversal attacks
+    // Attackers trying /en/about/../dashboard should still be blocked
+
+    await page.goto("/en/about/../dashboard");
+    const url = page.url();
+    expect(url).toContain("/en/enter");
+    expect(url).not.toContain("/dashboard");
   });
 
   test("should allow access to protected routes when authenticated", async ({ page }) => {
@@ -45,8 +77,8 @@ test.describe("Route Protection", () => {
       await page.goto("/en/preferences");
       await expect(page).toHaveURL("/en/preferences");
 
-      await page.goto("/en/watched");
-      await expect(page).toHaveURL("/en/watched");
+      await page.goto("/en/dashboard");
+      await expect(page).toHaveURL("/en/dashboard");
     } finally {
       await cleanupTestUser(user.id);
     }

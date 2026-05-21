@@ -8,9 +8,12 @@ import {
 } from "@/types/overpass";
 import { OSMElementSchema, type OSMRelation } from "@/types/osm";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
+import type { Bbox } from "@/types/geojson";
+import { calculateBbox } from "@/lib/utils";
 
 const OVERPASS_API_URL =
-  process.env.OVERPASS_API_URL || "https://overpass-api.de/api/interpreter";
+  process.env.OVERPASS_API_URL ||
+  "https://maps.mail.ru/osm/tools/overpass/api/interpreter";
 
 /**
  * Get the User-Agent string for OSM API requests
@@ -24,13 +27,29 @@ export function getUserAgent(): string {
 
   // Generate default User-Agent with app URL
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://osmforcities.org";
-  const url = baseUrl.replace(/^https?:\/\//, ''); // Remove protocol
+  const url = baseUrl.replace(/^https?:\/\//, ""); // Remove protocol
   return `OSMForCities (+https://${url})`;
 }
 
-// Safeguard to prevent external API calls in test mode
+function isLocalOverpass(url: string | undefined) {
+  if (!url) {
+    return false;
+  }
+
+  try {
+    const parsed = new URL(url);
+    return (
+      parsed.hostname === "localhost" ||
+      parsed.hostname === "127.0.0.1" ||
+      parsed.hostname.endsWith(".localhost")
+    );
+  } catch {
+    return false;
+  }
+}
+
 function preventExternalCallsInTests() {
-  if (process.env.NODE_ENV === "test") {
+  if (process.env.NODE_ENV === "test" && !isLocalOverpass(OVERPASS_API_URL)) {
     throw new Error(
       "External API calls are not allowed in test mode. Use mocked responses instead."
     );
@@ -318,3 +337,27 @@ export type {
   OverpassError,
   OverpassData,
 } from "@/types/overpass";
+
+export interface DatasetSnapshot {
+  geojson: FeatureCollection;
+  stats: DatasetStats;
+  bbox: Bbox | null;
+  dataCount: number;
+}
+
+export async function fetchDatasetSnapshot(
+  areaId: number,
+  rawQuery: string
+): Promise<DatasetSnapshot> {
+  const queryString = rawQuery.replace(/\{OSM_RELATION_ID\}/g, areaId.toString());
+  const overpassData = await executeOverpassQuery(queryString);
+  const geojson = convertOverpassToGeoJSON(overpassData);
+  const stats = extractDatasetStats(overpassData);
+  const bbox = calculateBbox(geojson);
+  return {
+    geojson,
+    stats,
+    bbox,
+    dataCount: geojson.features.length,
+  };
+}

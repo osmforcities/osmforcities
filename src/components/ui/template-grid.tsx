@@ -23,14 +23,8 @@ type DatasetGridProps = {
 };
 
 /**
- * Grid component for displaying and filtering dataset templates
- * @param templates - Array of template objects to display
- * @param areaId - ID of the area for template links
- * @example
- * <DatasetGrid
- *   templates={templates}
- *   areaId="12345"
- * />
+ * Grid component for displaying and filtering dataset templates.
+ * Templates are pre-resolved for the current locale by the server.
  */
 export function DatasetGrid({ templates, areaId }: DatasetGridProps) {
   const t = useTranslations("AreaPage");
@@ -39,14 +33,17 @@ export function DatasetGrid({ templates, areaId }: DatasetGridProps) {
 
   // Group templates by category
   const templatesByCategory = useMemo(() => {
-    return templates.reduce((acc, template) => {
-      const category = template.category;
-      if (!acc[category]) {
-        acc[category] = [];
-      }
-      acc[category].push(template);
-      return acc;
-    }, {} as Record<string, Template[]>);
+    return templates.reduce(
+      (acc, template) => {
+        const category = template.category;
+        if (!acc[category]) {
+          acc[category] = [];
+        }
+        acc[category].push(template);
+        return acc;
+      },
+      {} as Record<string, Template[]>,
+    );
   }, [templates]);
 
   // Get all available categories
@@ -56,10 +53,13 @@ export function DatasetGrid({ templates, areaId }: DatasetGridProps) {
 
   // Get category counts for pills
   const categoryCounts = useMemo(() => {
-    return Object.keys(templatesByCategory).reduce((acc, category) => {
-      acc[category] = templatesByCategory[category].length;
-      return acc;
-    }, {} as Record<string, number>);
+    return Object.keys(templatesByCategory).reduce(
+      (acc, category) => {
+        acc[category] = templatesByCategory[category].length;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
   }, [templatesByCategory]);
 
   // Filter templates based on selected category and search term
@@ -69,7 +69,7 @@ export function DatasetGrid({ templates, areaId }: DatasetGridProps) {
     // Filter by category
     if (selectedCategory !== "all") {
       filtered = filtered.filter(
-        (template) => template.category === selectedCategory
+        (template) => template.category === selectedCategory,
       );
     }
 
@@ -80,7 +80,7 @@ export function DatasetGrid({ templates, areaId }: DatasetGridProps) {
         (template) =>
           template.name.toLowerCase().includes(searchLower) ||
           template.description?.toLowerCase().includes(searchLower) ||
-          template.tags.some((tag) => tag.toLowerCase().includes(searchLower))
+          template.tags.some((tag) => tag.toLowerCase().includes(searchLower)),
       );
     }
 
@@ -140,7 +140,7 @@ export function DatasetGrid({ templates, areaId }: DatasetGridProps) {
             <GridListItem key={template.id} className="group h-full">
               <Card
                 href={`/area/${areaId}/dataset/${template.id}`}
-                description={template.description || undefined}
+                description={template.description ?? undefined}
               >
                 <CardHeader>
                   <div className="flex items-center gap-3">

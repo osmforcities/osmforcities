@@ -1,0 +1,26 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Overview/Building Stories" />
+
+# Building Stories
+
+Use Storybook to document UI components and validate accessibility, RTL, and themes.
+
+## Quick Start
+
+- Run `pnpm storybook` in `osmforcities/`
+- Create `*.stories.tsx` files next to your components in `src/components/`
+- Export a default `meta` object and named stories using `StoryObj`
+- Verify controls, RTL, and a11y panel in Storybook
+
+## Expectations
+
+- Cover variants, sizes, disabled state, and icon usage
+- Include at least one RTL story when relevant
+- Confirm zero a11y violations in the a11y panel
+- Use `args` for simple cases, `render` for composed layouts
+
+## File Placement
+
+- Components: `src/components/**/ComponentName.tsx`
+- Stories: `src/components/**/component-name.stories.tsx`

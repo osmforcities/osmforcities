@@ -5,6 +5,7 @@ import { NavLink, NavButton } from "@/components/ui/nav-link";
 interface NavActionsProps {
   isLoggedIn: boolean;
   translations: {
+    dashboard: string;
     about: string;
     preferences: string;
     signOut: string;
@@ -13,6 +14,9 @@ interface NavActionsProps {
   isMobile?: boolean;
 }
 
+/**
+ * Navigation action links - Dashboard, About, Preferences, Sign Out (logged in) or About, Sign In (logged out)
+ */
 export default function NavActions({
   isLoggedIn,
   translations,
@@ -25,6 +29,9 @@ export default function NavActions({
   if (isLoggedIn) {
     return (
       <div className={containerClass}>
+        <NavLink href="/dashboard" isMobile={isMobile} data-testid="navbar-dashboard">
+          {translations.dashboard}
+        </NavLink>
         <NavLink href="/about" isMobile={isMobile}>
           {translations.about}
         </NavLink>

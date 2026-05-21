@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import SignupForm from "./signup-form";
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Locale } from "next-intl";
 import { routing } from "@/i18n/routing";
 
@@ -22,6 +22,7 @@ export default async function SignupPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations("EnterPage");
 
   // Only show this page in test or development environment
   if (
@@ -32,17 +33,15 @@ export default async function SignupPage({
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-semibold text-gray-900">
-            {"Not Found"}
+            {t("notFound")}
           </h1>
           <p className="text-gray-600 mt-2">
-            {"This page is only available in test environment."}
+            {t("testEnvOnly")}
           </p>
         </div>
       </div>
     );
   }
-
-  // No translations needed for test environment
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
@@ -50,10 +49,10 @@ export default async function SignupPage({
         <div className="w-full max-w-sm space-y-8">
           <div className="text-center">
             <h1 className="text-2xl font-semibold text-black dark:text-white">
-              {"Create Account"}
+              {t("createAccount")}
             </h1>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-              {"Sign up for testing purposes"}
+              {t("signupForTesting")}
             </p>
           </div>
 
