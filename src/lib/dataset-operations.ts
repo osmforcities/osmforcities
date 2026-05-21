@@ -2,13 +2,7 @@ import { prisma } from "@/lib/db";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { resolveTemplate } from "@/lib/template-resolver";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
-import {
-  fetchOsmRelationData,
-  executeOverpassQuery,
-  convertOverpassToGeoJSON,
-  extractDatasetStats,
-} from "@/lib/osm";
-import { calculateBbox } from "@/lib/utils";
+import { fetchOsmRelationData, fetchDatasetSnapshot } from "@/lib/osm";
 import { Prisma } from "@prisma/client";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
@@ -166,26 +160,18 @@ async function createDatasetOnDemand(
   }
 
   try {
-    const queryString = template.overpassQuery.replace(
-      /\{OSM_RELATION_ID\}/g,
-      areaId.toString()
-    );
-
-    const overpassData = await executeOverpassQuery(queryString);
-    const geojsonData = convertOverpassToGeoJSON(overpassData);
-    const bbox = calculateBbox(geojsonData);
-    const datasetStats = extractDatasetStats(overpassData);
+    const snapshot = await fetchDatasetSnapshot(area.id, template.overpassQuery);
     const dataset = await prisma.dataset.create({
       data: {
         templateId: template.id,
         areaId: area.id,
         cityName: area.name,
         isActive: true,
-        geojson: JSON.parse(JSON.stringify(geojsonData)),
-        bbox: bbox ? JSON.parse(JSON.stringify(bbox)) : null,
-        dataCount: overpassData.elements.length,
+        geojson: JSON.parse(JSON.stringify(snapshot.geojson)),
+        bbox: snapshot.bbox ? JSON.parse(JSON.stringify(snapshot.bbox)) : null,
+        dataCount: snapshot.dataCount,
         lastChecked: new Date(),
-        stats: JSON.parse(JSON.stringify(datasetStats)),
+        stats: JSON.parse(JSON.stringify(snapshot.stats)),
       },
       include: {
         template: {
