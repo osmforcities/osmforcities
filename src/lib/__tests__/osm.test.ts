@@ -55,7 +55,7 @@ describe("fetchDatasetSnapshot", () => {
     );
   });
 
-  it("returns correct dataCount from elements length", async () => {
+  it("returns correct dataCount from features length", async () => {
     const snapshot = await fetchDatasetSnapshot(1, "query");
     expect(snapshot.dataCount).toBe(2);
   });

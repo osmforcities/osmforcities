@@ -358,6 +358,6 @@ export async function fetchDatasetSnapshot(
     geojson,
     stats,
     bbox,
-    dataCount: overpassData.elements.length,
+    dataCount: geojson.features.length,
   };
 }
