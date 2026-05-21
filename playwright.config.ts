@@ -25,12 +25,15 @@ export default defineConfig({
   webServer: {
     command: process.env.CI
       ? "ENABLE_TEST_AUTH=true pnpm start"
-      : "ENABLE_TEST_AUTH=true pnpm dev",
+      : "NODE_ENV=test ENABLE_TEST_AUTH=true pnpm dev",
     url: "http://localhost:3000/api/health",
     reuseExistingServer: true,
-    timeout: 120 * 1000,
+    timeout: process.env.CI ? 300 * 1000 : 120 * 1000,
     stdout: "pipe",
     stderr: "pipe",
+    env: {
+      OVERPASS_API_URL: "http://localhost:3000/api/mock-overpass",
+    },
   },
   globalSetup: require.resolve("./tests/global-setup.ts"),
   testMatch: "**/*.spec.ts",
