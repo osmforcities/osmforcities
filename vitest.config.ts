@@ -41,6 +41,11 @@ export default defineConfig({
         },
       }),
       defineProject({
+        resolve: {
+          alias: {
+            '@': path.join(dirname, 'src'),
+          },
+        },
         test: {
           name: 'unit',
           environment: 'node',
