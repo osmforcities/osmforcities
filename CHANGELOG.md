@@ -1,5 +1,17 @@
 # osmforcities
 
+## 1.9.2
+
+### Patch Changes
+
+- Migrate to fetchDatasetSnapshot, delete useOverpassQuery [#234]
+- Add dataset staleness check to /api/health endpoint [#214]
+- Fix Umami session fingerprinting [#233]
+
+[#234]: https://github.com/osmforcities/osmforcities/pull/234
+[#214]: https://github.com/osmforcities/osmforcities/pull/214
+[#233]: https://github.com/osmforcities/osmforcities/pull/233
+
 ## 1.9.1
 
 ### Added
