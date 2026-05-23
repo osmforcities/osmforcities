@@ -22,26 +22,30 @@ export async function PUT(
     // Resolve params
     const { id } = await params;
 
-    // Get current dataset
-    const dataset = await prisma.dataset.findUnique({
+    // Check dataset exists before toggling
+    const existing = await prisma.dataset.findUnique({
       where: { id },
-      select: { id: true, isFeatured: true },
+      select: { id: true },
     });
 
-    if (!dataset) {
+    if (!existing) {
       return NextResponse.json(
         { error: "Dataset not found" },
         { status: 404 }
       );
     }
 
-    // Toggle isFeatured
-    const updatedDataset = await prisma.dataset.update({
-      where: { id },
-      data: { isFeatured: !dataset.isFeatured }
-    });
+    // Toggle isFeatured atomically using a raw update expression
+    const [result] = await prisma.$queryRaw<
+      { id: string; isFeatured: boolean }[]
+    >`
+      UPDATE "datasets"
+      SET "isFeatured" = NOT "isFeatured"
+      WHERE id = ${id}
+      RETURNING id, "isFeatured"
+    `;
 
-    return NextResponse.json({ id: updatedDataset.id, isFeatured: updatedDataset.isFeatured });
+    return NextResponse.json({ id: result.id, isFeatured: result.isFeatured });
   } catch (error) {
     console.error("Error toggling featured status:", error);
     return NextResponse.json(
