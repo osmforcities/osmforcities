@@ -24,7 +24,8 @@ export async function PUT(
 
     // Get current dataset
     const dataset = await prisma.dataset.findUnique({
-      where: { id }
+      where: { id },
+      select: { id: true, isFeatured: true },
     });
 
     if (!dataset) {
