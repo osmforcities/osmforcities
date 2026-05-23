@@ -217,7 +217,8 @@ function NavSearch() {
             className="px-2 py-1.5 border-0 rounded-r bg-white hover:bg-olive-100 focus:outline-none transition-all duration-150"
             onPress={clearInput}
             excludeFromTabOrder
-            aria-label={inputValue ? t("clearSearch") : t("searchButton")}
+            aria-label={inputValue ? t("clearSearch") : undefined}
+            aria-hidden={!inputValue || undefined}
           >
             {!inputValue ? (
               <Search size={16} className="text-gray-400" />
