@@ -135,6 +135,7 @@ export function DatasetGrid({ templates, areaId }: DatasetGridProps) {
           items={filteredTemplates}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
           data-testid="template-grid"
+          aria-label={t("availableDatasets")}
         >
           {(template) => (
             <GridListItem key={template.id} className="group h-full">

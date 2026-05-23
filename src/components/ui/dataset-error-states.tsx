@@ -20,6 +20,7 @@ export function TemplateNotFoundError({
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -75,6 +76,7 @@ export function AreaNotFoundError({ areaId }: { areaId: string }) {
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -128,8 +130,9 @@ export function DatasetCreationError({
     error.toLowerCase().includes("timeout") ||
     error.toLowerCase().includes("timed out");
   const isTooLarge =
-    error.toLowerCase().includes("too large") ||
-    error.toLowerCase().includes("memory");
+    !isTimeout &&
+    (error.toLowerCase().includes("too large") ||
+      error.toLowerCase().includes("memory"));
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center" data-testid="dataset-creation-error">
@@ -140,6 +143,7 @@ export function DatasetCreationError({
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -234,6 +238,7 @@ export function DatasetErrorBoundary({
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"

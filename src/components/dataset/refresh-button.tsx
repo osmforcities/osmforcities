@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 
@@ -16,6 +17,7 @@ export default function DatasetRefreshButton({
   onRefresh,
 }: DatasetRefreshButtonProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const t = useTranslations("DatasetPage");
 
   const handleRefresh = async () => {
     if (!isActive) return;
@@ -52,7 +54,7 @@ export default function DatasetRefreshButton({
       variant="outline"
       size="sm"
       className="p-2"
-      title={isRefreshing ? "Refreshing..." : "Refresh Data"}
+      aria-label={isRefreshing ? t("refreshing") : t("refreshData")}
     >
       <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
     </Button>

@@ -20,7 +20,8 @@
     "signOut": "Sign Out",
     "mainMenu": "Main navigation menu",
     "menu": "Menu",
-    "close": "Close"
+    "close": "Close",
+    "breadcrumbLabel": "Breadcrumb"
   },
   "Common": {
     "shareFeedback": "Share Feedback",
@@ -47,6 +48,7 @@
     "noFollowedDatasetsTitle": "No datasets followed yet",
     "noFollowedDatasetsDescription": "Search above to get started.",
     "datasetCount": "Following {count, plural, =1 {# dataset} other {# datasets}}",
+    "followedDatasetsGridLabel": "Followed datasets",
     "watcherCount": "{count, plural, =1 {# watcher} other {# watchers}}",
     "active": "Active",
     "inactive": "Inactive"
@@ -206,7 +208,8 @@
     "searching": "Searching...",
     "typeMoreChars": "Type {count} more character{count, plural, one {} other {s}} to search",
     "searchHint": "Try searching for cities, regions, or countries",
-    "idLabel": "ID: "
+    "idLabel": "ID: ",
+    "clearSearch": "Clear search"
   },
   "AddressTypes": {
     "city": "City",
