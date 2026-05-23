@@ -47,6 +47,7 @@
     "noFollowedDatasetsTitle": "Você ainda não segue nenhum conjunto de dados",
     "noFollowedDatasetsDescription": "Pesquise acima para começar.",
     "datasetCount": "Seguindo {count, plural, =1 {# conjunto de dados} other {# conjuntos de dados}}",
+    "followedDatasetsGridLabel": "Conjuntos de dados acompanhados",
     "watcherCount": "{count, plural, =1 {# seguidor} other {# seguidores}}",
     "active": "Ativo",
     "inactive": "Inativo"
@@ -204,7 +205,9 @@
     "searching": "Buscando...",
     "typeMoreChars": "Digite {count} caractere{count, plural, one {} other {s}} a mais para buscar",
     "searchHint": "Tente buscar por cidades, regiões ou países",
-    "idLabel": "ID: "
+    "idLabel": "ID: ",
+    "clearSearch": "Limpar pesquisa",
+    "searchButton": "Pesquisar"
   },
   "AddressTypes": {
     "city": "Cidade",

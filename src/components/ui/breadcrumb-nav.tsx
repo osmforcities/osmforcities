@@ -15,7 +15,7 @@ type BreadcrumbNavProps = {
 
 export function BreadcrumbNav({ items }: BreadcrumbNavProps) {
   return (
-    <Breadcrumbs className="flex items-center space-x-2 text-sm" data-testid="breadcrumb-nav">
+    <Breadcrumbs className="flex items-center space-x-2 text-sm" data-testid="breadcrumb-nav" aria-label="Breadcrumb">
       {items.map((item, index) => (
         <Breadcrumb key={index}>
           <div className="flex items-center">
