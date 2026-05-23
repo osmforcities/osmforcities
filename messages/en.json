@@ -20,7 +20,8 @@
     "signOut": "Sign Out",
     "mainMenu": "Main navigation menu",
     "menu": "Menu",
-    "close": "Close"
+    "close": "Close",
+    "breadcrumbLabel": "Breadcrumb"
   },
   "Common": {
     "shareFeedback": "Share Feedback",

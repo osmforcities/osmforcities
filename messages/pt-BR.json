@@ -20,7 +20,8 @@
     "signOut": "Sair",
     "mainMenu": "Menu de navegação principal",
     "menu": "Menu",
-    "close": "Fechar"
+    "close": "Fechar",
+    "breadcrumbLabel": "Navegação"
   },
   "Common": {
     "shareFeedback": "Compartilhar Feedback",

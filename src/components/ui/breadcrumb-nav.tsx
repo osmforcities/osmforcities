@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Breadcrumbs, Breadcrumb } from "react-aria-components";
 import { Link as NextLink } from "@/i18n/navigation";
 import { ChevronRight, Home } from "lucide-react";
@@ -14,8 +15,10 @@ type BreadcrumbNavProps = {
 };
 
 export function BreadcrumbNav({ items }: BreadcrumbNavProps) {
+  const t = useTranslations("Navigation");
+
   return (
-    <Breadcrumbs className="flex items-center space-x-2 text-sm" data-testid="breadcrumb-nav" aria-label="Breadcrumb">
+    <Breadcrumbs className="flex items-center space-x-2 text-sm" data-testid="breadcrumb-nav" aria-label={t("breadcrumbLabel")}>
       {items.map((item, index) => (
         <Breadcrumb key={index}>
           <div className="flex items-center">
