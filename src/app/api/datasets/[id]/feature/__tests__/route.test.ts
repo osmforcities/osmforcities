@@ -37,9 +37,8 @@ describe("PUT /api/datasets/[id]/feature", () => {
       method: "PUT",
     });
 
-    // @ts-expect-error - mock session
     const response = await PUT(request, {
-      params: { id: testDatasetId },
+      params: Promise.resolve({ id: testDatasetId }),
     });
 
     expect(response.status).toBe(403);
@@ -52,9 +51,8 @@ describe("PUT /api/datasets/[id]/feature", () => {
       method: "PUT",
     });
 
-    // @ts-expect-error - mock params
     const response = await PUT(request, {
-      params: { id: "invalid-id" },
+      params: Promise.resolve({ id: "invalid-id" }),
     });
 
     expect(response.status).toBe(404);
@@ -73,9 +71,8 @@ describe("PUT /api/datasets/[id]/feature", () => {
       method: "PUT",
     });
 
-    // @ts-expect-error - mock params and session
     const response = await PUT(request, {
-      params: { id: testDatasetId },
+      params: Promise.resolve({ id: testDatasetId }),
     });
 
     expect(response.status).toBe(200);

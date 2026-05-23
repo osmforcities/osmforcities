@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get current session
@@ -19,9 +19,12 @@ export async function PUT(
       );
     }
 
+    // Resolve params
+    const { id } = await params;
+
     // Get current dataset
     const dataset = await prisma.dataset.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!dataset) {
@@ -33,7 +36,7 @@ export async function PUT(
 
     // Toggle isFeatured
     const updatedDataset = await prisma.dataset.update({
-      where: { id: params.id },
+      where: { id },
       data: { isFeatured: !dataset.isFeatured }
     });
 
