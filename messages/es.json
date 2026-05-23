@@ -207,8 +207,7 @@
     "typeMoreChars": "Escribe {count} carácter{count, plural, one {} other {es}} más para buscar",
     "searchHint": "Prueba buscando ciudades, regiones o países",
     "idLabel": "ID: ",
-    "clearSearch": "Limpiar búsqueda",
-    "searchButton": "Buscar"
+    "clearSearch": "Limpiar búsqueda"
   },
   "AddressTypes": {
     "city": "Ciudad",
