@@ -124,7 +124,9 @@ export function DatasetCreationError({
   onRetry?: () => void;
 }) {
   const t = useTranslations("DatasetErrors");
-  const isTimeout = error.toLowerCase().includes("timeout");
+  const isTimeout =
+    error.toLowerCase().includes("timeout") ||
+    error.toLowerCase().includes("timed out");
   const isTooLarge =
     error.toLowerCase().includes("too large") ||
     error.toLowerCase().includes("memory");
@@ -170,12 +172,6 @@ export function DatasetCreationError({
             </>
           )}
         </p>
-
-        {error && (
-          <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
-            <p className="text-sm text-gray-600 font-mono">{error}</p>
-          </div>
-        )}
 
         <div className="space-y-3">
           {onRetry && (

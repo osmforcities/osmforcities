@@ -236,16 +236,9 @@ async function createDatasetOnDemand(
           "Dataset too large - try a smaller area or more specific template"
         );
       }
-      if (error.message.includes("Overpass API error")) {
-        throw new Error(`Overpass API error: ${error.message}`);
-      }
     }
 
-    throw new Error(
-      `Failed to fetch dataset data: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`
-    );
+    throw new Error("Failed to load dataset data. Please try again later.");
   }
 }
 
