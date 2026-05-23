@@ -40,7 +40,7 @@ export async function PUT(
       data: { isFeatured: !dataset.isFeatured }
     });
 
-    return NextResponse.json(updatedDataset);
+    return NextResponse.json({ id: updatedDataset.id, isFeatured: updatedDataset.isFeatured });
   } catch (error) {
     console.error("Error toggling featured status:", error);
     return NextResponse.json(
