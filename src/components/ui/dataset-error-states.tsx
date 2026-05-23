@@ -130,8 +130,9 @@ export function DatasetCreationError({
     error.toLowerCase().includes("timeout") ||
     error.toLowerCase().includes("timed out");
   const isTooLarge =
-    error.toLowerCase().includes("too large") ||
-    error.toLowerCase().includes("memory");
+    !isTimeout &&
+    (error.toLowerCase().includes("too large") ||
+      error.toLowerCase().includes("memory"));
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center" data-testid="dataset-creation-error">
