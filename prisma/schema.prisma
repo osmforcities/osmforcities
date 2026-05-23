@@ -96,6 +96,7 @@ model Dataset {
   templateId  String
   cityName    String
   isActive    Boolean        @default(true)
+  isFeatured  Boolean        @default(false)
   lastChecked DateTime?
   dataCount   Int            @default(0)
   geojson     Json?
