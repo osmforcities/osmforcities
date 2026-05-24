@@ -1,137 +1,186 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { useState } from "react";
 import { StoryShell } from "./story-shell";
 
-const mockAllCities = [
-  { id: "paris", name: "Paris", country: "France", datasets: 14, emoji: "🗼" },
-  { id: "berlin", name: "Berlin", country: "Germany", datasets: 9, emoji: "🏛" },
-  { id: "amsterdam", name: "Amsterdam", country: "Netherlands", datasets: 6, emoji: "🚲" },
-  { id: "london", name: "London", country: "UK", datasets: 8, emoji: "🎡" },
-  { id: "tokyo", name: "Tokyo", country: "Japan", datasets: 15, emoji: "⛩" },
-  { id: "lisbon", name: "Lisbon", country: "Portugal", datasets: 5, emoji: "🐟" },
+// Mock data for stacked-rows layout
+const featuredDatasets = [
+  { id: "bicycle-paris", name: "Bicycle Parking", city: "Paris", flag: "🇫🇷", features: 1204 },
+  { id: "trees-berlin", name: "Urban Trees", city: "Berlin", flag: "🇩🇪", features: 38420 },
+  { id: "water-lagos", name: "Water Points", city: "Lagos", flag: "🇳🇬", features: 2890 },
+  { id: "bus-lisbon", name: "Bus Stops", city: "Lisbon", flag: "🇵🇹", features: 2104 },
 ];
 
-const mockFeaturedDatasets = [
-  { id: "bicycle-parking", name: "Bicycle Parking", city: "Paris", features: 2340 },
-  { id: "bus-stops", name: "Bus Stops", city: "Berlin", features: 4100 },
-  { id: "public-fountains", name: "Public Fountains", city: "Amsterdam", features: 890 },
-  { id: "green-spaces", name: "Green Spaces", city: "London", features: 1200 },
+const mostActiveDatasets = [
+  { id: "water-lagos", name: "Water Points", city: "Lagos", flag: "🇳🇬", edits: 42 },
+  { id: "bus-mumbai", name: "Bus Stops", city: "Mumbai", flag: "🇮🇳", edits: 38 },
+  { id: "bike-saopaulo", name: "Bike Lanes", city: "São Paulo", flag: "🇧🇷", edits: 31 },
+  { id: "hospital-cairo", name: "Hospitals", city: "Cairo", flag: "🇪🇬", edits: 27 },
+];
+
+const mostMonitoredDatasets = [
+  { id: "bicycle-paris", name: "Bicycle Parking", city: "Paris", flag: "🇫🇷", followers: 234 },
+  { id: "atm-tokyo", name: "ATMs", city: "Tokyo", flag: "🇯🇵", followers: 198 },
+  { id: "trees-berlin", name: "Urban Trees", city: "Berlin", flag: "🇩🇪", followers: 187 },
+  { id: "hospital-london", name: "Hospitals", city: "London", flag: "🇬🇧", followers: 156 },
+];
+
+const largestDatasets = [
+  { id: "trees-berlin", name: "Urban Trees", city: "Berlin", flag: "🇩🇪", features: 38420 },
+  { id: "bus-istanbul", name: "Bus Stops", city: "Istanbul", flag: "🇹🇷", features: 24100 },
+  { id: "lights-seoul", name: "Street Lights", city: "Seoul", flag: "🇰🇷", features: 19840 },
+];
+
+const mostMonitoredCities = [
+  { id: "paris", name: "Paris", flag: "🇫🇷", followers: 412 },
+  { id: "tokyo", name: "Tokyo", flag: "🇯🇵", followers: 387 },
+  { id: "nairobi", name: "Nairobi", flag: "🇰🇪", followers: 301 },
+];
+
+const recentlyAddedDatasets = [
+  { id: "ciclovia-bogota", name: "Ciclovías", city: "Bogotá", flag: "🇨🇴", added: "2 days ago" },
+  { id: "markets-accra", name: "Markets", city: "Accra", flag: "🇬🇭", added: "5 days ago" },
+  { id: "flood-jakarta", name: "Flood Sensors", city: "Jakarta", flag: "🇮🇩", added: "1 week ago" },
+  { id: "clinics-kampala", name: "Health Clinics", city: "Kampala", flag: "🇺🇬", added: "2 weeks ago" },
 ];
 
 function ExplorePage({ isLoggedIn }: { isLoggedIn: boolean }) {
-  const [selectedId, setSelectedId] = useState<string | null>("paris");
-  const selected = mockAllCities.find((c) => c.id === selectedId);
-
   return (
     <StoryShell isLoggedIn={isLoggedIn} pageTitle="Explore">
-      <div
-        className="flex border-b border-neutral-200 dark:border-neutral-800"
-        style={{ height: "calc(100vh - var(--nav-height))" }}
-      >
-        {/* Left panel — all cities (same for all users) */}
-        <aside className="w-[36%] min-w-60 flex flex-col border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black overflow-y-auto">
-          <div className="px-6 py-5 border-b border-neutral-100 dark:border-neutral-800">
-            <div className="flex items-baseline justify-between">
-              <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">All cities</h1>
-              {isLoggedIn && (
-                <button className="text-xs text-neutral-400 hover:text-neutral-700">
-                  Your cities →
-                </button>
-              )}
-            </div>
-            <div className="mt-3">
-              <input
-                type="text"
-                placeholder="Search cities…"
-                className="w-full px-3 py-1.5 text-sm rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400"
-                readOnly
-              />
+      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 py-8">
+        <div className="max-w-7xl mx-auto px-6">
+          {/* Search */}
+          <div className="mb-8">
+            <div className="bg-white border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 flex items-center gap-3 shadow-sm">
+              <span className="text-neutral-400">🔍</span>
+              <span className="text-neutral-400 text-sm">Search cities and datasets…</span>
             </div>
           </div>
-          <nav className="flex-1 py-1">
-            {mockAllCities.map((city) => (
-              <button
-                key={city.id}
-                onClick={() => setSelectedId(city.id)}
-                className={`w-full flex items-center gap-3 px-5 py-3 text-left transition-colors border-b border-neutral-50 dark:border-neutral-800 ${
-                  selectedId === city.id
-                    ? "bg-olive-50 dark:bg-olive-950 border-r-2 border-olive-600"
-                    : "hover:bg-neutral-50 dark:hover:bg-neutral-900"
-                }`}
-              >
-                <span className="text-lg">{city.emoji}</span>
-                <div className="flex-1 min-w-0">
-                  <p
-                    className={`text-sm font-medium ${
-                      selectedId === city.id
-                        ? "text-olive-700 dark:text-olive-400"
-                        : "text-neutral-800 dark:text-neutral-200"
-                    }`}
-                  >
-                    {city.name}
-                  </p>
-                  <p className="text-xs text-neutral-400">
-                    {city.country} · {city.datasets} datasets
-                  </p>
-                </div>
-              </button>
-            ))}
-          </nav>
-          {/* Bottom of left panel — sign in CTA for logged-out only */}
-          {!isLoggedIn && (
-            <div className="px-5 py-4 border-t border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900">
-              <p className="text-xs text-neutral-500 mb-2">
-                Sign in to follow cities and track changes
-              </p>
-              <button className="w-full px-4 py-2 text-sm font-semibold text-white bg-neutral-900 rounded-lg hover:bg-neutral-700">
-                Sign in
-              </button>
+
+          {/* Banner: logged in only */}
+          {isLoggedIn && (
+            <div className="mb-8">
+              <div className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg px-4 py-3 flex items-center justify-between">
+                <span className="text-sm text-neutral-700 dark:text-neutral-300">See your personalized activity</span>
+                <span className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 cursor-pointer">Your Dashboard →</span>
+              </div>
             </div>
           )}
-        </aside>
 
-        {/* Right panel — featured datasets */}
-        <main className="flex-1 flex flex-col bg-neutral-50 dark:bg-neutral-900 overflow-y-auto">
-          <div className="px-7 py-5 border-b border-neutral-100 dark:border-neutral-800 bg-white dark:bg-black">
-            {selected ? (
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">{selected.emoji}</span>
-                <div>
-                  <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
-                    {selected.name}
-                  </h2>
-                  <p className="text-sm text-neutral-500">
-                    {selected.country} · {selected.datasets} datasets
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
-                Featured datasets
-              </h2>
-            )}
-          </div>
-          <div className="p-7">
-            <p className="text-xs font-medium text-neutral-500 uppercase tracking-wide mb-4">
-              Featured datasets
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              {mockFeaturedDatasets.map((ds) => (
-                <div
-                  key={ds.id}
-                  className="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 cursor-pointer hover:shadow-sm transition-shadow"
-                >
-                  <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
-                    {ds.name}
-                  </p>
-                  <p className="text-xs text-neutral-400 mt-1">
-                    {ds.city} · {ds.features.toLocaleString()} features
-                  </p>
+          {/* Featured */}
+          <section className="mb-10">
+            <div className="flex items-baseline justify-between mb-4">
+              <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">Featured</h2>
+              <span className="text-xs text-neutral-400 hover:text-neutral-700 cursor-pointer">See all →</span>
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              {featuredDatasets.map((ds) => (
+                <div key={ds.id} className="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 cursor-pointer hover:shadow-sm transition-shadow">
+                  <div className="text-xs text-neutral-400 mb-2">{ds.city} {ds.flag}</div>
+                  <div className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-1">{ds.name}</div>
+                  <div className="text-xs text-neutral-400">{ds.features.toLocaleString()} features</div>
                 </div>
               ))}
             </div>
-          </div>
-        </main>
+          </section>
+
+          {/* Most Active */}
+          <section className="mb-10">
+            <div className="flex items-baseline justify-between mb-4">
+              <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+                Most Active <span className="font-normal text-neutral-400">— last 30 days</span>
+              </h2>
+              <span className="text-xs text-neutral-400 hover:text-neutral-700 cursor-pointer">See all →</span>
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              {mostActiveDatasets.map((ds) => (
+                <div key={ds.id} className="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 cursor-pointer hover:shadow-sm transition-shadow">
+                  <div className="text-xs text-neutral-400 mb-2">{ds.city} {ds.flag}</div>
+                  <div className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-1">{ds.name}</div>
+                  <div className="text-xs text-olive-600 font-medium">↑ {ds.edits} edits</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Most Monitored */}
+          <section className="mb-10">
+            <div className="flex items-baseline justify-between mb-4">
+              <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">Most Monitored</h2>
+              <span className="text-xs text-neutral-400 hover:text-neutral-700 cursor-pointer">See all →</span>
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              {mostMonitoredDatasets.map((ds) => (
+                <div key={ds.id} className="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 cursor-pointer hover:shadow-sm transition-shadow">
+                  <div className="text-xs text-neutral-400 mb-2">{ds.city} {ds.flag}</div>
+                  <div className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-1">{ds.name}</div>
+                  <div className="text-xs text-neutral-400">{ds.followers} followers</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Largest Datasets */}
+          <section className="mb-10">
+            <div className="flex items-baseline justify-between mb-4">
+              <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">Largest Datasets</h2>
+              <span className="text-xs text-neutral-400 hover:text-neutral-700 cursor-pointer">See all →</span>
+            </div>
+            <div className="flex flex-col gap-2">
+              {largestDatasets.map((ds) => (
+                <div key={ds.id} className="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg px-4 py-3 flex items-center justify-between cursor-pointer hover:shadow-sm transition-shadow">
+                  <div>
+                    <div className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{ds.name}</div>
+                    <div className="text-xs text-neutral-400">{ds.city} {ds.flag}</div>
+                  </div>
+                  <div className="text-sm font-semibold text-neutral-500">{ds.features.toLocaleString()}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Most Monitored Cities */}
+          <section className="mb-10">
+            <div className="flex items-baseline justify-between mb-4">
+              <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">Most Monitored Cities</h2>
+              <span className="text-xs text-neutral-400 hover:text-neutral-700 cursor-pointer">See all →</span>
+            </div>
+            <div className="flex flex-col gap-2">
+              {mostMonitoredCities.map((city) => (
+                <div key={city.id} className="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg px-4 py-3 flex items-center justify-between cursor-pointer hover:shadow-sm transition-shadow">
+                  <div className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{city.name} {city.flag}</div>
+                  <div className="text-xs text-neutral-400">{city.followers} followers</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Recently Added */}
+          <section className="mb-10">
+            <div className="flex items-baseline justify-between mb-4">
+              <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">Recently Added</h2>
+              <span className="text-xs text-neutral-400 hover:text-neutral-700 cursor-pointer">See all →</span>
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              {recentlyAddedDatasets.map((ds) => (
+                <div key={ds.id} className="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 cursor-pointer hover:shadow-sm transition-shadow">
+                  <div className="text-xs text-neutral-400 mb-2">{ds.city} {ds.flag}</div>
+                  <div className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-1">{ds.name}</div>
+                  <div className="text-xs text-neutral-400">Added {ds.added}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Sign-in CTA (logged out only) */}
+          {!isLoggedIn && (
+            <div className="border border-neutral-200 dark:border-neutral-700 rounded-lg p-5 bg-white dark:bg-neutral-800 flex items-center justify-between">
+              <div>
+                <div className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-1">Follow cities and datasets</div>
+                <div className="text-xs text-neutral-500">Sign in to track changes and get notified when data updates.</div>
+              </div>
+              <button className="bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs font-semibold px-4 py-2.5 rounded-lg whitespace-nowrap ml-4">Sign in</button>
+            </div>
+          )}
+        </div>
       </div>
     </StoryShell>
   );
