@@ -118,7 +118,7 @@ async function AreaTemplateDatasetView({
       isWatched = !!watchRecord;
     }
 
-    const dataset = transformDataset(result.dataset, session?.user || null, locale, { isWatched });
+    const dataset = transformDataset(result.dataset, session?.user || null, locale, { isWatched, skipTemplateResolution: true });
 
     trackEvent(
       ANALYTICS_EVENTS.DATASET_DETAIL_VIEW,

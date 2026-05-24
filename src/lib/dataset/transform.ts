@@ -37,23 +37,22 @@ export function transformDataset(
   rawDataset: RawDataset,
   user: User | null,
   locale: string,
-  options?: { isWatched?: boolean }
+  options?: { isWatched?: boolean; skipTemplateResolution?: boolean }
 ): Dataset {
   if (!rawDataset.template) {
     throw new Error("Dataset template is required");
   }
 
-  // Skip re-resolution if template was already resolved (translations stripped)
-  const resolvedTemplate = "translations" in rawDataset.template
-    ? resolveTemplateForLocale(
+  const resolvedTemplate = options?.skipTemplateResolution
+    ? (rawDataset.template as { name: string; description: string | null })
+    : resolveTemplateForLocale(
         rawDataset.template as {
           translations: Array<{ locale: string; name: string; description: string | null }>;
           name: string;
           description: string | null;
         },
         locale
-      )
-    : rawDataset.template as { name: string; description: string | null };
+      );
   const permissions = calculatePermissions(rawDataset, user);
 
   // If isWatched is explicitly provided, use it. Otherwise infer from watchers array.
