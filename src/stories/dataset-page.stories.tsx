@@ -16,7 +16,7 @@ function DatasetPage() {
   const selected = mockFeatures.find((f) => f.id === selectedId);
 
   return (
-    <StoryShell>
+    <StoryShell pageTitle="Bicycle Parking" backLabel="Paris">
     <div
       className="flex border-b border-neutral-200 dark:border-neutral-800"
       style={{ height: 'calc(100vh - var(--nav-height))' }}
@@ -24,7 +24,6 @@ function DatasetPage() {
       {/* Left panel — 40% for map pages */}
       <aside className="w-[40%] min-w-64 flex flex-col border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black overflow-y-auto">
         <div className="px-6 py-5 border-b border-neutral-100 dark:border-neutral-800">
-          <p className="text-xs text-neutral-400 mb-1">Paris · Transportation</p>
           <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Bicycle Parking</h1>
           <p className="text-sm text-neutral-500 mt-0.5">1,204 features · Updated 2 days ago</p>
         </div>

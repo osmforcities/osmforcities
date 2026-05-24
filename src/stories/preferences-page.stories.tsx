@@ -92,7 +92,7 @@ function PreferencesPage() {
   const [activeSection, setActiveSection] = useState('general');
 
   return (
-    <StoryShell>
+    <StoryShell pageTitle="Preferences" pageTitleMuted>
     <div
       className="flex border-b border-neutral-200 dark:border-neutral-800"
       style={{ height: 'calc(100vh - var(--nav-height))' }}
