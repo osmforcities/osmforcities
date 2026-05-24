@@ -44,6 +44,7 @@ export function HeroMap() {
         </div>
       </Map>
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-black/25 via-transparent to-transparent" />
+      {/* WARNING: Attribution links below must be updated when switching tile providers */}
       <div className="absolute bottom-3 left-3 rounded-md bg-black/50 px-2 py-1 text-xs text-white shadow-sm">
         <a
           href="https://www.openstreetmap.org/copyright"

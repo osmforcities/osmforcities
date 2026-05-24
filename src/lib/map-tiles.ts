@@ -7,6 +7,8 @@ export const mapStyle = {
       type: "raster",
       tiles: [TILE_URL],
       tileSize: 512,
+      // WARNING: Attribution must be updated when switching to a different tile provider
+      // to comply with their terms of service
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     },
   },
