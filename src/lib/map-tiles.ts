@@ -27,9 +27,12 @@ function getTileConfig(): TileProviderConfig {
 
   // Custom URL overrides provider selection
   if (customUrl) {
+    const customTileSize = process.env.NEXT_PUBLIC_MAP_TILE_SIZE
+      ? parseInt(process.env.NEXT_PUBLIC_MAP_TILE_SIZE, 10)
+      : 256; // Default to standard OSM tile size
     return {
       url: customUrl,
-      tileSize: 512, // Default to CartoDB @2x size for custom URLs
+      tileSize: customTileSize,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', // Safe default
     };
   }
