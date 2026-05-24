@@ -1,8 +1,7 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getTranslations, getLocale } from "next-intl/server";
-import { DatasetSchema } from "@/schemas/dataset";
-import type { FeatureCollection } from "geojson";
+import { transformDataset } from "@/lib/dataset/transform";
 import { DatasetInteractiveSection } from "@/components/dataset/dataset-interactive-section";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
@@ -119,18 +118,7 @@ async function AreaTemplateDatasetView({
       isWatched = !!watchRecord;
     }
 
-    const dataset = DatasetSchema.parse({
-      ...result.dataset,
-      geojson: result.dataset.geojson as FeatureCollection | null,
-      bbox: result.dataset.bbox as number[] | null,
-      area: {
-        ...result.dataset.area,
-        geojson: result.dataset.area.geojson as FeatureCollection | null,
-      },
-      isWatched,
-      watchersCount: result.dataset.watchers?.length || 0,
-      canDelete: false,
-    });
+    const dataset = transformDataset(result.dataset, session?.user || null, locale, { isWatched });
 
     trackEvent(
       ANALYTICS_EVENTS.DATASET_DETAIL_VIEW,

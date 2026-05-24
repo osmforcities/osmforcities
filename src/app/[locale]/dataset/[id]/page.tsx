@@ -2,9 +2,8 @@ import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { getLocale } from "next-intl/server";
-import { resolveTemplateForLocale } from "@/lib/template-locale";
-import { DatasetSchema, type Dataset } from "@/schemas/dataset";
-import type { FeatureCollection } from "geojson";
+import { type Dataset } from "@/schemas/dataset";
+import { transformDataset } from "@/lib/dataset/transform";
 import { DatasetMapWrapper } from "@/components/dataset/map-wrapper";
 import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
 import { DatasetStatsTable } from "@/components/dataset/dataset-stats-table";
@@ -45,26 +44,7 @@ async function getDataset(id: string, locale: string): Promise<Dataset | null> {
 
     if (!rawDataset) return null;
 
-    const resolvedTemplate = resolveTemplateForLocale(
-      rawDataset.template,
-      locale,
-    );
-
-    return DatasetSchema.parse({
-      ...rawDataset,
-      template: resolvedTemplate,
-      geojson: rawDataset.geojson as FeatureCollection | null,
-      bbox: rawDataset.bbox as number[] | null,
-      area: {
-        ...rawDataset.area,
-        geojson: rawDataset.area.geojson as FeatureCollection | null,
-      },
-      isWatched: user ? rawDataset.watchers.length > 0 : false,
-      watchersCount: rawDataset._count.watchers,
-      canDelete: false,
-      isFeatured: rawDataset.isFeatured ?? false,
-      canFeature: user?.isAdmin ?? false,
-    });
+    return transformDataset(rawDataset, user, locale);
   } catch (error) {
     console.error("Error fetching dataset:", error);
     return null;

@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { DatasetSchema } from "@/schemas/dataset";
-import type { FeatureCollection } from "geojson";
+import { transformDataset } from "@/lib/dataset/transform";
 
 export async function GET() {
   try {
@@ -40,20 +39,9 @@ export async function GET() {
       },
     });
 
-    const datasets = watchedDatasets.map((watch) => {
-      const dataset = watch.dataset;
-      return DatasetSchema.parse({
-        ...dataset,
-        geojson: dataset.geojson as FeatureCollection | null,
-        bbox: dataset.bbox as number[] | null,
-        area: {
-          ...dataset.area,
-          geojson: dataset.area.geojson as FeatureCollection | null,
-        },
-        isWatched: true,
-        watchersCount: dataset._count.watchers,
-      });
-    });
+    const datasets = watchedDatasets.map((watch) =>
+      transformDataset(watch.dataset, user, "en", { isWatched: true })
+    );
 
     return NextResponse.json(datasets);
   } catch (error) {
