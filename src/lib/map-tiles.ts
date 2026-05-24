@@ -28,7 +28,7 @@ function getTileConfig(): TileProviderConfig {
   // Custom URL overrides provider selection
   if (customUrl) {
     const customTileSize = process.env.NEXT_PUBLIC_MAP_TILE_SIZE
-      ? parseInt(process.env.NEXT_PUBLIC_MAP_TILE_SIZE, 10)
+      ? (parseInt(process.env.NEXT_PUBLIC_MAP_TILE_SIZE, 10) || 256)
       : 256; // Default to standard OSM tile size
     return {
       url: customUrl,
