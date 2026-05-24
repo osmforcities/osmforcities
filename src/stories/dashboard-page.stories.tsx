@@ -21,7 +21,7 @@ function DashboardPage() {
   const selected = mockAreas.find((a) => a.id === selectedId)!;
 
   return (
-    <StoryShell>
+    <StoryShell pageTitle="Dashboard">
     <div
       className="flex border-b border-neutral-200 dark:border-neutral-800"
       style={{ height: 'calc(100vh - var(--nav-height))' }}
@@ -29,7 +29,12 @@ function DashboardPage() {
       {/* Left panel */}
       <aside className="w-[36%] min-w-60 flex flex-col border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black overflow-y-auto">
         <div className="px-6 py-5 border-b border-neutral-100 dark:border-neutral-800">
-          <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Your areas</h1>
+          <div className="flex items-baseline justify-between">
+            <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Your areas</h1>
+            <button className="text-xs text-neutral-400 hover:text-neutral-700">
+              Explore all cities →
+            </button>
+          </div>
           <p className="text-sm text-neutral-500 mt-0.5">{mockAreas.length} monitored</p>
         </div>
         <nav className="flex-1 py-2">
@@ -55,11 +60,6 @@ function DashboardPage() {
             </button>
           ))}
         </nav>
-        <div className="px-6 py-4 border-t border-neutral-100 dark:border-neutral-800">
-          <button className="w-full px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors">
-            + Add area
-          </button>
-        </div>
       </aside>
 
       {/* Right panel */}

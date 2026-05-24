@@ -142,6 +142,10 @@ export function MockNavBar({
                 {dropdownOpen && (
                   <div className="absolute right-0 top-10 w-44 bg-white border border-neutral-200 rounded-lg shadow-lg py-1 z-50">
                     <button className="w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">
+                      Dashboard
+                    </button>
+                    <div className="my-1 border-t border-neutral-100" />
+                    <button className="w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">
                       Preferences
                     </button>
                     <div className="my-1 border-t border-neutral-100" />

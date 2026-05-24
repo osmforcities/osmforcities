@@ -39,8 +39,13 @@ export const LoggedOut_Dataset: Story = {
 
 // --- Logged in ---
 
-export const LoggedIn_Home: Story = {
-  name: "Logged in / Home (Explore)",
+export const LoggedIn_Dashboard: Story = {
+  name: "Logged in / Dashboard (home)",
+  args: { isLoggedIn: true, pageTitle: "Dashboard" },
+};
+
+export const LoggedIn_Explore: Story = {
+  name: "Logged in / Explore",
   args: { isLoggedIn: true, pageTitle: "Explore" },
 };
 
