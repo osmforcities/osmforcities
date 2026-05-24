@@ -1,14 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import { useTranslations } from "next-intl";
 import Map, { NavigationControl } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { HERO_LOCATIONS } from "./hero-map-locations";
 import { mapStyle } from "@/lib/map-tiles";
 
 export function HeroMap() {
-  const t = useTranslations("Home.hero");
 
   const location = useMemo(() => {
     const fallback = HERO_LOCATIONS[0];
@@ -34,7 +32,6 @@ export function HeroMap() {
         doubleClickZoom
         touchZoomRotate
         keyboard
-        attributionControl={false}
         reuseMaps
         key={location?.id ?? "hero-map"}
         style={{ width: "100%", height: "100%" }}
@@ -44,26 +41,6 @@ export function HeroMap() {
         </div>
       </Map>
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-black/25 via-transparent to-transparent" />
-      {/* WARNING: Attribution links below must be updated when switching tile providers */}
-      <div className="absolute bottom-3 left-3 rounded-md bg-black/50 px-2 py-1 text-xs text-white shadow-sm">
-        <a
-          href="https://www.openstreetmap.org/copyright"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:underline"
-        >
-          {t("osmAttribution")}
-        </a>
-        {t("attributionSeparator")}
-        <a
-          href="https://carto.com/attributions"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:underline"
-        >
-          {t("cartoAttribution")}
-        </a>
-      </div>
     </div>
   );
 }
