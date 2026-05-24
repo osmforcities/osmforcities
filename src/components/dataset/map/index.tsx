@@ -31,6 +31,20 @@ export default function DatasetMap({ dataset, boundary }: DatasetMapProps) {
   const { tooltipInfo, handleHover, handleMouseLeave } = useMapInteractions();
   const { dateFilter, setDateFilter, updateFilterIfNeeded } = useDateFilter();
 
+  const tileUrl = process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png";
+
+  const mapStyle = useMemo(() => ({
+    version: 8,
+    sources: {
+      tiles: {
+        type: "raster",
+        tiles: [tileUrl],
+        tileSize: 256,
+      },
+    },
+    layers: [{ id: "tiles", type: "raster", source: "tiles" }],
+  }), [tileUrl]);
+
   // Calculate initial view state before any conditional returns
   const initialViewState = useMemo(() => {
     const areaBounds = parseAreaBounds(dataset.area);
@@ -114,7 +128,7 @@ export default function DatasetMap({ dataset, boundary }: DatasetMapProps) {
           >
             <Map
               ref={mapRef}
-              mapStyle="https://tiles.openfreemap.org/styles/positron"
+              mapStyle={mapStyle}
               aria-label={t('mapLabel')}
               initialViewState={initialViewState}
               interactiveLayerIds={[

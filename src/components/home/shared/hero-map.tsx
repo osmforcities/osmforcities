@@ -6,11 +6,9 @@ import Map, { NavigationControl } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { HERO_LOCATIONS } from "./hero-map-locations";
 
-// Vector style (MapLibre) backed by OSM tiles
-const HERO_MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/positron";
-
 export function HeroMap() {
   const t = useTranslations("Home.hero");
+
   const location = useMemo(() => {
     const fallback = HERO_LOCATIONS[0];
     if (!fallback) return null;
@@ -18,10 +16,24 @@ export function HeroMap() {
     return HERO_LOCATIONS[randomIndex] ?? fallback;
   }, []);
 
+  const tileUrl = process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png";
+
+  const mapStyle = useMemo(() => ({
+    version: 8,
+    sources: {
+      tiles: {
+        type: "raster",
+        tiles: [tileUrl],
+        tileSize: 256,
+      },
+    },
+    layers: [{ id: "tiles", type: "raster", source: "tiles" }],
+  }), [tileUrl]);
+
   return (
     <div className="relative h-full min-h-[320px] bg-gray-100 dark:bg-gray-900">
       <Map
-        mapStyle={HERO_MAP_STYLE_URL}
+        mapStyle={mapStyle}
         initialViewState={
           location ?? {
             longitude: 0,

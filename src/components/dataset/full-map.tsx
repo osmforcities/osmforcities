@@ -37,6 +37,20 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
     const { dateFilter, setDateFilter, updateFilterIfNeeded } = useDateFilter();
     const { selectedFeature, handleFeatureClick, handleMouseEnter, handleMouseLeave, handleDeselect, cursor } = useFeatureSelection(onFeatureSelect);
 
+    const tileUrl = process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png";
+
+    const mapStyle = useMemo(() => ({
+      version: 8,
+      sources: {
+        tiles: {
+          type: "raster",
+          tiles: [tileUrl],
+          tileSize: 256,
+        },
+      },
+      layers: [{ id: "tiles", type: "raster", source: "tiles" }],
+    }), [tileUrl]);
+
     // Expose deselect function to parent
     useImperativeHandle(ref, () => ({
       deselectFeature: handleDeselect,
@@ -85,7 +99,7 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
         {hasFilteredData ? (
           <Map
             ref={mapRef}
-            mapStyle="https://tiles.openfreemap.org/styles/positron"
+            mapStyle={mapStyle}
             aria-label={t('fullScreenMapLabel')}
             initialViewState={initialViewState}
             style={{ width: "100%", height: "100%" }}
