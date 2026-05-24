@@ -3,19 +3,24 @@ import type { StyleSpecification } from "maplibre-gl";
 type TileProvider = "cartodb" | "osm";
 
 interface TileProviderConfig {
-  url: string;
+  urls: string[];
   tileSize: number;
   attribution: string;
 }
 
 const TILE_PROVIDERS: Record<TileProvider, TileProviderConfig> = {
   cartodb: {
-    url: "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+    urls: [
+      "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+      "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+      "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+      "https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+    ],
     tileSize: 512,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
   },
   osm: {
-    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    urls: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
     tileSize: 256,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   },
@@ -31,7 +36,7 @@ function getTileConfig(): TileProviderConfig {
       ? (parseInt(process.env.NEXT_PUBLIC_MAP_TILE_SIZE, 10) || 256)
       : 256; // Default to standard OSM tile size
     return {
-      url: customUrl,
+      urls: [customUrl],
       tileSize: customTileSize,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', // Safe default
     };
@@ -47,7 +52,7 @@ export const mapStyle = {
   sources: {
     tiles: {
       type: "raster",
-      tiles: [tileConfig.url],
+      tiles: tileConfig.urls,
       tileSize: tileConfig.tileSize,
       attribution: tileConfig.attribution,
     },
