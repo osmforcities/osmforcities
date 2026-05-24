@@ -168,6 +168,11 @@
     "refreshing": "Refreshing...",
     "watch": "Watch",
     "unwatch": "Unwatch",
+    "featured": "Featured",
+    "feature": "Feature",
+    "unfeature": "Unfeature",
+    "featureTitle": "Feature this dataset on homepage",
+    "unfeatureTitle": "Remove from featured",
     "dataMetrics": "Data Metrics",
     "actions": "Actions"
   },

@@ -62,6 +62,8 @@ async function getDataset(id: string, locale: string): Promise<Dataset | null> {
       isWatched: user ? rawDataset.watchers.length > 0 : false,
       watchersCount: rawDataset._count.watchers,
       canDelete: false,
+      isFeatured: rawDataset.isFeatured ?? false,
+      canFeature: user?.isAdmin ?? false,
     });
   } catch (error) {
     console.error("Error fetching dataset:", error);

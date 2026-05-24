@@ -167,6 +167,11 @@
     "refreshing": "Actualizando...",
     "watch": "Seguir",
     "unwatch": "Dejar de Seguir",
+    "featured": "Destacado",
+    "feature": "Destacar",
+    "unfeature": "Quitar destacado",
+    "featureTitle": "Destacar este conjunto en la página principal",
+    "unfeatureTitle": "Quitar de destacados",
     "dataMetrics": "Métricas de Datos",
     "actions": "Acciones"
   },

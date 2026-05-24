@@ -87,6 +87,8 @@ export const DatasetSchema = z.object({
   isWatched: z.boolean().optional(),
   watchersCount: z.number().optional(),
   canDelete: z.boolean().optional(),
+  isFeatured: z.boolean().optional(),
+  canFeature: z.boolean().optional(),
 });
 
 export type Dataset = z.infer<typeof DatasetSchema>;
