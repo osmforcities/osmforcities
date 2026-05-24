@@ -14,6 +14,7 @@ import { useDateFilter, useMapData, useFeatureSelection } from "./map/hooks";
 import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
 import type { DateFilter } from "@/types/geojson";
+import { mapStyle } from "@/lib/map-tiles";
 
 export interface DatasetFullMapHandle {
   deselectFeature: () => void;
@@ -36,20 +37,6 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
 
     const { dateFilter, setDateFilter, updateFilterIfNeeded } = useDateFilter();
     const { selectedFeature, handleFeatureClick, handleMouseEnter, handleMouseLeave, handleDeselect, cursor } = useFeatureSelection(onFeatureSelect);
-
-    const tileUrl = process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png";
-
-    const mapStyle = useMemo(() => ({
-      version: 8,
-      sources: {
-        tiles: {
-          type: "raster",
-          tiles: [tileUrl],
-          tileSize: 256,
-        },
-      },
-      layers: [{ id: "tiles", type: "raster", source: "tiles" }],
-    }), [tileUrl]);
 
     // Expose deselect function to parent
     useImperativeHandle(ref, () => ({

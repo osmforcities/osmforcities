@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import Map, { NavigationControl } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { HERO_LOCATIONS } from "./hero-map-locations";
+import { mapStyle } from "@/lib/map-tiles";
 
 export function HeroMap() {
   const t = useTranslations("Home.hero");
@@ -15,20 +16,6 @@ export function HeroMap() {
     const randomIndex = Math.floor(Math.random() * HERO_LOCATIONS.length);
     return HERO_LOCATIONS[randomIndex] ?? fallback;
   }, []);
-
-  const tileUrl = process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png";
-
-  const mapStyle = useMemo(() => ({
-    version: 8,
-    sources: {
-      tiles: {
-        type: "raster",
-        tiles: [tileUrl],
-        tileSize: 256,
-      },
-    },
-    layers: [{ id: "tiles", type: "raster", source: "tiles" }],
-  }), [tileUrl]);
 
   return (
     <div className="relative h-full min-h-[320px] bg-gray-100 dark:bg-gray-900">
