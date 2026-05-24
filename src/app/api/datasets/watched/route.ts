@@ -43,7 +43,7 @@ export async function GET() {
 
     // Derive locale from Accept-Language header (default to 'en' if not specified)
     const acceptLanguage = headersList.get("accept-language") || "en";
-    const locale = acceptLanguage.split(",")[0].split("-")[0];
+    const locale = acceptLanguage.split(",")[0].trim();
 
     const datasets = watchedDatasets.map((watch) =>
       transformDataset(watch.dataset, user, locale, { isWatched: true })
