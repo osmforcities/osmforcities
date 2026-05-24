@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { transformDataset } from "@/lib/dataset/transform";
 
 export async function GET() {
+  const headersList = await headers();
   try {
     const session = await auth();
     const user = session?.user || null;
@@ -39,8 +41,12 @@ export async function GET() {
       },
     });
 
+    // Derive locale from Accept-Language header (default to 'en' if not specified)
+    const acceptLanguage = headersList.get("accept-language") || "en";
+    const locale = acceptLanguage.split(",")[0].split("-")[0];
+
     const datasets = watchedDatasets.map((watch) =>
-      transformDataset(watch.dataset, user, "en", { isWatched: true })
+      transformDataset(watch.dataset, user, locale, { isWatched: true })
     );
 
     return NextResponse.json(datasets);

@@ -54,7 +54,7 @@ export function transformDataset(
   const permissions = calculatePermissions(rawDataset, user);
 
   // If isWatched is explicitly provided, use it. Otherwise infer from watchers array.
-  const isWatched = options?.isWatched ?? (rawDataset.watchers && rawDataset.watchers.length > 0);
+  const isWatched = options?.isWatched ?? (rawDataset.watchers ? rawDataset.watchers.length > 0 : false);
 
   return DatasetSchema.parse({
     ...rawDataset,
@@ -66,7 +66,7 @@ export function transformDataset(
       geojson: rawDataset.area.geojson as FeatureCollection | null,
     } : rawDataset.area,
     isWatched,
-    watchersCount: rawDataset._count?.watchers || rawDataset.watchers?.length || 0,
+    watchersCount: rawDataset._count?.watchers ?? rawDataset.watchers?.length ?? 0,
     ...permissions,
   });
 }
