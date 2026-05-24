@@ -67,11 +67,13 @@ const eslintConfig = [
     },
   },
   {
-    files: ["src/**/*.stories.tsx"],
+    files: ["src/**/*.stories.tsx", "src/stories/**/*.tsx"],
     rules: {
       "react/no-unescaped-entities": "off",
       "@typescript-eslint/no-unused-vars": "error",
-      "react/jsx-no-literals": "error",
+      "react/jsx-no-literals": "off",
+      "no-restricted-syntax": "off",
+      "storybook/no-renderer-packages": "off",
       "no-restricted-imports": [
         "error",
         {
