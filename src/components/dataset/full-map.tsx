@@ -14,6 +14,7 @@ import { useDateFilter, useMapData, useFeatureSelection } from "./map/hooks";
 import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
 import type { DateFilter } from "@/types/geojson";
+import { mapStyle } from "@/lib/map-tiles";
 
 export interface DatasetFullMapHandle {
   deselectFeature: () => void;
@@ -85,7 +86,7 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
         {hasFilteredData ? (
           <Map
             ref={mapRef}
-            mapStyle="https://tiles.openfreemap.org/styles/positron"
+            mapStyle={mapStyle}
             aria-label={t('fullScreenMapLabel')}
             initialViewState={initialViewState}
             style={{ width: "100%", height: "100%" }}

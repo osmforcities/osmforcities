@@ -17,6 +17,7 @@ import { NoDataMessage } from "./no-data-message";
 import { AgeLegend } from "./age-legend";
 import { processOSMFeaturesForVisualization } from "../../../lib/osm-data-processor";
 import { useMapInteractions, useDateFilter } from "./hooks";
+import { mapStyle } from "@/lib/map-tiles";
 
 
 type DatasetMapProps = {
@@ -114,7 +115,7 @@ export default function DatasetMap({ dataset, boundary }: DatasetMapProps) {
           >
             <Map
               ref={mapRef}
-              mapStyle="https://tiles.openfreemap.org/styles/positron"
+              mapStyle={mapStyle}
               aria-label={t('mapLabel')}
               initialViewState={initialViewState}
               interactiveLayerIds={[
