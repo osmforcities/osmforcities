@@ -10,4 +10,4 @@ export const mapStyle = {
     },
   },
   layers: [{ id: "tiles", type: "raster", source: "tiles" }],
-} as const;
+} satisfies import("maplibre-gl").StyleSpecification;
