@@ -53,6 +53,15 @@ export function HeroMap() {
         >
           {t("osmAttribution")}
         </a>
+        {t("attributionSeparator")}
+        <a
+          href="https://carto.com/attributions"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:underline"
+        >
+          {t("cartoAttribution")}
+        </a>
       </div>
     </div>
   );

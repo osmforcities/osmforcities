@@ -6,7 +6,7 @@ export const mapStyle = {
     tiles: {
       type: "raster",
       tiles: [TILE_URL],
-      tileSize: 256,
+      tileSize: 512,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     },
   },
