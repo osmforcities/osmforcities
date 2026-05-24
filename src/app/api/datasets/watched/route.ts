@@ -5,8 +5,8 @@ import { prisma } from "@/lib/db";
 import { transformDataset } from "@/lib/dataset/transform";
 
 export async function GET() {
-  const headersList = await headers();
   try {
+    const headersList = await headers();
     const session = await auth();
     const user = session?.user || null;
 
@@ -41,9 +41,9 @@ export async function GET() {
       },
     });
 
-    // Derive locale from Accept-Language header (default to 'en' if not specified)
+    // Derive locale from Accept-Language header, preserving full tag (e.g., 'pt-BR', not 'pt')
     const acceptLanguage = headersList.get("accept-language") || "en";
-    const locale = acceptLanguage.split(",")[0].trim();
+    const locale = acceptLanguage.split(",")[0].split(";")[0].trim();
 
     const datasets = watchedDatasets.map((watch) =>
       transformDataset(watch.dataset, user, locale, { isWatched: true })
