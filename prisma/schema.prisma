@@ -67,9 +67,8 @@ model Template {
   name          String
   description   String?
   overpassQuery String
-  categoryName  String
-  categoryId    String?
-  category      Category?             @relation("CategoryTemplates", fields: [categoryId], references: [id])
+  categoryId    String
+  category      Category              @relation("CategoryTemplates", fields: [categoryId], references: [id])
   tags          String[]
   isActive      Boolean               @default(true)
   deprecatesAt  DateTime?
