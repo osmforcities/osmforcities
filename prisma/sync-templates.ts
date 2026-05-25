@@ -101,10 +101,12 @@ async function main() {
     const name = i18n?.name?.en ?? template.name;
     const description = i18n?.desc?.en ?? template.description ?? null;
 
-    // Find category by slug
+    // Find category by slug, fallback to 'other' category
+    const categorySlug = template.category || "other";
     const categoryRecord = await prisma.category.findUnique({
-      where: { slug: template.category },
+      where: { slug: categorySlug },
     });
+    const categoryId: string = categoryRecord?.id ?? "cat_other";
 
     await prisma.template.upsert({
       where: { id: template.id },
@@ -112,8 +114,7 @@ async function main() {
         name,
         description,
         overpassQuery: template.overpassQuery,
-        categoryName: template.category,
-        category: categoryRecord ? { connect: { id: categoryRecord.id } } : undefined,
+        category: { connect: { id: categoryId } },
         tags: template.tags,
         updatedAt: new Date(),
       },
@@ -122,8 +123,7 @@ async function main() {
         name,
         description,
         overpassQuery: template.overpassQuery,
-        categoryName: template.category,
-        category: categoryRecord ? { connect: { id: categoryRecord.id } } : undefined,
+        category: { connect: { id: categoryId } },
         tags: template.tags,
       },
     });
