@@ -13,7 +13,7 @@ type Dataset = {
   template: {
     id: string;
     name: string;
-    category: string;
+    category: { slug: string } | null;
   };
   area: {
     id: number;
@@ -47,7 +47,6 @@ export function DashboardGrid({ datasets }: DashboardGridProps) {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -92,18 +91,17 @@ export function DashboardGrid({ datasets }: DashboardGridProps) {
         items={datasets}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
         data-testid="followed-datasets-grid"
-        aria-label={t("followedDatasetsGridLabel")}
       >
         {(dataset) => (
           <GridListItem key={dataset.id} className="group h-full">
             <Card
               href={`/area/${dataset.area.id}/dataset/${dataset.template.id}`}
-              description={`${dataset.template.category} dataset for ${dataset.cityName}`}
+              description={`${dataset.template.category?.slug ?? "other"} dataset for ${dataset.cityName}`}
             >
               <CardHeader>
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-olive-100 text-olive-600 rounded-lg">
-                    {getCategoryIcon(dataset.template.category)}
+                    {getCategoryIcon(dataset.template.category?.slug ?? "other")}
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 group-hover:text-olive-700">
@@ -121,7 +119,7 @@ export function DashboardGrid({ datasets }: DashboardGridProps) {
               <CardFooter>
                 <div className="flex flex-wrap gap-2 w-full">
                   <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700 capitalize">
-                    {dataset.template.category}
+                    {dataset.template.category?.slug ?? "other"}
                   </span>
                   <span
                     className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${

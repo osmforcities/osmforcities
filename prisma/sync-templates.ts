@@ -101,13 +101,19 @@ async function main() {
     const name = i18n?.name?.en ?? template.name;
     const description = i18n?.desc?.en ?? template.description ?? null;
 
+    // Find category by slug
+    const categoryRecord = await prisma.category.findUnique({
+      where: { slug: template.category },
+    });
+
     await prisma.template.upsert({
       where: { id: template.id },
       update: {
         name,
         description,
         overpassQuery: template.overpassQuery,
-        category: template.category,
+        categoryName: template.category,
+        category: categoryRecord ? { connect: { id: categoryRecord.id } } : undefined,
         tags: template.tags,
         updatedAt: new Date(),
       },
@@ -116,7 +122,8 @@ async function main() {
         name,
         description,
         overpassQuery: template.overpassQuery,
-        category: template.category,
+        categoryName: template.category,
+        category: categoryRecord ? { connect: { id: categoryRecord.id } } : undefined,
         tags: template.tags,
       },
     });

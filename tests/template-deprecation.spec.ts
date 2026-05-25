@@ -30,6 +30,13 @@ test.describe("Template Deprecation", () => {
       // Clean up
       await prisma.template.deleteMany({ where: { id: "test-deprecated" } });
 
+      // Create a test category first
+      const testCategory = await prisma.category.upsert({
+        where: { slug: "test" },
+        create: { id: "cat-test", name: "Test", slug: "test" },
+        update: {},
+      });
+
       // Create a deprecated template
       await prisma.template.create({
         data: {
@@ -37,7 +44,8 @@ test.describe("Template Deprecation", () => {
           name: "Deprecated Template",
           description: "This template is deprecated",
           overpassQuery: 'node["amenity"](area.searchArea);',
-          category: "test",
+          categoryName: "test",
+          category: { connect: { id: testCategory.id } },
           tags: ["amenity"],
           isActive: true,
           deprecatesAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
@@ -62,6 +70,13 @@ test.describe("Template Deprecation", () => {
       testUser = await createTestUser(prisma);
       await setupAuthenticationWithLogin(page, testUser);
 
+      // Create a test category first
+      const testCategory = await prisma.category.upsert({
+        where: { slug: "test" },
+        create: { id: "cat-test", name: "Test", slug: "test" },
+        update: {},
+      });
+
       // Create a non-deprecated template
       await prisma.template.upsert({
         where: { id: "test-active" },
@@ -70,7 +85,8 @@ test.describe("Template Deprecation", () => {
           name: "Active Template",
           description: "This template is active",
           overpassQuery: 'node["amenity"](area.searchArea);',
-          category: "test",
+          categoryName: "test",
+          category: { connect: { id: testCategory.id } },
           tags: ["amenity"],
           isActive: true,
         },
