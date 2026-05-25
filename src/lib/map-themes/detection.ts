@@ -160,8 +160,8 @@ export function detectIntensityTheme(
     return null;
   }
 
-  const min = Math.min(...numericValues);
-  const max = Math.max(...numericValues);
+  const min = numericValues.reduce((a, b) => (b < a ? b : a), numericValues[0]);
+  const max = numericValues.reduce((a, b) => (b > a ? b : a), numericValues[0]);
 
   // Zero range means no meaningful intensity
   if (min === max) {
@@ -192,9 +192,9 @@ export function detectCategoricalTheme(
     return null;
   }
 
-  // Count values case-insensitively
+  // Count values case-insensitively, tracking most common original casing
   const valueCounts = new Map<string, number>();
-  const originalValueByLower = new Map<string, string>(); // Preserve original casing
+  const casingCounts = new Map<string, Map<string, number>>(); // lower -> Map<original, count>
 
   for (const value of analysis.values) {
     if (typeof value !== 'string') continue;
@@ -203,10 +203,26 @@ export function detectCategoricalTheme(
     const count = valueCounts.get(lower) || 0;
     valueCounts.set(lower, count + 1);
 
-    // Preserve the most common original casing
-    if (!originalValueByLower.has(lower) || count > (valueCounts.get(lower) || 0)) {
-      originalValueByLower.set(lower, value);
+    // Track each casing variant
+    if (!casingCounts.has(lower)) {
+      casingCounts.set(lower, new Map());
     }
+    const casingMap = casingCounts.get(lower)!;
+    casingMap.set(value, (casingMap.get(value) || 0) + 1);
+  }
+
+  // Determine most common casing for each lowercase value
+  const originalValueByLower = new Map<string, string>();
+  for (const [lower, casingMap] of casingCounts.entries()) {
+    let bestCasing = lower;
+    let bestCount = 0;
+    for (const [casing, count] of casingMap.entries()) {
+      if (count > bestCount) {
+        bestCount = count;
+        bestCasing = casing;
+      }
+    }
+    originalValueByLower.set(lower, bestCasing);
   }
 
   const uniqueCount = valueCounts.size;
@@ -223,7 +239,7 @@ export function detectCategoricalTheme(
       count,
     }))
     .sort((a, b) => b.count - a.count)
-    .slice(0, 8); // Top 8 get distinct colors
+    .slice(0, PALETTES.categorical.tableau10.length); // Top N get distinct colors (one per palette slot)
 
   // Assign colors from palette
   const colorMap = new Map<string, string>();
@@ -234,7 +250,7 @@ export function detectCategoricalTheme(
     );
   }
 
-  const otherCount = Math.max(0, uniqueCount - 8);
+  const otherCount = Math.max(0, uniqueCount - PALETTES.categorical.tableau10.length);
 
   return {
     type: 'categorical',
