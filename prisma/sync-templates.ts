@@ -94,6 +94,12 @@ async function main() {
     console.log(`Undeprecated ${toUndeprecate.length} templates re-added to YAML`);
   }
 
+  // Pre-load all categories for efficient lookup
+  const allCategories = await prisma.category.findMany({
+    select: { id: true, slug: true },
+  });
+  const categoryMap = new Map(allCategories.map((c) => [c.slug, c.id]));
+
   // Upsert templates from YAML
   let upserted = 0;
   for (const template of result.templates) {
@@ -103,10 +109,7 @@ async function main() {
 
     // Find category by slug, fallback to 'other' category
     const categorySlug = template.category || "other";
-    const categoryRecord = await prisma.category.findUnique({
-      where: { slug: categorySlug },
-    });
-    const categoryId: string = categoryRecord?.id ?? "cat_other";
+    const categoryId: string = categoryMap.get(categorySlug) ?? "cat_other";
 
     await prisma.template.upsert({
       where: { id: template.id },
