@@ -5,12 +5,10 @@ import { MapPin, Users, Pencil } from "lucide-react";
 import { getCategoryIcon } from "@/lib/category-icons";
 
 export interface DatasetCardProps {
-  id?: string;
   name: string;
   city: string;
   country: string;
   category: string;
-  features?: number;
   href: string;
   stats?: Array<{ label: string; value: string | number }>;
 }
@@ -57,6 +55,7 @@ function formatStatValue(label: string, value: string | number): string {
       const [, num, unit] = match;
       return `${num}${unit === 'month' ? 'mo' : unit.charAt(0)}`;
     }
+    return strValue;
   }
 
   // Format numbers for everything else
@@ -78,7 +77,6 @@ export function DatasetCard({
   city,
   country,
   category,
-  features,
   href,
   stats,
 }: DatasetCardProps) {
@@ -105,13 +103,6 @@ export function DatasetCard({
 
         {/* Stats */}
         <div className="flex items-center gap-3 text-[10px] mt-2">
-          {features && (
-            <div className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400">
-              <MapPin className="w-2.5 h-2.5" />
-              <span className="font-medium">{formatCompactNumber(features)}</span>
-            </div>
-          )}
-
           {stats?.map((stat) => {
             const StatIcon = getStatIcon(stat.label);
             return (

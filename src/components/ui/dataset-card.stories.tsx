@@ -19,8 +19,8 @@ export const Default: Story = {
     city: "Paris",
     country: "france",
     category: "transportation",
-    features: 1204,
     href: "/area/paris/dataset/bicycle-paris",
+    stats: [{ label: "Features", value: 1204 }],
   },
 };
 
@@ -30,9 +30,9 @@ export const WithStats: Story = {
     city: "London",
     country: "united kingdom",
     category: "healthcare",
-    features: 312,
     href: "/area/london/dataset/hospitals-london",
     stats: [
+      { label: "Features", value: 312 },
       { label: "Contributors", value: "12" },
       { label: "Last updated", value: "2 days ago" },
     ],
@@ -45,8 +45,8 @@ export const LargeNumbers: Story = {
     city: "Berlin",
     country: "germany",
     category: "nature",
-    features: 38420,
     href: "/area/berlin/dataset/trees-berlin",
+    stats: [{ label: "Features", value: 38420 }],
   },
 };
 
@@ -56,8 +56,8 @@ export const DarkMode: Story = {
     city: "Paris",
     country: "france",
     category: "transportation",
-    features: 1204,
     href: "/area/paris/dataset/bicycle-paris",
+    stats: [{ label: "Features", value: 1204 }],
   },
   parameters: {
     backgrounds: { default: "dark" },
@@ -80,24 +80,24 @@ export const GridShowcase: Story = {
             city="Paris"
             country="france"
             category="transportation"
-            features={1204}
             href="/area/paris/dataset/bicycle-paris"
+            stats={[{ label: "Features", value: 1204 }]}
           />
           <DatasetCard
             name="Urban Trees"
             city="Berlin"
             country="germany"
             category="nature"
-            features={38420}
             href="/area/berlin/dataset/trees-berlin"
+            stats={[{ label: "Features", value: 38420 }]}
           />
           <DatasetCard
             name="ATMs"
             city="Tokyo"
             country="japan"
             category="financial"
-            features={890}
             href="/area/tokyo/dataset/atms-tokyo"
+            stats={[{ label: "Features", value: 890 }]}
           />
         </div>
       </div>
@@ -124,9 +124,9 @@ export const GridShowcase: Story = {
             city="Paris"
             country="france"
             category="transportation"
-            features={1204}
             href="/area/paris/dataset/bicycle-paris"
             stats={[
+              { label: "Features", value: 1204 },
               { label: "Contributors", value: "8" },
               { label: "Last updated", value: "3 days ago" },
             ]}
@@ -145,9 +145,9 @@ export const GridShowcase: Story = {
             city="Santa Rita do Passa Quatro"
             country="brazil"
             category="education"
-            features={45}
             href="/area/santa-rita-do-passa-quatro/dataset/schools-santa-rita"
             stats={[
+              { label: "Features", value: 45 },
               { label: "Contributors", value: "12" },
               { label: "Last updated", value: "1 week ago" },
             ]}
@@ -157,9 +157,9 @@ export const GridShowcase: Story = {
             city="San Francisco"
             country="united states"
             category="healthcare"
-            features={312}
             href="/area/san-francisco/dataset/hospitals-san-francisco"
             stats={[
+              { label: "Features", value: 312 },
               { label: "Contributors", value: "28" },
               { label: "Last updated", value: "4 days ago" },
             ]}
@@ -169,9 +169,9 @@ export const GridShowcase: Story = {
             city="New York City"
             country="united states"
             category="transportation"
-            features={1247}
             href="/area/new-york-city/dataset/transport-new-york"
             stats={[
+              { label: "Features", value: 1247 },
               { label: "Contributors", value: "45" },
               { label: "Last updated", value: "2 days ago" },
             ]}
