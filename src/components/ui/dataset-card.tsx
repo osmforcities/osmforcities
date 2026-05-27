@@ -10,14 +10,21 @@ export interface DatasetCardProps {
   country: string;
   category: string;
   href: string;
-  stats?: Array<{ label: string; value: string | number }>;
+  stats: Array<{ label: string; value: string | number }>;
 }
 
 /**
  * Get country flag emoji from country code
  */
 function getCountryFlag(country: string): string {
-  // Temporary placeholder - will be replaced with proper flag conversion
+  if (!country) return "";
+  // ISO 3166-1 alpha-2 code → Unicode regional indicator pair
+  if (/^[a-zA-Z]{2}$/.test(country)) {
+    return [...country.toUpperCase()]
+      .map((c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65))
+      .join("");
+  }
+  // Fallback: full country name map (used by Storybook stories)
   const flagMap: Record<string, string> = {
     france: "🇫🇷",
     germany: "🇩🇪",
@@ -27,8 +34,15 @@ function getCountryFlag(country: string): string {
     netherlands: "🇳🇱",
     brazil: "🇧🇷",
     "united states": "🇺🇸",
+    nigeria: "🇳🇬",
+    colombia: "🇨🇴",
+    ghana: "🇬🇭",
+    indonesia: "🇮🇩",
+    uganda: "🇺🇬",
+    india: "🇮🇳",
+    egypt: "🇪🇬",
   };
-  return flagMap[country.toLowerCase()] || "";
+  return flagMap[country.toLowerCase()] ?? "";
 }
 
 /**
@@ -103,7 +117,7 @@ export function DatasetCard({
 
         {/* Stats */}
         <div className="flex items-center gap-3 text-[10px] mt-2">
-          {stats?.map((stat) => {
+          {stats.map((stat) => {
             const StatIcon = getStatIcon(stat.label);
             return (
               <div key={stat.label} className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400">

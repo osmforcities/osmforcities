@@ -16,6 +16,7 @@
     "users": "Users",
     "preferences": "Preferences",
     "brandName": "OSM for Cities",
+    "explore": "Explore",
     "signIn": "Sign In",
     "signOut": "Sign Out",
     "mainMenu": "Main navigation menu",
@@ -365,6 +366,7 @@
       "title": "Understand your city through open data",
       "description": "OSM for Cities organizes OpenStreetMap data into datasets you can follow. Track schools, transport, parks, and clinics as they change, receive updates by email, and understand how your city evolves over time.",
       "seeHowItWorks": "See how it works",
+      "exploreDatasets": "Explore datasets",
       "osmAttribution": "© OpenStreetMap contributors"
     },
     "features": {
@@ -575,6 +577,12 @@
     "signInToBrowse": "Explore the map of <strong>{dataset} in {area}</strong>, made by the OpenStreetMap community.",
     "continueWithEmail": "Continue with email",
     "back": "Back"
+  },
+  "ExplorePage": {
+    "metaTitle": "Explore — OSM for Cities",
+    "title": "Explore",
+    "description": "Discover open data from cities worldwide",
+    "noDatasets": "No featured datasets yet."
   },
   "SEO": {
     "home": {
