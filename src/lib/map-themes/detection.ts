@@ -131,7 +131,8 @@ export function detectBooleanTheme(
  * Returns null if the property doesn't have a valid numeric range.
  */
 export function detectIntensityTheme(
-  analysis: PropertyAnalysis
+  analysis: PropertyAnalysis,
+  maxCoercionFailureRate = 0.2
 ): IntensityTheme | null {
   // Must have numeric or mixed type with numeric dominant
   if (analysis.dominantType !== 'number') {
@@ -152,7 +153,7 @@ export function detectIntensityTheme(
 
   // Check coercion failure rate
   const failureRate = 1 - numericValues.length / analysis.values.length;
-  if (failureRate > 0.2) {
+  if (failureRate > maxCoercionFailureRate) {
     return null; // Too many values couldn't be coerced
   }
 

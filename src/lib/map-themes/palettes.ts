@@ -26,7 +26,7 @@ export const PALETTES = {
       '#9c755f', // brown
       '#bab0ac', // gray
     ] as const,
-    other: '#9ca3af', // for values beyond top 8
+    other: '#9ca3af', // for values beyond top 10
   },
 
   /**

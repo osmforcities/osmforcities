@@ -51,8 +51,8 @@ export function detectMapThemes(
 
   // Analyze each property
   for (const field of allProperties) {
-    // Skip excluded properties
-    if (isPropertyExcluded(field)) {
+    // Skip excluded properties (hardcoded + caller-supplied)
+    if (isPropertyExcluded(field) || finalConfig.excludedProperties.has(field)) {
       continue;
     }
 
@@ -73,7 +73,7 @@ export function detectMapThemes(
       continue; // Boolean is exclusive
     }
 
-    const intensityTheme = detectIntensityTheme(analysis);
+    const intensityTheme = detectIntensityTheme(analysis, finalConfig.maxCoercionFailureRate);
     if (intensityTheme) {
       themes.push({
         theme: intensityTheme,
