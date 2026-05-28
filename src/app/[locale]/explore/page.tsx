@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { DatasetCard } from "@/components/ui/dataset-card";
 import { processDatasetStats } from "@/lib/dataset-stats";
+import { getAreaDetailsById } from "@/lib/nominatim";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
 
@@ -28,6 +29,23 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
     },
     orderBy: { createdAt: "desc" },
   });
+
+  // Backfill missing country codes from Nominatim (lazy, fires once per area)
+  const missing = datasets.filter((d) => !d.area.countryCode);
+  if (missing.length > 0) {
+    await Promise.all(
+      missing.map(async (d) => {
+        const details = await getAreaDetailsById(d.area.id);
+        if (details?.countryCode) {
+          await prisma.area.update({
+            where: { id: d.area.id },
+            data: { countryCode: details.countryCode },
+          });
+          d.area.countryCode = details.countryCode;
+        }
+      })
+    );
+  }
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 py-8">
