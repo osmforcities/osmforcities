@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { DatasetCard } from "@/components/ui/dataset-card";
 import { processDatasetStats } from "@/lib/dataset-stats";
 import { getAreaDetailsById } from "@/lib/nominatim";
+import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
 
@@ -25,7 +26,9 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
     where: { isFeatured: true },
     include: {
       area: true,
-      template: true,
+      template: {
+        include: { translations: true },
+      },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -74,13 +77,14 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {datasets.map((dataset) => {
               const s = processDatasetStats(dataset, locale);
+              const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
               return (
                 <DatasetCard
                   key={dataset.id}
-                  name={dataset.template.name}
+                  name={resolvedTemplate.name}
                   city={dataset.cityName}
                   country={dataset.area.countryCode ?? ""}
-                  category={dataset.template.category}
+                  category={resolvedTemplate.category}
                   href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
                   stats={[
                     { type: "features",     label: t("stats.features"),     value: s.features },
