@@ -33,6 +33,16 @@ export async function getOrCreateDataset(
   let dataset = await getDatasetWithDetails(areaId, template.id, locale);
 
   if (dataset) {
+    if (!dataset.area.countryCode) {
+      const areaDetails = await getAreaDetailsById(areaId);
+      if (areaDetails?.countryCode) {
+        await prisma.area.update({
+          where: { id: areaId },
+          data: { countryCode: areaDetails.countryCode },
+        });
+        dataset.area.countryCode = areaDetails.countryCode;
+      }
+    }
     return { dataset, wasCreated: false };
   }
 
@@ -106,48 +116,65 @@ async function createDatasetOnDemand(
     where: { id: areaId },
   });
 
+  if (area && !area.countryCode) {
+    const areaDetails = await getAreaDetailsById(areaId);
+    if (areaDetails?.countryCode) {
+      area = await prisma.area.update({
+        where: { id: areaId },
+        data: { countryCode: areaDetails.countryCode },
+      });
+    }
+  }
+
   if (!area) {
     try {
-      const osmData = await fetchOsmRelationData(areaId);
+      const [osmData, areaDetails] = await Promise.all([
+        fetchOsmRelationData(areaId),
+        getAreaDetailsById(areaId),
+      ]);
+
+      if (!osmData && !areaDetails) {
+        throw new Error(`Area not found: ${areaId}`);
+      }
+
+      // City OSM relations don't carry ISO3166 tags — Nominatim is the
+      // only reliable source for country code.
+      const countryCode = areaDetails?.countryCode ?? null;
+
       if (osmData) {
         area = await prisma.area.upsert({
           where: { id: areaId },
           update: {
             name: osmData.name,
-            countryCode: osmData.countryCode,
+            countryCode,
             bounds: osmData.bounds,
             geojson: JSON.parse(JSON.stringify(osmData.convertedGeojson)),
           },
           create: {
             id: areaId,
             name: osmData.name,
-            countryCode: osmData.countryCode,
+            countryCode,
             bounds: osmData.bounds,
             geojson: JSON.parse(JSON.stringify(osmData.convertedGeojson)),
           },
         });
       } else {
-        const areaDetails = await getAreaDetailsById(areaId);
-        if (!areaDetails) {
-          throw new Error(`Area not found: ${areaId}`);
-        }
-
         area = await prisma.area.upsert({
           where: { id: areaId },
           update: {
-            name: areaDetails.name,
-            countryCode: areaDetails.countryCode,
-            bounds: areaDetails.boundingBox
-              ? JSON.stringify(areaDetails.boundingBox)
+            name: areaDetails!.name,
+            countryCode,
+            bounds: areaDetails!.boundingBox
+              ? JSON.stringify(areaDetails!.boundingBox)
               : null,
             geojson: Prisma.JsonNull,
           },
           create: {
             id: areaId,
-            name: areaDetails.name,
-            countryCode: areaDetails.countryCode,
-            bounds: areaDetails.boundingBox
-              ? JSON.stringify(areaDetails.boundingBox)
+            name: areaDetails!.name,
+            countryCode,
+            bounds: areaDetails!.boundingBox
+              ? JSON.stringify(areaDetails!.boundingBox)
               : null,
             geojson: Prisma.JsonNull,
           },
