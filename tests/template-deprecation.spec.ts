@@ -57,6 +57,8 @@ test.describe("Template Deprecation", () => {
       // Should show template not found error
       await expect(page.locator("text=Dataset Template Not Found")).toBeVisible();
     } finally {
+      await prisma.template.deleteMany({ where: { id: "test-deprecated" } });
+      await prisma.category.deleteMany({ where: { slug: "test" } });
       await prisma.$disconnect();
     }
   });
@@ -102,6 +104,8 @@ test.describe("Template Deprecation", () => {
       const isVisible = await templateNotFound.isVisible().catch(() => false);
       expect(isVisible).toBe(false);
     } finally {
+      await prisma.template.deleteMany({ where: { id: "test-active" } });
+      await prisma.category.deleteMany({ where: { slug: "test" } });
       await prisma.$disconnect();
     }
   });
