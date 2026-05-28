@@ -13,7 +13,7 @@ type Dataset = {
   template: {
     id: string;
     name: string;
-    category: { slug: string } | null;
+    category: { slug: string };
   };
   area: {
     id: number;
@@ -98,12 +98,12 @@ export function DashboardGrid({ datasets }: DashboardGridProps) {
           <GridListItem key={dataset.id} className="group h-full">
             <Card
               href={`/area/${dataset.area.id}/dataset/${dataset.template.id}`}
-              description={`${dataset.template.category?.slug ?? "other"} dataset for ${dataset.cityName}`}
+              description={`${dataset.template.category.slug} dataset for ${dataset.cityName}`}
             >
               <CardHeader>
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-olive-100 text-olive-600 rounded-lg">
-                    {getCategoryIcon(dataset.template.category?.slug ?? "other")}
+                    {getCategoryIcon(dataset.template.category.slug)}
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 group-hover:text-olive-700">
@@ -121,7 +121,7 @@ export function DashboardGrid({ datasets }: DashboardGridProps) {
               <CardFooter>
                 <div className="flex flex-wrap gap-2 w-full">
                   <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700 capitalize">
-                    {dataset.template.category?.slug ?? "other"}
+                    {dataset.template.category.slug}
                   </span>
                   <span
                     className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
