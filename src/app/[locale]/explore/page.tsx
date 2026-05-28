@@ -30,21 +30,30 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
     orderBy: { createdAt: "desc" },
   });
 
-  // Backfill missing country codes from Nominatim (lazy, fires once per area)
-  const missing = datasets.filter((d) => !d.area.countryCode);
+  // Backfill missing country codes from Nominatim (lazy, fires once per unique area)
+  const seen = new Set<number>();
+  const missing = datasets.filter((d) => {
+    if (d.area.countryCode || seen.has(d.area.id)) return false;
+    seen.add(d.area.id);
+    return true;
+  });
   if (missing.length > 0) {
-    await Promise.all(
-      missing.map(async (d) => {
-        const details = await getAreaDetailsById(d.area.id);
-        if (details?.countryCode) {
-          await prisma.area.update({
-            where: { id: d.area.id },
-            data: { countryCode: details.countryCode },
-          });
-          d.area.countryCode = details.countryCode;
-        }
-      })
-    );
+    try {
+      await Promise.all(
+        missing.map(async (d) => {
+          const details = await getAreaDetailsById(d.area.id);
+          if (details?.countryCode) {
+            await prisma.area.update({
+              where: { id: d.area.id },
+              data: { countryCode: details.countryCode },
+            });
+            d.area.countryCode = details.countryCode;
+          }
+        })
+      );
+    } catch {
+      // Silently fail — page renders with 🌐 fallback flags
+    }
   }
 
   return (
