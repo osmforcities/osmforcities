@@ -246,11 +246,12 @@ export function detectCategoricalTheme(
     .sort((a, b) => b.count - a.count)
     .slice(0, PALETTES.categorical.tableau10.length); // Top N get distinct colors (one per palette slot)
 
-  // Assign colors from palette
+  // Assign colors from palette, keyed by lowercase for case-insensitive matching
   const colorMap = new Map<string, string>();
   for (let i = 0; i < topValues.length; i++) {
+    const lower = topValues[i].value.toLowerCase();
     colorMap.set(
-      topValues[i].value,
+      lower,
       PALETTES.categorical.tableau10[i % PALETTES.categorical.tableau10.length]
     );
   }

@@ -303,6 +303,8 @@ describe('detectCategoricalTheme', () => {
     expect(theme).toBeDefined();
     // Should have 2 categories: wood (merged) and metal
     expect(theme?.topValues.length).toBeLessThanOrEqual(2);
+    // colorMap keys should be lowercase for case-insensitive matching in MapLibre expressions
+    expect(Array.from(theme?.colorMap.keys() || [])).toEqual(['wood', 'metal']);
   });
 });
 

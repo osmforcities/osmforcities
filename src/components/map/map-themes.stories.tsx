@@ -38,8 +38,8 @@ function getCircleColorExpression(theme: MapTheme | null): string | unknown[] {
     }
 
     case 'categorical': {
-      // Build match expression from colorMap
-      const matches: unknown[] = ['match', ['get', theme.field]];
+      // Build match expression from colorMap (keys are lowercase)
+      const matches: unknown[] = ['match', ['downcase', ['get', theme.field]]];
       for (const [value, color] of theme.colorMap.entries()) {
         matches.push(value, color);
       }
