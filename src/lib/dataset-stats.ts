@@ -6,7 +6,7 @@ export interface ProcessedDatasetStats {
   lastEdited: string;
 }
 
-export function processDatasetStats(dataset: Dataset): ProcessedDatasetStats {
+export function processDatasetStats(dataset: Dataset, locale: string): ProcessedDatasetStats {
   const stats = dataset.stats as
     | {
         editorsCount?: number;
@@ -18,19 +18,21 @@ export function processDatasetStats(dataset: Dataset): ProcessedDatasetStats {
   return {
     features: dataset.dataCount,
     contributors: stats?.editorsCount || 0,
-    lastEdited: formatRelativeTime(stats?.mostRecentElement),
+    lastEdited: formatRelativeTime(stats?.mostRecentElement, locale),
   };
 }
 
-function formatRelativeTime(timestamp: string | null | undefined): string {
+function formatRelativeTime(timestamp: string | null | undefined, locale: string): string {
   if (!timestamp) return "—";
 
-  const date = new Date(timestamp);
-  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  const diffMs = new Date(timestamp).getTime() - Date.now();
+  const absSec = Math.abs(diffMs / 1000);
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
 
-  if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
-  if (seconds < 2592000) return `${Math.floor(seconds / 86400)} days ago`;
-  if (seconds < 31536000) return `${Math.floor(seconds / 2592000)} months ago`;
-  return `${Math.floor(seconds / 31536000)} years ago`;
+  if (absSec < 60) return rtf.format(Math.round(diffMs / 1000), "second");
+  if (absSec < 3600) return rtf.format(Math.round(diffMs / 60000), "minute");
+  if (absSec < 86400) return rtf.format(Math.round(diffMs / 3600000), "hour");
+  if (absSec < 2592000) return rtf.format(Math.round(diffMs / 86400000), "day");
+  if (absSec < 31536000) return rtf.format(Math.round(diffMs / 2592000000), "month");
+  return rtf.format(Math.round(diffMs / 31536000000), "year");
 }
