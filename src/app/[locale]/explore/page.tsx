@@ -25,7 +25,12 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
   const datasets = await prisma.dataset.findMany({
     where: { isFeatured: true },
     include: {
-      area: true,
+      area: {
+        select: {
+          id: true,
+          countryCode: true,
+        },
+      },
       template: {
         include: { translations: true },
       },
