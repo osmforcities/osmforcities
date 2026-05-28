@@ -2,6 +2,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { isPropertyExcluded, analyzeProperty, detectBooleanTheme, detectIntensityTheme, detectCategoricalTheme, calculateScore } from '../map-themes/detection';
+import { detectMapThemes } from '../map-themes';
 import type { Feature } from 'geojson';
 import type { PropertyAnalysis, CategoricalTheme, BooleanTheme, IntensityTheme } from '../map-themes/types';
 
@@ -364,5 +365,74 @@ describe('calculateScore', () => {
     const coverage = 1.0;
     const score = calculateScore(theme, coverage);
     expect(score).toBe(10); // 1.0 * min(20, 10) = 10
+  });
+});
+
+describe('detectCategoricalTheme', () => {
+  it('should cap topValues at palette length and set otherCount when >10 categories', () => {
+    const values = Array.from({ length: 15 }, (_, i) => `type-${i}`);
+    const analysis: PropertyAnalysis = {
+      field: 'category',
+      coverage: 1.0,
+      values,
+      nonNullCount: 15,
+      uniqueValues: new Set(values),
+      type: 'string',
+      dominantType: 'string',
+    };
+    const theme = detectCategoricalTheme(analysis);
+    expect(theme).toBeDefined();
+    expect(theme?.topValues.length).toBe(10); // capped at palette length
+    expect(theme?.otherCount).toBe(5); // 15 - 10 = 5
+  });
+});
+
+describe('detectMapThemes', () => {
+  const features: Feature[] = [
+    { type: 'Feature', properties: { covered: 'yes' }, geometry: null },
+    { type: 'Feature', properties: { covered: 'yes' }, geometry: null },
+    { type: 'Feature', properties: { covered: 'no' }, geometry: null },
+    { type: 'Feature', properties: { capacity: 10 }, geometry: null },
+    { type: 'Feature', properties: { capacity: 20 }, geometry: null },
+    { type: 'Feature', properties: { name: 'Central Station' }, geometry: null },
+  ] as unknown as Feature[];
+
+  it('should filter out properties below coverage threshold', () => {
+    const themes = detectMapThemes(features, { minCoverage: 0.5 });
+    expect(themes.length).toBeGreaterThan(0);
+    // 'name' appears in 1/6 features (< 50%) so should be filtered out
+    const hasName = themes.some((t) => t.field === 'name');
+    expect(hasName).toBe(false);
+  });
+
+  it('should prioritize boolean over categorical for same field', () => {
+    const booleanFeatures: Feature[] = [
+      { type: 'Feature', properties: { covered: 'yes' }, geometry: null },
+      { type: 'Feature', properties: { covered: 'no' }, geometry: null },
+    ] as unknown as Feature[];
+    const themes = detectMapThemes(booleanFeatures);
+    expect(themes.length).toBe(1);
+    expect(themes[0].type).toBe('boolean');
+    // Categorical should not be emitted for the same field
+    expect(themes.filter((t) => t.type === 'categorical').length).toBe(0);
+  });
+
+  it('should respect caller-supplied excluded properties', () => {
+    const themes = detectMapThemes(features, {
+      excludedProperties: new Set(['capacity']),
+    });
+    // 'capacity' should be excluded even though it passes coverage
+    const hasCapacity = themes.some((t) => t.field === 'capacity');
+    expect(hasCapacity).toBe(false);
+  });
+
+  it('should sort themes by score descending', () => {
+    const themes = detectMapThemes(features);
+    expect(themes.length).toBeGreaterThan(1);
+    // Boolean (yes/no) has higher score multiplier (10) than intensity (5)
+    // So 'covered' (boolean) should come before 'capacity' (intensity)
+    const coveredIndex = themes.findIndex((t) => t.field === 'covered');
+    const capacityIndex = themes.findIndex((t) => t.field === 'capacity');
+    expect(coveredIndex).toBeLessThan(capacityIndex);
   });
 });
