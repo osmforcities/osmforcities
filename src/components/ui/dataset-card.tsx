@@ -4,13 +4,15 @@ import { Link } from "react-aria-components";
 import { MapPin, Users, Pencil } from "lucide-react";
 import { getCategoryIcon } from "@/lib/category-icons";
 
+export type StatType = "features" | "contributors" | "lastEdited";
+
 export interface DatasetCardProps {
   name: string;
   city: string;
   country: string;
   category: string;
   href: string;
-  stats: Array<{ label: string; value: string | number }>;
+  stats: Array<{ label: string; value: string | number; type: StatType }>;
 }
 
 /**
@@ -55,34 +57,14 @@ function formatCompactNumber(value: number | string): string {
   return `${(num / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
 }
 
-/**
- * Format stat value based on label type
- */
-function formatStatValue(label: string, value: string | number): string {
-  const lowerLabel = label.toLowerCase();
-  const strValue = String(value);
-
-  // Format dates: "2 days ago" → "2d", "3 months ago" → "3mo"
-  if (lowerLabel.includes("update") || lowerLabel.includes("last") || lowerLabel.includes("time")) {
-    const match = strValue.toLowerCase().match(/(\d+)\s*(day|week|month|year)s?\s*ago/);
-    if (match) {
-      const [, num, unit] = match;
-      return `${num}${unit === 'month' ? 'mo' : unit.charAt(0)}`;
-    }
-    return strValue;
-  }
-
-  // Format numbers for everything else
+function formatStatValue(type: StatType, value: string | number): string {
+  if (type === "lastEdited") return String(value);
   return formatCompactNumber(value);
 }
 
-/**
- * Get icon for stat type based on label
- */
-function getStatIcon(label: string) {
-  const lowerLabel = label.toLowerCase();
-  if (lowerLabel.includes("contributor") || lowerLabel.includes("user") || lowerLabel.includes("people")) return Users;
-  if (lowerLabel.includes("update") || lowerLabel.includes("last") || lowerLabel.includes("time")) return Pencil;
+function getStatIcon(type: StatType) {
+  if (type === "contributors") return Users;
+  if (type === "lastEdited") return Pencil;
   return MapPin;
 }
 
@@ -118,11 +100,11 @@ export function DatasetCard({
         {/* Stats */}
         <div className="flex items-center gap-3 text-[10px] mt-2">
           {stats.map((stat) => {
-            const StatIcon = getStatIcon(stat.label);
+            const StatIcon = getStatIcon(stat.type);
             return (
-              <div key={stat.label} className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400">
+              <div key={stat.type} className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400">
                 <StatIcon className="w-2.5 h-2.5" />
-                <span className="font-medium">{formatStatValue(stat.label, stat.value)}</span>
+                <span className="font-medium">{formatStatValue(stat.type, stat.value)}</span>
               </div>
             );
           })}
