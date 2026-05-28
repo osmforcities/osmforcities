@@ -21,12 +21,17 @@ function getCircleColorExpression(theme: MapTheme | null): string | unknown[] {
 
   switch (theme.type) {
     case 'boolean': {
+      // MapLibre match labels must be string or number; coerce booleans to strings
+      const isBooleanValue = typeof theme.trueValue === 'boolean';
+      const trueLabel = isBooleanValue ? String(theme.trueValue) : theme.trueValue;
+      const falseLabel = isBooleanValue ? String(theme.falseValue) : theme.falseValue;
+
       return [
         'match',
-        ['get', theme.field],
-        theme.trueValue,
+        isBooleanValue ? ['to-string', ['get', theme.field]] : ['get', theme.field],
+        trueLabel,
         theme.trueColor,
-        theme.falseValue,
+        falseLabel,
         theme.falseColor,
         '#9ca3af', // fallback for other values
       ];
