@@ -6,10 +6,21 @@ import type { Feature } from 'geojson';
 import type { PropertyAnalysis, CategoricalTheme, BooleanTheme, IntensityTheme } from '../map-themes/types';
 
 describe('isPropertyExcluded', () => {
-  it('should exclude OSM metadata properties', () => {
+  it('should exclude OSM metadata properties (@-prefixed Overpass format)', () => {
     expect(isPropertyExcluded('@id')).toBe(true);
     expect(isPropertyExcluded('@type')).toBe(true);
     expect(isPropertyExcluded('@timestamp')).toBe(true);
+    expect(isPropertyExcluded('@uid')).toBe(true);
+    expect(isPropertyExcluded('@user')).toBe(true);
+    expect(isPropertyExcluded('@changeset')).toBe(true);
+    expect(isPropertyExcluded('@version')).toBe(true);
+  });
+
+  it('should exclude OSM metadata properties (bare-name stored GeoJSON format)', () => {
+    expect(isPropertyExcluded('uid')).toBe(true);
+    expect(isPropertyExcluded('user')).toBe(true);
+    expect(isPropertyExcluded('changeset')).toBe(true);
+    expect(isPropertyExcluded('version')).toBe(true);
   });
 
   it('should exclude internal fields', () => {

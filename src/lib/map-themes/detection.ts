@@ -9,7 +9,7 @@ import { PALETTES } from './palettes';
  * OSM metadata, internal fields, and common non-data fields.
  */
 export const EXCLUDED_PROPERTIES = new Set([
-  // OSM metadata
+  // OSM metadata — both @-prefixed (Overpass API) and bare (stored GeoJSON) forms
   '@id',
   '@type',
   '@version',
@@ -17,6 +17,10 @@ export const EXCLUDED_PROPERTIES = new Set([
   '@timestamp',
   '@user',
   '@uid',
+  'uid',
+  'user',
+  'changeset',
+  'version',
   // Internal fields
   'ageCategory',
   'originalType',

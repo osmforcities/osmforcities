@@ -14,9 +14,9 @@ const parisBusStopsData = JSON.parse(parisBusStopsRaw) as FeatureCollection;
 /**
  * Build MapLibre paint expression for circle-color based on selected theme.
  */
-function getCircleColorExpression(theme: MapTheme | null): unknown[] {
+function getCircleColorExpression(theme: MapTheme | null): string | unknown[] {
   if (!theme) {
-    return ['#3b82f6'];
+    return '#3b82f6';
   }
 
   switch (theme.type) {
@@ -56,7 +56,7 @@ function getCircleColorExpression(theme: MapTheme | null): unknown[] {
     }
 
     default:
-      return ['#3b82f6'];
+      return '#3b82f6';
   }
 }
 
