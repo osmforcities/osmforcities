@@ -85,7 +85,12 @@ export async function fetchOsmRelationData(relationId: number) {
     out bb tags;
   `;
 
-  const overpassData = await executeOverpassQuery(query);
+  let overpassData;
+  try {
+    overpassData = await executeOverpassQuery(query);
+  } catch {
+    return null; // Transport errors trigger Nominatim fallback
+  }
 
   const validationResult = OverpassResponseSchema.safeParse(overpassData);
   if (!validationResult.success) {
