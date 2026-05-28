@@ -94,6 +94,19 @@ async function main() {
     console.log(`Undeprecated ${toUndeprecate.length} templates re-added to YAML`);
   }
 
+  // Pre-load all categories for efficient lookup
+  const allCategories = await prisma.category.findMany({
+    select: { id: true, slug: true },
+  });
+  const categoryMap = new Map(allCategories.map((c) => [c.slug, c.id]));
+
+  // Some YAML category values differ from their DB leaf-category slugs
+  // because the leaf slug was changed to avoid colliding with the parent group slug
+  const YAML_TO_DB_SLUG: Record<string, string> = {
+    infrastructure: "infrastructure-general",
+    environment: "environment-general",
+  };
+
   // Upsert templates from YAML
   let upserted = 0;
   for (const template of result.templates) {
@@ -101,13 +114,17 @@ async function main() {
     const name = i18n?.name?.en ?? template.name;
     const description = i18n?.desc?.en ?? template.description ?? null;
 
+    const categorySlug = template.category || "other";
+    const dbSlug = YAML_TO_DB_SLUG[categorySlug] ?? categorySlug;
+    const categoryId: string = categoryMap.get(dbSlug) ?? "cat_other";
+
     await prisma.template.upsert({
       where: { id: template.id },
       update: {
         name,
         description,
         overpassQuery: template.overpassQuery,
-        category: template.category,
+        category: { connect: { id: categoryId } },
         tags: template.tags,
         updatedAt: new Date(),
       },
@@ -116,7 +133,7 @@ async function main() {
         name,
         description,
         overpassQuery: template.overpassQuery,
-        category: template.category,
+        category: { connect: { id: categoryId } },
         tags: template.tags,
       },
     });

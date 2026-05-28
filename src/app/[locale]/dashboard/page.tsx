@@ -27,7 +27,9 @@ async function getWatchedDatasets(userId: string) {
     include: {
       dataset: {
         include: {
-          template: true,
+          template: {
+            include: { category: true },
+          },
           area: true,
           _count: {
             select: { watchers: true },
