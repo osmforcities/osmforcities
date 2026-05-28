@@ -1,6 +1,13 @@
 import { prisma } from "@/lib/db";
 import simplify from "@turf/simplify";
-import { executeOverpassQuery, convertOverpassToGeoJSON } from "@/lib/osm";
+import {
+  executeOverpassQuery,
+  convertOverpassToGeoJSON,
+  preventExternalCallsInTests,
+  getUserAgent,
+} from "@/lib/overpass/transport";
+import { OverpassResponseSchema } from "@/types/overpass";
+import type { OSMRelation } from "@/types/osm";
 import { BOUNDARY_SIMPLIFICATION_TOLERANCE } from "@/lib/constants";
 import { createLogger } from "@/lib/logger";
 import type { FeatureCollection } from "geojson";
@@ -71,4 +78,52 @@ export async function getAreaBoundary(areaId: number): Promise<FeatureCollection
   });
 
   return simplify(featureCollection, { tolerance: BOUNDARY_SIMPLIFICATION_TOLERANCE, highQuality: false });
+}
+
+export async function fetchOsmRelationData(relationId: number) {
+  preventExternalCallsInTests();
+
+  const query = `
+    [out:json][timeout:25];
+    rel(${relationId});
+    out bb tags;
+  `;
+
+  const res = await fetch(
+    process.env.OVERPASS_API_URL ||
+      "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": getUserAgent(),
+      },
+      body: `data=${encodeURIComponent(query)}`,
+    }
+  );
+
+  if (!res.ok) return null;
+
+  const data = await res.json();
+
+  const validationResult = OverpassResponseSchema.safeParse(data);
+  if (!validationResult.success) {
+    console.error("Invalid Overpass response:", validationResult.error);
+    return null;
+  }
+
+  const rel = validationResult.data.elements?.[0] as OSMRelation;
+  if (!rel || rel.type !== "relation") return null;
+
+  const geojson = convertOverpassToGeoJSON(validationResult.data);
+
+  return {
+    name: rel.tags?.name || `Relation ${relationId}`,
+    countryCode: rel.tags?.["ISO3166-1"] || null,
+    bounds: rel.bounds
+      ? `${rel.bounds.minlat},${rel.bounds.minlon},${rel.bounds.maxlat},${rel.bounds.maxlon}`
+      : null,
+    geojson: rel,
+    convertedGeojson: geojson,
+  };
 }

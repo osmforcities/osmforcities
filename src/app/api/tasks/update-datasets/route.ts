@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { fetchDatasetSnapshot } from "@/lib/osm";
+import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 

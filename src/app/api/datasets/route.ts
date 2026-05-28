@@ -3,7 +3,8 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { CreateDatasetSchema } from "@/schemas/dataset";
 import { Prisma } from "@prisma/client";
-import { fetchOsmRelationData, fetchDatasetSnapshot } from "@/lib/osm";
+import { fetchOsmRelationData } from "@/lib/area-boundary";
+import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
