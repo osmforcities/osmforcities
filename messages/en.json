@@ -582,7 +582,12 @@
     "metaTitle": "Explore — OSM for Cities",
     "title": "Explore",
     "description": "Discover open data from cities worldwide",
-    "noDatasets": "No featured datasets yet."
+    "noDatasets": "No featured datasets yet.",
+    "stats": {
+      "features": "Features",
+      "contributors": "Contributors",
+      "lastEdited": "Last edited"
+    }
   },
   "SEO": {
     "home": {

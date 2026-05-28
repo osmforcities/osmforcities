@@ -1,26 +1,30 @@
 import { prisma } from "@/lib/db";
 import { DatasetCard } from "@/components/ui/dataset-card";
 import { processDatasetStats } from "@/lib/dataset-stats";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Locale } from "next-intl";
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+export const revalidate = 3600;
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "ExplorePage" });
+  setRequestLocale(locale);
+  const t = await getTranslations("ExplorePage");
 
   return {
     title: t("metaTitle"),
   };
 }
 
-export default async function FeaturedDatasetsPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function FeaturedDatasetsPage({ params }: { params: Promise<{ locale: Locale }> }) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "ExplorePage" });
+  setRequestLocale(locale);
+  const t = await getTranslations("ExplorePage");
   const datasets = await prisma.dataset.findMany({
     where: { isFeatured: true },
     include: {
       area: true,
       template: true,
-      _count: { select: { watchers: true } },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -41,30 +45,24 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
           <p className="text-sm text-neutral-400">{t("noDatasets")}</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {datasets.map((dataset) => (
-              <DatasetCard
-                key={dataset.id}
-                name={dataset.template.name}
-                city={dataset.cityName}
-                country={dataset.area.countryCode ?? ""}
-                category={dataset.template.category}
-                href={`/area/${dataset.areaId}/dataset/${dataset.templateId}`}
-                stats={[
-                  {
-                    label: "Features",
-                    value: processDatasetStats(dataset).features,
-                  },
-                  {
-                    label: "Contributors",
-                    value: processDatasetStats(dataset).contributors,
-                  },
-                  {
-                    label: "Last edited",
-                    value: processDatasetStats(dataset).lastEdited,
-                  },
-                ]}
-              />
-            ))}
+            {datasets.map((dataset) => {
+              const s = processDatasetStats(dataset, locale);
+              return (
+                <DatasetCard
+                  key={dataset.id}
+                  name={dataset.template.name}
+                  city={dataset.cityName}
+                  country={dataset.area.countryCode ?? ""}
+                  category={dataset.template.category}
+                  href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+                  stats={[
+                    { type: "features",     label: t("stats.features"),     value: s.features },
+                    { type: "contributors", label: t("stats.contributors"), value: s.contributors },
+                    { type: "lastEdited",   label: t("stats.lastEdited"),   value: s.lastEdited },
+                  ]}
+                />
+              );
+            })}
           </div>
         )}
       </div>
