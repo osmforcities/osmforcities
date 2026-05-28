@@ -3,8 +3,6 @@ import simplify from "@turf/simplify";
 import {
   executeOverpassQuery,
   convertOverpassToGeoJSON,
-  preventExternalCallsInTests,
-  getUserAgent,
 } from "@/lib/overpass/transport";
 import { OverpassResponseSchema } from "@/types/overpass";
 import type { OSMRelation } from "@/types/osm";
@@ -81,34 +79,17 @@ export async function getAreaBoundary(areaId: number): Promise<FeatureCollection
 }
 
 export async function fetchOsmRelationData(relationId: number) {
-  preventExternalCallsInTests();
-
   const query = `
     [out:json][timeout:25];
     rel(${relationId});
     out bb tags;
   `;
 
-  const res = await fetch(
-    process.env.OVERPASS_API_URL ||
-      "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent": getUserAgent(),
-      },
-      body: `data=${encodeURIComponent(query)}`,
-    }
-  );
+  const overpassData = await executeOverpassQuery(query);
 
-  if (!res.ok) return null;
-
-  const data = await res.json();
-
-  const validationResult = OverpassResponseSchema.safeParse(data);
+  const validationResult = OverpassResponseSchema.safeParse(overpassData);
   if (!validationResult.success) {
-    console.error("Invalid Overpass response:", validationResult.error);
+    log.error("Invalid Overpass response", { error: validationResult.error });
     return null;
   }
 
