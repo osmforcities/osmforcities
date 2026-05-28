@@ -33,13 +33,13 @@ describe('isPropertyExcluded', () => {
 });
 
 describe('analyzeProperty', () => {
-  const features: Feature[] = [
+  const features = [
     { type: 'Feature', properties: { amenity: 'bench' }, geometry: null },
     { type: 'Feature', properties: { amenity: 'bench' }, geometry: null },
     { type: 'Feature', properties: { amenity: 'fountain' }, geometry: null },
     { type: 'Feature', properties: { amenity: 'atm' }, geometry: null },
     { type: 'Feature', properties: { }, geometry: null }, // missing
-  ] as Feature[];
+  ] as unknown as Feature[];
 
   it('should calculate coverage correctly', () => {
     const result = analyzeProperty(features, 'amenity');
