@@ -41,22 +41,18 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
     return true;
   });
   if (missing.length > 0) {
-    try {
-      await Promise.all(
-        missing.map(async (d) => {
-          const details = await getAreaDetailsById(d.area.id);
-          if (details?.countryCode) {
-            await prisma.area.update({
-              where: { id: d.area.id },
-              data: { countryCode: details.countryCode },
-            });
-            d.area.countryCode = details.countryCode;
-          }
-        })
-      );
-    } catch {
-      // Silently fail — page renders with 🌐 fallback flags
-    }
+    await Promise.allSettled(
+      missing.map(async (d) => {
+        const details = await getAreaDetailsById(d.area.id);
+        if (details?.countryCode) {
+          await prisma.area.update({
+            where: { id: d.area.id },
+            data: { countryCode: details.countryCode },
+          });
+          d.area.countryCode = details.countryCode;
+        }
+      })
+    );
   }
 
   return (
