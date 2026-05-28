@@ -143,7 +143,7 @@ export function detectIntensityTheme(
   const numericValues = analysis.values
     .map((v) => {
       if (typeof v === 'number') return v;
-      if (typeof v === 'string') {
+      if (typeof v === 'string' && v.trim() !== '') {
         const parsed = Number(v);
         return isNaN(parsed) ? null : parsed;
       }

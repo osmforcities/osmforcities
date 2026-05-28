@@ -197,6 +197,23 @@ describe('detectIntensityTheme', () => {
     expect(theme?.min).toBe(10);
     expect(theme?.max).toBe(40);
   });
+
+  it('should treat empty strings as coercion failures, not as 0', () => {
+    // 5 numerics + 1 empty → failure rate 1/6 ≈ 0.17 < default 0.2 threshold
+    const analysis: PropertyAnalysis = {
+      field: 'height',
+      coverage: 1,
+      values: [10, 20, 30, 40, 50, ''],
+      nonNullCount: 6,
+      uniqueValues: new Set([10, 20, 30, 40, 50, '']),
+      type: 'mixed',
+      dominantType: 'number',
+    };
+    const theme = detectIntensityTheme(analysis);
+    expect(theme).toBeDefined();
+    expect(theme?.min).toBe(10); // not 0
+    expect(theme?.max).toBe(50);
+  });
 });
 
 describe('detectCategoricalTheme', () => {
