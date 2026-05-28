@@ -24,10 +24,10 @@ ALTER TABLE "templates" RENAME COLUMN "category" TO "categoryName";
 ALTER TABLE "templates" ADD COLUMN "categoryId" TEXT;
 
 -- Create foreign key for category relation (will be enforced after data migration)
-ALTER TABLE "templates" ADD CONSTRAINT "templates_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "templates" ADD CONSTRAINT "templates_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- Insert Category Groups (parent categories)
-INSERT INTO "categories" (id, name, slug, parentId) VALUES
+INSERT INTO "categories" (id, name, slug, "parentId") VALUES
     ('cat_infrastructure', 'Infrastructure', 'infrastructure', NULL),
     ('cat_services', 'Services', 'services', NULL),
     ('cat_places', 'Places', 'places', NULL),
@@ -36,15 +36,15 @@ INSERT INTO "categories" (id, name, slug, parentId) VALUES
     ('cat_other', 'Other', 'other', NULL);
 
 -- Insert child categories for Infrastructure
-INSERT INTO "categories" (id, name, slug, parentId) VALUES
+INSERT INTO "categories" (id, name, slug, "parentId") VALUES
     ('cat_transport', 'transport', 'transport', 'cat_infrastructure'),
     ('cat_transport_infrastructure', 'transport_infrastructure', 'transport_infrastructure', 'cat_infrastructure'),
     ('cat_transportation', 'transportation', 'transportation', 'cat_infrastructure'),
     ('cat_traffic', 'traffic', 'traffic', 'cat_infrastructure'),
-    ('cat_infrastructure_general', 'infrastructure', 'infrastructure', 'cat_infrastructure');
+    ('cat_infrastructure_general', 'infrastructure', 'infrastructure-general', 'cat_infrastructure');
 
 -- Insert child categories for Services
-INSERT INTO "categories" (id, name, slug, parentId) VALUES
+INSERT INTO "categories" (id, name, slug, "parentId") VALUES
     ('cat_healthcare', 'healthcare', 'healthcare', 'cat_services'),
     ('cat_education', 'education', 'education', 'cat_services'),
     ('cat_government', 'government', 'government', 'cat_services'),
@@ -52,7 +52,7 @@ INSERT INTO "categories" (id, name, slug, parentId) VALUES
     ('cat_financial', 'financial', 'financial', 'cat_services');
 
 -- Insert child categories for Places
-INSERT INTO "categories" (id, name, slug, parentId) VALUES
+INSERT INTO "categories" (id, name, slug, "parentId") VALUES
     ('cat_shops', 'shops', 'shops', 'cat_places'),
     ('cat_food', 'food', 'food', 'cat_places'),
     ('cat_amenities', 'amenities', 'amenities', 'cat_places'),
@@ -60,20 +60,20 @@ INSERT INTO "categories" (id, name, slug, parentId) VALUES
     ('cat_religion', 'religion', 'religion', 'cat_places');
 
 -- Insert child categories for Community
-INSERT INTO "categories" (id, name, slug, parentId) VALUES
+INSERT INTO "categories" (id, name, slug, "parentId") VALUES
     ('cat_social', 'social', 'social', 'cat_community'),
     ('cat_culture', 'culture', 'culture', 'cat_community'),
     ('cat_sports', 'sports', 'sports', 'cat_community'),
     ('cat_leisure', 'leisure', 'leisure', 'cat_community');
 
 -- Insert child categories for Environment
-INSERT INTO "categories" (id, name, slug, parentId) VALUES
+INSERT INTO "categories" (id, name, slug, "parentId") VALUES
     ('cat_nature', 'nature', 'nature', 'cat_environment'),
-    ('cat_environment-cat', 'environment', 'environment', 'cat_environment'),
+    ('cat_environment_general', 'environment', 'environment-general', 'cat_environment'),
     ('cat_agriculture', 'agriculture', 'agriculture', 'cat_environment');
 
 -- Insert child categories for Other
-INSERT INTO "categories" (id, name, slug, parentId) VALUES
+INSERT INTO "categories" (id, name, slug, "parentId") VALUES
     ('cat_barriers', 'barriers', 'barriers', 'cat_other'),
     ('cat_public', 'public', 'public', 'cat_other'),
     ('cat_tourism', 'tourism', 'tourism', 'cat_other');
@@ -85,7 +85,7 @@ UPDATE "templates" SET "categoryId" =
         WHEN 'transport_infrastructure' THEN 'cat_transport_infrastructure'
         WHEN 'transportation' THEN 'cat_transportation'
         WHEN 'traffic' THEN 'cat_traffic'
-        WHEN 'infrastructure' THEN 'cat_infrastructure-general'
+        WHEN 'infrastructure' THEN 'cat_infrastructure_general'
         WHEN 'healthcare' THEN 'cat_healthcare'
         WHEN 'education' THEN 'cat_education'
         WHEN 'government' THEN 'cat_government'
@@ -101,12 +101,12 @@ UPDATE "templates" SET "categoryId" =
         WHEN 'sports' THEN 'cat_sports'
         WHEN 'leisure' THEN 'cat_leisure'
         WHEN 'nature' THEN 'cat_nature'
-        WHEN 'environment' THEN 'cat_environment-cat'
+        WHEN 'environment' THEN 'cat_environment_general'
         WHEN 'agriculture' THEN 'cat_agriculture'
         WHEN 'barriers' THEN 'cat_barriers'
         WHEN 'public' THEN 'cat_public'
         WHEN 'tourism' THEN 'cat_tourism'
-        ELSE NULL
+        ELSE 'cat_other'
     END;
 
 -- Make categoryId required (NOT NULL)
