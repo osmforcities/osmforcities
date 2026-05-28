@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { CreateDatasetSchema } from "@/schemas/dataset";
 import { Prisma } from "@prisma/client";
 import { fetchOsmRelationData, fetchDatasetSnapshot } from "@/lib/osm";
+import { getAreaDetailsById } from "@/lib/nominatim";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
@@ -38,7 +39,11 @@ export async function POST(req: NextRequest) {
 
   if (!area) {
     try {
-      const fetched = await fetchOsmRelationData(osmRelationId);
+      const [fetched, areaDetails] = await Promise.all([
+        fetchOsmRelationData(osmRelationId),
+        getAreaDetailsById(osmRelationId),
+      ]);
+
       if (!fetched)
         return NextResponse.json(
           { error: "Failed to fetch OSM relation" },
@@ -50,7 +55,7 @@ export async function POST(req: NextRequest) {
           id: osmRelationId,
           name: fetched.name,
           bounds: fetched.bounds,
-          countryCode: fetched.countryCode,
+          countryCode: areaDetails?.countryCode ?? null,
           geojson: JSON.parse(JSON.stringify(fetched.convertedGeojson)),
         },
       });
