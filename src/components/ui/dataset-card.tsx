@@ -19,7 +19,7 @@ export interface DatasetCardProps {
  * Get country flag emoji from country code
  */
 function getCountryFlag(country: string): string {
-  if (!country) return "";
+  if (!country) return "🌐";
   // ISO 3166-1 alpha-2 code → Unicode regional indicator pair
   if (/^[a-zA-Z]{2}$/.test(country)) {
     return [...country.toUpperCase()]
@@ -44,7 +44,7 @@ function getCountryFlag(country: string): string {
     india: "🇮🇳",
     egypt: "🇪🇬",
   };
-  return flagMap[country.toLowerCase()] ?? "";
+  return flagMap[country.toLowerCase()] ?? "🌐";
 }
 
 /**
