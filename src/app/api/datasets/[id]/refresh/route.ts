@@ -25,7 +25,13 @@ export async function POST(
         userId: user.id,
       },
       include: {
-        template: true,
+        template: {
+          include: {
+            category: {
+              select: { slug: true },
+            },
+          },
+        },
         area: true,
       },
     });

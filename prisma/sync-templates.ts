@@ -116,7 +116,10 @@ async function main() {
 
     const categorySlug = template.category || "other";
     const dbSlug = YAML_TO_DB_SLUG[categorySlug] ?? categorySlug;
-    const categoryId: string = categoryMap.get(dbSlug) ?? "cat_other";
+    const categoryId = categoryMap.get(dbSlug) || categoryMap.get("other");
+    if (!categoryId) {
+      throw new Error(`Category "${dbSlug}" not found in database and fallback "other" category is missing`);
+    }
 
     await prisma.template.upsert({
       where: { id: template.id },
