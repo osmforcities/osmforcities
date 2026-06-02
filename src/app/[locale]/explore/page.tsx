@@ -5,6 +5,9 @@ import { getAreaDetailsById } from "@/lib/nominatim";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger("explore-page");
 
 export const revalidate = 3600;
 
@@ -69,7 +72,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
       if (result.status === "fulfilled" && result.value) {
         backfilledByArea.set(result.value.areaId, result.value.countryCode);
       } else if (result.status === "rejected") {
-        console.error("Failed to backfill area country code:", result.reason);
+        logger.error("Failed to backfill area country code", { reason: result.reason });
       }
     }
     for (const dataset of datasets) {

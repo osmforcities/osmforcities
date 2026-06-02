@@ -6,6 +6,9 @@ import { fetchOsmRelationData, fetchDatasetSnapshot } from "@/lib/osm";
 import { Prisma } from "@prisma/client";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger("dataset-operations");
 
 export type DatasetCreationResult = {
   dataset: NonNullable<Awaited<ReturnType<typeof getDatasetWithDetails>>>;
@@ -34,14 +37,19 @@ export async function getOrCreateDataset(
 
   if (dataset) {
     if (!dataset.area.countryCode) {
-      const areaDetails = await getAreaDetailsById(areaId);
-      if (areaDetails?.countryCode) {
-        await prisma.area.update({
-          where: { id: areaId },
-          data: { countryCode: areaDetails.countryCode },
-        });
-        dataset.area.countryCode = areaDetails.countryCode;
-      }
+      void (async () => {
+        try {
+          const areaDetails = await getAreaDetailsById(areaId);
+          if (areaDetails?.countryCode) {
+            await prisma.area.update({
+              where: { id: areaId },
+              data: { countryCode: areaDetails.countryCode },
+            });
+          }
+        } catch (error) {
+          logger.error("Failed to backfill countryCode", { areaId, error });
+        }
+      })();
     }
     return { dataset, wasCreated: false };
   }
@@ -181,7 +189,7 @@ async function createDatasetOnDemand(
         });
       }
     } catch (error) {
-      console.error("Failed to fetch area data:", error);
+      logger.error("Failed to fetch area data", { areaId, error });
       throw new Error(`Failed to fetch area data: ${areaId}`);
     }
   }
@@ -247,7 +255,7 @@ async function createDatasetOnDemand(
       template: resolvedTemplate,
     };
   } catch (error) {
-    console.error("Failed to fetch Overpass data:", error);
+    logger.error("Failed to fetch Overpass data", { areaId, templateId: template.id, error });
 
     if (error instanceof Error) {
       if (error.message.includes("timeout")) {
