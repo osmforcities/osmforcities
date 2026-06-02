@@ -49,7 +49,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
     return true;
   });
   if (missing.length > 0) {
-    await Promise.allSettled(
+    const results = await Promise.allSettled(
       missing.map(async (d) => {
         const details = await getAreaDetailsById(d.area.id);
         if (details?.countryCode) {
@@ -57,10 +57,25 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
             where: { id: d.area.id },
             data: { countryCode: details.countryCode },
           });
-          d.area.countryCode = details.countryCode;
+          return { areaId: d.area.id, countryCode: details.countryCode };
         }
+        return null;
       })
     );
+
+    // Propagate backfilled codes to all datasets sharing the same area
+    const backfilledByArea = new Map<number, string>();
+    for (const result of results) {
+      if (result.status === "fulfilled" && result.value) {
+        backfilledByArea.set(result.value.areaId, result.value.countryCode);
+      }
+    }
+    for (const dataset of datasets) {
+      const code = backfilledByArea.get(dataset.area.id);
+      if (code) {
+        dataset.area.countryCode = code;
+      }
+    }
   }
 
   return (
