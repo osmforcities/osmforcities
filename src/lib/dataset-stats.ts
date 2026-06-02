@@ -25,7 +25,10 @@ export function processDatasetStats(dataset: Dataset, locale: string): Processed
 function formatRelativeTime(timestamp: string | null | undefined, locale: string): string {
   if (!timestamp) return "—";
 
-  const diffMs = new Date(timestamp).getTime() - Date.now();
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return "—";
+
+  const diffMs = date.getTime() - Date.now();
   const absSec = Math.abs(diffMs / 1000);
   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
 
