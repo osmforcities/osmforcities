@@ -58,7 +58,11 @@ export const DatasetSchema = z.object({
   template: z.object({
     id: z.string(),
     name: z.string(),
-    category: z.string(),
+    category: z.object({
+      id: z.string(),
+      name: z.string(),
+      slug: z.string(),
+    }).nullable(),
     description: z.string().nullable(),
   }),
   user: z

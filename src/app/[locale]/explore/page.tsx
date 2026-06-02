@@ -68,6 +68,8 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
     for (const result of results) {
       if (result.status === "fulfilled" && result.value) {
         backfilledByArea.set(result.value.areaId, result.value.countryCode);
+      } else if (result.status === "rejected") {
+        console.error("Failed to backfill area country code:", result.reason);
       }
     }
     for (const dataset of datasets) {
@@ -103,7 +105,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
                   name={resolvedTemplate.name}
                   city={dataset.cityName}
                   country={dataset.area.countryCode ?? ""}
-                  category={resolvedTemplate.category.name}
+                  category={resolvedTemplate.category?.name ?? "other"}
                   href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
                   stats={[
                     { type: "features",     label: t("stats.features"),     value: s.features },
