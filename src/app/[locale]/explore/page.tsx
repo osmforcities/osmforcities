@@ -32,7 +32,10 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
         },
       },
       template: {
-        include: { translations: true },
+        include: {
+          translations: true,
+          category: true,
+        },
       },
     },
     orderBy: { createdAt: "desc" },
@@ -85,7 +88,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
                   name={resolvedTemplate.name}
                   city={dataset.cityName}
                   country={dataset.area.countryCode ?? ""}
-                  category={resolvedTemplate.category}
+                  category={resolvedTemplate.category.name}
                   href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
                   stats={[
                     { type: "features",     label: t("stats.features"),     value: s.features },
