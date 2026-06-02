@@ -25,7 +25,13 @@ export async function POST(
         userId: user.id,
       },
       include: {
-        template: true,
+        template: {
+          include: {
+            category: {
+              select: { slug: true },
+            },
+          },
+        },
         area: true,
       },
     });
@@ -59,7 +65,13 @@ export async function POST(
         updatedAt: new Date(),
       },
       include: {
-        template: true,
+        template: {
+          include: {
+            category: {
+              select: { slug: true },
+            },
+          },
+        },
         user: {
           select: {
             id: true,

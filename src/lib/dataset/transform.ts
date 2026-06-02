@@ -44,12 +44,13 @@ export function transformDataset(
   }
 
   const resolvedTemplate = options?.skipTemplateResolution
-    ? (rawDataset.template as { name: string; description: string | null })
+    ? (rawDataset.template as { name: string; description: string | null; category?: { slug: string } })
     : resolveTemplateForLocale(
         rawDataset.template as {
           translations: Array<{ locale: string; name: string; description: string | null }>;
           name: string;
           description: string | null;
+          category?: { slug: string };
         },
         locale
       );
@@ -62,7 +63,10 @@ export function transformDataset(
     ...rawDataset,
     geojson: rawDataset.geojson as FeatureCollection | null,
     bbox: rawDataset.bbox as number[] | null,
-    template: resolvedTemplate,
+    template: {
+      ...resolvedTemplate,
+      category: (resolvedTemplate as { category?: { slug: string } }).category?.slug ?? "other",
+    },
     area: rawDataset.area ? {
       ...rawDataset.area,
       geojson: rawDataset.area.geojson as FeatureCollection | null,

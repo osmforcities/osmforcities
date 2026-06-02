@@ -21,6 +21,7 @@ async function getActiveTemplates(locale: string) {
     where: { isActive: true },
     include: {
       translations: true,
+      category: true,
     },
     orderBy: { name: "asc" },
   });
@@ -30,7 +31,7 @@ async function getActiveTemplates(locale: string) {
       id: resolved.id,
       name: resolved.name,
       description: resolved.description,
-      category: resolved.category,
+      category: resolved.category?.slug ?? "other",
       tags: resolved.tags,
     };
   });
