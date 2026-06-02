@@ -21,7 +21,14 @@ async function getDataset(id: string, locale: string): Promise<Dataset | null> {
     const rawDataset = await prisma.dataset.findUnique({
       where: { id },
       include: {
-        template: { include: { translations: true } },
+        template: {
+          include: {
+            translations: true,
+            category: {
+              select: { slug: true },
+            },
+          },
+        },
         area: true,
         user: {
           select: {

@@ -9,7 +9,9 @@ export default async function PublicDatasetsFeed() {
   const datasets = await prisma.dataset.findMany({
     where: { isActive: true },
     include: {
-      template: true,
+      template: {
+        include: { category: true },
+      },
       user: true,
       area: true,
     },
@@ -49,7 +51,7 @@ export default async function PublicDatasetsFeed() {
                   </p>
                 </div>
                 <span className="text-xs bg-gray-100 px-2 py-1 rounded capitalize">
-                  {dataset.template.category}
+                  {dataset.template.category?.slug ?? "other"}
                 </span>
               </div>
 
