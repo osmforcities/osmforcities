@@ -6,7 +6,6 @@ describe("Dataset.isFeatured field", () => {
   let originalIsFeaturedValue: boolean | undefined;
 
   beforeAll(async () => {
-    // Find an existing dataset
     const datasets = await prisma.dataset.findMany({
       take: 1,
       select: { id: true, isFeatured: true },
@@ -21,7 +20,6 @@ describe("Dataset.isFeatured field", () => {
   });
 
   afterAll(async () => {
-    // Restore original value
     if (testDatasetId && originalIsFeaturedValue !== undefined) {
       await prisma.dataset.update({
         where: { id: testDatasetId },
@@ -41,13 +39,11 @@ describe("Dataset.isFeatured field", () => {
   });
 
   it("should allow toggling isFeatured field", async () => {
-    // Get current value
     const current = await prisma.dataset.findUnique({
       where: { id: testDatasetId },
       select: { isFeatured: true },
     });
 
-    // Toggle to opposite
     const toggled = await prisma.dataset.update({
       where: { id: testDatasetId },
       data: { isFeatured: !current?.isFeatured },
@@ -55,7 +51,6 @@ describe("Dataset.isFeatured field", () => {
 
     expect(toggled.isFeatured).toBe(!current?.isFeatured);
 
-    // Toggle back
     const restored = await prisma.dataset.update({
       where: { id: testDatasetId },
       data: { isFeatured: current?.isFeatured ?? false },

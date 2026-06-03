@@ -1,13 +1,19 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { PUT } from "../route";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { prisma } from "@/lib/db";
+
+vi.mock("@/auth", () => ({
+  auth: vi.fn().mockResolvedValue({
+    user: { id: "test-admin", email: "admin@test.com", isAdmin: true },
+  }),
+}));
+
+import { PUT } from "../route";
 
 describe("PUT /api/datasets/[id]/feature", () => {
   let testDatasetId: string;
   let originalIsFeaturedValue: boolean | undefined;
 
   beforeAll(async () => {
-    // Find an existing dataset
     const datasets = await prisma.dataset.findMany({
       take: 1,
       select: { id: true, isFeatured: true },
@@ -22,7 +28,6 @@ describe("PUT /api/datasets/[id]/feature", () => {
   });
 
   afterAll(async () => {
-    // Restore original value
     if (testDatasetId && originalIsFeaturedValue !== undefined) {
       await prisma.dataset.update({
         where: { id: testDatasetId },
@@ -32,10 +37,13 @@ describe("PUT /api/datasets/[id]/feature", () => {
   });
 
   it("should return 403 for non-admin users", async () => {
-    // Mock non-admin session
-    const request = new Request("http://localhost:3000/api/datasets/" + testDatasetId + "/feature", {
-      method: "PUT",
-    });
+    const { auth } = await import("@/auth");
+    vi.mocked(auth).mockResolvedValueOnce(null);
+
+    const request = new Request(
+      "http://localhost:3000/api/datasets/" + testDatasetId + "/feature",
+      { method: "PUT" }
+    );
 
     const response = await PUT(request, {
       params: Promise.resolve({ id: testDatasetId }),
@@ -47,9 +55,10 @@ describe("PUT /api/datasets/[id]/feature", () => {
   });
 
   it("should return 404 for non-existent dataset", async () => {
-    const request = new Request("http://localhost:3000/api/datasets/invalid-id/feature", {
-      method: "PUT",
-    });
+    const request = new Request(
+      "http://localhost:3000/api/datasets/invalid-id/feature",
+      { method: "PUT" }
+    );
 
     const response = await PUT(request, {
       params: Promise.resolve({ id: "invalid-id" }),
@@ -61,22 +70,21 @@ describe("PUT /api/datasets/[id]/feature", () => {
   });
 
   it("should toggle isFeatured field successfully", async () => {
-    // Get current value
     const beforeUpdate = await prisma.dataset.findUnique({
       where: { id: testDatasetId },
       select: { isFeatured: true },
     });
 
-    const request = new Request("http://localhost:3000/api/datasets/" + testDatasetId + "/feature", {
-      method: "PUT",
-    });
+    const request = new Request(
+      "http://localhost:3000/api/datasets/" + testDatasetId + "/feature",
+      { method: "PUT" }
+    );
 
     const response = await PUT(request, {
       params: Promise.resolve({ id: testDatasetId }),
     });
 
     expect(response.status).toBe(200);
-
     const body = await response.json();
     expect(body.isFeatured).toBe(!beforeUpdate?.isFeatured);
     expect(body.id).toBe(testDatasetId);
