@@ -1,0 +1,54 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "entry": [
+    "src/index.{ts,tsx,js,jsx}",
+    "src/main.{ts,tsx,js,jsx}"
+  ],
+  "ignorePatterns": [
+    ".storybook/**"
+  ],
+  "duplicates": {
+    "minOccurrences": 3
+  },
+  "rules": {
+    "unused-dependencies": "warn"
+  },
+  "ignoreExports": [
+    {
+      "file": "src/i18n/navigation.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/lib/osm.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/schemas/dataset.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/components/dataset/map/feature-tooltip.tsx",
+      "exports": ["FeatureTooltip"]
+    },
+    {
+      "file": "src/components/dataset/map/index.tsx",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/components/dataset/refresh-button.tsx",
+      "exports": ["default"]
+    },
+    {
+      "file": "src/components/dataset/side-panel.tsx",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/components/dataset/watch-button.tsx",
+      "exports": ["default"]
+    },
+    {
+      "file": "global.ts",
+      "exports": ["*"]
+    }
+  ]
+}
