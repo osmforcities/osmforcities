@@ -6,64 +6,14 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import type { FeatureCollection, Feature } from 'geojson';
 import { mapStyle } from '@/lib/map-tiles';
 import { detectMapThemes, type MapTheme } from '@/lib/map-themes';
+import { buildCircleColorExpression, buildCircleRadiusExpression } from '@/components/dataset/map/layers/expressions';
 // @ts-expect-error – Vite ?raw imports are not typed in tsconfig
 import parisBusStopsRaw from '@/lib/__tests__/fixtures/bus-stops-paris.geojson?raw';
+// @ts-expect-error – Vite ?raw imports are not typed in tsconfig
+import mixedThemesRaw from '@/lib/__tests__/fixtures/mixed-themes.geojson?raw';
 
 const parisBusStopsData = JSON.parse(parisBusStopsRaw) as FeatureCollection;
-
-/**
- * Build MapLibre paint expression for circle-color based on selected theme.
- */
-function getCircleColorExpression(theme: MapTheme | null): string | unknown[] {
-  if (!theme) {
-    return '#3b82f6';
-  }
-
-  switch (theme.type) {
-    case 'boolean': {
-      // MapLibre match labels must be string or number; coerce booleans to strings
-      const isBooleanValue = typeof theme.trueValue === 'boolean';
-      const trueLabel = isBooleanValue ? String(theme.trueValue) : theme.trueValue;
-      const falseLabel = isBooleanValue ? String(theme.falseValue) : theme.falseValue;
-
-      return [
-        'match',
-        isBooleanValue ? ['to-string', ['get', theme.field]] : ['get', theme.field],
-        trueLabel,
-        theme.trueColor,
-        falseLabel,
-        theme.falseColor,
-        '#9ca3af', // fallback for other values
-      ];
-    }
-
-    case 'categorical': {
-      // Build match expression from colorMap (keys are lowercase)
-      const matches: unknown[] = ['match', ['downcase', ['get', theme.field]]];
-      for (const [value, color] of theme.colorMap.entries()) {
-        matches.push(value, color);
-      }
-      matches.push('#9ca3af'); // fallback for "other"
-      return matches;
-    }
-
-    case 'intensity': {
-      const [colorMin, colorMax] = theme.colorScale;
-      return [
-        'interpolate',
-        ['linear'],
-        ['to-number', ['get', theme.field]],
-        theme.min,
-        colorMin,
-        theme.max,
-        colorMax,
-      ];
-    }
-
-    default:
-      return '#3b82f6';
-  }
-}
+const mixedThemesData = JSON.parse(mixedThemesRaw) as FeatureCollection;
 
 function MapThemesViewer({ features }: { features: Feature[] }) {
   const [themes, setThemes] = useState<MapTheme[]>([]);
@@ -216,11 +166,11 @@ function MapThemesViewer({ features }: { features: Feature[] }) {
               id="points"
               type="circle"
               paint={{
-                'circle-radius': 6,
-                'circle-stroke-width': 2,
-                'circle-stroke-color': '#1e40af',
+                'circle-radius': selectedTheme ? buildCircleRadiusExpression(selectedTheme, 7) as number : 7,
+                'circle-stroke-width': 1,
+                'circle-stroke-color': 'rgba(255, 255, 255, 0.8)',
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                'circle-color': getCircleColorExpression(selectedTheme) as any,
+                'circle-color': selectedTheme ? buildCircleColorExpression(selectedTheme) as any : '#3b82f6',
               }}
             />
           </Source>
@@ -244,5 +194,15 @@ type Story = StoryObj<typeof meta>;
 export const ParisBusStops: Story = {
   render: () => {
     return <MapThemesViewer features={parisBusStopsData.features} />;
+  },
+};
+
+export const MixedThemes: Story = {
+  render: () => {
+    return <MapThemesViewer features={mixedThemesData.features} />;
+  },
+  name: 'Mixed Themes (All Types)',
+  parameters: {
+    notes: 'Demonstrates all three theme types: categorical (amenity), boolean (covered), and intensity (capacity). Points are sized by capacity for intensity themes.',
   },
 };
