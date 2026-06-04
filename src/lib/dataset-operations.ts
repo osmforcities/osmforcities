@@ -125,12 +125,16 @@ async function createDatasetOnDemand(
   });
 
   if (area && !area.countryCode) {
-    const areaDetails = await getAreaDetailsById(areaId);
-    if (areaDetails?.countryCode) {
-      area = await prisma.area.update({
-        where: { id: areaId },
-        data: { countryCode: areaDetails.countryCode },
-      });
+    try {
+      const areaDetails = await getAreaDetailsById(areaId);
+      if (areaDetails?.countryCode) {
+        area = await prisma.area.update({
+          where: { id: areaId },
+          data: { countryCode: areaDetails.countryCode },
+        });
+      }
+    } catch (error) {
+      logger.error("Failed to backfill countryCode", { areaId, error });
     }
   }
 
