@@ -7,6 +7,7 @@ interface NavActionsProps {
   translations: {
     dashboard: string;
     about: string;
+    explore: string;
     preferences: string;
     signOut: string;
     signIn: string;
@@ -29,6 +30,9 @@ export default function NavActions({
   if (isLoggedIn) {
     return (
       <div className={containerClass}>
+        <NavLink href="/explore" isMobile={isMobile}>
+          {translations.explore}
+        </NavLink>
         <NavLink href="/dashboard" isMobile={isMobile} data-testid="navbar-dashboard">
           {translations.dashboard}
         </NavLink>
@@ -53,6 +57,9 @@ export default function NavActions({
 
   return (
     <div className={containerClass}>
+      <NavLink href="/explore" isMobile={isMobile}>
+        {translations.explore}
+      </NavLink>
       <NavLink href="/about" isMobile={isMobile}>
         {translations.about}
       </NavLink>

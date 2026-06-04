@@ -26,7 +26,7 @@ export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
   const pageT = useTranslations("DatasetPage");
 
   const basicInfoRows: InfoRowData[] = [
-    { label: t("category"), value: dataset.template.category, isPill: true },
+    { label: t("category"), value: dataset.template.category?.name ?? "other", isPill: true },
     {
       label: t("status"),
       value: dataset.isActive ? pageT("active") : pageT("inactive"),

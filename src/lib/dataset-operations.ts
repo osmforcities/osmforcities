@@ -6,6 +6,9 @@ import { fetchOsmRelationData, fetchDatasetSnapshot } from "@/lib/osm";
 import { Prisma } from "@prisma/client";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger("dataset-operations");
 
 export type DatasetCreationResult = {
   dataset: NonNullable<Awaited<ReturnType<typeof getDatasetWithDetails>>>;
@@ -33,6 +36,21 @@ export async function getOrCreateDataset(
   let dataset = await getDatasetWithDetails(areaId, template.id, locale);
 
   if (dataset) {
+    if (!dataset.area.countryCode) {
+      void (async () => {
+        try {
+          const areaDetails = await getAreaDetailsById(areaId);
+          if (areaDetails?.countryCode) {
+            await prisma.area.update({
+              where: { id: areaId },
+              data: { countryCode: areaDetails.countryCode },
+            });
+          }
+        } catch (error) {
+          logger.error("Failed to backfill countryCode", { areaId, error });
+        }
+      })();
+    }
     return { dataset, wasCreated: false };
   }
 
@@ -106,55 +124,76 @@ async function createDatasetOnDemand(
     where: { id: areaId },
   });
 
+  if (area && !area.countryCode) {
+    try {
+      const areaDetails = await getAreaDetailsById(areaId);
+      if (areaDetails?.countryCode) {
+        area = await prisma.area.update({
+          where: { id: areaId },
+          data: { countryCode: areaDetails.countryCode },
+        });
+      }
+    } catch (error) {
+      logger.error("Failed to backfill countryCode", { areaId, error });
+    }
+  }
+
   if (!area) {
     try {
-      const osmData = await fetchOsmRelationData(areaId);
+      const [osmData, areaDetails] = await Promise.all([
+        fetchOsmRelationData(areaId),
+        getAreaDetailsById(areaId),
+      ]);
+
+      if (!osmData && !areaDetails) {
+        throw new Error(`Area not found: ${areaId}`);
+      }
+
+      // City OSM relations don't carry ISO3166 tags — Nominatim is the
+      // only reliable source for country code.
+      const countryCode = areaDetails?.countryCode ?? null;
+
       if (osmData) {
         area = await prisma.area.upsert({
           where: { id: areaId },
           update: {
             name: osmData.name,
-            countryCode: osmData.countryCode,
+            countryCode,
             bounds: osmData.bounds,
             geojson: JSON.parse(JSON.stringify(osmData.convertedGeojson)),
           },
           create: {
             id: areaId,
             name: osmData.name,
-            countryCode: osmData.countryCode,
+            countryCode,
             bounds: osmData.bounds,
             geojson: JSON.parse(JSON.stringify(osmData.convertedGeojson)),
           },
         });
       } else {
-        const areaDetails = await getAreaDetailsById(areaId);
-        if (!areaDetails) {
-          throw new Error(`Area not found: ${areaId}`);
-        }
-
         area = await prisma.area.upsert({
           where: { id: areaId },
           update: {
-            name: areaDetails.name,
-            countryCode: areaDetails.countryCode,
-            bounds: areaDetails.boundingBox
-              ? JSON.stringify(areaDetails.boundingBox)
+            name: areaDetails!.name,
+            countryCode,
+            bounds: areaDetails!.boundingBox
+              ? JSON.stringify(areaDetails!.boundingBox)
               : null,
             geojson: Prisma.JsonNull,
           },
           create: {
             id: areaId,
-            name: areaDetails.name,
-            countryCode: areaDetails.countryCode,
-            bounds: areaDetails.boundingBox
-              ? JSON.stringify(areaDetails.boundingBox)
+            name: areaDetails!.name,
+            countryCode,
+            bounds: areaDetails!.boundingBox
+              ? JSON.stringify(areaDetails!.boundingBox)
               : null,
             geojson: Prisma.JsonNull,
           },
         });
       }
     } catch (error) {
-      console.error("Failed to fetch area data:", error);
+      logger.error("Failed to fetch area data", { areaId, error });
       throw new Error(`Failed to fetch area data: ${areaId}`);
     }
   }
@@ -220,7 +259,7 @@ async function createDatasetOnDemand(
       template: resolvedTemplate,
     };
   } catch (error) {
-    console.error("Failed to fetch Overpass data:", error);
+    logger.error("Failed to fetch Overpass data", { areaId, templateId: template.id, error });
 
     if (error instanceof Error) {
       if (error.message.includes("timeout")) {

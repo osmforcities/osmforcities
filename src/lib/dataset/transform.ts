@@ -65,7 +65,7 @@ export function transformDataset(
     bbox: rawDataset.bbox as number[] | null,
     template: {
       ...resolvedTemplate,
-      category: (resolvedTemplate as { category?: { slug: string } }).category?.slug ?? "other",
+      category: (resolvedTemplate as { category?: { id: string; name: string; slug: string } | null }).category ?? null,
     },
     area: rawDataset.area ? {
       ...rawDataset.area,
