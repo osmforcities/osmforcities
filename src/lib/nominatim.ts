@@ -3,7 +3,7 @@ import {
   type NominatimResult,
 } from "@/schemas/nominatim";
 import { Area } from "@/types/area";
-import { getUserAgent } from "./osm";
+import { getUserAgent } from "@/lib/overpass/transport";
 
 // Safeguard to prevent external API calls in test mode
 function preventExternalCallsInTests() {
