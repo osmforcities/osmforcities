@@ -105,7 +105,6 @@ export async function fetchOsmRelationData(relationId: number) {
 
   return {
     name: rel.tags?.name || `Relation ${relationId}`,
-    countryCode: rel.tags?.["ISO3166-1"] || null,
     bounds: rel.bounds
       ? `${rel.bounds.minlat},${rel.bounds.minlon},${rel.bounds.maxlat},${rel.bounds.maxlon}`
       : null,
