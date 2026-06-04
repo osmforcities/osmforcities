@@ -102,7 +102,7 @@ export function DatasetCard({
           {stats.map((stat) => {
             const StatIcon = getStatIcon(stat.type);
             return (
-              <div key={stat.type} className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400">
+              <div key={stat.type} aria-label={stat.label} className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400">
                 <StatIcon className="w-2.5 h-2.5" />
                 <span className="font-medium">{formatStatValue(stat.type, stat.value)}</span>
               </div>
