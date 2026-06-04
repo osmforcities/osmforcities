@@ -21,7 +21,13 @@ export async function GET() {
       include: {
         dataset: {
           include: {
-            template: true,
+            template: {
+              include: {
+                category: {
+                  select: { slug: true },
+                },
+              },
+            },
             user: {
               select: {
                 id: true,

@@ -17,6 +17,7 @@ async function getTemplates(locale: string) {
   const rows = await prisma.template.findMany({
     include: {
       translations: true,
+      category: true,
       _count: { select: { datasets: true } },
     },
     orderBy: { name: "asc" },
@@ -25,6 +26,7 @@ async function getTemplates(locale: string) {
     const resolved = resolveTemplateForLocale(t, locale);
     return {
       ...resolved,
+      category: t.category?.slug ?? "other",
       _count: t._count,
     };
   });

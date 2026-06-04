@@ -48,12 +48,27 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
+model Category {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  slug      String     @unique
+  parentId  String?
+  parent    Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryHierarchy")
+  templates Template[] @relation("CategoryTemplates")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("categories")
+}
+
 model Template {
   id            String                @id @default(cuid())
   name          String
   description   String?
   overpassQuery String
-  category      String
+  categoryId    String
+  category      Category              @relation("CategoryTemplates", fields: [categoryId], references: [id])
   tags          String[]
   isActive      Boolean               @default(true)
   deprecatesAt  DateTime?

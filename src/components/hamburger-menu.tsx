@@ -26,6 +26,7 @@ export default async function HamburgerMenu({ isLoggedIn }: HamburgerMenuProps) 
           isLoggedIn={isLoggedIn}
           translations={{
             dashboard: t("dashboard"),
+            explore: t("explore"),
             about: t("about"),
             preferences: t("preferences"),
             signOut: t("signOut"),

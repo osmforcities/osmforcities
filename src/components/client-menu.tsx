@@ -63,6 +63,7 @@ export default function ClientMenu({ isLoggedIn }: ClientMenuProps) {
                     isLoggedIn={isLoggedIn}
                     translations={{
                       dashboard: t("dashboard"),
+                      explore: t("explore"),
                       about: t("about"),
                       preferences: t("preferences"),
                       signOut: t("signOut"),
