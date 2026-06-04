@@ -39,10 +39,7 @@ export async function POST(req: NextRequest) {
 
   if (!area) {
     try {
-      const [fetched, areaDetails] = await Promise.all([
-        fetchOsmRelationData(osmRelationId),
-        getAreaDetailsById(osmRelationId),
-      ]);
+      const fetched = await fetchOsmRelationData(osmRelationId);
 
       if (!fetched)
         return NextResponse.json(
@@ -50,12 +47,20 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
 
+      let countryCode: string | null = null;
+      try {
+        const areaDetails = await getAreaDetailsById(osmRelationId);
+        countryCode = areaDetails?.countryCode ?? null;
+      } catch {
+        // Nominatim is best-effort; country code can be backfilled later
+      }
+
       area = await prisma.area.create({
         data: {
           id: osmRelationId,
           name: fetched.name,
           bounds: fetched.bounds,
-          countryCode: areaDetails?.countryCode ?? null,
+          countryCode,
           geojson: JSON.parse(JSON.stringify(fetched.convertedGeojson)),
         },
       });
