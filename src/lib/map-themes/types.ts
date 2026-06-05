@@ -24,6 +24,7 @@ export interface BooleanTheme {
   falseColor: string;
   trueValue: string | boolean | number;
   falseValue: string | boolean | number;
+  trueAliases: Array<string | boolean | number>; // Additional values that should map to true (e.g., 'roof' for 'covered')
 }
 
 /**

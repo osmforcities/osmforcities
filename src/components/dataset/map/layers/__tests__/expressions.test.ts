@@ -42,13 +42,14 @@ describe('buildCircleColorExpression', () => {
       falseColor: '#ef4444',
       trueValue: 'yes',
       falseValue: 'no',
+      trueAliases: [],
     };
 
     const expression = buildCircleColorExpression(theme);
 
     expect(expression).toEqual([
       'case',
-      ['==', ['get', 'covered'], 'yes'],
+      ['any', ['==', ['get', 'covered'], 'yes']],
       '#22c55e',
       '#ef4444',
     ]);
@@ -62,15 +63,37 @@ describe('buildCircleColorExpression', () => {
       falseColor: '#9ca3af',
       trueValue: true,
       falseValue: false,
+      trueAliases: [],
     };
 
     const expression = buildCircleColorExpression(theme);
 
     expect(expression).toEqual([
       'case',
-      ['==', ['get', 'lit'], true],
+      ['any', ['==', ['get', 'lit'], true]],
       '#3b82f6',
       '#9ca3af',
+    ]);
+  });
+
+  it('should build case expression for boolean theme with aliases', () => {
+    const theme: BooleanTheme = {
+      type: 'boolean',
+      field: 'covered',
+      trueColor: '#22c55e',
+      falseColor: '#ef4444',
+      trueValue: 'yes',
+      falseValue: 'no',
+      trueAliases: ['roof'],
+    };
+
+    const expression = buildCircleColorExpression(theme);
+
+    expect(expression).toEqual([
+      'case',
+      ['any', ['==', ['get', 'covered'], 'yes'], ['==', ['get', 'covered'], 'roof']],
+      '#22c55e',
+      '#ef4444',
     ]);
   });
 
@@ -147,6 +170,7 @@ describe('buildCircleRadiusExpression', () => {
       falseColor: '#ef4444',
       trueValue: 'yes',
       falseValue: 'no',
+      trueAliases: [],
     };
 
     const expression = buildCircleRadiusExpression(theme, 8);

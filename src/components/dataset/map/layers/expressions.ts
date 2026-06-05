@@ -40,10 +40,21 @@ export const buildCircleColorExpression = (theme: MapTheme) => {
   }
 
   if (theme.type === "boolean") {
-    // Boolean: case with trueValue → trueColor, else → falseColor
+    // Boolean: check trueValue and all trueAliases, else → falseColor
+    // Build conditions for trueValue and all aliases
+    const conditions: unknown[] = ["any"];
+
+    // Add main trueValue check
+    conditions.push(["==", ["get", theme.field], theme.trueValue]);
+
+    // Add all alias checks
+    for (const alias of theme.trueAliases) {
+      conditions.push(["==", ["get", theme.field], alias]);
+    }
+
     return [
       "case",
-      ["==", ["get", theme.field], theme.trueValue],
+      conditions, // true if any condition matches
       theme.trueColor,
       theme.falseColor,
     ] as const;
@@ -74,7 +85,7 @@ export const buildCircleColorExpression = (theme: MapTheme) => {
 export const buildCircleRadiusExpression = (
   theme: MapTheme,
   baseRadius: number,
-): number | unknown => {
+): number | unknown[] => {
   if (theme.type === "intensity") {
     // Intensity: interpolate radius from 0.5x to 1.5x baseRadius
     // Use to-number to handle string numeric values from OSM

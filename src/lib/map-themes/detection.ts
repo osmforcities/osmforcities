@@ -128,6 +128,7 @@ export function detectBooleanTheme(
   // Apply grouping rules if field-specific grouping exists
   const grouping = BOOLEAN_GROUPING[analysis.field];
   let effectiveValues = Array.from(analysis.uniqueValues);
+  const trueAliases: Array<string | boolean | number> = [];
 
   if (grouping) {
     // Create a reverse mapping: value -> grouped value
@@ -141,7 +142,14 @@ export function detectBooleanTheme(
     // Group values that should be merged
     effectiveValues = effectiveValues.map((v) => {
       const strV = String(v);
-      return valueToGrouped[strV] || strV;
+      const grouped = valueToGrouped[strV];
+      if (grouped && grouped === 'yes') {
+        // Track values that were grouped into 'true'
+        if (!trueAliases.includes(v as string | boolean | number)) {
+          trueAliases.push(v as string | boolean | number);
+        }
+      }
+      return grouped || strV;
     });
 
     // Remove duplicates after grouping
@@ -166,6 +174,7 @@ export function detectBooleanTheme(
         falseColor: pattern.palette.false,
         trueValue: pattern.true,
         falseValue: pattern.false,
+        trueAliases,
       };
     }
   }
@@ -296,12 +305,13 @@ export function detectCategoricalTheme(
     .sort((a, b) => b.count - a.count)
     .slice(0, PALETTES.categorical.tableau10.length); // Top N get distinct colors (one per palette slot)
 
-  // Assign colors from palette, keyed by lowercase for case-insensitive matching
+  // Assign colors from palette, keyed by original casing value
   const colorMap = new Map<string, string>();
   for (let i = 0; i < topValues.length; i++) {
-    const lower = topValues[i].value.toLowerCase();
+    // Use the original casing value as the key (not lowercase)
+    const originalValue = topValues[i].value;
     colorMap.set(
-      lower,
+      originalValue,
       PALETTES.categorical.tableau10[i % PALETTES.categorical.tableau10.length]
     );
   }

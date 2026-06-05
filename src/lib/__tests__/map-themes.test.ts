@@ -304,8 +304,12 @@ describe('detectCategoricalTheme', () => {
     expect(theme).toBeDefined();
     // Should have 2 categories: wood (merged) and metal
     expect(theme?.topValues.length).toBeLessThanOrEqual(2);
-    // colorMap keys should be lowercase for case-insensitive matching in MapLibre expressions
-    expect(Array.from(theme?.colorMap.keys() || [])).toEqual(['wood', 'metal']);
+    // colorMap keys should use most common original casing for MapLibre expressions
+    // In case of tie (Wood, wood, WOOD each appear once), any of them is acceptable
+    const colorMapKeys = Array.from(theme?.colorMap.keys() || []);
+    expect(colorMapKeys).toHaveLength(2);
+    expect(colorMapKeys[0].toLowerCase()).toBe('wood');
+    expect(colorMapKeys[1]).toBe('Metal');
   });
 });
 
@@ -318,6 +322,7 @@ describe('calculateScore', () => {
       falseColor: '#ef4444',
       trueValue: 'yes',
       falseValue: 'no',
+      trueAliases: [],
     };
     const coverage = 0.8; // 80%
     const score = calculateScore(theme, coverage);
