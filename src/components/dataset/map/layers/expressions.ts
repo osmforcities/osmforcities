@@ -51,10 +51,11 @@ export const buildCircleColorExpression = (theme: MapTheme) => {
 
   if (theme.type === "intensity") {
     // Intensity: interpolate with min/max and colorScale endpoints
+    // Use to-number to handle string numeric values from OSM
     return [
       "interpolate",
       ["linear"],
-      ["get", theme.field],
+      ["to-number", ["get", theme.field]],
       theme.min,
       theme.colorScale[0],
       theme.max,
@@ -76,10 +77,11 @@ export const buildCircleRadiusExpression = (
 ): number | unknown => {
   if (theme.type === "intensity") {
     // Intensity: interpolate radius from 0.5x to 1.5x baseRadius
+    // Use to-number to handle string numeric values from OSM
     return [
       "interpolate",
       ["linear"],
-      ["get", theme.field],
+      ["to-number", ["get", theme.field]],
       theme.min,
       baseRadius * 0.5,
       theme.max,

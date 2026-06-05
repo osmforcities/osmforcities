@@ -60,8 +60,16 @@ export function analyzeProperty(
       values.push(value);
       uniqueValues.add(value);
 
-      const type = typeof value;
-      typeCounts[type] = (typeCounts[type] || 0) + 1;
+      // For strings, check if they're actually numbers
+      let detectedType = typeof value;
+      if (detectedType === 'string') {
+        const trimmed = (value as string).trim();
+        if (trimmed !== '' && !isNaN(Number(trimmed))) {
+          detectedType = 'number';
+        }
+      }
+
+      typeCounts[detectedType] = (typeCounts[detectedType] || 0) + 1;
     }
   }
 
@@ -98,22 +106,57 @@ const BOOLEAN_PATTERNS = [
 ] as const;
 
 /**
+ * Grouping patterns for OSM boolean fields where extra values should be mapped.
+ * Format: field -> { groupedValue: [values to group] }
+ */
+const BOOLEAN_GROUPING: Record<string, Record<string, string[]>> = {
+  covered: {
+    yes: ['yes', 'roof'], // roof counts as covered
+  },
+  shelter: {
+    yes: ['yes', 'covered'], // covered counts as sheltered
+  },
+};
+
+/**
  * Detect if a property represents a boolean theme.
  * Returns null if the property doesn't match boolean patterns.
  */
 export function detectBooleanTheme(
   analysis: PropertyAnalysis
 ): BooleanTheme | null {
-  // Must have exactly 2 distinct values
-  if (analysis.uniqueValues.size !== 2) {
+  // Apply grouping rules if field-specific grouping exists
+  const grouping = BOOLEAN_GROUPING[analysis.field];
+  let effectiveValues = Array.from(analysis.uniqueValues);
+
+  if (grouping) {
+    // Create a reverse mapping: value -> grouped value
+    const valueToGrouped: Record<string, string> = {};
+    for (const [groupedValue, sourceValues] of Object.entries(grouping)) {
+      for (const sourceValue of sourceValues) {
+        valueToGrouped[sourceValue] = groupedValue;
+      }
+    }
+
+    // Group values that should be merged
+    effectiveValues = effectiveValues.map((v) => {
+      const strV = String(v);
+      return valueToGrouped[strV] || strV;
+    });
+
+    // Remove duplicates after grouping
+    effectiveValues = Array.from(new Set(effectiveValues));
+  }
+
+  // Must have exactly 2 distinct values after grouping
+  if (effectiveValues.length !== 2) {
     return null;
   }
 
-  const values = Array.from(analysis.uniqueValues);
-
   for (const pattern of BOOLEAN_PATTERNS) {
-    const hasTrue = values.includes(pattern.true);
-    const hasFalse = values.includes(pattern.false);
+    // Check both strict equality and string version for flexibility
+    const hasTrue = effectiveValues.includes(pattern.true) || effectiveValues.includes(String(pattern.true));
+    const hasFalse = effectiveValues.includes(pattern.false) || effectiveValues.includes(String(pattern.false));
 
     if (hasTrue && hasFalse) {
       return {
@@ -138,8 +181,8 @@ export function detectIntensityTheme(
   analysis: PropertyAnalysis,
   maxCoercionFailureRate = 0.2
 ): IntensityTheme | null {
-  // Must have numeric or mixed type with numeric dominant
-  if (analysis.dominantType !== 'number') {
+  // Allow numeric or string dominant (strings might be numeric)
+  if (analysis.dominantType !== 'number' && analysis.dominantType !== 'string') {
     return null;
   }
 
@@ -165,11 +208,18 @@ export function detectIntensityTheme(
     return null;
   }
 
-  const min = numericValues.reduce((a, b) => (b < a ? b : a), numericValues[0]);
-  const max = numericValues.reduce((a, b) => (b > a ? b : a), numericValues[0]);
+  // Sort for percentile calculation
+  const sorted = [...numericValues].sort((a, b) => a - b);
+
+  // Use percentiles instead of raw min/max to handle outliers better
+  // 10th percentile as lower bound, 90th as upper bound
+  const p10Index = Math.floor(sorted.length * 0.1);
+  const p90Index = Math.floor(sorted.length * 0.9);
+  const min = sorted[p10Index];
+  const max = sorted[p90Index];
 
   // Zero range means no meaningful intensity
-  if (min === max) {
+  if (min === max || min === undefined || max === undefined) {
     return null;
   }
 

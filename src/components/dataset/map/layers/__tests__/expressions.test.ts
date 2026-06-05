@@ -88,7 +88,7 @@ describe('buildCircleColorExpression', () => {
     expect(expression).toEqual([
       'interpolate',
       ['linear'],
-      ['get', 'capacity'],
+      ['to-number', ['get', 'capacity']],
       0,
       '#deebf7',
       100,
@@ -117,7 +117,7 @@ describe('buildCircleRadiusExpression', () => {
     expect(expression).toEqual([
       'interpolate',
       ['linear'],
-      ['get', 'capacity'],
+      ['to-number', ['get', 'capacity']],
       0,
       5, // 10 * 0.5
       100,
@@ -168,7 +168,7 @@ describe('buildCircleRadiusExpression', () => {
     expect(expression).toEqual([
       'interpolate',
       ['linear'],
-      ['get', 'height'],
+      ['to-number', ['get', 'height']],
       1,
       3, // 6 * 0.5
       50,

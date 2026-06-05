@@ -11,9 +11,12 @@ import { buildCircleColorExpression, buildCircleRadiusExpression } from '@/compo
 import parisBusStopsRaw from '@/lib/__tests__/fixtures/bus-stops-paris.geojson?raw';
 // @ts-expect-error – Vite ?raw imports are not typed in tsconfig
 import mixedThemesRaw from '@/lib/__tests__/fixtures/mixed-themes.geojson?raw';
+// @ts-expect-error – Vite ?raw imports are not typed in tsconfig
+import bicycleParkingParisRaw from '@/lib/__tests__/fixtures/bicycle-parking-paris.geojson?raw';
 
 const parisBusStopsData = JSON.parse(parisBusStopsRaw) as FeatureCollection;
 const mixedThemesData = JSON.parse(mixedThemesRaw) as FeatureCollection;
+const bicycleParkingParisData = JSON.parse(bicycleParkingParisRaw) as FeatureCollection;
 
 function MapThemesViewer({ features }: { features: Feature[] }) {
   const [themes, setThemes] = useState<MapTheme[]>([]);
@@ -194,6 +197,16 @@ type Story = StoryObj<typeof meta>;
 export const ParisBusStops: Story = {
   render: () => {
     return <MapThemesViewer features={parisBusStopsData.features} />;
+  },
+};
+
+export const BicycleParkingParis: Story = {
+  render: () => {
+    return <MapThemesViewer features={bicycleParkingParisData.features} />;
+  },
+  name: 'Bicycle Parking Paris',
+  parameters: {
+    notes: 'Real-world dataset with all three theme types: intensity (capacity), boolean (covered, shelter), and categorical (bicycle_parking types). Great for testing production use cases.',
   },
 };
 
