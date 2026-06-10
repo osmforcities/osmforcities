@@ -104,13 +104,15 @@ export async function getAreaDetailsById(
       return null;
     }
 
-    const data = await response.json();
-    if (!data || data.length === 0) {
+    const rawData = await response.json();
+    if (!rawData || rawData.length === 0) {
       return null;
     }
 
-    // Convert the lookup result to our Area format
-    const result = data[0];
+    // Validate with Zod before conversion (aligns with searchAreasWithNominatim)
+    const validatedData = NominatimSearchResponseSchema.parse(rawData);
+    const result = validatedData[0];
+
     return fromNominatim(result);
   } catch (error) {
     console.error("Error fetching area details:", error);

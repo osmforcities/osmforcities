@@ -167,7 +167,7 @@ describe("fromOverpass", () => {
   };
 
   it("converts valid Overpass relation to Area", () => {
-    const area = fromOverpass(mockOSMRelation, mockOSMRelation.tags, mockOSMRelation.bounds);
+    const area = fromOverpass(mockOSMRelation, mockOSMRelation.tags, mockOSMRelation.bounds!);
 
     expect(area.id).toBe(9876543);
     expect(area.name).toBe("Paris");
@@ -176,14 +176,14 @@ describe("fromOverpass", () => {
   });
 
   it("reorders bbox from bounds to [minLat, minLon, maxLat, maxLon]", () => {
-    const area = fromOverpass(mockOSMRelation, mockOSMRelation.tags, mockOSMRelation.bounds);
+    const area = fromOverpass(mockOSMRelation, mockOSMRelation.tags, mockOSMRelation.bounds!);
 
     expect(area.boundingBox).toEqual([48.8155, 2.2241, 48.9021, 2.4699]);
   });
 
   it("throws InvalidAreaError for invalid id", () => {
     const invalidRelation = { ...mockOSMRelation, id: 0 };
-    expect(() => fromOverpass(invalidRelation, mockOSMRelation.tags, mockOSMRelation.bounds)).toThrow(InvalidAreaError);
+    expect(() => fromOverpass(invalidRelation, mockOSMRelation.tags, mockOSMRelation.bounds!)).toThrow(InvalidAreaError);
   });
 
   it("throws InvalidAreaError for invalid bbox", () => {
@@ -192,7 +192,7 @@ describe("fromOverpass", () => {
   });
 
   it("handles undefined tags gracefully", () => {
-    const area = fromOverpass(mockOSMRelation, undefined, mockOSMRelation.bounds);
+    const area = fromOverpass(mockOSMRelation, undefined, mockOSMRelation.bounds!);
     expect(area.name).toBe("");
     expect(area.class).toBe("");
   });

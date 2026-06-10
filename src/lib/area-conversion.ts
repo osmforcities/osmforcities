@@ -93,13 +93,12 @@ export function fromNominatim(result: NominatimResult): Area {
  * - Consistency with Nominatim conversion path
  * - Test coverage ensures implementation stays valid
  */
-export function fromOverpass(relation: OSMRelation, tags: Record<string, string> | undefined, bounds?: { minlat: number; minlon: number; maxlat: number; maxlon: number }): Area {
+export function fromOverpass(
+  relation: OSMRelation,
+  tags: Record<string, string> | undefined,
+  bounds: { minlat: number; minlon: number; maxlat: number; maxlon: number }
+): Area {
   validateId(relation.id);
-
-  if (!bounds) {
-    throw new InvalidAreaError("Bounds are required for Overpass conversion");
-  }
-
   const bbox = normalizeBoundsToBbox(bounds);
   validateBBox(bbox);
 
