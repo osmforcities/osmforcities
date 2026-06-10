@@ -2,8 +2,9 @@ import {
   NominatimSearchResponseSchema,
   type NominatimResult,
 } from "@/schemas/nominatim";
-import { Area } from "@/types/area";
+import { fromNominatim } from "@/lib/area-conversion";
 import { getUserAgent } from "@/lib/overpass/transport";
+import type { Area } from "@/types/area";
 
 // Safeguard to prevent external API calls in test mode
 function preventExternalCallsInTests() {
@@ -68,27 +69,12 @@ export async function searchAreasWithNominatim(
 
 /**
  * Convert Nominatim result to Area type
+ * @deprecated Use fromNominatim from @/lib/area-conversion instead
  * @param result - Nominatim result
  * @returns Area - Converted area object
  */
-export function convertNominatimResultToArea(result: NominatimResult): Area {
-  return {
-    id: result.osm_id,
-    name: result.name || result.display_name.split(",")[0].trim(),
-    displayName: result.display_name,
-    osmType: result.osm_type,
-    class: result.class,
-    type: result.type,
-    addresstype: result.addresstype,
-    boundingBox: [
-      parseFloat(result.boundingbox[0]), // minLat
-      parseFloat(result.boundingbox[2]), // minLon
-      parseFloat(result.boundingbox[1]), // maxLat
-      parseFloat(result.boundingbox[3]), // maxLon
-    ],
-    countryCode: result.address?.country_code,
-    country: result.address?.country,
-  };
+export function convertNominatimResultToArea(result: NominatimResult) {
+  return fromNominatim(result);
 }
 
 /**
@@ -125,24 +111,7 @@ export async function getAreaDetailsById(
 
     // Convert the lookup result to our Area format
     const result = data[0];
-    return {
-      id: osmRelationId,
-      name: result.name || result.display_name.split(",")[0].trim(),
-      displayName: result.display_name,
-      osmType: "relation" as const,
-      class: result.class || "",
-      type: result.type || "",
-      addresstype: result.addresstype,
-      boundingBox: [
-        parseFloat(result.boundingbox[0]),
-        parseFloat(result.boundingbox[2]),
-        parseFloat(result.boundingbox[1]),
-        parseFloat(result.boundingbox[3]),
-      ],
-      countryCode: result.address?.country_code,
-      country: result.address?.country,
-      state: result.address?.state,
-    };
+    return fromNominatim(result);
   } catch (error) {
     console.error("Error fetching area details:", error);
     return null;

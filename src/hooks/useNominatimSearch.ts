@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { searchAreasWithNominatim } from "@/lib/nominatim";
+import { fromNominatim } from "@/lib/area-conversion";
 import { Area } from "@/types/area";
 
 type UseNominatimSearchOptions = {
@@ -34,25 +35,7 @@ export function useNominatimAreas({
     enabled,
   });
 
-  const areas: Area[] =
-    data?.map((result) => ({
-      id: result.osm_id,
-      name: result.name || result.display_name.split(",")[0].trim(),
-      displayName: result.display_name,
-      osmType: result.osm_type,
-      class: result.class,
-      type: result.type,
-      addresstype: result.addresstype,
-      boundingBox: [
-        parseFloat(result.boundingbox[0]),
-        parseFloat(result.boundingbox[2]),
-        parseFloat(result.boundingbox[1]),
-        parseFloat(result.boundingbox[3]),
-      ] as [number, number, number, number],
-      countryCode: result.address?.country_code,
-      country: result.address?.country,
-      state: result.address?.state,
-    })) || [];
+  const areas: Area[] = data?.map((result) => fromNominatim(result)) || [];
 
   return {
     data: areas,
