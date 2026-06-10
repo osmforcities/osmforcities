@@ -10,7 +10,8 @@ export class InvalidAreaError extends Error {
 }
 
 function validateId(id: number): void {
-  if (id <= 0) {
+  // Guard against NaN (undefined/null after numeric conversion)
+  if (isNaN(id) || id <= 0) {
     throw new InvalidAreaError(`Invalid area id: ${id}. Must be positive.`);
   }
 }
@@ -80,6 +81,18 @@ export function fromNominatim(result: NominatimResult): Area {
   };
 }
 
+/**
+ * Convert Overpass relation to Area
+ * @param relation - OSM relation from Overpass API
+ * @param tags - Relation tags (optional, for name/class/type extraction)
+ * @param bounds - Geographic bounds { minlat, minlon, maxlat, maxlon }
+ * @returns Area - Converted area object
+ *
+ * Note: Currently unused in production but preserved for:
+ * - Future Overpass API integration (area queries, bbox-based searches)
+ * - Consistency with Nominatim conversion path
+ * - Test coverage ensures implementation stays valid
+ */
 export function fromOverpass(relation: OSMRelation, tags: Record<string, string> | undefined, bounds?: { minlat: number; minlon: number; maxlat: number; maxlon: number }): Area {
   validateId(relation.id);
 

@@ -74,6 +74,12 @@ describe("fromNominatim", () => {
     expect(() => fromNominatim(invalidResult)).toThrow("Invalid area id");
   });
 
+  it("throws InvalidAreaError for invalid id (NaN)", () => {
+    const invalidResult = { ...mockNominatimCity, osm_id: NaN };
+    expect(() => fromNominatim(invalidResult)).toThrow(InvalidAreaError);
+    expect(() => fromNominatim(invalidResult)).toThrow("Invalid area id");
+  });
+
   it("throws InvalidAreaError for invalid bbox (wrong length)", () => {
     const invalidResult = { ...mockNominatimCity, boundingbox: ["38.0", "39.0"] };
     expect(() => fromNominatim(invalidResult)).toThrow(InvalidAreaError);
