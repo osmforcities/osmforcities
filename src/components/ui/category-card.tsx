@@ -49,7 +49,7 @@ export function CategoryCard({
       <div className="flex gap-4 border border-gray-200 dark:border-gray-800 rounded-xl p-5">
         <div className="flex-shrink-0">
           <div className="bg-olive-100 dark:bg-olive-700 rounded-lg p-3">
-            <Icon className="size-6 text-olive-500" />
+            <Icon className="size-6 text-olive-500 dark:text-olive-300" />
           </div>
         </div>
 
@@ -75,7 +75,7 @@ export function CategoryCard({
       <div className="mb-4">
         <div className="flex items-center gap-3">
           <div className="bg-olive-100 dark:bg-olive-700 rounded-lg p-3">
-            <Icon className="size-6 text-olive-500" />
+            <Icon className="size-6 text-olive-500 dark:text-olive-300" />
           </div>
           <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
             {category}
