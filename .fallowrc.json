@@ -1,0 +1,13 @@
+{
+  "ignoreExports": [
+    "useNavigate",
+    "useRouter"
+  ],
+  "ignoreFiles": [
+    "global.ts",
+    ".stories.",
+    ".stories.ts",
+    ".stories.tsx",
+    ".storybook/"
+  ]
+}

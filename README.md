@@ -127,6 +127,12 @@ pnpm i18n:check:fix
 
 The i18n check runs automatically in CI/CD and before commits when translation files are modified.
 
+## Development Tools
+
+### Fallow (Dead Code Detection)
+
+Run `pnpm fallow` to detect unused exports and files. See [Fallow](docs/tools/fallow.md) for guidance on interpreting results and safe cleanup.
+
 ## Documentation
 
 This project's documentation is an ongoing effort. You can find more detailed information on specific features in the `docs/` directory.

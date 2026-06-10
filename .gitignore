@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+FALLOW_FINDINGS.md
 
 # debug
 npm-debug.log*
