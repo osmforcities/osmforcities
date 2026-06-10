@@ -2,9 +2,9 @@ import type { FeatureCollection, Feature } from "geojson";
 import type { DateFilter } from "../types/geojson";
 import { getAvailableTimeframes, filterFeaturesByDate, calculateAge } from "./utils";
 
-export type FeatureAgeCategory = "recent" | "medium" | "older" | "very-old";
+type FeatureAgeCategory = "recent" | "medium" | "older" | "very-old";
 
-export const categorizeFeatureByAge = (feature: Feature): FeatureAgeCategory => {
+const categorizeFeatureByAge = (feature: Feature): FeatureAgeCategory => {
   const timestamp = feature.properties?.["@timestamp"] || feature.properties?.timestamp;
   if (!timestamp) return "very-old";
   
@@ -15,7 +15,7 @@ export const categorizeFeatureByAge = (feature: Feature): FeatureAgeCategory => 
   return "very-old";
 };
 
-export const addAgeCategoriesToFeatures = (geojson: FeatureCollection): FeatureCollection => {
+const addAgeCategoriesToFeatures = (geojson: FeatureCollection): FeatureCollection => {
   return {
     ...geojson,
     features: geojson.features.map(feature => ({
@@ -25,19 +25,6 @@ export const addAgeCategoriesToFeatures = (geojson: FeatureCollection): FeatureC
         ageCategory: categorizeFeatureByAge(feature),
       },
     })),
-  };
-};
-
-export const filterOSMFeaturesByDate = (
-  geojson: FeatureCollection,
-  dateFilter: DateFilter = "all"
-): FeatureCollection & { availableTimeframes: DateFilter[] } => {
-  const filteredFeatures = filterFeaturesByDate(geojson.features, dateFilter);
-
-  return {
-    ...geojson,
-    features: filteredFeatures,
-    availableTimeframes: getAvailableTimeframes(geojson.features),
   };
 };
 
