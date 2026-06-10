@@ -1,2 +1,2 @@
-export { useDateFilter, useMapInteractions, useFeatureSelection } from "./use-date-filter";
+export { useDateFilter, useFeatureSelection } from "./use-date-filter";
 export { useMapData } from "./use-map-data";
