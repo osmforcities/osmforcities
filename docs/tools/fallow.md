@@ -43,10 +43,11 @@ For each flagged item:
 - Navigation: `useNavigate`, `useRouter`
 - Components used in dynamic imports
 
-## Example
+## Example Cleanup
 
-See PR #297 for example cleanup:
-- 11 files deleted, 21 exports removed
+Typical cleanup session:
+- 10-15 files deleted (components, hooks, utilities)
+- 15-25 exports removed (barrel exports, unused functions)
 - All verified with grep and type-check
 - Commit: `chore: remove dead code detected by Fallow`
 
