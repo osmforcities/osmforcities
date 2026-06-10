@@ -62,7 +62,7 @@ export function fromNominatim(result: NominatimResult): Area {
 
   return {
     id: result.osm_id,
-    name: result.name?.trim() || "",
+    name: result.name?.trim() || result.display_name?.split(",")[0].trim() || "",
     displayName: result.display_name?.trim() || "",
     osmType: result.osm_type,
     class: result.class,

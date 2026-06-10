@@ -124,6 +124,17 @@ describe("fromNominatim", () => {
     expect(area.name).toBe("Lisbon");
     expect(area.displayName).toBe("Lisbon, Portugal");
   });
+
+  it("falls back to display_name when name is empty", () => {
+    const resultWithEmptyName: NominatimResult = {
+      ...mockNominatimCity,
+      name: "",
+      display_name: "Lisbon, Portugal",
+    };
+
+    const area = fromNominatim(resultWithEmptyName);
+    expect(area.name).toBe("Lisbon"); // Falls back to first part of display_name
+  });
 });
 
 describe("fromOverpass", () => {

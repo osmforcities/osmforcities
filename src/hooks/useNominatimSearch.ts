@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { searchAreasWithNominatim } from "@/lib/nominatim";
-import { fromNominatim } from "@/lib/area-conversion";
+import { fromNominatim, InvalidAreaError } from "@/lib/area-conversion";
 import { Area } from "@/types/area";
 
 type UseNominatimSearchOptions = {
@@ -35,7 +35,17 @@ export function useNominatimAreas({
     enabled,
   });
 
-  const areas: Area[] = data?.map((result) => fromNominatim(result)) || [];
+  const areas: Area[] = data?.map((result) => {
+    try {
+      return fromNominatim(result);
+    } catch (error) {
+      if (error instanceof InvalidAreaError) {
+        console.warn("Invalid area data skipped:", result, error);
+        return null;
+      }
+      throw error;
+    }
+  }).filter((area): area is Area => area !== null) || [];
 
   return {
     data: areas,
