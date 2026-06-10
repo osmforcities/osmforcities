@@ -3,11 +3,13 @@
 //   pnpm i18n:review              — list sections with key/flagged counts
 //   pnpm i18n:review <Section>    — print all keys in that section
 
-import { readFileSync } from "fs";
+import { readFileSync, readdirSync } from "fs";
 import { join } from "path";
 
 const MESSAGES_DIR = join(__dirname, "../messages");
-const LOCALES = ["pt-BR", "es"] as const;
+const LOCALES = readdirSync(MESSAGES_DIR)
+  .filter((f) => f.endsWith(".json") && f !== "en.json" && !f.endsWith(".ts"))
+  .map((f) => f.replace(".json", ""));
 
 // Words allowed to appear unchanged in any translation (proper nouns, tech terms)
 const ALLOWED = new Set([
@@ -40,7 +42,6 @@ function flatten(
 // Returns English words that appear verbatim in the translation (possible anglicisms).
 // Skips short words, capitalized words (proper nouns), and known allowed terms.
 function detectAnglicisms(enValue: string, translated: string): string[] {
-  const translatedLower = translated.toLowerCase();
   return enValue
     .split(/\s+/)
     .filter((word) => {
@@ -48,7 +49,7 @@ function detectAnglicisms(enValue: string, translated: string): string[] {
       if (clean.length < 5) return false;
       if (clean[0] === clean[0].toUpperCase() && clean[0] !== clean[0].toLowerCase()) return false; // proper noun
       if (ALLOWED.has(clean.toLowerCase())) return false;
-      return translatedLower.includes(clean.toLowerCase());
+      return new RegExp(`\\b${clean}\\b`, "i").test(translated);
     })
     .map((w) => w.replace(/[^a-zA-Z]/g, ""));
 }
