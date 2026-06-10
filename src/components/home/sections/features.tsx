@@ -21,7 +21,7 @@ function FeatureItemComponent({
     <div className="flex gap-4">
       <div className="flex-shrink-0">
         <div className="bg-olive-100 dark:bg-olive-700 rounded-lg p-3">
-          <Icon className="size-6 text-olive-500" />
+          <Icon className="size-6 text-olive-500 dark:text-olive-300" />
         </div>
       </div>
       <div className="space-y-1">
