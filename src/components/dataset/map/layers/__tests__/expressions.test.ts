@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { buildCircleColorExpression, buildCircleRadiusExpression } from '../expressions';
 import type { CategoricalTheme, BooleanTheme, IntensityTheme } from '@/lib/map-themes/types';
+import { PALETTES } from '@/lib/map-themes/palettes';
 
 describe('buildCircleColorExpression', () => {
   it('should build case expression for categorical theme', () => {
@@ -52,6 +53,7 @@ describe('buildCircleColorExpression', () => {
       ['any', ['==', ['get', 'covered'], 'yes']],
       '#22c55e',
       '#ef4444',
+      PALETTES.boolean.yesNo.muted,
     ]);
   });
 
@@ -73,6 +75,7 @@ describe('buildCircleColorExpression', () => {
       ['any', ['==', ['get', 'lit'], true]],
       '#3b82f6',
       '#9ca3af',
+      PALETTES.boolean.trueFalse.muted,
     ]);
   });
 
@@ -94,6 +97,7 @@ describe('buildCircleColorExpression', () => {
       ['any', ['==', ['get', 'covered'], 'yes'], ['==', ['get', 'covered'], 'roof']],
       '#22c55e',
       '#ef4444',
+      PALETTES.boolean.yesNo.muted,
     ]);
   });
 
@@ -122,6 +126,72 @@ describe('buildCircleColorExpression', () => {
   it('should throw on unknown theme type', () => {
     const theme = { type: 'unknown' as never, field: 'foo' };
     expect(() => buildCircleColorExpression(theme as never)).toThrow('Unknown theme type');
+  });
+
+  it('should include muted color for yes/no pattern', () => {
+    const theme: BooleanTheme = {
+      type: 'boolean',
+      field: 'covered',
+      trueColor: '#22c55e',
+      falseColor: '#ef4444',
+      trueValue: 'yes',
+      falseValue: 'no',
+      trueAliases: [],
+    };
+
+    const expression = buildCircleColorExpression(theme);
+
+    expect(expression).toEqual([
+      'case',
+      ['any', ['==', ['get', 'covered'], 'yes']],
+      '#22c55e',
+      '#ef4444',
+      PALETTES.boolean.yesNo.muted,
+    ]);
+  });
+
+  it('should include muted color for true/false pattern', () => {
+    const theme: BooleanTheme = {
+      type: 'boolean',
+      field: 'lit',
+      trueColor: '#3b82f6',
+      falseColor: '#9ca3af',
+      trueValue: true,
+      falseValue: false,
+      trueAliases: [],
+    };
+
+    const expression = buildCircleColorExpression(theme);
+
+    expect(expression).toEqual([
+      'case',
+      ['any', ['==', ['get', 'lit'], true]],
+      '#3b82f6',
+      '#9ca3af',
+      PALETTES.boolean.trueFalse.muted,
+    ]);
+  });
+
+  it('should include muted color for 1/0 pattern', () => {
+    const theme: BooleanTheme = {
+      type: 'boolean',
+      field: 'access',
+      trueColor: '#22c55e',
+      falseColor: '#f59e0b',
+      trueValue: 1,
+      falseValue: 0,
+      trueAliases: [],
+    };
+
+    const expression = buildCircleColorExpression(theme);
+
+    expect(expression).toEqual([
+      'case',
+      ['any', ['==', ['get', 'access'], 1]],
+      '#22c55e',
+      '#f59e0b',
+      PALETTES.boolean.oneZero.muted,
+    ]);
   });
 });
 

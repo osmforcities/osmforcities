@@ -108,3 +108,10 @@ export {
   detectCategoricalTheme,
   calculateScore,
 } from './detection';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { buildLegend } from './legends';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { Legend } from './legends';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { LegendItem } from './legends';

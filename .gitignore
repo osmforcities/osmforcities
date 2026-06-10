@@ -69,3 +69,6 @@ messages/*.d.json.ts
 # Storybook
 storybook-static/
 .playwright-mcp/
+
+# Superpowers planning files
+docs/superpowers/

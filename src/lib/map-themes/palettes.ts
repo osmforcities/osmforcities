@@ -44,9 +44,9 @@ export const PALETTES = {
    * Pattern matching: yes/no → green/red, true/false → blue/gray, 1/0 → green/amber
    */
   boolean: {
-    yesNo: { true: '#22c55e', false: '#ef4444' } as const,
-    trueFalse: { true: '#3b82f6', false: '#9ca3af' } as const,
-    oneZero: { true: '#22c55e', false: '#f59e0b' } as const,
+    yesNo: { true: '#22c55e', false: '#ef4444', muted: '#9ca3ae' } as const,
+    trueFalse: { true: '#3b82f6', false: '#9ca3af', muted: '#6b7280' } as const,
+    oneZero: { true: '#22c55e', false: '#f59e0b', muted: '#9ca3ae' } as const,
   },
 } as const;
 

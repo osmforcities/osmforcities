@@ -3,6 +3,7 @@
 import { describe, it, expect } from 'vitest';
 import { isPropertyExcluded, analyzeProperty, detectBooleanTheme, detectIntensityTheme, detectCategoricalTheme, calculateScore } from '../map-themes/detection';
 import { detectMapThemes } from '../map-themes';
+import { PALETTES } from '../map-themes/palettes';
 import type { Feature } from 'geojson';
 import type { PropertyAnalysis, CategoricalTheme, BooleanTheme, IntensityTheme } from '../map-themes/types';
 
@@ -439,5 +440,21 @@ describe('detectMapThemes', () => {
     const coveredIndex = themes.findIndex((t) => t.field === 'covered');
     const capacityIndex = themes.findIndex((t) => t.field === 'capacity');
     expect(coveredIndex).toBeLessThan(capacityIndex);
+  });
+});
+
+describe('PALETTES', () => {
+  describe('boolean palettes', () => {
+    it('should include muted fallback for yesNo', () => {
+      expect(PALETTES.boolean.yesNo.muted).toBe('#9ca3ae');
+    });
+
+    it('should include muted fallback for trueFalse', () => {
+      expect(PALETTES.boolean.trueFalse.muted).toBe('#6b7280');
+    });
+
+    it('should include muted fallback for oneZero', () => {
+      expect(PALETTES.boolean.oneZero.muted).toBe('#9ca3ae');
+    });
   });
 });
