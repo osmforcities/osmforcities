@@ -372,7 +372,7 @@
       "title": "Como o OSM for Cities funciona",
       "description": "Siga conjuntos de dados, monitore mudanças, explore dados visualmente e baixe para análise",
       "curate": {
-        "title": "Curate seus conjuntos de dados",
+        "title": "Selecione seus conjuntos de dados",
         "description": "Escolha o que importa para sua cidade. Siga escolas, transporte, parques, clínicas ou qualquer conjunto de dados rastreado no OpenStreetMap. Construa um feed personalizado da infraestrutura que você se importa."
       },
       "notifications": {
