@@ -92,6 +92,12 @@ describe("fromNominatim", () => {
     expect(() => fromNominatim(invalidResult)).toThrow("Invalid bounding box");
   });
 
+  it("throws InvalidAreaError for invalid bbox (non-numeric strings)", () => {
+    const invalidResult = { ...mockNominatimCity, boundingbox: ["abc", "def", "ghi", "jkl"] };
+    expect(() => fromNominatim(invalidResult)).toThrow(InvalidAreaError);
+    expect(() => fromNominatim(invalidResult)).toThrow("coordinates must be numeric");
+  });
+
   it("handles missing optional fields with undefined", () => {
     const area = fromNominatim(mockNominatimMinimal);
 

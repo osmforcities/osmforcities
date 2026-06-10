@@ -22,6 +22,11 @@ function validateBBox(bbox: number[]): void {
 
   const [minLat, minLon, maxLat, maxLon] = bbox;
 
+  // Check for NaN values (parseFloat failed)
+  if (isNaN(minLat) || isNaN(minLon) || isNaN(maxLat) || isNaN(maxLon)) {
+    throw new InvalidAreaError(`Invalid bounding box: coordinates must be numeric`);
+  }
+
   // Validate latitude: -90 to 90
   if (minLat < -90 || minLat > 90 || maxLat < -90 || maxLat > 90) {
     throw new InvalidAreaError(`Invalid bounding box: latitude must be between -90 and 90`);
