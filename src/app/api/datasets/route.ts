@@ -3,7 +3,9 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { CreateDatasetSchema } from "@/schemas/dataset";
 import { Prisma } from "@prisma/client";
-import { fetchOsmRelationData, fetchDatasetSnapshot } from "@/lib/osm";
+import { fetchOsmRelationData } from "@/lib/area-boundary";
+import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
+import { getAreaDetailsById } from "@/lib/nominatim";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
@@ -39,18 +41,27 @@ export async function POST(req: NextRequest) {
   if (!area) {
     try {
       const fetched = await fetchOsmRelationData(osmRelationId);
+
       if (!fetched)
         return NextResponse.json(
           { error: "Failed to fetch OSM relation" },
           { status: 400 }
         );
 
+      let countryCode: string | null = null;
+      try {
+        const areaDetails = await getAreaDetailsById(osmRelationId);
+        countryCode = areaDetails?.countryCode ?? null;
+      } catch {
+        // Nominatim is best-effort; country code can be backfilled later
+      }
+
       area = await prisma.area.create({
         data: {
           id: osmRelationId,
           name: fetched.name,
           bounds: fetched.bounds,
-          countryCode: fetched.countryCode,
+          countryCode,
           geojson: JSON.parse(JSON.stringify(fetched.convertedGeojson)),
         },
       });

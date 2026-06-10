@@ -33,8 +33,11 @@ vi.mock("@/lib/template-resolver", () => ({
   }),
 }));
 
-vi.mock("@/lib/osm", () => ({
+vi.mock("@/lib/dataset-snapshot", () => ({
   fetchDatasetSnapshot: vi.fn(),
+}));
+
+vi.mock("@/lib/area-boundary", () => ({
   fetchOsmRelationData: vi.fn(),
 }));
 
@@ -51,7 +54,7 @@ vi.mock("@/lib/nominatim", () => ({
 }));
 
 import { getOrCreateDataset } from "@/lib/dataset-operations";
-import { fetchDatasetSnapshot } from "@/lib/osm";
+import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 
 const mockFetchDatasetSnapshot = vi.mocked(fetchDatasetSnapshot);
 

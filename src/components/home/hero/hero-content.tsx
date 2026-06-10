@@ -1,8 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowDown } from "lucide-react";
+import { ArrowRight, ArrowDown } from "lucide-react";
 import { scrollToSection } from "../shared/scroll-to-section";
 
 export function HeroContent() {
@@ -34,8 +35,18 @@ export function HeroContent() {
         </p>
         <div className="mt-6 flex flex-wrap items-center gap-4 md:mt-8">
           <Button
+            asChild
             size="lg"
             variant="primary"
+          >
+            <Link href="/explore" className="gap-2">
+              {t("hero.exploreDatasets")}
+              <ArrowRight className="size-4" />
+            </Link>
+          </Button>
+          <Button
+            size="lg"
+            variant="secondary"
             onClick={() => scrollToSection("features")}
             className="gap-2"
           >

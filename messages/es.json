@@ -8,6 +8,7 @@
   "Navigation": {
     "home": "Inicio",
     "dashboard": "Panel",
+    "explore": "Explorar",
     "about": "Acerca de",
     "myDatasets": "Mis Conjuntos de Datos",
     "public": "Público",
@@ -362,6 +363,7 @@
     "hero": {
       "title": "Comprende tu ciudad a través de datos abiertos",
       "description": "OSM for Cities organiza los datos de OpenStreetMap en conjuntos de datos que puedes seguir. Rastrea escuelas, transporte, parques y clínicas a medida que cambian, recibe actualizaciones por correo electrónico y comprende cómo evoluciona tu ciudad con el tiempo.",
+      "exploreDatasets": "Explorar conjuntos de datos",
       "seeHowItWorks": "Ver cómo funciona",
       "osmAttribution": "© Colaboradores de OpenStreetMap"
     },
@@ -370,7 +372,7 @@
       "title": "Cómo funciona OSM for Cities",
       "description": "Sigue conjuntos de datos, rastrea cambios, explora datos visualmente y descarga para análisis",
       "curate": {
-        "title": "Curate tus conjuntos de datos",
+        "title": "Selecciona tus conjuntos de datos",
         "description": "Elige lo que importa para tu ciudad. Sigue escuelas, transporte, parques, clínicas o cualquier conjunto de datos rastreado en OpenStreetMap. Construye una feed personalizada de la infraestructura que te importa."
       },
       "notifications": {
@@ -582,6 +584,17 @@
     "signInToBrowse": "Explora el mapa de <strong>{dataset} en {area}</strong>, creado por la comunidad de OpenStreetMap.",
     "continueWithEmail": "Continuar con email",
     "back": "Volver"
+  },
+  "ExplorePage": {
+    "metaTitle": "Explorar — OSM for Cities",
+    "title": "Explorar",
+    "description": "Descubre datos abiertos de ciudades de todo el mundo",
+    "noDatasets": "Aún no hay conjuntos de datos destacados.",
+    "stats": {
+      "features": "Elementos",
+      "contributors": "Colaboradores",
+      "lastEdited": "Última edición"
+    }
   },
   "SEO": {
     "home": {

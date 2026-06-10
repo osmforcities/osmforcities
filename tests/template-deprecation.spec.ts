@@ -11,6 +11,7 @@ import {
 } from "./utils/auth";
 
 test.describe("Template Deprecation", () => {
+  test.describe.configure({ mode: "serial" });
   let testUser: { id: string; email: string; password?: string };
 
   test.afterEach(async () => {

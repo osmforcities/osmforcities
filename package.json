@@ -20,6 +20,7 @@
     "prepare": "husky",
     "i18n:check": "i18n-check --locales messages --source en",
     "i18n:check:fix": "i18n-check --locales messages --source en --fix",
+    "i18n:review": "tsx scripts/export-translations.ts",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "changeset version && git add .",

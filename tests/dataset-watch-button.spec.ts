@@ -77,7 +77,7 @@ test.describe("Dataset Watch Button", () => {
 
   test("should display watch button for datasets", async ({ page }) => {
     await page.goto(
-      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+      getLocalizedPath(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`)
     );
 
     // Check that watch button is visible
@@ -90,7 +90,7 @@ test.describe("Dataset Watch Button", () => {
 
   test("should successfully watch a dataset", async ({ page }) => {
     await page.goto(
-      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+      getLocalizedPath(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`)
     );
 
     // Click watch button
@@ -116,7 +116,7 @@ test.describe("Dataset Watch Button", () => {
 
   test("should successfully unwatch a dataset", async ({ page }) => {
     await page.goto(
-      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+      getLocalizedPath(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`)
     );
 
     // First watch the dataset through the UI
@@ -167,7 +167,7 @@ test.describe("Dataset Watch Button", () => {
     });
 
     await page.goto(
-      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+      getLocalizedPath(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`)
     );
 
     const watchButton = page.getByTestId("dataset-watch-button");
@@ -200,7 +200,7 @@ test.describe("Dataset Watch Button", () => {
 
   test("should show correct button states", async ({ page }) => {
     await page.goto(
-      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+      getLocalizedPath(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`)
     );
 
     // Initially should show watch button
@@ -233,7 +233,7 @@ test.describe("Dataset Watch Button", () => {
     });
 
     await page.goto(
-      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+      getLocalizedPath(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`)
     );
 
     const watchButton = page.getByTestId("dataset-watch-button");
@@ -273,7 +273,7 @@ test.describe("Dataset Watch Button", () => {
     await prisma.$disconnect();
 
     await page.goto(
-      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+      getLocalizedPath(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`)
     );
 
     // Should show unwatch button initially
@@ -343,7 +343,7 @@ test.describe("Dataset Watch Button", () => {
     await seedPrisma.$disconnect();
 
     await page.goto(
-      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+      getLocalizedPath(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`)
     );
 
     const watchButton = page.getByTestId("dataset-watch-button");
@@ -400,7 +400,7 @@ test.describe("Dataset Watch Button", () => {
     await prisma.$disconnect();
 
     await page.goto(
-      `/area/${testDataset.area.id}/dataset/${testDataset.template.id}`
+      getLocalizedPath(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`)
     );
 
     // Current user should still be able to watch
