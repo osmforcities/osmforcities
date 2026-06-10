@@ -68,16 +68,6 @@ export async function searchAreasWithNominatim(
 }
 
 /**
- * Convert Nominatim result to Area type
- * @deprecated Use fromNominatim from @/lib/area-conversion instead
- * @param result - Nominatim result
- * @returns Area - Converted area object
- */
-export function convertNominatimResultToArea(result: NominatimResult) {
-  return fromNominatim(result);
-}
-
-/**
  * Fetch area details by OSM relation ID
  * @param osmRelationId - The OSM relation ID
  * @param language - The language code for the response (e.g., 'en', 'pt-BR', 'es')
