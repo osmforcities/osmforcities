@@ -6,8 +6,6 @@
   "ignoreFiles": [
     "global.ts",
     ".stories.",
-    ".stories.ts",
-    ".stories.tsx",
     ".storybook/"
   ]
 }

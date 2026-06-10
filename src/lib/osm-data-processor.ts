@@ -2,7 +2,7 @@ import type { FeatureCollection, Feature } from "geojson";
 import type { DateFilter } from "../types/geojson";
 import { getAvailableTimeframes, filterFeaturesByDate, calculateAge } from "./utils";
 
-export type FeatureAgeCategory = "recent" | "medium" | "older" | "very-old";
+type FeatureAgeCategory = "recent" | "medium" | "older" | "very-old";
 
 const categorizeFeatureByAge = (feature: Feature): FeatureAgeCategory => {
   const timestamp = feature.properties?.["@timestamp"] || feature.properties?.timestamp;
