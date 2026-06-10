@@ -68,26 +68,3 @@ export function getColorClasses(color: ColorVariant) {
       };
   }
 }
-
-export const useCaseColors: ColorVariant[] = [
-  "blue",
-  "orange",
-  "pink",
-  "indigo-gray",
-  "green",
-  "pink",
-  "yellow",
-  "blue",
-];
-
-export const categoryColors: ColorVariant[] = [
-  "blue",
-  "orange",
-  "purple",
-  "pink",
-  "indigo-gray",
-  "green",
-  "yellow",
-  "blue",
-  "purple",
-];

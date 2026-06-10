@@ -18,10 +18,10 @@ function FeatureItemComponent({
   const Icon = feature.icon;
 
   return (
-    <div className="flex gap-4 group">
+    <div className="flex gap-4">
       <div className="flex-shrink-0">
-        <div className="bg-blue-50 dark:bg-blue-950 rounded-lg p-3 group-hover:bg-blue-100 dark:group-hover:bg-blue-900 transition-colors">
-          <Icon className="size-6 text-blue-600" />
+        <div className="bg-olive-100 dark:bg-olive-700 rounded-lg p-3">
+          <Icon className="size-6 text-olive-500" />
         </div>
       </div>
       <div className="space-y-1">
