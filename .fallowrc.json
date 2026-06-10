@@ -1,6 +1,5 @@
 {
   "ignoreExports": [
-    "useNavigate",
     "useRouter"
   ],
   "ignoreFiles": [
