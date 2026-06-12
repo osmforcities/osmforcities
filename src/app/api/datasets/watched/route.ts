@@ -24,7 +24,7 @@ export async function GET() {
             template: {
               include: {
                 category: {
-                  select: { slug: true },
+                  select: { id: true, name: true, slug: true },
                 },
               },
             },
