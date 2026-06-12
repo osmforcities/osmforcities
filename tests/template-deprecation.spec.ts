@@ -11,6 +11,7 @@ import {
 } from "./utils/auth";
 
 test.describe("Template Deprecation", () => {
+  test.describe.configure({ mode: "serial" });
   let testUser: { id: string; email: string; password?: string };
 
   test.afterEach(async () => {
@@ -30,6 +31,13 @@ test.describe("Template Deprecation", () => {
       // Clean up
       await prisma.template.deleteMany({ where: { id: "test-deprecated" } });
 
+      // Create a test category first
+      const testCategory = await prisma.category.upsert({
+        where: { slug: "test" },
+        create: { id: "cat-test", name: "Test", slug: "test" },
+        update: {},
+      });
+
       // Create a deprecated template
       await prisma.template.create({
         data: {
@@ -37,7 +45,7 @@ test.describe("Template Deprecation", () => {
           name: "Deprecated Template",
           description: "This template is deprecated",
           overpassQuery: 'node["amenity"](area.searchArea);',
-          category: "test",
+          category: { connect: { id: testCategory.id } },
           tags: ["amenity"],
           isActive: true,
           deprecatesAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
@@ -50,6 +58,8 @@ test.describe("Template Deprecation", () => {
       // Should show template not found error
       await expect(page.locator("text=Dataset Template Not Found")).toBeVisible();
     } finally {
+      await prisma.template.deleteMany({ where: { id: "test-deprecated" } });
+      await prisma.category.deleteMany({ where: { slug: "test" } });
       await prisma.$disconnect();
     }
   });
@@ -62,6 +72,13 @@ test.describe("Template Deprecation", () => {
       testUser = await createTestUser(prisma);
       await setupAuthenticationWithLogin(page, testUser);
 
+      // Create a test category first
+      const testCategory = await prisma.category.upsert({
+        where: { slug: "test" },
+        create: { id: "cat-test", name: "Test", slug: "test" },
+        update: {},
+      });
+
       // Create a non-deprecated template
       await prisma.template.upsert({
         where: { id: "test-active" },
@@ -70,7 +87,7 @@ test.describe("Template Deprecation", () => {
           name: "Active Template",
           description: "This template is active",
           overpassQuery: 'node["amenity"](area.searchArea);',
-          category: "test",
+          category: { connect: { id: testCategory.id } },
           tags: ["amenity"],
           isActive: true,
         },
@@ -88,6 +105,8 @@ test.describe("Template Deprecation", () => {
       const isVisible = await templateNotFound.isVisible().catch(() => false);
       expect(isVisible).toBe(false);
     } finally {
+      await prisma.template.deleteMany({ where: { id: "test-active" } });
+      await prisma.category.deleteMany({ where: { slug: "test" } });
       await prisma.$disconnect();
     }
   });

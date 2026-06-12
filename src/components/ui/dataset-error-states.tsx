@@ -20,6 +20,7 @@ export function TemplateNotFoundError({
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -75,6 +76,7 @@ export function AreaNotFoundError({ areaId }: { areaId: string }) {
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -124,10 +126,13 @@ export function DatasetCreationError({
   onRetry?: () => void;
 }) {
   const t = useTranslations("DatasetErrors");
-  const isTimeout = error.toLowerCase().includes("timeout");
+  const isTimeout =
+    error.toLowerCase().includes("timeout") ||
+    error.toLowerCase().includes("timed out");
   const isTooLarge =
-    error.toLowerCase().includes("too large") ||
-    error.toLowerCase().includes("memory");
+    !isTimeout &&
+    (error.toLowerCase().includes("too large") ||
+      error.toLowerCase().includes("memory"));
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center" data-testid="dataset-creation-error">
@@ -138,6 +143,7 @@ export function DatasetCreationError({
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -170,12 +176,6 @@ export function DatasetCreationError({
             </>
           )}
         </p>
-
-        {error && (
-          <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
-            <p className="text-sm text-gray-600 font-mono">{error}</p>
-          </div>
-        )}
 
         <div className="space-y-3">
           {onRetry && (
@@ -238,6 +238,7 @@ export function DatasetErrorBoundary({
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"

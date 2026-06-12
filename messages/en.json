@@ -16,11 +16,13 @@
     "users": "Users",
     "preferences": "Preferences",
     "brandName": "OSM for Cities",
+    "explore": "Explore",
     "signIn": "Sign In",
     "signOut": "Sign Out",
     "mainMenu": "Main navigation menu",
     "menu": "Menu",
-    "close": "Close"
+    "close": "Close",
+    "breadcrumbLabel": "Breadcrumb"
   },
   "Common": {
     "shareFeedback": "Share Feedback",
@@ -47,6 +49,7 @@
     "noFollowedDatasetsTitle": "No datasets followed yet",
     "noFollowedDatasetsDescription": "Search above to get started.",
     "datasetCount": "Following {count, plural, =1 {# dataset} other {# datasets}}",
+    "followedDatasetsGridLabel": "Followed datasets",
     "watcherCount": "{count, plural, =1 {# watcher} other {# watchers}}",
     "active": "Active",
     "inactive": "Inactive"
@@ -166,6 +169,12 @@
     "refreshing": "Refreshing...",
     "watch": "Watch",
     "unwatch": "Unwatch",
+    "featured": "Featured",
+    "feature": "Feature",
+    "unfeature": "Unfeature",
+    "featureTitle": "Feature this dataset on homepage",
+    "unfeatureTitle": "Remove from featured",
+    "featureError": "Could not update featured status. Try again.",
     "dataMetrics": "Data Metrics",
     "actions": "Actions"
   },
@@ -206,7 +215,8 @@
     "searching": "Searching...",
     "typeMoreChars": "Type {count} more character{count, plural, one {} other {s}} to search",
     "searchHint": "Try searching for cities, regions, or countries",
-    "idLabel": "ID: "
+    "idLabel": "ID: ",
+    "clearSearch": "Clear search"
   },
   "AddressTypes": {
     "city": "City",
@@ -357,6 +367,7 @@
       "title": "Understand your city through open data",
       "description": "OSM for Cities organizes OpenStreetMap data into datasets you can follow. Track schools, transport, parks, and clinics as they change, receive updates by email, and understand how your city evolves over time.",
       "seeHowItWorks": "See how it works",
+      "exploreDatasets": "Explore datasets",
       "osmAttribution": "© OpenStreetMap contributors"
     },
     "features": {
@@ -567,6 +578,17 @@
     "signInToBrowse": "Explore the map of <strong>{dataset} in {area}</strong>, made by the OpenStreetMap community.",
     "continueWithEmail": "Continue with email",
     "back": "Back"
+  },
+  "ExplorePage": {
+    "metaTitle": "Explore — OSM for Cities",
+    "title": "Explore",
+    "description": "Discover open data from cities worldwide",
+    "noDatasets": "No featured datasets yet.",
+    "stats": {
+      "features": "Features",
+      "contributors": "Contributors",
+      "lastEdited": "Last edited"
+    }
   },
   "SEO": {
     "home": {

@@ -1,6 +1,6 @@
 {
   "name": "osmforcities",
-  "version": "1.9.2",
+  "version": "1.10.0",
   "private": true,
   "scripts": {
     "dev": "COMMIT_HASH=$(git rev-parse HEAD 2>/dev/null || echo 'unknown') next dev",
@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "type-check": "tsc --noEmit",
+    "fallow": "fallow dead-code",
     "db:sync": "tsx prisma/sync-templates.ts",
     "generate-icons": "tsx prisma/generate-icons.ts",
     "translate-todos": "tsx prisma/translate-todos.ts",
@@ -19,6 +20,7 @@
     "prepare": "husky",
     "i18n:check": "i18n-check --locales messages --source en",
     "i18n:check:fix": "i18n-check --locales messages --source en --fix",
+    "i18n:review": "tsx scripts/export-translations.ts",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "changeset version && git add .",
@@ -87,6 +89,7 @@
     "eslint-config-next": "15.3.6",
     "eslint-plugin-playwright": "^2.2.0",
     "eslint-plugin-storybook": "10.2.0",
+    "fallow": "^2.91.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.0",
     "playwright": "^1.58.0",

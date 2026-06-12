@@ -6,7 +6,6 @@ import { GridWrapper } from "../shared/grid-wrapper";
 import { DATASET_ICONS } from "../shared/icon-config";
 import { DatasetCategory } from "../shared/types";
 import { CategoryCard } from "@/components/ui/category-card";
-import { categoryColors } from "../shared";
 
 export function DatasetShowcase() {
   const t = useTranslations("Home");
@@ -88,7 +87,7 @@ export function DatasetShowcase() {
 
       {/* Category grid */}
       <GridWrapper columns={3} maxWidth="lg">
-        {categories.map((category, index) => (
+        {categories.map((category) => (
           <CategoryCard
             key={category.id}
             icon={category.icon}
@@ -96,7 +95,6 @@ export function DatasetShowcase() {
             title={category.title}
             description={category.description}
             variant="showcase"
-            colorVariant={categoryColors[index]}
           />
         ))}
       </GridWrapper>

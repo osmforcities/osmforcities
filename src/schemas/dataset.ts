@@ -58,7 +58,11 @@ export const DatasetSchema = z.object({
   template: z.object({
     id: z.string(),
     name: z.string(),
-    category: z.string(),
+    category: z.object({
+      id: z.string(),
+      name: z.string(),
+      slug: z.string(),
+    }).nullable(),
     description: z.string().nullable(),
   }),
   user: z
@@ -87,6 +91,8 @@ export const DatasetSchema = z.object({
   isWatched: z.boolean().optional(),
   watchersCount: z.number().optional(),
   canDelete: z.boolean().optional(),
+  isFeatured: z.boolean().optional(),
+  canFeature: z.boolean().optional(),
 });
 
 export type Dataset = z.infer<typeof DatasetSchema>;

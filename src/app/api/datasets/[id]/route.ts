@@ -13,7 +13,13 @@ export async function GET(
         id: id,
       },
       include: {
-        template: true,
+        template: {
+          include: {
+            category: {
+              select: { id: true, name: true, slug: true },
+            },
+          },
+        },
         user: {
           select: {
             id: true,

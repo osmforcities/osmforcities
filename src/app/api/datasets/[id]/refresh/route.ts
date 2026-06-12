@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { fetchDatasetSnapshot } from "@/lib/osm";
+import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
@@ -25,7 +25,13 @@ export async function POST(
         userId: user.id,
       },
       include: {
-        template: true,
+        template: {
+          include: {
+            category: {
+              select: { id: true, name: true, slug: true },
+            },
+          },
+        },
         area: true,
       },
     });
@@ -59,7 +65,13 @@ export async function POST(
         updatedAt: new Date(),
       },
       include: {
-        template: true,
+        template: {
+          include: {
+            category: {
+              select: { id: true, name: true, slug: true },
+            },
+          },
+        },
         user: {
           select: {
             id: true,

@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# worktrees
+.worktrees/
+
 # dependencies
 /node_modules
 /.pnp
@@ -23,6 +26,7 @@
 # misc
 .DS_Store
 *.pem
+FALLOW_FINDINGS.md
 
 # debug
 npm-debug.log*

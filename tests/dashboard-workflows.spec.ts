@@ -66,7 +66,9 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     const prisma = new PrismaClient();
 
     // Get a template
-    const template = await prisma.template.findFirst();
+    const template = await prisma.template.findFirst({
+      include: { category: true },
+    });
     if (!template) {
       throw new Error("No template found in database");
     }
@@ -140,7 +142,9 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     // Create a test dataset and watch it
     const prisma = new PrismaClient();
 
-    const template = await prisma.template.findFirst();
+    const template = await prisma.template.findFirst({
+      include: { category: true },
+    });
     if (!template) {
       throw new Error("No template found in database");
     }
@@ -200,7 +204,9 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     // Create a test dataset and watch it
     const prisma = new PrismaClient();
 
-    const template = await prisma.template.findFirst();
+    const template = await prisma.template.findFirst({
+      include: { category: true },
+    });
     if (!template) {
       throw new Error("No template found in database");
     }
@@ -263,7 +269,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     await expect(datasetCard.getByText("(US)")).toBeVisible();
 
     // Check for category badge
-    await expect(datasetCard.getByText(template.category)).toBeVisible();
+    await expect(datasetCard.getByText(template.category?.slug ?? "other")).toBeVisible();
 
     // Check for status badge
     await expect(datasetCard.getByText("Active")).toBeVisible();
@@ -273,7 +279,9 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     // Create a test dataset and watch it
     const prisma = new PrismaClient();
 
-    const template = await prisma.template.findFirst();
+    const template = await prisma.template.findFirst({
+      include: { category: true },
+    });
     if (!template) {
       throw new Error("No template found in database");
     }
@@ -325,7 +333,9 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     // Create a test dataset to ensure grid is visible
     const prisma = new PrismaClient();
 
-    const template = await prisma.template.findFirst();
+    const template = await prisma.template.findFirst({
+      include: { category: true },
+    });
     if (!template) {
       throw new Error("No template found in database");
     }

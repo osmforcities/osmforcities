@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Download, RefreshCw, Eye, EyeOff } from "lucide-react";
+import { Download, RefreshCw, Eye, EyeOff, Star } from "lucide-react";
 import type { Dataset } from "@/schemas/dataset";
 import { useDatasetDownload } from "@/hooks/useDatasetDownload";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
@@ -20,6 +20,9 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
 
   const [isWatched, setIsWatched] = useState(dataset.isWatched || false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isFeatured, setIsFeatured] = useState(dataset.isFeatured ?? false);
+  const [isFeaturingLoading, setIsFeaturingLoading] = useState(false);
+  const [hasFeatureError, setHasFeatureError] = useState(false);
 
   const handleToggleWatch = async () => {
     try {
@@ -43,13 +46,29 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
     }
   };
 
+  const handleToggleFeatured = async () => {
+    setHasFeatureError(false);
+    setIsFeaturingLoading(true);
+    try {
+      const res = await fetch(`/api/datasets/${dataset.id}/feature`, {
+        method: "PUT",
+      });
+      if (!res.ok) throw new Error("Failed to toggle featured status");
+      const data = await res.json();
+      setIsFeatured(data.isFeatured);
+    } catch (error) {
+      console.error("Error toggling featured status:", error);
+      setHasFeatureError(true);
+    } finally {
+      setIsFeaturingLoading(false);
+    }
+  };
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
       const result = await refreshDataset(dataset.id);
-      if (result.success) {
-        // Optionally show success message or update UI
-      } else {
+      if (!result.success) {
         console.error("Failed to refresh dataset:", result.error);
       }
     } catch (error) {
@@ -63,6 +82,33 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
     <div className="pt-4 pb-2">
       <div className="border-t border-gray-300 mb-4"></div>
       <div className="flex flex-col gap-3">
+        {isFeatured && !dataset.canFeature && (
+          <div className="flex items-center gap-1.5 text-sm font-medium text-amber-600">
+            <Star className="h-4 w-4 fill-current" />
+            {t("featured")}
+          </div>
+        )}
+
+        {dataset.canFeature && (
+          <>
+            <Button
+              onClick={handleToggleFeatured}
+              disabled={isFeaturingLoading}
+              className="flex items-center gap-2 w-full h-10"
+              variant={isFeatured ? "default" : "outline"}
+              title={isFeatured ? t("unfeatureTitle") : t("featureTitle")}
+            >
+              <Star className={`h-4 w-4 ${isFeatured ? "fill-current" : ""}`} />
+              {isFeatured ? t("unfeature") : t("feature")}
+            </Button>
+            {hasFeatureError && (
+              <p role="alert" className="text-sm text-red-600">
+                {t("featureError")}
+              </p>
+            )}
+          </>
+        )}
+
         {/* Refresh Button */}
         <Button
           onClick={handleRefresh}
@@ -99,23 +145,23 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
 
         {/* Watch/Unwatch Button */}
         <Button
-            onClick={handleToggleWatch}
-            disabled={isLoading}
-            className="flex items-center gap-2 w-full h-10"
-            variant={isWatched ? "default" : "outline"}
-            title={
-              isWatched
-                ? "Stop receiving updates about this dataset"
-                : "Get notified when this dataset is updated"
-            }
-            data-testid={isWatched ? "dataset-unwatch-button" : "dataset-watch-button"}
-          >
-            {isWatched ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-            {isWatched ? t("unwatch") : t("watch")}
+          onClick={handleToggleWatch}
+          disabled={isLoading}
+          className="flex items-center gap-2 w-full h-10"
+          variant={isWatched ? "default" : "outline"}
+          title={
+            isWatched
+              ? "Stop receiving updates about this dataset"
+              : "Get notified when this dataset is updated"
+          }
+          data-testid={isWatched ? "dataset-unwatch-button" : "dataset-watch-button"}
+        >
+          {isWatched ? (
+            <EyeOff className="h-4 w-4" />
+          ) : (
+            <Eye className="h-4 w-4" />
+          )}
+          {isWatched ? t("unwatch") : t("watch")}
         </Button>
       </div>
     </div>

@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { DatasetSchema } from "@/schemas/dataset";
-import type { FeatureCollection } from "geojson";
+import { transformDataset } from "@/lib/dataset/transform";
 
 export async function GET() {
   try {
+    const headersList = await headers();
     const session = await auth();
     const user = session?.user || null;
 
@@ -20,7 +21,13 @@ export async function GET() {
       include: {
         dataset: {
           include: {
-            template: true,
+            template: {
+              include: {
+                category: {
+                  select: { id: true, name: true, slug: true },
+                },
+              },
+            },
             user: {
               select: {
                 id: true,
@@ -40,20 +47,13 @@ export async function GET() {
       },
     });
 
-    const datasets = watchedDatasets.map((watch) => {
-      const dataset = watch.dataset;
-      return DatasetSchema.parse({
-        ...dataset,
-        geojson: dataset.geojson as FeatureCollection | null,
-        bbox: dataset.bbox as number[] | null,
-        area: {
-          ...dataset.area,
-          geojson: dataset.area.geojson as FeatureCollection | null,
-        },
-        isWatched: true,
-        watchersCount: dataset._count.watchers,
-      });
-    });
+    // Derive locale from Accept-Language header, preserving full tag (e.g., 'pt-BR', not 'pt')
+    const acceptLanguage = headersList.get("accept-language") || "en";
+    const locale = acceptLanguage.split(",")[0].split(";")[0].trim();
+
+    const datasets = watchedDatasets.map((watch) =>
+      transformDataset(watch.dataset, user, locale, { isWatched: true })
+    );
 
     return NextResponse.json(datasets);
   } catch (error) {
