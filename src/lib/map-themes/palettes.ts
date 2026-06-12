@@ -47,6 +47,10 @@ export const PALETTES = {
     yesNo: { true: '#22c55e', false: '#ef4444', muted: '#9ca3ae' } as const,
     trueFalse: { true: '#3b82f6', false: '#9ca3af', muted: '#6b7280' } as const,
     oneZero: { true: '#22c55e', false: '#f59e0b', muted: '#9ca3ae' } as const,
+    blueOrange: { true: '#3b82f6', false: '#f97316', muted: '#94a3b8' } as const,
+    tealCoral: { true: '#14b8a6', false: '#fb7185', muted: '#94a3b8' } as const,
+    purplePink: { true: '#a855f7', false: '#ec4899', muted: '#94a3b8' } as const,
+    blueOrangeDark: { true: '#2171b5', false: '#d94801', muted: '#9ca3af' } as const,
   },
 } as const;
 

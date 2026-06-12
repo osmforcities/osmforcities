@@ -99,7 +99,7 @@ export function analyzeProperty(
  * Known boolean patterns in OSM data.
  */
 const BOOLEAN_PATTERNS = [
-  { true: 'yes', false: 'no', palette: PALETTES.boolean.yesNo },
+  { true: 'yes', false: 'no', palette: PALETTES.boolean.blueOrange },
   { true: 'true', false: 'false', palette: PALETTES.boolean.trueFalse },
   { true: true, false: false, palette: PALETTES.boolean.trueFalse },
   { true: 1, false: 0, palette: PALETTES.boolean.oneZero },

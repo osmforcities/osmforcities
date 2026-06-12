@@ -93,7 +93,7 @@ function MapLibreMapWithThemes({ features, theme }: { features: Feature[]; theme
             id="points"
             type="circle"
             paint={{
-              'circle-radius': theme ? buildCircleRadiusExpression(theme, 7) as number : 7,
+              'circle-radius': theme ? buildCircleRadiusExpression(theme, 4) as number : 4,
               'circle-stroke-width': 1,
               'circle-stroke-color': 'rgba(255, 255, 255, 0.8)',
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -159,5 +159,104 @@ export const BicycleParkingParisCategorical: Story = {
   name: 'Bicycle Parking Paris - Categorical',
   parameters: {
     notes: 'Categorical themes from bicycle parking dataset: bicycle_parking types. Shows top 10 categories with "other" fallback.',
+  },
+};
+
+export const BooleanColorPaletteComparison: Story = {
+  render: () => {
+    const features = bicycleParkingParisData.features.slice(0, 200); // Subset for faster rendering
+
+    // Manually create boolean themes with different color palettes
+    // All represent the same "covered" property (yes/no) with different colors
+    const paletteVariants: Array<{ name: string; theme: MapTheme }> = [
+      {
+        name: 'yesNo (green/red/gray)',
+        theme: {
+          type: 'boolean',
+          field: 'covered',
+          trueValue: 'yes',
+          falseValue: 'no',
+          trueColor: '#22c55e',
+          falseColor: '#ef4444',
+          trueAliases: [],
+        },
+      },
+      {
+        name: 'blueOrange (colorblind-safe)',
+        theme: {
+          type: 'boolean',
+          field: 'covered',
+          trueValue: 'yes',
+          falseValue: 'no',
+          trueColor: '#3b82f6',
+          falseColor: '#f97316',
+          trueAliases: [],
+        },
+      },
+      {
+        name: 'tealCoral (modern UI)',
+        theme: {
+          type: 'boolean',
+          field: 'covered',
+          trueValue: 'yes',
+          falseValue: 'no',
+          trueColor: '#14b8a6',
+          falseColor: '#fb7185',
+          trueAliases: [],
+        },
+      },
+      {
+        name: 'purplePink (distinct)',
+        theme: {
+          type: 'boolean',
+          field: 'covered',
+          trueValue: 'yes',
+          falseValue: 'no',
+          trueColor: '#a855f7',
+          falseColor: '#ec4899',
+          trueAliases: [],
+        },
+      },
+      {
+        name: 'blueOrangeDark (ColorBrewer)',
+        theme: {
+          type: 'boolean',
+          field: 'covered',
+          trueValue: 'yes',
+          falseValue: 'no',
+          trueColor: '#2171b5',
+          falseColor: '#d94801',
+          trueAliases: [],
+        },
+      },
+    ];
+
+    const title = 'Boolean Color Palette Comparison';
+    const description = 'Comparing 5 boolean color schemes on the same data (covered: yes/no/muted)';
+
+    return (
+      <div className="p-4">
+        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <p className="text-sm text-gray-600 mb-6">
+          {description}
+        </p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {paletteVariants.map((variant, index) => (
+            <div key={index} className="border rounded-lg overflow-hidden">
+              <div className="bg-gray-50 px-4 py-2 border-b">
+                <h4 className="text-sm font-medium">{variant.name}</h4>
+              </div>
+              <div className="relative h-80">
+                <MapLibreMapWithThemes features={features} theme={variant.theme} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  },
+  parameters: {
+    layout: 'centered',
+    notes: 'Side-by-side comparison of boolean color schemes. All maps show the same "covered" theme (yes/no/muted) with different palettes.',
   },
 };
