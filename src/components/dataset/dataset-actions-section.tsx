@@ -22,6 +22,7 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isFeatured, setIsFeatured] = useState(dataset.isFeatured ?? false);
   const [isFeaturingLoading, setIsFeaturingLoading] = useState(false);
+  const [hasFeatureError, setHasFeatureError] = useState(false);
 
   const handleToggleWatch = async () => {
     try {
@@ -46,6 +47,7 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
   };
 
   const handleToggleFeatured = async () => {
+    setHasFeatureError(false);
     setIsFeaturingLoading(true);
     try {
       const res = await fetch(`/api/datasets/${dataset.id}/feature`, {
@@ -56,6 +58,7 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
       setIsFeatured(data.isFeatured);
     } catch (error) {
       console.error("Error toggling featured status:", error);
+      setHasFeatureError(true);
     } finally {
       setIsFeaturingLoading(false);
     }
@@ -87,16 +90,23 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
         )}
 
         {dataset.canFeature && (
-          <Button
-            onClick={handleToggleFeatured}
-            disabled={isFeaturingLoading}
-            className="flex items-center gap-2 w-full h-10"
-            variant={isFeatured ? "default" : "outline"}
-            title={isFeatured ? t("unfeatureTitle") : t("featureTitle")}
-          >
-            <Star className={`h-4 w-4 ${isFeatured ? "fill-current" : ""}`} />
-            {isFeatured ? t("unfeature") : t("feature")}
-          </Button>
+          <>
+            <Button
+              onClick={handleToggleFeatured}
+              disabled={isFeaturingLoading}
+              className="flex items-center gap-2 w-full h-10"
+              variant={isFeatured ? "default" : "outline"}
+              title={isFeatured ? t("unfeatureTitle") : t("featureTitle")}
+            >
+              <Star className={`h-4 w-4 ${isFeatured ? "fill-current" : ""}`} />
+              {isFeatured ? t("unfeature") : t("feature")}
+            </Button>
+            {hasFeatureError && (
+              <p role="alert" className="text-sm text-red-600">
+                {t("featureError")}
+              </p>
+            )}
+          </>
         )}
 
         {/* Refresh Button */}

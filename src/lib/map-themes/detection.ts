@@ -281,9 +281,10 @@ export function calculateScore(theme: MapTheme, coverage: number): number {
       return coverage * 10;
     case 'intensity':
       return coverage * 5;
-    case 'categorical':
+    case 'categorical': {
       const categoryCount = theme.topValues.length + theme.otherCount;
       return coverage * Math.min(categoryCount, 10);
+    }
     default:
       return 0;
   }

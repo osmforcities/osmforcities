@@ -173,6 +173,7 @@
     "unfeature": "Quitar destacado",
     "featureTitle": "Destacar este conjunto en la página principal",
     "unfeatureTitle": "Quitar de destacados",
+    "featureError": "No se pudo actualizar el estado destacado. Intente de nuevo.",
     "dataMetrics": "Métricas de Datos",
     "actions": "Acciones"
   },

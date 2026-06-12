@@ -40,21 +40,18 @@ export async function POST(req: NextRequest) {
 
   if (!area) {
     try {
-      const fetched = await fetchOsmRelationData(osmRelationId);
+      const [fetched, countryCode] = await Promise.all([
+        fetchOsmRelationData(osmRelationId),
+        getAreaDetailsById(osmRelationId)
+          .then((details) => details?.countryCode ?? null)
+          .catch(() => null),
+      ]);
 
       if (!fetched)
         return NextResponse.json(
           { error: "Failed to fetch OSM relation" },
           { status: 400 }
         );
-
-      let countryCode: string | null = null;
-      try {
-        const areaDetails = await getAreaDetailsById(osmRelationId);
-        countryCode = areaDetails?.countryCode ?? null;
-      } catch {
-        // Nominatim is best-effort; country code can be backfilled later
-      }
 
       area = await prisma.area.create({
         data: {
