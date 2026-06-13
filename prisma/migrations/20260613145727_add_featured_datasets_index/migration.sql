@@ -1,5 +1,5 @@
 -- DropIndex
-DROP INDEX "datasets_userId_templateId_areaId_key";
+DROP INDEX IF EXISTS "datasets_userId_templateId_areaId_key";
 
 -- AlterTable
 ALTER TABLE "categories" ALTER COLUMN "updatedAt" DROP DEFAULT;
