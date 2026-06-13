@@ -13,21 +13,6 @@ export interface CategoricalTheme {
 }
 
 /**
- * A boolean theme for properties with exactly two distinct values
- * matching yes/no, true/false, or 1/0 patterns.
- * Example: covered=yes/no, lit=yes/no
- */
-export interface BooleanTheme {
-  type: 'boolean';
-  field: string;
-  trueColor: string;
-  falseColor: string;
-  trueValue: string | boolean | number;
-  falseValue: string | boolean | number;
-  trueAliases: Array<string | boolean | number>; // Additional values that should map to true (e.g., 'roof' for 'covered')
-}
-
-/**
  * An intensity theme for numeric properties with a range > 0.
  * Example: capacity=10-100, height=1-50
  */
@@ -43,7 +28,7 @@ export interface IntensityTheme {
  * A map theme detected from dataset feature properties.
  * Age theme is NOT included — it's always available as a UI fallback.
  */
-export type MapTheme = CategoricalTheme | BooleanTheme | IntensityTheme;
+export type MapTheme = CategoricalTheme | IntensityTheme;
 
 /**
  * A feature property with its analyzed values.

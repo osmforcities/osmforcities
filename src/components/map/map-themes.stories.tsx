@@ -123,16 +123,16 @@ const meta: Meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BicycleParkingParisBoolean: Story = {
+export const BicycleParkingParisCategorical: Story = {
   render: () => {
     const features = bicycleParkingParisData.features;
-    const themes = detectMapThemes(features).filter((t) => t.type === 'boolean');
+    const themes = detectMapThemes(features).filter((t) => t.type === 'categorical');
     const selectedTheme = themes[0] || null;
     return <MapLibreMapWithThemes features={features} theme={selectedTheme} />;
   },
-  name: 'Bicycle Parking Paris - Boolean',
+  name: 'Bicycle Parking Paris - Categorical',
   parameters: {
-    notes: 'Boolean themes from bicycle parking dataset: covered, shelter. Shows muted fallback for unexpected values.',
+    notes: 'Categorical themes from bicycle parking dataset: bicycle_parking types. Shows top 10 categories with "other" fallback.',
   },
 };
 
@@ -149,90 +149,15 @@ export const BicycleParkingParisIntensity: Story = {
   },
 };
 
-export const BicycleParkingParisCategorical: Story = {
-  render: () => {
-    const features = bicycleParkingParisData.features;
-    const themes = detectMapThemes(features).filter((t) => t.type === 'categorical');
-    const selectedTheme = themes[0] || null;
-    return <MapLibreMapWithThemes features={features} theme={selectedTheme} />;
-  },
-  name: 'Bicycle Parking Paris - Categorical',
-  parameters: {
-    notes: 'Categorical themes from bicycle parking dataset: bicycle_parking types. Shows top 10 categories with "other" fallback.',
-  },
-};
-
-export const BooleanColorPaletteComparison: Story = {
+export const CategoricalColorPaletteComparison: Story = {
   render: () => {
     const features = bicycleParkingParisData.features.slice(0, 200); // Subset for faster rendering
 
-    // Manually create boolean themes with different color palettes
-    // All represent the same "covered" property (yes/no) with different colors
-    const paletteVariants: Array<{ name: string; theme: MapTheme }> = [
-      {
-        name: 'yesNo (green/red/gray)',
-        theme: {
-          type: 'boolean',
-          field: 'covered',
-          trueValue: 'yes',
-          falseValue: 'no',
-          trueColor: '#22c55e',
-          falseColor: '#ef4444',
-          trueAliases: [],
-        },
-      },
-      {
-        name: 'blueOrange (colorblind-safe)',
-        theme: {
-          type: 'boolean',
-          field: 'covered',
-          trueValue: 'yes',
-          falseValue: 'no',
-          trueColor: '#3b82f6',
-          falseColor: '#f97316',
-          trueAliases: [],
-        },
-      },
-      {
-        name: 'tealCoral (modern UI)',
-        theme: {
-          type: 'boolean',
-          field: 'covered',
-          trueValue: 'yes',
-          falseValue: 'no',
-          trueColor: '#14b8a6',
-          falseColor: '#fb7185',
-          trueAliases: [],
-        },
-      },
-      {
-        name: 'purplePink (distinct)',
-        theme: {
-          type: 'boolean',
-          field: 'covered',
-          trueValue: 'yes',
-          falseValue: 'no',
-          trueColor: '#a855f7',
-          falseColor: '#ec4899',
-          trueAliases: [],
-        },
-      },
-      {
-        name: 'blueOrangeDark (ColorBrewer)',
-        theme: {
-          type: 'boolean',
-          field: 'covered',
-          trueValue: 'yes',
-          falseValue: 'no',
-          trueColor: '#2171b5',
-          falseColor: '#d94801',
-          trueAliases: [],
-        },
-      },
-    ];
+    // Detect categorical themes from the data
+    const themes = detectMapThemes(features).filter((t) => t.type === 'categorical');
 
-    const title = 'Boolean Color Palette Comparison';
-    const description = 'Comparing 5 boolean color schemes on the same data (covered: yes/no/muted)';
+    const title = 'Categorical Theme Examples';
+    const description = `Found ${themes.length} categorical themes in bicycle parking dataset. Showing top themes by coverage.`;
 
     return (
       <div className="p-4">
@@ -241,13 +166,18 @@ export const BooleanColorPaletteComparison: Story = {
           {description}
         </p>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {paletteVariants.map((variant, index) => (
+          {themes.slice(0, 6).map((theme, index) => (
             <div key={index} className="border rounded-lg overflow-hidden">
               <div className="bg-gray-50 px-4 py-2 border-b">
-                <h4 className="text-sm font-medium">{variant.name}</h4>
+                <h4 className="text-sm font-medium">{theme.field}</h4>
+                {/* eslint-disable react/jsx-no-literals */}
+                <p className="text-xs text-gray-500">
+                  {theme.topValues.length} categories • {((theme.topValues[0]?.count || 0) / features.length * 100).toFixed(0)}% coverage
+                </p>
+                {/* eslint-enable react/jsx-no-literals */}
               </div>
               <div className="relative h-80">
-                <MapLibreMapWithThemes features={features} theme={variant.theme} />
+                <MapLibreMapWithThemes features={features} theme={theme} />
               </div>
             </div>
           ))}
@@ -257,6 +187,6 @@ export const BooleanColorPaletteComparison: Story = {
   },
   parameters: {
     layout: 'centered',
-    notes: 'Side-by-side comparison of boolean color schemes. All maps show the same "covered" theme (yes/no/muted) with different palettes.',
+    notes: 'Shows categorical themes detected from bicycle parking dataset. Each map displays a different field colored by its top categories.',
   },
 };

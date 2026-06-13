@@ -27,6 +27,7 @@ export const PALETTES = {
       '#bab0ac', // gray
     ] as const,
     other: '#9ca3af', // for values beyond top 10
+    stroke: 'rgba(255, 255, 255, 0.8)', // for categorical point stroke
   },
 
   /**

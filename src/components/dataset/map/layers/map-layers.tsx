@@ -1,6 +1,7 @@
 import type { Feature } from "geojson";
 import { SimplifiedFeaturesLayerGroup, DetailedFeaturesLayerGroup } from ".";
 import { createSimplifiedFeatures } from "@/lib/geojson";
+import type { CategoricalTheme } from "@/lib/map-themes";
 
 export const AGE_COLORS = {
   recent: "#22c55e",
@@ -91,9 +92,10 @@ type MapLayersProps = {
   geoJSONData: {
     features: Feature[];
   };
+  categoricalTheme: CategoricalTheme | null;
 };
 
-export function MapLayers({ geoJSONData }: MapLayersProps) {
+export function MapLayers({ geoJSONData, categoricalTheme }: MapLayersProps) {
   const polygonFeatures = geoJSONData.features.filter(
     (f: Feature) =>
       f.geometry.type === "Polygon" || f.geometry.type === "MultiPolygon"
@@ -116,11 +118,12 @@ export function MapLayers({ geoJSONData }: MapLayersProps) {
 
   return (
     <>
-      <SimplifiedFeaturesLayerGroup features={simplifiedFeatures} />
+      <SimplifiedFeaturesLayerGroup features={simplifiedFeatures} categoricalTheme={categoricalTheme} />
       <DetailedFeaturesLayerGroup
         polygonFeatures={polygonFeatures}
         lineFeatures={lineFeatures}
         pointFeatures={pointFeatures}
+        categoricalTheme={categoricalTheme}
       />
     </>
   );

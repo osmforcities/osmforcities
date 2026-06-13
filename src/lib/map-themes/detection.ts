@@ -1,7 +1,7 @@
 // src/lib/map-themes/detection.ts
 
 import type { Feature } from 'geojson';
-import type { PropertyAnalysis, BooleanTheme, IntensityTheme, CategoricalTheme, MapTheme } from './types';
+import type { PropertyAnalysis, IntensityTheme, CategoricalTheme, MapTheme } from './types';
 import { PALETTES } from './palettes';
 
 /**
@@ -93,93 +93,6 @@ export function analyzeProperty(
     type: detectedType,
     dominantType,
   };
-}
-
-/**
- * Known boolean patterns in OSM data.
- */
-const BOOLEAN_PATTERNS = [
-  { true: 'yes', false: 'no', palette: PALETTES.boolean.blueOrange },
-  { true: 'true', false: 'false', palette: PALETTES.boolean.trueFalse },
-  { true: true, false: false, palette: PALETTES.boolean.trueFalse },
-  { true: 1, false: 0, palette: PALETTES.boolean.oneZero },
-] as const;
-
-/**
- * Grouping patterns for OSM boolean fields where extra values should be mapped.
- * Format: field -> { groupedValue: [values to group] }
- */
-const BOOLEAN_GROUPING: Record<string, Record<string, string[]>> = {
-  covered: {
-    yes: ['yes', 'roof'], // roof counts as covered
-  },
-  shelter: {
-    yes: ['yes', 'covered'], // covered counts as sheltered
-  },
-};
-
-/**
- * Detect if a property represents a boolean theme.
- * Returns null if the property doesn't match boolean patterns.
- */
-export function detectBooleanTheme(
-  analysis: PropertyAnalysis
-): BooleanTheme | null {
-  // Apply grouping rules if field-specific grouping exists
-  const grouping = BOOLEAN_GROUPING[analysis.field];
-  let effectiveValues = Array.from(analysis.uniqueValues);
-  const trueAliases: Array<string | boolean | number> = [];
-
-  if (grouping) {
-    // Create a reverse mapping: value -> grouped value
-    const valueToGrouped: Record<string, string> = {};
-    for (const [groupedValue, sourceValues] of Object.entries(grouping)) {
-      for (const sourceValue of sourceValues) {
-        valueToGrouped[sourceValue] = groupedValue;
-      }
-    }
-
-    // Group values that should be merged
-    effectiveValues = effectiveValues.map((v) => {
-      const strV = String(v);
-      const grouped = valueToGrouped[strV];
-      if (grouped && grouped === 'yes') {
-        // Track values that were grouped into 'true'
-        if (!trueAliases.includes(v as string | boolean | number)) {
-          trueAliases.push(v as string | boolean | number);
-        }
-      }
-      return grouped || strV;
-    });
-
-    // Remove duplicates after grouping
-    effectiveValues = Array.from(new Set(effectiveValues));
-  }
-
-  // Must have exactly 2 distinct values after grouping
-  if (effectiveValues.length !== 2) {
-    return null;
-  }
-
-  for (const pattern of BOOLEAN_PATTERNS) {
-    // Check both strict equality and string version for flexibility
-    const hasTrue = effectiveValues.includes(pattern.true) || effectiveValues.includes(String(pattern.true));
-    const hasFalse = effectiveValues.includes(pattern.false) || effectiveValues.includes(String(pattern.false));
-
-    if (hasTrue && hasFalse) {
-      return {
-        type: 'boolean',
-        field: analysis.field,
-        trueColor: pattern.palette.true,
-        falseColor: pattern.palette.false,
-        trueValue: pattern.true,
-        falseValue: pattern.false,
-        trueAliases,
-      };
-    }
-  }
-
-  return null;
 }
 
 /**
@@ -331,14 +244,11 @@ export function detectCategoricalTheme(
  * Calculate a theme's score for sorting.
  * Higher score = better default visualization.
  *
- * Boolean: coverage × 10 (binary distinctions are very clear)
  * Intensity: coverage × 5 (numeric scales are useful but harder to read)
  * Categorical: coverage × min(n, 10) (more categories = more useful, capped at 10)
  */
 export function calculateScore(theme: MapTheme, coverage: number): number {
   switch (theme.type) {
-    case 'boolean':
-      return coverage * 10;
     case 'intensity':
       return coverage * 5;
     case 'categorical': {
