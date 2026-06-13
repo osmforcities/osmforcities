@@ -6,7 +6,7 @@ export interface ProcessedDatasetStats {
   lastEdited: string;
 }
 
-export function processDatasetStats(dataset: Dataset, locale: string): ProcessedDatasetStats {
+export function processDatasetStats(dataset: Pick<Dataset, 'dataCount' | 'stats'>, locale: string): ProcessedDatasetStats {
   const stats = dataset.stats as
     | {
         editorsCount?: number;
