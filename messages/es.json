@@ -173,6 +173,7 @@
     "unfeature": "Quitar destacado",
     "featureTitle": "Destacar este conjunto en la página principal",
     "unfeatureTitle": "Quitar de destacados",
+    "featureError": "No se pudo actualizar el estado destacado. Intente de nuevo.",
     "dataMetrics": "Métricas de Datos",
     "actions": "Acciones"
   },
@@ -372,7 +373,7 @@
       "title": "Cómo funciona OSM for Cities",
       "description": "Sigue conjuntos de datos, rastrea cambios, explora datos visualmente y descarga para análisis",
       "curate": {
-        "title": "Curate tus conjuntos de datos",
+        "title": "Selecciona tus conjuntos de datos",
         "description": "Elige lo que importa para tu ciudad. Sigue escuelas, transporte, parques, clínicas o cualquier conjunto de datos rastreado en OpenStreetMap. Construye una feed personalizada de la infraestructura que te importa."
       },
       "notifications": {

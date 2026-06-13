@@ -28,7 +28,7 @@ export async function POST(
         template: {
           include: {
             category: {
-              select: { slug: true },
+              select: { id: true, name: true, slug: true },
             },
           },
         },
@@ -68,7 +68,7 @@ export async function POST(
         template: {
           include: {
             category: {
-              select: { slug: true },
+              select: { id: true, name: true, slug: true },
             },
           },
         },

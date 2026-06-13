@@ -13,8 +13,7 @@ The implementation is split into a library file for API communication and a Reac
 This file contains the core logic for interacting with the Nominatim API.
 
 - `searchAreasWithNominatim(searchTerm, language)`: This function takes a search term and an optional language, queries the Nominatim API, and returns a promise that resolves to an array of validated search results. It filters for results of `osm_type === "relation"` to ensure we only get areas.
-- `getAreaDetailsById(osmRelationId, language)`: Fetches detailed information for a specific area using its OSM relation ID.
-- `convertNominatimResultToArea(result)`: A utility function to convert a raw Nominatim result into the application's `Area` type.
+- `getAreaDetailsById(osmRelationId, language)`: Fetches detailed information for a specific area using its OSM relation ID. Uses `fromNominatim` from `@/lib/area-conversion` to convert results.
 
 ### 2. React Hook (`osmforcities/src/hooks/useNominatimSearch.ts`)
 

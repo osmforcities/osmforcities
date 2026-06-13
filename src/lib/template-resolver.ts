@@ -27,36 +27,3 @@ export function isValidTemplateIdentifier(identifier: string): boolean {
   return slugPattern.test(identifier) || cuidPattern.test(identifier);
 }
 
-export function getTemplateUrlIdentifier(template: { id: string }): string {
-  return template.id;
-}
-
-export function parseTemplateUrlIdentifier(urlIdentifier: string): string {
-  return urlIdentifier;
-}
-
-export function isCuidIdentifier(identifier: string): boolean {
-  return /^c[a-z0-9]{24}$/.test(identifier);
-}
-
-export function isSlugIdentifier(identifier: string): boolean {
-  return /^[a-z]+(?:-[a-z]+)*$/.test(identifier);
-}
-
-export async function getAllTemplateIdentifiers() {
-  const templates = await prisma.template.findMany({
-    where: { isActive: true },
-    select: {
-      id: true,
-      name: true,
-      category: true,
-    },
-  });
-
-  return templates.map((template) => ({
-    id: template.id,
-    urlIdentifier: getTemplateUrlIdentifier(template),
-    name: template.name,
-    category: template.category,
-  }));
-}

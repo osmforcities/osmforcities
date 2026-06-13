@@ -6,7 +6,6 @@ import { GridWrapper } from "../shared/grid-wrapper";
 import { USE_CASE_ICONS } from "../shared/icon-config";
 import { UseCaseItem } from "../shared/types";
 import { CategoryCard } from "@/components/ui/category-card";
-import { useCaseColors } from "../shared";
 
 export function UseCases() {
   const t = useTranslations("Home.useCases");
@@ -81,7 +80,7 @@ export function UseCases() {
 
       {/* Use cases grid */}
       <GridWrapper columns={2} maxWidth="md">
-        {useCases.map((useCase, index) => (
+        {useCases.map((useCase) => (
           <CategoryCard
             key={useCase.id}
             icon={useCase.icon}
@@ -89,7 +88,6 @@ export function UseCases() {
             title={useCase.title}
             description={useCase.description}
             variant="compact"
-            colorVariant={useCaseColors[index]}
           />
         ))}
       </GridWrapper>

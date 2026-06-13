@@ -1,5 +1,50 @@
 # osmforcities
 
+## 1.10.0
+
+Featured datasets and a new Explore page make public discovery actionable:
+users can browse highlighted datasets and navigate the catalog without signing in.
+
+### Added
+
+- Featured datasets: isFeatured field, admin toggle API, and badge on dataset detail page [#260], [#262]
+- /explore page with improved dataset cards, category groups, and countryCode flags [#283]
+- Map themes: auto-detect categorical vs. intensity visualization styles from dataset values [#281]
+- Category model with parent/child relationships and YAML-to-DB sync [#280]
+- Map tile provider config via env var; CartoDB with multi-subdomain fallback [#261]
+- i18n review script with auto-discovered locales and word-boundary matching [#301]
+
+### Changed
+
+- DatasetCard redesign with stats slot and improved accessibility [#282]
+- Homepage: replace multi-color accent rotation with consistent olive palette [#300]
+- Area conversion: deep AreaConversion module with Zod validation [#299]
+- Overpass snapshot pipeline deepened with structured logging [#284]
+- Dataset transform service extracted from datasets API route [#274]
+
+### Fixed
+
+- Accessibility: missing aria-label/aria-labelledby on breadcrumbs, search, and dashboard grid [#248]
+- Category relation included in all dataset API responses [#296]
+- Overpass errors no longer exposed to clients [#247]
+- Feature toggle: atomic TOCTOU fix [#262]
+
+[#247]: https://github.com/osmforcities/osmforcities/pull/247
+[#248]: https://github.com/osmforcities/osmforcities/pull/248
+[#260]: https://github.com/osmforcities/osmforcities/pull/260
+[#261]: https://github.com/osmforcities/osmforcities/pull/261
+[#262]: https://github.com/osmforcities/osmforcities/pull/262
+[#274]: https://github.com/osmforcities/osmforcities/pull/274
+[#280]: https://github.com/osmforcities/osmforcities/pull/280
+[#281]: https://github.com/osmforcities/osmforcities/pull/281
+[#282]: https://github.com/osmforcities/osmforcities/pull/282
+[#283]: https://github.com/osmforcities/osmforcities/pull/283
+[#284]: https://github.com/osmforcities/osmforcities/pull/284
+[#296]: https://github.com/osmforcities/osmforcities/pull/296
+[#299]: https://github.com/osmforcities/osmforcities/pull/299
+[#300]: https://github.com/osmforcities/osmforcities/pull/300
+[#301]: https://github.com/osmforcities/osmforcities/pull/301
+
 ## 1.9.2
 
 ### Patch Changes
