@@ -66,15 +66,38 @@ async function getDatasetWithDetails(areaId: number, templateId: string, locale:
       templateId,
       isActive: true,
     },
-    include: {
+    select: {
+      id: true,
+      templateId: true,
+      areaId: true,
+      cityName: true,
+      geojson: true,
+      bbox: true,
+      dataCount: true,
+      lastChecked: true,
+      stats: true,
+      createdAt: true,
+      updatedAt: true,
       template: {
         select: {
           id: true,
           name: true,
           description: true,
-          category: true,
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
           tags: true,
-          translations: true,
+          translations: {
+            select: {
+              locale: true,
+              name: true,
+              description: true,
+            },
+          },
         },
       },
       area: {
@@ -213,15 +236,38 @@ async function createDatasetOnDemand(
         lastChecked: new Date(),
         stats: JSON.parse(JSON.stringify(snapshot.stats)),
       },
-      include: {
+      select: {
+        id: true,
+        templateId: true,
+        areaId: true,
+        cityName: true,
+        geojson: true,
+        bbox: true,
+        dataCount: true,
+        lastChecked: true,
+        stats: true,
+        createdAt: true,
+        updatedAt: true,
         template: {
           select: {
             id: true,
             name: true,
             description: true,
-            category: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              },
+            },
             tags: true,
-            translations: true,
+            translations: {
+              select: {
+                locale: true,
+                name: true,
+                description: true,
+              },
+            },
           },
         },
         area: {
