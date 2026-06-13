@@ -27,7 +27,13 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
   const t = await getTranslations("ExplorePage");
   const datasets = await prisma.dataset.findMany({
     where: { isFeatured: true },
-    include: {
+    select: {
+      id: true,
+      cityName: true,
+      dataCount: true,
+      stats: true,
+      areaId: true,
+      templateId: true,
       area: {
         select: {
           id: true,
@@ -35,9 +41,24 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
         },
       },
       template: {
-        include: {
-          translations: true,
-          category: true,
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+          translations: {
+            select: {
+              locale: true,
+              name: true,
+              description: true,
+            },
+          },
         },
       },
     },

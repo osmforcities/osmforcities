@@ -126,6 +126,7 @@ model Dataset {
   user        User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([templateId, areaId])
+  @@index([isFeatured, createdAt])
   @@map("datasets")
 }
 
