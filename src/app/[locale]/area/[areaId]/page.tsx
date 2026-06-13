@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { prisma } from "@/lib/db";
+
+export const revalidate = 3600; // 1 hour
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { DatasetGrid } from "@/components/ui/template-grid";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
@@ -19,9 +21,25 @@ type AreaPageProps = {
 async function getActiveTemplates(locale: string) {
   const rows = await prisma.template.findMany({
     where: { isActive: true },
-    include: {
-      translations: true,
-      category: true,
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      tags: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+      translations: {
+        select: {
+          locale: true,
+          name: true,
+          description: true,
+        },
+      },
     },
     orderBy: { name: "asc" },
   });
@@ -31,7 +49,7 @@ async function getActiveTemplates(locale: string) {
       id: resolved.id,
       name: resolved.name,
       description: resolved.description,
-      category: resolved.category?.slug ?? "other",
+      category: (resolved as { category?: { slug?: string } }).category?.slug ?? "other",
       tags: resolved.tags,
     };
   });
