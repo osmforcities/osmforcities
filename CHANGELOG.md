@@ -1,5 +1,32 @@
 # osmforcities
 
+## 1.11.0
+
+### Added
+
+- Explore page sections: recently added, largest, most edited, most contributors [#311]
+- MapLibre expression builders for auto-detected themes with blue-orange boolean palette and legend generation [#298]
+- Workflow requirement: develop as source branch for main PRs [#313]
+
+### Changed
+
+- Dataset stats promoted to first-class indexed columns [#312]
+- Explore page: extracted reusable components, simplified section pages, prioritized recently edited section [#311]
+- Map themes: code quality improvements and translations [#298]
+
+### Fixed
+- Explore page: removed locale prefix from navigation links [#311]
+- Explore page query performance with geojson exclusion and indexes [#309]
+- Migration: added IF EXISTS guard to DROP INDEX [#309]
+- Dataset stats: narrowed processDatasetStats parameter type [#312]
+- i18n: added translation key for age option in theme selector [#298]
+
+[#298]: https://github.com/osmforcities/osmforcities/pull/298
+[#309]: https://github.com/osmforcities/osmforcities/pull/309
+[#311]: https://github.com/osmforcities/osmforcities/pull/311
+[#312]: https://github.com/osmforcities/osmforcities/pull/312
+[#313]: https://github.com/osmforcities/osmforcities/pull/313
+
 ## 1.10.0
 
 Featured datasets and a new Explore page make public discovery actionable:
