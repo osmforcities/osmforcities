@@ -85,7 +85,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
   setRequestLocale(locale);
   const t = await getTranslations("ExplorePage");
 
-  const [featured, largest, mostWatched, mostContributors, recentlyEdited] = await Promise.all([
+  const [featured, recentlyEdited, mostWatched, mostContributors, largest] = await Promise.all([
     prisma.dataset.findMany({
       where: { isFeatured: true, dataCount: { gt: 0 } },
       select: {
@@ -98,14 +98,16 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
       take: 20,
     }).then(datasets => shuffleArray(datasets).slice(0, 6)),
     prisma.dataset.findMany({
-      where: { isActive: true, dataCount: { gt: 0 } },
+      where: { isActive: true, dataCount: { gt: 0 }, recentlyEditedCount: { not: null } },
       select: {
         ...DATASET_SELECT,
+        recentlyEditedCount: true,
+        lastEditedAt: true,
         _count: {
           select: { watchers: true }
         }
       },
-      orderBy: { dataCount: "desc" },
+      orderBy: { lastEditedAt: "desc" },
       take: 6,
     }),
     prisma.dataset.findMany({
@@ -132,16 +134,14 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
       take: 6,
     }),
     prisma.dataset.findMany({
-      where: { isActive: true, dataCount: { gt: 0 }, recentlyEditedCount: { not: null } },
+      where: { isActive: true, dataCount: { gt: 0 } },
       select: {
         ...DATASET_SELECT,
-        recentlyEditedCount: true,
-        lastEditedAt: true,
         _count: {
           select: { watchers: true }
         }
       },
-      orderBy: { lastEditedAt: "desc" },
+      orderBy: { dataCount: "desc" },
       take: 6,
     }),
   ]);
@@ -191,18 +191,19 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
           </Section>
         )}
 
-        {/* Largest Section */}
-        {largest.length > 0 && (
+        {/* Recently Edited Section */}
+        {recentlyEdited.length > 0 && (
           <Section
-            title={t("sections.largest")}
-            seeAllHref={`/${locale}/explore/largest`}
+            title={t("sections.recentlyEdited")}
+            seeAllHref={`/${locale}/explore/recently-edited`}
             t={t}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {largest.map((dataset) => {
+              {recentlyEdited.map((dataset) => {
                 const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+                const lastEdited = formatRelativeTime(dataset.lastEditedAt, locale);
                 const stats = [
-                  { type: "features" as const, label: t("stats.features"), value: dataset.dataCount },
+                  { type: "lastEdited" as const, label: t("stats.lastEdited"), value: lastEdited },
                 ];
 
                 return (
@@ -281,19 +282,18 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
           </Section>
         )}
 
-        {/* Recently Edited Section */}
-        {recentlyEdited.length > 0 && (
+        {/* Largest Section */}
+        {largest.length > 0 && (
           <Section
-            title={t("sections.recentlyEdited")}
-            seeAllHref={`/${locale}/explore/recently-edited`}
+            title={t("sections.largest")}
+            seeAllHref={`/${locale}/explore/largest`}
             t={t}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recentlyEdited.map((dataset) => {
+              {largest.map((dataset) => {
                 const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
-                const lastEdited = formatRelativeTime(dataset.lastEditedAt, locale);
                 const stats = [
-                  { type: "lastEdited" as const, label: t("stats.lastEdited"), value: lastEdited },
+                  { type: "features" as const, label: t("stats.features"), value: dataset.dataCount },
                 ];
 
                 return (
