@@ -5,7 +5,6 @@ import type { MapTheme, DetectionConfig } from './types';
 import {
   isPropertyExcluded,
   analyzeProperty,
-  detectBooleanTheme,
   detectIntensityTheme,
   detectCategoricalTheme,
   calculateScore,
@@ -64,15 +63,6 @@ export function detectMapThemes(
     }
 
     // Try each theme type
-    const booleanTheme = detectBooleanTheme(analysis);
-    if (booleanTheme) {
-      themes.push({
-        theme: booleanTheme,
-        score: calculateScore(booleanTheme, analysis.coverage),
-      });
-      continue; // Boolean is exclusive
-    }
-
     const intensityTheme = detectIntensityTheme(analysis, finalConfig.maxCoercionFailureRate);
     if (intensityTheme) {
       themes.push({
@@ -103,8 +93,9 @@ export { PALETTES } from './palettes';
 export {
   isPropertyExcluded,
   analyzeProperty,
-  detectBooleanTheme,
   detectIntensityTheme,
   detectCategoricalTheme,
   calculateScore,
 } from './detection';
+export { buildLegend } from './legends';
+export type { Legend, LegendItem } from './legends';

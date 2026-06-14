@@ -1,7 +1,7 @@
 // src/lib/map-themes/detection.ts
 
 import type { Feature } from 'geojson';
-import type { PropertyAnalysis, BooleanTheme, IntensityTheme, CategoricalTheme, MapTheme } from './types';
+import type { PropertyAnalysis, IntensityTheme, CategoricalTheme, MapTheme } from './types';
 import { PALETTES } from './palettes';
 
 /**
@@ -60,8 +60,16 @@ export function analyzeProperty(
       values.push(value);
       uniqueValues.add(value);
 
-      const type = typeof value;
-      typeCounts[type] = (typeCounts[type] || 0) + 1;
+      // For strings, check if they're actually numbers
+      let detectedType = typeof value;
+      if (detectedType === 'string') {
+        const trimmed = (value as string).trim();
+        if (trimmed !== '' && !isNaN(Number(trimmed))) {
+          detectedType = 'number';
+        }
+      }
+
+      typeCounts[detectedType] = (typeCounts[detectedType] || 0) + 1;
     }
   }
 
@@ -88,49 +96,6 @@ export function analyzeProperty(
 }
 
 /**
- * Known boolean patterns in OSM data.
- */
-const BOOLEAN_PATTERNS = [
-  { true: 'yes', false: 'no', palette: PALETTES.boolean.yesNo },
-  { true: 'true', false: 'false', palette: PALETTES.boolean.trueFalse },
-  { true: true, false: false, palette: PALETTES.boolean.trueFalse },
-  { true: 1, false: 0, palette: PALETTES.boolean.oneZero },
-] as const;
-
-/**
- * Detect if a property represents a boolean theme.
- * Returns null if the property doesn't match boolean patterns.
- */
-export function detectBooleanTheme(
-  analysis: PropertyAnalysis
-): BooleanTheme | null {
-  // Must have exactly 2 distinct values
-  if (analysis.uniqueValues.size !== 2) {
-    return null;
-  }
-
-  const values = Array.from(analysis.uniqueValues);
-
-  for (const pattern of BOOLEAN_PATTERNS) {
-    const hasTrue = values.includes(pattern.true);
-    const hasFalse = values.includes(pattern.false);
-
-    if (hasTrue && hasFalse) {
-      return {
-        type: 'boolean',
-        field: analysis.field,
-        trueColor: pattern.palette.true,
-        falseColor: pattern.palette.false,
-        trueValue: pattern.true,
-        falseValue: pattern.false,
-      };
-    }
-  }
-
-  return null;
-}
-
-/**
  * Detect if a property represents an intensity (numeric range) theme.
  * Returns null if the property doesn't have a valid numeric range.
  */
@@ -138,8 +103,8 @@ export function detectIntensityTheme(
   analysis: PropertyAnalysis,
   maxCoercionFailureRate = 0.2
 ): IntensityTheme | null {
-  // Must have numeric or mixed type with numeric dominant
-  if (analysis.dominantType !== 'number') {
+  // Allow numeric or string dominant (strings might be numeric)
+  if (analysis.dominantType !== 'number' && analysis.dominantType !== 'string') {
     return null;
   }
 
@@ -165,11 +130,18 @@ export function detectIntensityTheme(
     return null;
   }
 
-  const min = numericValues.reduce((a, b) => (b < a ? b : a), numericValues[0]);
-  const max = numericValues.reduce((a, b) => (b > a ? b : a), numericValues[0]);
+  // Sort for percentile calculation
+  const sorted = [...numericValues].sort((a, b) => a - b);
+
+  // Use percentiles instead of raw min/max to handle outliers better
+  // 10th percentile as lower bound, 90th as upper bound
+  const p10Index = Math.floor(sorted.length * 0.1);
+  const p90Index = Math.floor(sorted.length * 0.9);
+  const min = sorted[p10Index];
+  const max = sorted[p90Index];
 
   // Zero range means no meaningful intensity
-  if (min === max) {
+  if (min === max || min === undefined || max === undefined) {
     return null;
   }
 
@@ -246,12 +218,13 @@ export function detectCategoricalTheme(
     .sort((a, b) => b.count - a.count)
     .slice(0, PALETTES.categorical.tableau10.length); // Top N get distinct colors (one per palette slot)
 
-  // Assign colors from palette, keyed by lowercase for case-insensitive matching
+  // Assign colors from palette, keyed by original casing value
   const colorMap = new Map<string, string>();
   for (let i = 0; i < topValues.length; i++) {
-    const lower = topValues[i].value.toLowerCase();
+    // Use the original casing value as the key (not lowercase)
+    const originalValue = topValues[i].value;
     colorMap.set(
-      lower,
+      originalValue,
       PALETTES.categorical.tableau10[i % PALETTES.categorical.tableau10.length]
     );
   }
@@ -271,14 +244,11 @@ export function detectCategoricalTheme(
  * Calculate a theme's score for sorting.
  * Higher score = better default visualization.
  *
- * Boolean: coverage × 10 (binary distinctions are very clear)
  * Intensity: coverage × 5 (numeric scales are useful but harder to read)
  * Categorical: coverage × min(n, 10) (more categories = more useful, capped at 10)
  */
 export function calculateScore(theme: MapTheme, coverage: number): number {
   switch (theme.type) {
-    case 'boolean':
-      return coverage * 10;
     case 'intensity':
       return coverage * 5;
     case 'categorical': {
