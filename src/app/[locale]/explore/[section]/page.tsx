@@ -6,7 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
 import { notFound } from "next/navigation";
 
-export const revalidate = 3600;
+export const revalidate = 300;
 
 // Helper: Get stats for dataset based on section type
 function getDatasetStats(
