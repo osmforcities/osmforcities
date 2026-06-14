@@ -1,5 +1,11 @@
 # osmforcities
 
+## 1.11.0
+
+### Minor Changes
+
+- Release 1.11.0
+
 ## 1.10.0
 
 Featured datasets and a new Explore page make public discovery actionable:
