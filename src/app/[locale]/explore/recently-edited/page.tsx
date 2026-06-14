@@ -1,24 +1,10 @@
 import { prisma } from "@/lib/db";
 import { DatasetCard } from "@/components/ui/dataset-card";
+import { ExplorePageLayout, ExploreSectionHeader } from "@/components/explore/explore-components";
+import { formatRelativeTime } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
-import { Link } from "@/i18n/navigation";
-
-function formatRelativeTime(timestamp: Date | null | undefined, locale: string): string {
-  if (!timestamp) return "—";
-
-  const diffMs = timestamp.getTime() - Date.now();
-  const absSec = Math.abs(diffMs / 1000);
-  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
-
-  if (absSec < 60) return rtf.format(Math.round(diffMs / 1000), "second");
-  if (absSec < 3600) return rtf.format(Math.round(diffMs / 60000), "minute");
-  if (absSec < 86400) return rtf.format(Math.round(diffMs / 3600000), "hour");
-  if (absSec < 2592000) return rtf.format(Math.round(diffMs / 86400000), "day");
-  if (absSec < 31536000) return rtf.format(Math.round(diffMs / 2592000000), "month");
-  return rtf.format(Math.round(diffMs / 31536000000), "year");
-}
 
 export const revalidate = 300;
 
@@ -97,48 +83,34 @@ export default async function RecentlyEditedPage({
   });
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 py-8">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="mb-8">
-          <Link
-            href={`/explore`}
-            className="text-xs text-neutral-400 hover:text-neutral-700 cursor-pointer"
-          >
-            {t("backToExplore")}
-          </Link>
-          <h1 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mt-4">
-            {t("sections.recentlyEdited")}
-          </h1>
+    <ExplorePageLayout>
+      <ExploreSectionHeader sectionKey="recentlyEdited" t={t} />
+      {datasets.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {datasets.map((dataset) => {
+            const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+            const stats = [
+              { type: "lastEdited" as const, label: t("stats.lastEdited"), value: formatRelativeTime(dataset.lastEditedAt, locale) },
+            ];
+
+            return (
+              <DatasetCard
+                key={dataset.id}
+                name={resolvedTemplate.name}
+                city={dataset.cityName}
+                country={dataset.area.countryCode ?? ""}
+                category={resolvedTemplate.category?.name ?? "other"}
+                href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+                stats={stats}
+              />
+            );
+          })}
         </div>
-
-        {datasets.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {datasets.map((dataset) => {
-              const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
-              const lastEdited = formatRelativeTime(dataset.lastEditedAt, locale);
-              const stats = [
-                { type: "lastEdited" as const, label: t("stats.lastEdited"), value: lastEdited },
-              ];
-
-              return (
-                <DatasetCard
-                  key={dataset.id}
-                  name={resolvedTemplate.name}
-                  city={dataset.cityName}
-                  country={dataset.area.countryCode ?? ""}
-                  category={resolvedTemplate.category?.name ?? "other"}
-                  href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
-                  stats={stats}
-                />
-              );
-            })}
-          </div>
-        ) : (
-          <div className="text-center py-12 text-neutral-400">
-            {t("noDatasetsFound")}
-          </div>
-        )}
-      </div>
-    </div>
+      ) : (
+        <div className="text-center py-12 text-neutral-400">
+          {t("noDatasetsFound")}
+        </div>
+      )}
+    </ExplorePageLayout>
   );
 }

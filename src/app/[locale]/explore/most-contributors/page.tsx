@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/db";
 import { DatasetCard } from "@/components/ui/dataset-card";
+import { ExplorePageLayout, ExploreSectionHeader } from "@/components/explore/explore-components";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
-import { Link } from "@/i18n/navigation";
 
 export const revalidate = 300;
 
@@ -81,47 +81,34 @@ export default async function MostContributorsPage({
   });
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 py-8">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="mb-8">
-          <Link
-            href={`/explore`}
-            className="text-xs text-neutral-400 hover:text-neutral-700 cursor-pointer"
-          >
-            {t("backToExplore")}
-          </Link>
-          <h1 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mt-4">
-            {t("sections.mostContributors")}
-          </h1>
+    <ExplorePageLayout>
+      <ExploreSectionHeader sectionKey="mostContributors" t={t} />
+      {datasets.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {datasets.map((dataset) => {
+            const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+            const stats = [
+              { type: "contributors" as const, label: t("stats.contributors"), value: dataset.contributorsCount || 0 },
+            ];
+
+            return (
+              <DatasetCard
+                key={dataset.id}
+                name={resolvedTemplate.name}
+                city={dataset.cityName}
+                country={dataset.area.countryCode ?? ""}
+                category={resolvedTemplate.category?.name ?? "other"}
+                href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+                stats={stats}
+              />
+            );
+          })}
         </div>
-
-        {datasets.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {datasets.map((dataset) => {
-              const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
-              const stats = [
-                { type: "contributors" as const, label: t("stats.contributors"), value: dataset.contributorsCount || 0 },
-              ];
-
-              return (
-                <DatasetCard
-                  key={dataset.id}
-                  name={resolvedTemplate.name}
-                  city={dataset.cityName}
-                  country={dataset.area.countryCode ?? ""}
-                  category={resolvedTemplate.category?.name ?? "other"}
-                  href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
-                  stats={stats}
-                />
-              );
-            })}
-          </div>
-        ) : (
-          <div className="text-center py-12 text-neutral-400">
-            {t("noDatasetsFound")}
-          </div>
-        )}
-      </div>
-    </div>
+      ) : (
+        <div className="text-center py-12 text-neutral-400">
+          {t("noDatasetsFound")}
+        </div>
+      )}
+    </ExplorePageLayout>
   );
 }

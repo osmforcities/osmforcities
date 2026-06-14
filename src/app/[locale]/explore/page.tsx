@@ -1,25 +1,10 @@
 import { prisma } from "@/lib/db";
 import { DatasetCard } from "@/components/ui/dataset-card";
-import { processDatasetStats } from "@/lib/dataset-stats";
+import { processDatasetStats, formatRelativeTime } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
 import { Link } from "@/i18n/navigation";
-
-function formatRelativeTime(timestamp: Date | null | undefined, locale: string): string {
-  if (!timestamp) return "—";
-
-  const diffMs = timestamp.getTime() - Date.now();
-  const absSec = Math.abs(diffMs / 1000);
-  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
-
-  if (absSec < 60) return rtf.format(Math.round(diffMs / 1000), "second");
-  if (absSec < 3600) return rtf.format(Math.round(diffMs / 60000), "minute");
-  if (absSec < 86400) return rtf.format(Math.round(diffMs / 3600000), "hour");
-  if (absSec < 2592000) return rtf.format(Math.round(diffMs / 86400000), "day");
-  if (absSec < 31536000) return rtf.format(Math.round(diffMs / 2592000000), "month");
-  return rtf.format(Math.round(diffMs / 31536000000), "year");
-}
 
 export const revalidate = 3600;
 
