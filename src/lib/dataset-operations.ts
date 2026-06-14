@@ -78,6 +78,7 @@ async function getDatasetWithDetails(areaId: number, templateId: string, locale:
       stats: true,
       createdAt: true,
       updatedAt: true,
+      isActive: true,
       template: {
         select: {
           id: true,
@@ -248,6 +249,7 @@ async function createDatasetOnDemand(
         stats: true,
         createdAt: true,
         updatedAt: true,
+        isActive: true,
         template: {
           select: {
             id: true,

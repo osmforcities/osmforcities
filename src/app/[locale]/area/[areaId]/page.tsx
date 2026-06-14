@@ -2,8 +2,6 @@ import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { prisma } from "@/lib/db";
-
-export const revalidate = 3600; // 1 hour
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { DatasetGrid } from "@/components/ui/template-grid";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
@@ -11,6 +9,8 @@ import { Link } from "@/components/ui/link";
 import { trackEvent, getClientInfoFromHeaders } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { auth } from "@/auth";
+
+export const revalidate = 3600;
 
 type AreaPageProps = {
   params: Promise<{
@@ -44,12 +44,13 @@ async function getActiveTemplates(locale: string) {
     orderBy: { name: "asc" },
   });
   return rows.map((t) => {
+    const categorySlug = t.category?.slug ?? "other";
     const resolved = resolveTemplateForLocale(t, locale);
     return {
       id: resolved.id,
       name: resolved.name,
       description: resolved.description,
-      category: (resolved as { category?: { slug?: string } }).category?.slug ?? "other",
+      category: categorySlug,
       tags: resolved.tags,
     };
   });
