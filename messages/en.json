@@ -339,13 +339,16 @@
     "last7Days": "Last 7 days",
     "last30Days": "Last 30 days",
     "last90Days": "Last 90 days",
-    "age": "Age",
     "noDataInTimeframe": "No data found in the selected time period",
-    "lastEditedLegend": "Last Edited",
+    "lastEditedLegend": "Recent edits",
     "recentChanges": "≤ 7 days ago",
     "mediumChanges": "8-30 days ago",
     "olderChanges": "31-90 days ago",
-    "veryOldChanges": "> 90 days ago"
+    "veryOldChanges": "> 90 days ago",
+    "recentEdits": "Recent edits",
+    "themeSelect": "Select map theme",
+    "previousTheme": "Previous theme",
+    "nextTheme": "Next theme"
   },
   "DatasetWatchButton": {
     "privateDataset": "Private Dataset"
