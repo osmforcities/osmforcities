@@ -15,7 +15,7 @@ CREATE INDEX "datasets_recentlyEditedCount_idx" ON "datasets"("recentlyEditedCou
 -- Backfill from existing stats JSON
 UPDATE "datasets"
 SET
-  "lastEditedAt"        = (stats->>'mostRecentElement')::timestamptz,
+  "lastEditedAt"        = (stats->>'mostRecentElement')::timestamptz AT TIME ZONE 'UTC',
   "contributorsCount"   = (stats->>'editorsCount')::int,
   "recentlyEditedCount" = (stats->'recentActivity'->>'elementsEdited')::int
 WHERE stats IS NOT NULL;
