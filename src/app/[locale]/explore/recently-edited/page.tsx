@@ -101,7 +101,7 @@ export default async function RecentlyEditedPage({
       <div className="max-w-7xl mx-auto px-6">
         <div className="mb-8">
           <Link
-            href={`/${locale}/explore`}
+            href={`/explore`}
             className="text-xs text-neutral-400 hover:text-neutral-700 cursor-pointer"
           >
             {t("backToExplore")}

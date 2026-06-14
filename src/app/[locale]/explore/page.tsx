@@ -162,7 +162,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
         {featured.length > 0 && (
           <Section
             title={t("sections.featured")}
-            seeAllHref={`/${locale}/explore/featured`}
+            seeAllHref={`/explore/featured`}
             t={t}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -195,7 +195,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
         {recentlyEdited.length > 0 && (
           <Section
             title={t("sections.recentlyEdited")}
-            seeAllHref={`/${locale}/explore/recently-edited`}
+            seeAllHref={`/explore/recently-edited`}
             t={t}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -226,7 +226,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
         {mostWatched.length > 0 && (
           <Section
             title={t("sections.mostWatched")}
-            seeAllHref={`/${locale}/explore/most-watched`}
+            seeAllHref={`/explore/most-watched`}
             t={t}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -256,7 +256,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
         {mostContributors.length > 0 && (
           <Section
             title={t("sections.mostContributors")}
-            seeAllHref={`/${locale}/explore/most-contributors`}
+            seeAllHref={`/explore/most-contributors`}
             t={t}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -286,7 +286,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
         {largest.length > 0 && (
           <Section
             title={t("sections.largest")}
-            seeAllHref={`/${locale}/explore/largest`}
+            seeAllHref={`/explore/largest`}
             t={t}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

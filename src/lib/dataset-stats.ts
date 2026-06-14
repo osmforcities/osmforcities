@@ -1,54 +1,9 @@
 import { Dataset } from "@prisma/client";
-import type { StatType } from "@/components/ui/dataset-card";
 
 export interface ProcessedDatasetStats {
   features: number;
   contributors: number;
   lastEdited: string;
-}
-
-export interface DatasetStats {
-  type: StatType;
-  label: string;
-  value: string | number;
-}
-
-export function getDatasetStats(
-  dataset: {
-    _count: { watchers: number };
-    contributorsCount?: number | null;
-    recentlyEditedCount?: number | null;
-    lastEditedAt?: Date | null;
-  },
-  processedStats: ProcessedDatasetStats,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t: any,
-  section: "featured" | "largest" | "most-watched" | "most-contributors" | "recently-edited" | "default"
-): DatasetStats[] {
-  switch (section) {
-    case "largest":
-      return [
-        { type: "features" as const, label: t("stats.features"), value: processedStats.features },
-      ];
-    case "most-watched":
-      return [
-        { type: "watchers" as const, label: t("stats.watchers"), value: dataset._count.watchers },
-      ];
-    case "most-contributors":
-      return [
-        { type: "contributors" as const, label: t("stats.contributors"), value: dataset.contributorsCount || 0 },
-      ];
-    case "recently-edited":
-      return [
-        { type: "features" as const, label: "Recently edited", value: dataset.recentlyEditedCount || 0 },
-      ];
-    default:
-      return [
-        { type: "features" as const, label: t("stats.features"), value: processedStats.features },
-        { type: "contributors" as const, label: t("stats.contributors"), value: processedStats.contributors },
-        { type: "lastEdited" as const, label: t("stats.lastEdited"), value: processedStats.lastEdited },
-      ];
-  }
 }
 
 export function processDatasetStats(dataset: Pick<Dataset, 'dataCount' | 'stats'>, locale: string): ProcessedDatasetStats {
