@@ -9,9 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Require develop as source branch
+        env:
+          HEAD_REF: ${{ github.head_ref }}
         run: |
-          if [ "${{ github.head_ref }}" != "develop" ]; then
-            echo "Error: PRs to main must come from develop branch, not ${{ github.head_ref }}"
+          if [ "$HEAD_REF" != "develop" ]; then
+            echo "Error: PRs to main must come from develop branch, not $HEAD_REF"
             exit 1
           fi
           echo "✅ Source branch is develop"
