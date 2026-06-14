@@ -24,6 +24,8 @@ import { trackEvent, getClientInfoFromHeaders } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { getAreaBoundary } from "@/lib/area-boundary";
 
+export const revalidate = 3600;
+
 type DatasetPageProps = {
   params: Promise<{
     areaId: string;
