@@ -81,8 +81,9 @@ export async function getAreaDetailsById(
 
   try {
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/lookup?osm_ids=R${osmRelationId}&format=json&addressdetails=1&extratags=1`,
+      `https://nominatim.openstreetmap.org/lookup?osm_ids=R${osmRelationId}&format=json&addressdetails=1&extratags=1&accept-language=${language}`,
       {
+        next: { revalidate: 86400 }, // 24 hours
         headers: {
           "Accept-Language": language,
           "User-Agent": getUserAgent(),
