@@ -585,10 +585,21 @@
     "title": "Explore",
     "description": "Discover open data from cities worldwide",
     "noDatasets": "No featured datasets yet.",
+    "noDatasetsFound": "No datasets found",
+    "seeAll": "See all →",
+    "backToExplore": "← Back to Explore",
     "stats": {
       "features": "Features",
       "contributors": "Contributors",
-      "lastEdited": "Last edited"
+      "lastEdited": "Last edited",
+      "watchers": "Watchers"
+    },
+    "sections": {
+      "featured": "Featured",
+      "largest": "Largest Datasets",
+      "mostWatched": "Most Watched",
+      "mostContributors": "Most Contributors",
+      "recentlyEdited": "Recently Edited"
     }
   },
   "SEO": {

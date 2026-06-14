@@ -592,10 +592,21 @@
     "title": "Explorar",
     "description": "Descubre datos abiertos de ciudades de todo el mundo",
     "noDatasets": "Aún no hay conjuntos de datos destacados.",
+    "noDatasetsFound": "No se encontraron conjuntos de datos",
+    "seeAll": "Ver todos →",
+    "backToExplore": "← Volver a Explorar",
     "stats": {
       "features": "Elementos",
       "contributors": "Colaboradores",
-      "lastEdited": "Última edición"
+      "lastEdited": "Última edición",
+      "watchers": "Seguidores"
+    },
+    "sections": {
+      "featured": "Destacados",
+      "largest": "Conjuntos de datos más grandes",
+      "mostWatched": "Más vistos",
+      "mostContributors": "Más colaboradores",
+      "recentlyEdited": "Editados recientemente"
     }
   },
   "SEO": {
