@@ -1,15 +1,22 @@
 import { prisma } from "@/lib/db";
 import { DatasetCard } from "@/components/ui/dataset-card";
-import { processDatasetStats } from "@/lib/dataset-stats";
-import { getAreaDetailsById } from "@/lib/nominatim";
+import { processDatasetStats, formatRelativeTime } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
-import { createLogger } from "@/lib/logger";
-
-const logger = createLogger("explore-page");
+import { Link } from "@/i18n/navigation";
 
 export const revalidate = 3600;
+
+// Fisher-Yates shuffle for unbiased random permutation
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }) {
   const { locale } = await params;
@@ -21,67 +28,108 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
   };
 }
 
+const DATASET_SELECT = {
+  id: true,
+  cityName: true,
+  dataCount: true,
+  stats: true,
+  areaId: true,
+  templateId: true,
+  createdAt: true,
+  area: {
+    select: {
+      id: true,
+      countryCode: true,
+    },
+  },
+  template: {
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+      translations: {
+        select: {
+          locale: true,
+          name: true,
+          description: true,
+        },
+      },
+    },
+  },
+} as const;
+
 export default async function FeaturedDatasetsPage({ params }: { params: Promise<{ locale: Locale }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("ExplorePage");
-  const datasets = await prisma.dataset.findMany({
-    where: { isFeatured: true },
-    include: {
-      area: {
-        select: {
-          id: true,
-          countryCode: true,
-        },
-      },
-      template: {
-        include: {
-          translations: true,
-          category: true,
-        },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-  });
 
-  // Backfill missing country codes from Nominatim (lazy, fires once per unique area)
-  const seen = new Set<number>();
-  const missing = datasets.filter((d) => {
-    if (d.area.countryCode || seen.has(d.area.id)) return false;
-    seen.add(d.area.id);
-    return true;
-  });
-  if (missing.length > 0) {
-    const results = await Promise.allSettled(
-      missing.map(async (d) => {
-        const details = await getAreaDetailsById(d.area.id);
-        if (details?.countryCode) {
-          await prisma.area.update({
-            where: { id: d.area.id },
-            data: { countryCode: details.countryCode },
-          });
-          return { areaId: d.area.id, countryCode: details.countryCode };
+  const [featured, recentlyEdited, mostWatched, mostContributors, largest] = await Promise.all([
+    prisma.dataset.findMany({
+      where: { isFeatured: true, dataCount: { gt: 0 } },
+      select: {
+        ...DATASET_SELECT,
+        _count: {
+          select: { watchers: true }
         }
-        return null;
-      })
-    );
-
-    // Propagate backfilled codes to all datasets sharing the same area
-    const backfilledByArea = new Map<number, string>();
-    for (const result of results) {
-      if (result.status === "fulfilled" && result.value) {
-        backfilledByArea.set(result.value.areaId, result.value.countryCode);
-      } else if (result.status === "rejected") {
-        logger.error("Failed to backfill area country code", { reason: result.reason });
-      }
-    }
-    for (const dataset of datasets) {
-      const code = backfilledByArea.get(dataset.area.id);
-      if (code) {
-        dataset.area.countryCode = code;
-      }
-    }
-  }
+      },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+    }).then(datasets => shuffleArray(datasets).slice(0, 6)),
+    prisma.dataset.findMany({
+      where: { isActive: true, dataCount: { gt: 0 }, lastEditedAt: { not: null } },
+      select: {
+        ...DATASET_SELECT,
+        recentlyEditedCount: true,
+        lastEditedAt: true,
+        _count: {
+          select: { watchers: true }
+        }
+      },
+      orderBy: { lastEditedAt: "desc" },
+      take: 6,
+    }),
+    prisma.dataset.findMany({
+      where: { isActive: true, dataCount: { gt: 0 } },
+      select: {
+        ...DATASET_SELECT,
+        _count: {
+          select: { watchers: true }
+        }
+      },
+      orderBy: { watchers: { _count: 'desc' } },
+      take: 6,
+    }),
+    prisma.dataset.findMany({
+      where: { isActive: true, dataCount: { gt: 0 }, contributorsCount: { not: null } },
+      select: {
+        ...DATASET_SELECT,
+        contributorsCount: true,
+        _count: {
+          select: { watchers: true }
+        }
+      },
+      orderBy: { contributorsCount: "desc" },
+      take: 6,
+    }),
+    prisma.dataset.findMany({
+      where: { isActive: true, dataCount: { gt: 0 } },
+      select: {
+        ...DATASET_SELECT,
+        _count: {
+          select: { watchers: true }
+        }
+      },
+      orderBy: { dataCount: "desc" },
+      take: 6,
+    }),
+  ]);
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 py-8">
@@ -95,32 +143,192 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
           </p>
         </div>
 
-        {datasets.length === 0 ? (
-          <p className="text-sm text-neutral-400">{t("noDatasets")}</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {datasets.map((dataset) => {
-              const s = processDatasetStats(dataset, locale);
-              const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
-              return (
-                <DatasetCard
-                  key={dataset.id}
-                  name={resolvedTemplate.name}
-                  city={dataset.cityName}
-                  country={dataset.area.countryCode ?? ""}
-                  category={resolvedTemplate.category?.name ?? "other"}
-                  href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
-                  stats={[
-                    { type: "features",     label: t("stats.features"),     value: s.features },
-                    { type: "contributors", label: t("stats.contributors"), value: s.contributors },
-                    { type: "lastEdited",   label: t("stats.lastEdited"),   value: s.lastEdited },
-                  ]}
-                />
-              );
-            })}
-          </div>
+        {/* Featured Section */}
+        {featured.length > 0 && (
+          <Section
+            title={t("sections.featured")}
+            seeAllHref={`/explore/featured`}
+            t={t}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {featured.map((dataset) => {
+                const s = processDatasetStats(dataset, locale);
+                const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+                const stats = [
+                  { type: "features" as const, label: t("stats.features"), value: s.features },
+                  { type: "contributors" as const, label: t("stats.contributors"), value: s.contributors },
+                  { type: "lastEdited" as const, label: t("stats.lastEdited"), value: s.lastEdited },
+                ];
+
+                return (
+                  <DatasetCard
+                    key={dataset.id}
+                    name={resolvedTemplate.name}
+                    city={dataset.cityName}
+                    country={dataset.area.countryCode ?? ""}
+                    category={resolvedTemplate.category?.name ?? "other"}
+                    href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+                    stats={stats}
+                  />
+                );
+              })}
+            </div>
+          </Section>
+        )}
+
+        {/* Recently Edited Section */}
+        {recentlyEdited.length > 0 && (
+          <Section
+            title={t("sections.recentlyEdited")}
+            seeAllHref={`/explore/recently-edited`}
+            t={t}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {recentlyEdited.map((dataset) => {
+                const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+                const lastEdited = formatRelativeTime(dataset.lastEditedAt, locale);
+                const stats = [
+                  { type: "lastEdited" as const, label: t("stats.lastEdited"), value: lastEdited },
+                ];
+
+                return (
+                  <DatasetCard
+                    key={dataset.id}
+                    name={resolvedTemplate.name}
+                    city={dataset.cityName}
+                    country={dataset.area.countryCode ?? ""}
+                    category={resolvedTemplate.category?.name ?? "other"}
+                    href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+                    stats={stats}
+                  />
+                );
+              })}
+            </div>
+          </Section>
+        )}
+
+        {/* Most Watched Section */}
+        {mostWatched.length > 0 && (
+          <Section
+            title={t("sections.mostWatched")}
+            seeAllHref={`/explore/most-watched`}
+            t={t}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {mostWatched.map((dataset) => {
+                const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+                const stats = [
+                  { type: "watchers" as const, label: t("stats.watchers"), value: dataset._count.watchers },
+                ];
+
+                return (
+                  <DatasetCard
+                    key={dataset.id}
+                    name={resolvedTemplate.name}
+                    city={dataset.cityName}
+                    country={dataset.area.countryCode ?? ""}
+                    category={resolvedTemplate.category?.name ?? "other"}
+                    href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+                    stats={stats}
+                  />
+                );
+              })}
+            </div>
+          </Section>
+        )}
+
+        {/* Most Contributors Section */}
+        {mostContributors.length > 0 && (
+          <Section
+            title={t("sections.mostContributors")}
+            seeAllHref={`/explore/most-contributors`}
+            t={t}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {mostContributors.map((dataset) => {
+                const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+                const stats = [
+                  { type: "contributors" as const, label: t("stats.contributors"), value: dataset.contributorsCount || 0 },
+                ];
+
+                return (
+                  <DatasetCard
+                    key={dataset.id}
+                    name={resolvedTemplate.name}
+                    city={dataset.cityName}
+                    country={dataset.area.countryCode ?? ""}
+                    category={resolvedTemplate.category?.name ?? "other"}
+                    href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+                    stats={stats}
+                  />
+                );
+              })}
+            </div>
+          </Section>
+        )}
+
+        {/* Largest Section */}
+        {largest.length > 0 && (
+          <Section
+            title={t("sections.largest")}
+            seeAllHref={`/explore/largest`}
+            t={t}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {largest.map((dataset) => {
+                const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+                const stats = [
+                  { type: "features" as const, label: t("stats.features"), value: dataset.dataCount },
+                ];
+
+                return (
+                  <DatasetCard
+                    key={dataset.id}
+                    name={resolvedTemplate.name}
+                    city={dataset.cityName}
+                    country={dataset.area.countryCode ?? ""}
+                    category={resolvedTemplate.category?.name ?? "other"}
+                    href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+                    stats={stats}
+                  />
+                );
+              })}
+            </div>
+          </Section>
         )}
       </div>
     </div>
+  );
+}
+
+function Section({
+  title,
+  seeAllHref,
+  children,
+  t,
+}: {
+  title: string;
+  seeAllHref: string | null;
+  children: React.ReactNode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t: any;
+}) {
+  return (
+    <section className="mb-10">
+      <div className="flex items-baseline justify-between mb-4">
+        <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+          {title}
+        </h2>
+        {seeAllHref && (
+          <Link
+            href={seeAllHref}
+            className="text-xs text-neutral-400 hover:text-neutral-700 cursor-pointer"
+          >
+            {t("seeAll")}
+          </Link>
+        )}
+      </div>
+      {children}
+    </section>
   );
 }

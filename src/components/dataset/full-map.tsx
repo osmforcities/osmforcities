@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useCallback, useEffect, useImperativeHandle, forwardRef } from "react";
+import React, { useRef, useCallback, useEffect, useImperativeHandle, forwardRef, useMemo, useState } from "react";
 import Map, { Source, Layer } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -9,12 +9,15 @@ import type { Dataset } from "@/schemas/dataset";
 import { MapLayers } from "./map/layers";
 import { AoiBoundaryLayer } from "./map/aoi-boundary-layer";
 import { AgeLegend } from "./map/age-legend";
+import { MapLegend } from "./map/map-legend";
 import { MapDateFilterControl } from "./map/map-date-filter-control";
 import { useDateFilter, useMapData, useFeatureSelection } from "./map/hooks";
 import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
 import type { DateFilter } from "@/types/geojson";
 import { mapStyle } from "@/lib/map-tiles";
+import { detectMapThemes } from "@/lib/map-themes";
+import type { CategoricalTheme } from "@/lib/map-themes";
 
 export interface DatasetFullMapHandle {
   deselectFeature: () => void;
@@ -47,6 +50,17 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
     dateFilter,
   });
 
+  // Detect categorical themes from dataset features
+  const categoricalThemes = useMemo(() => {
+    if (!processedData?.features || processedData.features.length === 0) {
+      return [];
+    }
+    const allThemes = detectMapThemes(processedData.features);
+    return allThemes.filter((t) => t.type === 'categorical');
+  }, [processedData?.features]);
+
+  // Theme selection - null means age theme, non-null means categorical theme
+  const [selectedCategoricalTheme, setSelectedCategoricalTheme] = useState<CategoricalTheme | null>(null);
   // Update filter if needed
   useEffect(() => {
     if (processedData?.availableTimeframes) {
@@ -77,9 +91,43 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
       {/* Map */}
       <div className="flex-1 relative">
         {hasFilteredData && (
+          /* Theme Selector */
+          <div className="absolute z-10 top-4 left-4">
+            {categoricalThemes.length > 0 && (
+              <select
+                value={selectedCategoricalTheme ? selectedCategoricalTheme.field : 'age'}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === 'age') {
+                    setSelectedCategoricalTheme(null);
+                  } else {
+                    const theme = categoricalThemes.find(t => t.field === value);
+                    if (theme) {
+                      setSelectedCategoricalTheme(theme);
+                    }
+                  }
+                }}
+                className="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-olive-500 focus:border-olive-500"
+              >
+                <option value="age">{t('age')}</option>
+                {categoricalThemes.map(theme => (
+                  <option key={theme.field} value={theme.field}>
+                    {theme.field}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+        )}
+
+        {hasFilteredData && (
           /* Legend */
           <div className="absolute z-10 top-4 right-4">
-            <AgeLegend />
+            {selectedCategoricalTheme ? (
+              <MapLegend theme={selectedCategoricalTheme} title={selectedCategoricalTheme.field} />
+            ) : (
+              <AgeLegend />
+            )}
           </div>
         )}
 
@@ -108,7 +156,7 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
             touchZoomRotate={true}
           >
             {boundary && <AoiBoundaryLayer boundary={boundary} />}
-            <MemoizedMapLayers geoJSONData={processedData} />
+            <MemoizedMapLayers geoJSONData={processedData} categoricalTheme={selectedCategoricalTheme} />
             {selectedFeature && (
               <Source
                 id="highlight-feature"
@@ -148,11 +196,13 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
                 />
               </Source>
             )}
-            <MemoizedMapDateFilterControl
-              availableTimeframes={processedData.availableTimeframes}
-              dateFilter={dateFilter}
-              onDateFilterChange={handleDateFilterChange}
-            />
+            {!selectedCategoricalTheme && (
+              <MemoizedMapDateFilterControl
+                availableTimeframes={processedData.availableTimeframes}
+                dateFilter={dateFilter}
+                onDateFilterChange={handleDateFilterChange}
+              />
+            )}
           </Map>
         ) : (
           <MapNoDataState dateFilter={dateFilter} hasData={hasFilteredData} />

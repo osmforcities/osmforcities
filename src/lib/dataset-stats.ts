@@ -6,7 +6,7 @@ export interface ProcessedDatasetStats {
   lastEdited: string;
 }
 
-export function processDatasetStats(dataset: Dataset, locale: string): ProcessedDatasetStats {
+export function processDatasetStats(dataset: Pick<Dataset, 'dataCount' | 'stats'>, locale: string): ProcessedDatasetStats {
   const stats = dataset.stats as
     | {
         editorsCount?: number;
@@ -22,10 +22,10 @@ export function processDatasetStats(dataset: Dataset, locale: string): Processed
   };
 }
 
-function formatRelativeTime(timestamp: string | null | undefined, locale: string): string {
+export function formatRelativeTime(timestamp: string | Date | null | undefined, locale: string): string {
   if (!timestamp) return "—";
 
-  const date = new Date(timestamp);
+  const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
   if (isNaN(date.getTime())) return "—";
 
   const diffMs = date.getTime() - Date.now();

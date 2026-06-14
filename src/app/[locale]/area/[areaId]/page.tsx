@@ -10,6 +10,8 @@ import { trackEvent, getClientInfoFromHeaders } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { auth } from "@/auth";
 
+export const revalidate = 3600;
+
 type AreaPageProps = {
   params: Promise<{
     areaId: string;
@@ -19,19 +21,36 @@ type AreaPageProps = {
 async function getActiveTemplates(locale: string) {
   const rows = await prisma.template.findMany({
     where: { isActive: true },
-    include: {
-      translations: true,
-      category: true,
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      tags: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+      translations: {
+        select: {
+          locale: true,
+          name: true,
+          description: true,
+        },
+      },
     },
     orderBy: { name: "asc" },
   });
   return rows.map((t) => {
+    const categorySlug = t.category?.slug ?? "other";
     const resolved = resolveTemplateForLocale(t, locale);
     return {
       id: resolved.id,
       name: resolved.name,
       description: resolved.description,
-      category: resolved.category?.slug ?? "other",
+      category: categorySlug,
       tags: resolved.tags,
     };
   });

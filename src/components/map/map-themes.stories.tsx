@@ -1,84 +1,46 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import Map, { Source, Layer } from 'react-map-gl/maplibre';
 import type { MapRef } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { FeatureCollection, Feature } from 'geojson';
 import { mapStyle } from '@/lib/map-tiles';
 import { detectMapThemes, type MapTheme } from '@/lib/map-themes';
+import { buildCircleColorExpression, buildCircleRadiusExpression } from '@/components/dataset/map/layers/expressions';
+import { MapLegend } from '@/components/dataset/map/map-legend';
 // @ts-expect-error – Vite ?raw imports are not typed in tsconfig
-import parisBusStopsRaw from '@/lib/__tests__/fixtures/bus-stops-paris.geojson?raw';
+import bicycleParkingParisRaw from '@/lib/__tests__/fixtures/bicycle-parking-paris.geojson?raw';
 
-const parisBusStopsData = JSON.parse(parisBusStopsRaw) as FeatureCollection;
+const bicycleParkingRawParsed = JSON.parse(bicycleParkingParisRaw) as FeatureCollection;
+const bicycleParkingParisData = {
+  ...bicycleParkingRawParsed,
+  features: convertPolygonsToPoints(bicycleParkingRawParsed.features)
+};
 
-/**
- * Build MapLibre paint expression for circle-color based on selected theme.
- */
-function getCircleColorExpression(theme: MapTheme | null): string | unknown[] {
-  if (!theme) {
-    return '#3b82f6';
+function polygonToCentroidPoint(feature: Feature): Feature {
+  if (feature.geometry?.type === 'Polygon') {
+    const coordinates = feature.geometry.coordinates[0] as [number, number][];
+    const sum = coordinates.reduce((acc, [lon, lat]) => [acc[0] + lon, acc[1] + lat], [0, 0]);
+    const centroid: [number, number] = [sum[0] / coordinates.length, sum[1] / coordinates.length];
+    return {
+      ...feature,
+      geometry: {
+        type: 'Point',
+        coordinates: centroid,
+      },
+    };
   }
-
-  switch (theme.type) {
-    case 'boolean': {
-      // MapLibre match labels must be string or number; coerce booleans to strings
-      const isBooleanValue = typeof theme.trueValue === 'boolean';
-      const trueLabel = isBooleanValue ? String(theme.trueValue) : theme.trueValue;
-      const falseLabel = isBooleanValue ? String(theme.falseValue) : theme.falseValue;
-
-      return [
-        'match',
-        isBooleanValue ? ['to-string', ['get', theme.field]] : ['get', theme.field],
-        trueLabel,
-        theme.trueColor,
-        falseLabel,
-        theme.falseColor,
-        '#9ca3af', // fallback for other values
-      ];
-    }
-
-    case 'categorical': {
-      // Build match expression from colorMap (keys are lowercase)
-      const matches: unknown[] = ['match', ['downcase', ['get', theme.field]]];
-      for (const [value, color] of theme.colorMap.entries()) {
-        matches.push(value, color);
-      }
-      matches.push('#9ca3af'); // fallback for "other"
-      return matches;
-    }
-
-    case 'intensity': {
-      const [colorMin, colorMax] = theme.colorScale;
-      return [
-        'interpolate',
-        ['linear'],
-        ['to-number', ['get', theme.field]],
-        theme.min,
-        colorMin,
-        theme.max,
-        colorMax,
-      ];
-    }
-
-    default:
-      return '#3b82f6';
-  }
+  return feature;
 }
 
-function MapThemesViewer({ features }: { features: Feature[] }) {
-  const [themes, setThemes] = useState<MapTheme[]>([]);
-  const [selectedTheme, setSelectedTheme] = useState<MapTheme | null>(null);
+function convertPolygonsToPoints(features: Feature[]): Feature[] {
+  return features.map(polygonToCentroidPoint);
+}
+
+function MapLibreMapWithThemes({ features, theme }: { features: Feature[]; theme: MapTheme | null }) {
   const mapRef = useRef<MapRef | null>(null);
 
-  useEffect(() => {
-    const detected = detectMapThemes(features);
-    setThemes(detected);
-    if (detected.length > 0) {
-      setSelectedTheme(detected[0]);
-    }
-  }, [features]);
-
-  const fitBounds = () => {
+  const fitBounds = useCallback(() => {
     if (!mapRef.current || features.length === 0) return;
 
     const coordinates = features
@@ -104,135 +66,55 @@ function MapThemesViewer({ features }: { features: Feature[] }) {
     ];
 
     mapRef.current.fitBounds(bounds, { padding: 50 });
-  };
+  }, [features]);
+
+  useEffect(() => {
+    fitBounds();
+  }, [features, fitBounds]);
 
   return (
-    <div className="flex h-screen">
-      {/* Sidebar */}
-      <div className="w-80 bg-white border-r overflow-y-auto p-4">
-        <h2 className="text-lg font-semibold mb-4">{"Detected Themes"}</h2>
-
-        {themes.length === 0 ? (
-          <p className="text-gray-500">{"No themes detected"}</p>
-        ) : (
-          <ul className="space-y-2">
-            {themes.map((theme, i) => (
-              <li key={i}>
-                <button
-                  onClick={() => setSelectedTheme(theme)}
-                  className={`w-full text-left p-2 rounded border ${
-                    selectedTheme?.type === theme.type && selectedTheme?.field === theme.field
-                      ? 'bg-blue-50 border-blue-500'
-                      : 'hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="font-medium">{theme.field}</div>
-                  <div className="text-sm text-gray-500 capitalize">{theme.type}</div>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {selectedTheme && (
-          <div className="mt-6 border-t pt-4">
-            <h3 className="font-medium mb-2">{"Theme Details"}</h3>
-            <div className="text-sm space-y-2">
-              <div>
-                <span className="text-gray-500">{"Type:"}</span>{' '}
-                <span className="capitalize">{selectedTheme.type}</span>
-              </div>
-              <div>
-                <span className="text-gray-500">{"Field:"}</span> {selectedTheme.field}
-              </div>
-              {selectedTheme.type === 'categorical' && (
-                <>
-                  <div>
-                    <span className="text-gray-500">{"Categories:"}</span>{' '}
-                    {selectedTheme.topValues.length + selectedTheme.otherCount}
-                  </div>
-                  <div className="mt-2">
-                    <span className="text-gray-500">{"Top values:"}</span>
-                    <ul className="ml-4 mt-1 space-y-1">
-                      {selectedTheme.topValues.slice(0, 5).map((v) => (
-                        <li key={v.value}>
-                          {v.value} {"("} {v.count} {")"}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </>
-              )}
-              {selectedTheme.type === 'boolean' && (
-                <>
-                  <div>
-                    <span className="text-gray-500">{"True:"}</span> {String(selectedTheme.trueValue)}
-                  </div>
-                  <div>
-                    <span className="text-gray-500">{"False:"}</span> {String(selectedTheme.falseValue)}
-                  </div>
-                </>
-              )}
-              {selectedTheme.type === 'intensity' && (
-                <>
-                  <div>
-                    <span className="text-gray-500">{"Min:"}</span> {selectedTheme.min}
-                  </div>
-                  <div>
-                    <span className="text-gray-500">{"Max:"}</span> {selectedTheme.max}
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-
-        <button
-          onClick={fitBounds}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+    <div className="relative h-screen w-full">
+      <Map
+        ref={mapRef}
+        mapStyle={mapStyle}
+        initialViewState={{
+          longitude: 2.3522,
+          latitude: 48.8566,
+          zoom: 12,
+        }}
+        style={{ width: '100%', height: '100%' }}
+      >
+        <Source
+          id="features"
+          type="geojson"
+          data={{ type: 'FeatureCollection', features } as FeatureCollection}
         >
-          {"Fit Bounds"}
-        </button>
-      </div>
+          <Layer
+            id="points"
+            type="circle"
+            paint={{
+              'circle-radius': theme ? buildCircleRadiusExpression(theme, 4) as number : 4,
+              'circle-stroke-width': 1,
+              'circle-stroke-color': 'rgba(255, 255, 255, 0.8)',
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              'circle-color': theme ? buildCircleColorExpression(theme) as any : '#3b82f6',
+            }}
+          />
+        </Source>
+      </Map>
 
-      {/* Map */}
-      <div className="flex-1">
-        <Map
-          ref={mapRef}
-          mapStyle={mapStyle}
-          initialViewState={{
-            longitude: 2.3522,
-            latitude: 48.8566,
-            zoom: 12,
-          }}
-          style={{ width: '100%', height: '100%' }}
-        >
-          <Source
-            id="features"
-            type="geojson"
-            data={{ type: 'FeatureCollection', features } as FeatureCollection}
-          >
-            <Layer
-              id="points"
-              type="circle"
-              paint={{
-                'circle-radius': 6,
-                'circle-stroke-width': 2,
-                'circle-stroke-color': '#1e40af',
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                'circle-color': getCircleColorExpression(selectedTheme) as any,
-              }}
-            />
-          </Source>
-        </Map>
-      </div>
+      {/* Legend Overlay */}
+      {theme && (
+        <div className="absolute z-10 top-4 right-4">
+          <MapLegend theme={theme} title={theme.field} />
+        </div>
+      )}
     </div>
   );
 }
 
-const meta: Meta<typeof MapThemesViewer> = {
+const meta: Meta = {
   title: 'Map/MapThemes',
-  component: MapThemesViewer,
   parameters: {
     layout: 'fullscreen',
   },
@@ -241,8 +123,70 @@ const meta: Meta<typeof MapThemesViewer> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const ParisBusStops: Story = {
+export const BicycleParkingParisCategorical: Story = {
   render: () => {
-    return <MapThemesViewer features={parisBusStopsData.features} />;
+    const features = bicycleParkingParisData.features;
+    const themes = detectMapThemes(features).filter((t) => t.type === 'categorical');
+    const selectedTheme = themes[0] || null;
+    return <MapLibreMapWithThemes features={features} theme={selectedTheme} />;
+  },
+  name: 'Bicycle Parking Paris - Categorical',
+  parameters: {
+    notes: 'Categorical themes from bicycle parking dataset: bicycle_parking types. Shows top 10 categories with "other" fallback.',
+  },
+};
+
+export const BicycleParkingParisIntensity: Story = {
+  render: () => {
+    const features = bicycleParkingParisData.features;
+    const themes = detectMapThemes(features).filter((t) => t.type === 'intensity');
+    const selectedTheme = themes[0] || null;
+    return <MapLibreMapWithThemes features={features} theme={selectedTheme} />;
+  },
+  name: 'Bicycle Parking Paris - Intensity',
+  parameters: {
+    notes: 'Intensity theme from bicycle parking dataset: capacity. Shows numeric range interpolation with percentile-based bounds (10th-90th).',
+  },
+};
+
+export const CategoricalColorPaletteComparison: Story = {
+  render: () => {
+    const features = bicycleParkingParisData.features.slice(0, 200); // Subset for faster rendering
+
+    // Detect categorical themes from the data
+    const themes = detectMapThemes(features).filter((t) => t.type === 'categorical');
+
+    const title = 'Categorical Theme Examples';
+    const description = `Found ${themes.length} categorical themes in bicycle parking dataset. Showing top themes by coverage.`;
+
+    return (
+      <div className="p-4">
+        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <p className="text-sm text-gray-600 mb-6">
+          {description}
+        </p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {themes.slice(0, 6).map((theme, index) => (
+            <div key={index} className="border rounded-lg overflow-hidden">
+              <div className="bg-gray-50 px-4 py-2 border-b">
+                <h4 className="text-sm font-medium">{theme.field}</h4>
+                {/* eslint-disable react/jsx-no-literals */}
+                <p className="text-xs text-gray-500">
+                  {theme.topValues.length} categories • {((theme.topValues[0]?.count || 0) / features.length * 100).toFixed(0)}% coverage
+                </p>
+                {/* eslint-enable react/jsx-no-literals */}
+              </div>
+              <div className="relative h-80">
+                <MapLibreMapWithThemes features={features} theme={theme} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  },
+  parameters: {
+    layout: 'centered',
+    notes: 'Shows categorical themes detected from bicycle parking dataset. Each map displays a different field colored by its top categories.',
   },
 };

@@ -13,4 +13,6 @@ export {
   createAgeColorExpression,
   createSimplifiedOpacityExpression,
   createDetailedOpacityExpression,
+  buildCircleColorExpression,
+  buildCircleRadiusExpression,
 } from "./expressions";

@@ -337,6 +337,7 @@
     "last7Days": "Últimos 7 días",
     "last30Days": "Últimos 30 días",
     "last90Days": "Últimos 90 días",
+    "age": "Antigüedad",
     "noDataInTimeframe": "No se encontraron datos en el período seleccionado",
     "lastEditedLegend": "Última Edición",
     "recentChanges": "≤ 7 días atrás",
@@ -591,10 +592,21 @@
     "title": "Explorar",
     "description": "Descubre datos abiertos de ciudades de todo el mundo",
     "noDatasets": "Aún no hay conjuntos de datos destacados.",
+    "noDatasetsFound": "No se encontraron conjuntos de datos",
+    "seeAll": "Ver todos →",
+    "backToExplore": "← Volver a Explorar",
     "stats": {
       "features": "Elementos",
       "contributors": "Colaboradores",
-      "lastEdited": "Última edición"
+      "lastEdited": "Última edición",
+      "watchers": "Seguidores"
+    },
+    "sections": {
+      "featured": "Destacados",
+      "largest": "Conjuntos de datos más grandes",
+      "mostWatched": "Más vistos",
+      "mostContributors": "Más colaboradores",
+      "recentlyEdited": "Editados recientemente"
     }
   },
   "SEO": {

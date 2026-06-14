@@ -339,6 +339,7 @@
     "last7Days": "Last 7 days",
     "last30Days": "Last 30 days",
     "last90Days": "Last 90 days",
+    "age": "Age",
     "noDataInTimeframe": "No data found in the selected time period",
     "lastEditedLegend": "Last Edited",
     "recentChanges": "≤ 7 days ago",
@@ -584,10 +585,21 @@
     "title": "Explore",
     "description": "Discover open data from cities worldwide",
     "noDatasets": "No featured datasets yet.",
+    "noDatasetsFound": "No datasets found",
+    "seeAll": "See all →",
+    "backToExplore": "← Back to Explore",
     "stats": {
       "features": "Features",
       "contributors": "Contributors",
-      "lastEdited": "Last edited"
+      "lastEdited": "Last edited",
+      "watchers": "Watchers"
+    },
+    "sections": {
+      "featured": "Featured",
+      "largest": "Largest Datasets",
+      "mostWatched": "Most Watched",
+      "mostContributors": "Most Contributors",
+      "recentlyEdited": "Recently Edited"
     }
   },
   "SEO": {
