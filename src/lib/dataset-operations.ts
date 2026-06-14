@@ -212,6 +212,9 @@ async function createDatasetOnDemand(
         dataCount: snapshot.dataCount,
         lastChecked: new Date(),
         stats: JSON.parse(JSON.stringify(snapshot.stats)),
+        lastEditedAt: snapshot.stats.mostRecentElement ?? null,
+        contributorsCount: snapshot.stats.editorsCount,
+        recentlyEditedCount: snapshot.stats.recentActivity.elementsEdited,
       },
       include: {
         template: {
