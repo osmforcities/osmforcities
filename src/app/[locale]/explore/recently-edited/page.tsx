@@ -5,6 +5,21 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
+function formatRelativeTime(timestamp: Date | null | undefined, locale: string): string {
+  if (!timestamp) return "—";
+
+  const diffMs = timestamp.getTime() - Date.now();
+  const absSec = Math.abs(diffMs / 1000);
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+
+  if (absSec < 60) return rtf.format(Math.round(diffMs / 1000), "second");
+  if (absSec < 3600) return rtf.format(Math.round(diffMs / 60000), "minute");
+  if (absSec < 86400) return rtf.format(Math.round(diffMs / 3600000), "hour");
+  if (absSec < 2592000) return rtf.format(Math.round(diffMs / 86400000), "day");
+  if (absSec < 31536000) return rtf.format(Math.round(diffMs / 2592000000), "month");
+  return rtf.format(Math.round(diffMs / 31536000000), "year");
+}
+
 export const revalidate = 300;
 
 export async function generateMetadata({
@@ -72,6 +87,7 @@ export default async function RecentlyEditedPage({
     select: {
       ...DATASET_SELECT,
       recentlyEditedCount: true,
+      lastEditedAt: true,
       _count: {
         select: { watchers: true }
       }
@@ -99,8 +115,9 @@ export default async function RecentlyEditedPage({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {datasets.map((dataset) => {
               const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+              const lastEdited = formatRelativeTime(dataset.lastEditedAt, locale);
               const stats = [
-                { type: "features" as const, label: "Recently edited", value: dataset.recentlyEditedCount || 0 },
+                { type: "lastEdited" as const, label: t("stats.lastEdited"), value: lastEdited },
               ];
 
               return (
