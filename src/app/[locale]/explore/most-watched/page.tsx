@@ -4,32 +4,21 @@ import { processDatasetStats, getDatasetStats } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
-import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 
 export const revalidate = 300;
 
-export function generateStaticParams() {
-  return SECTIONS.map((section) => ({ section }));
-}
-
-const SECTIONS = ["featured", "largest", "most-watched"] as const;
-type Section = (typeof SECTIONS)[number];
-
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: Locale; section: string }>;
+  params: Promise<{ locale: Locale }>;
 }) {
-  const { locale, section } = await params;
+  const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("ExplorePage");
 
-  const sectionKey = section === "largest" ? "largest" : section === "most-watched" ? "mostWatched" : "featured";
-  const title = t.raw(`sections.${sectionKey}`);
-
   return {
-    title: `${title} - ${t("metaTitle")}`,
+    title: `${t("sections.mostWatched")} - ${t("metaTitle")}`,
   };
 }
 
@@ -70,23 +59,26 @@ const DATASET_SELECT = {
   },
 } as const;
 
-export default async function ExploreSectionPage({
+export default async function MostWatchedPage({
   params,
 }: {
-  params: Promise<{ locale: Locale; section: string }>;
+  params: Promise<{ locale: Locale }>;
 }) {
-  const { locale, section: sectionParam } = await params;
-
-  if (!SECTIONS.includes(sectionParam as Section)) {
-    notFound();
-  }
-
-  const section = sectionParam as Section;
-
+  const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("ExplorePage");
 
-  const datasets = await getDatasets(section as Section);
+  const datasets = await prisma.dataset.findMany({
+    where: { isActive: true, dataCount: { gt: 0 } },
+    select: {
+      ...DATASET_SELECT,
+      _count: {
+        select: { watchers: true }
+      }
+    },
+    orderBy: { watchers: { _count: 'desc' } },
+    take: 24,
+  });
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 py-8">
@@ -99,7 +91,7 @@ export default async function ExploreSectionPage({
             {t("backToExplore")}
           </Link>
           <h1 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mt-4">
-            {t(`sections.${sectionKey(section)}`)}
+            {t("sections.mostWatched")}
           </h1>
         </div>
 
@@ -108,7 +100,7 @@ export default async function ExploreSectionPage({
             {datasets.map((dataset) => {
               const s = processDatasetStats(dataset, locale);
               const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
-              const stats = getDatasetStats(dataset, s, t, section);
+              const stats = getDatasetStats(dataset, s, t, "most-watched");
 
               return (
                 <DatasetCard
@@ -131,48 +123,4 @@ export default async function ExploreSectionPage({
       </div>
     </div>
   );
-}
-
-function sectionKey(section: Section): "featured" | "largest" | "mostWatched" {
-  switch (section) {
-    case "largest":
-      return "largest";
-    case "most-watched":
-      return "mostWatched";
-    default:
-      return "featured";
-  }
-}
-
-async function getDatasets(section: Section) {
-  const selectWithWatchers = {
-    ...DATASET_SELECT,
-    _count: {
-      select: { watchers: true }
-    }
-  };
-
-  switch (section) {
-    case "featured":
-      return prisma.dataset.findMany({
-        where: { isFeatured: true, dataCount: { gt: 0 } },
-        select: selectWithWatchers,
-        orderBy: { createdAt: "desc" },
-        take: 24,
-      });
-    case "largest":
-      return prisma.dataset.findMany({
-        where: { isActive: true, dataCount: { gt: 0 } },
-        select: selectWithWatchers,
-        orderBy: { dataCount: "desc" },
-        take: 24,
-      });
-    case "most-watched":
-      return prisma.dataset.findMany({
-        where: { isActive: true, dataCount: { gt: 0 } },
-        select: selectWithWatchers,
-        orderBy: { watchers: { _count: 'desc' } },
-        take: 24,
-      });
-  }
 }
