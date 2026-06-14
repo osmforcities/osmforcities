@@ -24,11 +24,11 @@ describe('buildCircleColorExpression', () => {
 
     expect(expression).toEqual([
       'case',
-      ['==', ['get', 'amenity'], 'bench'],
+      ['==', ['downcase', ['get', 'amenity']], 'bench'],
       '#4e79a7',
-      ['==', ['get', 'amenity'], 'fountain'],
+      ['==', ['downcase', ['get', 'amenity']], 'fountain'],
       '#f28e2c',
-      ['==', ['get', 'amenity'], 'atm'],
+      ['==', ['downcase', ['get', 'amenity']], 'atm'],
       '#e15759',
       '#9ca3af', // fallback color
     ]);

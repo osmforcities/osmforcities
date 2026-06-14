@@ -31,7 +31,7 @@ export const buildCircleColorExpression = (theme: MapTheme) => {
     const expression: unknown[] = ["case"];
 
     for (const [value, color] of entries) {
-      expression.push(["==", ["get", theme.field], value], color);
+      expression.push(["==", ["downcase", ["get", theme.field]], value.toLowerCase()], color);
     }
 
     // Fallback color for "other" values
