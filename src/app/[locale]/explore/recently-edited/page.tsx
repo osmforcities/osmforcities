@@ -69,7 +69,7 @@ export default async function RecentlyEditedPage({
   const t = await getTranslations("ExplorePage");
 
   const datasets = await prisma.dataset.findMany({
-    where: { isActive: true, dataCount: { gt: 0 }, recentlyEditedCount: { not: null } },
+    where: { isActive: true, dataCount: { gt: 0 }, lastEditedAt: { not: null } },
     select: {
       ...DATASET_SELECT,
       recentlyEditedCount: true,

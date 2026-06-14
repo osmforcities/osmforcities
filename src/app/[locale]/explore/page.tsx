@@ -83,7 +83,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
       take: 20,
     }).then(datasets => shuffleArray(datasets).slice(0, 6)),
     prisma.dataset.findMany({
-      where: { isActive: true, dataCount: { gt: 0 }, recentlyEditedCount: { not: null } },
+      where: { isActive: true, dataCount: { gt: 0 }, lastEditedAt: { not: null } },
       select: {
         ...DATASET_SELECT,
         recentlyEditedCount: true,
