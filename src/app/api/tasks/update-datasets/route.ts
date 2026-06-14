@@ -75,6 +75,9 @@ export async function POST(req: NextRequest) {
             dataCount: snapshot.dataCount,
             lastChecked: new Date(),
             updatedAt: new Date(),
+            lastEditedAt: snapshot.stats.mostRecentElement ?? null,
+            contributorsCount: snapshot.stats.editorsCount,
+            recentlyEditedCount: snapshot.stats.recentActivity.elementsEdited,
           },
         });
 

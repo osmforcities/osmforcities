@@ -63,6 +63,9 @@ export async function POST(
         geojson: JSON.parse(JSON.stringify(snapshot.geojson)),
         bbox: snapshot.bbox ? JSON.parse(JSON.stringify(snapshot.bbox)) : null,
         updatedAt: new Date(),
+        lastEditedAt: snapshot.stats.mostRecentElement ?? null,
+        contributorsCount: snapshot.stats.editorsCount,
+        recentlyEditedCount: snapshot.stats.recentActivity.elementsEdited,
       },
       include: {
         template: {
