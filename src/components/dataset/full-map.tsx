@@ -11,6 +11,7 @@ import { AoiBoundaryLayer } from "./map/aoi-boundary-layer";
 import { AgeLegend } from "./map/age-legend";
 import { MapLegend } from "./map/map-legend";
 import { MapDateFilterControl } from "./map/map-date-filter-control";
+import { ThemeSwitcher } from "./map/theme-switcher";
 import { useDateFilter, useMapData, useFeatureSelection } from "./map/hooks";
 import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
@@ -59,8 +60,18 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
     return allThemes.filter((t) => t.type === 'categorical');
   }, [processedData?.features]);
 
-  // Theme selection - null means age theme, non-null means categorical theme
+  // Theme selection - null means recent edits, non-null means categorical theme
   const [selectedCategoricalTheme, setSelectedCategoricalTheme] = useState<CategoricalTheme | null>(null);
+  const themeInitialized = useRef(false);
+
+  // Default to the first detected theme on first render where themes appear
+  useEffect(() => {
+    if (!themeInitialized.current && categoricalThemes.length > 0) {
+      setSelectedCategoricalTheme(categoricalThemes[0]);
+      themeInitialized.current = true;
+    }
+  }, [categoricalThemes]);
+
   // Update filter if needed
   useEffect(() => {
     if (processedData?.availableTimeframes) {
@@ -91,32 +102,13 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
       {/* Map */}
       <div className="flex-1 relative">
         {hasFilteredData && (
-          /* Theme Selector */
+          /* Theme Switcher */
           <div className="absolute z-10 top-4 left-4">
-            {categoricalThemes.length > 0 && (
-              <select
-                value={selectedCategoricalTheme ? selectedCategoricalTheme.field : 'age'}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value === 'age') {
-                    setSelectedCategoricalTheme(null);
-                  } else {
-                    const theme = categoricalThemes.find(t => t.field === value);
-                    if (theme) {
-                      setSelectedCategoricalTheme(theme);
-                    }
-                  }
-                }}
-                className="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-olive-500 focus:border-olive-500"
-              >
-                <option value="age">{t('age')}</option>
-                {categoricalThemes.map(theme => (
-                  <option key={theme.field} value={theme.field}>
-                    {theme.field}
-                  </option>
-                ))}
-              </select>
-            )}
+            <ThemeSwitcher
+              detectedThemes={categoricalThemes}
+              activeTheme={selectedCategoricalTheme}
+              onChange={setSelectedCategoricalTheme}
+            />
           </div>
         )}
 
