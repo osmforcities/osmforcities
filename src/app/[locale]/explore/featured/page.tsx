@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { DatasetCard } from "@/components/ui/dataset-card";
-import { processDatasetStats, getDatasetStats } from "@/lib/dataset-stats";
+import { processDatasetStats } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
@@ -100,7 +100,11 @@ export default async function FeaturedPage({
             {datasets.map((dataset) => {
               const s = processDatasetStats(dataset, locale);
               const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
-              const stats = getDatasetStats(dataset, s, t, "featured");
+              const stats = [
+                { type: "features" as const, label: t("stats.features"), value: s.features },
+                { type: "contributors" as const, label: t("stats.contributors"), value: s.contributors },
+                { type: "lastEdited" as const, label: t("stats.lastEdited"), value: s.lastEdited },
+              ];
 
               return (
                 <DatasetCard

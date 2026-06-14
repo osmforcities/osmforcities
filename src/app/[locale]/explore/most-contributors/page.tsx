@@ -17,7 +17,7 @@ export async function generateMetadata({
   const t = await getTranslations("ExplorePage");
 
   return {
-    title: `${t("sections.largest")} - ${t("metaTitle")}`,
+    title: `${t("sections.mostContributors")} - ${t("metaTitle")}`,
   };
 }
 
@@ -58,7 +58,7 @@ const DATASET_SELECT = {
   },
 } as const;
 
-export default async function LargestPage({
+export default async function MostContributorsPage({
   params,
 }: {
   params: Promise<{ locale: Locale }>;
@@ -68,14 +68,15 @@ export default async function LargestPage({
   const t = await getTranslations("ExplorePage");
 
   const datasets = await prisma.dataset.findMany({
-    where: { isActive: true, dataCount: { gt: 0 } },
+    where: { isActive: true, dataCount: { gt: 0 }, contributorsCount: { not: null } },
     select: {
       ...DATASET_SELECT,
+      contributorsCount: true,
       _count: {
         select: { watchers: true }
       }
     },
-    orderBy: { dataCount: "desc" },
+    orderBy: { contributorsCount: "desc" },
     take: 24,
   });
 
@@ -90,7 +91,7 @@ export default async function LargestPage({
             {t("backToExplore")}
           </Link>
           <h1 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mt-4">
-            {t("sections.largest")}
+            {t("sections.mostContributors")}
           </h1>
         </div>
 
@@ -99,7 +100,7 @@ export default async function LargestPage({
             {datasets.map((dataset) => {
               const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
               const stats = [
-                { type: "features" as const, label: t("stats.features"), value: dataset.dataCount },
+                { type: "contributors" as const, label: t("stats.contributors"), value: dataset.contributorsCount || 0 },
               ];
 
               return (

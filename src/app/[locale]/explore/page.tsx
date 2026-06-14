@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { DatasetCard } from "@/components/ui/dataset-card";
-import { processDatasetStats, getDatasetStats } from "@/lib/dataset-stats";
+import { processDatasetStats } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
@@ -70,7 +70,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
   setRequestLocale(locale);
   const t = await getTranslations("ExplorePage");
 
-  const [featured, largest, mostWatched] = await Promise.all([
+  const [featured, largest, mostWatched, mostContributors, recentlyEdited] = await Promise.all([
     prisma.dataset.findMany({
       where: { isFeatured: true, dataCount: { gt: 0 } },
       select: {
@@ -104,6 +104,30 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
       orderBy: { watchers: { _count: 'desc' } },
       take: 6,
     }),
+    prisma.dataset.findMany({
+      where: { isActive: true, dataCount: { gt: 0 }, contributorsCount: { not: null } },
+      select: {
+        ...DATASET_SELECT,
+        contributorsCount: true,
+        _count: {
+          select: { watchers: true }
+        }
+      },
+      orderBy: { contributorsCount: "desc" },
+      take: 6,
+    }),
+    prisma.dataset.findMany({
+      where: { isActive: true, dataCount: { gt: 0 }, recentlyEditedCount: { not: null } },
+      select: {
+        ...DATASET_SELECT,
+        recentlyEditedCount: true,
+        _count: {
+          select: { watchers: true }
+        }
+      },
+      orderBy: { lastEditedAt: "desc" },
+      take: 6,
+    }),
   ]);
 
   return (
@@ -125,12 +149,29 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
             seeAllHref={`/${locale}/explore/featured`}
             t={t}
           >
-            <DatasetGrid
-              datasets={featured}
-              locale={locale}
-              t={t}
-              statType="default"
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {featured.map((dataset) => {
+                const s = processDatasetStats(dataset, locale);
+                const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+                const stats = [
+                  { type: "features" as const, label: t("stats.features"), value: s.features },
+                  { type: "contributors" as const, label: t("stats.contributors"), value: s.contributors },
+                  { type: "lastEdited" as const, label: t("stats.lastEdited"), value: s.lastEdited },
+                ];
+
+                return (
+                  <DatasetCard
+                    key={dataset.id}
+                    name={resolvedTemplate.name}
+                    city={dataset.cityName}
+                    country={dataset.area.countryCode ?? ""}
+                    category={resolvedTemplate.category?.name ?? "other"}
+                    href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+                    stats={stats}
+                  />
+                );
+              })}
+            </div>
           </Section>
         )}
 
@@ -141,12 +182,26 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
             seeAllHref={`/${locale}/explore/largest`}
             t={t}
           >
-            <DatasetGrid
-              datasets={largest}
-              locale={locale}
-              t={t}
-              statType="largest"
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {largest.map((dataset) => {
+                const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+                const stats = [
+                  { type: "features" as const, label: t("stats.features"), value: dataset.dataCount },
+                ];
+
+                return (
+                  <DatasetCard
+                    key={dataset.id}
+                    name={resolvedTemplate.name}
+                    city={dataset.cityName}
+                    country={dataset.area.countryCode ?? ""}
+                    category={resolvedTemplate.category?.name ?? "other"}
+                    href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+                    stats={stats}
+                  />
+                );
+              })}
+            </div>
           </Section>
         )}
 
@@ -157,12 +212,86 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
             seeAllHref={`/${locale}/explore/most-watched`}
             t={t}
           >
-            <DatasetGrid
-              datasets={mostWatched}
-              locale={locale}
-              t={t}
-              statType="most-watched"
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {mostWatched.map((dataset) => {
+                const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+                const stats = [
+                  { type: "watchers" as const, label: t("stats.watchers"), value: dataset._count.watchers },
+                ];
+
+                return (
+                  <DatasetCard
+                    key={dataset.id}
+                    name={resolvedTemplate.name}
+                    city={dataset.cityName}
+                    country={dataset.area.countryCode ?? ""}
+                    category={resolvedTemplate.category?.name ?? "other"}
+                    href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+                    stats={stats}
+                  />
+                );
+              })}
+            </div>
+          </Section>
+        )}
+
+        {/* Most Contributors Section */}
+        {mostContributors.length > 0 && (
+          <Section
+            title={t("sections.mostContributors")}
+            seeAllHref={`/${locale}/explore/most-contributors`}
+            t={t}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {mostContributors.map((dataset) => {
+                const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+                const stats = [
+                  { type: "contributors" as const, label: t("stats.contributors"), value: dataset.contributorsCount || 0 },
+                ];
+
+                return (
+                  <DatasetCard
+                    key={dataset.id}
+                    name={resolvedTemplate.name}
+                    city={dataset.cityName}
+                    country={dataset.area.countryCode ?? ""}
+                    category={resolvedTemplate.category?.name ?? "other"}
+                    href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+                    stats={stats}
+                  />
+                );
+              })}
+            </div>
+          </Section>
+        )}
+
+        {/* Recently Edited Section */}
+        {recentlyEdited.length > 0 && (
+          <Section
+            title={t("sections.recentlyEdited")}
+            seeAllHref={`/${locale}/explore/recently-edited`}
+            t={t}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {recentlyEdited.map((dataset) => {
+                const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
+                const stats = [
+                  { type: "features" as const, label: "Recently edited", value: dataset.recentlyEditedCount || 0 },
+                ];
+
+                return (
+                  <DatasetCard
+                    key={dataset.id}
+                    name={resolvedTemplate.name}
+                    city={dataset.cityName}
+                    country={dataset.area.countryCode ?? ""}
+                    category={resolvedTemplate.category?.name ?? "other"}
+                    href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+                    stats={stats}
+                  />
+                );
+              })}
+            </div>
           </Section>
         )}
       </div>
@@ -199,63 +328,5 @@ function Section({
       </div>
       {children}
     </section>
-  );
-}
-
-function DatasetGrid({
-  datasets,
-  locale,
-  t,
-  statType,
-}: {
-  datasets: Array<{
-    id: string;
-    cityName: string;
-    dataCount: number;
-    stats: import("@prisma/client").Prisma.JsonValue;
-    areaId: number;
-    templateId: string;
-    createdAt: Date;
-    area: { id: number; countryCode: string | null };
-    template: {
-      id: string;
-      name: string;
-      description: string | null;
-      category: { id: string; name: string; slug: string } | null;
-      translations: Array<{
-        locale: string;
-        name: string;
-        description: string | null;
-      }>;
-    };
-    _count: {
-      watchers: number;
-    };
-  }>;
-  locale: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t: any;
-  statType: "default" | "largest" | "most-watched";
-}) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {datasets.map((dataset) => {
-        const s = processDatasetStats(dataset, locale);
-        const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
-        const stats = getDatasetStats(dataset, s, t, statType);
-
-        return (
-          <DatasetCard
-            key={dataset.id}
-            name={resolvedTemplate.name}
-            city={dataset.cityName}
-            country={dataset.area.countryCode ?? ""}
-            category={resolvedTemplate.category?.name ?? "other"}
-            href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
-            stats={stats}
-          />
-        );
-      })}
-    </div>
   );
 }

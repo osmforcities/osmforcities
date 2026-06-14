@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/db";
 import { DatasetCard } from "@/components/ui/dataset-card";
-import { processDatasetStats, getDatasetStats } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
@@ -98,9 +97,10 @@ export default async function MostWatchedPage({
         {datasets.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {datasets.map((dataset) => {
-              const s = processDatasetStats(dataset, locale);
               const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
-              const stats = getDatasetStats(dataset, s, t, "most-watched");
+              const stats = [
+                { type: "watchers" as const, label: t("stats.watchers"), value: dataset._count.watchers },
+              ];
 
               return (
                 <DatasetCard

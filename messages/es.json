@@ -604,7 +604,9 @@
     "sections": {
       "featured": "Destacados",
       "largest": "Conjuntos de datos más grandes",
-      "mostWatched": "Más vistos"
+      "mostWatched": "Más vistos",
+      "mostContributors": "Más colaboradores",
+      "recentlyEdited": "Editados recientemente"
     }
   },
   "SEO": {

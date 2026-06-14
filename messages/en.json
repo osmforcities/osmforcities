@@ -597,7 +597,9 @@
     "sections": {
       "featured": "Featured",
       "largest": "Largest Datasets",
-      "mostWatched": "Most Watched"
+      "mostWatched": "Most Watched",
+      "mostContributors": "Most Contributors",
+      "recentlyEdited": "Recently Edited"
     }
   },
   "SEO": {
