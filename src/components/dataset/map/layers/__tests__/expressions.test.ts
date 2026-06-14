@@ -24,11 +24,38 @@ describe('buildCircleColorExpression', () => {
 
     expect(expression).toEqual([
       'case',
-      ['==', ['get', 'amenity'], 'bench'],
+      ['==', ['downcase', ['get', 'amenity']], 'bench'],
       '#4e79a7',
-      ['==', ['get', 'amenity'], 'fountain'],
+      ['==', ['downcase', ['get', 'amenity']], 'fountain'],
       '#f28e2c',
-      ['==', ['get', 'amenity'], 'atm'],
+      ['==', ['downcase', ['get', 'amenity']], 'atm'],
+      '#e15759',
+      '#9ca3af', // fallback color
+    ]);
+  });
+
+  it('should lowercase non-canonical casing colorMap keys', () => {
+    const theme: CategoricalTheme = {
+      type: 'categorical',
+      field: 'covered',
+      colorMap: new Map([
+        ['Yes', '#4e79a7'],
+        ['No', '#e15759'],
+      ]),
+      topValues: [
+        { value: 'Yes', count: 80 },
+        { value: 'No', count: 20 },
+      ],
+      otherCount: 0,
+    };
+
+    const expression = buildCircleColorExpression(theme);
+
+    expect(expression).toEqual([
+      'case',
+      ['==', ['downcase', ['get', 'covered']], 'yes'],
+      '#4e79a7',
+      ['==', ['downcase', ['get', 'covered']], 'no'],
       '#e15759',
       '#9ca3af', // fallback color
     ]);
