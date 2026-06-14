@@ -26,7 +26,6 @@ const DATASET_SELECT = {
   id: true,
   cityName: true,
   dataCount: true,
-  stats: true,
   areaId: true,
   templateId: true,
   createdAt: true,
