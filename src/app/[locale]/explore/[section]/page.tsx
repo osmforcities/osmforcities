@@ -1,37 +1,16 @@
 import { prisma } from "@/lib/db";
 import { DatasetCard } from "@/components/ui/dataset-card";
-import { processDatasetStats } from "@/lib/dataset-stats";
+import { processDatasetStats, getDatasetStats } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
 import { notFound } from "next/navigation";
+import { Link } from "@/i18n/navigation";
 
 export const revalidate = 300;
 
-// Helper: Get stats for dataset based on section type
-function getDatasetStats(
-  dataset: { _count: { watchers: number } },
-  processedStats: { features: string | number; contributors: string | number; lastEdited: string | number },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t: any,
-  section: Section
-) {
-  switch (section) {
-    case "largest":
-      return [
-        { type: "features" as const, label: t("stats.features"), value: processedStats.features },
-      ];
-    case "most-watched":
-      return [
-        { type: "watchers" as const, label: t("stats.watchers"), value: dataset._count.watchers },
-      ];
-    default:
-      return [
-        { type: "features" as const, label: t("stats.features"), value: processedStats.features },
-        { type: "contributors" as const, label: t("stats.contributors"), value: processedStats.contributors },
-        { type: "lastEdited" as const, label: t("stats.lastEdited"), value: processedStats.lastEdited },
-      ];
-  }
+export function generateStaticParams() {
+  return SECTIONS.map((section) => ({ section }));
 }
 
 const SECTIONS = ["featured", "largest", "most-watched"] as const;
@@ -113,12 +92,12 @@ export default async function ExploreSectionPage({
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 py-8">
       <div className="max-w-7xl mx-auto px-6">
         <div className="mb-8">
-          <a
+          <Link
             href={`/${locale}/explore`}
             className="text-xs text-neutral-400 hover:text-neutral-700 cursor-pointer"
           >
             {t("backToExplore")}
-          </a>
+          </Link>
           <h1 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mt-4">
             {t(`sections.${sectionKey(section)}`)}
           </h1>

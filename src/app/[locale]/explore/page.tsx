@@ -1,36 +1,21 @@
 import { prisma } from "@/lib/db";
 import { DatasetCard } from "@/components/ui/dataset-card";
-import { processDatasetStats } from "@/lib/dataset-stats";
+import { processDatasetStats, getDatasetStats } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 export const revalidate = 3600;
 
-// Helper: Get stats for dataset based on section type
-function getDatasetStats(
-  dataset: { _count: { watchers: number } },
-  processedStats: { features: string | number; contributors: string | number; lastEdited: string | number },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t: any,
-  statType: "default" | "largest" | "most-watched"
-) {
-  switch (statType) {
-    case "largest":
-      return [
-        { type: "features" as const, label: t("stats.features"), value: processedStats.features },
-      ];
-    case "most-watched":
-      return [
-        { type: "watchers" as const, label: t("stats.watchers"), value: dataset._count.watchers },
-      ];
-    default:
-      return [
-        { type: "features" as const, label: t("stats.features"), value: processedStats.features },
-        { type: "contributors" as const, label: t("stats.contributors"), value: processedStats.contributors },
-        { type: "lastEdited" as const, label: t("stats.lastEdited"), value: processedStats.lastEdited },
-      ];
+// Fisher-Yates shuffle for unbiased random permutation
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
+  return shuffled;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }) {
@@ -96,7 +81,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
       },
       orderBy: { createdAt: "desc" },
       take: 20,
-    }).then(datasets => datasets.sort(() => Math.random() - 0.5).slice(0, 6)),
+    }).then(datasets => shuffleArray(datasets).slice(0, 6)),
     prisma.dataset.findMany({
       where: { isActive: true, dataCount: { gt: 0 } },
       select: {
@@ -204,12 +189,12 @@ function Section({
           {title}
         </h2>
         {seeAllHref && (
-          <a
+          <Link
             href={seeAllHref}
             className="text-xs text-neutral-400 hover:text-neutral-700 cursor-pointer"
           >
             {t("seeAll")}
-          </a>
+          </Link>
         )}
       </div>
       {children}

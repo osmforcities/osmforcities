@@ -1,9 +1,41 @@
 import { Dataset } from "@prisma/client";
+import type { StatType } from "@/components/ui/dataset-card";
 
 export interface ProcessedDatasetStats {
   features: number;
   contributors: number;
   lastEdited: string;
+}
+
+export interface DatasetStats {
+  type: StatType;
+  label: string;
+  value: string | number;
+}
+
+export function getDatasetStats(
+  dataset: { _count: { watchers: number } },
+  processedStats: ProcessedDatasetStats,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t: any,
+  section: "featured" | "largest" | "most-watched" | "default"
+): DatasetStats[] {
+  switch (section) {
+    case "largest":
+      return [
+        { type: "features" as const, label: t("stats.features"), value: processedStats.features },
+      ];
+    case "most-watched":
+      return [
+        { type: "watchers" as const, label: t("stats.watchers"), value: dataset._count.watchers },
+      ];
+    default:
+      return [
+        { type: "features" as const, label: t("stats.features"), value: processedStats.features },
+        { type: "contributors" as const, label: t("stats.contributors"), value: processedStats.contributors },
+        { type: "lastEdited" as const, label: t("stats.lastEdited"), value: processedStats.lastEdited },
+      ];
+  }
 }
 
 export function processDatasetStats(dataset: Pick<Dataset, 'dataCount' | 'stats'>, locale: string): ProcessedDatasetStats {
