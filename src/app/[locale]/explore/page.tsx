@@ -207,10 +207,10 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
           </Section>
         )}
 
-        {/* Most Watched Section */}
+        {/* Most Saved Section */}
         {mostWatched.length > 0 && (
           <Section
-            title={t("sections.mostWatched")}
+            title={t("sections.mostSaved")}
             seeAllHref={`/explore/most-watched`}
             t={t}
           >
@@ -218,7 +218,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
               {mostWatched.map((dataset) => {
                 const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
                 const stats = [
-                  { type: "watchers" as const, label: t("stats.watchers"), value: dataset._count.watchers },
+                  { type: "watchers" as const, label: t("stats.saves"), value: dataset._count.watchers },
                 ];
 
                 return (

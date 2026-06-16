@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "react-aria-components";
-import { MapPin, Users, Pencil, Eye } from "lucide-react";
+import { MapPin, Users, Pencil, Bookmark } from "lucide-react";
 import { getCategoryIcon } from "@/lib/category-icons";
 
 export type StatType = "features" | "contributors" | "lastEdited" | "watchers";
@@ -65,7 +65,7 @@ function formatStatValue(type: StatType, value: string | number): string {
 function getStatIcon(type: StatType) {
   if (type === "contributors") return Users;
   if (type === "lastEdited") return Pencil;
-  if (type === "watchers") return Eye;
+  if (type === "watchers") return Bookmark;
   return MapPin;
 }
 
