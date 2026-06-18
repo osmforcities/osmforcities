@@ -2,10 +2,21 @@ import type { FeatureCollection } from "geojson";
 import {
   executeOverpassQuery,
   convertOverpassToGeoJSON,
+  countOverpassElements,
 } from "@/lib/overpass/transport";
 import type { OverpassData } from "@/types/overpass";
 import { calculateBbox } from "@/lib/utils";
 import type { Bbox } from "@/types/geojson";
+import { MAX_DATASET_ELEMENTS } from "@/lib/constants";
+
+export class DatasetTooLargeError extends Error {
+  constructor(public readonly count: number) {
+    super(
+      `Dataset too large: ${count.toLocaleString()} elements (max ${MAX_DATASET_ELEMENTS.toLocaleString()}). Try a smaller area.`
+    );
+    this.name = "DatasetTooLargeError";
+  }
+}
 
 export interface DatasetStats {
   editorsCount: number;
@@ -148,6 +159,12 @@ export async function fetchDatasetSnapshot(
     /\{OSM_RELATION_ID\}/g,
     areaId.toString()
   );
+
+  const elementCount = await countOverpassElements(queryString);
+  if (elementCount > MAX_DATASET_ELEMENTS) {
+    throw new DatasetTooLargeError(elementCount);
+  }
+
   const overpassData = await executeOverpassQuery(queryString);
   const geojson = convertOverpassToGeoJSON(overpassData);
   const stats = extractDatasetStats(overpassData);

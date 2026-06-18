@@ -5,6 +5,7 @@ import {
 import { fromNominatim } from "@/lib/area-conversion";
 import { getUserAgent } from "@/lib/overpass/transport";
 import type { Area } from "@/types/area";
+import { ALLOWED_AREA_ADDRESS_TYPES } from "@/lib/constants";
 
 // Safeguard to prevent external API calls in test mode
 function preventExternalCallsInTests() {
@@ -55,9 +56,11 @@ export async function searchAreasWithNominatim(
     // Validate the response with Zod
     const validatedData = NominatimSearchResponseSchema.parse(rawData);
 
-    // Filter to only include relations (areas like cities, regions, etc.)
+    // Filter to relations at city-level and below (block countries, states, regions)
     const filteredResults = validatedData.filter(
-      (result) => result.osm_type === "relation"
+      (result) =>
+        result.osm_type === "relation" &&
+        (!result.addresstype || ALLOWED_AREA_ADDRESS_TYPES.has(result.addresstype))
     );
 
     return filteredResults;
