@@ -60,7 +60,8 @@ export async function searchAreasWithNominatim(
     const filteredResults = validatedData.filter(
       (result) =>
         result.osm_type === "relation" &&
-        (!result.addresstype || ALLOWED_AREA_ADDRESS_TYPES.has(result.addresstype))
+        result.addresstype !== undefined &&
+        ALLOWED_AREA_ADDRESS_TYPES.has(result.addresstype)
     );
 
     return filteredResults;

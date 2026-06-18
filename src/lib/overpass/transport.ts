@@ -99,7 +99,11 @@ export async function countOverpassElements(query: string): Promise<number> {
   if (total === undefined) {
     throw new Error("Unexpected response format from Overpass count query");
   }
-  return parseInt(total, 10);
+  const elementCount = parseInt(total, 10);
+  if (!Number.isInteger(elementCount)) {
+    throw new Error(`Invalid element count from Overpass: "${total}"`);
+  }
+  return elementCount;
 }
 
 export function convertOverpassToGeoJSON(
