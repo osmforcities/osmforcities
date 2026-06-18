@@ -68,7 +68,7 @@ export async function POST(
 
     trackEvent(ANALYTICS_EVENTS.DATASET_FOLLOW, `/datasets/${datasetId}/follow`, getClientInfo(request));
 
-    return NextResponse.json({ success: true, watch: save });
+    return NextResponse.json({ success: true, save });
   } catch (error) {
     console.error("Error saving dataset:", error);
     return NextResponse.json(

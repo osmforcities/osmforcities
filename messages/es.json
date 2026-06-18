@@ -520,7 +520,7 @@
     "reportSubjectChanged": "{count} {datasets} cambiaron {lastPeriod}",
     "reportSubjectNoChanges": "Sin cambios {lastPeriod}",
     "reportChanged": "Los siguientes conjuntos de datos se actualizaron {lastPeriod}:",
-    "reportNoChanges": "No hubo cambios en tus {watchedDatasetsLink} {lastPeriod}.",
+    "reportNoChanges": "No hubo cambios en tus {savedDatasetsLink} {lastPeriod}.",
     "reportFollowed": "conjuntos de datos guardados",
     "preferencesPage": "página de preferencias",
     "lastPeriodDay": "en el último día",

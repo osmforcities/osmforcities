@@ -17,7 +17,7 @@ const DatasetResponseSchema = DatasetSchema;
 
 const SaveResponseSchema = z.object({
   success: z.boolean(),
-  watch: z.object({
+  save: z.object({
     id: z.string(),
     userId: z.string(),
     datasetId: z.string(),
