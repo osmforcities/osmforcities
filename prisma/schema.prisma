@@ -145,7 +145,7 @@ model DatasetSave {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, datasetId])
-  @@map("dataset_watches")
+  @@map("dataset_saves")
 }
 
 enum ReportFrequency {
