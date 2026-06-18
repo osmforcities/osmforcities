@@ -8,7 +8,7 @@ import { PrismaClient } from "@prisma/client";
 import { getLocalizedPath } from "./config";
 import { MAX_FOLLOWS_PER_USER } from "../src/lib/constants";
 
-test.describe("Dataset Watch Button", () => {
+test.describe("Dataset Save Button", () => {
   test.describe.configure({ retries: 2 });
 
   let testUser: { id: string; email: string; password?: string };
@@ -75,34 +75,34 @@ test.describe("Dataset Watch Button", () => {
     }
   });
 
-  test("should display watch button for datasets", async ({ page }) => {
+  test("should display save button for datasets", async ({ page }) => {
     await page.goto(
       getLocalizedPath(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`)
     );
 
-    // Check that watch button is visible
+    // Check that save button is visible
     const watchButton = page.getByTestId("dataset-watch-button");
     await expect(watchButton).toBeVisible();
 
-    // Check button has eye icon
-    await expect(watchButton.locator("svg")).toBeVisible(); // Eye icon
+    // Check button has bookmark icon
+    await expect(watchButton.locator("svg")).toBeVisible(); // Bookmark icon
   });
 
-  test("should successfully watch a dataset", async ({ page }) => {
+  test("should successfully save a dataset", async ({ page }) => {
     await page.goto(
       getLocalizedPath(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`)
     );
 
-    // Click watch button
+    // Click save button
     const watchButton = page.getByTestId("dataset-watch-button");
     await expect(watchButton).toBeVisible({ timeout: 10000 });
     await watchButton.click();
 
-    // Check that button now shows unwatch - wait for button to be updated
+    // Check that button now shows unsave - wait for button to be updated
     const unwatchButton = page.getByTestId("dataset-unwatch-button");
     await expect(unwatchButton).toBeVisible({ timeout: 10000 });
 
-    // Check that dataset appears in watched datasets
+    // Check that dataset appears in saved datasets
     await page.goto(getLocalizedPath("/dashboard"));
     // Check for dataset count text
     await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
@@ -114,12 +114,12 @@ test.describe("Dataset Watch Button", () => {
     await expect(datasetCard).toBeVisible();
   });
 
-  test("should successfully unwatch a dataset", async ({ page }) => {
+  test("should successfully unsave a dataset", async ({ page }) => {
     await page.goto(
       getLocalizedPath(`/area/${testDataset.area.id}/dataset/${testDataset.template.id}`)
     );
 
-    // First watch the dataset through the UI
+    // First save the dataset through the UI
     const watchButton = page.getByTestId("dataset-watch-button");
     await expect(watchButton).toBeVisible({ timeout: 10000 });
 
@@ -128,7 +128,7 @@ test.describe("Dataset Watch Button", () => {
     await watchButton.waitFor({ state: "visible" });
     await watchButton.click({ force: true });
 
-    // Wait for button to change to unwatch (wait for API call to complete)
+    // Wait for button to change to unsave (wait for API call to complete)
     await page.waitForTimeout(500);
     const unwatchButton = page.getByTestId("dataset-unwatch-button");
     await expect(unwatchButton).toBeVisible({ timeout: 10000 });
@@ -141,11 +141,11 @@ test.describe("Dataset Watch Button", () => {
     await unwatchButton.waitFor({ state: "visible" });
     await unwatchButton.click({ force: true });
 
-    // Wait for watch button to reappear after unwatching
+    // Wait for save button to reappear after unsaving
     const watchButtonAfter = page.getByTestId("dataset-watch-button");
     await expect(watchButtonAfter).toBeVisible({ timeout: 10000 });
 
-    // Check that dataset no longer appears in watched datasets
+    // Check that dataset no longer appears in saved datasets
     await page.goto(getLocalizedPath("/dashboard"));
 
     // Should show empty state or not show this dataset
@@ -155,7 +155,7 @@ test.describe("Dataset Watch Button", () => {
     await expect(datasetCard).toBeHidden();
   });
 
-  test("should handle watch button loading state", async ({ page }) => {
+  test("should handle save button loading state", async ({ page }) => {
     let resolveApiCall: () => void;
     const apiCallPromise = new Promise<void>((resolve) => {
       resolveApiCall = resolve;
@@ -192,7 +192,7 @@ test.describe("Dataset Watch Button", () => {
     // Wait for API call to complete and state to update
     await page.waitForTimeout(500);
 
-    // After successful watch, button should change to unwatch button
+    // After successful save, button should change to unwatch button
     const unwatchButton = page.getByTestId("dataset-unwatch-button");
     await expect(unwatchButton).toBeVisible({ timeout: 10000 });
     await expect(unwatchButton).toBeEnabled();
@@ -252,7 +252,7 @@ test.describe("Dataset Watch Button", () => {
   });
 
   test("should prevent watching already watched dataset", async ({ page }) => {
-    // First watch the dataset
+    // First save the dataset
     const prisma = new PrismaClient();
 
     // Ensure the dataset still exists

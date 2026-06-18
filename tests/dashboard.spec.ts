@@ -146,18 +146,18 @@ test.describe("User Dashboard", () => {
     await expect(cards).toHaveCount(2); // Header card + datasets section card
   });
 
-  test("should display watcher count badges when available", async ({
+  test("should display save count badges when available", async ({
     page,
   }) => {
     await page.goto(getLocalizedPath("/dashboard"));
 
-    // Check for watcher count badges in dataset cards
-    const watcherBadges = page.getByText(/watcher/);
-    const badgeCount = await watcherBadges.count();
+    // Check for save count badges in dataset cards
+    const saveBadges = page.getByText(/save/);
+    const badgeCount = await saveBadges.count();
 
     if (badgeCount > 0) {
-      // Check that watcher badges have correct styling
-      await expect(watcherBadges.first()).toHaveClass(/bg-blue-100/);
+      // Check that save badges have correct styling
+      await expect(saveBadges.first()).toHaveClass(/bg-blue-100/);
     }
   });
 

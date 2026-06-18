@@ -59,10 +59,10 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     await expect(page.getByTestId("tab-following")).toBeVisible();
   });
 
-  test("should display followed datasets when user has watched datasets", async ({
+  test("should display saved datasets when user has saved datasets", async ({
     page,
   }) => {
-    // Create a test dataset and watch it
+    // Create a test dataset and save it
     const prisma = new PrismaClient();
 
     // Get a template
@@ -275,8 +275,8 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     await expect(datasetCard.getByText("Active")).toBeVisible();
   });
 
-  test("should handle watcher count display", async ({ page }) => {
-    // Create a test dataset and watch it
+  test("should handle save count display", async ({ page }) => {
+    // Create a test dataset and save it
     const prisma = new PrismaClient();
 
     const template = await prisma.template.findFirst({
@@ -325,8 +325,8 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await page.goto(getLocalizedPath("/dashboard"));
 
-    // Check for watcher count
-    await expect(page.getByText("1 watcher")).toBeVisible();
+    // Check for save count
+    await expect(page.getByText("1 save")).toBeVisible();
   });
 
   test("should be responsive on different screen sizes", async ({ page }) => {
