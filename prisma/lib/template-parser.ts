@@ -17,6 +17,7 @@ export interface LogicEntry {
   query: string;
   category: string;
   icon?: string;
+  parent?: string;
 }
 
 /**
@@ -26,6 +27,7 @@ export interface TemplateLogic {
   query: string;
   category: string;
   icon?: string;
+  parent?: string;
 }
 
 /**
@@ -56,6 +58,7 @@ export interface TemplateConfig {
   kv: string;
   category: string;
   icon?: string;
+  parent?: string;
   name?: string;
   description?: string;
 }
@@ -70,6 +73,7 @@ export interface ParsedTemplate {
   overpassQuery: string;
   category: string;
   tags: string[];
+  parent?: string;
 }
 
 /**
@@ -213,6 +217,7 @@ export function buildTemplate(config: TemplateConfig): ParsedTemplate {
     id,
     kv,
     category,
+    parent,
     name: configName,
     description: configDesc,
   } = config;
@@ -242,6 +247,7 @@ export function buildTemplate(config: TemplateConfig): ParsedTemplate {
     overpassQuery,
     category,
     tags,
+    parent,
   };
 }
 
@@ -271,6 +277,7 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
       const query = String(arr[1] ?? "");
       const category = String(arr[2] ?? "");
       const iconRaw = arr[3];
+      const parentRaw = arr[4];
       if (id && query && category) {
         entries.push({
           id,
@@ -279,6 +286,10 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
           icon:
             iconRaw !== undefined && iconRaw !== null && String(iconRaw) !== ""
               ? String(iconRaw)
+              : undefined,
+          parent:
+            parentRaw !== undefined && parentRaw !== null && String(parentRaw) !== ""
+              ? String(parentRaw)
               : undefined,
         });
       }
@@ -339,6 +350,7 @@ export function loadTemplatesYaml(
       query: entry.query,
       category: entry.category,
       icon: entry.icon,
+      parent: entry.parent,
     };
   }
   return { templates, categories };
@@ -382,6 +394,7 @@ export function parseTemplates(config: LogicConfig): ParseResult {
         kv: obj.query,
         category: obj.category,
         icon: obj.icon,
+        parent: obj.parent,
       };
       const template = buildTemplate(parsed);
       templates.push(template);

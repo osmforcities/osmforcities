@@ -1,16 +1,20 @@
 # Template definitions for OSM for Cities (logic only)
-# Format: [id, query, category, icon?]
+# Format: [id, query, category, icon?, parent?]
 # Composite queries: ; = OR, & = AND. Example: highway=footway;highway=path&surface=paved
 
 templates:
 # Transportation
-  - ["bicycle-parking","amenity=bicycle_parking","transportation","Bike"]
-  - ["bicycle-rental","amenity=bicycle_rental","transportation","Bike"]
-  - ["bicycle-shop","shop=bicycle","transportation","Bike"]
-  - ["bus-stops","highway=bus_stop","transportation","Bus"]
+  # Parent template for bicycle infrastructure
+  - ["bicycle-infrastructure","amenity=bicycle_parking;amenity=bicycle_rental;shop=bicycle","transportation","Bike"]
+  - ["bicycle-parking","amenity=bicycle_parking","transportation","Bike","bicycle-infrastructure"]
+  - ["bicycle-rental","amenity=bicycle_rental","transportation","Bike","bicycle-infrastructure"]
+  - ["bicycle-shop","shop=bicycle","transportation","Bike","bicycle-infrastructure"]
+  # Parent template for public transit
+  - ["public-transit","highway=bus_stop;railway=station;railway=tram_stop;railway=subway_entrance","transportation","Train"]
+  - ["bus-stops","highway=bus_stop","transportation","Bus","public-transit"]
   - ["ev-charging","amenity=charging_station","transportation","Zap"]
-  - ["railway-stations","railway=station","transportation","Train"]
-  - ["tram-stops","railway=tram_stop","transportation","Train"]
+  - ["railway-stations","railway=station","transportation","Train","public-transit"]
+  - ["tram-stops","railway=tram_stop","transportation","Train","public-transit"]
   - ["subway-entrances","railway=subway_entrance","transportation","Train"]
   - ["ferry-terminals","amenity=ferry_terminal","transportation","Ship"]
   - ["taxi-ranks","amenity=taxi","transportation","Car"]
@@ -118,10 +122,10 @@ templates:
   - ["marinas","leisure=marina","leisure"]
   - ["dog-parks","leisure=dog_park","leisure"]
 # Nature
-  # Core urban tree structure
+  # Core urban tree structure (parent for street-trees and trees-with-species)
   - ["urban-trees","natural=tree;natural=tree_row","nature","TreePine"]
-  # Street-focused arborization (maintenance & shading context)
-  - ["street-trees","natural=tree_row","nature","Route"]
+  # Street-focused arborization (child of urban-trees)
+  - ["street-trees","natural=tree_row","nature","Route","urban-trees"]
   # Managed green spaces (planned landscaping)
   - ["managed-green","leisure=park;leisure=garden;landuse=orchard","nature","Leaf"]
   # Natural / spontaneous vegetation
@@ -262,7 +266,7 @@ templates:
   # Advanced landscaping datasets
   # =========================
   # Trees with species information (advanced)
-  - ["trees-with-species","natural=tree&species=*","nature","Leaf"]
+  - ["trees-with-species","natural=tree&species=*","nature","Leaf","urban-trees"]
   # Irrigated green areas (where mapped)
   - ["irrigated-green","irrigation=yes","nature","Droplet"]
 # =========================

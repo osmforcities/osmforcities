@@ -108,6 +108,7 @@ async function main() {
   };
 
   // Upsert templates from YAML
+  // Pass 1: upsert all templates without parent (ensures parents exist first)
   let upserted = 0;
   for (const template of result.templates) {
     const i18n = i18nConfig?.templates?.[template.id];
@@ -170,7 +171,20 @@ async function main() {
     }
   }
 
+  // Pass 2: connect parent relationships
+  let parentsLinked = 0;
+  for (const template of result.templates) {
+    if (template.parent) {
+      await prisma.template.update({
+        where: { id: template.id },
+        data: { parent: { connect: { id: template.parent } } },
+      });
+      parentsLinked++;
+    }
+  }
+
   console.log(`Upserted ${upserted} templates from YAML`);
+  console.log(`Linked ${parentsLinked} parent relationships`);
   console.log("Sync complete");
 }
 
