@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Download, RefreshCw, Eye, EyeOff, Star } from "lucide-react";
+import { Download, RefreshCw, Bookmark, BookmarkMinus, Star } from "lucide-react";
 import type { Dataset } from "@/schemas/dataset";
 import { useDatasetDownload } from "@/hooks/useDatasetDownload";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
@@ -143,25 +143,21 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
           {t("downloadData")}
         </Button>
 
-        {/* Watch/Unwatch Button */}
+        {/* Save/Unsave Button */}
         <Button
           onClick={handleToggleWatch}
           disabled={isLoading}
           className="flex items-center gap-2 w-full h-10"
           variant={isWatched ? "default" : "outline"}
-          title={
-            isWatched
-              ? "Stop receiving updates about this dataset"
-              : "Get notified when this dataset is updated"
-          }
+          title={isWatched ? t("unsaveTooltip") : t("saveTooltip")}
           data-testid={isWatched ? "dataset-unwatch-button" : "dataset-watch-button"}
         >
           {isWatched ? (
-            <EyeOff className="h-4 w-4" />
+            <BookmarkMinus className="h-4 w-4" />
           ) : (
-            <Eye className="h-4 w-4" />
+            <Bookmark className="h-4 w-4" />
           )}
-          {isWatched ? t("unwatch") : t("watch")}
+          {isWatched ? t("unsave") : t("save")}
         </Button>
       </div>
     </div>

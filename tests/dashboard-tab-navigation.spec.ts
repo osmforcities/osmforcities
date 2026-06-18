@@ -258,10 +258,10 @@ test.describe("Dashboard Tab Navigation", () => {
       ).toBeVisible();
     });
 
-    test("should show followed datasets when user has watched datasets", async ({
+    test("should show saved datasets when user has saved datasets", async ({
       page,
     }) => {
-      // Create a test dataset and watch it
+      // Create a test dataset and save it
       const prisma = new PrismaClient();
 
       const template = await prisma.template.findFirst();

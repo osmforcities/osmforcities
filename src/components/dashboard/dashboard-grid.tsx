@@ -134,7 +134,7 @@ export function DashboardGrid({ datasets }: DashboardGridProps) {
                   </span>
                   {dataset._count && dataset._count.watchers > 0 && (
                     <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-700">
-                      {t("watcherCount", { count: dataset._count.watchers })}
+                      {t("saveCount", { count: dataset._count.watchers })}
                     </span>
                   )}
                 </div>

@@ -17,7 +17,7 @@ export async function generateMetadata({
   const t = await getTranslations("ExplorePage");
 
   return {
-    title: `${t("sections.mostWatched")} - ${t("metaTitle")}`,
+    title: `${t("sections.mostSaved")} - ${t("metaTitle")}`,
   };
 }
 
@@ -80,13 +80,13 @@ export default async function MostWatchedPage({
 
   return (
     <ExplorePageLayout>
-      <ExploreSectionHeader sectionKey="mostWatched" t={t} />
+      <ExploreSectionHeader sectionKey="mostSaved" t={t} />
       {datasets.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {datasets.map((dataset) => {
             const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
             const stats = [
-              { type: "watchers" as const, label: t("stats.watchers"), value: dataset._count.watchers },
+              { type: "watchers" as const, label: t("stats.saves"), value: dataset._count.watchers },
             ];
 
             return (
