@@ -405,6 +405,16 @@ export function parseTemplates(config: LogicConfig): ParseResult {
     index++;
   }
 
+  const parsedIds = new Set(templates.map((t) => t.id));
+  for (const template of templates) {
+    if (template.parent && !parsedIds.has(template.parent)) {
+      errors.push({
+        field: "parent",
+        message: `Template "${template.id}" references unknown parent id: "${template.parent}"`,
+      });
+    }
+  }
+
   return { templates, errors, warnings };
 }
 

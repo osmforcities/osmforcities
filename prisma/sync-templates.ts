@@ -171,7 +171,7 @@ async function main() {
     }
   }
 
-  // Pass 2: connect parent relationships
+  // Pass 2: connect or clear parent relationships
   let parentsLinked = 0;
   for (const template of result.templates) {
     if (template.parent) {
@@ -180,6 +180,11 @@ async function main() {
         data: { parent: { connect: { id: template.parent } } },
       });
       parentsLinked++;
+    } else {
+      await prisma.template.update({
+        where: { id: template.id },
+        data: { parentId: null },
+      });
     }
   }
 
