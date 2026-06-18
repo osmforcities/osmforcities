@@ -106,10 +106,10 @@ async function AreaTemplateDatasetView({
       getAreaDetailsById(areaId),
     ]);
 
-    // Check if current user is watching this dataset
-    let isWatched = false;
+    // Check if current user has saved this dataset
+    let isSaved = false;
     if (session?.user?.id) {
-      const watchRecord = await prisma.datasetWatch.findUnique({
+      const saveRecord = await prisma.datasetSave.findUnique({
         where: {
           userId_datasetId: {
             userId: session.user.id,
@@ -117,10 +117,10 @@ async function AreaTemplateDatasetView({
           },
         },
       });
-      isWatched = !!watchRecord;
+      isSaved = !!saveRecord;
     }
 
-    const dataset = transformDataset(result.dataset, session?.user || null, locale, { isWatched, skipTemplateResolution: true });
+    const dataset = transformDataset(result.dataset, session?.user || null, locale, { isSaved, skipTemplateResolution: true });
 
     trackEvent(
       ANALYTICS_EVENTS.DATASET_DETAIL_VIEW,

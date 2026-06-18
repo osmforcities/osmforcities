@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { WatchDatasetSchema, UnwatchDatasetSchema } from "@/schemas/dataset";
+import { SaveDatasetSchema, UnsaveDatasetSchema } from "@/schemas/dataset";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { MAX_FOLLOWS_PER_USER } from "@/lib/constants";
@@ -20,7 +20,7 @@ export async function POST(
 
     const { id: datasetId } = await params;
 
-    const validatedData = WatchDatasetSchema.parse({ datasetId });
+    const validatedData = SaveDatasetSchema.parse({ datasetId });
 
     const dataset = await prisma.dataset.findUnique({
       where: { id: datasetId },
@@ -30,7 +30,7 @@ export async function POST(
       return NextResponse.json({ error: "Dataset not found" }, { status: 404 });
     }
 
-    const existingWatch = await prisma.datasetWatch.findUnique({
+    const existingSave = await prisma.datasetSave.findUnique({
       where: {
         userId_datasetId: {
           userId: user.id,
@@ -39,19 +39,19 @@ export async function POST(
       },
     });
 
-    if (existingWatch) {
+    if (existingSave) {
       return NextResponse.json(
-        { error: "Already watching this dataset" },
+        { error: "Already saved this dataset" },
         { status: 400 },
       );
     }
 
-    const watch = await prisma.$transaction(async (tx) => {
-      const count = await tx.datasetWatch.count({
+    const save = await prisma.$transaction(async (tx) => {
+      const count = await tx.datasetSave.count({
         where: { userId: user.id },
       });
       if (count >= MAX_FOLLOWS_PER_USER) return null;
-      return tx.datasetWatch.create({
+      return tx.datasetSave.create({
         data: {
           userId: user.id,
           datasetId: validatedData.datasetId,
@@ -59,7 +59,7 @@ export async function POST(
       });
     });
 
-    if (!watch) {
+    if (!save) {
       return NextResponse.json(
         { error: "follow_limit_reached", limit: MAX_FOLLOWS_PER_USER },
         { status: 403 },
@@ -68,9 +68,9 @@ export async function POST(
 
     trackEvent(ANALYTICS_EVENTS.DATASET_FOLLOW, `/datasets/${datasetId}/follow`, getClientInfo(request));
 
-    return NextResponse.json({ success: true, watch });
+    return NextResponse.json({ success: true, watch: save });
   } catch (error) {
-    console.error("Error watching dataset:", error);
+    console.error("Error saving dataset:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },
@@ -92,9 +92,9 @@ export async function DELETE(
 
     const { id: datasetId } = await params;
 
-    const validatedData = UnwatchDatasetSchema.parse({ datasetId });
+    const validatedData = UnsaveDatasetSchema.parse({ datasetId });
 
-    const existingWatch = await prisma.datasetWatch.findUnique({
+    const existingSave = await prisma.datasetSave.findUnique({
       where: {
         userId_datasetId: {
           userId: user.id,
@@ -103,14 +103,14 @@ export async function DELETE(
       },
     });
 
-    if (!existingWatch) {
+    if (!existingSave) {
       return NextResponse.json(
-        { error: "Not watching this dataset" },
+        { error: "Not saved this dataset" },
         { status: 400 },
       );
     }
 
-    await prisma.datasetWatch.delete({
+    await prisma.datasetSave.delete({
       where: {
         userId_datasetId: {
           userId: user.id,
@@ -123,7 +123,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error unwatching dataset:", error);
+    console.error("Error unsaving dataset:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

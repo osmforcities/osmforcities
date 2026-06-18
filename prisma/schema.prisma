@@ -9,19 +9,19 @@ datasource db {
 }
 
 model User {
-  id               String          @id @default(cuid())
-  email            String          @unique
+  id               String        @id @default(cuid())
+  email            String        @unique
   name             String?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  isAdmin          Boolean         @default(false)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  isAdmin          Boolean       @default(false)
   lastReportSent   DateTime?
-  reportsEnabled   Boolean         @default(false)
+  reportsEnabled   Boolean       @default(false)
   reportsFrequency ReportFrequency @default(DAILY)
-  language         String          @default("en")
+  language         String        @default("en")
   emailVerified    DateTime?
   password         String?
-  watchedDatasets  DatasetWatch[]
+  savedDatasets    DatasetSave[]
   datasets         Dataset[]
   sessions         Session[]
 
@@ -106,27 +106,27 @@ model Area {
 }
 
 model Dataset {
-  id          String         @id @default(cuid())
-  userId      String?
-  templateId  String
-  cityName    String
-  isActive    Boolean        @default(true)
-  isFeatured  Boolean        @default(false)
-  lastChecked DateTime?
-  dataCount   Int            @default(0)
-  geojson     Json?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  areaId      Int
+  id                  String        @id @default(cuid())
+  userId              String?
+  templateId          String
+  cityName            String
+  isActive            Boolean       @default(true)
+  isFeatured          Boolean       @default(false)
+  lastChecked         DateTime?
+  dataCount           Int           @default(0)
+  geojson             Json?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  areaId              Int
   bbox                Json?
   stats               Json?
   lastEditedAt        DateTime?
   contributorsCount   Int?
   recentlyEditedCount Int?
-  watchers            DatasetWatch[]
-  area                Area           @relation(fields: [areaId], references: [id], onDelete: Cascade)
-  template            Template       @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  user                User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  savedBy             DatasetSave[]
+  area                Area          @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  template            Template      @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  user                User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([templateId, areaId])
   @@index([isFeatured, createdAt])
@@ -136,7 +136,7 @@ model Dataset {
   @@map("datasets")
 }
 
-model DatasetWatch {
+model DatasetSave {
   id        String   @id @default(cuid())
   userId    String
   datasetId String

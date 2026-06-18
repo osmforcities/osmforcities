@@ -4,7 +4,7 @@ import { Link } from "react-aria-components";
 import { MapPin, Users, Pencil, Bookmark } from "lucide-react";
 import { getCategoryIcon } from "@/lib/category-icons";
 
-export type StatType = "features" | "contributors" | "lastEdited" | "watchers";
+export type StatType = "features" | "contributors" | "lastEdited" | "savedBy";
 
 export interface DatasetCardProps {
   name: string;
@@ -65,7 +65,7 @@ function formatStatValue(type: StatType, value: string | number): string {
 function getStatIcon(type: StatType) {
   if (type === "contributors") return Users;
   if (type === "lastEdited") return Pencil;
-  if (type === "watchers") return Bookmark;
+  if (type === "savedBy") return Bookmark;
   return MapPin;
 }
 

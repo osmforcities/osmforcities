@@ -1,8 +1,6 @@
 import { prisma } from "@/lib/db";
-import { CATALOG_FILTER } from "@/lib/dataset-catalog-filter";
 import { DatasetCard } from "@/components/ui/dataset-card";
 import { ExplorePageLayout, ExploreSectionHeader } from "@/components/explore/explore-components";
-import { formatRelativeTime } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
@@ -19,7 +17,7 @@ export async function generateMetadata({
   const t = await getTranslations("ExplorePage");
 
   return {
-    title: `${t("sections.recentlyEdited")} - ${t("metaTitle")}`,
+    title: `${t("sections.mostSaved")} - ${t("metaTitle")}`,
   };
 }
 
@@ -59,7 +57,7 @@ const DATASET_SELECT = {
   },
 } as const;
 
-export default async function RecentlyEditedPage({
+export default async function MostSavedPage({
   params,
 }: {
   params: Promise<{ locale: Locale }>;
@@ -69,28 +67,26 @@ export default async function RecentlyEditedPage({
   const t = await getTranslations("ExplorePage");
 
   const datasets = await prisma.dataset.findMany({
-    where: { isActive: true, dataCount: { gt: 0 }, lastEditedAt: { not: null }, ...CATALOG_FILTER },
+    where: { isActive: true, dataCount: { gt: 0 }, savedBy: { some: {} } },
     select: {
       ...DATASET_SELECT,
-      recentlyEditedCount: true,
-      lastEditedAt: true,
       _count: {
         select: { savedBy: true }
       }
     },
-    orderBy: { lastEditedAt: "desc" },
+    orderBy: { savedBy: { _count: 'desc' } },
     take: 24,
   });
 
   return (
     <ExplorePageLayout>
-      <ExploreSectionHeader sectionKey="recentlyEdited" t={t} />
+      <ExploreSectionHeader sectionKey="mostSaved" t={t} />
       {datasets.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {datasets.map((dataset) => {
             const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
             const stats = [
-              { type: "lastEdited" as const, label: t("stats.lastEdited"), value: formatRelativeTime(dataset.lastEditedAt, locale) },
+              { type: "savedBy" as const, label: t("stats.saves"), value: dataset._count.savedBy },
             ];
 
             return (

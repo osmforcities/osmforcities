@@ -72,7 +72,7 @@ export default async function LargestPage({
     select: {
       ...DATASET_SELECT,
       _count: {
-        select: { watchers: true }
+        select: { savedBy: true }
       }
     },
     orderBy: { dataCount: "desc" },

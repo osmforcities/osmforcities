@@ -77,7 +77,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
       select: {
         ...DATASET_SELECT,
         _count: {
-          select: { watchers: true }
+          select: { savedBy: true }
         }
       },
       orderBy: { createdAt: "desc" },
@@ -90,21 +90,21 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
         recentlyEditedCount: true,
         lastEditedAt: true,
         _count: {
-          select: { watchers: true }
+          select: { savedBy: true }
         }
       },
       orderBy: { lastEditedAt: "desc" },
       take: 6,
     }),
     prisma.dataset.findMany({
-      where: { isActive: true, dataCount: { gt: 0 }, watchers: { some: {} } },
+      where: { isActive: true, dataCount: { gt: 0 }, savedBy: { some: {} } },
       select: {
         ...DATASET_SELECT,
         _count: {
-          select: { watchers: true }
+          select: { savedBy: true }
         }
       },
-      orderBy: { watchers: { _count: 'desc' } },
+      orderBy: { savedBy: { _count: 'desc' } },
       take: 6,
     }),
     prisma.dataset.findMany({
@@ -113,7 +113,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
         ...DATASET_SELECT,
         contributorsCount: true,
         _count: {
-          select: { watchers: true }
+          select: { savedBy: true }
         }
       },
       orderBy: { contributorsCount: "desc" },
@@ -124,7 +124,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
       select: {
         ...DATASET_SELECT,
         _count: {
-          select: { watchers: true }
+          select: { savedBy: true }
         }
       },
       orderBy: { dataCount: "desc" },
@@ -212,14 +212,14 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
         {mostWatched.length > 0 && (
           <Section
             title={t("sections.mostSaved")}
-            seeAllHref={`/explore/most-watched`}
+            seeAllHref={`/explore/most-saved`}
             t={t}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {mostWatched.map((dataset) => {
                 const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
                 const stats = [
-                  { type: "watchers" as const, label: t("stats.saves"), value: dataset._count.watchers },
+                  { type: "savedBy" as const, label: t("stats.saves"), value: dataset._count.savedBy },
                 ];
 
                 return (

@@ -64,14 +64,14 @@ test.describe("Seamless Discovery Workflow", () => {
       await expect(page).toHaveURL(/\/en\/area\/\d+\/dataset\/[a-zA-Z0-9-]+/);
 
       // Should show dataset page with save button
-      const watchButton = page.getByTestId("dataset-watch-button");
+      const watchButton = page.getByTestId("dataset-save-button");
       await expect(watchButton).toBeVisible();
 
       // Click save button
       await watchButton.click();
 
       // Should show unsave button
-      const unwatchButton = page.getByTestId("dataset-unwatch-button");
+      const unwatchButton = page.getByTestId("dataset-unsave-button");
       await expect(unwatchButton).toBeVisible();
 
       // Navigate back to dashboard
@@ -124,7 +124,7 @@ test.describe("Seamless Discovery Workflow", () => {
       },
     });
 
-    await prisma.datasetWatch.create({
+    await prisma.datasetSave.create({
       data: {
         datasetId: testDataset.id,
         userId: testUser.id,
@@ -235,7 +235,7 @@ test.describe("Seamless Discovery Workflow", () => {
       },
     });
 
-    await prisma.datasetWatch.create({
+    await prisma.datasetSave.create({
       data: {
         datasetId: testDataset.id,
         userId: testUser.id,
@@ -250,7 +250,7 @@ test.describe("Seamless Discovery Workflow", () => {
 
     // Should show unsave button (already saved) since we created a save record
     // Wait for page to load and button to appear
-    const unwatchButton = page.getByTestId("dataset-unwatch-button");
+    const unwatchButton = page.getByTestId("dataset-unsave-button");
     await expect(unwatchButton).toBeVisible({ timeout: 10000 });
 
     // Navigate back to dashboard
@@ -316,7 +316,7 @@ test.describe("Seamless Discovery Workflow", () => {
         },
       });
 
-      await prisma.datasetWatch.create({
+      await prisma.datasetSave.create({
         data: {
           datasetId: testDataset.id,
           userId: testUser.id,

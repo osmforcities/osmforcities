@@ -1,8 +1,8 @@
 import { z } from "zod";
 import {
   DatasetSchema,
-  WatchDatasetSchema,
-  UnwatchDatasetSchema,
+  SaveDatasetSchema,
+  UnsaveDatasetSchema,
 } from "@/schemas/dataset";
 
 const ApiResponseSchema = z.object({
@@ -15,7 +15,7 @@ const DatasetsResponseSchema = z.array(DatasetSchema);
 
 const DatasetResponseSchema = DatasetSchema;
 
-const WatchResponseSchema = z.object({
+const SaveResponseSchema = z.object({
   success: z.boolean(),
   watch: z.object({
     id: z.string(),
@@ -40,7 +40,7 @@ const UpdateDatasetResponseSchema = ApiResponseSchema;
 export type ApiResponse = z.infer<typeof ApiResponseSchema>;
 export type DatasetResponse = z.infer<typeof DatasetResponseSchema>;
 export type DatasetsResponse = z.infer<typeof DatasetsResponseSchema>;
-export type WatchResponse = z.infer<typeof WatchResponseSchema>;
+export type SaveResponse = z.infer<typeof SaveResponseSchema>;
 export type RefreshResponse = z.infer<typeof RefreshResponseSchema>;
 export type UpdateDatasetInput = z.infer<typeof UpdateDatasetSchema>;
 export type UpdateDatasetResponse = z.infer<typeof UpdateDatasetResponseSchema>;
@@ -49,10 +49,10 @@ export {
   ApiResponseSchema,
   DatasetResponseSchema,
   DatasetsResponseSchema,
-  WatchResponseSchema,
+  SaveResponseSchema,
   RefreshResponseSchema,
   UpdateDatasetSchema,
   UpdateDatasetResponseSchema,
-  WatchDatasetSchema,
-  UnwatchDatasetSchema,
+  SaveDatasetSchema,
+  UnsaveDatasetSchema,
 };
