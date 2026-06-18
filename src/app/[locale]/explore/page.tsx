@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { CATALOG_FILTER } from "@/lib/dataset-catalog-filter";
 import { DatasetCard } from "@/components/ui/dataset-card";
 import { processDatasetStats, formatRelativeTime } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
@@ -83,7 +84,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
       take: 20,
     }).then(datasets => shuffleArray(datasets).slice(0, 6)),
     prisma.dataset.findMany({
-      where: { isActive: true, dataCount: { gt: 0 }, lastEditedAt: { not: null } },
+      where: { isActive: true, dataCount: { gt: 0 }, lastEditedAt: { not: null }, ...CATALOG_FILTER },
       select: {
         ...DATASET_SELECT,
         recentlyEditedCount: true,
@@ -96,7 +97,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
       take: 6,
     }),
     prisma.dataset.findMany({
-      where: { isActive: true, dataCount: { gt: 0 } },
+      where: { isActive: true, dataCount: { gt: 0 }, watchers: { some: {} } },
       select: {
         ...DATASET_SELECT,
         _count: {
@@ -107,7 +108,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
       take: 6,
     }),
     prisma.dataset.findMany({
-      where: { isActive: true, dataCount: { gt: 0 }, contributorsCount: { not: null } },
+      where: { isActive: true, dataCount: { gt: 0 }, contributorsCount: { not: null }, ...CATALOG_FILTER },
       select: {
         ...DATASET_SELECT,
         contributorsCount: true,
@@ -119,7 +120,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
       take: 6,
     }),
     prisma.dataset.findMany({
-      where: { isActive: true, dataCount: { gt: 0 } },
+      where: { isActive: true, dataCount: { gt: 0 }, ...CATALOG_FILTER },
       select: {
         ...DATASET_SELECT,
         _count: {

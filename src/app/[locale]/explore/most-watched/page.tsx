@@ -67,7 +67,7 @@ export default async function MostWatchedPage({
   const t = await getTranslations("ExplorePage");
 
   const datasets = await prisma.dataset.findMany({
-    where: { isActive: true, dataCount: { gt: 0 } },
+    where: { isActive: true, dataCount: { gt: 0 }, watchers: { some: {} } },
     select: {
       ...DATASET_SELECT,
       _count: {
