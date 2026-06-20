@@ -155,7 +155,7 @@ async function generateEmailContent(
   }
 
   const reportChangedText = t("reportChanged", { lastPeriod });
-  const savedDatasetsLink = createEmailLink(`${getBaseUrl()}/`, t("reportFollowed"));
+  const savedDatasetsLink = createEmailLink(`${getBaseUrl()}/`, t("reportSaved"));
   const emailBody =
     count > 0
       ? generateEmailBodyWithChanges(

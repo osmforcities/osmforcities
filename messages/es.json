@@ -32,8 +32,8 @@
     "welcomeBack": "Bienvenido de vuelta, {name}",
     "welcomeBackGeneric": "Bienvenido de vuelta",
     "manageDatasetsSubtitle": "Gestiona tus conjuntos de datos y explora la plataforma",
-    "following": "Siguiendo",
-    "followingAriaLabel": "Siguiendo - Ver conjuntos de datos que estás siguiendo",
+    "saved": "Guardados",
+    "savedAriaLabel": "Guardados - Ver conjuntos de datos que has guardado",
     "explore": "Explorar",
     "templates": "Plantillas",
     "users": "Usuarios",
@@ -46,11 +46,15 @@
     "datasets": "Conjuntos de datos:",
     "viewAllTemplates": "Ver Todas las Plantillas",
     "viewAllUsers": "Ver Todos los Usuarios",
-    "noFollowedDatasetsTitle": "Aún no sigues ningún conjunto de datos",
-    "noFollowedDatasetsDescription": "Busca arriba para comenzar.",
-    "datasetCount": "Siguiendo {count, plural, =1 {# conjunto de datos} other {# conjuntos de datos}}",
-    "followedDatasetsGridLabel": "Conjuntos de datos seguidos",
+    "noSavedDatasetsTitle": "Aún no has guardado ningún conjunto de datos",
+    "noSavedDatasetsDescription": "Busca arriba para comenzar.",
+    "savedDatasetsGridLabel": "Conjuntos de datos guardados",
     "saveCount": "{count, plural, =1 {# guardado} other {# guardados}}",
+    "saveCountAriaLabel": "{used, number} de {limit, number} conjuntos de datos guardados",
+    "savedLabel": "{used, number}/{limit, number} guardados",
+    "limitReachedSuffix": "— límite alcanzado",
+    "quotaInfoTooltip": "Cada usuario puede guardar hasta {limit, number} conjuntos de datos. Quita uno del panel para liberar espacio.",
+    "quotaInfoButtonLabel": "¿Qué significa el límite de guardados?",
     "active": "Activo",
     "inactive": "Inactivo"
   },
@@ -100,10 +104,10 @@
     "lastChecked": "Última Verificación:"
   },
   "Watched": {
-    "metaTitle": "Siguiendo - OSM for Cities",
-    "metaDescription": "Conjuntos de datos que estás siguiendo",
-    "title": "Siguiendo",
-    "emptyMessage": "Aún no estás siguiendo ningún conjunto de datos.",
+    "metaTitle": "Guardados - OSM for Cities",
+    "metaDescription": "Conjuntos de datos que has guardado",
+    "title": "Guardados",
+    "emptyMessage": "Aún no has guardado ningún conjunto de datos.",
     "emptyActionText": "Explorar Conjuntos de Datos Públicos"
   },
   "EnterPage": {
@@ -170,6 +174,8 @@
     "unsave": "Quitar",
     "saveTooltip": "Guardar para visitar más tarde",
     "unsaveTooltip": "Quitar de guardados",
+    "saveLimitReached": "Límite de guardados alcanzado",
+    "saveLimitMessage": "Puedes guardar hasta {limit, number} conjuntos de datos. Quita uno desde tu panel primero. <link>Ir al panel</link>.",
     "featured": "Destacado",
     "feature": "Destacar",
     "unfeature": "Quitar destacado",
@@ -294,7 +300,7 @@
   "PreferencesPage": {
     "emailPreferences": "Preferencias de Email",
     "reports": "Reportes",
-    "reportsDescription": "Recibe actualizaciones por correo electrónico cuando tus datasets monitoreados tengan cambios."
+    "reportsDescription": "Recibe actualizaciones por correo electrónico cuando tus conjuntos de datos guardados tengan cambios."
   },
   "PreferencesForm": {
     "enableReports": "Habilitar reportes",
@@ -521,7 +527,7 @@
     "reportSubjectNoChanges": "Sin cambios {lastPeriod}",
     "reportChanged": "Los siguientes conjuntos de datos se actualizaron {lastPeriod}:",
     "reportNoChanges": "No hubo cambios en tus {savedDatasetsLink} {lastPeriod}.",
-    "reportFollowed": "conjuntos de datos guardados",
+    "reportSaved": "conjuntos de datos guardados",
     "preferencesPage": "página de preferencias",
     "lastPeriodDay": "en el último día",
     "lastPeriodWeek": "en la última semana",

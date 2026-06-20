@@ -32,8 +32,8 @@
     "welcomeBack": "Bem-vindo de volta, {name}",
     "welcomeBackGeneric": "Bem-vindo de volta",
     "manageDatasetsSubtitle": "Gerencie seus conjuntos de dados e explore a plataforma",
-    "following": "Seguindo",
-    "followingAriaLabel": "Seguindo - Ver conjuntos de dados que você está seguindo",
+    "saved": "Salvos",
+    "savedAriaLabel": "Salvos - Ver conjuntos de dados que você salvou",
     "explore": "Explorar",
     "templates": "Modelos",
     "users": "Usuários",
@@ -46,11 +46,15 @@
     "datasets": "Conjuntos de dados:",
     "viewAllTemplates": "Ver Todos os Modelos",
     "viewAllUsers": "Ver Todos os Usuários",
-    "noFollowedDatasetsTitle": "Você ainda não segue nenhum conjunto de dados",
-    "noFollowedDatasetsDescription": "Pesquise acima para começar.",
-    "datasetCount": "Seguindo {count, plural, =1 {# conjunto de dados} other {# conjuntos de dados}}",
-    "followedDatasetsGridLabel": "Conjuntos de dados acompanhados",
+    "noSavedDatasetsTitle": "Você ainda não salvou nenhum conjunto de dados",
+    "noSavedDatasetsDescription": "Pesquise acima para começar.",
+    "savedDatasetsGridLabel": "Conjuntos de dados salvos",
     "saveCount": "{count, plural, =1 {# salvo} other {# salvos}}",
+    "saveCountAriaLabel": "{used, number} de {limit, number} conjuntos de dados salvos",
+    "savedLabel": "{used, number}/{limit, number} salvos",
+    "limitReachedSuffix": "— limite atingido",
+    "quotaInfoTooltip": "Cada usuário pode salvar até {limit, number} conjuntos de dados. Remova um do seu painel para liberar espaço.",
+    "quotaInfoButtonLabel": "O que significa o limite de salvos?",
     "active": "Ativo",
     "inactive": "Inativo"
   },
@@ -100,10 +104,10 @@
     "lastChecked": "Última Verificação:"
   },
   "Watched": {
-    "metaTitle": "Seguindo - OSM for Cities",
-    "metaDescription": "Conjuntos de dados que você segue",
-    "title": "Seguindo",
-    "emptyMessage": "Você ainda não está seguindo nenhum conjunto de dados.",
+    "metaTitle": "Salvos - OSM for Cities",
+    "metaDescription": "Conjuntos de dados que você salvou",
+    "title": "Salvos",
+    "emptyMessage": "Você ainda não salvou nenhum conjunto de dados.",
     "emptyActionText": "Explorar Conjuntos de Dados Públicos"
   },
   "EnterPage": {
@@ -170,6 +174,8 @@
     "unsave": "Remover",
     "saveTooltip": "Salvar para visitar depois",
     "unsaveTooltip": "Remover dos salvos",
+    "saveLimitReached": "Limite de salvos atingido",
+    "saveLimitMessage": "Você pode salvar até {limit, number} conjuntos de dados. Remova um pelo seu painel primeiro. <link>Ir para o painel</link>.",
     "featured": "Destacado",
     "feature": "Destacar",
     "unfeature": "Remover destaque",
@@ -294,7 +300,7 @@
   "PreferencesPage": {
     "emailPreferences": "Preferências de Email",
     "reports": "Relatórios",
-    "reportsDescription": "Receba atualizações por e-mail quando seus datasets monitorados tiverem alterações."
+    "reportsDescription": "Receba atualizações por e-mail quando seus conjuntos de dados salvos tiverem alterações."
   },
   "PreferencesForm": {
     "enableReports": "Habilitar relatórios",
@@ -521,7 +527,7 @@
     "reportSubjectNoChanges": "Sem mudanças {lastPeriod}",
     "reportChanged": "Os seguintes conjuntos de dados foram atualizados {lastPeriod}:",
     "reportNoChanges": "Não houve mudanças nos seus {savedDatasetsLink} {lastPeriod}.",
-    "reportFollowed": "conjuntos de dados salvos",
+    "reportSaved": "conjuntos de dados salvos",
     "preferencesPage": "página de preferências",
     "lastPeriodDay": "no último dia",
     "lastPeriodWeek": "na última semana",

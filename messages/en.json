@@ -32,8 +32,8 @@
     "welcomeBack": "Welcome back, {name}",
     "welcomeBackGeneric": "Welcome back",
     "manageDatasetsSubtitle": "Manage your datasets and explore the platform",
-    "following": "Following",
-    "followingAriaLabel": "Following - View datasets you're following",
+    "saved": "Saved",
+    "savedAriaLabel": "Saved - View datasets you've saved",
     "explore": "Explore",
     "templates": "Templates",
     "users": "Users",
@@ -46,11 +46,15 @@
     "datasets": "Datasets:",
     "viewAllTemplates": "View All Templates",
     "viewAllUsers": "View All Users",
-    "noFollowedDatasetsTitle": "No datasets followed yet",
-    "noFollowedDatasetsDescription": "Search above to get started.",
-    "datasetCount": "Following {count, plural, =1 {# dataset} other {# datasets}}",
-    "followedDatasetsGridLabel": "Followed datasets",
+    "noSavedDatasetsTitle": "No datasets saved yet",
+    "noSavedDatasetsDescription": "Search above to get started.",
+    "savedDatasetsGridLabel": "Saved datasets",
     "saveCount": "{count, plural, =1 {# save} other {# saves}}",
+    "saveCountAriaLabel": "{used, number} of {limit, number} datasets saved",
+    "savedLabel": "{used, number}/{limit, number} saved",
+    "limitReachedSuffix": "— limit reached",
+    "quotaInfoTooltip": "Each user can save up to {limit, number} datasets. Unsave one from your dashboard to free a slot.",
+    "quotaInfoButtonLabel": "What does the save limit mean?",
     "active": "Active",
     "inactive": "Inactive"
   },
@@ -100,10 +104,10 @@
     "lastChecked": "Last Checked:"
   },
   "Watched": {
-    "metaTitle": "Following - OSM for Cities",
-    "metaDescription": "Datasets you're following",
-    "title": "Following",
-    "emptyMessage": "You're not following any datasets yet.",
+    "metaTitle": "Saved - OSM for Cities",
+    "metaDescription": "Datasets you've saved",
+    "title": "Saved",
+    "emptyMessage": "You haven't saved any datasets yet.",
     "emptyActionText": "Browse Public Datasets"
   },
   "EnterPage": {
@@ -171,6 +175,8 @@
     "unsave": "Unsave",
     "saveTooltip": "Save to revisit later",
     "unsaveTooltip": "Remove from saved",
+    "saveLimitReached": "Save limit reached",
+    "saveLimitMessage": "You can save up to {limit, number} datasets. Unsave one from your dashboard first. <link>Go to dashboard</link>.",
     "featured": "Featured",
     "feature": "Feature",
     "unfeature": "Unfeature",
@@ -296,7 +302,7 @@
   "PreferencesPage": {
     "emailPreferences": "Email Preferences",
     "reports": "Reports",
-    "reportsDescription": "Receive email updates when your followed datasets have changes."
+    "reportsDescription": "Receive email updates when your saved datasets have changes."
   },
   "PreferencesForm": {
     "enableReports": "Enable reports",
@@ -514,7 +520,7 @@
     "reportSubjectNoChanges": "No changes {lastPeriod}",
     "reportChanged": "The following datasets were updated {lastPeriod}:",
     "reportNoChanges": "There were no changes to your {savedDatasetsLink} {lastPeriod}.",
-    "reportFollowed": "saved datasets",
+    "reportSaved": "saved datasets",
     "preferencesPage": "preferences page",
     "lastPeriodDay": "in the last day",
     "lastPeriodWeek": "in the last week",
