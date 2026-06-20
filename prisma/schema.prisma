@@ -69,6 +69,9 @@ model Template {
   overpassQuery String
   categoryId    String
   category      Category              @relation("CategoryTemplates", fields: [categoryId], references: [id])
+  parentId      String?
+  parent        Template?             @relation("TemplateHierarchy", fields: [parentId], references: [id])
+  children      Template[]            @relation("TemplateHierarchy")
   tags          String[]
   isActive      Boolean               @default(true)
   deprecatesAt  DateTime?
