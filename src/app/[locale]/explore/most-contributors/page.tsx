@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { CATALOG_FILTER } from "@/lib/dataset-catalog-filter";
 import { DatasetCard } from "@/components/ui/dataset-card";
 import { ExplorePageLayout, ExploreSectionHeader } from "@/components/explore/explore-components";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
@@ -67,7 +68,7 @@ export default async function MostContributorsPage({
   const t = await getTranslations("ExplorePage");
 
   const datasets = await prisma.dataset.findMany({
-    where: { isActive: true, dataCount: { gt: 0 }, contributorsCount: { not: null } },
+    where: { isActive: true, dataCount: { gt: 0 }, contributorsCount: { not: null }, ...CATALOG_FILTER },
     select: {
       ...DATASET_SELECT,
       contributorsCount: true,
