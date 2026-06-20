@@ -36,7 +36,7 @@ export function QuotaIndicator({ used, limit }: QuotaIndicatorProps) {
       ? "text-amber-400 hover:text-amber-600 dark:hover:text-amber-300"
       : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300";
 
-  const pct = Math.min(100, (used / limit) * 100);
+  const pct = Math.min(100, ratio * 100);
 
   return (
     <div

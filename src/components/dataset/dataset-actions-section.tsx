@@ -188,10 +188,14 @@ export function DatasetActionsSection({
             data-testid="save-limit-message"
             className="text-sm text-amber-700 dark:text-amber-500"
           >
-            {t("saveLimitMessage", { limit: saveLimit })}
-            <Link href="/dashboard" size="sm" variant="underline">
-              {t("goToDashboard")}
-            </Link>
+            {t.rich("saveLimitMessage", {
+              limit: saveLimit,
+              link: (chunks) => (
+                <Link href="/dashboard" size="sm" variant="underline">
+                  {chunks}
+                </Link>
+              ),
+            })}
           </p>
         )}
       </div>
