@@ -161,7 +161,7 @@ test.describe("Dataset Save Button", () => {
       resolveApiCall = resolve;
     });
 
-    await page.route("**/api/datasets/*/watch", async (route) => {
+    await page.route("**/api/datasets/*/save", async (route) => {
       await apiCallPromise;
       await route.continue();
     });
@@ -174,7 +174,7 @@ test.describe("Dataset Save Button", () => {
     await watchButton.scrollIntoViewIfNeeded();
 
     // Set up request listener AFTER route is configured
-    const requestPromise = page.waitForRequest("**/api/datasets/*/watch");
+    const requestPromise = page.waitForRequest("**/api/datasets/*/save");
 
     // Click with force to bypass footer interception
     watchButton.click({ force: true }).catch(() => {
@@ -224,7 +224,7 @@ test.describe("Dataset Save Button", () => {
 
   test("should handle API errors gracefully", async ({ page }) => {
     // Mock API to return error
-    await page.route("**/api/datasets/*/watch", async (route) => {
+    await page.route("**/api/datasets/*/save", async (route) => {
       await route.fulfill({
         status: 500,
         contentType: "application/json",
@@ -251,7 +251,7 @@ test.describe("Dataset Save Button", () => {
     await expect(watchButton).toBeVisible();
   });
 
-  test("should prevent watching already watched dataset", async ({ page }) => {
+  test("should prevent saving already saved dataset", async ({ page }) => {
     // First save the dataset
     const prisma = new PrismaClient();
 
@@ -281,7 +281,7 @@ test.describe("Dataset Save Button", () => {
     await expect(unwatchButton).toBeVisible();
 
     // Try to watch again (should not create duplicate)
-    await page.route("**/api/datasets/*/watch", async (route) => {
+    await page.route("**/api/datasets/*/save", async (route) => {
       if (route.request().method() === "POST") {
         await route.fulfill({
           status: 400,
@@ -351,7 +351,7 @@ test.describe("Dataset Save Button", () => {
 
     const responsePromise = page.waitForResponse(
       (resp) =>
-        /\/api\/datasets\/.+\/watch/.test(resp.url()) &&
+        /\/api\/datasets\/.+\/save/.test(resp.url()) &&
         resp.request().method() === "POST"
     );
     await watchButton.click();
