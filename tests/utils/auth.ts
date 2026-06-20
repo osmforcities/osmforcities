@@ -76,13 +76,13 @@ export async function createAdminTestUser(
 export async function cleanupTestUser(userId: string) {
   const prisma = new PrismaClient();
   try {
-    // Remove all dataset watches for this user
-    await prisma.datasetWatch.deleteMany({ where: { userId } });
+    // Remove all dataset saves for this user
+    await prisma.datasetSave.deleteMany({ where: { userId } });
 
-    // Remove any datasets that have no watchers (test datasets)
+    // Remove any datasets that have no savers (test datasets)
     await prisma.dataset.deleteMany({
       where: {
-        watchers: {
+        savedBy: {
           none: {},
         },
       },

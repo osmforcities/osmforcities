@@ -20,7 +20,7 @@ type Dataset = {
     countryCode: string | null;
   };
   _count?: {
-    watchers: number;
+    savedBy: number;
   };
 };
 
@@ -132,9 +132,9 @@ export function DashboardGrid({ datasets }: DashboardGridProps) {
                   >
                     {dataset.isActive ? t("active") : t("inactive")}
                   </span>
-                  {dataset._count && dataset._count.watchers > 0 && (
+                  {dataset._count && dataset._count.savedBy > 0 && (
                     <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-700">
-                      {t("saveCount", { count: dataset._count.watchers })}
+                      {t("saveCount", { count: dataset._count.savedBy })}
                     </span>
                   )}
                 </div>

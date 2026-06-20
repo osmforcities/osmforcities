@@ -57,7 +57,7 @@ const DATASET_SELECT = {
   },
 } as const;
 
-export default async function MostWatchedPage({
+export default async function MostSavedPage({
   params,
 }: {
   params: Promise<{ locale: Locale }>;
@@ -67,14 +67,14 @@ export default async function MostWatchedPage({
   const t = await getTranslations("ExplorePage");
 
   const datasets = await prisma.dataset.findMany({
-    where: { isActive: true, dataCount: { gt: 0 }, watchers: { some: {} } },
+    where: { isActive: true, dataCount: { gt: 0 }, savedBy: { some: {} } },
     select: {
       ...DATASET_SELECT,
       _count: {
-        select: { watchers: true }
+        select: { savedBy: true }
       }
     },
-    orderBy: { watchers: { _count: 'desc' } },
+    orderBy: { savedBy: { _count: 'desc' } },
     take: 24,
   });
 
@@ -86,7 +86,7 @@ export default async function MostWatchedPage({
           {datasets.map((dataset) => {
             const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
             const stats = [
-              { type: "watchers" as const, label: t("stats.saves"), value: dataset._count.watchers },
+              { type: "savedBy" as const, label: t("stats.saves"), value: dataset._count.savedBy },
             ];
 
             return (

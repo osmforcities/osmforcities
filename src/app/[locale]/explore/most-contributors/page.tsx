@@ -73,7 +73,7 @@ export default async function MostContributorsPage({
       ...DATASET_SELECT,
       contributorsCount: true,
       _count: {
-        select: { watchers: true }
+        select: { savedBy: true }
       }
     },
     orderBy: { contributorsCount: "desc" },

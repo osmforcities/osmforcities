@@ -75,7 +75,7 @@ export default async function RecentlyEditedPage({
       recentlyEditedCount: true,
       lastEditedAt: true,
       _count: {
-        select: { watchers: true }
+        select: { savedBy: true }
       }
     },
     orderBy: { lastEditedAt: "desc" },

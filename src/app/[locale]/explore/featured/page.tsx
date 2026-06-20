@@ -73,7 +73,7 @@ export default async function FeaturedPage({
     select: {
       ...DATASET_SELECT,
       _count: {
-        select: { watchers: true }
+        select: { savedBy: true }
       }
     },
     orderBy: { createdAt: "desc" },

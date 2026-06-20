@@ -15,34 +15,34 @@ type DatasetActionsSectionProps = {
 export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
   const t = useTranslations("DatasetPage");
   const { downloadDataset } = useDatasetDownload();
-  const { watchDataset, unwatchDataset, refreshDataset, isLoading } =
+  const { saveDataset, unsaveDataset, refreshDataset, isLoading } =
     useDatasetActions();
 
-  const [isWatched, setIsWatched] = useState(dataset.isWatched || false);
+  const [isSaved, setIsSaved] = useState(dataset.isSaved || false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isFeatured, setIsFeatured] = useState(dataset.isFeatured ?? false);
   const [isFeaturingLoading, setIsFeaturingLoading] = useState(false);
   const [hasFeatureError, setHasFeatureError] = useState(false);
 
-  const handleToggleWatch = async () => {
+  const handleToggleSave = async () => {
     try {
-      if (isWatched) {
-        const result = await unwatchDataset(dataset.id);
+      if (isSaved) {
+        const result = await unsaveDataset(dataset.id);
         if (result.success) {
-          setIsWatched(false);
+          setIsSaved(false);
         } else {
-          console.error("Failed to unwatch dataset:", result.error);
+          console.error("Failed to unsave dataset:", result.error);
         }
       } else {
-        const result = await watchDataset(dataset.id);
+        const result = await saveDataset(dataset.id);
         if (result.success) {
-          setIsWatched(true);
+          setIsSaved(true);
         } else {
-          console.error("Failed to watch dataset:", result.error);
+          console.error("Failed to save dataset:", result.error);
         }
       }
     } catch (error) {
-      console.error("Error toggling watch:", error);
+      console.error("Error toggling save:", error);
     }
   };
 
@@ -145,19 +145,19 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
 
         {/* Save/Unsave Button */}
         <Button
-          onClick={handleToggleWatch}
+          onClick={handleToggleSave}
           disabled={isLoading}
           className="flex items-center gap-2 w-full h-10"
-          variant={isWatched ? "default" : "outline"}
-          title={isWatched ? t("unsaveTooltip") : t("saveTooltip")}
-          data-testid={isWatched ? "dataset-unwatch-button" : "dataset-watch-button"}
+          variant={isSaved ? "default" : "outline"}
+          title={isSaved ? t("unsaveTooltip") : t("saveTooltip")}
+          data-testid={isSaved ? "dataset-unsave-button" : "dataset-save-button"}
         >
-          {isWatched ? (
+          {isSaved ? (
             <BookmarkMinus className="h-4 w-4" />
           ) : (
             <Bookmark className="h-4 w-4" />
           )}
-          {isWatched ? t("unsave") : t("save")}
+          {isSaved ? t("unsave") : t("save")}
         </Button>
       </div>
     </div>

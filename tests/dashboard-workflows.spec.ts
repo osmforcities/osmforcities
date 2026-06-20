@@ -107,7 +107,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     });
 
     // Watch the dataset
-    await prisma.datasetWatch.create({
+    await prisma.datasetSave.create({
       data: {
         datasetId: testDataset.id,
         userId: testUser.id,
@@ -176,7 +176,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
       },
     });
 
-    await prisma.datasetWatch.create({
+    await prisma.datasetSave.create({
       data: {
         datasetId: testDataset.id,
         userId: testUser.id,
@@ -242,7 +242,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
       },
     });
 
-    await prisma.datasetWatch.create({
+    await prisma.datasetSave.create({
       data: {
         datasetId: testDataset.id,
         userId: testUser.id,
@@ -314,7 +314,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     });
 
     // Watch the dataset
-    await prisma.datasetWatch.create({
+    await prisma.datasetSave.create({
       data: {
         datasetId: testDataset.id,
         userId: testUser.id,
@@ -367,7 +367,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
       },
     });
 
-    await prisma.datasetWatch.create({
+    await prisma.datasetSave.create({
       data: {
         datasetId: testDataset.id,
         userId: testUser.id,
@@ -431,7 +431,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
         },
       });
 
-      await prisma.datasetWatch.create({
+      await prisma.datasetSave.create({
         data: {
           datasetId: testDataset.id,
           userId: testUser.id,

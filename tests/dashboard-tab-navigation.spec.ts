@@ -294,7 +294,7 @@ test.describe("Dashboard Tab Navigation", () => {
         },
       });
 
-      await prisma.datasetWatch.create({
+      await prisma.datasetSave.create({
         data: {
           datasetId: testDataset.id,
           userId: regularUser.id,

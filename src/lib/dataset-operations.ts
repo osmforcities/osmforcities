@@ -117,7 +117,7 @@ async function getDatasetWithDetails(areaId: number, templateId: string, locale:
           email: true,
         },
       },
-      watchers: {
+      savedBy: {
         select: {
           id: true,
           userId: true,
@@ -291,7 +291,7 @@ async function createDatasetOnDemand(
             email: true,
           },
         },
-        watchers: {
+        savedBy: {
           select: {
             id: true,
             userId: true,
@@ -395,7 +395,7 @@ export async function getDatasetMetadata(
       },
       _count: {
         select: {
-          watchers: true,
+          savedBy: true,
         },
       },
     },

@@ -36,11 +36,11 @@ export const CreateDatasetSchema = z.object({
   osmRelationId: z.number(),
 });
 
-export const WatchDatasetSchema = z.object({
+export const SaveDatasetSchema = z.object({
   datasetId: z.string(),
 });
 
-export const UnwatchDatasetSchema = z.object({
+export const UnsaveDatasetSchema = z.object({
   datasetId: z.string(),
 });
 
@@ -79,7 +79,7 @@ export const DatasetSchema = z.object({
     bounds: z.string().nullable(),
     geojson: GeoJSONFeatureCollectionSchema.nullable(),
   }),
-  watchers: z
+  savedBy: z
     .array(
       z.object({
         id: z.string(),
@@ -88,8 +88,8 @@ export const DatasetSchema = z.object({
       })
     )
     .optional(),
-  isWatched: z.boolean().optional(),
-  watchersCount: z.number().optional(),
+  isSaved: z.boolean().optional(),
+  savedCount: z.number().optional(),
   canDelete: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
   canFeature: z.boolean().optional(),
@@ -98,5 +98,5 @@ export const DatasetSchema = z.object({
 export type Dataset = z.infer<typeof DatasetSchema>;
 export type DatasetStats = z.infer<typeof DatasetStatsSchema>;
 export type CreateDatasetInput = z.infer<typeof CreateDatasetSchema>;
-export type WatchDatasetInput = z.infer<typeof WatchDatasetSchema>;
-export type UnwatchDatasetInput = z.infer<typeof UnwatchDatasetSchema>;
+export type SaveDatasetInput = z.infer<typeof SaveDatasetSchema>;
+export type UnsaveDatasetInput = z.infer<typeof UnsaveDatasetSchema>;

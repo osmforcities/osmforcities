@@ -18,9 +18,9 @@ type RawDataset = {
     geojson?: unknown;
     [key: string]: unknown;
   };
-  watchers?: Array<unknown>;
+  savedBy?: Array<unknown>;
   _count?: {
-    watchers?: number;
+    savedBy?: number;
   };
   isFeatured?: boolean | null;
 };
@@ -37,7 +37,7 @@ export function transformDataset(
   rawDataset: RawDataset,
   user: User | null,
   locale: string,
-  options?: { isWatched?: boolean; skipTemplateResolution?: boolean }
+  options?: { isSaved?: boolean; skipTemplateResolution?: boolean }
 ): Dataset {
   if (!rawDataset.template) {
     throw new Error("Dataset template is required");
@@ -56,8 +56,8 @@ export function transformDataset(
       );
   const permissions = calculatePermissions(rawDataset, user);
 
-  // If isWatched is explicitly provided, use it. Otherwise infer from watchers array.
-  const isWatched = options?.isWatched ?? (rawDataset.watchers ? rawDataset.watchers.length > 0 : false);
+  // If isSaved is explicitly provided, use it. Otherwise infer from savedBy array.
+  const isSaved = options?.isSaved ?? (rawDataset.savedBy ? rawDataset.savedBy.length > 0 : false);
 
   return DatasetSchema.parse({
     ...rawDataset,
@@ -71,8 +71,8 @@ export function transformDataset(
       ...rawDataset.area,
       geojson: rawDataset.area.geojson as FeatureCollection | null,
     } : rawDataset.area,
-    isWatched,
-    watchersCount: rawDataset._count?.watchers ?? rawDataset.watchers?.length ?? 0,
+    isSaved,
+    savedCount: rawDataset._count?.savedBy ?? rawDataset.savedBy?.length ?? 0,
     ...permissions,
   });
 }

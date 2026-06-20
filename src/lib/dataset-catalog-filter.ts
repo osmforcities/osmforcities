@@ -7,5 +7,5 @@
  * or watched by at least one user.
  */
 export const CATALOG_FILTER = {
-  AND: [{ OR: [{ isFeatured: true }, { watchers: { some: {} } }] }],
+  AND: [{ OR: [{ isFeatured: true }, { savedBy: { some: {} } }] }],
 };

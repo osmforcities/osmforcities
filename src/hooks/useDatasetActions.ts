@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { apiClient } from "@/lib/api-client";
 import {
-  WatchResponse,
+  SaveResponse,
   ApiResponse,
   RefreshResponse,
   UpdateDatasetResponse,
@@ -9,12 +9,12 @@ import {
   DatasetResponse,
   DatasetsResponseSchema,
   DatasetResponseSchema,
-  WatchResponseSchema,
+  SaveResponseSchema,
   RefreshResponseSchema,
   UpdateDatasetResponseSchema,
   ApiResponseSchema,
-  WatchDatasetSchema,
-  UnwatchDatasetSchema,
+  SaveDatasetSchema,
+  UnsaveDatasetSchema,
   UpdateDatasetSchema,
 } from "@/types/api";
 
@@ -34,24 +34,20 @@ export function useDatasetActions() {
     return apiClient.get("/api/datasets/public", DatasetsResponseSchema);
   };
 
-  const getWatchedDatasets = async (): Promise<DatasetsResponse> => {
-    return apiClient.get("/api/datasets/watched", DatasetsResponseSchema);
-  };
-
-  const watchDataset = async (
+  const saveDataset = async (
     datasetId: string
   ): Promise<{ success: boolean; error?: string }> => {
     setIsLoading(true);
     try {
-      const validatedData = WatchDatasetSchema.parse({ datasetId });
-      const result: WatchResponse = await apiClient.post(
-        `/api/datasets/${datasetId}/watch`,
-        WatchResponseSchema,
+      const validatedData = SaveDatasetSchema.parse({ datasetId });
+      const result: SaveResponse = await apiClient.post(
+        `/api/datasets/${datasetId}/save`,
+        SaveResponseSchema,
         validatedData
       );
       return { success: result.success };
     } catch (error) {
-      console.error("Error watching dataset:", error);
+      console.error("Error saving dataset:", error);
       return {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
@@ -61,20 +57,20 @@ export function useDatasetActions() {
     }
   };
 
-  const unwatchDataset = async (
+  const unsaveDataset = async (
     datasetId: string
   ): Promise<{ success: boolean; error?: string }> => {
     setIsLoading(true);
     try {
-      const validatedData = UnwatchDatasetSchema.parse({ datasetId });
+      const validatedData = UnsaveDatasetSchema.parse({ datasetId });
       const result: ApiResponse = await apiClient.delete(
-        `/api/datasets/${datasetId}/watch`,
+        `/api/datasets/${datasetId}/save`,
         ApiResponseSchema,
         validatedData
       );
       return { success: result.success };
     } catch (error) {
-      console.error("Error unwatching dataset:", error);
+      console.error("Error unsaving dataset:", error);
       return {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
@@ -189,10 +185,9 @@ export function useDatasetActions() {
     getDatasets,
     getDataset,
     getPublicDatasets,
-    getWatchedDatasets,
 
-    watchDataset,
-    unwatchDataset,
+    saveDataset,
+    unsaveDataset,
     refreshDataset,
     isLoading,
 
