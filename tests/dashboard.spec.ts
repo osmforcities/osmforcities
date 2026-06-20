@@ -23,7 +23,7 @@ test.describe("User Dashboard", () => {
     await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for dashboard grid (either with datasets or empty state)
-    const grid = page.getByTestId("followed-datasets-grid");
+    const grid = page.getByTestId("saved-datasets-grid");
     const emptyState = page.getByTestId("dashboard-empty-state");
 
     const hasGrid = await grid.isVisible();
@@ -37,7 +37,7 @@ test.describe("User Dashboard", () => {
     await page.goto(getLocalizedPath("/dashboard"));
 
     // Check for dashboard grid (either with datasets or empty state)
-    const grid = page.getByTestId("followed-datasets-grid");
+    const grid = page.getByTestId("saved-datasets-grid");
     const emptyState = page.getByTestId("dashboard-empty-state");
 
     const hasGrid = await grid.isVisible();
@@ -70,7 +70,7 @@ test.describe("User Dashboard", () => {
     await page.goto(getLocalizedPath("/dashboard"));
 
     // Check if there are any dataset cards or empty state
-    const datasetGrid = page.getByTestId("followed-datasets-grid");
+    const datasetGrid = page.getByTestId("saved-datasets-grid");
     const emptyState = page.getByTestId("dashboard-empty-state");
 
     const hasGrid = await datasetGrid.isVisible();
@@ -82,7 +82,7 @@ test.describe("User Dashboard", () => {
     if (hasGrid) {
       // Check for dataset cards (if any exist)
       const datasetCards = page.locator(
-        '[data-testid="followed-datasets-grid"] > div'
+        '[data-testid="saved-datasets-grid"] > div'
       );
       const cardCount = await datasetCards.count();
 
@@ -112,7 +112,7 @@ test.describe("User Dashboard", () => {
 
     // Check if there are any dataset cards
     const datasetCards = page.locator(
-      '[data-testid="followed-datasets-grid"] > div'
+      '[data-testid="saved-datasets-grid"] > div'
     );
     const cardCount = await datasetCards.count();
 
@@ -151,8 +151,10 @@ test.describe("User Dashboard", () => {
   }) => {
     await page.goto(getLocalizedPath("/dashboard"));
 
-    // Check for save count badges in dataset cards
-    const saveBadges = page.getByText(/save/);
+    // Check for save count badges in dataset cards (inside the grid, not the quota indicator)
+    const saveBadges = page
+      .getByTestId("saved-datasets-grid")
+      .getByText(/save/);
     const badgeCount = await saveBadges.count();
 
     if (badgeCount > 0) {
@@ -193,7 +195,7 @@ test.describe("User Dashboard", () => {
     await page.goto(getLocalizedPath("/dashboard"));
 
     // Check if there's a dataset grid or empty state
-    const datasetGrid = page.getByTestId("followed-datasets-grid");
+    const datasetGrid = page.getByTestId("saved-datasets-grid");
     const emptyState = page.getByTestId("dashboard-empty-state");
 
     const hasGrid = await datasetGrid.isVisible();
@@ -205,19 +207,19 @@ test.describe("User Dashboard", () => {
     if (hasGrid) {
       // Test mobile view
       await page.setViewportSize({ width: 375, height: 667 });
-      await expect(page.getByTestId("followed-datasets-grid")).toHaveClass(
+      await expect(page.getByTestId("saved-datasets-grid")).toHaveClass(
         /grid-cols-1/
       );
 
       // Test tablet view
       await page.setViewportSize({ width: 768, height: 1024 });
-      await expect(page.getByTestId("followed-datasets-grid")).toHaveClass(
+      await expect(page.getByTestId("saved-datasets-grid")).toHaveClass(
         /md:grid-cols-2/
       );
 
       // Test desktop view
       await page.setViewportSize({ width: 1024, height: 768 });
-      await expect(page.getByTestId("followed-datasets-grid")).toHaveClass(
+      await expect(page.getByTestId("saved-datasets-grid")).toHaveClass(
         /lg:grid-cols-3/
       );
     }
@@ -241,7 +243,7 @@ test.describe("User Dashboard", () => {
     if (hasCountText) {
       // The text should handle both singular and plural forms
       const text = await countText.textContent();
-      expect(text).toMatch(/Following \d+ dataset(s)?/);
+      expect(text).toMatch(/\d+\/10/);
     }
   });
 
@@ -250,7 +252,7 @@ test.describe("User Dashboard", () => {
 
     // Check for country codes in dataset cards
     const datasetCards = page.locator(
-      '[data-testid="followed-datasets-grid"] > div'
+      '[data-testid="saved-datasets-grid"] > div'
     );
     const cardCount = await datasetCards.count();
 

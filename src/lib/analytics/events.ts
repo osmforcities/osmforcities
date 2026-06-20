@@ -8,15 +8,15 @@ export const ANALYTICS_EVENTS = {
   DATASET_CREATE: "dataset_create",
   DATASET_DETAIL_VIEW: "dataset_detail_view",
   DATASET_DOWNLOAD: "dataset_download",
-  DATASET_FOLLOW: "dataset_follow",
-  DATASET_UNFOLLOW: "dataset_unfollow",
+  DATASET_SAVE: "dataset_save",
+  DATASET_UNSAVE: "dataset_unsave",
   DATASET_REFRESH: "dataset_refresh",
   DATASET_REFRESH_JOB: "dataset_refresh_job",
   DATASET_UPSELL_VIEW: "dataset_upsell_view",
 
   // User events
   SIGN_UP: "sign_up",
-  WATCHED_DATASETS_VIEW: "watched_datasets_view",
+  SAVED_DATASETS_VIEW: "saved_datasets_view",
 
   // Area events
   AREA_VIEW_LOGGED_IN: "area_view_logged_in",

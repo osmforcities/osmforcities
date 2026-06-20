@@ -1,6 +1,6 @@
 /**
- * Dashboard tabs component - navigation between Following/Users/Templates
- * Following tab links to /dashboard, Users to /users, Templates to /templates
+ * Dashboard tabs component - navigation between Saved/Users/Templates
+ * Saved tab links to /dashboard, Users to /users, Templates to /templates
  */
 
 "use client";
@@ -32,7 +32,7 @@ export function DashboardTabs({
     router.push("/templates");
   };
 
-  const handleFollowingTabClick = () => {
+  const handleSavedTabClick = () => {
     router.push("/dashboard");
   };
 
@@ -40,21 +40,21 @@ export function DashboardTabs({
   const getTabsConfig = () => {
     if (context === "admin-users") {
       return {
-        tabs: ["following", "users", "templates"],
+        tabs: ["saved", "users", "templates"],
         activeTab: activeTab || "users",
         layout: "grid-cols-3"
       };
     } else if (context === "admin-templates") {
       return {
-        tabs: ["following", "users", "templates"],
+        tabs: ["saved", "users", "templates"],
         activeTab: activeTab || "templates",
         layout: "grid-cols-3"
       };
     } else {
       // dashboard context
       return {
-        tabs: isAdmin ? ["following", "users", "templates"] : ["following"],
-        activeTab: "following",
+        tabs: isAdmin ? ["saved", "users", "templates"] : ["saved"],
+        activeTab: "saved",
         layout: isAdmin ? "grid-cols-3" : "inline-flex"
       };
     }
@@ -66,14 +66,14 @@ export function DashboardTabs({
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-8" data-testid="dashboard-tabs">
       <Tabs defaultValue={defaultValue} value={defaultValue} className="w-full">
         <TabsList className={`${layout} w-full`}>
-          {tabs.includes("following") && (
+          {tabs.includes("saved") && (
             <TabsTrigger
-              value="following"
-              onClick={context !== "dashboard" ? handleFollowingTabClick : undefined}
-              data-testid="tab-following"
-              aria-label={tabT("followingAriaLabel")}
+              value="saved"
+              onClick={context !== "dashboard" ? handleSavedTabClick : undefined}
+              data-testid="tab-saved"
+              aria-label={tabT("savedAriaLabel")}
             >
-              {tabT("following")}
+              {tabT("saved")}
             </TabsTrigger>
           )}
 

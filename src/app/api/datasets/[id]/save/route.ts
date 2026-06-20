@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { SaveDatasetSchema, UnsaveDatasetSchema } from "@/schemas/dataset";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
-import { MAX_FOLLOWS_PER_USER } from "@/lib/constants";
+import { MAX_SAVES_PER_USER } from "@/lib/constants";
 
 export async function POST(
   request: NextRequest,
@@ -50,7 +50,7 @@ export async function POST(
       const count = await tx.datasetSave.count({
         where: { userId: user.id },
       });
-      if (count >= MAX_FOLLOWS_PER_USER) return null;
+      if (count >= MAX_SAVES_PER_USER) return null;
       return tx.datasetSave.create({
         data: {
           userId: user.id,
@@ -61,12 +61,12 @@ export async function POST(
 
     if (!save) {
       return NextResponse.json(
-        { error: "follow_limit_reached", limit: MAX_FOLLOWS_PER_USER },
+        { error: "save_limit_reached", limit: MAX_SAVES_PER_USER },
         { status: 403 },
       );
     }
 
-    trackEvent(ANALYTICS_EVENTS.DATASET_FOLLOW, `/datasets/${datasetId}/follow`, getClientInfo(request));
+    trackEvent(ANALYTICS_EVENTS.DATASET_SAVE, `/datasets/${datasetId}/save`, getClientInfo(request));
 
     return NextResponse.json({ success: true, save });
   } catch (error) {
@@ -119,7 +119,7 @@ export async function DELETE(
       },
     });
 
-    trackEvent(ANALYTICS_EVENTS.DATASET_UNFOLLOW, `/datasets/${datasetId}/unfollow`, getClientInfo(request));
+    trackEvent(ANALYTICS_EVENTS.DATASET_UNSAVE, `/datasets/${datasetId}/unsave`, getClientInfo(request));
 
     return NextResponse.json({ success: true });
   } catch (error) {

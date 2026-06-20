@@ -12,11 +12,15 @@ import { FeatureDetailPanel } from "@/components/dataset/feature-detail-panel";
 type DatasetInteractiveSectionProps = {
   dataset: Dataset;
   boundary: FeatureCollection | null;
+  savedCount?: number;
+  saveLimit?: number;
 };
 
 export function DatasetInteractiveSection({
   dataset,
   boundary,
+  savedCount = 0,
+  saveLimit,
 }: DatasetInteractiveSectionProps) {
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
   const mapRef = useRef<DatasetFullMapHandle>(null);
@@ -52,7 +56,7 @@ export function DatasetInteractiveSection({
                   <DatasetInfoPanel dataset={dataset} />
                   <DatasetStatsTable dataset={dataset} />
                 </div>
-                <DatasetActionsSection dataset={dataset} />
+                <DatasetActionsSection dataset={dataset} savedCount={savedCount} saveLimit={saveLimit} />
               </>
             )}
           </div>

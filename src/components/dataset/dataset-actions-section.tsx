@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/components/ui/link";
 import { Download, RefreshCw, Bookmark, BookmarkMinus, Star } from "lucide-react";
 import type { Dataset } from "@/schemas/dataset";
 import { useDatasetDownload } from "@/hooks/useDatasetDownload";
@@ -10,19 +11,31 @@ import { useState } from "react";
 
 type DatasetActionsSectionProps = {
   dataset: Dataset;
+  savedCount?: number;
+  saveLimit?: number;
 };
 
-export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
+export function DatasetActionsSection({
+  dataset,
+  savedCount = 0,
+  saveLimit,
+}: DatasetActionsSectionProps) {
   const t = useTranslations("DatasetPage");
   const { downloadDataset } = useDatasetDownload();
   const { saveDataset, unsaveDataset, refreshDataset, isLoading } =
     useDatasetActions();
 
   const [isSaved, setIsSaved] = useState(dataset.isSaved || false);
+  const [saveCount, setSaveCount] = useState(savedCount);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isFeatured, setIsFeatured] = useState(dataset.isFeatured ?? false);
   const [isFeaturingLoading, setIsFeaturingLoading] = useState(false);
   const [hasFeatureError, setHasFeatureError] = useState(false);
+
+  const atLimit =
+    !isSaved &&
+    saveLimit !== undefined &&
+    saveCount >= saveLimit;
 
   const handleToggleSave = async () => {
     try {
@@ -30,6 +43,7 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
         const result = await unsaveDataset(dataset.id);
         if (result.success) {
           setIsSaved(false);
+          setSaveCount((c) => Math.max(0, c - 1));
         } else {
           console.error("Failed to unsave dataset:", result.error);
         }
@@ -37,6 +51,9 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
         const result = await saveDataset(dataset.id);
         if (result.success) {
           setIsSaved(true);
+          setSaveCount((c) => c + 1);
+        } else if (result.error === "save_limit_reached") {
+          setSaveCount(saveLimit ?? saveCount);
         } else {
           console.error("Failed to save dataset:", result.error);
         }
@@ -146,10 +163,16 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
         {/* Save/Unsave Button */}
         <Button
           onClick={handleToggleSave}
-          disabled={isLoading}
+          disabled={isLoading || atLimit}
           className="flex items-center gap-2 w-full h-10"
           variant={isSaved ? "default" : "outline"}
-          title={isSaved ? t("unsaveTooltip") : t("saveTooltip")}
+          title={
+            isSaved
+              ? t("unsaveTooltip")
+              : atLimit
+                ? t("saveLimitReached")
+                : t("saveTooltip")
+          }
           data-testid={isSaved ? "dataset-unsave-button" : "dataset-save-button"}
         >
           {isSaved ? (
@@ -157,8 +180,20 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
           ) : (
             <Bookmark className="h-4 w-4" />
           )}
-          {isSaved ? t("unsave") : t("save")}
+          {isSaved ? t("unsave") : atLimit ? t("saveLimitReached") : t("save")}
         </Button>
+        {atLimit && saveLimit !== undefined && (
+          <p
+            role="alert"
+            data-testid="save-limit-message"
+            className="text-sm text-amber-700 dark:text-amber-500"
+          >
+            {t("saveLimitMessage", { limit: saveLimit })}
+            <Link href="/dashboard" size="sm" variant="underline">
+              {t("goToDashboard")}
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );

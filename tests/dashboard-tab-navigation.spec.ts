@@ -38,7 +38,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Check that only Following tab is visible
-      await expect(page.getByTestId("tab-following")).toBeVisible();
+      await expect(page.getByTestId("tab-saved")).toBeVisible();
       await expect(page.getByTestId("tab-users")).toBeHidden();
       await expect(page.getByTestId("tab-templates")).toBeHidden();
     });
@@ -54,7 +54,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Check that all three tabs are visible
-      await expect(page.getByTestId("tab-following")).toBeVisible();
+      await expect(page.getByTestId("tab-saved")).toBeVisible();
       await expect(page.getByTestId("tab-users")).toBeVisible();
       await expect(page.getByTestId("tab-templates")).toBeVisible();
     });
@@ -136,7 +136,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.getByTestId("tab-users").click();
 
       // Should see DashboardTabs with all three tabs
-      await expect(page.getByTestId("tab-following")).toBeVisible();
+      await expect(page.getByTestId("tab-saved")).toBeVisible();
       await expect(page.getByTestId("tab-users")).toBeVisible();
       await expect(page.getByTestId("tab-templates")).toBeVisible();
 
@@ -156,7 +156,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.getByTestId("tab-templates").click();
 
       // Should see DashboardTabs with all three tabs
-      await expect(page.getByTestId("tab-following")).toBeVisible();
+      await expect(page.getByTestId("tab-saved")).toBeVisible();
       await expect(page.getByTestId("tab-users")).toBeVisible();
       await expect(page.getByTestId("tab-templates")).toBeVisible();
 
@@ -183,7 +183,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await expect(page).toHaveURL("http://localhost:3000/en/dashboard");
 
       // Should see home dashboard with all tabs again
-      await expect(page.getByTestId("tab-following")).toBeVisible();
+      await expect(page.getByTestId("tab-saved")).toBeVisible();
       await expect(page.getByTestId("tab-users")).toBeVisible();
       await expect(page.getByTestId("tab-templates")).toBeVisible();
     });
@@ -209,7 +209,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await expect(page).toHaveURL("http://localhost:3000/en/users");
 
       // Navigate back to dashboard from users page
-      await page.getByTestId("tab-following").click();
+      await page.getByTestId("tab-saved").click();
       await expect(page).toHaveURL("http://localhost:3000/en/dashboard");
     });
   });
@@ -229,7 +229,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await expect(page.getByTestId("dashboard-welcome-message")).toBeVisible();
 
       // Check dashboard grid
-      const grid = page.getByTestId("followed-datasets-grid");
+      const grid = page.getByTestId("saved-datasets-grid");
       const emptyState = page.getByTestId("dashboard-empty-state");
 
       const hasGrid = await grid.isVisible();
@@ -311,7 +311,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Check for dataset grid
-      const datasetGrid = page.getByTestId("followed-datasets-grid");
+      const datasetGrid = page.getByTestId("saved-datasets-grid");
       await expect(datasetGrid).toBeVisible();
 
       // Check for dataset content
@@ -334,7 +334,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.setViewportSize({ width: 375, height: 667 });
 
       // Check tabs are still visible and functional
-      await expect(page.getByTestId("tab-following")).toBeVisible();
+      await expect(page.getByTestId("tab-saved")).toBeVisible();
       await expect(page.getByTestId("tab-users")).toBeVisible();
 
       // Test Users tab navigation on mobile
@@ -354,7 +354,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.setViewportSize({ width: 768, height: 1024 });
 
       // Check tabs are still visible and functional
-      await expect(page.getByTestId("tab-following")).toBeVisible();
+      await expect(page.getByTestId("tab-saved")).toBeVisible();
       await expect(page.getByTestId("tab-users")).toBeVisible();
 
       // Test Users tab navigation on tablet
@@ -408,16 +408,16 @@ test.describe("Dashboard Tab Navigation", () => {
       await expect(tabsList).toBeVisible();
 
       // Check for proper tab roles for all tabs
-      const followingTab = page.locator('[role="tab"]:has-text("Following")');
+      const savedTab = page.locator('[role="tab"]:has-text("Saved")');
       const usersTab = page.locator('[role="tab"]:has-text("Users")');
       const templatesTab = page.locator('[role="tab"]:has-text("Templates")');
 
-      await expect(followingTab).toBeVisible();
+      await expect(savedTab).toBeVisible();
       await expect(usersTab).toBeVisible();
       await expect(templatesTab).toBeVisible();
 
       // Check for aria-label attributes
-      await expect(page.getByTestId("tab-following")).toHaveAttribute("aria-label");
+      await expect(page.getByTestId("tab-saved")).toHaveAttribute("aria-label");
       await expect(page.getByTestId("tab-users")).toHaveAttribute("aria-label");
       await expect(page.getByTestId("tab-templates")).toHaveAttribute("aria-label");
     });
@@ -433,7 +433,7 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
       // Check all tabs are visible
-      await expect(page.getByTestId("tab-following")).toBeVisible();
+      await expect(page.getByTestId("tab-saved")).toBeVisible();
       await expect(page.getByTestId("tab-users")).toBeVisible();
       await expect(page.getByTestId("tab-templates")).toBeVisible();
 
@@ -466,7 +466,7 @@ test.describe("Dashboard Tab Navigation", () => {
 
       // Should show some kind of error indication (not a hanging state)
       // This is a basic test - in reality, we might want to add error boundaries
-      await expect(page.getByTestId("tab-following")).toBeVisible();
+      await expect(page.getByTestId("tab-saved")).toBeVisible();
     });
 
     test("should handle rapid tab clicks", async ({ page }) => {

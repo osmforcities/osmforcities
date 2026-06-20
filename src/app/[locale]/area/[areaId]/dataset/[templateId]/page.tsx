@@ -23,6 +23,7 @@ import type { TranslationFunction } from "@/lib/types";
 import { trackEvent, getClientInfoFromHeaders } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { getAreaBoundary } from "@/lib/area-boundary";
+import { MAX_SAVES_PER_USER } from "@/lib/constants";
 
 export const revalidate = 3600;
 
@@ -106,18 +107,23 @@ async function AreaTemplateDatasetView({
       getAreaDetailsById(areaId),
     ]);
 
-    // Check if current user has saved this dataset
+    // Check if current user has saved this dataset, and total save count for quota UI
     let isSaved = false;
+    let savedCount = 0;
     if (session?.user?.id) {
-      const saveRecord = await prisma.datasetSave.findUnique({
-        where: {
-          userId_datasetId: {
-            userId: session.user.id,
-            datasetId: result.dataset.id,
+      const [saveRecord, count] = await Promise.all([
+        prisma.datasetSave.findUnique({
+          where: {
+            userId_datasetId: {
+              userId: session.user.id,
+              datasetId: result.dataset.id,
+            },
           },
-        },
-      });
+        }),
+        prisma.datasetSave.count({ where: { userId: session.user.id } }),
+      ]);
       isSaved = !!saveRecord;
+      savedCount = count;
     }
 
     const dataset = transformDataset(result.dataset, session?.user || null, locale, { isSaved, skipTemplateResolution: true });
@@ -148,7 +154,7 @@ async function AreaTemplateDatasetView({
             <BreadcrumbNav items={breadcrumbItems} />
           </div>
 
-          <DatasetInteractiveSection dataset={dataset} boundary={boundary} />
+          <DatasetInteractiveSection dataset={dataset} boundary={boundary} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
         </div>
       </div>
     );

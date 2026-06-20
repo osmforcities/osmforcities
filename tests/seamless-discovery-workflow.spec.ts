@@ -81,7 +81,7 @@ test.describe("Seamless Discovery Workflow", () => {
       // No heading exists in new design, just check for dataset count text
       await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
       await expect(page.getByTestId("dashboard-dataset-count")).toContainText(
-        "Following 1 dataset"
+        "1/10"
       );
     }
   });
@@ -137,7 +137,7 @@ test.describe("Seamless Discovery Workflow", () => {
 
     // Click on dataset card
     const datasetCard = page
-      .getByTestId("followed-datasets-grid")
+      .getByTestId("saved-datasets-grid")
       .locator("a")
       .first();
     await datasetCard.click();
@@ -259,7 +259,7 @@ test.describe("Seamless Discovery Workflow", () => {
     // Should show the dataset in followed list
     await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
     await expect(page.getByTestId("dashboard-dataset-count")).toContainText(
-      "Following 1 dataset"
+      "1/10"
     );
   });
 
@@ -273,7 +273,7 @@ test.describe("Seamless Discovery Workflow", () => {
     ).toBeVisible();
 
     // Should not show any dataset cards
-    const datasetGrid = page.getByTestId("followed-datasets-grid");
+    const datasetGrid = page.getByTestId("saved-datasets-grid");
     const cardCount = await datasetGrid.locator("div").count();
     expect(cardCount).toBe(0);
   });
@@ -331,12 +331,12 @@ test.describe("Seamless Discovery Workflow", () => {
     // Should show multiple datasets
     await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
     await expect(page.getByTestId("dashboard-dataset-count")).toContainText(
-      "Following 3 datasets"
+      "3/10"
     );
 
     // Should show multiple dataset cards
     const datasetCards = page
-      .getByTestId("followed-datasets-grid")
+      .getByTestId("saved-datasets-grid")
       .locator("div");
     const cardCount = await datasetCards.count();
     expect(cardCount).toBeGreaterThan(0);
