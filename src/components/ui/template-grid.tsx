@@ -1,32 +1,25 @@
 "use client";
 
 import { GridList, GridListItem } from "react-aria-components";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { MapPin, Users, Pencil, Bookmark, Star } from "lucide-react";
 import { Card, CardHeader, CardFooter } from "@/components/ui/card";
 import { SearchInput } from "@/components/ui/search-input";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getCategoryIcon } from "@/lib/category-icons";
-import { useState, useMemo } from "react";
-
-type Template = {
-  id: string;
-  name: string;
-  description: string | null;
-  /** Leaf category slug — used for filtering. */
-  category: string;
-  /** Human-readable category name — used for display. */
-  categoryLabel: string;
-  tags: string[];
-};
+import { formatRelativeTime } from "@/lib/dataset-stats";
+import type { AreaDataType } from "@/lib/area-templates";
+import { useState, useMemo, useEffect } from "react";
 
 type DatasetGridProps = {
-  templates: Template[];
+  templates: AreaDataType[];
   areaId: string;
   /** Category slug to pre-select (from the `?category=` URL param). */
   initialCategory?: string;
 };
 
 const ALL = "all";
+type StatusFilter = "all" | "featured" | "saved";
 
 /**
  * Browse templates for an area: a category sidebar (desktop) / dropdown (mobile)
@@ -35,6 +28,7 @@ const ALL = "all";
  */
 export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridProps) {
   const t = useTranslations("AreaPage");
+  const locale = useLocale();
 
   // Categories present in this template set: { slug, label, count }, sorted by label.
   const categories = useMemo(() => {
@@ -58,10 +52,44 @@ export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridP
   const [selectedCategory, setSelectedCategory] = useState<string>(
     initialCategory && knownSlug.has(initialCategory) ? initialCategory : ALL
   );
+  const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
+
+  // Sync the category from the URL (?category=) on client-side navigation.
+  useEffect(() => {
+    if (initialCategory && knownSlug.has(initialCategory)) {
+      setSelectedCategory(initialCategory);
+    } else if (selectedCategory !== ALL) {
+      setSelectedCategory(ALL);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialCategory]);
+
+  const statusCounts = useMemo(
+    () => ({
+      all: templates.length,
+      featured: templates.filter((tpl) => tpl.status?.isFeatured).length,
+      saved: templates.filter((tpl) => (tpl.status?.savedCount ?? 0) > 0).length,
+    }),
+    [templates]
+  );
+
+  // Only show Featured/Saved when there is at least one matching data type.
+  const visibleStatuses = useMemo(
+    () =>
+      (["featured", "saved"] as const).filter(
+        (s) => statusCounts[s] > 0
+      ) as StatusFilter[],
+    [statusCounts]
+  );
 
   const filteredTemplates = useMemo(() => {
     let filtered = templates;
+    if (selectedStatus === "featured") {
+      filtered = filtered.filter((tpl) => tpl.status?.isFeatured);
+    } else if (selectedStatus === "saved") {
+      filtered = filtered.filter((tpl) => (tpl.status?.savedCount ?? 0) > 0);
+    }
     if (selectedCategory !== ALL) {
       filtered = filtered.filter((tpl) => tpl.category === selectedCategory);
     }
@@ -76,7 +104,7 @@ export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridP
       );
     }
     return filtered;
-  }, [templates, selectedCategory, searchTerm]);
+  }, [templates, selectedStatus, selectedCategory, searchTerm]);
 
   if (templates.length === 0) {
     return (
@@ -90,8 +118,32 @@ export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridP
 
   return (
     <div className="flex flex-col lg:flex-row lg:gap-8 lg:h-full lg:min-h-0">
-      {/* Mobile category dropdown */}
-      <div className="lg:hidden mb-4">
+      {/* Mobile controls */}
+      <div className="lg:hidden mb-4 space-y-3">
+        <div
+          className="grid grid-cols-3 gap-1 rounded-lg bg-gray-100 p-1"
+          role="group"
+          aria-label={t("status")}
+        >
+          {(["all", ...visibleStatuses] as StatusFilter[]).map((s) => (
+            <button
+              key={s}
+              onClick={() => setSelectedStatus(s)}
+              aria-pressed={selectedStatus === s}
+              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                selectedStatus === s
+                  ? "bg-white text-olive-700 shadow-sm"
+                  : "text-gray-600"
+              }`}
+            >
+              {s === "all"
+                ? t("statusAll")
+                : s === "featured"
+                  ? t("statusFeatured")
+                  : t("statusSaved")}
+            </button>
+          ))}
+        </div>
         <label className="sr-only" htmlFor="category-filter">
           {t("filterByCategory")}
         </label>
@@ -112,6 +164,38 @@ export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridP
 
       {/* Desktop category sidebar — scrolls independently */}
       <aside className="hidden lg:block lg:w-56 lg:flex-shrink-0 lg:h-full lg:overflow-y-auto lg:pr-1">
+        <div className="mb-4">
+          <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-wide text-neutral-400">
+            {t("status")}
+          </p>
+          <div className="space-y-1">
+            <CategoryItem
+              label={t("statusAll")}
+              count={statusCounts.all}
+              active={selectedStatus === "all"}
+              onClick={() => setSelectedStatus("all")}
+            />
+            {statusCounts.featured > 0 && (
+              <CategoryItem
+                label={t("statusFeatured")}
+                count={statusCounts.featured}
+                active={selectedStatus === "featured"}
+                onClick={() => setSelectedStatus("featured")}
+              />
+            )}
+            {statusCounts.saved > 0 && (
+              <CategoryItem
+                label={t("statusSaved")}
+                count={statusCounts.saved}
+                active={selectedStatus === "saved"}
+                onClick={() => setSelectedStatus("saved")}
+              />
+            )}
+          </div>
+        </div>
+        <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-wide text-neutral-400">
+          {t("filterByCategory")}
+        </p>
         <nav aria-label={t("filterByCategory")} className="space-y-1">
           <CategoryItem
             label={t("allDatasets")}
@@ -173,28 +257,68 @@ export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridP
                           {template.categoryLabel}
                         </p>
                       </div>
+                      {template.status?.isFeatured && (
+                        <Star
+                          className="h-4 w-4 shrink-0 fill-olive-500 text-olive-500"
+                          aria-label={t("featuredBadge")}
+                        />
+                      )}
                     </div>
                   </CardHeader>
 
                   <CardFooter>
-                    {template.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {template.tags.slice(0, 3).map((tag) => (
-                          <span
-                            key={tag}
-                            className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700"
-                          >
-                            {tag}
+                    {template.status ? (
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-neutral-500">
+                        <span className="inline-flex items-center gap-1">
+                          <MapPin className="h-3 w-3" />
+                          {t("statFeatures", {
+                            count: String(template.status.dataCount),
+                          })}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <Users className="h-3 w-3" />
+                          {t("statContributors", {
+                            count: String(template.status.contributors),
+                          })}
+                        </span>
+                        {template.status.lastEditedAt && (
+                          <span className="inline-flex items-center gap-1">
+                            <Pencil className="h-3 w-3" />
+                            {formatRelativeTime(
+                              template.status.lastEditedAt,
+                              locale
+                            )}
                           </span>
-                        ))}
-                        {template.tags.length > 3 && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-500">
-                            {t("moreTags", {
-                              count: String(template.tags.length - 3),
+                        )}
+                        {template.status.savedCount > 0 && (
+                          <span className="inline-flex items-center gap-1">
+                            <Bookmark className="h-3 w-3" />
+                            {t("statSaved", {
+                              count: String(template.status.savedCount),
                             })}
                           </span>
                         )}
                       </div>
+                    ) : (
+                      template.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {template.tags.slice(0, 3).map((tag) => (
+                            <span
+                              key={tag}
+                              className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                          {template.tags.length > 3 && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-500">
+                              {t("moreTags", {
+                                count: String(template.tags.length - 3),
+                              })}
+                            </span>
+                          )}
+                        </div>
+                      )
                     )}
                   </CardFooter>
                 </Card>
