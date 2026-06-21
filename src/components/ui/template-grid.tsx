@@ -56,14 +56,13 @@ export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridP
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   // Sync the category from the URL (?category=) on client-side navigation.
+  // Runs only when initialCategory changes; sidebar clicks don't touch the URL,
+  // so in-page selections are preserved between URL changes.
   useEffect(() => {
-    if (initialCategory && knownSlug.has(initialCategory)) {
-      setSelectedCategory(initialCategory);
-    } else if (selectedCategory !== ALL) {
-      setSelectedCategory(ALL);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialCategory]);
+    setSelectedCategory(
+      initialCategory && knownSlug.has(initialCategory) ? initialCategory : ALL
+    );
+  }, [initialCategory, knownSlug]);
 
   const statusCounts = useMemo(
     () => ({
@@ -120,11 +119,12 @@ export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridP
     <div className="flex flex-col lg:flex-row lg:gap-8 lg:h-full lg:min-h-0">
       {/* Mobile controls */}
       <div className="lg:hidden mb-4 space-y-3">
-        <div
-          className="grid grid-cols-3 gap-1 rounded-lg bg-gray-100 p-1"
-          role="group"
-          aria-label={t("status")}
-        >
+        {visibleStatuses.length > 0 && (
+          <div
+            className="grid grid-cols-3 gap-1 rounded-lg bg-gray-100 p-1"
+            role="group"
+            aria-label={t("status")}
+          >
           {(["all", ...visibleStatuses] as StatusFilter[]).map((s) => (
             <button
               key={s}
@@ -143,7 +143,8 @@ export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridP
                   : t("statusSaved")}
             </button>
           ))}
-        </div>
+          </div>
+        )}
         <label className="sr-only" htmlFor="category-filter">
           {t("filterByCategory")}
         </label>
@@ -164,10 +165,11 @@ export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridP
 
       {/* Desktop category sidebar — scrolls independently */}
       <aside className="hidden lg:block lg:w-56 lg:flex-shrink-0 lg:h-full lg:overflow-y-auto lg:pr-1">
-        <div className="mb-4">
-          <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-wide text-neutral-400">
-            {t("status")}
-          </p>
+        {visibleStatuses.length > 0 && (
+          <div className="mb-4">
+            <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-wide text-neutral-400">
+              {t("status")}
+            </p>
           <div className="space-y-1">
             <CategoryItem
               label={t("statusAll")}
@@ -192,7 +194,8 @@ export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridP
               />
             )}
           </div>
-        </div>
+          </div>
+        )}
         <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-wide text-neutral-400">
           {t("filterByCategory")}
         </p>
@@ -247,7 +250,7 @@ export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridP
                   <CardHeader>
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-olive-100 text-olive-600 rounded-lg">
-                        {getCategoryIcon(template.categoryLabel)}
+                        {getCategoryIcon(template.category)}
                       </div>
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900 group-hover:text-olive-700">
