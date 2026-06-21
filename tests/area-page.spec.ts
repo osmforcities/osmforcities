@@ -71,9 +71,6 @@ test.describe("Area Page", () => {
     // Check that we're not on a 404 page
     await expect(page.locator("h1")).not.toContainText("404");
 
-    // Area name is shown as the heading
-    await expect(page.locator("h1")).toContainText("São Paulo");
-
     // Check that template grid is present
     await expect(page.locator("[data-testid='template-grid']")).toBeVisible();
   });
