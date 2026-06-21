@@ -228,8 +228,6 @@
     "comingSoonDescription": "Você poderá explorar e criar datasets para esta área diretamente desta página.",
     "areaDetails": "Detalhes da Área",
     "boundingBox": "Caixa Delimitadora",
-    "osmLink": "OpenStreetMap",
-    "viewOnOpenStreetMap": "Ver no OpenStreetMap →",
     "sections": {
       "featured": "Destaques",
       "largest": "Maiores Datasets",

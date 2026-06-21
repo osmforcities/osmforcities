@@ -230,8 +230,6 @@
     "comingSoonDescription": "You'll be able to explore and create datasets for this area directly from this page.",
     "areaDetails": "Area Details",
     "boundingBox": "Bounding Box",
-    "osmLink": "OpenStreetMap",
-    "viewOnOpenStreetMap": "View on OpenStreetMap →",
     "sections": {
       "featured": "Featured",
       "largest": "Largest Datasets",
