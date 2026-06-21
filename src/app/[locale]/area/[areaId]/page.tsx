@@ -2,13 +2,14 @@ import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { prisma } from "@/lib/db";
-import { resolveTemplateForLocale } from "@/lib/template-locale";
-import { DatasetGrid } from "@/components/ui/template-grid";
+import { getCategories } from "@/lib/area-templates";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { Link } from "@/components/ui/link";
 import { trackEvent, getClientInfoFromHeaders } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { auth } from "@/auth";
+import { DatasetSections } from "@/components/dataset/dataset-sections";
+import { CategoryCards } from "@/components/ui/category-cards";
 
 export const revalidate = 3600;
 
@@ -18,14 +19,25 @@ type AreaPageProps = {
   }>;
 };
 
-async function getActiveTemplates(locale: string) {
-  const rows = await prisma.template.findMany({
-    where: { isActive: true },
+const DATASET_SELECT = {
+  id: true,
+  cityName: true,
+  dataCount: true,
+  stats: true,
+  areaId: true,
+  templateId: true,
+  createdAt: true,
+  area: {
+    select: {
+      id: true,
+      countryCode: true,
+    },
+  },
+  template: {
     select: {
       id: true,
       name: true,
       description: true,
-      tags: true,
       category: {
         select: {
           id: true,
@@ -41,19 +53,102 @@ async function getActiveTemplates(locale: string) {
         },
       },
     },
-    orderBy: { name: "asc" },
-  });
-  return rows.map((t) => {
-    const categorySlug = t.category?.slug ?? "other";
-    const resolved = resolveTemplateForLocale(t, locale);
-    return {
-      id: resolved.id,
-      name: resolved.name,
-      description: resolved.description,
-      category: categorySlug,
-      tags: resolved.tags,
-    };
-  });
+  },
+} as const;
+
+async function getAreaDatasets(areaId: number) {
+  const osmRelationId = areaId;
+
+  const [featured, recentlyEdited, mostSaved, mostContributors, largest] = await Promise.all([
+    // Featured datasets for this area
+    prisma.dataset.findMany({
+      where: {
+        isFeatured: true,
+        dataCount: { gt: 0 },
+        areaId: osmRelationId,
+      },
+      select: {
+        ...DATASET_SELECT,
+        _count: {
+          select: { savedBy: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+    }),
+    // Recently edited datasets for this area
+    prisma.dataset.findMany({
+      where: {
+        isActive: true,
+        dataCount: { gt: 0 },
+        lastEditedAt: { not: null },
+        areaId: osmRelationId,
+      },
+      select: {
+        ...DATASET_SELECT,
+        recentlyEditedCount: true,
+        lastEditedAt: true,
+        _count: {
+          select: { savedBy: true },
+        },
+      },
+      orderBy: { lastEditedAt: "desc" },
+      take: 6,
+    }),
+    // Most saved datasets for this area
+    prisma.dataset.findMany({
+      where: {
+        isActive: true,
+        dataCount: { gt: 0 },
+        savedBy: { some: {} },
+        areaId: osmRelationId,
+      },
+      select: {
+        ...DATASET_SELECT,
+        _count: {
+          select: { savedBy: true },
+        },
+      },
+      orderBy: { savedBy: { _count: "desc" } },
+      take: 6,
+    }),
+    // Datasets with most contributors for this area
+    prisma.dataset.findMany({
+      where: {
+        isActive: true,
+        dataCount: { gt: 0 },
+        contributorsCount: { not: null },
+        areaId: osmRelationId,
+      },
+      select: {
+        ...DATASET_SELECT,
+        contributorsCount: true,
+        _count: {
+          select: { savedBy: true },
+        },
+      },
+      orderBy: { contributorsCount: "desc" },
+      take: 6,
+    }),
+    // Largest datasets for this area
+    prisma.dataset.findMany({
+      where: {
+        isActive: true,
+        dataCount: { gt: 0 },
+        areaId: osmRelationId,
+      },
+      select: {
+        ...DATASET_SELECT,
+        _count: {
+          select: { savedBy: true },
+        },
+      },
+      orderBy: { dataCount: "desc" },
+      take: 6,
+    }),
+  ]);
+
+  return { featured, recentlyEdited, mostSaved, mostContributors, largest };
 }
 
 export default async function AreaPage({ params }: AreaPageProps) {
@@ -67,9 +162,10 @@ export default async function AreaPage({ params }: AreaPageProps) {
     notFound();
   }
 
-  const [areaInfo, templates, session] = await Promise.all([
+  const [areaInfo, datasets, categories, session] = await Promise.all([
     getAreaDetailsById(osmRelationId),
-    getActiveTemplates(locale),
+    getAreaDatasets(osmRelationId),
+    getCategories(),
     auth(),
   ]);
 
@@ -94,39 +190,39 @@ export default async function AreaPage({ params }: AreaPageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="mb-8">
           <BreadcrumbNav items={breadcrumbItems} />
         </div>
 
-        {/* Area Header Card */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-8">
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0">
-              <h1 className="text-3xl font-bold text-gray-900 mb-3">
-                {areaInfo.name}
-              </h1>
-              <p className="text-lg text-gray-600 mb-2">
-                {areaInfo.state && areaInfo.country
-                  ? `${areaInfo.state}, ${areaInfo.country}`
-                  : areaInfo.state || areaInfo.country || ""}
-              </p>
-              <Link
-                href={`https://www.openstreetmap.org/relation/${areaInfo.id}`}
-                external
-                size="sm"
-              >
-                {t("idLabel")}
-                {areaInfo.id}
-              </Link>
-            </div>
-          </div>
+        {/* Area Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            {areaInfo.name}
+          </h1>
+          <p className="text-lg text-gray-600 mb-1">
+            {areaInfo.state && areaInfo.country
+              ? `${areaInfo.state}, ${areaInfo.country}`
+              : areaInfo.state || areaInfo.country || ""}
+          </p>
+          <Link
+            href={`https://www.openstreetmap.org/relation/${areaInfo.id}`}
+            external
+            size="sm"
+          >
+            {t("idLabel")}
+            {areaInfo.id}
+          </Link>
         </div>
 
-        {/* Datasets Section */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
-          <DatasetGrid templates={templates} areaId={areaId} />
-        </div>
+        <DatasetSections data={datasets} locale={locale} />
+
+        {/* Find data by category */}
+        <CategoryCards
+          categories={categories}
+          areaId={areaId}
+          areaName={areaInfo.name}
+        />
       </div>
     </div>
   );

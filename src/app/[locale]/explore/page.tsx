@@ -1,11 +1,8 @@
 import { prisma } from "@/lib/db";
 import { CATALOG_FILTER } from "@/lib/dataset-catalog-filter";
-import { DatasetCard } from "@/components/ui/dataset-card";
-import { processDatasetStats, formatRelativeTime } from "@/lib/dataset-stats";
-import { resolveTemplateForLocale } from "@/lib/template-locale";
+import { DatasetSections } from "@/components/dataset/dataset-sections";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
-import { Link } from "@/i18n/navigation";
 
 export const revalidate = 3600;
 
@@ -144,192 +141,24 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
           </p>
         </div>
 
-        {/* Featured Section */}
-        {featured.length > 0 && (
-          <Section
-            title={t("sections.featured")}
-            seeAllHref={`/explore/featured`}
-            t={t}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {featured.map((dataset) => {
-                const s = processDatasetStats(dataset, locale);
-                const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
-                const stats = [
-                  { type: "features" as const, label: t("stats.features"), value: s.features },
-                  { type: "contributors" as const, label: t("stats.contributors"), value: s.contributors },
-                  { type: "lastEdited" as const, label: t("stats.lastEdited"), value: s.lastEdited },
-                ];
-
-                return (
-                  <DatasetCard
-                    key={dataset.id}
-                    name={resolvedTemplate.name}
-                    city={dataset.cityName}
-                    country={dataset.area.countryCode ?? ""}
-                    category={resolvedTemplate.category?.name ?? "other"}
-                    href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
-                    stats={stats}
-                  />
-                );
-              })}
-            </div>
-          </Section>
-        )}
-
-        {/* Recently Edited Section */}
-        {recentlyEdited.length > 0 && (
-          <Section
-            title={t("sections.recentlyEdited")}
-            seeAllHref={`/explore/recently-edited`}
-            t={t}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recentlyEdited.map((dataset) => {
-                const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
-                const lastEdited = formatRelativeTime(dataset.lastEditedAt, locale);
-                const stats = [
-                  { type: "lastEdited" as const, label: t("stats.lastEdited"), value: lastEdited },
-                ];
-
-                return (
-                  <DatasetCard
-                    key={dataset.id}
-                    name={resolvedTemplate.name}
-                    city={dataset.cityName}
-                    country={dataset.area.countryCode ?? ""}
-                    category={resolvedTemplate.category?.name ?? "other"}
-                    href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
-                    stats={stats}
-                  />
-                );
-              })}
-            </div>
-          </Section>
-        )}
-
-        {/* Most Saved Section */}
-        {mostWatched.length > 0 && (
-          <Section
-            title={t("sections.mostSaved")}
-            seeAllHref={`/explore/most-saved`}
-            t={t}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {mostWatched.map((dataset) => {
-                const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
-                const stats = [
-                  { type: "savedBy" as const, label: t("stats.saves"), value: dataset._count.savedBy },
-                ];
-
-                return (
-                  <DatasetCard
-                    key={dataset.id}
-                    name={resolvedTemplate.name}
-                    city={dataset.cityName}
-                    country={dataset.area.countryCode ?? ""}
-                    category={resolvedTemplate.category?.name ?? "other"}
-                    href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
-                    stats={stats}
-                  />
-                );
-              })}
-            </div>
-          </Section>
-        )}
-
-        {/* Most Contributors Section */}
-        {mostContributors.length > 0 && (
-          <Section
-            title={t("sections.mostContributors")}
-            seeAllHref={`/explore/most-contributors`}
-            t={t}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {mostContributors.map((dataset) => {
-                const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
-                const stats = [
-                  { type: "contributors" as const, label: t("stats.contributors"), value: dataset.contributorsCount || 0 },
-                ];
-
-                return (
-                  <DatasetCard
-                    key={dataset.id}
-                    name={resolvedTemplate.name}
-                    city={dataset.cityName}
-                    country={dataset.area.countryCode ?? ""}
-                    category={resolvedTemplate.category?.name ?? "other"}
-                    href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
-                    stats={stats}
-                  />
-                );
-              })}
-            </div>
-          </Section>
-        )}
-
-        {/* Largest Section */}
-        {largest.length > 0 && (
-          <Section
-            title={t("sections.largest")}
-            seeAllHref={`/explore/largest`}
-            t={t}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {largest.map((dataset) => {
-                const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
-                const stats = [
-                  { type: "features" as const, label: t("stats.features"), value: dataset.dataCount },
-                ];
-
-                return (
-                  <DatasetCard
-                    key={dataset.id}
-                    name={resolvedTemplate.name}
-                    city={dataset.cityName}
-                    country={dataset.area.countryCode ?? ""}
-                    category={resolvedTemplate.category?.name ?? "other"}
-                    href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
-                    stats={stats}
-                  />
-                );
-              })}
-            </div>
-          </Section>
-        )}
+        <DatasetSections
+          data={{
+            featured,
+            recentlyEdited,
+            mostSaved: mostWatched,
+            mostContributors,
+            largest,
+          }}
+          locale={locale}
+          seeAllHrefs={{
+            featured: "/explore/featured",
+            recentlyEdited: "/explore/recently-edited",
+            mostSaved: "/explore/most-saved",
+            mostContributors: "/explore/most-contributors",
+            largest: "/explore/largest",
+          }}
+        />
       </div>
     </div>
-  );
-}
-
-function Section({
-  title,
-  seeAllHref,
-  children,
-  t,
-}: {
-  title: string;
-  seeAllHref: string | null;
-  children: React.ReactNode;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t: any;
-}) {
-  return (
-    <section className="mb-10">
-      <div className="flex items-baseline justify-between mb-4">
-        <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">
-          {title}
-        </h2>
-        {seeAllHref && (
-          <Link
-            href={seeAllHref}
-            className="text-xs text-neutral-400 hover:text-neutral-700 cursor-pointer"
-          >
-            {t("seeAll")}
-          </Link>
-        )}
-      </div>
-      {children}
-    </section>
   );
 }

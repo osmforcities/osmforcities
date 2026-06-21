@@ -124,6 +124,9 @@
   },
   "DatasetPage": {
     "backToHome": "Volver al Inicio",
+    "emptyTitle": "No se encontró ningún {dataset} en {area}",
+    "emptyDescription": "Este conjunto de datos aún no tiene elementos en esta área. Puede que no exista aquí, o que los datos no se hayan mapeado en OpenStreetMap.",
+    "backToArea": "← Volver a {area}",
     "datasetStats": "Estadísticas del Conjunto de Datos",
     "category": "Categoría",
     "totalFeatures": "Total de Elementos",
@@ -213,7 +216,18 @@
     "areaDetails": "Detalles del Área",
     "boundingBox": "Caja Delimitadora",
     "osmLink": "OpenStreetMap",
-    "viewOnOpenStreetMap": "Ver en OpenStreetMap →"
+    "viewOnOpenStreetMap": "Ver en OpenStreetMap →",
+    "sections": {
+      "featured": "Destacados",
+      "largest": "Conjuntos de Datos Más Grandes",
+      "mostSaved": "Más Guardados",
+      "mostContributors": "Más Contribuidores",
+      "recentlyEdited": "Editados Recientemente"
+    }
+  },
+  "CategoryCards": {
+    "title": "Encontrar datos en {area}",
+    "subtitle": "Explora categorías de datos de OpenStreetMap. Lo disponible depende del mapeo local."
   },
   "NavSearch": {
     "searchPlaceholder": "Buscar ciudades y áreas...",

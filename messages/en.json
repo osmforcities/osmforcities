@@ -125,6 +125,9 @@
 
   "DatasetPage": {
     "backToHome": "Back to Home",
+    "emptyTitle": "No {dataset} found in {area}",
+    "emptyDescription": "This dataset has no features in this area yet. It may not exist here, or the data has not been mapped in OpenStreetMap.",
+    "backToArea": "← Back to {area}",
     "datasetStats": "Dataset Stats",
     "category": "Category",
     "totalFeatures": "Total Features",
@@ -215,7 +218,18 @@
     "areaDetails": "Area Details",
     "boundingBox": "Bounding Box",
     "osmLink": "OpenStreetMap",
-    "viewOnOpenStreetMap": "View on OpenStreetMap →"
+    "viewOnOpenStreetMap": "View on OpenStreetMap →",
+    "sections": {
+      "featured": "Featured",
+      "largest": "Largest Datasets",
+      "mostSaved": "Most Saved",
+      "mostContributors": "Most Contributors",
+      "recentlyEdited": "Recently Edited"
+    }
+  },
+  "CategoryCards": {
+    "title": "Find data in {area}",
+    "subtitle": "Browse categories of OpenStreetMap data. What's available depends on local mapping."
   },
   "NavSearch": {
     "searchPlaceholder": "Search cities and areas...",
