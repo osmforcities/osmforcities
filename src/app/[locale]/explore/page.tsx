@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { CATALOG_FILTER } from "@/lib/dataset-catalog-filter";
+import { DATASET_SELECT } from "@/lib/dataset-section-select";
 import { DatasetSections } from "@/components/dataset/dataset-sections";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
@@ -25,43 +26,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
     title: t("metaTitle"),
   };
 }
-
-const DATASET_SELECT = {
-  id: true,
-  cityName: true,
-  dataCount: true,
-  stats: true,
-  areaId: true,
-  templateId: true,
-  createdAt: true,
-  area: {
-    select: {
-      id: true,
-      countryCode: true,
-    },
-  },
-  template: {
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      category: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-        },
-      },
-      translations: {
-        select: {
-          locale: true,
-          name: true,
-          description: true,
-        },
-      },
-    },
-  },
-} as const;
 
 export default async function FeaturedDatasetsPage({ params }: { params: Promise<{ locale: Locale }> }) {
   const { locale } = await params;

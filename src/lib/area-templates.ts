@@ -5,10 +5,10 @@ export type AreaTemplate = {
   id: string;
   name: string;
   description: string | null;
-  /** Leaf category slug the template belongs to. */
+  /** Leaf category slug — used for filtering and URL `?category=` matching. */
   category: string;
-  /** Top-level (parent) category slug, or the leaf slug if it has no parent. */
-  parentSlug: string;
+  /** Human-readable category name — used for display. */
+  categoryLabel: string;
   tags: string[];
 };
 
@@ -31,7 +31,6 @@ export async function getActiveTemplates(
           id: true,
           name: true,
           slug: true,
-          parent: { select: { slug: true } },
         },
       },
       translations: {
@@ -46,34 +45,16 @@ export async function getActiveTemplates(
   });
 
   return rows.map((t) => {
-    const categorySlug = t.category?.slug ?? "other";
-    const parentSlug = t.category?.parent?.slug ?? categorySlug;
     const resolved = resolveTemplateForLocale(t, locale);
     return {
       id: resolved.id,
       name: resolved.name,
       description: resolved.description,
-      category: categorySlug,
-      parentSlug,
+      category: t.category?.slug ?? "other",
+      categoryLabel: t.category?.name ?? "other",
       tags: resolved.tags,
     };
   });
-}
-
-/**
- * Filter templates to those whose leaf category slug OR parent category slug
- * matches the given slug. Returns all templates when no slug is provided.
- */
-export function filterTemplatesByCategory(
-  templates: AreaTemplate[],
-  categorySlug?: string
-): AreaTemplate[] {
-  if (!categorySlug) return templates;
-  const matched = templates.filter(
-    (t) => t.category === categorySlug || t.parentSlug === categorySlug
-  );
-  // Unknown slug -> show everything rather than an empty page.
-  return matched.length > 0 ? matched : templates;
 }
 
 /**

@@ -3,7 +3,6 @@ import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import NavBar from "@/components/nav-bar";
-import Footer from "@/components/footer";
 import { QueryProvider } from "@/hooks/QueryProvider";
 import { NextIntlClientProvider, hasLocale, Locale } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -99,7 +98,6 @@ export default async function LocaleLayout({
             <div className="min-h-screen flex flex-col">
               <NavBar />
               <main className="flex-1">{children}</main>
-              <Footer />
             </div>
           </NextIntlClientProvider>
         </QueryProvider>
