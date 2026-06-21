@@ -4,6 +4,8 @@ import { getTranslations, getLocale } from "next-intl/server";
 import { transformDataset } from "@/lib/dataset/transform";
 import { DatasetInteractiveSection } from "@/components/dataset/dataset-interactive-section";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Link } from "@/i18n/navigation";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import {
@@ -134,15 +136,51 @@ async function AreaTemplateDatasetView({
       await getClientInfoFromHeaders()
     );
 
-    const boundary = await getAreaBoundary(areaId);
-
+    const areaName = areaInfo?.name || dataset.area.name;
     const breadcrumbItems = [
       { label: navT("home"), href: "/" },
       { label: areaInfo?.country || "Area" },
       ...(areaInfo?.state ? [{ label: areaInfo.state }] : []),
-      { label: areaInfo?.name || dataset.area.name, href: `/area/${areaId}` },
+      { label: areaName, href: `/area/${areaId}` },
       { label: dataset.template.name },
     ];
+
+    // Empty state: dataset has no features in this area.
+    if (result.dataset.dataCount === 0) {
+      const datasetT = await getTranslations("DatasetPage");
+      return (
+        <div className="bg-gray-50">
+          <div
+            className="max-w-7xl mx-auto px-4 py-8 flex flex-col"
+            style={{ minHeight: "calc(100vh - var(--nav-height))" }}
+          >
+            <div className="mb-8 flex-shrink-0">
+              <BreadcrumbNav items={breadcrumbItems} />
+            </div>
+
+            <EmptyState
+              type="no-data"
+              title={datasetT("emptyTitle", {
+                dataset: dataset.template.name,
+                area: areaName,
+              })}
+              description={datasetT("emptyDescription")}
+            />
+
+            <div className="text-center">
+              <Link
+                href={`/area/${areaId}`}
+                className="text-sm text-link hover:text-link-active hover:underline transition-colors"
+              >
+                {datasetT("backToArea", { area: areaName })}
+              </Link>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const boundary = await getAreaBoundary(areaId);
 
     return (
       <div className="bg-gray-50">

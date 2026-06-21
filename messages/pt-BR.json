@@ -124,6 +124,9 @@
   },
   "DatasetPage": {
     "backToHome": "Voltar ao Início",
+    "emptyTitle": "Nenhum {dataset} encontrado em {area}",
+    "emptyDescription": "Este conjunto de dados ainda não tem feições nesta área. Pode não existir aqui, ou os dados ainda não foram mapeados no OpenStreetMap.",
+    "backToArea": "← Voltar para {area}",
     "datasetStats": "Estatísticas do Conjunto de Dados",
     "category": "Categoria",
     "totalFeatures": "Total de Feições",
@@ -200,8 +203,21 @@
     "adminLevel": "Nível Administrativo",
     "population": "População",
     "country": "País",
-    "availableDatasets": "Datasets Disponíveis",
-    "chooseDatasetDescription": "Escolha um dataset para explorar dados desta área",
+    "findData": "Encontrar dados",
+    "filterByCategory": "Filtrar por categoria",
+    "status": "Status",
+    "statusAll": "Todos",
+    "statusFeatured": "Destacados",
+    "statusSaved": "Salvos",
+    "statFeatures": "{count} feições",
+    "statContributors": "{count} contribuidores",
+    "statSaved": "{count} salvos",
+    "lastEditedAria": "Última edição",
+    "featuredBadge": "Destacado",
+    "allDatasets": "Todos os tipos de dados",
+    "searchPlaceholder": "Buscar tipos de dados...",
+    "noResults": "Nenhum tipo de dado encontrado",
+    "noResultsDescription": "Tente outro termo de busca ou categoria.",
     "noDatasetsAvailable": "Nenhum dataset disponível",
     "noDatasetsDescription": "Atualmente não há datasets disponíveis para esta área. Volte mais tarde ou entre em contato conosco se precisar de tipos de dados específicos.",
     "moreTags": "+{count} mais",
@@ -212,8 +228,17 @@
     "comingSoonDescription": "Você poderá explorar e criar datasets para esta área diretamente desta página.",
     "areaDetails": "Detalhes da Área",
     "boundingBox": "Caixa Delimitadora",
-    "osmLink": "OpenStreetMap",
-    "viewOnOpenStreetMap": "Ver no OpenStreetMap →"
+    "sections": {
+      "featured": "Destaques",
+      "largest": "Maiores Datasets",
+      "mostSaved": "Mais Salvos",
+      "mostContributors": "Mais Contribuidores",
+      "recentlyEdited": "Editados Recentemente"
+    }
+  },
+  "CategoryCards": {
+    "title": "Encontrar dados em {area}",
+    "subtitle": "Explore categorias de dados do OpenStreetMap. O que está disponível depende do mapeamento local."
   },
   "NavSearch": {
     "searchPlaceholder": "Buscar cidades e áreas...",
