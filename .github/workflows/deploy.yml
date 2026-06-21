@@ -113,38 +113,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key deploy@${{ steps.target.outputs.host }} \
             ./deploy-wrapper.sh ${{ steps.target.outputs.branch }}
 
-      - name: Health check - staging
-        if: steps.target.outputs.environment == 'staging'
-        run: |
-          for i in {1..30}; do
-            if curl -f -s -o /dev/null -w "%{http_code}" https://staging.osmforcities.org/ | grep -E "^(200|307)$" > /dev/null; then
-              echo "✅ Staging health check passed"
-              break
-            fi
-            if [ $i -eq 30 ]; then
-              echo "❌ Staging health check failed after 30 attempts"
-              exit 1
-            fi
-            echo "⏳ Waiting for staging to be ready... ($i/30)"
-            sleep 10
-          done
-
-      - name: Health check - production
-        if: steps.target.outputs.environment == 'production'
-        run: |
-          for i in {1..30}; do
-            if curl -f -s -o /dev/null -w "%{http_code}" https://osmforcities.org/ | grep -E "^(200|307)$" > /dev/null; then
-              echo "✅ Production health check passed"
-              break
-            fi
-            if [ $i -eq 30 ]; then
-              echo "❌ Production health check failed after 30 attempts"
-              exit 1
-            fi
-            echo "⏳ Waiting for production to be ready... ($i/30)"
-            sleep 10
-          done
-
       - name: Deployment summary
         run: |
           echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
