@@ -212,6 +212,7 @@
     "statFeatures": "{count} elementos",
     "statContributors": "{count} contribuidores",
     "statSaved": "{count} guardados",
+    "lastEditedAria": "Última edición",
     "featuredBadge": "Destacado",
     "allDatasets": "Todos los tipos de datos",
     "searchPlaceholder": "Buscar tipos de datos...",

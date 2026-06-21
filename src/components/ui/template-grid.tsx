@@ -8,6 +8,7 @@ import { SearchInput } from "@/components/ui/search-input";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getCategoryIcon } from "@/lib/category-icons";
 import { formatRelativeTime } from "@/lib/dataset-stats";
+import { formatCompactNumber } from "@/components/ui/dataset-card";
 import type { AreaDataType } from "@/lib/area-templates";
 import { useState, useMemo, useEffect } from "react";
 
@@ -271,34 +272,54 @@ export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridP
 
                   <CardFooter>
                     {template.status ? (
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-neutral-500">
-                        <span className="inline-flex items-center gap-1">
-                          <MapPin className="h-3 w-3" />
-                          {t("statFeatures", {
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-neutral-500 dark:text-neutral-400">
+                        <span
+                          className="inline-flex items-center gap-1"
+                          aria-label={t("statFeatures", {
                             count: String(template.status.dataCount),
                           })}
+                        >
+                          <MapPin className="h-2.5 w-2.5" />
+                          <span className="font-medium">
+                            {formatCompactNumber(template.status.dataCount)}
+                          </span>
                         </span>
-                        <span className="inline-flex items-center gap-1">
-                          <Users className="h-3 w-3" />
-                          {t("statContributors", {
+                        <span
+                          className="inline-flex items-center gap-1"
+                          aria-label={t("statContributors", {
                             count: String(template.status.contributors),
                           })}
+                        >
+                          <Users className="h-2.5 w-2.5" />
+                          <span className="font-medium">
+                            {formatCompactNumber(template.status.contributors)}
+                          </span>
                         </span>
                         {template.status.lastEditedAt && (
-                          <span className="inline-flex items-center gap-1">
-                            <Pencil className="h-3 w-3" />
-                            {formatRelativeTime(
-                              template.status.lastEditedAt,
-                              locale
-                            )}
+                          <span
+                            className="inline-flex items-center gap-1"
+                            aria-label={t("lastEditedAria")}
+                          >
+                            <Pencil className="h-2.5 w-2.5" />
+                            <span className="font-medium">
+                              {formatRelativeTime(
+                                template.status.lastEditedAt,
+                                locale
+                              )}
+                            </span>
                           </span>
                         )}
                         {template.status.savedCount > 0 && (
-                          <span className="inline-flex items-center gap-1">
-                            <Bookmark className="h-3 w-3" />
-                            {t("statSaved", {
+                          <span
+                            className="inline-flex items-center gap-1"
+                            aria-label={t("statSaved", {
                               count: String(template.status.savedCount),
                             })}
+                          >
+                            <Bookmark className="h-2.5 w-2.5" />
+                            <span className="font-medium">
+                              {formatCompactNumber(template.status.savedCount)}
+                            </span>
                           </span>
                         )}
                       </div>

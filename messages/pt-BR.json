@@ -212,6 +212,7 @@
     "statFeatures": "{count} feições",
     "statContributors": "{count} contribuidores",
     "statSaved": "{count} salvos",
+    "lastEditedAria": "Última edição",
     "featuredBadge": "Destacado",
     "allDatasets": "Todos os tipos de dados",
     "searchPlaceholder": "Buscar tipos de dados...",

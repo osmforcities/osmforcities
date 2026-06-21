@@ -214,6 +214,7 @@
     "statFeatures": "{count} features",
     "statContributors": "{count} contributors",
     "statSaved": "{count} saved",
+    "lastEditedAria": "Last edited",
     "featuredBadge": "Featured",
     "allDatasets": "All data types",
     "searchPlaceholder": "Search data types...",
