@@ -1,5 +1,6 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
-import { resolveTemplateForLocale } from "@/lib/template-locale";
+import { mapAppLocaleToDb, resolveTemplateForLocale } from "@/lib/template-locale";
 
 export type AreaTemplate = {
   id: string;
@@ -120,13 +121,8 @@ export async function getAreaDataTypes(
   return buildAreaDataTypes(templates, datasets);
 }
 
-/**
- * Fetch all active templates resolved for the given locale.
- * Shared by the area page and the area templates browse page.
- */
-export async function getActiveTemplates(
-  locale: string
-): Promise<AreaTemplate[]> {
+async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
+  const dbLocale = mapAppLocaleToDb(locale);
   const rows = await prisma.template.findMany({
     where: { isActive: true },
     select: {
@@ -141,7 +137,10 @@ export async function getActiveTemplates(
           slug: true,
         },
       },
+      // Only fetch the translation for the requested locale — resolveTemplateForLocale
+      // picks the matching row (now the only one) and falls back to the base fields.
       translations: {
+        where: { locale: dbLocale },
         select: {
           locale: true,
           name: true,
@@ -164,3 +163,17 @@ export async function getActiveTemplates(
     };
   });
 }
+
+/**
+ * All active templates resolved for the given locale. Shared by the area page
+ * and the area templates browse page.
+ *
+ * Area-independent and varies only by locale (the cache key), so the result is
+ * cached instead of re-querying all active templates per load. Revalidates
+ * hourly; bust the "templates" tag to refresh sooner.
+ */
+export const getActiveTemplates = unstable_cache(
+  fetchActiveTemplates,
+  ["active-templates"],
+  { revalidate: 3600, tags: ["templates"] }
+);
