@@ -5,22 +5,21 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@auth/core': 0.41.2
-  '@xmldom/xmldom': '>=0.8.4'
-  '@vitest/browser': '>=4.1.6'
-  vitest: '>=4.1.6'
-  rollup: '>=4.59.0'
-  '@eslint/plugin-kit': '>=0.3.4'
-  axios: '>=1.15.1'
-  icu-minify: '>=4.9.2'
-  flatted: '>=3.4.2'
-  tar: '>=7.5.11'
-  undici: '>=7.24.0'
-  yaml: '>=2.8.3'
-  postcss: '>=8.5.10'
-  protocol-buffers-schema: '>=3.6.1'
-  ws: '>=8.20.1'
-  mdast-util-to-hast: '>=13.2.1'
+  '@xmldom/xmldom': '>=0.8.4 <1.0.0'
+  '@vitest/browser': '>=4.1.8 <5.0.0'
+  vitest: '>=4.1.8 <5.0.0'
+  rollup: '>=4.59.0 <5.0.0'
+  '@eslint/plugin-kit': '>=0.3.4 <1.0.0'
+  axios: '>=1.15.1 <2.0.0'
+  icu-minify: '>=4.9.2 <5.0.0'
+  flatted: '>=3.4.2 <4.0.0'
+  tar: '>=7.5.11 <8.0.0'
+  undici: '>=7.24.0 <9.0.0'
+  yaml: '>=2.8.3 <3.0.0'
+  postcss: '>=8.5.10 <9.0.0'
+  protocol-buffers-schema: '>=3.6.1 <4.0.0'
+  ws: '>=8.20.1 <9.0.0'
+  mdast-util-to-hast: '>=13.2.1 <14.0.0'
 
 importers:
 
@@ -87,8 +86,8 @@ importers:
         specifier: 15.5.18
         version: 15.5.18(@babel/core@7.28.6)(@playwright/test@1.58.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       next-auth:
-        specifier: 5.0.0-beta.30
-        version: 5.0.0-beta.30(next@15.5.18(@babel/core@7.28.6)(@playwright/test@1.58.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
+        specifier: 5.0.0-beta.31
+        version: 5.0.0-beta.31(next@15.5.18(@babel/core@7.28.6)(@playwright/test@1.58.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
       next-intl:
         specifier: ^4.9.1
         version: 4.13.0(next@15.5.18(@babel/core@7.28.6)(@playwright/test@1.58.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(typescript@5.8.3)
@@ -178,10 +177,10 @@ importers:
         specifier: ^8.33.1
         version: 8.33.1(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)
       '@vitest/browser-playwright':
-        specifier: ^4.1.0
+        specifier: ^4.1.8
         version: 4.1.9(playwright@1.58.2)(vite@7.3.1(@types/node@20.19.43)(jiti@2.4.2)(lightningcss@1.30.1)(tsx@4.19.4)(yaml@2.9.0))(vitest@4.1.9)
       '@vitest/coverage-v8':
-        specifier: ^4.1.0
+        specifier: ^4.1.8
         version: 4.1.9(@vitest/browser@4.1.9)(vitest@4.1.9)
       eslint:
         specifier: ^9
@@ -226,7 +225,7 @@ importers:
         specifier: ^5
         version: 5.8.3
       vitest:
-        specifier: '>=4.1.6'
+        specifier: '>=4.1.8 <5.0.0'
         version: 4.1.9(@types/node@20.19.43)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(vite@7.3.1(@types/node@20.19.43)(jiti@2.4.2)(lightningcss@1.30.1)(tsx@4.19.4)(yaml@2.9.0))
 
 packages:
@@ -2297,7 +2296,7 @@ packages:
     resolution: {integrity: sha512-5EdhGZtnu3V88ces7s53hhfK5KSASnJZv8Lulpc04cWO3REESroJXg73DFsOmgbU2BhwV0E20bu2IDZb3VKW4Q==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      rollup: '>=4.59.0'
+      rollup: '>=4.59.0 <5.0.0'
     peerDependenciesMeta:
       rollup:
         optional: true
@@ -2475,11 +2474,11 @@ packages:
   '@storybook/addon-vitest@10.4.6':
     resolution: {integrity: sha512-VvskHge0GZy86LG6kcY5Ww34z8rDV8JBxqSdUpcJVsWfIvyX6MfAbqI76LlereSyBIJGZJZsqaLwRXsQoVY+0Q==}
     peerDependencies:
-      '@vitest/browser': '>=4.1.6'
+      '@vitest/browser': '>=4.1.8 <5.0.0'
       '@vitest/browser-playwright': ^4.0.0
       '@vitest/runner': ^3.0.0 || ^4.0.0
       storybook: ^10.4.6
-      vitest: '>=4.1.6'
+      vitest: '>=4.1.8 <5.0.0'
     peerDependenciesMeta:
       '@vitest/browser':
         optional: true
@@ -2500,7 +2499,7 @@ packages:
     resolution: {integrity: sha512-NILLxDqpA/JR/AazGWpsz+4fadJwRU4uhHephGtYpVOWnQA/DkJfKT6zpcJVq8+QA8A2zKMLX3GVKsXIrxjuDA==}
     peerDependencies:
       esbuild: '*'
-      rollup: '>=4.59.0'
+      rollup: '>=4.59.0 <5.0.0'
       storybook: ^10.4.6
       vite: '*'
       webpack: '*'
@@ -3173,18 +3172,18 @@ packages:
     resolution: {integrity: sha512-Bq1rOGf9waevzG3EOkO/dene6bvKTUsZMVg8S1i+WH3JcMjuXEjiahP9rAqZRELUqjBySOJsvvSWqK/B3wjKQw==}
     peerDependencies:
       playwright: '*'
-      vitest: '>=4.1.6'
+      vitest: '>=4.1.8 <5.0.0'
 
   '@vitest/browser@4.1.9':
     resolution: {integrity: sha512-j1BKtWmPcqpMhmx/L9EPLgAJpCb0zKfwoWLmqBbxaogCXHjOwHFSEoHCBfnGtx93xKQwilZ26m+UOsHqHMkRNg==}
     peerDependencies:
-      vitest: '>=4.1.6'
+      vitest: '>=4.1.8 <5.0.0'
 
   '@vitest/coverage-v8@4.1.9':
     resolution: {integrity: sha512-G9/lgqibheLVBDRuya45EbsEXTYcWoSG+TLg7i2axuzx0Eq62eXn+aWXyaVdV5vKvFSWd6ywcX8hA7la9Pvu8g==}
     peerDependencies:
-      '@vitest/browser': '>=4.1.6'
-      vitest: '>=4.1.6'
+      '@vitest/browser': '>=4.1.8 <5.0.0'
+      vitest: '>=4.1.8 <5.0.0'
     peerDependenciesMeta:
       '@vitest/browser':
         optional: true
@@ -5179,8 +5178,8 @@ packages:
     resolution: {integrity: sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==}
     engines: {node: '>= 0.6'}
 
-  next-auth@5.0.0-beta.30:
-    resolution: {integrity: sha512-+c51gquM3F6nMVmoAusRJ7RIoY0K4Ts9HCCwyy/BRoe4mp3msZpOzYMyb5LAYc1wSo74PMQkGDcaghIO7W6Xjg==}
+  next-auth@5.0.0-beta.31:
+    resolution: {integrity: sha512-1OBgCKPzo+S7UWWMp3xgvGvIJ0OpV7B3vR4ZDRqD9a4Ch+OT6dakLXG9ivhtmIWVa71nTSXattOHyCg8sNi8/Q==}
     peerDependencies:
       '@simplewebauthn/browser': ^9.0.1
       '@simplewebauthn/server': ^9.0.2
@@ -6343,7 +6342,7 @@ packages:
       sugarss: ^5.0.0
       terser: ^5.16.0
       tsx: ^4.8.1
-      yaml: '>=2.8.3'
+      yaml: '>=2.8.3 <3.0.0'
     peerDependenciesMeta:
       '@types/node':
         optional: true
@@ -12303,7 +12302,7 @@ snapshots:
 
   negotiator@1.0.0: {}
 
-  next-auth@5.0.0-beta.30(next@15.5.18(@babel/core@7.28.6)(@playwright/test@1.58.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3):
+  next-auth@5.0.0-beta.31(next@15.5.18(@babel/core@7.28.6)(@playwright/test@1.58.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3):
     dependencies:
       '@auth/core': 0.41.2
       next: 15.5.18(@babel/core@7.28.6)(@playwright/test@1.58.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
