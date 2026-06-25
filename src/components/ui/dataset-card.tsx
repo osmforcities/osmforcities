@@ -1,10 +1,10 @@
 "use client";
 
 import { Link } from "react-aria-components";
-import { MapPin, Users, Pencil, Eye } from "lucide-react";
+import { MapPin, Users, Pencil, Bookmark } from "lucide-react";
 import { getCategoryIcon } from "@/lib/category-icons";
 
-export type StatType = "features" | "contributors" | "lastEdited" | "watchers";
+export type StatType = "features" | "contributors" | "lastEdited" | "savedBy";
 
 export interface DatasetCardProps {
   name: string;
@@ -50,7 +50,7 @@ function getCountryFlag(country: string): string {
 /**
  * Format number in compact notation (1.2k, 2M, etc.)
  */
-function formatCompactNumber(value: number | string): string {
+export function formatCompactNumber(value: number | string): string {
   const num = typeof value === 'string' ? parseInt(value.replace(/,/g, ''), 10) : value;
   if (num < 1000) return num.toString();
   if (num < 1000000) return `${(num / 1000).toFixed(1).replace(/\.0$/, '')}k`;
@@ -65,7 +65,7 @@ function formatStatValue(type: StatType, value: string | number): string {
 function getStatIcon(type: StatType) {
   if (type === "contributors") return Users;
   if (type === "lastEdited") return Pencil;
-  if (type === "watchers") return Eye;
+  if (type === "savedBy") return Bookmark;
   return MapPin;
 }
 

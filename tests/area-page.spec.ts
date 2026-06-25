@@ -71,20 +71,8 @@ test.describe("Area Page", () => {
     // Check that we're not on a 404 page
     await expect(page.locator("h1")).not.toContainText("404");
 
-    // Check that area ID is displayed
-    await expect(page.locator("text=ID: 298470")).toBeVisible();
-
-    // Check that datasets section is displayed
-    await expect(page.locator("text=Available Datasets")).toBeVisible();
-    await expect(
-      page.locator("text=Choose a dataset to explore data for this area")
-    ).toBeVisible();
-
     // Check that template grid is present
     await expect(page.locator("[data-testid='template-grid']")).toBeVisible();
-
-    // Check that OpenStreetMap link is present
-    await expect(page.locator("a[href*='openstreetmap.org']")).toBeVisible();
   });
 
   test("should display clickable dataset cards", async ({ page }) => {

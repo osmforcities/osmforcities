@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { CATALOG_FILTER } from "@/lib/dataset-catalog-filter";
 import { DatasetCard } from "@/components/ui/dataset-card";
 import { ExplorePageLayout, ExploreSectionHeader } from "@/components/explore/explore-components";
 import { formatRelativeTime } from "@/lib/dataset-stats";
@@ -68,13 +69,13 @@ export default async function RecentlyEditedPage({
   const t = await getTranslations("ExplorePage");
 
   const datasets = await prisma.dataset.findMany({
-    where: { isActive: true, dataCount: { gt: 0 }, lastEditedAt: { not: null } },
+    where: { isActive: true, dataCount: { gt: 0 }, lastEditedAt: { not: null }, ...CATALOG_FILTER },
     select: {
       ...DATASET_SELECT,
       recentlyEditedCount: true,
       lastEditedAt: true,
       _count: {
-        select: { watchers: true }
+        select: { savedBy: true }
       }
     },
     orderBy: { lastEditedAt: "desc" },

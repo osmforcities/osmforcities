@@ -80,7 +80,7 @@ const enMessages = {
   reportSubjectNoChanges: "No changes",
   reportChanged: "Datasets updated:",
   reportNoChanges: "No changes to {watchedDatasetsLink} {lastPeriod}",
-  reportFollowed: "watched datasets",
+  reportSaved: "saved datasets",
   preferencesPage: "preferences page",
   generatedAt: "Generated at {timestamp}Z. All dates shown are in UTC.",
   unsubscribe: "Unsubscribe: {preferencesLink}",

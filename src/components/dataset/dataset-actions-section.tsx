@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Download, RefreshCw, Eye, EyeOff, Star } from "lucide-react";
+import { Link } from "@/components/ui/link";
+import { Download, RefreshCw, Bookmark, BookmarkMinus, Star } from "lucide-react";
 import type { Dataset } from "@/schemas/dataset";
 import { useDatasetDownload } from "@/hooks/useDatasetDownload";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
@@ -10,39 +11,55 @@ import { useState } from "react";
 
 type DatasetActionsSectionProps = {
   dataset: Dataset;
+  savedCount?: number;
+  saveLimit?: number;
 };
 
-export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
+export function DatasetActionsSection({
+  dataset,
+  savedCount = 0,
+  saveLimit,
+}: DatasetActionsSectionProps) {
   const t = useTranslations("DatasetPage");
   const { downloadDataset } = useDatasetDownload();
-  const { watchDataset, unwatchDataset, refreshDataset, isLoading } =
+  const { saveDataset, unsaveDataset, refreshDataset, isLoading } =
     useDatasetActions();
 
-  const [isWatched, setIsWatched] = useState(dataset.isWatched || false);
+  const [isSaved, setIsSaved] = useState(dataset.isSaved || false);
+  const [saveCount, setSaveCount] = useState(savedCount);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isFeatured, setIsFeatured] = useState(dataset.isFeatured ?? false);
   const [isFeaturingLoading, setIsFeaturingLoading] = useState(false);
   const [hasFeatureError, setHasFeatureError] = useState(false);
 
-  const handleToggleWatch = async () => {
+  const atLimit =
+    !isSaved &&
+    saveLimit !== undefined &&
+    saveCount >= saveLimit;
+
+  const handleToggleSave = async () => {
     try {
-      if (isWatched) {
-        const result = await unwatchDataset(dataset.id);
+      if (isSaved) {
+        const result = await unsaveDataset(dataset.id);
         if (result.success) {
-          setIsWatched(false);
+          setIsSaved(false);
+          setSaveCount((c) => Math.max(0, c - 1));
         } else {
-          console.error("Failed to unwatch dataset:", result.error);
+          console.error("Failed to unsave dataset:", result.error);
         }
       } else {
-        const result = await watchDataset(dataset.id);
+        const result = await saveDataset(dataset.id);
         if (result.success) {
-          setIsWatched(true);
+          setIsSaved(true);
+          setSaveCount((c) => c + 1);
+        } else if (result.error === "save_limit_reached") {
+          setSaveCount(saveLimit ?? saveCount);
         } else {
-          console.error("Failed to watch dataset:", result.error);
+          console.error("Failed to save dataset:", result.error);
         }
       }
     } catch (error) {
-      console.error("Error toggling watch:", error);
+      console.error("Error toggling save:", error);
     }
   };
 
@@ -143,26 +160,44 @@ export function DatasetActionsSection({ dataset }: DatasetActionsSectionProps) {
           {t("downloadData")}
         </Button>
 
-        {/* Watch/Unwatch Button */}
+        {/* Save/Unsave Button */}
         <Button
-          onClick={handleToggleWatch}
-          disabled={isLoading}
+          onClick={handleToggleSave}
+          disabled={isLoading || atLimit}
           className="flex items-center gap-2 w-full h-10"
-          variant={isWatched ? "default" : "outline"}
+          variant={isSaved ? "default" : "outline"}
           title={
-            isWatched
-              ? "Stop receiving updates about this dataset"
-              : "Get notified when this dataset is updated"
+            isSaved
+              ? t("unsaveTooltip")
+              : atLimit
+                ? t("saveLimitReached")
+                : t("saveTooltip")
           }
-          data-testid={isWatched ? "dataset-unwatch-button" : "dataset-watch-button"}
+          data-testid={isSaved ? "dataset-unsave-button" : "dataset-save-button"}
         >
-          {isWatched ? (
-            <EyeOff className="h-4 w-4" />
+          {isSaved ? (
+            <BookmarkMinus className="h-4 w-4" />
           ) : (
-            <Eye className="h-4 w-4" />
+            <Bookmark className="h-4 w-4" />
           )}
-          {isWatched ? t("unwatch") : t("watch")}
+          {isSaved ? t("unsave") : atLimit ? t("saveLimitReached") : t("save")}
         </Button>
+        {atLimit && saveLimit !== undefined && (
+          <p
+            role="alert"
+            data-testid="save-limit-message"
+            className="text-sm text-amber-700 dark:text-amber-500"
+          >
+            {t.rich("saveLimitMessage", {
+              limit: saveLimit,
+              link: (chunks) => (
+                <Link href="/dashboard" size="sm" variant="underline">
+                  {chunks}
+                </Link>
+              ),
+            })}
+          </p>
+        )}
       </div>
     </div>
   );

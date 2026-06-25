@@ -1,5 +1,5 @@
 /**
- * Dashboard page - shows watched datasets for authenticated users
+ * Dashboard page - shows saved datasets for authenticated users
  * Redirects to /enter if not authenticated
  */
 
@@ -12,17 +12,17 @@ import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
 import { trackEvent, getClientInfoFromHeaders } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
+import { MAX_SAVES_PER_USER } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Dashboard - OSM for Cities",
-  description: "Manage your watched OpenStreetMap datasets",
+  description: "Manage your saved OpenStreetMap datasets",
 };
 
-/** Fetches datasets watched by the user */
-async function getWatchedDatasets(userId: string) {
-  const watchedDatasets = await prisma.datasetWatch.findMany({
+async function getSavedDatasets(userId: string) {
+  const savedDatasets = await prisma.datasetSave.findMany({
     where: { userId },
     include: {
       dataset: {
@@ -32,7 +32,7 @@ async function getWatchedDatasets(userId: string) {
           },
           area: true,
           _count: {
-            select: { watchers: true },
+            select: { savedBy: true },
           },
         },
       },
@@ -40,12 +40,9 @@ async function getWatchedDatasets(userId: string) {
     orderBy: { createdAt: "desc" },
   });
 
-  return watchedDatasets.map((watch) => watch.dataset);
+  return savedDatasets.map((save) => save.dataset);
 }
 
-/**
- * Dashboard page component - displays user's watched datasets
- */
 export default async function Dashboard() {
   const session = await auth();
   const user = session?.user || null;
@@ -56,9 +53,9 @@ export default async function Dashboard() {
   }
 
   const tabT = await getTranslations("TabLayout");
-  const watchedDatasets = await getWatchedDatasets(user.id);
+  const savedDatasets = await getSavedDatasets(user.id);
 
-  trackEvent(ANALYTICS_EVENTS.WATCHED_DATASETS_VIEW, "/datasets/watched/view", await getClientInfoFromHeaders());
+  trackEvent(ANALYTICS_EVENTS.SAVED_DATASETS_VIEW, "/datasets/saved/view", await getClientInfoFromHeaders());
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
@@ -82,11 +79,11 @@ export default async function Dashboard() {
           <DashboardTabs
             isAdmin={user.isAdmin}
             context="dashboard"
-            activeTab="following"
+            activeTab="saved"
           />
 
           <div className="bg-white rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-8">
-            <DashboardGrid datasets={watchedDatasets} />
+            <DashboardGrid datasets={savedDatasets} saveLimit={MAX_SAVES_PER_USER} />
           </div>
         </div>
       </div>

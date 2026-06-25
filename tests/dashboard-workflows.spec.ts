@@ -37,7 +37,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     await expect(page.getByTestId("dashboard-subtitle")).toBeVisible();
 
     // Check for new tab navigation
-    await expect(page.getByTestId("tab-following")).toBeVisible();
+    await expect(page.getByTestId("tab-saved")).toBeVisible();
     await expect(page.getByTestId("tab-users")).toBeHidden(); // Regular user shouldn't see Users tab
   });
 
@@ -56,13 +56,13 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     ).toBeVisible();
 
     // Ensure tab navigation is still visible
-    await expect(page.getByTestId("tab-following")).toBeVisible();
+    await expect(page.getByTestId("tab-saved")).toBeVisible();
   });
 
-  test("should display followed datasets when user has watched datasets", async ({
+  test("should display saved datasets when user has saved datasets", async ({
     page,
   }) => {
-    // Create a test dataset and watch it
+    // Create a test dataset and save it
     const prisma = new PrismaClient();
 
     // Get a template
@@ -107,7 +107,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     });
 
     // Watch the dataset
-    await prisma.datasetWatch.create({
+    await prisma.datasetSave.create({
       data: {
         datasetId: testDataset.id,
         userId: testUser.id,
@@ -124,7 +124,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
 
     // Check for dataset card
-    const datasetGrid = page.getByTestId("followed-datasets-grid");
+    const datasetGrid = page.getByTestId("saved-datasets-grid");
     await expect(datasetGrid).toBeVisible();
 
     // Check for dataset card content
@@ -133,7 +133,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     await expect(page.getByText("(US)")).toBeVisible();
 
     // Ensure tab navigation is still visible
-    await expect(page.getByTestId("tab-following")).toBeVisible();
+    await expect(page.getByTestId("tab-saved")).toBeVisible();
   });
 
   test("should navigate to stable route when clicking dataset card", async ({
@@ -176,7 +176,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
       },
     });
 
-    await prisma.datasetWatch.create({
+    await prisma.datasetSave.create({
       data: {
         datasetId: testDataset.id,
         userId: testUser.id,
@@ -189,7 +189,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     // Click on dataset card
     const datasetCard = page
-      .getByTestId("followed-datasets-grid")
+      .getByTestId("saved-datasets-grid")
       .locator("a")
       .first();
     await datasetCard.click();
@@ -242,7 +242,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
       },
     });
 
-    await prisma.datasetWatch.create({
+    await prisma.datasetSave.create({
       data: {
         datasetId: testDataset.id,
         userId: testUser.id,
@@ -255,7 +255,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     // Check dataset card structure
     const datasetCard = page
-      .getByTestId("followed-datasets-grid")
+      .getByTestId("saved-datasets-grid")
       .locator("div")
       .first();
 
@@ -275,8 +275,8 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     await expect(datasetCard.getByText("Active")).toBeVisible();
   });
 
-  test("should handle watcher count display", async ({ page }) => {
-    // Create a test dataset and watch it
+  test("should handle save count display", async ({ page }) => {
+    // Create a test dataset and save it
     const prisma = new PrismaClient();
 
     const template = await prisma.template.findFirst({
@@ -314,7 +314,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     });
 
     // Watch the dataset
-    await prisma.datasetWatch.create({
+    await prisma.datasetSave.create({
       data: {
         datasetId: testDataset.id,
         userId: testUser.id,
@@ -325,8 +325,8 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await page.goto(getLocalizedPath("/dashboard"));
 
-    // Check for watcher count
-    await expect(page.getByText("1 watcher")).toBeVisible();
+    // Check for save count
+    await expect(page.getByText("1 save")).toBeVisible();
   });
 
   test("should be responsive on different screen sizes", async ({ page }) => {
@@ -367,7 +367,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
       },
     });
 
-    await prisma.datasetWatch.create({
+    await prisma.datasetSave.create({
       data: {
         datasetId: testDataset.id,
         userId: testUser.id,
@@ -378,7 +378,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 
     await page.goto(getLocalizedPath("/dashboard"));
 
-    const datasetGrid = page.getByTestId("followed-datasets-grid");
+    const datasetGrid = page.getByTestId("saved-datasets-grid");
 
     // Test mobile view
     await page.setViewportSize({ width: 375, height: 667 });
@@ -431,7 +431,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
         },
       });
 
-      await prisma.datasetWatch.create({
+      await prisma.datasetSave.create({
         data: {
           datasetId: testDataset.id,
           userId: testUser.id,
@@ -447,7 +447,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
     await expect(
       page.getByTestId("dashboard-dataset-count")
-    ).toContainText("Following 2 datasets");
+    ).toContainText("2/10");
   });
 });
 
@@ -514,14 +514,14 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
     await page.goto(getLocalizedPath("/dashboard"));
 
     // Check that tab navigation is visible
-    await expect(page.getByTestId("tab-following")).toBeVisible();
+    await expect(page.getByTestId("tab-saved")).toBeVisible();
     await expect(page.getByTestId("tab-users")).toBeHidden(); // Regular user shouldn't see Users tab
 
     // Check that existing dashboard functionality still works
     await expect(page.getByTestId("dashboard-welcome-message")).toBeVisible();
 
     // Check for dashboard grid or empty state
-    const grid = page.getByTestId("followed-datasets-grid");
+    const grid = page.getByTestId("saved-datasets-grid");
     const emptyState = page.getByTestId("dashboard-empty-state");
 
     const hasGrid = await grid.isVisible();

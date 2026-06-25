@@ -155,7 +155,7 @@ async function generateEmailContent(
   }
 
   const reportChangedText = t("reportChanged", { lastPeriod });
-  const watchedDatasetsLink = createEmailLink(`${getBaseUrl()}/`, t("reportFollowed"));
+  const savedDatasetsLink = createEmailLink(`${getBaseUrl()}/`, t("reportSaved"));
   const emailBody =
     count > 0
       ? generateEmailBodyWithChanges(
@@ -165,7 +165,7 @@ async function generateEmailContent(
           deprecationNotice
         )
       : await formatEmail(userLocale, "reportNoChanges", {
-          watchedDatasetsLink,
+          savedDatasetsLink,
           lastPeriod,
         });
 
@@ -217,7 +217,7 @@ export async function generateNextUserReport(): Promise<{
     where: {
       reportsEnabled: true,
       emailVerified: { not: null },
-      watchedDatasets: { some: {} },
+      savedDatasets: { some: {} },
       OR: [
         { lastReportSent: null },
         {
@@ -261,7 +261,7 @@ export async function generateNextUserReport(): Promise<{
 
   const recentDatasets = await prisma.dataset.findMany({
     where: {
-      watchers: {
+      savedBy: {
         some: {
           userId: user.id,
         },

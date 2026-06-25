@@ -25,7 +25,7 @@ test.describe("Seamless Discovery Workflow", () => {
     }
   });
 
-  test("should complete full discovery workflow: dashboard → search → area → dataset → watch", async ({
+  test("should complete full discovery workflow: dashboard → search → area → dataset → save", async ({
     page,
   }) => {
     // Start at dashboard
@@ -63,25 +63,25 @@ test.describe("Seamless Discovery Workflow", () => {
       // Should navigate to dataset page with stable route
       await expect(page).toHaveURL(/\/en\/area\/\d+\/dataset\/[a-zA-Z0-9-]+/);
 
-      // Should show dataset page with watch button
-      const watchButton = page.getByTestId("dataset-watch-button");
+      // Should show dataset page with save button
+      const watchButton = page.getByTestId("dataset-save-button");
       await expect(watchButton).toBeVisible();
 
-      // Click watch button
+      // Click save button
       await watchButton.click();
 
-      // Should show unwatch button
-      const unwatchButton = page.getByTestId("dataset-unwatch-button");
+      // Should show unsave button
+      const unwatchButton = page.getByTestId("dataset-unsave-button");
       await expect(unwatchButton).toBeVisible();
 
       // Navigate back to dashboard
       await page.goto(getLocalizedPath("/dashboard"));
 
-      // Should now show the watched dataset
+      // Should now show the saved dataset
       // No heading exists in new design, just check for dataset count text
       await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
       await expect(page.getByTestId("dashboard-dataset-count")).toContainText(
-        "Following 1 dataset"
+        "1/10"
       );
     }
   });
@@ -89,7 +89,7 @@ test.describe("Seamless Discovery Workflow", () => {
   test("should handle stable route navigation from dashboard", async ({
     page,
   }) => {
-    // Create a test dataset and watch it
+    // Create a test dataset and save it
     const prisma = new PrismaClient();
 
     const template = await prisma.template.findFirst();
@@ -124,7 +124,7 @@ test.describe("Seamless Discovery Workflow", () => {
       },
     });
 
-    await prisma.datasetWatch.create({
+    await prisma.datasetSave.create({
       data: {
         datasetId: testDataset.id,
         userId: testUser.id,
@@ -137,7 +137,7 @@ test.describe("Seamless Discovery Workflow", () => {
 
     // Click on dataset card
     const datasetCard = page
-      .getByTestId("followed-datasets-grid")
+      .getByTestId("saved-datasets-grid")
       .locator("a")
       .first();
     await datasetCard.click();
@@ -199,8 +199,8 @@ test.describe("Seamless Discovery Workflow", () => {
     expect(hasDataset || hasLoading || hasError).toBe(true);
   });
 
-  test("should maintain watch state across navigation", async ({ page }) => {
-    // Create a test dataset and watch it
+  test("should maintain save state across navigation", async ({ page }) => {
+    // Create a test dataset and save it
     const prisma = new PrismaClient();
 
     const template = await prisma.template.findFirst();
@@ -235,7 +235,7 @@ test.describe("Seamless Discovery Workflow", () => {
       },
     });
 
-    await prisma.datasetWatch.create({
+    await prisma.datasetSave.create({
       data: {
         datasetId: testDataset.id,
         userId: testUser.id,
@@ -248,9 +248,9 @@ test.describe("Seamless Discovery Workflow", () => {
     const stableUrl = `/en/area/${testArea.id}/dataset/${template.id}`;
     await page.goto(stableUrl);
 
-    // Should show unwatch button (already watching) since we created a watch record
+    // Should show unsave button (already saved) since we created a save record
     // Wait for page to load and button to appear
-    const unwatchButton = page.getByTestId("dataset-unwatch-button");
+    const unwatchButton = page.getByTestId("dataset-unsave-button");
     await expect(unwatchButton).toBeVisible({ timeout: 10000 });
 
     // Navigate back to dashboard
@@ -259,7 +259,7 @@ test.describe("Seamless Discovery Workflow", () => {
     // Should show the dataset in followed list
     await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
     await expect(page.getByTestId("dashboard-dataset-count")).toContainText(
-      "Following 1 dataset"
+      "1/10"
     );
   });
 
@@ -273,12 +273,12 @@ test.describe("Seamless Discovery Workflow", () => {
     ).toBeVisible();
 
     // Should not show any dataset cards
-    const datasetGrid = page.getByTestId("followed-datasets-grid");
+    const datasetGrid = page.getByTestId("saved-datasets-grid");
     const cardCount = await datasetGrid.locator("div").count();
     expect(cardCount).toBe(0);
   });
 
-  test("should handle multiple watched datasets", async ({ page }) => {
+  test("should handle multiple saved datasets", async ({ page }) => {
     // Create multiple test datasets with different templates
     const prisma = new PrismaClient();
 
@@ -316,7 +316,7 @@ test.describe("Seamless Discovery Workflow", () => {
         },
       });
 
-      await prisma.datasetWatch.create({
+      await prisma.datasetSave.create({
         data: {
           datasetId: testDataset.id,
           userId: testUser.id,
@@ -331,12 +331,12 @@ test.describe("Seamless Discovery Workflow", () => {
     // Should show multiple datasets
     await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
     await expect(page.getByTestId("dashboard-dataset-count")).toContainText(
-      "Following 3 datasets"
+      "3/10"
     );
 
     // Should show multiple dataset cards
     const datasetCards = page
-      .getByTestId("followed-datasets-grid")
+      .getByTestId("saved-datasets-grid")
       .locator("div");
     const cardCount = await datasetCards.count();
     expect(cardCount).toBeGreaterThan(0);
