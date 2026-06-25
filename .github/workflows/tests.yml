@@ -57,6 +57,14 @@ jobs:
       - name: Generate Prisma Client
         run: pnpm prisma generate
 
+      - name: Build Next.js for production
+        run: pnpm build
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5433/osmforcities-test
+          AUTH_SECRET: test-secret-for-ci-only
+          AUTH_URL: http://localhost:3000
+          CRON_ROUTE_SECRET: test-cron-secret
+
       - name: Install Playwright Browsers
         run: pnpm playwright install chromium --with-deps
 

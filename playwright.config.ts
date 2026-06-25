@@ -23,10 +23,12 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "NODE_ENV=test ENABLE_TEST_AUTH=true pnpm dev",
+    command: process.env.CI
+      ? "ENABLE_TEST_AUTH=true pnpm start"
+      : "NODE_ENV=test ENABLE_TEST_AUTH=true pnpm dev",
     url: "http://localhost:3000",
     reuseExistingServer: true,
-    timeout: 120 * 1000,
+    timeout: process.env.CI ? 300 * 1000 : 120 * 1000,
     stdout: "pipe",
     stderr: "pipe",
     env: {
