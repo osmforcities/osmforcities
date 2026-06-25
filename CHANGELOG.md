@@ -1,5 +1,34 @@
 # osmforcities
 
+## 1.12.0
+
+### Added
+
+- Area page redesign: unified data-type browser with status filters, explore-style sections, and category discovery [#330]
+- Template parent-child hierarchy support [#325]
+- Save-limit quota UX [#328]
+
+### Changed
+
+- Renamed "Watch" to "Save" across UI strings, icons, schema, and the `dataset_watches` table (now `dataset_saves`) [#321], [#324], [#328]
+- Explore listings restricted to featured or saved datasets [#327]
+- Cache active templates query by locale [#332]
+- CI: removed Cloudflare-blocked post-deploy health checks [#329]
+
+### Security
+
+- Resolved pnpm audit vulnerabilities [#333]
+
+[#321]: https://github.com/osmforcities/osmforcities/pull/321
+[#324]: https://github.com/osmforcities/osmforcities/pull/324
+[#325]: https://github.com/osmforcities/osmforcities/pull/325
+[#327]: https://github.com/osmforcities/osmforcities/pull/327
+[#328]: https://github.com/osmforcities/osmforcities/pull/328
+[#329]: https://github.com/osmforcities/osmforcities/pull/329
+[#330]: https://github.com/osmforcities/osmforcities/pull/330
+[#332]: https://github.com/osmforcities/osmforcities/pull/332
+[#333]: https://github.com/osmforcities/osmforcities/pull/333
+
 ## 1.11.0
 
 ### Added
