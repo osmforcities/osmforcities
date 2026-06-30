@@ -8,6 +8,12 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 
+vi.mock("@/lib/logger", () => ({
+  createLogger: () => ({
+    error: vi.fn(),
+  }),
+}));
+
 import { refreshTokenClaims } from "@/lib/auth-token";
 import { prisma } from "@/lib/db";
 
@@ -56,10 +62,19 @@ describe("refreshTokenClaims", () => {
     expect(result.isAdmin).toBe(true);
   });
 
-  it("does not overwrite claims when the user is missing from the DB", async () => {
+  it("fails closed (clears isAdmin) when the user is missing from the DB", async () => {
     mockFindUnique.mockResolvedValue(null as never);
 
     const token = { id: "ghost", isAdmin: true, language: "en" };
+    const result = await refreshTokenClaims(token as never);
+
+    expect(result.isAdmin).toBe(false);
+  });
+
+  it("preserves existing claims when the DB lookup throws", async () => {
+    mockFindUnique.mockRejectedValue(new Error("connection refused"));
+
+    const token = { id: "user-1", isAdmin: true, language: "en" };
     const result = await refreshTokenClaims(token as never);
 
     expect(result.isAdmin).toBe(true);
