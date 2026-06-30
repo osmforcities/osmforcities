@@ -96,11 +96,27 @@ export async function trackEvent(
 // Fire-and-forget tracking for server components/pages: captures request client
 // info during render, then schedules the event to run after the response is sent
 // so analytics never blocks the render. De-duplicates the capture+after+track
-// pattern repeated across pages.
+// pattern repeated across pages. Never rejects — a headers() failure is logged,
+// not propagated to the render.
 export async function trackEventAfterResponse(
   eventName: string,
   url: string,
 ): Promise<void> {
-  const clientInfo = await getClientInfoFromHeaders();
-  after(() => trackEvent(eventName, url, clientInfo));
+  try {
+    const clientInfo = await getClientInfoFromHeaders();
+    after(() => trackEvent(eventName, url, clientInfo));
+  } catch (err) {
+    logger.warn("trackEventAfterResponse error", { event: eventName, err });
+  }
+}
+
+// Fire-and-forget tracking for route handlers: schedules the event after the
+// response is sent using client info derived from the request. De-duplicates the
+// after(() => trackEvent(..., getClientInfo(req))) pattern across API routes.
+export function trackEventAfterRequest(
+  eventName: string,
+  url: string,
+  request: NextRequest,
+): void {
+  after(() => trackEvent(eventName, url, getClientInfo(request)));
 }
