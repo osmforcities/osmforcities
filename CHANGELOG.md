@@ -1,5 +1,12 @@
 # osmforcities
 
+## Unreleased
+
+### Fixed
+
+- Featured dataset toggle now reflects the dataset's real featured state on the detail page. The dataset query omitted `isFeatured`, so the button always initialized as "not featured" (requiring two clicks to enable and showing the wrong state after reload).
+- Admin status now refreshes from the database on every session check. Previously `isAdmin` was only written to the session token at sign-in, so an admin whose session predated their promotion (or whose token claims were reset by the next-auth upgrade) saw admin-only controls — including the featured toggle — hidden until signing out and back in.
+
 ## 1.12.0
 
 ### Added

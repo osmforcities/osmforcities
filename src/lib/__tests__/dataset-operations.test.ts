@@ -55,8 +55,48 @@ vi.mock("@/lib/nominatim", () => ({
 
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
+import { prisma } from "@/lib/db";
 
 const mockFetchDatasetSnapshot = vi.mocked(fetchDatasetSnapshot);
+const mockDatasetFindFirst = vi.mocked(prisma.dataset.findFirst);
+
+const existingDatasetRow = {
+  id: "ds-1",
+  templateId: "tmpl-1",
+  areaId: 1,
+  cityName: "Test City",
+  geojson: null,
+  bbox: null,
+  dataCount: 5,
+  lastChecked: new Date(),
+  stats: null,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  isActive: true,
+  isFeatured: true,
+  template: { id: "tmpl-1", name: "Test", description: null, translations: [] },
+  area: { id: 1, name: "Test City", countryCode: "US", bounds: null, geojson: null },
+  user: null,
+  savedBy: [],
+};
+
+describe("getOrCreateDataset — isFeatured passthrough", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("selects isFeatured and returns it so the toggle reflects real state", async () => {
+    mockDatasetFindFirst.mockResolvedValueOnce(existingDatasetRow as never);
+
+    const { dataset } = await getOrCreateDataset(1, "test-template", "en");
+
+    // The select must request isFeatured, otherwise the detail page button
+    // always initializes to "not featured" regardless of the DB value.
+    const selectArg = mockDatasetFindFirst.mock.calls[0]?.[0]?.select;
+    expect(selectArg?.isFeatured).toBe(true);
+    expect(dataset.isFeatured).toBe(true);
+  });
+});
 
 describe("getOrCreateDataset — error sanitization", () => {
   beforeEach(() => {
