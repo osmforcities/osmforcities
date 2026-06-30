@@ -1,11 +1,10 @@
 import { notFound } from "next/navigation";
-import { after } from "next/server";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { getAreaDataTypes } from "@/lib/area-templates";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { DatasetGrid } from "@/components/ui/template-grid";
-import { trackEvent, getClientInfoFromHeaders } from "@/lib/umami";
+import { trackEventAfterResponse } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { auth } from "@/auth";
 
@@ -37,15 +36,11 @@ export default async function AreaPage({ params, searchParams }: AreaPageProps) 
     notFound();
   }
 
-  const areaClientInfo = await getClientInfoFromHeaders();
-  after(() =>
-    trackEvent(
-      session?.user
-        ? ANALYTICS_EVENTS.AREA_VIEW_LOGGED_IN
-        : ANALYTICS_EVENTS.AREA_VIEW_LOGGED_OUT,
-      `/area/${areaId}/view`,
-      areaClientInfo,
-    ),
+  await trackEventAfterResponse(
+    session?.user
+      ? ANALYTICS_EVENTS.AREA_VIEW_LOGGED_IN
+      : ANALYTICS_EVENTS.AREA_VIEW_LOGGED_OUT,
+    `/area/${areaId}/view`,
   );
 
   const breadcrumbItems = [

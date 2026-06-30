@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { prisma } from "@/lib/db";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
@@ -27,7 +27,7 @@ export async function GET(
       );
     }
 
-    await trackEvent(ANALYTICS_EVENTS.DATASET_DOWNLOAD, `/datasets/${id}/download`, getClientInfo(_request));
+    after(() => trackEvent(ANALYTICS_EVENTS.DATASET_DOWNLOAD, `/datasets/${id}/download`, getClientInfo(_request)));
 
     const safeName = `${dataset.template.name}-${dataset.cityName}.geojson`.replace(
       /[^\w.\-]+/g,
