@@ -16,6 +16,7 @@ import type { JWT } from "next-auth/jwt";
 import type { Session } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import { refreshTokenClaims } from "@/lib/auth-token";
 
 type DatabaseUser = {
   id: string;
@@ -173,12 +174,16 @@ const {
 
   callbacks: {
     async jwt({ token, user }): Promise<JWT> {
+      // On initial sign-in, capture the user id from the provider result.
       if (user && user.id) {
         token.id = user.id;
-        token.isAdmin = user.isAdmin;
-        token.language = user.language;
       }
-      return token;
+      // Always refresh admin status and language from the DB. The previous
+      // implementation only wrote these on sign-in, so a user promoted to admin
+      // after their session was created — or whose token claims were reset by a
+      // next-auth upgrade — kept a stale `isAdmin: false` token, hiding the
+      // featured toggle and other admin UI until they signed out and back in.
+      return refreshTokenClaims(token);
     },
 
     async session({ session, token }): Promise<Session> {
