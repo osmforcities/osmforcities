@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
+import { trackEvent } from "@/lib/umami";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 export async function PUT(
   request: Request,
@@ -40,6 +42,12 @@ export async function PUT(
     }
 
     const [result] = rows;
+    await trackEvent(
+      result.isFeatured
+        ? ANALYTICS_EVENTS.DATASET_FEATURED
+        : ANALYTICS_EVENTS.DATASET_UNFEATURED,
+      `/datasets/${result.id}/feature`,
+    );
     return NextResponse.json({ id: result.id, isFeatured: result.isFeatured });
   } catch (error) {
     console.error("Error toggling featured status:", error);

@@ -13,9 +13,13 @@ export const ANALYTICS_EVENTS = {
   DATASET_REFRESH: "dataset_refresh",
   DATASET_REFRESH_JOB: "dataset_refresh_job",
   DATASET_UPSELL_VIEW: "dataset_upsell_view",
+  DATASET_FEATURED: "dataset_featured",
+  DATASET_UNFEATURED: "dataset_unfeatured",
 
   // User events
   SIGN_UP: "sign_up",
+  SIGN_IN: "sign_in",
+  SIGN_OUT: "sign_out",
   SAVED_DATASETS_VIEW: "saved_datasets_view",
 
   // Area events
