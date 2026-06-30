@@ -1,8 +1,5 @@
 import type { JWT } from "next-auth/jwt";
 import { prisma } from "@/lib/db";
-import { createLogger } from "@/lib/logger";
-
-const logger = createLogger("auth-token");
 
 /**
  * Refreshes admin status and language on the JWT from the database so that
@@ -31,7 +28,10 @@ export async function refreshTokenClaims(token: JWT): Promise<JWT> {
       select: { isAdmin: true, language: true },
     });
   } catch (error) {
-    logger.error("Failed to refresh token claims; keeping existing claims", {
+    // console.error (not the winston logger) — this module is imported by the
+    // middleware edge-runtime bundle via auth.ts, and winston relies on Node
+    // APIs (process.nextTick) that are unavailable in the Edge Runtime.
+    console.error("Failed to refresh token claims; keeping existing claims", {
       userId: token.id,
       error,
     });

@@ -8,12 +8,6 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 
-vi.mock("@/lib/logger", () => ({
-  createLogger: () => ({
-    error: vi.fn(),
-  }),
-}));
-
 import { refreshTokenClaims } from "@/lib/auth-token";
 import { prisma } from "@/lib/db";
 
