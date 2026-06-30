@@ -85,7 +85,7 @@ export async function POST(
       },
     });
 
-    trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
+    await trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
 
     return NextResponse.json({
       success: true,

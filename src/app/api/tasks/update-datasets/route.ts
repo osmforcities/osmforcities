@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { prisma } from "@/lib/db";
 import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 import { trackEvent } from "@/lib/umami";
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
           },
         });
 
-        trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH_JOB, `/jobs/datasets/${dataset.id}/refresh`);
+        after(() => trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH_JOB, `/jobs/datasets/${dataset.id}/refresh`));
 
         results.successful++;
       } catch (error) {

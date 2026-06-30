@@ -51,15 +51,15 @@ describe("trackEvent", () => {
     vi.restoreAllMocks();
   });
 
-  it("does nothing when env vars are absent", () => {
+  it("does nothing when env vars are absent", async () => {
     delete process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
-    trackEvent("test_event", "/test");
+    await trackEvent("test_event", "/test");
     expect(fetch).not.toHaveBeenCalled();
   });
 
   it("sends POST to /api/send with event payload", async () => {
-    trackEvent("dataset_create", "/datasets/123/create");
-    await vi.waitFor(() => expect(fetch).toHaveBeenCalledOnce());
+    await trackEvent("dataset_create", "/datasets/123/create");
+    expect(fetch).toHaveBeenCalledOnce();
 
     const [url, opts] = (fetch as ReturnType<typeof vi.fn>).mock.calls[0];
     expect(url).toBe("https://analytics.example.com/api/send");
@@ -70,13 +70,17 @@ describe("trackEvent", () => {
 
   it("forwards ip and userAgent as headers when clientInfo provided", async () => {
     const clientInfo: ClientInfo = { ip: "1.2.3.4", userAgent: "TestAgent/1" };
-    trackEvent("sign_up", "/sign-up", clientInfo);
-    await vi.waitFor(() => expect(fetch).toHaveBeenCalledOnce());
+    await trackEvent("sign_up", "/sign-up", clientInfo);
 
     const [, opts] = (fetch as ReturnType<typeof vi.fn>).mock.calls[0];
     expect((opts as RequestInit).headers).toMatchObject({
       "x-forwarded-for": "1.2.3.4",
       "user-agent": "TestAgent/1",
     });
+  });
+
+  it("never rejects when fetch fails (tracking must not break user flows)", async () => {
+    vi.spyOn(global, "fetch").mockRejectedValue(new Error("network down"));
+    await expect(trackEvent("dataset_save", "/datasets/1/save")).resolves.toBeUndefined();
   });
 });

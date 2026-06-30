@@ -66,7 +66,7 @@ export async function POST(
       );
     }
 
-    trackEvent(ANALYTICS_EVENTS.DATASET_SAVE, `/datasets/${datasetId}/save`, getClientInfo(request));
+    await trackEvent(ANALYTICS_EVENTS.DATASET_SAVE, `/datasets/${datasetId}/save`, getClientInfo(request));
 
     return NextResponse.json({ success: true, save });
   } catch (error) {
@@ -119,7 +119,7 @@ export async function DELETE(
       },
     });
 
-    trackEvent(ANALYTICS_EVENTS.DATASET_UNSAVE, `/datasets/${datasetId}/unsave`, getClientInfo(request));
+    await trackEvent(ANALYTICS_EVENTS.DATASET_UNSAVE, `/datasets/${datasetId}/unsave`, getClientInfo(request));
 
     return NextResponse.json({ success: true });
   } catch (error) {

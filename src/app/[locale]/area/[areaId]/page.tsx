@@ -4,7 +4,7 @@ import { getAreaDetailsById } from "@/lib/nominatim";
 import { getAreaDataTypes } from "@/lib/area-templates";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { DatasetGrid } from "@/components/ui/template-grid";
-import { trackEvent, getClientInfoFromHeaders } from "@/lib/umami";
+import { trackEventAfterResponse } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { auth } from "@/auth";
 
@@ -36,12 +36,11 @@ export default async function AreaPage({ params, searchParams }: AreaPageProps) 
     notFound();
   }
 
-  trackEvent(
+  await trackEventAfterResponse(
     session?.user
       ? ANALYTICS_EVENTS.AREA_VIEW_LOGGED_IN
       : ANALYTICS_EVENTS.AREA_VIEW_LOGGED_OUT,
     `/area/${areaId}/view`,
-    await getClientInfoFromHeaders()
   );
 
   const breadcrumbItems = [
