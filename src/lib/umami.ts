@@ -41,11 +41,15 @@ export async function getClientInfoFromHeaders(): Promise<ClientInfo> {
   };
 }
 
-export function trackEvent(
+// Awaited so callers (server components via `after()`, API routes, background
+// jobs) can ensure the request completes before the response/render finishes —
+// a detached fetch would be reaped by the runtime and the event silently lost.
+// Never rejects: failures are logged so tracking can never break a user flow.
+export async function trackEvent(
   eventName: string,
   url: string,
   clientInfo?: ClientInfo,
-): void {
+): Promise<void> {
   const websiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
   const umamiUrl = process.env.NEXT_PUBLIC_UMAMI_URL;
 
@@ -58,32 +62,32 @@ export function trackEvent(
   if (clientInfo?.ip) fetchHeaders["x-forwarded-for"] = clientInfo.ip;
   if (clientInfo?.userAgent) fetchHeaders["user-agent"] = clientInfo.userAgent;
 
-  fetch(`${umamiUrl}/api/send`, {
-    method: "POST",
-    headers: fetchHeaders,
-    body: JSON.stringify({
-      type: "event",
-      payload: {
-        website: websiteId,
-        url,
-        name: eventName,
-        hostname: process.env.NEXT_PUBLIC_APP_URL
-          ? new URL(process.env.NEXT_PUBLIC_APP_URL).hostname
-          : "",
-        language: clientInfo?.language ?? "",
-        referrer: clientInfo?.referrer ?? "",
-      },
-    }),
-  })
-    .then(async (res) => {
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({ status: res.status }));
-        logger.warn("Umami event failed", { event: eventName, status: res.status, data });
-      } else {
-        logger.debug("Umami event sent", { event: eventName, url });
-      }
-    })
-    .catch((err) => {
-      logger.warn("Umami event error", { event: eventName, err });
+  try {
+    const res = await fetch(`${umamiUrl}/api/send`, {
+      method: "POST",
+      headers: fetchHeaders,
+      body: JSON.stringify({
+        type: "event",
+        payload: {
+          website: websiteId,
+          url,
+          name: eventName,
+          hostname: process.env.NEXT_PUBLIC_APP_URL
+            ? new URL(process.env.NEXT_PUBLIC_APP_URL).hostname
+            : "",
+          language: clientInfo?.language ?? "",
+          referrer: clientInfo?.referrer ?? "",
+        },
+      }),
     });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({ status: res.status }));
+      logger.warn("Umami event failed", { event: eventName, status: res.status, data });
+    } else {
+      logger.info("Umami event sent", { event: eventName, url });
+    }
+  } catch (err) {
+    logger.warn("Umami event error", { event: eventName, err });
+  }
 }

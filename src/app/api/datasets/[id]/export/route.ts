@@ -27,7 +27,7 @@ export async function GET(
       );
     }
 
-    trackEvent(ANALYTICS_EVENTS.DATASET_DOWNLOAD, `/datasets/${id}/download`, getClientInfo(_request));
+    await trackEvent(ANALYTICS_EVENTS.DATASET_DOWNLOAD, `/datasets/${id}/download`, getClientInfo(_request));
 
     const safeName = `${dataset.template.name}-${dataset.cityName}.geojson`.replace(
       /[^\w.\-]+/g,

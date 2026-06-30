@@ -4,6 +4,7 @@
  */
 
 import { Metadata } from "next";
+import { after } from "next/server";
 import { auth } from "@/auth";
 import { redirect } from "@/i18n/navigation";
 import { getTranslations, getLocale } from "next-intl/server";
@@ -55,7 +56,10 @@ export default async function Dashboard() {
   const tabT = await getTranslations("TabLayout");
   const savedDatasets = await getSavedDatasets(user.id);
 
-  trackEvent(ANALYTICS_EVENTS.SAVED_DATASETS_VIEW, "/datasets/saved/view", await getClientInfoFromHeaders());
+  const dashClientInfo = await getClientInfoFromHeaders();
+  after(() =>
+    trackEvent(ANALYTICS_EVENTS.SAVED_DATASETS_VIEW, "/datasets/saved/view", dashClientInfo),
+  );
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">

@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import { after } from "next/server";
 import { getTranslations, getLocale } from "next-intl/server";
 import { transformDataset } from "@/lib/dataset/transform";
 import { DatasetInteractiveSection } from "@/components/dataset/dataset-interactive-section";
@@ -63,10 +64,13 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
       return <AreaNotFoundError areaId={areaId} />;
     }
 
-    trackEvent(
-      ANALYTICS_EVENTS.DATASET_UPSELL_VIEW,
-      `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/upsell`,
-      await getClientInfoFromHeaders()
+    const upsellClientInfo = await getClientInfoFromHeaders();
+    after(() =>
+      trackEvent(
+        ANALYTICS_EVENTS.DATASET_UPSELL_VIEW,
+        `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/upsell`,
+        upsellClientInfo,
+      ),
     );
 
     return (
@@ -130,10 +134,13 @@ async function AreaTemplateDatasetView({
 
     const dataset = transformDataset(result.dataset, session?.user || null, locale, { isSaved, skipTemplateResolution: true });
 
-    trackEvent(
-      ANALYTICS_EVENTS.DATASET_DETAIL_VIEW,
-      `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/view`,
-      await getClientInfoFromHeaders()
+    const detailClientInfo = await getClientInfoFromHeaders();
+    after(() =>
+      trackEvent(
+        ANALYTICS_EVENTS.DATASET_DETAIL_VIEW,
+        `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/view`,
+        detailClientInfo,
+      ),
     );
 
     const areaName = areaInfo?.name || dataset.area.name;

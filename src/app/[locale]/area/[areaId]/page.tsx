@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { after } from "next/server";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { getAreaDataTypes } from "@/lib/area-templates";
@@ -36,12 +37,15 @@ export default async function AreaPage({ params, searchParams }: AreaPageProps) 
     notFound();
   }
 
-  trackEvent(
-    session?.user
-      ? ANALYTICS_EVENTS.AREA_VIEW_LOGGED_IN
-      : ANALYTICS_EVENTS.AREA_VIEW_LOGGED_OUT,
-    `/area/${areaId}/view`,
-    await getClientInfoFromHeaders()
+  const areaClientInfo = await getClientInfoFromHeaders();
+  after(() =>
+    trackEvent(
+      session?.user
+        ? ANALYTICS_EVENTS.AREA_VIEW_LOGGED_IN
+        : ANALYTICS_EVENTS.AREA_VIEW_LOGGED_OUT,
+      `/area/${areaId}/view`,
+      areaClientInfo,
+    ),
   );
 
   const breadcrumbItems = [

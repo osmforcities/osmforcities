@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
           },
         });
 
-        trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH_JOB, `/jobs/datasets/${dataset.id}/refresh`);
+        await trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH_JOB, `/jobs/datasets/${dataset.id}/refresh`);
 
         results.successful++;
       } catch (error) {
