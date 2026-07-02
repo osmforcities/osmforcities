@@ -74,6 +74,38 @@ export async function executeOverpassQuery(
   return data as OverpassResponse;
 }
 
+export async function countOverpassElements(query: string): Promise<number> {
+  preventExternalCallsInTests();
+
+  const countQuery = query
+    .replace(/\[timeout:\d+\]/, "[timeout:10]")
+    .replace(/out\s+[^;]+;\s*$/, "out count;");
+
+  const response = await fetch(OVERPASS_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "User-Agent": getUserAgent(),
+    },
+    body: `data=${encodeURIComponent(countQuery)}`,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Overpass API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const total = data?.elements?.[0]?.tags?.total;
+  if (total === undefined) {
+    throw new Error("Unexpected response format from Overpass count query");
+  }
+  const elementCount = parseInt(total, 10);
+  if (!Number.isInteger(elementCount)) {
+    throw new Error(`Invalid element count from Overpass: "${total}"`);
+  }
+  return elementCount;
+}
+
 export function convertOverpassToGeoJSON(
   overpassData: OverpassData
 ): FeatureCollection {

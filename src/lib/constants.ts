@@ -11,6 +11,25 @@ export const DEPRECATION_DAYS = 30;
 /** Simplification tolerance for area boundaries (reduces coordinate count while preserving detail) */
 export const BOUNDARY_SIMPLIFICATION_TOLERANCE = 0.00001;
 
+/** Maximum number of OSM elements allowed in a dataset */
+export const MAX_DATASET_ELEMENTS = 50_000;
+
+/** Nominatim addresstype values allowed for area search (city-level and below only) */
+export const ALLOWED_AREA_ADDRESS_TYPES = new Set([
+  "city",
+  "town",
+  "village",
+  "suburb",
+  "neighbourhood",
+  "hamlet",
+  "municipality",
+  "borough",
+  "quarter",
+  "city_district",
+  "district",
+  "island",
+]);
+
 /** Supported locales for translations */
 export const SUPPORTED_LOCALES = ["en", "pt-BR", "es"] as const;
 
