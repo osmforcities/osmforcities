@@ -68,13 +68,13 @@ describe("trackEvent", () => {
     expect(body.payload.website).toBe("test-website-id");
   });
 
-  it("forwards ip and userAgent as headers when clientInfo provided", async () => {
+  it("forwards ip as x-umami-client-ip and userAgent as headers when clientInfo provided", async () => {
     const clientInfo: ClientInfo = { ip: "1.2.3.4", userAgent: "TestAgent/1" };
     await trackEvent("sign_up", "/sign-up", clientInfo);
 
     const [, opts] = (fetch as ReturnType<typeof vi.fn>).mock.calls[0];
     expect((opts as RequestInit).headers).toMatchObject({
-      "x-forwarded-for": "1.2.3.4",
+      "x-umami-client-ip": "1.2.3.4",
       "user-agent": "TestAgent/1",
     });
   });

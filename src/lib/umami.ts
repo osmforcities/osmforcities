@@ -59,7 +59,7 @@ export async function trackEvent(
     "Content-Type": "application/json",
   };
 
-  if (clientInfo?.ip) fetchHeaders["x-forwarded-for"] = clientInfo.ip;
+  if (clientInfo?.ip) fetchHeaders["x-umami-client-ip"] = clientInfo.ip;
   if (clientInfo?.userAgent) fetchHeaders["user-agent"] = clientInfo.userAgent;
 
   try {
