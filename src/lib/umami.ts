@@ -78,6 +78,13 @@ export async function trackEvent(
             : "",
           language: clientInfo?.language ?? "",
           referrer: clientInfo?.referrer ?? "",
+          // Pass the visitor IP/UA in the payload (not just headers): Umami runs a
+          // full MaxMind lookup on payload.ip and skips its provider-header
+          // shortcut, so server-side events resolve country + region + city
+          // (headers alone yielded country only). This is Umami's documented
+          // server-side tracking pattern.
+          ...(clientInfo?.ip ? { ip: clientInfo.ip } : {}),
+          ...(clientInfo?.userAgent ? { userAgent: clientInfo.userAgent } : {}),
         },
       }),
     });
