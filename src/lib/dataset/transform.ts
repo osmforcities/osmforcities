@@ -28,6 +28,7 @@ type RawDataset = {
 function calculatePermissions(rawDataset: RawDataset, user: User | null) {
   return {
     canFeature: user?.isAdmin ?? false,
+    canRefresh: user?.isAdmin ?? false,
     canDelete: false,
     isFeatured: rawDataset.isFeatured ?? false,
   };

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse, after } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 import { trackEvent } from "@/lib/umami";
@@ -58,6 +58,11 @@ export async function POST(req: NextRequest) {
       errors: [] as string[],
     };
 
+    // Tracking runs inline (not after(), whose callbacks were dropped) but is
+    // collected and settled after the loop so a slow Umami call never delays the
+    // next dataset. trackEvent is bounded (5s) and never rejects.
+    const analyticsEvents: Promise<void>[] = [];
+
     for (const dataset of datasetsToUpdate) {
       try {
 
@@ -81,7 +86,12 @@ export async function POST(req: NextRequest) {
           },
         });
 
-        after(() => trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH_JOB, `/jobs/datasets/${dataset.id}/refresh`));
+        analyticsEvents.push(
+          trackEvent(
+            ANALYTICS_EVENTS.DATASET_REFRESH_JOB,
+            `/jobs/datasets/${dataset.id}/refresh`
+          )
+        );
 
         results.successful++;
       } catch (error) {
@@ -95,6 +105,8 @@ export async function POST(req: NextRequest) {
         results.errors.push(`Dataset ${dataset.id}: ${errorMessage}`);
       }
     }
+
+    await Promise.allSettled(analyticsEvents);
 
     return NextResponse.json({
       success: true,
