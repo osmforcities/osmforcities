@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 
 vi.mock("@/auth", () => ({
@@ -40,7 +41,7 @@ describe("PUT /api/datasets/[id]/feature", () => {
     const { auth } = await import("@/auth");
     vi.mocked(auth).mockResolvedValueOnce(null);
 
-    const request = new Request(
+    const request = new NextRequest(
       "http://localhost:3000/api/datasets/" + testDatasetId + "/feature",
       { method: "PUT" }
     );
@@ -55,7 +56,7 @@ describe("PUT /api/datasets/[id]/feature", () => {
   });
 
   it("should return 404 for non-existent dataset", async () => {
-    const request = new Request(
+    const request = new NextRequest(
       "http://localhost:3000/api/datasets/invalid-id/feature",
       { method: "PUT" }
     );
@@ -75,7 +76,7 @@ describe("PUT /api/datasets/[id]/feature", () => {
       select: { isFeatured: true },
     });
 
-    const request = new Request(
+    const request = new NextRequest(
       "http://localhost:3000/api/datasets/" + testDatasetId + "/feature",
       { method: "PUT" }
     );

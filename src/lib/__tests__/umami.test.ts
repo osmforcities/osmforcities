@@ -79,6 +79,25 @@ describe("trackEvent", () => {
     });
   });
 
+  it("also sends ip and userAgent in the payload so Umami resolves full city", async () => {
+    const clientInfo: ClientInfo = { ip: "1.2.3.4", userAgent: "TestAgent/1" };
+    await trackEvent("sign_up", "/sign-up", clientInfo);
+
+    const [, opts] = (fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+    const body = JSON.parse((opts as RequestInit).body as string);
+    expect(body.payload.ip).toBe("1.2.3.4");
+    expect(body.payload.userAgent).toBe("TestAgent/1");
+  });
+
+  it("omits ip/userAgent from payload when clientInfo is absent", async () => {
+    await trackEvent("dataset_refresh_job", "/datasets/refresh");
+
+    const [, opts] = (fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+    const body = JSON.parse((opts as RequestInit).body as string);
+    expect(body.payload.ip).toBeUndefined();
+    expect(body.payload.userAgent).toBeUndefined();
+  });
+
   it("never rejects when fetch fails (tracking must not break user flows)", async () => {
     vi.spyOn(global, "fetch").mockRejectedValue(new Error("network down"));
     await expect(trackEvent("dataset_save", "/datasets/1/save")).resolves.toBeUndefined();
