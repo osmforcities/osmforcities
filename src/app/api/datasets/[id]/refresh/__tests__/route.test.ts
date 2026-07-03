@@ -55,5 +55,9 @@ describe("POST /api/datasets/[id]/refresh", () => {
     const res = await call();
     expect(res.status).toBe(404);
     expect(prisma.dataset.findUnique).toHaveBeenCalledOnce();
+    expect(prisma.dataset.findUnique).toHaveBeenCalledWith({
+      where: { id: "does-not-exist" },
+      include: expect.any(Object),
+    });
   });
 });
