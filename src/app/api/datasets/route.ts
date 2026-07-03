@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
       include: { template: true },
     });
 
-    trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`, getClientInfo(req));
+    await trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`, getClientInfo(req));
 
     return NextResponse.json(dataset, { status: 201 });
   } catch (err) {

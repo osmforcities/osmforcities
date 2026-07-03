@@ -27,7 +27,14 @@ export async function GET(
       );
     }
 
-    trackEvent(ANALYTICS_EVENTS.DATASET_DOWNLOAD, `/datasets/${id}/download`, getClientInfo(_request));
+    // Await inline (not after()): after() callbacks in this route handler were
+    // unreliable and the download event was dropped. Save/unsave await inline and
+    // land reliably; match that. The event fetch is bounded to 5s and never throws.
+    await trackEvent(
+      ANALYTICS_EVENTS.DATASET_DOWNLOAD,
+      `/datasets/${id}/download`,
+      getClientInfo(_request),
+    );
 
     const safeName = `${dataset.template.name}-${dataset.cityName}.geojson`.replace(
       /[^\w.\-]+/g,

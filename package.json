@@ -1,6 +1,6 @@
 {
   "name": "osmforcities",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "private": true,
   "scripts": {
     "dev": "COMMIT_HASH=$(git rev-parse HEAD 2>/dev/null || echo 'unknown') next dev",
@@ -47,7 +47,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "html-to-text": "^9.0.5",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.2.0",
     "lucide-react": "^0.513.0",
     "maplibre-gl": "^5.6.0",
     "next": "15.5.18",

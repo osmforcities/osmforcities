@@ -173,6 +173,8 @@
     "basicInfo": "Información Básica",
     "refreshData": "Actualizar Datos",
     "refreshing": "Actualizando...",
+    "dataFetched": "Datos obtenidos {time}",
+    "dataNotFetched": "Datos aún no obtenidos",
     "save": "Guardar",
     "unsave": "Quitar",
     "saveTooltip": "Guardar para visitar más tarde",

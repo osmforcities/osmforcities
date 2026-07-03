@@ -24,7 +24,9 @@ export async function GET(request: NextRequest) {
     }
 
     if (!verificationResult.user.emailVerified) {
-      trackEvent(ANALYTICS_EVENTS.SIGN_UP, "/sign-up", getClientInfo(request));
+      await trackEvent(ANALYTICS_EVENTS.SIGN_UP, "/sign-up", getClientInfo(request));
+    } else {
+      await trackEvent(ANALYTICS_EVENTS.SIGN_IN, "/sign-in", getClientInfo(request));
     }
 
     await prisma.user.update({

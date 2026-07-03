@@ -79,6 +79,7 @@ async function getDatasetWithDetails(areaId: number, templateId: string, locale:
       createdAt: true,
       updatedAt: true,
       isActive: true,
+      isFeatured: true,
       template: {
         select: {
           id: true,
@@ -253,6 +254,7 @@ async function createDatasetOnDemand(
         createdAt: true,
         updatedAt: true,
         isActive: true,
+        isFeatured: true,
         template: {
           select: {
             id: true,
@@ -301,7 +303,7 @@ async function createDatasetOnDemand(
       },
     });
 
-    trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`);
+    await trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`);
 
     // Resolve template translations for the given locale
     const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);

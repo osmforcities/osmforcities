@@ -1,5 +1,35 @@
 # osmforcities
 
+## 1.13.0
+
+### Added
+
+- Admin-only manual dataset refresh with last-fetched timestamp caption [#346]
+- Analytics: track sign-in, sign-out, downloads, page views, and featured-toggle events [#335], [#336], [#344], [#345]
+
+### Changed
+
+- Send visitor IP via `x-umami-client-ip` so server-side events resolve the right city [#344]
+- Bound Umami fetch timeout and make event tracking non-blocking in routes [#335], [#336]
+- Batch cron refresh tracking and gate manual dataset refresh to admins [#346]
+
+### Fixed
+
+- Featured dataset toggle now reflects the dataset's real featured state on the detail page. The dataset query omitted `isFeatured`, so the button always initialized as "not featured" (requiring two clicks to enable and showing the wrong state after reload) [#335]
+- Admin status now refreshes from the database on every session check. Previously `isAdmin` was only written to the session token at sign-in, so an admin whose session predated their promotion (or whose token claims were reset by the next-auth upgrade) saw admin-only controls — including the featured toggle — hidden until signing out and back in [#335]
+- Token refresh now fails closed on deleted users and uses edge-runtime-safe logging [#335]
+
+### Security
+
+- Bump js-yaml to 4.2.0 (DoS fix in the merge operator) [#337]
+
+[#335]: https://github.com/osmforcities/osmforcities/pull/335
+[#336]: https://github.com/osmforcities/osmforcities/pull/336
+[#337]: https://github.com/osmforcities/osmforcities/pull/337
+[#344]: https://github.com/osmforcities/osmforcities/pull/344
+[#345]: https://github.com/osmforcities/osmforcities/pull/345
+[#346]: https://github.com/osmforcities/osmforcities/pull/346
+
 ## 1.12.0
 
 ### Added

@@ -22,7 +22,7 @@ import { DatasetUpsellPage } from "@/components/dataset/dataset-upsell-page";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import type { TranslationFunction } from "@/lib/types";
-import { trackEvent, getClientInfoFromHeaders } from "@/lib/umami";
+import { trackEventAfterResponse } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { getAreaBoundary } from "@/lib/area-boundary";
 import { MAX_SAVES_PER_USER } from "@/lib/constants";
@@ -63,10 +63,9 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
       return <AreaNotFoundError areaId={areaId} />;
     }
 
-    trackEvent(
+    await trackEventAfterResponse(
       ANALYTICS_EVENTS.DATASET_UPSELL_VIEW,
       `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/upsell`,
-      await getClientInfoFromHeaders()
     );
 
     return (
@@ -130,10 +129,9 @@ async function AreaTemplateDatasetView({
 
     const dataset = transformDataset(result.dataset, session?.user || null, locale, { isSaved, skipTemplateResolution: true });
 
-    trackEvent(
+    await trackEventAfterResponse(
       ANALYTICS_EVENTS.DATASET_DETAIL_VIEW,
       `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/view`,
-      await getClientInfoFromHeaders()
     );
 
     const areaName = areaInfo?.name || dataset.area.name;

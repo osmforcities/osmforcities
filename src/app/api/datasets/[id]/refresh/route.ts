@@ -17,12 +17,17 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Manual refresh is an admin-only action. Regular users see the last-fetched
+    // timestamp instead of a refresh control.
+    if (!user.isAdmin) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const { id: datasetId } = await params;
 
-    const dataset = await prisma.dataset.findFirst({
+    const dataset = await prisma.dataset.findUnique({
       where: {
         id: datasetId,
-        userId: user.id,
       },
       include: {
         template: {
@@ -85,12 +90,13 @@ export async function POST(
       },
     });
 
-    trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
+    await trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
 
     return NextResponse.json({
       success: true,
       dataset: updatedDataset,
       dataCount: snapshot.dataCount,
+      lastChecked: updatedDataset.lastChecked,
     });
   } catch (error) {
     console.error("Error refreshing dataset:", error);

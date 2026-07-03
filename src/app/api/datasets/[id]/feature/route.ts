@@ -1,9 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
+import { trackEvent, getClientInfo } from "@/lib/umami";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -40,6 +42,13 @@ export async function PUT(
     }
 
     const [result] = rows;
+    await trackEvent(
+      result.isFeatured
+        ? ANALYTICS_EVENTS.DATASET_FEATURED
+        : ANALYTICS_EVENTS.DATASET_UNFEATURED,
+      `/datasets/${result.id}/feature`,
+      getClientInfo(request),
+    );
     return NextResponse.json({ id: result.id, isFeatured: result.isFeatured });
   } catch (error) {
     console.error("Error toggling featured status:", error);

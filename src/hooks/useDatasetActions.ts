@@ -82,7 +82,12 @@ export function useDatasetActions() {
 
   const refreshDataset = async (
     datasetId: string
-  ): Promise<{ success: boolean; error?: string; dataCount?: number }> => {
+  ): Promise<{
+    success: boolean;
+    error?: string;
+    dataCount?: number;
+    lastChecked?: Date;
+  }> => {
     setIsLoading(true);
     try {
       const result: RefreshResponse = await apiClient.post(
@@ -92,6 +97,7 @@ export function useDatasetActions() {
       return {
         success: result.success,
         dataCount: result.dataCount,
+        lastChecked: result.lastChecked,
       };
     } catch (error) {
       console.error("Error refreshing dataset:", error);
