@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse, after } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 import { trackEvent } from "@/lib/umami";
@@ -81,7 +81,11 @@ export async function POST(req: NextRequest) {
           },
         });
 
-        after(() => trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH_JOB, `/jobs/datasets/${dataset.id}/refresh`));
+        // Await inline (not after()): after() callbacks in this route handler
+        // were dropped, so scheduled refreshes never tracked. This is a
+        // background cron with no client waiting, so blocking on the bounded,
+        // non-throwing event is fine.
+        await trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH_JOB, `/jobs/datasets/${dataset.id}/refresh`);
 
         results.successful++;
       } catch (error) {
