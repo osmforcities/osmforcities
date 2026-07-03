@@ -30,6 +30,7 @@ export function DatasetActionsSection({
   const [isSaved, setIsSaved] = useState(dataset.isSaved || false);
   const [saveCount, setSaveCount] = useState(savedCount);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastChecked, setLastChecked] = useState(dataset.lastChecked);
   const [isFeatured, setIsFeatured] = useState(dataset.isFeatured ?? false);
   const [isFeaturingLoading, setIsFeaturingLoading] = useState(false);
   const [hasFeatureError, setHasFeatureError] = useState(false);
@@ -87,7 +88,9 @@ export function DatasetActionsSection({
     setIsRefreshing(true);
     try {
       const result = await refreshDataset(dataset.id);
-      if (!result.success) {
+      if (result.success) {
+        setLastChecked(result.lastChecked ?? new Date());
+      } else {
         console.error("Failed to refresh dataset:", result.error);
       }
     } catch (error) {
@@ -206,9 +209,9 @@ export function DatasetActionsSection({
         {/* Last-fetched caption, shown to everyone (admins also get the refresh control) */}
         <p className="flex items-center gap-1 pt-1 text-xs text-muted-foreground">
           <Clock className="h-3 w-3" />
-          {dataset.lastChecked
+          {lastChecked
             ? t("dataFetched", {
-                time: formatRelativeTime(dataset.lastChecked, locale),
+                time: formatRelativeTime(lastChecked, locale),
               })
             : t("dataNotFetched")}
         </p>

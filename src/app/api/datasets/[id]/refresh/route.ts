@@ -96,6 +96,7 @@ export async function POST(
       success: true,
       dataset: updatedDataset,
       dataCount: snapshot.dataCount,
+      lastChecked: updatedDataset.lastChecked,
     });
   } catch (error) {
     console.error("Error refreshing dataset:", error);
