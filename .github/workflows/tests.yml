@@ -21,6 +21,12 @@ jobs:
     needs: checks
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 2-shard matrix: each shard runs on its own runner with its own
+        # Postgres service, halving wall-clock CI time.
+        shard: [1/2, 2/2]
     services:
       postgres:
         image: postgres:15
@@ -61,7 +67,7 @@ jobs:
         run: pnpm playwright install chromium --with-deps
 
       - name: Run Playwright tests
-        run: pnpm test:playwright
+        run: pnpm test:playwright -- --shard=${{ matrix.shard }}
         env:
           NODE_ENV: test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5433/osmforcities-test
@@ -74,7 +80,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report
+          name: playwright-report-shard-${{ matrix.shard }}
           path: playwright-report/
           retention-days: 30
 

@@ -5,7 +5,11 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : 2,
+  // 2 workers in CI: tests create unique users per run (timestamped emails) and
+  // clean up after themselves, so concurrent DB access is safe. Combined with
+  // the 2-shard matrix in .github/workflows/tests.yml this gives up to 4-way
+  // parallelism.
+  workers: process.env.CI ? 2 : 2,
   timeout: 60 * 1000,
   expect: {
     timeout: 30 * 1000,
