@@ -159,7 +159,7 @@
     "datasetDetails": "Dataset Details",
     "datasetDescription": "This dataset monitors {template} features in {city}.",
     "backToDatasets": "← back to datasets",
-    "datasetTitle": "{template} in {city}",
+    "datasetTitle": "{template}",
     "invalidData": "Invalid Data",
     "invalidDataMessage": "The dataset contains invalid GeoJSON data.",
     "downloadGeoJSON": "Download GeoJSON",

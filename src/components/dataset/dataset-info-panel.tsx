@@ -42,12 +42,11 @@ export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
   return (
     <div className="space-y-4">
       <h2
-        className="text-lg font-semibold leading-tight"
+        className="text-xl font-semibold leading-tight"
         data-testid="dataset-template-name"
       >
         {t("datasetTitle", {
           template: dataset.template.name,
-          city: dataset.area.name,
         })}
       </h2>
 
