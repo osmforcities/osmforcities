@@ -3,9 +3,8 @@
 export function DatasetLoadingSkeleton() {
   return (
     <div
-      className="bg-gray-50 lg:flex lg:overflow-hidden"
+      className="bg-gray-50 lg:flex lg:overflow-hidden lg:h-[calc(100dvh_-_var(--nav-height))]"
       data-testid="dataset-loading-skeleton"
-      style={{ height: "calc(100dvh - var(--nav-height))" }}
     >
       {/* Side Panel */}
       <aside className="bg-white border-b lg:border-b-0 lg:border-r border-gray-200 p-6 flex flex-col lg:w-96 lg:flex-shrink-0 lg:h-full">
