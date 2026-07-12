@@ -129,13 +129,8 @@ test.describe("Area Page", () => {
     await expect(firstDatasetLink.locator("h3")).toBeVisible(); // Dataset name
   });
 
-  test("should handle invalid area ID gracefully", async ({ page }) => {
-    // Navigate to invalid area page
-    await page.goto(getLocalizedPath("/area/invalid"));
-
-    // Should redirect to 404 or show error
-    await expect(page.locator("text=404")).toBeVisible({ timeout: 10000 });
-  });
+  // Invalid area ID 404 handling is covered by dataset-page.spec.ts.
+  // pt-BR template rendering is covered by dataset-translations.spec.ts.
 
   test("should display templates in Portuguese (pt-BR)", async ({ page }) => {
     // Mock Nominatim response for area details
