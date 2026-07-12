@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { getTranslations, getLocale } from "next-intl/server";
 import { transformDataset } from "@/lib/dataset/transform";
 import { DatasetInteractiveSection } from "@/components/dataset/dataset-interactive-section";
-import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Link } from "@/i18n/navigation";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
@@ -21,7 +20,6 @@ import {
 import { DatasetUpsellPage } from "@/components/dataset/dataset-upsell-page";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import type { TranslationFunction } from "@/lib/types";
 import { trackEventAfterResponse } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { getAreaBoundary } from "@/lib/area-boundary";
@@ -38,7 +36,6 @@ type DatasetPageProps = {
 
 export default async function DatasetPage({ params }: DatasetPageProps) {
   const { areaId, templateId } = await params;
-  const navT = await getTranslations("Navigation");
 
   const osmRelationId = parseInt(areaId, 10);
   if (isNaN(osmRelationId) || osmRelationId <= 0) {
@@ -82,7 +79,6 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
       <AreaTemplateDatasetView
         areaId={osmRelationId}
         templateId={templateId}
-        navT={navT}
         session={session}
       />
     </Suspense>
@@ -92,12 +88,10 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
 async function AreaTemplateDatasetView({
   areaId,
   templateId,
-  navT,
   session,
 }: {
   areaId: number;
   templateId: string;
-  navT: TranslationFunction;
   session: Awaited<ReturnType<typeof auth>> | null;
 }) {
   const locale = await getLocale();
@@ -135,13 +129,6 @@ async function AreaTemplateDatasetView({
     );
 
     const areaName = areaInfo?.name || dataset.area.name;
-    const breadcrumbItems = [
-      { label: navT("home"), href: "/" },
-      { label: areaInfo?.country || "Area" },
-      ...(areaInfo?.state ? [{ label: areaInfo.state }] : []),
-      { label: areaName, href: `/area/${areaId}` },
-      { label: dataset.template.name },
-    ];
 
     // Empty state: dataset has no features in this area.
     if (result.dataset.dataCount === 0) {
@@ -152,10 +139,6 @@ async function AreaTemplateDatasetView({
             className="max-w-7xl mx-auto px-4 py-8 flex flex-col"
             style={{ minHeight: "calc(100vh - var(--nav-height))" }}
           >
-            <div className="mb-8 flex-shrink-0">
-              <BreadcrumbNav items={breadcrumbItems} />
-            </div>
-
             <EmptyState
               type="no-data"
               title={datasetT("emptyTitle", {
@@ -181,17 +164,8 @@ async function AreaTemplateDatasetView({
     const boundary = await getAreaBoundary(areaId);
 
     return (
-      <div className="bg-gray-50">
-        <div
-          className="max-w-7xl mx-auto px-4 py-8 flex flex-col"
-          style={{ minHeight: "calc(100vh - var(--nav-height))" }}
-        >
-          <div className="mb-8 flex-shrink-0">
-            <BreadcrumbNav items={breadcrumbItems} />
-          </div>
-
-          <DatasetInteractiveSection dataset={dataset} boundary={boundary} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
-        </div>
+      <div className="bg-gray-50 lg:h-[calc(100dvh_-_var(--nav-height))] lg:flex lg:overflow-hidden">
+        <DatasetInteractiveSection dataset={dataset} boundary={boundary} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
       </div>
     );
   } catch (error) {

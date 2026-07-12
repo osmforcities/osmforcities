@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
+import { ArrowLeft } from "lucide-react";
 import type { Feature, FeatureCollection } from "geojson";
 import type { Dataset } from "@/schemas/dataset";
+import { Link } from "@/i18n/navigation";
 import { DatasetMapWrapper, type DatasetFullMapHandle } from "@/components/dataset/map-wrapper";
 import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
 import { DatasetStatsTable } from "@/components/dataset/dataset-stats-table";
@@ -24,6 +27,7 @@ export function DatasetInteractiveSection({
 }: DatasetInteractiveSectionProps) {
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
   const mapRef = useRef<DatasetFullMapHandle>(null);
+  const t = useTranslations("DatasetPage");
 
   useEffect(() => {
     // Expose test hook in test mode or development
@@ -37,42 +41,44 @@ export function DatasetInteractiveSection({
   }, []);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1 min-h-0">
+    <div className="flex flex-col lg:flex-row lg:flex-1 lg:h-full lg:min-h-0 lg:overflow-hidden">
       {/* Side Panel */}
-      <div className="lg:col-span-1">
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 h-full">
-          <div className="flex flex-col h-full">
-            {selectedFeature ? (
-              <FeatureDetailPanel
-                feature={selectedFeature}
-                onBack={() => {
-                  setSelectedFeature(null);
-                  mapRef.current?.deselectFeature();
-                }}
-              />
-            ) : (
-              <>
-                <div className="flex-1 overflow-y-auto space-y-6" data-testid="dataset-sidebar-default">
-                  <DatasetInfoPanel dataset={dataset} />
-                  <DatasetStatsTable dataset={dataset} />
-                </div>
-                <DatasetActionsSection dataset={dataset} savedCount={savedCount} saveLimit={saveLimit} />
-              </>
-            )}
-          </div>
-        </div>
-      </div>
+      <aside className="bg-white border-b lg:border-b-0 lg:border-r border-gray-200 p-6 flex flex-col lg:w-96 lg:flex-shrink-0 lg:h-full">
+        {selectedFeature ? (
+          <FeatureDetailPanel
+            feature={selectedFeature}
+            onBack={() => {
+              setSelectedFeature(null);
+              mapRef.current?.deselectFeature();
+            }}
+          />
+        ) : (
+          <>
+            <Link
+              href={`/area/${dataset.area.id}`}
+              aria-label={t("backToAreaLabel", { area: dataset.area.name })}
+              className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 -ml-1 mb-4 transition-colors"
+            >
+              <ArrowLeft className="size-4" />
+              {dataset.area.name}
+            </Link>
+            <div className="flex-1 overflow-y-auto space-y-6" data-testid="dataset-sidebar-default">
+              <DatasetInfoPanel dataset={dataset} />
+              <DatasetStatsTable dataset={dataset} />
+            </div>
+            <DatasetActionsSection dataset={dataset} savedCount={savedCount} saveLimit={saveLimit} />
+          </>
+        )}
+      </aside>
 
       {/* Map Panel */}
-      <div className="lg:col-span-2">
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden h-full">
-          <DatasetMapWrapper
-            ref={mapRef}
-            dataset={dataset}
-            boundary={boundary}
-            onFeatureSelect={setSelectedFeature}
-          />
-        </div>
+      <div className="lg:flex-1 lg:h-full h-[60vh]">
+        <DatasetMapWrapper
+          ref={mapRef}
+          dataset={dataset}
+          boundary={boundary}
+          onFeatureSelect={setSelectedFeature}
+        />
       </div>
     </div>
   );
