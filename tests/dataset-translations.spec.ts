@@ -15,7 +15,7 @@ test.describe("Dataset Template Translations", () => {
 
     await page.goto(`/en/area/${areaId}/dataset/${templateId}`);
     await page.waitForLoadState("domcontentloaded");
-    await expect(page.locator("[data-testid='breadcrumb-nav']").getByText("Bicycle Parking")).toBeVisible();
+    await expect(page.getByTestId("dataset-template-name")).toContainText("Bicycle Parking");
 
     await cleanupTestUser(testUser.id);
   });
@@ -28,7 +28,7 @@ test.describe("Dataset Template Translations", () => {
 
     await page.goto(`/pt-BR/area/${areaId}/dataset/${templateId}`);
     await page.waitForLoadState("domcontentloaded");
-    await expect(page.locator("[data-testid='breadcrumb-nav']").getByText("Estacionamento para bicicletas")).toBeVisible();
+    await expect(page.getByTestId("dataset-template-name")).toContainText("Estacionamento para bicicletas");
 
     await cleanupTestUser(ptUser.id);
   });
@@ -41,7 +41,7 @@ test.describe("Dataset Template Translations", () => {
 
     await page.goto(`/es/area/${areaId}/dataset/${templateId}`);
     await page.waitForLoadState("domcontentloaded");
-    await expect(page.locator("[data-testid='breadcrumb-nav']").getByText("Estacionamiento de bicicletas")).toBeVisible();
+    await expect(page.getByTestId("dataset-template-name")).toContainText("Estacionamiento de bicicletas");
 
     await cleanupTestUser(esUser.id);
   });

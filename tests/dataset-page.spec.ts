@@ -38,13 +38,6 @@ test.describe("Dataset Page", () => {
       await expect(page.locator("text=Template Not Found")).toBeVisible();
     }
   });
-
-  test("should display breadcrumb navigation", async ({ page }) => {
-    await page.goto("/area/298470/dataset/bicycle-parking");
-
-    // Should show breadcrumb navigation
-    await expect(page.locator("[data-testid='breadcrumb-nav']")).toBeVisible();
-  });
 });
 
 test.describe.serial("Feature detail panel", () => {

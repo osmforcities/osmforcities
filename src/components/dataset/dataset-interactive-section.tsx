@@ -37,42 +37,36 @@ export function DatasetInteractiveSection({
   }, []);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1 min-h-0">
+    <div className="flex flex-col lg:flex-row lg:flex-1 lg:h-full lg:min-h-0 lg:overflow-hidden">
       {/* Side Panel */}
-      <div className="lg:col-span-1">
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 h-full">
-          <div className="flex flex-col h-full">
-            {selectedFeature ? (
-              <FeatureDetailPanel
-                feature={selectedFeature}
-                onBack={() => {
-                  setSelectedFeature(null);
-                  mapRef.current?.deselectFeature();
-                }}
-              />
-            ) : (
-              <>
-                <div className="flex-1 overflow-y-auto space-y-6" data-testid="dataset-sidebar-default">
-                  <DatasetInfoPanel dataset={dataset} />
-                  <DatasetStatsTable dataset={dataset} />
-                </div>
-                <DatasetActionsSection dataset={dataset} savedCount={savedCount} saveLimit={saveLimit} />
-              </>
-            )}
-          </div>
-        </div>
-      </div>
+      <aside className="bg-white border-b lg:border-b-0 lg:border-r border-gray-200 p-6 flex flex-col lg:w-96 lg:flex-shrink-0 lg:h-full">
+        {selectedFeature ? (
+          <FeatureDetailPanel
+            feature={selectedFeature}
+            onBack={() => {
+              setSelectedFeature(null);
+              mapRef.current?.deselectFeature();
+            }}
+          />
+        ) : (
+          <>
+            <div className="flex-1 overflow-y-auto space-y-6" data-testid="dataset-sidebar-default">
+              <DatasetInfoPanel dataset={dataset} />
+              <DatasetStatsTable dataset={dataset} />
+            </div>
+            <DatasetActionsSection dataset={dataset} savedCount={savedCount} saveLimit={saveLimit} />
+          </>
+        )}
+      </aside>
 
       {/* Map Panel */}
-      <div className="lg:col-span-2">
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden h-full">
-          <DatasetMapWrapper
-            ref={mapRef}
-            dataset={dataset}
-            boundary={boundary}
-            onFeatureSelect={setSelectedFeature}
-          />
-        </div>
+      <div className="lg:flex-1 lg:h-full h-[60vh]">
+        <DatasetMapWrapper
+          ref={mapRef}
+          dataset={dataset}
+          boundary={boundary}
+          onFeatureSelect={setSelectedFeature}
+        />
       </div>
     </div>
   );
