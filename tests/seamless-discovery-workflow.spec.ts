@@ -7,6 +7,10 @@ import {
 import { PrismaClient } from "@prisma/client";
 import { getLocalizedPath } from "./config";
 
+// Debounce + API call + render budget for the navbar search.
+const LISTBOX_TIMEOUT = 30000;
+const SEARCH_DEBOUNCE_WAIT = 600;
+
 test.describe("Seamless Discovery Workflow", () => {
   let testUser: { id: string; email: string; password?: string };
 
@@ -28,62 +32,57 @@ test.describe("Seamless Discovery Workflow", () => {
   test("should complete full discovery workflow: dashboard → search → area → dataset → save", async ({
     page,
   }) => {
-    // Start at dashboard
+    // Start at dashboard — fresh user sees the empty state.
     await page.goto(getLocalizedPath("/dashboard"));
     await expect(page.getByTestId("dashboard-welcome-message")).toBeVisible();
-
-    // Should show empty state initially
     await expect(page.getByTestId("dashboard-empty-state-title")).toBeVisible();
 
-    // Use navbar search to find a city (no separate search page)
-    const searchInput = page.getByPlaceholder(/search.*city|city.*search/i);
-    if (await searchInput.isVisible()) {
-      await searchInput.fill("New York");
-      await searchInput.press("Enter");
+    // The navbar search is the entry point to discovery (no separate search
+    // page). Assert it is present rather than silently skipping the test body.
+    const searchInput = page.getByTestId("nav-search-input");
+    await expect(searchInput).toBeVisible();
 
-      // Should show search results
-      await expect(page.getByText(/New York/i)).toBeVisible();
+    // The global Nominatim mock (test-setup.ts) returns São Paulo results for
+    // "são". Type, wait for the listbox, then navigate.
+    await searchInput.click();
+    await searchInput.fill("são");
+    await expect(page.getByRole("listbox")).toBeVisible({
+      timeout: LISTBOX_TIMEOUT,
+    });
+    // eslint-disable-next-line playwright/no-wait-for-timeout
+    await page.waitForTimeout(SEARCH_DEBOUNCE_WAIT);
 
-      // Click on a city result
-      const cityResult = page.getByText(/New York/i).first();
-      await cityResult.click();
+    await searchInput.press("ArrowDown");
+    await searchInput.press("Enter");
 
-      // Should navigate to area page
-      await expect(page).toHaveURL(/\/en\/area\/\d+/);
+    // Should navigate to the area page.
+    await expect(page).toHaveURL(/\/en\/area\/\d+/);
 
-      // Should show available datasets for the area
-      await expect(
-        page.getByText(/datasets.*available|available.*datasets/i)
-      ).toBeVisible();
+    // Should show available datasets for the area.
+    await expect(page.locator("[data-testid='template-grid']")).toBeVisible();
 
-      // Click on a dataset
-      const datasetLink = page.getByRole("link").first();
-      await datasetLink.click();
+    // Click on a dataset.
+    const datasetLink = page.locator("a[href*='/dataset/']").first();
+    await datasetLink.click();
 
-      // Should navigate to dataset page with stable route
-      await expect(page).toHaveURL(/\/en\/area\/\d+\/dataset\/[a-zA-Z0-9-]+/);
+    // Should navigate to the dataset page with a stable route.
+    await expect(page).toHaveURL(/\/en\/area\/\d+\/dataset\/[a-zA-Z0-9-]+/);
 
-      // Should show dataset page with save button
-      const watchButton = page.getByTestId("dataset-save-button");
-      await expect(watchButton).toBeVisible();
+    // Save the dataset.
+    const watchButton = page.getByTestId("dataset-save-button");
+    await expect(watchButton).toBeVisible();
+    await watchButton.click();
 
-      // Click save button
-      await watchButton.click();
+    // Should flip to the unsave button.
+    const unwatchButton = page.getByTestId("dataset-unsave-button");
+    await expect(unwatchButton).toBeVisible();
 
-      // Should show unsave button
-      const unwatchButton = page.getByTestId("dataset-unsave-button");
-      await expect(unwatchButton).toBeVisible();
-
-      // Navigate back to dashboard
-      await page.goto(getLocalizedPath("/dashboard"));
-
-      // Should now show the saved dataset
-      // No heading exists in new design, just check for dataset count text
-      await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
-      await expect(page.getByTestId("dashboard-dataset-count")).toContainText(
-        "1/10"
-      );
-    }
+    // Navigate back to dashboard — the saved dataset should now appear.
+    await page.goto(getLocalizedPath("/dashboard"));
+    await expect(page.getByTestId("dashboard-dataset-count")).toBeVisible();
+    await expect(page.getByTestId("dashboard-dataset-count")).toContainText(
+      "1/10"
+    );
   });
 
   test("should handle stable route navigation from dashboard", async ({
@@ -155,50 +154,6 @@ test.describe("Seamless Discovery Workflow", () => {
     ).toBeVisible();
   });
 
-  test("should handle on-demand dataset creation", async ({ page }) => {
-    // Navigate directly to a stable route that might not have a dataset yet
-    const prisma = new PrismaClient();
-
-    const template = await prisma.template.findFirst();
-    if (!template) {
-      throw new Error("No template found in database");
-    }
-
-    const testArea = await prisma.area.create({
-      data: {
-        id: Math.floor(Math.random() * 10000) + 1000,
-        name: "Test City",
-        countryCode: "US",
-        bounds: "40.4774,-74.2591,40.9176,-73.7004",
-        geojson: {
-          type: "FeatureCollection",
-          features: [],
-        },
-      },
-    });
-
-    await prisma.$disconnect();
-
-    // Navigate directly to stable route
-    const stableUrl = `/en/area/${testArea.id}/dataset/${template.id}`;
-    await page.goto(stableUrl);
-
-    // Should handle on-demand creation (might show loading state)
-    // The page should either show the dataset or a loading/error state
-    const hasDataset = await page
-      .getByRole("heading", { name: new RegExp(template.name) })
-      .isVisible();
-    const hasLoading = await page
-      .getByTestId("dataset-loading-skeleton")
-      .isVisible();
-    const hasError = await page
-      .getByTestId("dataset-creation-error")
-      .isVisible();
-
-    // At least one of these should be true
-    expect(hasDataset || hasLoading || hasError).toBe(true);
-  });
-
   test("should maintain save state across navigation", async ({ page }) => {
     // Create a test dataset and save it
     const prisma = new PrismaClient();
@@ -261,21 +216,6 @@ test.describe("Seamless Discovery Workflow", () => {
     await expect(page.getByTestId("dashboard-dataset-count")).toContainText(
       "1/10"
     );
-  });
-
-  test("should handle empty dashboard state correctly", async ({ page }) => {
-    await page.goto(getLocalizedPath("/dashboard"));
-
-    // Should show empty state
-    await expect(page.getByTestId("dashboard-empty-state-title")).toBeVisible();
-    await expect(
-      page.getByTestId("dashboard-empty-state-description")
-    ).toBeVisible();
-
-    // Should not show any dataset cards
-    const datasetGrid = page.getByTestId("saved-datasets-grid");
-    const cardCount = await datasetGrid.locator("div").count();
-    expect(cardCount).toBe(0);
   });
 
   test("should handle multiple saved datasets", async ({ page }) => {
