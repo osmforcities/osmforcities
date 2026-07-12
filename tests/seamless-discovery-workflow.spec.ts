@@ -151,7 +151,7 @@ test.describe("Seamless Discovery Workflow", () => {
       page.getByRole("heading", { name: new RegExp(template.name) })
     ).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: /Test City/ })
+      page.getByRole("link", { name: /Test City/ })
     ).toBeVisible();
   });
 
