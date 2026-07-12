@@ -127,6 +127,7 @@
     "emptyTitle": "Nenhum {dataset} encontrado em {area}",
     "emptyDescription": "Este conjunto de dados ainda não tem feições nesta área. Pode não existir aqui, ou os dados ainda não foram mapeados no OpenStreetMap.",
     "backToArea": "← Voltar para {area}",
+    "backToAreaLabel": "Voltar para {area}",
     "datasetStats": "Estatísticas do Conjunto de Dados",
     "category": "Categoria",
     "totalFeatures": "Total de Feições",

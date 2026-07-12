@@ -56,10 +56,11 @@ export function DatasetInteractiveSection({
           <>
             <Link
               href={`/area/${dataset.area.id}`}
+              aria-label={t("backToAreaLabel", { area: dataset.area.name })}
               className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 -ml-1 mb-4 transition-colors"
             >
               <ArrowLeft className="size-4" />
-              {t("backToArea", { area: dataset.area.name })}
+              {dataset.area.name}
             </Link>
             <div className="flex-1 overflow-y-auto space-y-6" data-testid="dataset-sidebar-default">
               <DatasetInfoPanel dataset={dataset} />

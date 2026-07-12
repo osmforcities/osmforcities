@@ -128,6 +128,7 @@
     "emptyTitle": "No {dataset} found in {area}",
     "emptyDescription": "This dataset has no features in this area yet. It may not exist here, or the data has not been mapped in OpenStreetMap.",
     "backToArea": "← Back to {area}",
+    "backToAreaLabel": "Back to {area}",
     "datasetStats": "Dataset Stats",
     "category": "Category",
     "totalFeatures": "Total Features",

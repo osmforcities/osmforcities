@@ -127,6 +127,7 @@
     "emptyTitle": "No se encontró ningún {dataset} en {area}",
     "emptyDescription": "Este conjunto de datos aún no tiene elementos en esta área. Puede que no exista aquí, o que los datos no se hayan mapeado en OpenStreetMap.",
     "backToArea": "← Volver a {area}",
+    "backToAreaLabel": "Volver a {area}",
     "datasetStats": "Estadísticas del Conjunto de Datos",
     "category": "Categoría",
     "totalFeatures": "Total de Elementos",
