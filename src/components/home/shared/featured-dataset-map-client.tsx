@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Map, { Layer, NavigationControl, Source } from "react-map-gl/maplibre";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Map, { NavigationControl } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Link } from "react-aria-components";
@@ -14,6 +14,8 @@ import { calculateBbox } from "@/lib/utils";
 import type { Bbox } from "@/types/geojson";
 import type { ProcessedDatasetStats } from "@/lib/dataset-stats";
 import { formatCompactNumber } from "@/components/ui/dataset-card";
+import { MapLayers } from "@/components/dataset/map/layers";
+import { processOSMFeaturesForVisualization } from "@/lib/osm-data-processor";
 
 type FeaturedDatasetMapClientProps = {
   datasetId: string;
@@ -23,17 +25,6 @@ type FeaturedDatasetMapClientProps = {
   stats: ProcessedDatasetStats;
   href: string;
 };
-
-// MapLibre paint can't read CSS variables; resolve design-system tokens at
-// mount so the map follows the active theme. Fallbacks match globals.css.
-function resolveAccentColors() {
-  const styles = getComputedStyle(document.documentElement);
-  const accent =
-    styles.getPropertyValue("--color-olive-600").trim() || "#4d5d33";
-  const accentContrast =
-    styles.getPropertyValue("--color-olive-100").trim() || "#eef3ea";
-  return { accent, accentContrast };
-}
 
 export function FeaturedDatasetMapClient({
   datasetId,
@@ -46,13 +37,8 @@ export function FeaturedDatasetMapClient({
   const t = useTranslations("Home.featuredDataset");
   const mapRef = useRef<MapRef | null>(null);
   const [geojson, setGeojson] = useState<FeatureCollection | null>(null);
-  const [colors, setColors] = useState<ReturnType<
-    typeof resolveAccentColors
-  > | null>(null);
 
   useEffect(() => {
-    setColors(resolveAccentColors());
-
     const controller = new AbortController();
     fetch(`/api/datasets/${datasetId}/geojson`, { signal: controller.signal })
       .then((response) => (response.ok ? response.json() : null))
@@ -65,6 +51,12 @@ export function FeaturedDatasetMapClient({
 
     return () => controller.abort();
   }, [datasetId]);
+
+  // Same processing as the dataset page map so rendering matches it exactly
+  const processedData = useMemo(
+    () => (geojson ? processOSMFeaturesForVisualization(geojson) : null),
+    [geojson]
+  );
 
   // Server bounds cover most datasets; fit to the data when the area has none
   useEffect(() => {
@@ -100,38 +92,8 @@ export function FeaturedDatasetMapClient({
         reuseMaps
         style={{ width: "100%", height: "100%" }}
       >
-        {geojson && colors && (
-          <Source id="featured-dataset" type="geojson" data={geojson}>
-            <Layer
-              id="featured-dataset-fill"
-              type="fill"
-              filter={["==", "$type", "Polygon"]}
-              paint={{
-                "fill-color": colors.accent,
-                "fill-opacity": 0.2,
-              }}
-            />
-            <Layer
-              id="featured-dataset-line"
-              type="line"
-              filter={["!=", "$type", "Point"]}
-              paint={{
-                "line-color": colors.accent,
-                "line-width": 2,
-              }}
-            />
-            <Layer
-              id="featured-dataset-point"
-              type="circle"
-              filter={["==", "$type", "Point"]}
-              paint={{
-                "circle-radius": 4,
-                "circle-color": colors.accent,
-                "circle-stroke-width": 1.5,
-                "circle-stroke-color": colors.accentContrast,
-              }}
-            />
-          </Source>
+        {processedData && (
+          <MapLayers geoJSONData={processedData} categoricalTheme={null} />
         )}
         <div className="absolute right-3 bottom-3">
           <NavigationControl showCompass={false} visualizePitch={false} />
