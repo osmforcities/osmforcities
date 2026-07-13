@@ -35,6 +35,7 @@ export async function refreshTokenClaims(token: JWT): Promise<JWT> {
   type LookupResult = { isAdmin: boolean; language: string | null } | null | typeof TIMED_OUT;
 
   let result: LookupResult;
+  let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     const lookup = prisma.user
       .findUnique({
@@ -45,9 +46,9 @@ export async function refreshTokenClaims(token: JWT): Promise<JWT> {
 
     result = await Promise.race<LookupResult>([
       lookup,
-      new Promise<LookupResult>((resolve) =>
-        setTimeout(() => resolve(TIMED_OUT), CLAIM_REFRESH_TIMEOUT_MS)
-      ),
+      new Promise<LookupResult>((resolve) => {
+        timer = setTimeout(() => resolve(TIMED_OUT), CLAIM_REFRESH_TIMEOUT_MS);
+      }),
     ]);
   } catch (error) {
     // console.error (not the winston logger) — this module is imported by the
@@ -57,6 +58,11 @@ export async function refreshTokenClaims(token: JWT): Promise<JWT> {
       error,
     });
     return token;
+  } finally {
+    // Clear the pending timer so it doesn't linger on the event loop when the
+    // lookup won the race (the common case). refreshTokenClaims runs on every
+    // authenticated request, so uncleared timers would accumulate under load.
+    if (timer) clearTimeout(timer);
   }
 
   if (result === TIMED_OUT) {

@@ -73,4 +73,24 @@ describe("refreshTokenClaims", () => {
 
     expect(result.isAdmin).toBe(true);
   });
+
+  it("preserves existing claims when the DB lookup times out", async () => {
+    // Never resolves — simulates a hung/slow DB. The 2s timeout should fire
+    // and preserve the existing claims instead of stalling.
+    mockFindUnique.mockImplementation(
+      () => new Promise(() => {}) as never,
+    );
+
+    const token = { id: "user-1", isAdmin: true, language: "pt-BR" };
+    // Advance fake timers past CLAIM_REFRESH_TIMEOUT_MS (2000ms) so the
+    // Promise.race timeout resolves before the pending lookup.
+    vi.useFakeTimers();
+    const pending = refreshTokenClaims(token as never);
+    await vi.advanceTimersByTimeAsync(2000);
+    const result = await pending;
+    vi.useRealTimers();
+
+    expect(result.isAdmin).toBe(true);
+    expect(result.language).toBe("pt-BR");
+  });
 });
