@@ -1,0 +1,179 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Map, { Layer, NavigationControl, Source } from "react-map-gl/maplibre";
+import type { MapRef } from "react-map-gl/maplibre";
+import "maplibre-gl/dist/maplibre-gl.css";
+import { Link } from "react-aria-components";
+import { MapPin, Pencil, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
+import type { FeatureCollection } from "geojson";
+import { mapStyle } from "@/lib/map-tiles";
+import { getCategoryIcon } from "@/lib/category-icons";
+import { calculateBbox } from "@/lib/utils";
+import type { Bbox } from "@/types/geojson";
+import type { ProcessedDatasetStats } from "@/lib/dataset-stats";
+import { formatCompactNumber } from "@/components/ui/dataset-card";
+
+type FeaturedDatasetMapClientProps = {
+  datasetId: string;
+  bounds: Bbox | null;
+  title: string;
+  category: string;
+  stats: ProcessedDatasetStats;
+  href: string;
+};
+
+// MapLibre paint can't read CSS variables; resolve design-system tokens at
+// mount so the map follows the active theme. Fallbacks match globals.css.
+function resolveAccentColors() {
+  const styles = getComputedStyle(document.documentElement);
+  const accent =
+    styles.getPropertyValue("--color-olive-600").trim() || "#4d5d33";
+  const accentContrast =
+    styles.getPropertyValue("--color-olive-100").trim() || "#eef3ea";
+  return { accent, accentContrast };
+}
+
+export function FeaturedDatasetMapClient({
+  datasetId,
+  bounds,
+  title,
+  category,
+  stats,
+  href,
+}: FeaturedDatasetMapClientProps) {
+  const t = useTranslations("Home.featuredDataset");
+  const mapRef = useRef<MapRef | null>(null);
+  const [geojson, setGeojson] = useState<FeatureCollection | null>(null);
+  const [colors, setColors] = useState<ReturnType<
+    typeof resolveAccentColors
+  > | null>(null);
+
+  useEffect(() => {
+    setColors(resolveAccentColors());
+
+    const controller = new AbortController();
+    fetch(`/api/datasets/${datasetId}/geojson`, { signal: controller.signal })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data: FeatureCollection | null) => {
+        if (data) setGeojson(data);
+      })
+      .catch(() => {
+        // Marketing page: on failure keep the basemap + card, no error UI
+      });
+
+    return () => controller.abort();
+  }, [datasetId]);
+
+  // Server bounds cover most datasets; fit to the data when the area has none
+  useEffect(() => {
+    if (bounds || !geojson) return;
+    const dataBounds = calculateBbox(geojson);
+    if (dataBounds) {
+      mapRef.current?.fitBounds(dataBounds, { padding: 40, duration: 0 });
+    }
+  }, [bounds, geojson]);
+
+  const statItems = [
+    { type: "features", label: t("stats.features"), value: formatCompactNumber(stats.features), Icon: MapPin },
+    { type: "contributors", label: t("stats.contributors"), value: formatCompactNumber(stats.contributors), Icon: Users },
+    { type: "lastEdited", label: t("stats.lastEdited"), value: stats.lastEdited, Icon: Pencil },
+  ];
+
+  return (
+    <div className="relative h-full min-h-[320px] bg-gray-100 dark:bg-gray-900">
+      <Map
+        ref={mapRef}
+        mapStyle={mapStyle}
+        initialViewState={
+          bounds
+            ? { bounds, fitBoundsOptions: { padding: 40 } }
+            : { longitude: 0, latitude: 0, zoom: 1 }
+        }
+        dragPan
+        scrollZoom={false}
+        dragRotate={false}
+        doubleClickZoom
+        touchZoomRotate
+        keyboard
+        reuseMaps
+        style={{ width: "100%", height: "100%" }}
+      >
+        {geojson && colors && (
+          <Source id="featured-dataset" type="geojson" data={geojson}>
+            <Layer
+              id="featured-dataset-fill"
+              type="fill"
+              filter={["==", "$type", "Polygon"]}
+              paint={{
+                "fill-color": colors.accent,
+                "fill-opacity": 0.2,
+              }}
+            />
+            <Layer
+              id="featured-dataset-line"
+              type="line"
+              filter={["!=", "$type", "Point"]}
+              paint={{
+                "line-color": colors.accent,
+                "line-width": 2,
+              }}
+            />
+            <Layer
+              id="featured-dataset-point"
+              type="circle"
+              filter={["==", "$type", "Point"]}
+              paint={{
+                "circle-radius": 4,
+                "circle-color": colors.accent,
+                "circle-stroke-width": 1.5,
+                "circle-stroke-color": colors.accentContrast,
+              }}
+            />
+          </Source>
+        )}
+        <div className="absolute right-3 bottom-3">
+          <NavigationControl showCompass={false} visualizePitch={false} />
+        </div>
+      </Map>
+
+      {/* Info card overlay */}
+      <div className="absolute top-4 left-4 max-w-xs bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.1)] p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex items-center justify-center shrink-0 w-8 h-8 text-olive-600 opacity-60">
+            {getCategoryIcon(category)}
+          </div>
+          <div className="min-w-0">
+            <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+              {title}
+            </h3>
+            <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-medium capitalize rounded-full bg-olive-100 text-olive-700 dark:bg-neutral-800 dark:text-neutral-300">
+              {category}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 text-[10px] mt-3">
+          {statItems.map(({ type, label, value, Icon }) => (
+            <div
+              key={type}
+              aria-label={label}
+              className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400"
+            >
+              <Icon className="w-2.5 h-2.5" />
+              <span className="font-medium">{value}</span>
+            </div>
+          ))}
+        </div>
+
+        <Link
+          href={href}
+          className="inline-block mt-3 text-sm font-medium text-olive-600 hover:text-olive-700 focus:outline-none focus:ring-2 focus:ring-green-500 rounded"
+        >
+          {t("viewDataset")}
+        </Link>
+      </div>
+    </div>
+  );
+}

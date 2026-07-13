@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { trackEvent, getClientInfo } from "@/lib/umami";
@@ -42,6 +43,11 @@ export async function PUT(
     }
 
     const [result] = rows;
+    try {
+      // Bust the homepage featured-hero cache; best-effort — the toggle
+      // succeeded regardless (and there is no request store under vitest)
+      revalidateTag("featured-datasets");
+    } catch {}
     await trackEvent(
       result.isFeatured
         ? ANALYTICS_EVENTS.DATASET_FEATURED
