@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { DatasetCard, type StatType } from "@/components/ui/dataset-card";
 import { processDatasetStats, formatRelativeTime } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
+import { getDatasetPath } from "@/lib/urls";
 
 type SectionTemplate = {
   id: string;
@@ -64,7 +65,7 @@ export async function DatasetSections({
         city={dataset.cityName}
         country={dataset.area.countryCode ?? ""}
         category={resolved.category?.name ?? "other"}
-        href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+        href={getDatasetPath({ locale, areaId: dataset.areaId, templateId: dataset.templateId })}
         stats={stats}
       />
     );
