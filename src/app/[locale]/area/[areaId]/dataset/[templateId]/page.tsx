@@ -20,7 +20,7 @@ import {
 import { DatasetUpsellPage } from "@/components/dataset/dataset-upsell-page";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { trackEventAfterResponse } from "@/lib/umami";
+import { TrackView } from "@/components/analytics/track-view";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { getAreaBoundary } from "@/lib/area-boundary";
 import { MAX_SAVES_PER_USER } from "@/lib/constants";
@@ -60,17 +60,18 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
       return <AreaNotFoundError areaId={areaId} />;
     }
 
-    await trackEventAfterResponse(
-      ANALYTICS_EVENTS.DATASET_UPSELL_VIEW,
-      `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/upsell`,
-    );
-
     return (
-      <DatasetUpsellPage
-        datasetName={template.name}
-        areaName={areaInfo.name}
-        areaId={areaId}
-      />
+      <>
+        <TrackView
+          event={ANALYTICS_EVENTS.DATASET_UPSELL_VIEW}
+          url={`/area/${areaId}/dataset/${encodeURIComponent(templateId)}/upsell`}
+        />
+        <DatasetUpsellPage
+          datasetName={template.name}
+          areaName={areaInfo.name}
+          areaId={areaId}
+        />
+      </>
     );
   }
 
@@ -123,9 +124,11 @@ async function AreaTemplateDatasetView({
 
     const dataset = transformDataset(result.dataset, session?.user || null, locale, { isSaved, skipTemplateResolution: true });
 
-    await trackEventAfterResponse(
-      ANALYTICS_EVENTS.DATASET_DETAIL_VIEW,
-      `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/view`,
+    const trackDetailView = (
+      <TrackView
+        event={ANALYTICS_EVENTS.DATASET_DETAIL_VIEW}
+        url={`/area/${areaId}/dataset/${encodeURIComponent(templateId)}/view`}
+      />
     );
 
     const areaName = areaInfo?.name || dataset.area.name;
@@ -135,6 +138,7 @@ async function AreaTemplateDatasetView({
       const datasetT = await getTranslations("DatasetPage");
       return (
         <div className="bg-gray-50">
+          {trackDetailView}
           <div
             className="max-w-7xl mx-auto px-4 py-8 flex flex-col"
             style={{ minHeight: "calc(100vh - var(--nav-height))" }}
@@ -165,6 +169,7 @@ async function AreaTemplateDatasetView({
 
     return (
       <div className="bg-gray-50 lg:h-[calc(100dvh_-_var(--nav-height))] lg:flex lg:overflow-hidden">
+        {trackDetailView}
         <DatasetInteractiveSection dataset={dataset} boundary={boundary} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
       </div>
     );
