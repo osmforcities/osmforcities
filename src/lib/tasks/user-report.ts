@@ -29,6 +29,8 @@ interface DatasetStats {
   };
   recentDatasets: Array<{
     id: string;
+    areaId: number;
+    templateId: string;
     name: string;
     templateName: string;
     lastChanged: Date | null;
@@ -55,6 +57,8 @@ function getLatestChangeDate(datasets: Array<{ stats?: DatasetStatsData }>): str
 function generateEmailBodyWithChanges(
   recentDatasets: Array<{
     id: string;
+    areaId: number;
+    templateId: string;
     name: string;
     templateName: string;
     lastChanged: Date | null;
@@ -62,12 +66,15 @@ function generateEmailBodyWithChanges(
   }>,
   frequency: "DAILY" | "WEEKLY",
   changedText: string,
-  deprecationText?: string
+  deprecationText: string | undefined,
+  userLocale: Locale
 ): string {
   const datasetsByDay = new Map<
     string,
     Array<{
       id: string;
+      areaId: number;
+      templateId: string;
       name: string;
       templateName: string;
     }>
@@ -82,6 +89,8 @@ function generateEmailBodyWithChanges(
     }
     datasetsByDay.get(dayKey)!.push({
       id: ds.id,
+      areaId: ds.areaId,
+      templateId: ds.templateId,
       name: ds.name,
       templateName: ds.templateName,
     });
@@ -97,7 +106,7 @@ function generateEmailBodyWithChanges(
         .map(
           (ds) =>
             `${createEmailLink(
-              `${getBaseUrl()}/dataset/${ds.id}`,
+              `${getBaseUrl()}/${userLocale}/area/${ds.areaId}/dataset/${ds.templateId}`,
               `${ds.templateName} - ${ds.name}`
             )}`
         )
@@ -162,7 +171,8 @@ async function generateEmailContent(
           recentDatasets,
           frequency,
           reportChangedText,
-          deprecationNotice
+          deprecationNotice,
+          userLocale
         )
       : await formatEmail(userLocale, "reportNoChanges", {
           savedDatasetsLink,
@@ -269,6 +279,8 @@ export async function generateNextUserReport(): Promise<{
     },
     select: {
       id: true,
+      areaId: true,
+      templateId: true,
       cityName: true,
       stats: true,
       template: {
@@ -340,6 +352,8 @@ export async function generateNextUserReport(): Promise<{
 
       return {
         id: dataset.id,
+        areaId: dataset.areaId,
+        templateId: dataset.templateId,
         name: dataset.cityName,
         templateName: resolvedTemplate.name,
         lastChanged: mostRecentElement ? new Date(mostRecentElement) : null,
