@@ -25,14 +25,8 @@ jobs:
       fail-fast: false
       matrix:
         # 2-shard matrix: each shard runs on its own runner with its own
-        # Postgres service, halving wall-clock CI time. `shard` (1/2) drives
-        # the Playwright --shard flag; `shard_id` (1-2) is a slash-free
-        # identifier used for artifact names (upload-artifact rejects "/").
-        include:
-          - shard: 1/2
-            shard_id: 1-2
-          - shard: 2/2
-            shard_id: 2-2
+        # Postgres service, halving wall-clock CI time.
+        shard: [1/2, 2/2]
     services:
       postgres:
         image: postgres:15
@@ -82,13 +76,6 @@ jobs:
           CRON_ROUTE_SECRET: test-cron-secret
           ENABLE_TEST_AUTH: true
           NEXT_TELEMETRY_DISABLED: 1
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
-        with:
-          name: playwright-report-shard-${{ matrix.shard_id }}
-          path: playwright-report/
-          retention-days: 30
 
   storybook-tests:
     if: github.event.pull_request.draft == false
