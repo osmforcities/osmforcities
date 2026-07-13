@@ -12,70 +12,34 @@ import { prisma } from "@/lib/db";
  * hiding the featured toggle and other admin UI until they signed out and in.
  *
  * Failure modes:
- * - If the lookup throws (transient DB issue) or exceeds CLAIM_REFRESH_TIMEOUT_MS,
- *   the existing claims are preserved so a DB blip or slowness doesn't stall
- *   middleware/page loads site-wide.
+ * - If the lookup throws (transient DB issue), the existing claims are
+ *   preserved so a DB blip doesn't take down auth/session resolution.
  * - If the user row no longer exists (deleted account), privileged claims are
  *   cleared so a stale admin token can't retain admin access until expiry.
  */
-
-// Bound the DB lookup so a slow/hung database degrades to stale claims instead
-// of stalling every request that runs through middleware (which resolves the
-// JWT, and therefore this function, on the Node runtime).
-const CLAIM_REFRESH_TIMEOUT_MS = 2000;
-
 export async function refreshTokenClaims(token: JWT): Promise<JWT> {
   if (!token.id) {
     return token;
   }
-
-  // Sentinel distinguishing a timed-out lookup (preserve existing claims) from
-  // a real `findUnique` that returned null (user deleted — fail closed).
-  const TIMED_OUT = Symbol("timed-out");
-  type LookupResult = { isAdmin: boolean; language: string | null } | null | typeof TIMED_OUT;
-
-  let result: LookupResult;
-  let timer: ReturnType<typeof setTimeout> | undefined;
+  let dbUser: { isAdmin: boolean; language: string | null } | null;
   try {
-    const lookup = prisma.user
-      .findUnique({
-        where: { id: token.id as string },
-        select: { isAdmin: true, language: true },
-      })
-      .then((u) => u as LookupResult);
-
-    result = await Promise.race<LookupResult>([
-      lookup,
-      new Promise<LookupResult>((resolve) => {
-        timer = setTimeout(() => resolve(TIMED_OUT), CLAIM_REFRESH_TIMEOUT_MS);
-      }),
-    ]);
+    dbUser = await prisma.user.findUnique({
+      where: { id: token.id as string },
+      select: { isAdmin: true, language: true },
+    });
   } catch (error) {
     // console.error (not the winston logger) — this module is imported by the
-    // middleware bundle via auth.ts; keep this path dependency-light.
+    // middleware edge-runtime bundle via auth.ts, and winston relies on Node
+    // APIs (process.nextTick) that are unavailable in the Edge Runtime.
     console.error("Failed to refresh token claims; keeping existing claims", {
       userId: token.id,
       error,
     });
     return token;
-  } finally {
-    // Clear the pending timer so it doesn't linger on the event loop when the
-    // lookup won the race (the common case). refreshTokenClaims runs on every
-    // authenticated request, so uncleared timers would accumulate under load.
-    if (timer) clearTimeout(timer);
   }
-
-  if (result === TIMED_OUT) {
-    // Slow DB — preserve existing claims rather than stalling the request.
-    console.warn("refreshTokenClaims timed out; keeping existing claims", {
-      userId: token.id,
-    });
-    return token;
-  }
-
-  if (result) {
-    token.isAdmin = result.isAdmin;
-    token.language = result.language ?? "en";
+  if (dbUser) {
+    token.isAdmin = dbUser.isAdmin;
+    token.language = dbUser.language ?? "en";
   } else {
     // User no longer exists — fail closed.
     token.isAdmin = false;
