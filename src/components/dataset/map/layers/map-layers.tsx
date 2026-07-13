@@ -109,9 +109,12 @@ export function MapLayers({ geoJSONData, categoricalTheme }: MapLayersProps) {
     (f: Feature) => f.geometry.type === "Point"
   );
 
+  // Lines are excluded from simplification: collapsing them to centroid
+  // circles at low zoom reads as points (bad for e.g. cycleways); they render
+  // as lines at all zoom levels instead.
   const simplifiedFeatures = createSimplifiedFeatures(
     polygonFeatures,
-    lineFeatures,
+    [],
     pointFeatures
   );
 

@@ -50,12 +50,9 @@ export function DetailedFeaturesLayerGroup({
           id="detailed-lines"
           features={lineFeatures}
           layerType="line"
-          paint={{
-            ...LINE_STYLE,
-            "line-opacity": createDetailedOpacityExpression(
-              LINE_STYLE["line-opacity"]
-            ),
-          }}
+          // No zoom-step opacity: lines have no simplified counterpart and
+          // must stay visible at all zoom levels
+          paint={LINE_STYLE}
         />
       )}
 
