@@ -14,12 +14,6 @@ export const createAgeColorExpression = (colors: typeof AGE_COLORS) =>
     colors["very-old"],
   ] as const;
 
-export const createSimplifiedOpacityExpression = (visibleOpacity: number) =>
-  ["step", ["zoom"], visibleOpacity, 14, 0] as const;
-
-export const createDetailedOpacityExpression = (originalOpacity: number) =>
-  ["step", ["zoom"], 0, 14, originalOpacity] as const;
-
 /**
  * Build a MapLibre circle-color expression from a detected theme.
  * Handles categorical (case) and intensity (interpolate).

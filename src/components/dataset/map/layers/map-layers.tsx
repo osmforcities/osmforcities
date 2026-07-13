@@ -1,6 +1,5 @@
 import type { Feature } from "geojson";
-import { SimplifiedFeaturesLayerGroup, DetailedFeaturesLayerGroup } from ".";
-import { createSimplifiedFeatures } from "@/lib/geojson";
+import { DetailedFeaturesLayerGroup } from ".";
 import type { CategoricalTheme } from "@/lib/map-themes";
 
 export const AGE_COLORS = {
@@ -109,25 +108,14 @@ export function MapLayers({ geoJSONData, categoricalTheme }: MapLayersProps) {
     (f: Feature) => f.geometry.type === "Point"
   );
 
-  // Lines are excluded from simplification: collapsing them to centroid
-  // circles at low zoom reads as points (bad for e.g. cycleways); they render
-  // as lines at all zoom levels instead.
-  const simplifiedFeatures = createSimplifiedFeatures(
-    polygonFeatures,
-    [],
-    pointFeatures
-  );
-
-
+  // All geometries render true-to-shape at every zoom level; the previous
+  // low-zoom consolidation to centroid circles hid lines and polygons.
   return (
-    <>
-      <SimplifiedFeaturesLayerGroup features={simplifiedFeatures} categoricalTheme={categoricalTheme} />
-      <DetailedFeaturesLayerGroup
-        polygonFeatures={polygonFeatures}
-        lineFeatures={lineFeatures}
-        pointFeatures={pointFeatures}
-        categoricalTheme={categoricalTheme}
-      />
-    </>
+    <DetailedFeaturesLayerGroup
+      polygonFeatures={polygonFeatures}
+      lineFeatures={lineFeatures}
+      pointFeatures={pointFeatures}
+      categoricalTheme={categoricalTheme}
+    />
   );
 }

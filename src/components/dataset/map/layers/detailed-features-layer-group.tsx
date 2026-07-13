@@ -1,7 +1,6 @@
 import { Feature } from "geojson";
 import { MapLayer } from "./map-layer";
 import { POLYGON_STYLE, LINE_STYLE, POINT_STYLE } from "./map-layers";
-import { createDetailedOpacityExpression } from "./expressions";
 import type { CategoricalTheme } from "@/lib/map-themes";
 import { buildCircleColorExpression, buildCircleRadiusExpression } from "./expressions";
 import { PALETTES } from "@/lib/map-themes/palettes";
@@ -26,21 +25,11 @@ export function DetailedFeaturesLayerGroup({
           id="detailed-polygons"
           features={polygonFeatures}
           layerType="fill"
-          paint={{
-            ...POLYGON_STYLE.fill,
-            "fill-opacity": createDetailedOpacityExpression(
-              POLYGON_STYLE.fill["fill-opacity"]
-            ),
-          }}
+          paint={POLYGON_STYLE.fill}
           strokeLayer={{
             id: "detailed-polygons-stroke",
             type: "line",
-            paint: {
-              ...POLYGON_STYLE.stroke,
-              "line-opacity": createDetailedOpacityExpression(
-                POLYGON_STYLE.stroke["line-opacity"]
-              ),
-            },
+            paint: POLYGON_STYLE.stroke,
           }}
         />
       )}
@@ -50,8 +39,6 @@ export function DetailedFeaturesLayerGroup({
           id="detailed-lines"
           features={lineFeatures}
           layerType="line"
-          // No zoom-step opacity: lines have no simplified counterpart and
-          // must stay visible at all zoom levels
           paint={LINE_STYLE}
         />
       )}
@@ -69,14 +56,10 @@ export function DetailedFeaturesLayerGroup({
             "circle-color": categoricalTheme
               ? buildCircleColorExpression(categoricalTheme)
               : POINT_STYLE["circle-color"],
-            "circle-opacity": createDetailedOpacityExpression(
-              POINT_STYLE["circle-opacity"]
-            ),
             "circle-stroke-color": categoricalTheme
               ? PALETTES.categorical.stroke
               : POINT_STYLE["circle-stroke-color"],
             "circle-stroke-width": categoricalTheme ? 1 : POINT_STYLE["circle-stroke-width"],
-            "circle-stroke-opacity": createDetailedOpacityExpression(0.9),
           }}
         />
       )}
