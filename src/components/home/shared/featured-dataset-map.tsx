@@ -80,6 +80,7 @@ export async function FeaturedDatasetMap() {
   return (
     <FeaturedDatasetMapClient
       datasetId={dataset.id}
+      areaId={dataset.areaId}
       bounds={parseAreaBounds(dataset.area)}
       title={t("title", {
         template: resolvedTemplate.name,

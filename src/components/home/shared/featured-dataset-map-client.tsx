@@ -15,10 +15,12 @@ import type { Bbox } from "@/types/geojson";
 import type { ProcessedDatasetStats } from "@/lib/dataset-stats";
 import { formatCompactNumber } from "@/components/ui/dataset-card";
 import { MapLayers } from "@/components/dataset/map/layers";
+import { AoiBoundaryLayer } from "@/components/dataset/map/aoi-boundary-layer";
 import { processOSMFeaturesForVisualization } from "@/lib/osm-data-processor";
 
 type FeaturedDatasetMapClientProps = {
   datasetId: string;
+  areaId: number;
   bounds: Bbox | null;
   title: string;
   category: string;
@@ -28,6 +30,7 @@ type FeaturedDatasetMapClientProps = {
 
 export function FeaturedDatasetMapClient({
   datasetId,
+  areaId,
   bounds,
   title,
   category,
@@ -37,26 +40,51 @@ export function FeaturedDatasetMapClient({
   const t = useTranslations("Home.featuredDataset");
   const mapRef = useRef<MapRef | null>(null);
   const [geojson, setGeojson] = useState<FeatureCollection | null>(null);
+  const [boundary, setBoundary] = useState<FeatureCollection | null>(null);
 
   useEffect(() => {
+    setGeojson(null);
+    setBoundary(null);
+
     const controller = new AbortController();
+    // Marketing page: on failure keep the basemap + card, no error UI
     fetch(`/api/datasets/${datasetId}/geojson`, { signal: controller.signal })
       .then((response) => (response.ok ? response.json() : null))
       .then((data: FeatureCollection | null) => {
         if (data) setGeojson(data);
       })
-      .catch(() => {
-        // Marketing page: on failure keep the basemap + card, no error UI
-      });
+      .catch(() => {});
+
+    fetch(`/api/areas/${areaId}/boundary`, { signal: controller.signal })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data: FeatureCollection | null) => {
+        if (data) setBoundary(data);
+      })
+      .catch(() => {});
 
     return () => controller.abort();
-  }, [datasetId]);
+  }, [datasetId, areaId]);
 
   // Same processing as the dataset page map so rendering matches it exactly
   const processedData = useMemo(
     () => (geojson ? processOSMFeaturesForVisualization(geojson) : null),
     [geojson]
   );
+
+  // Reposition whenever a different dataset arrives: client-side navigation
+  // re-renders the hero with new props but does not remount the Map, so
+  // initialViewState alone would leave the old view. bounds is intentionally
+  // read via ref — its identity changes every server render.
+  const boundsRef = useRef(bounds);
+  boundsRef.current = bounds;
+  useEffect(() => {
+    if (boundsRef.current) {
+      mapRef.current?.fitBounds(boundsRef.current, {
+        padding: 40,
+        duration: 0,
+      });
+    }
+  }, [datasetId]);
 
   // Server bounds cover most datasets; fit to the data when the area has none
   useEffect(() => {
@@ -92,6 +120,7 @@ export function FeaturedDatasetMapClient({
         reuseMaps
         style={{ width: "100%", height: "100%" }}
       >
+        {boundary && <AoiBoundaryLayer boundary={boundary} />}
         {processedData && (
           <MapLayers geoJSONData={processedData} categoricalTheme={null} />
         )}
