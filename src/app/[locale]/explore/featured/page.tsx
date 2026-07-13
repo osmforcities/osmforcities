@@ -5,6 +5,7 @@ import { processDatasetStats } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
+import { getDatasetPath } from "@/lib/urls";
 
 export const revalidate = 300;
 
@@ -101,7 +102,7 @@ export default async function FeaturedPage({
                 city={dataset.cityName}
                 country={dataset.area.countryCode ?? ""}
                 category={resolvedTemplate.category?.name ?? "other"}
-                href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+                href={getDatasetPath({ locale, areaId: dataset.areaId, templateId: dataset.templateId })}
                 stats={stats}
               />
             );

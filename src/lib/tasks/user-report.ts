@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { htmlToText } from "html-to-text";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
+import { getDatasetUrl } from "@/lib/urls";
 import {
   createEmailLink,
   getEmailT,
@@ -106,7 +107,11 @@ function generateEmailBodyWithChanges(
         .map(
           (ds) =>
             `${createEmailLink(
-              `${getBaseUrl()}/${userLocale}/area/${ds.areaId}/dataset/${ds.templateId}`,
+              getDatasetUrl(getBaseUrl(), {
+                locale: userLocale,
+                areaId: ds.areaId,
+                templateId: ds.templateId,
+              }),
               `${ds.templateName} - ${ds.name}`
             )}`
         )
