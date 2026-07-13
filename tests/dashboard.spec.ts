@@ -83,12 +83,7 @@ test.describe("User Dashboard", () => {
     }
   });
 
-  test("should handle dataset count pluralization correctly", async ({
-    page,
-  }) => {
-    await page.goto(getLocalizedPath("/dashboard"));
-
-    // Fresh user has no datasets — empty state is shown
-    await expect(page.getByTestId("dashboard-empty-state")).toBeVisible();
-  });
+  // Dataset-count pluralization requires a seeded dataset and is covered by
+  // dashboard-workflows.spec.ts. Removed the duplicate empty-state test that
+  // was left here under the pluralization name.
 });

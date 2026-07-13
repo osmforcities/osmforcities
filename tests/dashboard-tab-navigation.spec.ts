@@ -94,13 +94,13 @@ test.describe("Dashboard Tab Navigation", () => {
 
       // Click Users tab — should navigate + render DashboardTabs on the page
       await page.getByTestId("tab-users").click();
-      await expect(page).toHaveURL("http://localhost:3000/en/users");
+      await expect(page).toHaveURL(/\/en\/users$/);
       await expect(page.getByTestId("tab-saved")).toBeVisible();
       await expect(page.getByTestId("tab-templates")).toBeVisible();
 
       // Click Templates tab from the users page
       await page.getByTestId("tab-templates").click();
-      await expect(page).toHaveURL("http://localhost:3000/en/templates");
+      await expect(page).toHaveURL(/\/en\/templates$/);
       await expect(page.getByRole("heading", { name: "Templates" })).toBeVisible();
     });
 

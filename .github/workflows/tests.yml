@@ -67,7 +67,7 @@ jobs:
         run: pnpm playwright install chromium --with-deps
 
       - name: Run Playwright tests
-        run: pnpm test:playwright -- --shard=${{ matrix.shard }}
+        run: pnpm exec playwright test --shard=${{ matrix.shard }}
         env:
           NODE_ENV: test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5433/osmforcities-test
