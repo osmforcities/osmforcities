@@ -13,5 +13,5 @@ export function getDatasetPath({ locale, areaId, templateId }: DatasetLocation):
 
 /** Absolute dataset URL for contexts without a router (emails, external links). */
 export function getDatasetUrl(baseUrl: string, location: DatasetLocation): string {
-  return `${baseUrl}${getDatasetPath(location)}`;
+  return `${baseUrl.replace(/\/+$/, "")}${getDatasetPath(location)}`;
 }
