@@ -3,6 +3,7 @@ import { DatasetCard } from "@/components/ui/dataset-card";
 import { ExplorePageLayout, ExploreSectionHeader } from "@/components/explore/explore-components";
 import { processDatasetStats } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
+import { datasetPagePath } from "@/lib/utils";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
 
@@ -101,7 +102,7 @@ export default async function FeaturedPage({
                 city={dataset.cityName}
                 country={dataset.area.countryCode ?? ""}
                 category={resolvedTemplate.category?.name ?? "other"}
-                href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+                href={datasetPagePath(locale, dataset.areaId, dataset.templateId)}
                 stats={stats}
               />
             );

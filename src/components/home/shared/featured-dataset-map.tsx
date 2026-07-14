@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/db";
 import { processDatasetStats } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
-import { parseAreaBounds } from "@/lib/utils";
+import { datasetPagePath, parseAreaBounds } from "@/lib/utils";
 import { HeroMap } from "./hero-map";
 import { FeaturedDatasetMapClient } from "./featured-dataset-map-client";
 
@@ -88,7 +88,7 @@ export async function FeaturedDatasetMap() {
       })}
       category={resolvedTemplate.category?.name ?? "other"}
       stats={stats}
-      href={`/${locale}/area/${dataset.areaId}/dataset/${dataset.templateId}`}
+      href={datasetPagePath(locale, dataset.areaId, dataset.templateId)}
     />
   );
 }

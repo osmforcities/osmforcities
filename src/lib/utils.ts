@@ -216,6 +216,17 @@ export function getAreaCharacteristics(
 }
 
 /**
+ * Locale-prefixed path to a dataset page
+ */
+export function datasetPagePath(
+  locale: string,
+  areaId: number,
+  templateId: string
+): string {
+  return `/${locale}/area/${areaId}/dataset/${templateId}`;
+}
+
+/**
  * Build localized URLs for all supported locales
  * Used for hreflang links and sitemap alternates
  */
