@@ -65,16 +65,15 @@ export function FeaturedDatasetMapClient({
     return () => controller.abort();
   }, [datasetId, areaId]);
 
-  // Same processing as the dataset page map so rendering matches it exactly
+  // Same processing as the dataset page so rendering matches it
   const processedData = useMemo(
     () => (geojson ? processOSMFeaturesForVisualization(geojson) : null),
     [geojson]
   );
 
-  // Reposition whenever a different dataset arrives: client-side navigation
-  // re-renders the hero with new props but does not remount the Map, so
-  // initialViewState alone would leave the old view. bounds is intentionally
-  // read via ref — its identity changes every server render.
+  // Client-side navigation swaps props without remounting the Map, so
+  // initialViewState alone would keep the old view. bounds is read via
+  // ref because its identity changes every server render.
   const boundsRef = useRef(bounds);
   boundsRef.current = bounds;
   useEffect(() => {
@@ -129,14 +128,11 @@ export function FeaturedDatasetMapClient({
         </div>
       </Map>
 
-      {/* Info card overlay, bottom-right clear of the attribution bar.
-          The whole card is the link to the dataset page. */}
       <Link
         href={href}
         aria-label={`${title} — ${t("viewDataset")}`}
         className="group absolute bottom-12 right-4 block max-w-xs bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.1)] p-4 transition-shadow hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
       >
-        {/* Columns: icon | content (title + stats) | arrow, all vertically centered */}
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center shrink-0 w-8 h-8 text-olive-600 opacity-60">
             {getCategoryIcon(category)}

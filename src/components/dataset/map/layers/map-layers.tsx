@@ -64,9 +64,8 @@ export const LINE_STYLE = {
   "line-opacity": 0.9,
 };
 
-// Low-zoom circle size scales with dataset density: sparse points need bulk
-// to stay visible on city-wide views, dense ones would blend into a blob.
-// Everything converges to the base radius of 2 once zoomed in.
+// Low-zoom radius scales with density: sparse points need bulk to stay
+// visible on city-wide views, dense ones would blend into a blob
 export function buildPointRadiusForCount(count: number) {
   const lowZoomRadius = count > 5000 ? 2 : count > 1500 ? 3 : 3.5;
   return ["interpolate", ["linear"], ["zoom"], 8, lowZoomRadius, 14, 2];
@@ -119,8 +118,6 @@ export function MapLayers({ geoJSONData, categoricalTheme }: MapLayersProps) {
     (f: Feature) => f.geometry.type === "Point"
   );
 
-  // All geometries render true-to-shape at every zoom level; the previous
-  // low-zoom consolidation to centroid circles hid lines and polygons.
   return (
     <DetailedFeaturesLayerGroup
       polygonFeatures={polygonFeatures}
