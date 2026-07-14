@@ -4,7 +4,11 @@ import { prisma } from "@/lib/db";
 import { CreateDatasetSchema } from "@/schemas/dataset";
 import { Prisma } from "@prisma/client";
 import { fetchOsmRelationData } from "@/lib/area-boundary";
-import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
+import {
+  fetchDatasetSnapshot,
+  DatasetTooLargeError,
+  DatasetSizeCheckTimeoutError,
+} from "@/lib/dataset-snapshot";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
@@ -72,7 +76,11 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const snapshot = await fetchDatasetSnapshot(area.id, template.overpassQuery);
+    const snapshot = await fetchDatasetSnapshot(
+      area.id,
+      template.overpassQuery,
+      template.id
+    );
 
     const dataset = await prisma.dataset.create({
       data: {
@@ -92,6 +100,14 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(dataset, { status: 201 });
   } catch (err) {
+    if (err instanceof DatasetTooLargeError) {
+      return NextResponse.json({ error: err.message }, { status: 422 });
+    }
+
+    if (err instanceof DatasetSizeCheckTimeoutError) {
+      return NextResponse.json({ error: err.message }, { status: 503 });
+    }
+
     if (
       err instanceof Prisma.PrismaClientKnownRequestError &&
       err.code === "P2002"

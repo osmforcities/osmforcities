@@ -1,11 +1,85 @@
 import type { FeatureCollection } from "geojson";
 import {
-  executeOverpassQuery,
+  executeOverpassQueryWithByteLimit,
   convertOverpassToGeoJSON,
+  countOverpassElements,
+  OverpassTimeoutError,
+  OverpassResponseTooLargeError,
 } from "@/lib/overpass/transport";
 import type { OverpassData } from "@/types/overpass";
 import { calculateBbox } from "@/lib/utils";
 import type { Bbox } from "@/types/geojson";
+import { prisma } from "@/lib/db";
+import {
+  MAX_DATASET_BYTES,
+  OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
+  SIZE_CHECK_TTL_HOURS,
+} from "@/lib/constants";
+
+function formatMb(bytes: number): string {
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+export class DatasetTooLargeError extends Error {
+  constructor(public readonly bytes: number, estimated: boolean) {
+    super(
+      `Dataset too large: ${estimated ? "estimated " : ""}${formatMb(bytes)} of data (max ${formatMb(MAX_DATASET_BYTES)}). Try a smaller area.`
+    );
+    this.name = "DatasetTooLargeError";
+  }
+}
+
+export class DatasetSizeCheckTimeoutError extends Error {
+  constructor() {
+    super("Dataset size check timed out. Please try again later.");
+    this.name = "DatasetSizeCheckTimeoutError";
+  }
+}
+
+type SizeCheckStatus = "ok" | "too_large" | "timeout";
+
+async function recordSizeCheck(
+  areaId: number,
+  templateId: string,
+  status: SizeCheckStatus,
+  bytes: { estimatedBytes?: number; actualBytes?: number } = {}
+): Promise<void> {
+  const data = {
+    status,
+    estimatedBytes: bytes.estimatedBytes ?? null,
+    actualBytes: bytes.actualBytes ?? null,
+    checkedAt: new Date(),
+  };
+  await prisma.areaSizeCheck.upsert({
+    where: { areaId_templateId: { areaId, templateId } },
+    create: { areaId, templateId, ...data },
+    update: data,
+  });
+}
+
+/** Reject immediately if a fresh verdict already marked this area+template too large */
+async function assertNoFreshNegativeVerdict(
+  areaId: number,
+  templateId: string
+): Promise<void> {
+  const check = await prisma.areaSizeCheck.findUnique({
+    where: { areaId_templateId: { areaId, templateId } },
+  });
+  if (!check) return;
+
+  const ttlMs = SIZE_CHECK_TTL_HOURS * 60 * 60 * 1000;
+  if (Date.now() - check.checkedAt.getTime() > ttlMs) return;
+
+  if (check.status === "too_large") {
+    throw new DatasetTooLargeError(
+      check.actualBytes ?? check.estimatedBytes ?? MAX_DATASET_BYTES,
+      check.actualBytes === null
+    );
+  }
+  if (check.status === "timeout") {
+    throw new DatasetSizeCheckTimeoutError();
+  }
+}
 
 export interface DatasetStats {
   editorsCount: number;
@@ -142,13 +216,56 @@ function extractDatasetStats(overpassData: OverpassData): DatasetStats {
 
 export async function fetchDatasetSnapshot(
   areaId: number,
-  rawQuery: string
+  rawQuery: string,
+  templateId: string
 ): Promise<DatasetSnapshot> {
   const queryString = rawQuery.replace(
     /\{OSM_RELATION_ID\}/g,
     areaId.toString()
   );
-  const overpassData = await executeOverpassQuery(queryString);
+
+  await assertNoFreshNegativeVerdict(areaId, templateId);
+
+  // Cheap pre-flight: reject before Overpass serializes anything if the
+  // estimated payload already exceeds the cap
+  let estimatedBytes: number;
+  try {
+    const elementCount = await countOverpassElements(queryString);
+    estimatedBytes = elementCount * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE;
+  } catch (error) {
+    if (error instanceof OverpassTimeoutError) {
+      await recordSizeCheck(areaId, templateId, "timeout");
+      throw new DatasetSizeCheckTimeoutError();
+    }
+    throw error;
+  }
+  if (estimatedBytes > MAX_DATASET_BYTES) {
+    await recordSizeCheck(areaId, templateId, "too_large", { estimatedBytes });
+    throw new DatasetTooLargeError(estimatedBytes, true);
+  }
+
+  let overpassData: OverpassData;
+  try {
+    overpassData = await executeOverpassQueryWithByteLimit(
+      queryString,
+      MAX_DATASET_BYTES
+    );
+  } catch (error) {
+    if (error instanceof OverpassResponseTooLargeError) {
+      await recordSizeCheck(areaId, templateId, "too_large", {
+        estimatedBytes,
+        actualBytes: error.bytesRead,
+      });
+      throw new DatasetTooLargeError(error.bytesRead, false);
+    }
+    if (error instanceof OverpassTimeoutError) {
+      await recordSizeCheck(areaId, templateId, "timeout", { estimatedBytes });
+      throw new DatasetSizeCheckTimeoutError();
+    }
+    throw error;
+  }
+
+  await recordSizeCheck(areaId, templateId, "ok", { estimatedBytes });
   const geojson = convertOverpassToGeoJSON(overpassData);
   const stats = extractDatasetStats(overpassData);
   const bbox = calculateBbox(geojson);

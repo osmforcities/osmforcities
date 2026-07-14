@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
+import {
+  fetchDatasetSnapshot,
+  DatasetTooLargeError,
+  DatasetSizeCheckTimeoutError,
+} from "@/lib/dataset-snapshot";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
@@ -68,7 +72,8 @@ export async function POST(req: NextRequest) {
 
         const snapshot = await fetchDatasetSnapshot(
           dataset.areaId,
-          dataset.template.overpassQuery
+          dataset.template.overpassQuery,
+          dataset.templateId
         );
 
         await prisma.dataset.update({
@@ -95,6 +100,26 @@ export async function POST(req: NextRequest) {
 
         results.successful++;
       } catch (error) {
+        if (error instanceof DatasetTooLargeError) {
+          console.warn(
+            `Dataset ${dataset.id} deactivated (grew past size cap): ${error.message}`
+          );
+          await prisma.dataset.update({
+            where: { id: dataset.id },
+            data: { isActive: false },
+          });
+          results.failed++;
+          results.errors.push(`Dataset ${dataset.id}: ${error.message}`);
+          continue;
+        }
+        if (error instanceof DatasetSizeCheckTimeoutError) {
+          console.warn(
+            `Dataset ${dataset.id} skipped (size check timed out), will retry next run`
+          );
+          results.failed++;
+          results.errors.push(`Dataset ${dataset.id}: ${error.message}`);
+          continue;
+        }
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error";
         console.error(

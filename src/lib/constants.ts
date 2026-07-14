@@ -11,6 +11,15 @@ export const DEPRECATION_DAYS = 30;
 /** Simplification tolerance for area boundaries (reduces coordinate count while preserving detail) */
 export const BOUNDARY_SIMPLIFICATION_TOLERANCE = 0.00001;
 
+/** Maximum Overpass response size for a dataset, in bytes */
+export const MAX_DATASET_BYTES = 10 * 1024 * 1024;
+
+/** Empirical average JSON bytes per Overpass element, used to pre-estimate payload size from an element count */
+export const OVERPASS_BYTES_PER_ELEMENT_ESTIMATE = 400;
+
+/** Hours an AreaSizeCheck verdict stays fresh before re-checking against Overpass */
+export const SIZE_CHECK_TTL_HOURS = 24;
+
 /** Supported locales for translations */
 export const SUPPORTED_LOCALES = ["en", "pt-BR", "es"] as const;
 

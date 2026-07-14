@@ -225,7 +225,11 @@ async function createDatasetOnDemand(
   }
 
   try {
-    const snapshot = await fetchDatasetSnapshot(area.id, template.overpassQuery);
+    const snapshot = await fetchDatasetSnapshot(
+      area.id,
+      template.overpassQuery,
+      template.id
+    );
     const dataset = await prisma.dataset.create({
       data: {
         templateId: template.id,
