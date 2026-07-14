@@ -6,14 +6,14 @@ export const AGE_COLORS = {
   recent: "#22c55e",
   medium: "#f97316",
   older: "#eab308",
-  "very-old": "#6b7280",
+  "very-old": "#9ca3af",
 };
 
 export const AGE_STROKE_COLORS = {
   recent: "#16a34a",
   medium: "#ea580c",
   older: "#ca8a04",
-  "very-old": "#4b5563",
+  "very-old": "#6b7280",
 };
 
 export const POLYGON_STYLE = {
@@ -41,7 +41,9 @@ export const POLYGON_STYLE = {
       AGE_STROKE_COLORS.older,
       AGE_STROKE_COLORS["very-old"],
     ],
-    "line-width": 1.5,
+    // Wider stroke at low zoom keeps small polygons visible once their
+    // fill shrinks below a pixel
+    "line-width": ["interpolate", ["linear"], ["zoom"], 8, 2.5, 13, 1.5, 18, 2],
     "line-opacity": 0.9,
   },
 };
@@ -57,12 +59,13 @@ export const LINE_STYLE = {
     AGE_COLORS.older,
     AGE_COLORS["very-old"],
   ],
-  "line-width": 2,
+  // Wider lines at low zoom so short segments stay readable
+  "line-width": ["interpolate", ["linear"], ["zoom"], 8, 3.5, 13, 2, 18, 2.5],
   "line-opacity": 0.9,
 };
 
 export const POINT_STYLE = {
-  "circle-radius": 3,
+  "circle-radius": 2,
   "circle-color": [
     "case",
     ["==", ["get", "ageCategory"], "recent"],

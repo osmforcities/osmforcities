@@ -4,7 +4,7 @@ const AGE_LEGEND_ITEMS = [
   { key: "recent", color: "#22c55e", labelKey: "recentChanges" },
   { key: "medium", color: "#f97316", labelKey: "mediumChanges" },
   { key: "older", color: "#eab308", labelKey: "olderChanges" },
-  { key: "very-old", color: "#6b7280", labelKey: "veryOldChanges" },
+  { key: "very-old", color: "#9ca3af", labelKey: "veryOldChanges" },
 ] as const;
 
 export function AgeLegend() {
