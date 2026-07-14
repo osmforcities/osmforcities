@@ -1,6 +1,11 @@
 import { Feature } from "geojson";
 import { MapLayer } from "./map-layer";
-import { POLYGON_STYLE, LINE_STYLE, POINT_STYLE } from "./map-layers";
+import {
+  POLYGON_STYLE,
+  LINE_STYLE,
+  POINT_STYLE,
+  buildPointRadiusForCount,
+} from "./map-layers";
 import type { CategoricalTheme } from "@/lib/map-themes";
 import { buildCircleColorExpression, buildCircleRadiusExpression } from "./expressions";
 import { PALETTES } from "@/lib/map-themes/palettes";
@@ -52,7 +57,7 @@ export function DetailedFeaturesLayerGroup({
             ...POINT_STYLE,
             "circle-radius": categoricalTheme
               ? buildCircleRadiusExpression(categoricalTheme, 4) as number
-              : POINT_STYLE["circle-radius"],
+              : buildPointRadiusForCount(pointFeatures.length),
             "circle-color": categoricalTheme
               ? buildCircleColorExpression(categoricalTheme)
               : POINT_STYLE["circle-color"],

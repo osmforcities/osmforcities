@@ -64,6 +64,14 @@ export const LINE_STYLE = {
   "line-opacity": 0.9,
 };
 
+// Low-zoom circle size scales with dataset density: sparse points need bulk
+// to stay visible on city-wide views, dense ones would blend into a blob.
+// Everything converges to the base radius of 2 once zoomed in.
+export function buildPointRadiusForCount(count: number) {
+  const lowZoomRadius = count > 5000 ? 2 : count > 1500 ? 3 : 3.5;
+  return ["interpolate", ["linear"], ["zoom"], 8, lowZoomRadius, 14, 2];
+}
+
 export const POINT_STYLE = {
   "circle-radius": 2,
   "circle-color": [
