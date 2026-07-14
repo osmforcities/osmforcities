@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Feature } from "geojson";
 import { MapLayer } from "./map-layer";
 import {
@@ -28,9 +29,11 @@ export function DetailedFeaturesLayerGroup({
   pointFeatures,
   categoricalTheme,
 }: DetailedFeaturesLayerGroupProps) {
-  const proxyPoints = categoricalTheme
-    ? []
-    : createSmallPolygonProxyPoints(polygonFeatures);
+  const proxyPoints = useMemo(
+    () =>
+      categoricalTheme ? [] : createSmallPolygonProxyPoints(polygonFeatures),
+    [categoricalTheme, polygonFeatures]
+  );
 
   return (
     <>

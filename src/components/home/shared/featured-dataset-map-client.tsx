@@ -51,14 +51,14 @@ export function FeaturedDatasetMapClient({
     fetch(`/api/datasets/${datasetId}/geojson`, { signal: controller.signal })
       .then((response) => (response.ok ? response.json() : null))
       .then((data: FeatureCollection | null) => {
-        if (data) setGeojson(data);
+        if (data && !controller.signal.aborted) setGeojson(data);
       })
       .catch(() => {});
 
     fetch(`/api/areas/${areaId}/boundary`, { signal: controller.signal })
       .then((response) => (response.ok ? response.json() : null))
       .then((data: FeatureCollection | null) => {
-        if (data) setBoundary(data);
+        if (data && !controller.signal.aborted) setBoundary(data);
       })
       .catch(() => {});
 
@@ -73,9 +73,12 @@ export function FeaturedDatasetMapClient({
 
   // Client-side navigation swaps props without remounting the Map, so
   // initialViewState alone would keep the old view. bounds is read via
-  // ref because its identity changes every server render.
+  // ref because its identity changes every server render. The sync effect
+  // must stay declared before the refit effect that reads it.
   const boundsRef = useRef(bounds);
-  boundsRef.current = bounds;
+  useEffect(() => {
+    boundsRef.current = bounds;
+  }, [bounds]);
   useEffect(() => {
     if (boundsRef.current) {
       mapRef.current?.fitBounds(boundsRef.current, {
