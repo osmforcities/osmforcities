@@ -102,6 +102,14 @@ export default async function middleware(req: NextRequest) {
   return addDebugHeaders(response);
 }
 
+// Run on the Node.js runtime so refreshTokenClaims (called via the jwt callback
+// in auth.ts) can use Prisma. The default Edge runtime cannot run Prisma's
+// native query engine, which silently swallowed the claim refresh on every
+// request. Middleware only needs isLoggedIn + session.user.language, both of
+// which work in Node — and Node restores the always-refresh behavior intended
+// by commit e2fbe7c.
+export const runtime = "nodejs";
+
 export const config = {
   matcher: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
 };

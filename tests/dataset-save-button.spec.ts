@@ -9,7 +9,8 @@ import { getLocalizedPath } from "./config";
 import { MAX_SAVES_PER_USER } from "../src/lib/constants";
 
 test.describe("Dataset Save Button", () => {
-  test.describe.configure({ retries: 2 });
+  // Note: per-describe retries removed — redundant with the global
+  // `retries: 2` already set in playwright.config.ts for CI runs.
 
   let testUser: { id: string; email: string; password?: string };
   let testDataset: {
