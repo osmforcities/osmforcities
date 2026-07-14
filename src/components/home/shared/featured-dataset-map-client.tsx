@@ -5,7 +5,7 @@ import Map, { NavigationControl } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Link } from "react-aria-components";
-import { ArrowRight, MapPin, Pencil, Users } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FeatureCollection } from "geojson";
 import { mapStyle } from "@/lib/map-tiles";
@@ -13,7 +13,7 @@ import { getCategoryIcon } from "@/lib/category-icons";
 import { calculateBbox } from "@/lib/utils";
 import type { Bbox } from "@/types/geojson";
 import type { ProcessedDatasetStats } from "@/lib/dataset-stats";
-import { formatCompactNumber } from "@/components/ui/dataset-card";
+import { DatasetStatsRow } from "@/components/ui/dataset-stats-row";
 import { MapLayers } from "@/components/dataset/map/layers";
 import { AoiBoundaryLayer } from "@/components/dataset/map/aoi-boundary-layer";
 import { processOSMFeaturesForVisualization } from "@/lib/osm-data-processor";
@@ -95,9 +95,9 @@ export function FeaturedDatasetMapClient({
   }, [bounds, geojson]);
 
   const statItems = [
-    { type: "features", label: t("stats.features"), value: formatCompactNumber(stats.features), Icon: MapPin },
-    { type: "contributors", label: t("stats.contributors"), value: formatCompactNumber(stats.contributors), Icon: Users },
-    { type: "lastEdited", label: t("stats.lastEdited"), value: stats.lastEdited, Icon: Pencil },
+    { type: "features" as const, label: t("stats.features"), value: stats.features },
+    { type: "contributors" as const, label: t("stats.contributors"), value: stats.contributors },
+    { type: "lastEdited" as const, label: t("stats.lastEdited"), value: stats.lastEdited },
   ];
 
   return (
@@ -141,18 +141,7 @@ export function FeaturedDatasetMapClient({
             <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
               {title}
             </h3>
-            <div className="flex items-center gap-3 text-[10px] mt-1.5">
-              {statItems.map(({ type, label, value, Icon }) => (
-                <div
-                  key={type}
-                  aria-label={label}
-                  className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400"
-                >
-                  <Icon className="w-2.5 h-2.5" />
-                  <span className="font-medium">{value}</span>
-                </div>
-              ))}
-            </div>
+            <DatasetStatsRow stats={statItems} className="mt-1.5" />
           </div>
           <ArrowRight
             aria-hidden
