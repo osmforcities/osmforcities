@@ -105,6 +105,8 @@ describe("user-report email generation", () => {
 
   const mockDataset = {
     id: "ds-1",
+    areaId: 12345,
+    templateId: "template-schools",
     cityName: "Sao Paulo",
     stats: {
       mostRecentElement: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
@@ -283,6 +285,20 @@ describe("user-report email generation", () => {
     const result = await generateNextUserReport();
     expect(result).toBeNull();
   });
+
+  it("links to the area/template dataset route, not the bare dataset id", async () => {
+    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
+    mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+    mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
+
+    const result = await generateNextUserReport();
+
+    expect(result?.emailContent.html).toContain(
+      `https://osmforcities.com/en/area/${mockDataset.areaId}/dataset/${mockDataset.templateId}`
+    );
+    expect(result?.emailContent.html).not.toContain(`/dataset/${mockDataset.id}`);
+  });
 });
 
 describe("deadlock scenario", () => {
@@ -302,6 +318,8 @@ describe("deadlock scenario", () => {
 
   const mockDatasetWithChanges = {
     id: "ds-1",
+    areaId: 12345,
+    templateId: "template-schools",
     cityName: "Sao Paulo",
     stats: {
       mostRecentElement: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
@@ -456,6 +474,8 @@ describe("report status tracking helpers", () => {
     mockPrisma.dataset.findMany.mockResolvedValue([
       {
         id: "ds-1",
+        areaId: 12345,
+        templateId: "template-schools",
         cityName: "Sao Paulo",
         stats: { mostRecentElement: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString() },
         template: {
