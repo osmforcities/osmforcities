@@ -46,7 +46,9 @@ describe("GET /api/datasets/[id]/geojson", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get("Content-Type")).toBe("application/geo+json");
-    expect(response.headers.get("Cache-Control")).toBe("public, max-age=300");
+    expect(response.headers.get("Cache-Control")).toBe(
+      "public, max-age=300, s-maxage=300, stale-while-revalidate=3600"
+    );
     const body = await response.json();
     expect(body.type).toBe("FeatureCollection");
   });
