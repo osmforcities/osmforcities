@@ -30,7 +30,7 @@ export type FilterDimension = {
  * TODO(#184): move allow-list to per-template config (templates.yml) so datasets
  * expose the tags meaningful to them (e.g. trees -> genus/leaf_type).
  */
-export const FILTERABLE_TAGS: string[] = [
+export const FILTERABLE_TAGS: readonly string[] = [
   "surface",
   "amenity",
   "material",
@@ -134,7 +134,7 @@ function computeAgeDimension(features: Feature[]): FilterDimension {
  */
 export function computeFilterDimensions(
   features: Feature[],
-  filterableTags: string[] = FILTERABLE_TAGS
+  filterableTags: readonly string[] = FILTERABLE_TAGS
 ): FilterDimension[] {
   const tagDimensions = filterableTags
     .map((key) => computeTagDimension(features, key))
