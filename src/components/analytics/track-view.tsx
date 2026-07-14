@@ -73,14 +73,16 @@ type TrackViewProps = {
  * The script loads afterInteractive, so poll briefly until window.umami exists.
  */
 export function TrackView({ event, url }: TrackViewProps) {
-  const fired = useRef(false);
+  const lastFiredKey = useRef<string | null>(null);
 
   useEffect(() => {
-    // Guard only against re-sending an event that was actually fired; a
-    // timed-out attempt leaves fired false so a prop change can retry.
-    if (fired.current) return;
+    // Key the guard by event+url: client-side navigation can reuse this
+    // instance with new props (new view to record), while StrictMode re-runs
+    // and timed-out attempts must not re-send the same event.
+    const key = `${event}:${url ?? ""}`;
+    if (lastFiredKey.current === key) return;
     return startTrackViewEvent(event, url, () => {
-      fired.current = true;
+      lastFiredKey.current = key;
     });
   }, [event, url]);
 
