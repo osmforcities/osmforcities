@@ -1,0 +1,188 @@
+// src/lib/__tests__/filter-dimensions.test.ts
+
+import { describe, it, expect } from "vitest";
+import type { Feature } from "geojson";
+import {
+  computeFilterDimensions,
+  FILTERABLE_TAGS,
+  AGE_CATEGORY_ORDER,
+  type FilterDimension,
+} from "../filter-dimensions";
+
+const feature = (properties: Record<string, unknown> | null): Feature =>
+  ({ type: "Feature", geometry: null, properties } as unknown as Feature);
+
+const byKey = (dims: FilterDimension[], key: string) =>
+  dims.find((d) => d.key === key);
+
+describe("computeFilterDimensions — tag dimensions", () => {
+  it("counts allow-listed tag values and sorts desc by count", () => {
+    const features = [
+      feature({ surface: "asphalt" }),
+      feature({ surface: "asphalt" }),
+      feature({ surface: "asphalt" }),
+      feature({ surface: "gravel" }),
+      feature({ surface: "paving_stones" }),
+      feature({ surface: "gravel" }),
+    ];
+
+    const surface = byKey(computeFilterDimensions(features), "surface");
+
+    expect(surface).toBeDefined();
+    expect(surface!.kind).toBe("tag");
+    expect(surface!.values).toEqual([
+      { value: "asphalt", count: 3 },
+      { value: "gravel", count: 2 },
+      { value: "paving_stones", count: 1 },
+    ]);
+  });
+
+  it("counts features missing the tag (null/undefined)", () => {
+    const features = [
+      feature({ surface: "asphalt" }),
+      feature({ surface: null }),
+      feature({}), // undefined
+      feature({ amenity: "bench" }), // has a different tag, still missing surface
+    ];
+
+    const surface = byKey(computeFilterDimensions(features), "surface");
+
+    expect(surface!.missing).toBe(3);
+    expect(surface!.values).toEqual([{ value: "asphalt", count: 1 }]);
+  });
+
+  it("merges values case-insensitively, preserving the dominant casing", () => {
+    const features = [
+      feature({ material: "Wood" }),
+      feature({ material: "wood" }),
+      feature({ material: "wood" }),
+      feature({ material: "WOOD" }),
+      feature({ material: "Metal" }),
+    ];
+
+    const material = byKey(computeFilterDimensions(features), "material");
+
+    expect(material!.values).toEqual([
+      // count is the case-folded total (Wood+wood+wood+WOOD); display uses the
+      // dominant casing "wood" (3 of 4 occurrences)
+      { value: "wood", count: 4 },
+      { value: "Metal", count: 1 },
+    ]);
+  });
+
+  it("coerces non-string tag values to strings", () => {
+    // `amenity` is allow-listed; use it with a numeric-ish value to exercise coercion
+    const features = [
+      feature({ amenity: 2 }),
+      feature({ amenity: 2 }),
+      feature({ amenity: "bench" }),
+    ];
+
+    const amenity = byKey(computeFilterDimensions(features), "amenity");
+
+    expect(amenity!.values).toEqual([
+      { value: "2", count: 2 },
+      { value: "bench", count: 1 },
+    ]);
+  });
+
+  it("omits allow-listed tags absent from all features", () => {
+    const features = [feature({ amenity: "bench" })];
+
+    const dims = computeFilterDimensions(features);
+
+    expect(byKey(dims, "surface")).toBeUndefined();
+    expect(byKey(dims, "material")).toBeUndefined();
+    expect(byKey(dims, "amenity")).toBeDefined();
+  });
+
+  it("ignores present tags that are not allow-listed", () => {
+    const features = [
+      feature({ colour: "red" }),
+      feature({ colour: "blue" }),
+    ];
+
+    const dims = computeFilterDimensions(features);
+
+    expect(byKey(dims, "colour")).toBeUndefined();
+    // only the always-present age dimension remains
+    expect(dims.map((d) => d.key)).toEqual(["age"]);
+  });
+
+  it("honors a custom filterableTags argument over the default seed", () => {
+    const features = [
+      feature({ colour: "red" }),
+      feature({ surface: "asphalt" }),
+    ];
+
+    const dims = computeFilterDimensions(features, ["colour"]);
+
+    expect(byKey(dims, "colour")).toBeDefined();
+    expect(byKey(dims, "surface")).toBeUndefined();
+  });
+});
+
+describe("computeFilterDimensions — age dimension", () => {
+  it("is always present with buckets in ordinal order, omitting zero-count buckets", () => {
+    const features = [
+      feature({ ageCategory: "older" }),
+      feature({ ageCategory: "recent" }),
+      feature({ ageCategory: "recent" }),
+      feature({ ageCategory: "very-old" }),
+    ];
+
+    const age = byKey(computeFilterDimensions(features), "age");
+
+    expect(age!.kind).toBe("age");
+    // ordinal order (recent, medium, older, very-old); `medium` omitted (zero)
+    expect(age!.values).toEqual([
+      { value: "recent", count: 2 },
+      { value: "older", count: 1 },
+      { value: "very-old", count: 1 },
+    ]);
+  });
+
+  it("counts features without a valid ageCategory as missing", () => {
+    const features = [
+      feature({ ageCategory: "recent" }),
+      feature({ ageCategory: "bogus" }),
+      feature({}),
+      feature(null),
+    ];
+
+    const age = byKey(computeFilterDimensions(features), "age");
+
+    expect(age!.missing).toBe(3);
+    expect(age!.values).toEqual([{ value: "recent", count: 1 }]);
+  });
+
+  it("keeps age buckets in the declared ordinal order", () => {
+    const features = AGE_CATEGORY_ORDER.map((c) => feature({ ageCategory: c }));
+
+    const age = byKey(computeFilterDimensions(features), "age");
+
+    expect(age!.values.map((v) => v.value)).toEqual([...AGE_CATEGORY_ORDER]);
+  });
+});
+
+describe("computeFilterDimensions — edge cases", () => {
+  it("handles an empty feature array without throwing", () => {
+    const dims = computeFilterDimensions([]);
+
+    expect(dims).toEqual([{ key: "age", kind: "age", values: [], missing: 0 }]);
+  });
+
+  it("handles features with null properties", () => {
+    const features = [feature(null), feature(null)];
+
+    const dims = computeFilterDimensions(features);
+
+    // no tag dimensions; age present with everything missing
+    expect(dims).toHaveLength(1);
+    expect(byKey(dims, "age")!.missing).toBe(2);
+  });
+
+  it("exposes a non-empty default allow-list", () => {
+    expect(FILTERABLE_TAGS.length).toBeGreaterThan(0);
+  });
+});
