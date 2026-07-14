@@ -6,6 +6,11 @@ import {
   POINT_STYLE,
   buildPointRadiusForCount,
 } from "./map-layers";
+import { createSmallPolygonProxyPoints } from "./polygon-proxy-points";
+
+// Proxy circles carry small polygons at low zoom, then hand off to the
+// real footprints as they become resolvable
+const PROXY_FADE = ["interpolate", ["linear"], ["zoom"], 12.5, 0.9, 14, 0];
 import type { CategoricalTheme } from "@/lib/map-themes";
 import { buildCircleColorExpression, buildCircleRadiusExpression } from "./expressions";
 import { PALETTES } from "@/lib/map-themes/palettes";
@@ -23,8 +28,26 @@ export function DetailedFeaturesLayerGroup({
   pointFeatures,
   categoricalTheme,
 }: DetailedFeaturesLayerGroupProps) {
+  const proxyPoints = categoricalTheme
+    ? []
+    : createSmallPolygonProxyPoints(polygonFeatures);
+
   return (
     <>
+      {proxyPoints.length > 0 && (
+        <MapLayer
+          id="polygon-proxy-points"
+          features={proxyPoints}
+          layerType="circle"
+          paint={{
+            ...POINT_STYLE,
+            "circle-radius": buildPointRadiusForCount(proxyPoints.length),
+            "circle-opacity": PROXY_FADE,
+            "circle-stroke-opacity": PROXY_FADE,
+          }}
+        />
+      )}
+
       {polygonFeatures.length > 0 && (
         <MapLayer
           id="detailed-polygons"
