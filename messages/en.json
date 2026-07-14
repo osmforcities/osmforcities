@@ -409,7 +409,7 @@
     },
     "featuredDataset": {
       "title": "{template} in {city}",
-      "viewDataset": "View dataset →",
+      "viewDataset": "View dataset",
       "stats": {
         "features": "Features",
         "contributors": "Contributors",

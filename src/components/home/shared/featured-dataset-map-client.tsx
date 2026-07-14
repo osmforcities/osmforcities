@@ -5,7 +5,7 @@ import Map, { NavigationControl } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Link } from "react-aria-components";
-import { MapPin, Pencil, Users } from "lucide-react";
+import { ArrowRight, MapPin, Pencil, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FeatureCollection } from "geojson";
 import { mapStyle } from "@/lib/map-tiles";
@@ -129,42 +129,42 @@ export function FeaturedDatasetMapClient({
         </div>
       </Map>
 
-      {/* Info card overlay */}
-      <div className="absolute top-4 left-4 max-w-xs bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.1)] p-4">
-        <div className="flex items-start gap-3">
+      {/* Info card overlay, bottom-right clear of the attribution bar.
+          The whole card is the link to the dataset page. */}
+      <Link
+        href={href}
+        aria-label={`${title} — ${t("viewDataset")}`}
+        className="group absolute bottom-12 right-4 block max-w-xs bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.1)] p-4 transition-shadow hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+      >
+        {/* Columns: icon | content (title + stats) | arrow, all vertically centered */}
+        <div className="flex items-center gap-3">
           <div className="flex items-center justify-center shrink-0 w-8 h-8 text-olive-600 opacity-60">
             {getCategoryIcon(category)}
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
               {title}
             </h3>
-            <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-medium capitalize rounded-full bg-olive-100 text-olive-700 dark:bg-neutral-800 dark:text-neutral-300">
-              {category}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 text-[10px] mt-3">
-          {statItems.map(({ type, label, value, Icon }) => (
-            <div
-              key={type}
-              aria-label={label}
-              className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400"
-            >
-              <Icon className="w-2.5 h-2.5" />
-              <span className="font-medium">{value}</span>
+            <div className="flex items-center gap-3 text-[10px] mt-1.5">
+              {statItems.map(({ type, label, value, Icon }) => (
+                <div
+                  key={type}
+                  aria-label={label}
+                  className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400"
+                >
+                  <Icon className="w-2.5 h-2.5" />
+                  <span className="font-medium">{value}</span>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+          <ArrowRight
+            aria-hidden
+            strokeWidth={2.5}
+            className="shrink-0 w-5 h-5 text-neutral-500 transition-all group-hover:translate-x-0.5 group-hover:text-olive-600"
+          />
         </div>
-
-        <Link
-          href={href}
-          className="inline-block mt-3 text-sm font-medium text-olive-600 hover:text-olive-700 focus:outline-none focus:ring-2 focus:ring-green-500 rounded"
-        >
-          {t("viewDataset")}
-        </Link>
-      </div>
+      </Link>
     </div>
   );
 }

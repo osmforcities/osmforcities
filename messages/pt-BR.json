@@ -407,7 +407,7 @@
     },
     "featuredDataset": {
       "title": "{template} em {city}",
-      "viewDataset": "Ver conjunto de dados →",
+      "viewDataset": "Ver conjunto de dados",
       "stats": {
         "features": "Elementos",
         "contributors": "Contribuidores",
