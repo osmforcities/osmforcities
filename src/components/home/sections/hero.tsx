@@ -7,9 +7,14 @@ export function Hero() {
   return (
     <HeroLayout>
       <HeroContent />
-      <Suspense fallback={<HeroMap />}>
-        <FeaturedDatasetMap />
-      </Suspense>
+      {/* Explicit wrapper so the grid always has exactly two element
+          children — Suspense streaming placeholders would otherwise become
+          extra grid items and wrap under the left column */}
+      <div className="relative h-full">
+        <Suspense fallback={<HeroMap />}>
+          <FeaturedDatasetMap />
+        </Suspense>
+      </div>
     </HeroLayout>
   );
 }
