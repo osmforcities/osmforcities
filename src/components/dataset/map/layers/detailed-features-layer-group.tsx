@@ -1,7 +1,17 @@
+import { useMemo } from "react";
 import { Feature } from "geojson";
 import { MapLayer } from "./map-layer";
-import { POLYGON_STYLE, LINE_STYLE, POINT_STYLE } from "./map-layers";
-import { createDetailedOpacityExpression } from "./expressions";
+import {
+  POLYGON_STYLE,
+  LINE_STYLE,
+  POINT_STYLE,
+  buildPointRadiusForCount,
+} from "./map-layers";
+import { createSmallPolygonProxyPoints } from "./polygon-proxy-points";
+
+// Proxy circles carry small polygons at low zoom, then hand off to the
+// real footprints as they become resolvable
+const PROXY_FADE = ["interpolate", ["linear"], ["zoom"], 12.5, 0.9, 14, 0];
 import type { CategoricalTheme } from "@/lib/map-themes";
 import { buildCircleColorExpression, buildCircleRadiusExpression } from "./expressions";
 import { PALETTES } from "@/lib/map-themes/palettes";
@@ -19,28 +29,38 @@ export function DetailedFeaturesLayerGroup({
   pointFeatures,
   categoricalTheme,
 }: DetailedFeaturesLayerGroupProps) {
+  const proxyPoints = useMemo(
+    () =>
+      categoricalTheme ? [] : createSmallPolygonProxyPoints(polygonFeatures),
+    [categoricalTheme, polygonFeatures]
+  );
+
   return (
     <>
+      {proxyPoints.length > 0 && (
+        <MapLayer
+          id="polygon-proxy-points"
+          features={proxyPoints}
+          layerType="circle"
+          paint={{
+            ...POINT_STYLE,
+            "circle-radius": buildPointRadiusForCount(proxyPoints.length),
+            "circle-opacity": PROXY_FADE,
+            "circle-stroke-opacity": PROXY_FADE,
+          }}
+        />
+      )}
+
       {polygonFeatures.length > 0 && (
         <MapLayer
           id="detailed-polygons"
           features={polygonFeatures}
           layerType="fill"
-          paint={{
-            ...POLYGON_STYLE.fill,
-            "fill-opacity": createDetailedOpacityExpression(
-              POLYGON_STYLE.fill["fill-opacity"]
-            ),
-          }}
+          paint={POLYGON_STYLE.fill}
           strokeLayer={{
             id: "detailed-polygons-stroke",
             type: "line",
-            paint: {
-              ...POLYGON_STYLE.stroke,
-              "line-opacity": createDetailedOpacityExpression(
-                POLYGON_STYLE.stroke["line-opacity"]
-              ),
-            },
+            paint: POLYGON_STYLE.stroke,
           }}
         />
       )}
@@ -50,12 +70,7 @@ export function DetailedFeaturesLayerGroup({
           id="detailed-lines"
           features={lineFeatures}
           layerType="line"
-          paint={{
-            ...LINE_STYLE,
-            "line-opacity": createDetailedOpacityExpression(
-              LINE_STYLE["line-opacity"]
-            ),
-          }}
+          paint={LINE_STYLE}
         />
       )}
 
@@ -68,18 +83,14 @@ export function DetailedFeaturesLayerGroup({
             ...POINT_STYLE,
             "circle-radius": categoricalTheme
               ? buildCircleRadiusExpression(categoricalTheme, 4) as number
-              : POINT_STYLE["circle-radius"],
+              : buildPointRadiusForCount(pointFeatures.length),
             "circle-color": categoricalTheme
               ? buildCircleColorExpression(categoricalTheme)
               : POINT_STYLE["circle-color"],
-            "circle-opacity": createDetailedOpacityExpression(
-              POINT_STYLE["circle-opacity"]
-            ),
             "circle-stroke-color": categoricalTheme
               ? PALETTES.categorical.stroke
               : POINT_STYLE["circle-stroke-color"],
             "circle-stroke-width": categoricalTheme ? 1 : POINT_STYLE["circle-stroke-width"],
-            "circle-stroke-opacity": createDetailedOpacityExpression(0.9),
           }}
         />
       )}

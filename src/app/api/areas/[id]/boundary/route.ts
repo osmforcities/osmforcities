@@ -20,7 +20,10 @@ export async function GET(
     }
 
     return NextResponse.json(boundary, {
-      headers: { "Cache-Control": "public, max-age=3600" },
+      headers: {
+        "Cache-Control":
+          "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+      },
     });
   } catch (error) {
     console.error("Error fetching area boundary:", error);

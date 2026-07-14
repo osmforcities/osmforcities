@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { trackEvent, getClientInfo } from "@/lib/umami";
@@ -42,6 +43,10 @@ export async function PUT(
     }
 
     const [result] = rows;
+    try {
+      // Best-effort homepage cache bust; throws without a request store (vitest)
+      revalidateTag("featured-datasets");
+    } catch {}
     await trackEvent(
       result.isFeatured
         ? ANALYTICS_EVENTS.DATASET_FEATURED

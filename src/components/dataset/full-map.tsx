@@ -143,7 +143,6 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             interactiveLayerIds={[
-              "simplified-features",
               "detailed-polygons",
               "detailed-lines",
               "detailed-points",
@@ -170,6 +169,7 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
                 <Layer
                   id="highlight-fill"
                   type="fill"
+                  filter={["==", "$type", "Polygon"]}
                   paint={{
                     "fill-color": "#0b4ad8",
                     "fill-opacity": 0.3,
@@ -178,15 +178,19 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
                 <Layer
                   id="highlight-stroke"
                   type="line"
+                  filter={["!=", "$type", "Point"]}
                   paint={{
                     "line-color": "#0b4ad8",
                     "line-width": 3,
                     "line-opacity": 1,
                   }}
                 />
+                {/* Point filter: without it a selected polygon/line gets a
+                    circle drawn on every vertex */}
                 <Layer
                   id="highlight-point"
                   type="circle"
+                  filter={["==", "$type", "Point"]}
                   paint={{
                     "circle-radius": 6,
                     "circle-color": "#0b4ad8",

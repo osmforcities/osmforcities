@@ -1,7 +1,8 @@
 import type { Prisma } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { DatasetCard, type StatType } from "@/components/ui/dataset-card";
+import { DatasetCard } from "@/components/ui/dataset-card";
+import type { StatType } from "@/components/ui/dataset-stats-row";
 import { processDatasetStats, formatRelativeTime } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getDatasetPath } from "@/lib/urls";

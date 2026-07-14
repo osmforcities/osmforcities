@@ -7,8 +7,7 @@ import { Card, CardHeader, CardFooter } from "@/components/ui/card";
 import { SearchInput } from "@/components/ui/search-input";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getCategoryIcon } from "@/lib/category-icons";
-import { formatRelativeTime } from "@/lib/dataset-stats";
-import { formatCompactNumber } from "@/components/ui/dataset-card";
+import { formatRelativeTime, formatCompactNumber } from "@/lib/dataset-stats";
 import type { AreaDataType } from "@/lib/area-templates";
 import { useState, useMemo, useEffect } from "react";
 

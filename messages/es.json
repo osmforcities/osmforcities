@@ -405,6 +405,15 @@
       "seeHowItWorks": "Ver cómo funciona",
       "osmAttribution": "© Colaboradores de OpenStreetMap"
     },
+    "featuredDataset": {
+      "title": "{template} en {city}",
+      "viewDataset": "Ver conjunto de datos",
+      "stats": {
+        "features": "Elementos",
+        "contributors": "Colaboradores",
+        "lastEdited": "Última edición"
+      }
+    },
     "features": {
       "subtitle": "Características",
       "title": "Cómo funciona OSM for Cities",

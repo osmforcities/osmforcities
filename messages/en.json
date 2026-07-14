@@ -407,6 +407,15 @@
       "exploreDatasets": "Explore datasets",
       "osmAttribution": "© OpenStreetMap contributors"
     },
+    "featuredDataset": {
+      "title": "{template} in {city}",
+      "viewDataset": "View dataset",
+      "stats": {
+        "features": "Features",
+        "contributors": "Contributors",
+        "lastEdited": "Last edited"
+      }
+    },
     "features": {
       "subtitle": "Features",
       "title": "How OSM for Cities works",
