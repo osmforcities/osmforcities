@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { GridList, GridListItem } from "react-aria-components";
 import { Card, CardHeader, CardFooter } from "@/components/ui/card";
-import { getCategoryIcon } from "@/lib/category-icons";
+import { getTemplateIcon } from "@/lib/category-icons";
 import { QuotaIndicator } from "@/components/dashboard/quota-indicator";
 
 type Dataset = {
@@ -107,7 +107,7 @@ export function DashboardGrid({ datasets, saveLimit }: DashboardGridProps) {
               <CardHeader>
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-olive-100 text-olive-600 rounded-lg">
-                    {getCategoryIcon(dataset.template.category.slug)}
+                    {getTemplateIcon(dataset.template.id, dataset.template.category.slug)}
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 group-hover:text-olive-700">

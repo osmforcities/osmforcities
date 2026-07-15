@@ -65,7 +65,8 @@ export async function DatasetSections({
         name={resolved.name}
         city={dataset.cityName}
         country={dataset.area.countryCode ?? ""}
-        category={resolved.category?.name ?? "other"}
+        category={resolved.category?.slug ?? "other"}
+        templateId={dataset.templateId}
         href={getDatasetPath({ locale, areaId: dataset.areaId, templateId: dataset.templateId })}
         stats={stats}
       />

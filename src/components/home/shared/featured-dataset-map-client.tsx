@@ -9,7 +9,7 @@ import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FeatureCollection } from "geojson";
 import { mapStyle } from "@/lib/map-tiles";
-import { getCategoryIcon } from "@/lib/category-icons";
+import { getTemplateIcon } from "@/lib/category-icons";
 import { calculateBbox } from "@/lib/utils";
 import type { Bbox } from "@/types/geojson";
 import type { ProcessedDatasetStats } from "@/lib/dataset-stats";
@@ -23,7 +23,10 @@ type FeaturedDatasetMapClientProps = {
   areaId: number;
   bounds: Bbox | null;
   title: string;
+  /** Category slug (icon fallback when the template has no icon) */
   category: string;
+  /** Template slug for the template-specific icon */
+  templateId: string;
   stats: ProcessedDatasetStats;
   href: string;
 };
@@ -34,6 +37,7 @@ export function FeaturedDatasetMapClient({
   bounds,
   title,
   category,
+  templateId,
   stats,
   href,
 }: FeaturedDatasetMapClientProps) {
@@ -138,7 +142,7 @@ export function FeaturedDatasetMapClient({
       >
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center shrink-0 w-8 h-8 text-olive-600 opacity-60">
-            {getCategoryIcon(category)}
+            {getTemplateIcon(templateId, category)}
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
