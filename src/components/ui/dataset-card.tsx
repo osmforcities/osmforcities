@@ -1,14 +1,17 @@
 "use client";
 
 import { Link } from "react-aria-components";
-import { getCategoryIcon } from "@/lib/category-icons";
+import { getTemplateIcon } from "@/lib/category-icons";
 import { DatasetStatsRow, type DatasetStat } from "@/components/ui/dataset-stats-row";
 
 export interface DatasetCardProps {
   name: string;
   city: string;
   country: string;
+  /** Category slug (icon fallback when the template has no icon) */
   category: string;
+  /** Template slug for the template-specific icon */
+  templateId?: string;
   href: string;
   stats: DatasetStat[];
 }
@@ -50,11 +53,12 @@ export function DatasetCard({
   city,
   country,
   category,
+  templateId,
   href,
   stats,
 }: DatasetCardProps) {
   const flag = getCountryFlag(country);
-  const categoryIcon = getCategoryIcon(category);
+  const categoryIcon = getTemplateIcon(templateId ?? "", category);
 
   return (
     <Link
