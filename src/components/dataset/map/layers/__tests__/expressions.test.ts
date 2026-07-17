@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { buildCircleColorExpression, buildCircleRadiusExpression } from '../expressions';
+import { buildPointRadiusForCount, LINE_STYLE, POLYGON_STYLE, POINT_STYLE } from '../map-layers';
 import type { CategoricalTheme, IntensityTheme } from '@/lib/map-themes/types';
 
 describe('buildCircleColorExpression', () => {
@@ -146,5 +147,42 @@ describe('buildCircleRadiusExpression', () => {
       50,
       9, // 6 * 1.5
     ]);
+  });
+});
+
+describe('zoom-responsive styles', () => {
+  it('buildPointRadiusForCount scales low-zoom radius by density and grows at high zoom', () => {
+    expect(buildPointRadiusForCount(10000)).toEqual([
+      'interpolate',
+      ['exponential', 1.5],
+      ['zoom'],
+      8,
+      2,
+      14,
+      2.5,
+      18,
+      6,
+    ]);
+    expect(buildPointRadiusForCount(2000)[4]).toBe(3);
+    expect(buildPointRadiusForCount(100)[4]).toBe(3.5);
+  });
+
+  it('line, polygon-stroke, and point-stroke widths interpolate exponentially on zoom', () => {
+    for (const expression of [
+      LINE_STYLE['line-width'],
+      POLYGON_STYLE.stroke['line-width'],
+      POINT_STYLE['circle-stroke-width'],
+    ]) {
+      expect(expression.slice(0, 3)).toEqual(['interpolate', ['exponential', 1.5], ['zoom']]);
+    }
+  });
+
+  it('lines and points grow toward street-level zoom instead of shrinking', () => {
+    const lineStops = LINE_STYLE['line-width'];
+    // last stop (z18) wider than the mid stop (z13)
+    expect(lineStops[lineStops.length - 1]).toBeGreaterThan(Number(lineStops[6]));
+
+    const pointStops = buildPointRadiusForCount(100);
+    expect(pointStops[pointStops.length - 1]).toBeGreaterThan(Number(pointStops[6]));
   });
 });
