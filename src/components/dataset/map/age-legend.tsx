@@ -1,10 +1,11 @@
 import { useTranslations } from "next-intl";
+import { AGE_COLORS } from "./layers/map-layers";
 
 const AGE_LEGEND_ITEMS = [
-  { key: "recent", color: "#22c55e", labelKey: "recentChanges" },
-  { key: "medium", color: "#f97316", labelKey: "mediumChanges" },
-  { key: "older", color: "#eab308", labelKey: "olderChanges" },
-  { key: "very-old", color: "#9ca3af", labelKey: "veryOldChanges" },
+  { key: "recent", color: AGE_COLORS.recent, labelKey: "recentChanges" },
+  { key: "medium", color: AGE_COLORS.medium, labelKey: "mediumChanges" },
+  { key: "older", color: AGE_COLORS.older, labelKey: "olderChanges" },
+  { key: "very-old", color: AGE_COLORS["very-old"], labelKey: "veryOldChanges" },
 ] as const;
 
 export function AgeLegend() {

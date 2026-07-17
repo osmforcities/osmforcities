@@ -1,6 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import { buildCircleColorExpression, buildCircleRadiusExpression } from '../expressions';
-import { buildPointRadiusForCount, LINE_STYLE, POLYGON_STYLE, POINT_STYLE } from '../map-layers';
+import {
+  buildPointRadiusForCount,
+  buildPointStrokeWidth,
+  buildLineWidth,
+  DEFAULT_STYLE_KNOBS,
+  AGE_SORT_KEY,
+  LINE_STYLE,
+  POLYGON_STYLE,
+  POINT_STYLE,
+} from '../map-layers';
 import type { CategoricalTheme, IntensityTheme } from '@/lib/map-themes/types';
 
 describe('buildCircleColorExpression', () => {
@@ -150,21 +159,116 @@ describe('buildCircleRadiusExpression', () => {
   });
 });
 
+// A stop output is either a plain number or a recent-boost case expression;
+// this extracts the non-recent (fallback) value either way
+function baseValue(output: unknown): number {
+  if (typeof output === 'number') return output;
+  const expr = output as unknown[];
+  return expr[expr.length - 1] as number;
+}
+
+// ...and this extracts the boosted value applied to recent features
+function recentValue(output: unknown): number {
+  if (typeof output === 'number') return output;
+  return (output as unknown[])[2] as number;
+}
+
+const noBoostKnobs = {
+  ...DEFAULT_STYLE_KNOBS,
+  radiusBoost: { recent: 0, medium: 0, older: 0, 'very-old': 0 },
+  recent: { haloWidth: 0 },
+};
+
 describe('zoom-responsive styles', () => {
   it('buildPointRadiusForCount scales low-zoom radius by density and grows at high zoom', () => {
-    expect(buildPointRadiusForCount(10000)).toEqual([
+    expect(buildPointRadiusForCount(10000, noBoostKnobs)).toEqual([
       'interpolate',
       ['exponential', 1.5],
       ['zoom'],
-      8,
-      2,
-      14,
-      2.5,
+      10,
+      1.5,
+      12,
+      1.5,
+      15,
+      5,
       18,
       6,
     ]);
-    expect(buildPointRadiusForCount(2000)[4]).toBe(3);
-    expect(buildPointRadiusForCount(100)[4]).toBe(3.5);
+    expect(buildPointRadiusForCount(2000, noBoostKnobs)[6]).toBe(2.25);
+    expect(buildPointRadiusForCount(100, noBoostKnobs)[6]).toBe(3);
+  });
+
+  it('recent points get a radius boost at every zoom stop', () => {
+    const boost = DEFAULT_STYLE_KNOBS.radiusBoost.recent;
+    expect(boost).toBeGreaterThan(0);
+    const expression = buildPointRadiusForCount(10000);
+    for (const stopIndex of [4, 6, 8, 10]) {
+      const output = expression[stopIndex];
+      expect(recentValue(output)).toBe(baseValue(output) + boost);
+    }
+  });
+
+  it('per-category boosts each get a case branch', () => {
+    const tuned = {
+      ...DEFAULT_STYLE_KNOBS,
+      radiusBoost: { recent: 2, medium: 1, older: 0.5, 'very-old': -0.5 },
+    };
+    const output = buildPointRadiusForCount(100, tuned)[8] as unknown[];
+    // z15 base radius 5: recent 7, medium 6, older 5.5, fallback 4.5
+    expect(output).toEqual([
+      'case',
+      ['==', ['get', 'ageCategory'], 'recent'],
+      7,
+      ['==', ['get', 'ageCategory'], 'medium'],
+      6,
+      ['==', ['get', 'ageCategory'], 'older'],
+      5.5,
+      4.5,
+    ]);
+  });
+
+  it('recent points keep a halo at low zoom where others have none', () => {
+    const strokeWidth = buildPointStrokeWidth(DEFAULT_STYLE_KNOBS);
+    const z12Output = strokeWidth[4];
+    expect(baseValue(z12Output)).toBe(0);
+    expect(recentValue(z12Output)).toBe(DEFAULT_STYLE_KNOBS.recent.haloWidth);
+  });
+
+  it('points get a white border that fades in with zoom', () => {
+    expect(POINT_STYLE['circle-stroke-color']).toBe('#ffffff');
+    const strokeWidth = POINT_STYLE['circle-stroke-width'] as unknown[];
+    expect(strokeWidth.slice(0, 3)).toEqual([
+      'interpolate',
+      ['exponential', 1.5],
+      ['zoom'],
+    ]);
+    expect(baseValue(strokeWidth[4])).toBe(0);
+    expect(baseValue(strokeWidth[6])).toBe(2);
+  });
+
+  it('age sort key draws recent above medium above the rest', () => {
+    expect(AGE_SORT_KEY[2]).toBe(2);
+    expect(AGE_SORT_KEY[4]).toBe(1);
+    expect(AGE_SORT_KEY[5]).toBe(0);
+  });
+
+  it('builders honor knob overrides (panel and baked code share one path)', () => {
+    const tuned = {
+      ...DEFAULT_STYLE_KNOBS,
+      base: 1.2,
+      line: { widthZ8: 5, widthZ13: 3, widthZ18: 10 },
+    };
+    expect(buildLineWidth(tuned)).toEqual([
+      'interpolate',
+      ['exponential', 1.2],
+      ['zoom'],
+      8,
+      5,
+      13,
+      3,
+      18,
+      10,
+    ]);
   });
 
   it('line, polygon-stroke, and point-stroke widths interpolate exponentially on zoom', () => {
@@ -178,11 +282,13 @@ describe('zoom-responsive styles', () => {
   });
 
   it('lines and points grow toward street-level zoom instead of shrinking', () => {
-    const lineStops = LINE_STYLE['line-width'];
+    const lineStops = LINE_STYLE['line-width'] as unknown[];
     // last stop (z18) wider than the mid stop (z13)
     expect(lineStops[lineStops.length - 1]).toBeGreaterThan(Number(lineStops[6]));
 
     const pointStops = buildPointRadiusForCount(100);
-    expect(pointStops[pointStops.length - 1]).toBeGreaterThan(Number(pointStops[6]));
+    expect(baseValue(pointStops[pointStops.length - 1])).toBeGreaterThan(
+      baseValue(pointStops[6])
+    );
   });
 });
