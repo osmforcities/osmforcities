@@ -224,10 +224,10 @@ function StyleTuningPanelInner({ features }: StyleTuningPanelProps) {
   const { pointCount, proxyPointCount } = useMemo(() => {
     const polygonFeatures = features.filter(
       (f) =>
-        f.geometry.type === "Polygon" || f.geometry.type === "MultiPolygon"
+        f.geometry?.type === "Polygon" || f.geometry?.type === "MultiPolygon"
     );
     return {
-      pointCount: features.filter((f) => f.geometry.type === "Point").length,
+      pointCount: features.filter((f) => f.geometry?.type === "Point").length,
       proxyPointCount: createSmallPolygonProxyPoints(polygonFeatures).length,
     };
   }, [features]);
@@ -289,6 +289,11 @@ function StyleTuningPanelInner({ features }: StyleTuningPanelProps) {
       "polygon-proxy-points",
       "circle-stroke-width",
       buildPointStrokeWidth(knobs)
+    );
+    setPaint(
+      "polygon-proxy-points",
+      "circle-stroke-color",
+      knobs.point.strokeColor
     );
     setPaint("polygon-proxy-points", "circle-color", ageColor);
 

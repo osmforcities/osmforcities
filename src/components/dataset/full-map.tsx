@@ -158,7 +158,11 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
           >
             {boundary && <AoiBoundaryLayer boundary={boundary} />}
             <MemoizedMapLayers geoJSONData={processedData} categoricalTheme={selectedCategoricalTheme} />
-            <StyleTuningPanel features={processedData.features} />
+            {/* Panel writes age paint to the shared layers; keep it out of
+                categorical-theme views so it cannot stomp their colors */}
+            {!selectedCategoricalTheme && (
+              <StyleTuningPanel features={processedData.features} />
+            )}
             {selectedFeature && (
               <Source
                 id="highlight-feature"
