@@ -95,15 +95,9 @@ export type InitialViewState =
   | { bounds: Bbox; fitBoundsOptions: { padding: number } }
   | { longitude: number; latitude: number; zoom: number };
 
-/** Tolerance (degrees, ~5.5 km) when testing whether a center is near the data. */
+/** ~5.5 km: the admin centre can sit just outside a tight data bbox */
 const CENTER_NEAR_BOUNDS_TOLERANCE_DEG = 0.05;
 
-/**
- * Whether the point is inside the bbox expanded by a tolerance margin. The
- * admin centre can sit just outside a tight data bbox (e.g. a bank across
- * the street from the bbox edge) — only a center far from the data signals
- * a bad center.
- */
 function isPointNearBounds(lat: number, lon: number, bbox: Bbox): boolean {
   const [minLon, minLat, maxLon, maxLat] = bbox;
   const t = CENTER_NEAR_BOUNDS_TOLERANCE_DEG;
@@ -112,13 +106,6 @@ function isPointNearBounds(lat: number, lon: number, bbox: Bbox): boolean {
   );
 }
 
-/**
- * Initial view for the dataset map. Small area bboxes fit well; large ones
- * are untrustworthy (scattered boundaries) so the admin centre at a fixed
- * zoom wins — unless the stored center falls outside the actual data, which
- * signals a bad center. Falls back to area bounds, then data bounds, then
- * world view.
- */
 export function computeInitialViewState(
   area: {
     bounds?: string | null;
@@ -141,8 +128,7 @@ export function computeInitialViewState(
         zoom: DATASET_MAP_DEFAULT_ZOOM,
       };
     }
-    // Center outside the actual data signals a bad center (e.g. a Nominatim
-    // centroid); the data extent is the trustworthy view.
+    // A center far from the data is a bad center (e.g. a Nominatim centroid)
     return { bounds: dataBounds, fitBoundsOptions: { padding: 20 } };
   }
 

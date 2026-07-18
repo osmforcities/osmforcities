@@ -10,11 +10,8 @@ export function isAreaInfoStale(refreshedAt: Date | null): boolean {
   return Date.now() - refreshedAt.getTime() > ttlMs;
 }
 
-/**
- * Resolve the map center for an area: the OSM relation's admin_centre member
- * is authoritative; Nominatim's lat/lon is a fallback that can be a bad
- * centroid (e.g. Luanda province resolves to an empty interior point).
- */
+// Nominatim's lat/lon can be a bad centroid (e.g. Luanda province resolves
+// to an empty interior point), so the OSM admin_centre member wins.
 export function resolveAreaCenter(
   osmData: Awaited<ReturnType<typeof fetchOsmRelationData>>,
   areaDetails: Awaited<ReturnType<typeof getAreaDetailsById>>
@@ -34,13 +31,6 @@ export function resolveAreaCenter(
   return null;
 }
 
-/**
- * Refresh stored area info (name, bounds, center, countryCode) from OSM and
- * Nominatim, stamping refreshedAt. When the relation's bbox changed, the
- * cached boundary polygon is invalidated so getAreaBoundary refetches it.
- * Returns the updated area, or null when nothing could be fetched (leaving
- * refreshedAt stale so the next view retries).
- */
 export async function refreshAreaInfo(
   areaId: number,
   currentBounds: string | null
@@ -66,7 +56,8 @@ export async function refreshAreaInfo(
       countryCode: areaDetails?.countryCode ?? undefined,
       centerLat: center?.centerLat,
       centerLon: center?.centerLon,
-      refreshedAt: new Date(),
+      // Nominatim-only refresh stays stale so the next view retries the bounds
+      ...(osmData ? { refreshedAt: new Date() } : {}),
       ...(boundsChanged ? { geojson: Prisma.JsonNull } : {}),
     },
   });

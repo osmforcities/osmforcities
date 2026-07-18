@@ -164,7 +164,7 @@ async function createDatasetOnDemand(
     try {
       const [osmData, areaDetails] = await Promise.all([
         fetchOsmRelationData(areaId),
-        getAreaDetailsById(areaId),
+        getAreaDetailsById(areaId).catch(() => null),
       ]);
 
       if (!osmData && !areaDetails) {
@@ -172,9 +172,7 @@ async function createDatasetOnDemand(
       }
 
       // City OSM relations don't carry ISO3166 tags — Nominatim is the
-      // only reliable source for country code. The admin_centre member from
-      // Overpass is the authoritative map center; Nominatim's lat/lon can be
-      // a bad centroid (e.g. Luanda province).
+      // only reliable source for country code.
       const countryCode = areaDetails?.countryCode ?? null;
       const center = resolveAreaCenter(osmData, areaDetails);
       const centerLat = center?.centerLat ?? null;

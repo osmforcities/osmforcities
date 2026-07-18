@@ -112,8 +112,7 @@ export async function fetchOsmRelationData(relationId: number) {
       ? { lat: adminCentreNode.lat, lon: adminCentreNode.lon }
       : null;
 
-  // Convert only the relation so the admin_centre node doesn't leak a stray
-  // point feature into the stored area geojson.
+  // Exclude the admin_centre node from the stored area geojson
   const geojson = convertOverpassToGeoJSON({
     ...validationResult.data,
     elements: [rel],

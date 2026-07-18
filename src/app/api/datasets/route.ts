@@ -4,7 +4,11 @@ import { prisma } from "@/lib/db";
 import { CreateDatasetSchema } from "@/schemas/dataset";
 import { Prisma } from "@prisma/client";
 import { fetchOsmRelationData } from "@/lib/area-boundary";
-import { resolveAreaCenter } from "@/lib/area-refresh";
+import {
+  isAreaInfoStale,
+  refreshAreaInfo,
+  resolveAreaCenter,
+} from "@/lib/area-refresh";
 import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { trackEvent, getClientInfo } from "@/lib/umami";
@@ -38,6 +42,14 @@ export async function POST(req: NextRequest) {
   let area = await prisma.area.findUnique({
     where: { id: osmRelationId },
   });
+
+  if (area && isAreaInfoStale(area.refreshedAt)) {
+    try {
+      area = (await refreshAreaInfo(osmRelationId, area.bounds)) ?? area;
+    } catch (err) {
+      console.error("Failed to refresh area info", err);
+    }
+  }
 
   if (!area) {
     try {

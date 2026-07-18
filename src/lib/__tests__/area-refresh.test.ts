@@ -132,7 +132,7 @@ describe("refreshAreaInfo", () => {
     expect(mockAreaUpdate).not.toHaveBeenCalled();
   });
 
-  it("still refreshes from Nominatim when Overpass fails", async () => {
+  it("writes Nominatim fields without stamping refreshedAt when Overpass fails", async () => {
     mockFetchOsmRelationData.mockResolvedValueOnce(null);
     mockGetAreaDetailsById.mockResolvedValueOnce(luandaNominatim as never);
 
@@ -145,7 +145,7 @@ describe("refreshAreaInfo", () => {
       centerLat: -9.5180344,
       centerLon: 13.535676,
     });
-    // No bounds from Overpass: leave stored bounds untouched
     expect(arg.data.bounds).toBeUndefined();
+    expect("refreshedAt" in arg.data).toBe(false);
   });
 });
