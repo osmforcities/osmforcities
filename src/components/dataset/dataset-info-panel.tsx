@@ -24,18 +24,17 @@ type InfoRowData = {
 
 export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
   const t = useTranslations("DatasetPage");
-  const pageT = useTranslations("DatasetPage");
 
   const basicInfoRows: InfoRowData[] = [
     { label: t("category"), value: dataset.template.category?.name ?? "other", isPill: true },
     {
       label: t("status"),
-      value: dataset.isActive ? pageT("active") : pageT("inactive"),
+      value: dataset.isActive ? t("active") : t("inactive"),
       isPill: true,
     },
     {
       label: t("visibility"),
-      value: pageT("public"),
+      value: t("public"),
       isPill: true,
     },
   ];
@@ -49,13 +48,15 @@ export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
         {t("datasetTitle", {
           template: dataset.template.name,
         })}
+        {/* Short sr-only text: the full tooltip sentence would pollute the
+            heading's accessible name */}
         {dataset.isFeatured && (
           <span
             className="ml-2 inline-flex align-baseline text-amber-500"
-            title={pageT("featuredTooltip")}
+            title={t("featuredTooltip")}
           >
             <Star aria-hidden className="h-4 w-4 fill-current" />
-            <span className="sr-only">{pageT("featuredTooltip")}</span>
+            <span className="sr-only">{t("featured")}</span>
           </span>
         )}
       </h2>

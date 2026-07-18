@@ -125,7 +125,9 @@ async function AreaTemplateDatasetView({
 
   try {
     const [result, areaInfo] = await Promise.all([
-      getOrCreateDataset(areaId, templateId, locale),
+      getOrCreateDataset(areaId, templateId, locale, {
+        allowCreate: !!session?.user,
+      }),
       getAreaDetailsById(areaId),
     ]);
 
@@ -227,6 +229,11 @@ async function AreaTemplateDatasetView({
 
       if (error.message.startsWith("Area not found:")) {
         return <AreaNotFoundError areaId={areaId.toString()} />;
+      }
+
+      // Anonymous view raced a dataset deactivation (allowCreate: false)
+      if (error.message.startsWith("Dataset not found:")) {
+        notFound();
       }
 
       if (error.message.includes("Template is not active:")) {

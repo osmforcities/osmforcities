@@ -96,6 +96,8 @@ export const DatasetSchema = z.object({
   isFeatured: z.boolean().optional(),
   canFeature: z.boolean().optional(),
   canRefresh: z.boolean().optional(),
+  // Optional: producers other than transformDataset omit it, and omission
+  // must mean "allowed" — check with === false, never truthiness
   canSave: z.boolean().optional(),
 });
 

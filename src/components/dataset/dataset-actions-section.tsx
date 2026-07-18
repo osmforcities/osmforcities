@@ -40,6 +40,17 @@ export function DatasetActionsSection({
     saveLimit !== undefined &&
     saveCount >= saveLimit;
 
+  // One save-button state drives label and tooltip so they cannot drift.
+  // canSave === false: signed-out visitor on a public featured page
+  // (undefined means the producer predates the field — allowed)
+  const saveLabel = dataset.canSave === false
+    ? { text: t("signInToSave"), title: t("signInToSave") }
+    : isSaved
+      ? { text: t("unsave"), title: t("unsaveTooltip") }
+      : atLimit
+        ? { text: t("saveLimitReached"), title: t("saveLimitReached") }
+        : { text: t("save"), title: t("saveTooltip") };
+
   const handleToggleSave = async () => {
     try {
       if (isSaved) {
@@ -167,15 +178,7 @@ export function DatasetActionsSection({
           disabled={isLoading || atLimit || dataset.canSave === false}
           className="flex items-center gap-2 w-full h-10"
           variant={isSaved ? "default" : "outline"}
-          title={
-            dataset.canSave === false
-              ? t("signInToSave")
-              : isSaved
-                ? t("unsaveTooltip")
-                : atLimit
-                  ? t("saveLimitReached")
-                  : t("saveTooltip")
-          }
+          title={saveLabel.title}
           data-testid={isSaved ? "dataset-unsave-button" : "dataset-save-button"}
         >
           {isSaved ? (
@@ -183,13 +186,7 @@ export function DatasetActionsSection({
           ) : (
             <Bookmark className="h-4 w-4" />
           )}
-          {dataset.canSave === false
-            ? t("signInToSave")
-            : isSaved
-              ? t("unsave")
-              : atLimit
-                ? t("saveLimitReached")
-                : t("save")}
+          {saveLabel.text}
         </Button>
         {atLimit && saveLimit !== undefined && (
           <p

@@ -24,7 +24,8 @@ export type DatasetCreationResult = {
 export async function getOrCreateDataset(
   areaId: number,
   templateIdentifier: string,
-  locale: string
+  locale: string,
+  options?: { allowCreate?: boolean }
 ): Promise<DatasetCreationResult> {
   const template = await resolveTemplate(templateIdentifier);
   if (!template) {
@@ -44,6 +45,13 @@ export async function getOrCreateDataset(
   if (dataset) {
     void refreshAreaInfoIfStale(dataset.area);
     return { dataset, wasCreated: false };
+  }
+
+  // Anonymous visits (public featured pages) must never create datasets,
+  // even if the row disappears between the page's featured check and this
+  // fetch — the invariant is enforced here, where creation happens
+  if (options?.allowCreate === false) {
+    throw new Error(`Dataset not found: ${templateIdentifier}`);
   }
 
   dataset = await createDatasetOnDemand(areaId, template, locale);
