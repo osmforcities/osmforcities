@@ -7,33 +7,42 @@ import {
   POINT_STYLE,
   AGE_SORT_KEY,
   buildPointRadiusForCount,
+  buildPolygonStrokeWidth,
+  buildLineWidth,
+  DEFAULT_STYLE_KNOBS,
 } from "./map-style";
 import { createSmallPolygonProxyPoints } from "./polygon-proxy-points";
 
 // Proxy circles carry small polygons at low zoom, then hand off to the
 // real footprints as they become resolvable
 const PROXY_FADE = ["interpolate", ["linear"], ["zoom"], 12.5, 0.9, 14, 0];
-import type { CategoricalTheme } from "@/lib/map-themes";
-import { buildCircleColorExpression, buildCircleRadiusExpression } from "./expressions";
+import type { CuratedTheme } from "@/lib/curated-themes";
+import { buildCuratedColorExpression } from "@/lib/curated-themes";
 import { PALETTES } from "@/lib/map-themes/palettes";
 
 type DetailedFeaturesLayerGroupProps = {
   polygonFeatures: Feature[];
   lineFeatures: Feature[];
   pointFeatures: Feature[];
-  categoricalTheme: CategoricalTheme | null;
+  curatedTheme: CuratedTheme | null;
+  visibilityFilter?: unknown[];
 };
 
 export function DetailedFeaturesLayerGroup({
   polygonFeatures,
   lineFeatures,
   pointFeatures,
-  categoricalTheme,
+  curatedTheme,
+  visibilityFilter,
 }: DetailedFeaturesLayerGroupProps) {
   const proxyPoints = useMemo(
-    () =>
-      categoricalTheme ? [] : createSmallPolygonProxyPoints(polygonFeatures),
-    [categoricalTheme, polygonFeatures]
+    () => (curatedTheme ? [] : createSmallPolygonProxyPoints(polygonFeatures)),
+    [curatedTheme, polygonFeatures]
+  );
+
+  const themeColor = useMemo(
+    () => (curatedTheme ? buildCuratedColorExpression(curatedTheme) : null),
+    [curatedTheme]
   );
 
   return (
@@ -43,6 +52,7 @@ export function DetailedFeaturesLayerGroup({
           id="polygon-proxy-points"
           features={proxyPoints}
           layerType="circle"
+          filter={visibilityFilter}
           paint={{
             ...POINT_STYLE,
             "circle-radius": buildPointRadiusForCount(proxyPoints.length),
@@ -58,11 +68,22 @@ export function DetailedFeaturesLayerGroup({
           id="detailed-polygons"
           features={polygonFeatures}
           layerType="fill"
-          paint={POLYGON_STYLE.fill}
+          filter={visibilityFilter}
+          paint={
+            themeColor
+              ? { "fill-color": themeColor, "fill-opacity": 0.7 }
+              : POLYGON_STYLE.fill
+          }
           strokeLayer={{
             id: "detailed-polygons-stroke",
             type: "line",
-            paint: POLYGON_STYLE.stroke,
+            paint: themeColor
+              ? {
+                  "line-color": themeColor,
+                  "line-width": buildPolygonStrokeWidth(DEFAULT_STYLE_KNOBS),
+                  "line-opacity": 0.9,
+                }
+              : POLYGON_STYLE.stroke,
           }}
         />
       )}
@@ -72,8 +93,17 @@ export function DetailedFeaturesLayerGroup({
           id="detailed-lines"
           features={lineFeatures}
           layerType="line"
-          paint={LINE_STYLE}
-          layout={{ "line-sort-key": AGE_SORT_KEY }}
+          filter={visibilityFilter}
+          paint={
+            themeColor
+              ? {
+                  "line-color": themeColor,
+                  "line-width": buildLineWidth(DEFAULT_STYLE_KNOBS),
+                  "line-opacity": 0.9,
+                }
+              : LINE_STYLE
+          }
+          layout={themeColor ? undefined : { "line-sort-key": AGE_SORT_KEY }}
         />
       )}
 
@@ -82,22 +112,21 @@ export function DetailedFeaturesLayerGroup({
           id="detailed-points"
           features={pointFeatures}
           layerType="circle"
+          filter={visibilityFilter}
           paint={{
             ...POINT_STYLE,
-            "circle-radius": categoricalTheme
-              ? buildCircleRadiusExpression(categoricalTheme, 4) as number
+            "circle-radius": themeColor
+              ? 4
               : buildPointRadiusForCount(pointFeatures.length),
-            "circle-color": categoricalTheme
-              ? buildCircleColorExpression(categoricalTheme)
-              : POINT_STYLE["circle-color"],
-            "circle-stroke-color": categoricalTheme
+            "circle-color": themeColor ?? POINT_STYLE["circle-color"],
+            "circle-stroke-color": themeColor
               ? PALETTES.categorical.stroke
               : POINT_STYLE["circle-stroke-color"],
-            "circle-stroke-width": categoricalTheme ? 1 : POINT_STYLE["circle-stroke-width"],
+            "circle-stroke-width": themeColor
+              ? 1
+              : POINT_STYLE["circle-stroke-width"],
           }}
-          layout={
-            categoricalTheme ? undefined : { "circle-sort-key": AGE_SORT_KEY }
-          }
+          layout={themeColor ? undefined : { "circle-sort-key": AGE_SORT_KEY }}
         />
       )}
     </>

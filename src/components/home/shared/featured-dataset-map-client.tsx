@@ -128,7 +128,7 @@ export function FeaturedDatasetMapClient({
       >
         {boundary && <AoiBoundaryLayer boundary={boundary} />}
         {processedData && (
-          <MapLayers geoJSONData={processedData} categoricalTheme={null} />
+          <MapLayers geoJSONData={processedData} curatedTheme={null} />
         )}
         <div className="absolute right-3 bottom-3">
           <NavigationControl showCompass={false} visualizePitch={false} />
