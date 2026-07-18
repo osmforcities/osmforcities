@@ -11,7 +11,7 @@ import {
   MISSING_CATEGORY,
   TOP_VALUES_COUNT,
 } from "../curated-themes";
-import { PALETTES } from "../map-themes/palettes";
+import { PALETTES } from "../map-palettes";
 
 const feature = (properties: Record<string, unknown> | null): Feature =>
   ({ type: "Feature", geometry: null, properties } as unknown as Feature);

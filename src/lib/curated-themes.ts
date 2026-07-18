@@ -6,7 +6,7 @@ import {
   FILTERABLE_TAGS,
   AGE_CATEGORY_ORDER,
 } from "./filter-dimensions";
-import { PALETTES } from "./map-themes/palettes";
+import { PALETTES } from "./map-palettes";
 
 /**
  * A curated categorical theme for an allow-listed tag (#184). Unlike the old

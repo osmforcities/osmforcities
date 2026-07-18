@@ -26,7 +26,7 @@ import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
 import { mapStyle } from "@/lib/map-tiles";
 import { AGE_COLORS } from "./map/layers/map-style";
-import { PALETTES } from "@/lib/map-themes/palettes";
+import { PALETTES } from "@/lib/map-palettes";
 import {
   buildCuratedThemes,
   buildAgeVisibilityFilter,

@@ -18,7 +18,7 @@ import { createSmallPolygonProxyPoints } from "./polygon-proxy-points";
 const PROXY_FADE = ["interpolate", ["linear"], ["zoom"], 12.5, 0.9, 14, 0];
 import type { CuratedTheme } from "@/lib/curated-themes";
 import { buildCuratedColorExpression } from "@/lib/curated-themes";
-import { PALETTES } from "@/lib/map-themes/palettes";
+import { PALETTES } from "@/lib/map-palettes";
 
 type DetailedFeaturesLayerGroupProps = {
   polygonFeatures: Feature[];

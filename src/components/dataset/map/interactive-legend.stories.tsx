@@ -7,7 +7,7 @@ import {
   type LegendViewOption,
 } from "./interactive-legend";
 import { AGE_COLORS } from "./layers/map-style";
-import { PALETTES } from "@/lib/map-themes/palettes";
+import { PALETTES } from "@/lib/map-palettes";
 import { OTHER_CATEGORY, MISSING_CATEGORY } from "@/lib/curated-themes";
 
 const ageView: LegendViewOption = { id: "age", label: "Last Edited" };

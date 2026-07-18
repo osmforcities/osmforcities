@@ -56,7 +56,7 @@ const isAgeCategory = (v: unknown): v is AgeCategory =>
 /**
  * Count an allow-listed tag across features, case-folded, preserving the dominant
  * original casing for display. Returns values sorted desc by count plus a `missing`
- * count. Salvaged from `detectCategoricalTheme` (map-themes/detection.ts) minus the
+ * count. Salvaged from the removed map-themes auto-detection minus the
  * color/scoring/category-count gating — here we surface every value.
  */
 function computeTagDimension(features: Feature[], key: string): FilterDimension {
