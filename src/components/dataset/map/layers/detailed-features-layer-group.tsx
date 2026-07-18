@@ -49,6 +49,7 @@ export function DetailedFeaturesLayerGroup({
             "circle-opacity": PROXY_FADE,
             "circle-stroke-opacity": PROXY_FADE,
           }}
+          layout={{ "circle-sort-key": AGE_SORT_KEY }}
         />
       )}
 
