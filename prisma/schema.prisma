@@ -153,6 +153,19 @@ model DatasetSave {
   @@map("dataset_saves")
 }
 
+model AreaSizeCheck {
+  id             String   @id @default(cuid())
+  areaId         Int
+  templateId     String
+  status         String
+  estimatedBytes Int?
+  actualBytes    Int?
+  checkedAt      DateTime @default(now())
+
+  @@unique([areaId, templateId])
+  @@map("area_size_checks")
+}
+
 enum ReportFrequency {
   DAILY
   WEEKLY
