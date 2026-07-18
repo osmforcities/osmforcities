@@ -81,8 +81,10 @@ export async function getAreaBoundary(areaId: number): Promise<FeatureCollection
 export async function fetchOsmRelationData(relationId: number) {
   const query = `
     [out:json][timeout:25];
-    rel(${relationId});
-    out bb tags;
+    rel(${relationId})->.a;
+    .a out bb tags;
+    node(r.a:"admin_centre");
+    out;
   `;
 
   let overpassData;
@@ -98,16 +100,31 @@ export async function fetchOsmRelationData(relationId: number) {
     return null;
   }
 
-  const rel = validationResult.data.elements?.[0] as OSMRelation;
-  if (!rel || rel.type !== "relation") return null;
+  const elements = validationResult.data.elements ?? [];
+  const rel = elements.find((e) => e.type === "relation") as
+    | OSMRelation
+    | undefined;
+  if (!rel) return null;
 
-  const geojson = convertOverpassToGeoJSON(validationResult.data);
+  const adminCentreNode = elements.find((e) => e.type === "node");
+  const adminCentre =
+    adminCentreNode && adminCentreNode.type === "node"
+      ? { lat: adminCentreNode.lat, lon: adminCentreNode.lon }
+      : null;
+
+  // Convert only the relation so the admin_centre node doesn't leak a stray
+  // point feature into the stored area geojson.
+  const geojson = convertOverpassToGeoJSON({
+    ...validationResult.data,
+    elements: [rel],
+  });
 
   return {
     name: rel.tags?.name || `Relation ${relationId}`,
     bounds: rel.bounds
       ? `${rel.bounds.minlat},${rel.bounds.minlon},${rel.bounds.maxlat},${rel.bounds.maxlon}`
       : null,
+    adminCentre,
     geojson: rel,
     convertedGeojson: geojson,
   };

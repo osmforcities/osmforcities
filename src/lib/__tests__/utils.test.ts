@@ -59,6 +59,35 @@ describe("computeInitialViewState", () => {
     });
   });
 
+  it("centers when the center lies inside the data bounds", () => {
+    const dataBounds: Bbox = [139.5, 35.4, 140.0, 35.9];
+    const view = computeInitialViewState(
+      { bounds: tokyoBounds, centerLat: 35.6768601, centerLon: 139.7638947 },
+      dataBounds
+    );
+
+    expect(view).toEqual({
+      longitude: 139.7638947,
+      latitude: 35.6768601,
+      zoom: 12,
+    });
+  });
+
+  it("fits data bounds when the center falls outside them (bad centroid)", () => {
+    // Luanda: stored center is the empty province interior, data is in the city
+    const luandaBounds = "-10.4562358,12.7897792,-8.5800243,14.6216669";
+    const dataBounds: Bbox = [13.15, -8.95, 13.35, -8.75];
+    const view = computeInitialViewState(
+      { bounds: luandaBounds, centerLat: -9.5180344, centerLon: 13.535676 },
+      dataBounds
+    );
+
+    expect(view).toEqual({
+      bounds: dataBounds,
+      fitBoundsOptions: { padding: 20 },
+    });
+  });
+
   it("falls back to bounds fit for a large area without a center", () => {
     const view = computeInitialViewState(
       { bounds: tokyoBounds, centerLat: null, centerLon: null },

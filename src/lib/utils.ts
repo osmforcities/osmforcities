@@ -95,10 +95,17 @@ export type InitialViewState =
   | { bounds: Bbox; fitBoundsOptions: { padding: number } }
   | { longitude: number; latitude: number; zoom: number };
 
+function isPointInBounds(lat: number, lon: number, bbox: Bbox): boolean {
+  const [minLon, minLat, maxLon, maxLat] = bbox;
+  return lat >= minLat && lat <= maxLat && lon >= minLon && lon <= maxLon;
+}
+
 /**
  * Initial view for the dataset map. Small area bboxes fit well; large ones
  * are untrustworthy (scattered boundaries) so the admin centre at a fixed
- * zoom wins. Falls back to area bounds, then data bounds, then world view.
+ * zoom wins — unless the stored center falls outside the actual data, which
+ * signals a bad center. Falls back to area bounds, then data bounds, then
+ * world view.
  */
 export function computeInitialViewState(
   area: {
@@ -115,11 +122,16 @@ export function computeInitialViewState(
   }
 
   if (area.centerLat != null && area.centerLon != null) {
-    return {
-      longitude: area.centerLon,
-      latitude: area.centerLat,
-      zoom: DATASET_MAP_DEFAULT_ZOOM,
-    };
+    if (!dataBounds || isPointInBounds(area.centerLat, area.centerLon, dataBounds)) {
+      return {
+        longitude: area.centerLon,
+        latitude: area.centerLat,
+        zoom: DATASET_MAP_DEFAULT_ZOOM,
+      };
+    }
+    // Center outside the actual data signals a bad center (e.g. a Nominatim
+    // centroid); the data extent is the trustworthy view.
+    return { bounds: dataBounds, fitBoundsOptions: { padding: 20 } };
   }
 
   if (areaBounds) {

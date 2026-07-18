@@ -3,6 +3,11 @@ import { getAreaDetailsById } from "@/lib/nominatim";
 import { resolveTemplate } from "@/lib/template-resolver";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { fetchOsmRelationData } from "@/lib/area-boundary";
+import {
+  isAreaInfoStale,
+  refreshAreaInfo,
+  resolveAreaCenter,
+} from "@/lib/area-refresh";
 import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 import { Prisma } from "@prisma/client";
 import { trackEvent } from "@/lib/umami";
@@ -37,26 +42,12 @@ export async function getOrCreateDataset(
   let dataset = await getDatasetWithDetails(areaId, template.id, locale);
 
   if (dataset) {
-    if (!dataset.area.countryCode || dataset.area.centerLat == null) {
+    if (isAreaInfoStale(dataset.area.refreshedAt)) {
       void (async () => {
         try {
-          const areaDetails = await getAreaDetailsById(areaId);
-          const hasNewCountryCode =
-            !dataset.area.countryCode && areaDetails?.countryCode;
-          const hasNewCenter =
-            dataset.area.centerLat == null && areaDetails?.centerLat != null;
-          if (hasNewCountryCode || hasNewCenter) {
-            await prisma.area.update({
-              where: { id: areaId },
-              data: {
-                countryCode: areaDetails?.countryCode ?? undefined,
-                centerLat: areaDetails?.centerLat ?? undefined,
-                centerLon: areaDetails?.centerLon ?? undefined,
-              },
-            });
-          }
+          await refreshAreaInfo(areaId, dataset.area.bounds);
         } catch (error) {
-          logger.error("Failed to backfill area details", { areaId, error });
+          logger.error("Failed to refresh area info", { areaId, error });
         }
       })();
     }
@@ -118,6 +109,7 @@ async function getDatasetWithDetails(areaId: number, templateId: string, locale:
           bounds: true,
           centerLat: true,
           centerLon: true,
+          refreshedAt: true,
           geojson: true,
         },
       },
@@ -160,24 +152,11 @@ async function createDatasetOnDemand(
     where: { id: areaId },
   });
 
-  if (area && (!area.countryCode || area.centerLat == null)) {
+  if (area && isAreaInfoStale(area.refreshedAt)) {
     try {
-      const areaDetails = await getAreaDetailsById(areaId);
-      const hasNewCountryCode = !area.countryCode && areaDetails?.countryCode;
-      const hasNewCenter =
-        area.centerLat == null && areaDetails?.centerLat != null;
-      if (hasNewCountryCode || hasNewCenter) {
-        area = await prisma.area.update({
-          where: { id: areaId },
-          data: {
-            countryCode: areaDetails?.countryCode ?? undefined,
-            centerLat: areaDetails?.centerLat ?? undefined,
-            centerLon: areaDetails?.centerLon ?? undefined,
-          },
-        });
-      }
+      area = (await refreshAreaInfo(areaId, area.bounds)) ?? area;
     } catch (error) {
-      logger.error("Failed to backfill area details", { areaId, error });
+      logger.error("Failed to refresh area info", { areaId, error });
     }
   }
 
@@ -193,10 +172,14 @@ async function createDatasetOnDemand(
       }
 
       // City OSM relations don't carry ISO3166 tags — Nominatim is the
-      // only reliable source for country code and admin centre coordinates.
+      // only reliable source for country code. The admin_centre member from
+      // Overpass is the authoritative map center; Nominatim's lat/lon can be
+      // a bad centroid (e.g. Luanda province).
       const countryCode = areaDetails?.countryCode ?? null;
-      const centerLat = areaDetails?.centerLat ?? null;
-      const centerLon = areaDetails?.centerLon ?? null;
+      const center = resolveAreaCenter(osmData, areaDetails);
+      const centerLat = center?.centerLat ?? null;
+      const centerLon = center?.centerLon ?? null;
+      const refreshedAt = new Date();
 
       if (osmData) {
         area = await prisma.area.upsert({
@@ -206,6 +189,7 @@ async function createDatasetOnDemand(
             countryCode,
             centerLat,
             centerLon,
+            refreshedAt,
             bounds: osmData.bounds,
             geojson: JSON.parse(JSON.stringify(osmData.convertedGeojson)),
           },
@@ -215,6 +199,7 @@ async function createDatasetOnDemand(
             countryCode,
             centerLat,
             centerLon,
+            refreshedAt,
             bounds: osmData.bounds,
             geojson: JSON.parse(JSON.stringify(osmData.convertedGeojson)),
           },
@@ -227,6 +212,7 @@ async function createDatasetOnDemand(
             countryCode,
             centerLat,
             centerLon,
+            refreshedAt,
             bounds: areaDetails!.boundingBox
               ? JSON.stringify(areaDetails!.boundingBox)
               : null,
@@ -238,6 +224,7 @@ async function createDatasetOnDemand(
             countryCode,
             centerLat,
             centerLon,
+            refreshedAt,
             bounds: areaDetails!.boundingBox
               ? JSON.stringify(areaDetails!.boundingBox)
               : null,
@@ -312,6 +299,7 @@ async function createDatasetOnDemand(
             bounds: true,
             centerLat: true,
             centerLon: true,
+            refreshedAt: true,
             geojson: true,
           },
         },
