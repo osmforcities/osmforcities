@@ -86,6 +86,11 @@ describe("fetchDatasetSnapshot", () => {
   it("substitutes {OSM_RELATION_ID} in the raw query before calling Overpass", async () => {
     const fetchSpy = vi.mocked(fetch);
     await fetchDatasetSnapshot(12345, "[out:json]; rel({OSM_RELATION_ID}); out;", "tpl-1");
+    const countCall = fetchSpy.mock.calls[0];
+    const countBody = (countCall[1] as RequestInit).body as string;
+    expect(decodeURIComponent(countBody.replace("data=", ""))).toBe(
+      "[out:json]; rel(12345); out count;"
+    );
     const fullCall = fetchSpy.mock.calls[1];
     const body = (fullCall[1] as RequestInit).body as string;
     expect(decodeURIComponent(body.replace("data=", ""))).toBe(

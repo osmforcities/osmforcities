@@ -74,19 +74,35 @@ describe("executeOverpassQueryWithByteLimit", () => {
 
 describe("countOverpassElements", () => {
   it("parses the total from an out count response", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: () =>
-          Promise.resolve({ elements: [{ type: "count", tags: { total: "42" } }] }),
-      } as unknown as Response)
-    );
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () =>
+        Promise.resolve({ elements: [{ type: "count", tags: { total: "42" } }] }),
+    } as unknown as Response);
+    vi.stubGlobal("fetch", fetchMock);
 
     await expect(countOverpassElements("[out:json]; rel(1); out;")).resolves.toBe(
       42
     );
+    const body = String((fetchMock.mock.calls[0][1] as RequestInit).body);
+    expect(decodeURIComponent(body)).toBe("data=[out:json]; rel(1); out count;");
+  });
+
+  it("rewrites output statements with modifiers to out count", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () =>
+        Promise.resolve({ elements: [{ type: "count", tags: { total: "7" } }] }),
+    } as unknown as Response);
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(
+      countOverpassElements("[out:json]; rel(1); out body geom;")
+    ).resolves.toBe(7);
+    const body = String((fetchMock.mock.calls[0][1] as RequestInit).body);
+    expect(decodeURIComponent(body)).toBe("data=[out:json]; rel(1); out count;");
   });
 
   it("throws OverpassTimeoutError on a 504 response", async () => {

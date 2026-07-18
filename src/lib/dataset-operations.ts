@@ -3,7 +3,11 @@ import { getAreaDetailsById } from "@/lib/nominatim";
 import { resolveTemplate } from "@/lib/template-resolver";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { fetchOsmRelationData } from "@/lib/area-boundary";
-import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
+import {
+  fetchDatasetSnapshot,
+  DatasetTooLargeError,
+  DatasetSizeCheckTimeoutError,
+} from "@/lib/dataset-snapshot";
 import { Prisma } from "@prisma/client";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
@@ -318,6 +322,14 @@ async function createDatasetOnDemand(
     };
   } catch (error) {
     logger.error("Failed to fetch Overpass data", { areaId, templateId: template.id, error });
+
+    // Typed size-check errors already carry sanitized user-facing messages
+    if (
+      error instanceof DatasetTooLargeError ||
+      error instanceof DatasetSizeCheckTimeoutError
+    ) {
+      throw error;
+    }
 
     if (error instanceof Error) {
       if (error.message.includes("timeout")) {

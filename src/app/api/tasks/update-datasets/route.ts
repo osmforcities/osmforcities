@@ -104,10 +104,17 @@ export async function POST(req: NextRequest) {
           console.warn(
             `Dataset ${dataset.id} deactivated (grew past size cap): ${error.message}`
           );
-          await prisma.dataset.update({
-            where: { id: dataset.id },
-            data: { isActive: false },
-          });
+          try {
+            await prisma.dataset.update({
+              where: { id: dataset.id },
+              data: { isActive: false },
+            });
+          } catch (deactivationError) {
+            console.error(
+              `Failed to deactivate dataset ${dataset.id}:`,
+              deactivationError
+            );
+          }
           results.failed++;
           results.errors.push(`Dataset ${dataset.id}: ${error.message}`);
           continue;

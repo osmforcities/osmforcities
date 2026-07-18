@@ -107,7 +107,7 @@ export async function countOverpassElements(query: string): Promise<number> {
 
   const countQuery = query
     .replace(/\[timeout:\d+\]/, "[timeout:10]")
-    .replace(/out\s+[^;]+;\s*$/, "out count;");
+    .replace(/\bout(\s+[^;]+)?;\s*$/, "out count;");
 
   let response: Response;
   try {
