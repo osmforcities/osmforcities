@@ -1,5 +1,19 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
+import {
+  fetchDatasetSnapshot,
+  DatasetTooLargeError,
+} from "@/lib/dataset-snapshot";
+import { prisma } from "@/lib/db";
+import { MAX_DATASET_BYTES, OVERPASS_BYTES_PER_ELEMENT_ESTIMATE } from "@/lib/constants";
+
+vi.mock("@/lib/db", () => ({
+  prisma: {
+    areaSizeCheck: {
+      findUnique: vi.fn(),
+      upsert: vi.fn(),
+    },
+  },
+}));
 
 const mockOverpassData = {
   version: 0.6,
@@ -31,15 +45,38 @@ const mockOverpassData = {
 };
 
 function makeFetchResponse(data: unknown) {
+  const text = JSON.stringify(data);
   return Promise.resolve({
     ok: true,
+    status: 200,
+    body: null,
     json: () => Promise.resolve(data),
-  } as Response);
+    text: () => Promise.resolve(text),
+  } as unknown as Response);
 }
+
+function makeCountResponse(total: number) {
+  return {
+    elements: [{ type: "count", tags: { total: String(total) } }],
+  };
+}
+
+function mockFetchImplementation(fullData: unknown, count = 2) {
+  return vi.fn()
+    .mockReturnValueOnce(makeFetchResponse(makeCountResponse(count)))
+    .mockReturnValue(makeFetchResponse(fullData));
+}
+
+const findUnique = vi.mocked(prisma.areaSizeCheck.findUnique);
+const upsert = vi.mocked(prisma.areaSizeCheck.upsert);
 
 describe("fetchDatasetSnapshot", () => {
   beforeEach(() => {
-    vi.stubGlobal("fetch", vi.fn().mockImplementation(() => makeFetchResponse(mockOverpassData)));
+    vi.stubGlobal("fetch", mockFetchImplementation(mockOverpassData));
+    findUnique.mockReset();
+    findUnique.mockResolvedValue(null);
+    upsert.mockReset();
+    upsert.mockResolvedValue({} as never);
   });
 
   afterEach(() => {
@@ -48,46 +85,121 @@ describe("fetchDatasetSnapshot", () => {
 
   it("substitutes {OSM_RELATION_ID} in the raw query before calling Overpass", async () => {
     const fetchSpy = vi.mocked(fetch);
-    await fetchDatasetSnapshot(12345, "[out:json]; rel({OSM_RELATION_ID}); out;");
-    const body = (fetchSpy.mock.calls[0][1] as RequestInit).body as string;
+    await fetchDatasetSnapshot(12345, "[out:json]; rel({OSM_RELATION_ID}); out;", "tpl-1");
+    const countCall = fetchSpy.mock.calls[0];
+    const countBody = (countCall[1] as RequestInit).body as string;
+    expect(decodeURIComponent(countBody.replace("data=", ""))).toBe(
+      "[out:json]; rel(12345); out count;"
+    );
+    const fullCall = fetchSpy.mock.calls[1];
+    const body = (fullCall[1] as RequestInit).body as string;
     expect(decodeURIComponent(body.replace("data=", ""))).toBe(
       "[out:json]; rel(12345); out;"
     );
   });
 
   it("returns correct dataCount from features length", async () => {
-    const snapshot = await fetchDatasetSnapshot(1, "query");
+    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
     expect(snapshot.dataCount).toBe(2);
   });
 
   it("returns geojson as a FeatureCollection", async () => {
-    const snapshot = await fetchDatasetSnapshot(1, "query");
+    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
     expect(snapshot.geojson.type).toBe("FeatureCollection");
     expect(Array.isArray(snapshot.geojson.features)).toBe(true);
   });
 
   it("returns stats with editorsCount matching unique users", async () => {
-    const snapshot = await fetchDatasetSnapshot(1, "query");
+    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
     expect(snapshot.stats.editorsCount).toBe(2);
   });
 
   it("returns bbox as null when no features produced", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockImplementation(() =>
-        makeFetchResponse({ ...mockOverpassData, elements: [] })
-      )
+      mockFetchImplementation({ ...mockOverpassData, elements: [] })
     );
-    const snapshot = await fetchDatasetSnapshot(1, "query");
+    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
     expect(snapshot.bbox).toBeNull();
   });
 
   it("replaces all occurrences of {OSM_RELATION_ID} in the template", async () => {
     const fetchSpy = vi.mocked(fetch);
-    await fetchDatasetSnapshot(99, "rel({OSM_RELATION_ID}); area({OSM_RELATION_ID});");
-    const body = (fetchSpy.mock.calls[0][1] as RequestInit).body as string;
+    await fetchDatasetSnapshot(99, "rel({OSM_RELATION_ID}); area({OSM_RELATION_ID});", "tpl-1");
+    const fullCall = fetchSpy.mock.calls[1];
+    const body = (fullCall[1] as RequestInit).body as string;
     expect(decodeURIComponent(body.replace("data=", ""))).toBe(
       "rel(99); area(99);"
+    );
+  });
+
+  it("records an ok verdict after a successful fetch", async () => {
+    await fetchDatasetSnapshot(1, "query", "tpl-1");
+    expect(upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { areaId_templateId: { areaId: 1, templateId: "tpl-1" } },
+        create: expect.objectContaining({ status: "ok" }),
+      })
+    );
+  });
+
+  it("rejects when the count estimate exceeds the byte cap, recording too_large", async () => {
+    const overCapCount =
+      Math.ceil(MAX_DATASET_BYTES / OVERPASS_BYTES_PER_ELEMENT_ESTIMATE) + 1;
+    vi.stubGlobal(
+      "fetch",
+      mockFetchImplementation(mockOverpassData, overCapCount)
+    );
+    const fetchSpy = vi.mocked(fetch);
+
+    await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
+      DatasetTooLargeError
+    );
+    // only the count query ran; the full fetch was never attempted
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({ status: "too_large" }),
+      })
+    );
+  });
+
+  it("rejects instantly from a fresh too_large verdict without calling Overpass", async () => {
+    findUnique.mockResolvedValue({
+      id: "check-1",
+      areaId: 1,
+      templateId: "tpl-1",
+      status: "too_large",
+      estimatedBytes: 20_000_000,
+      actualBytes: null,
+      checkedAt: new Date(),
+    });
+    const fetchSpy = vi.mocked(fetch);
+
+    await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
+      DatasetTooLargeError
+    );
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(upsert).not.toHaveBeenCalled();
+  });
+
+  it("re-checks against Overpass when the cached verdict is stale", async () => {
+    findUnique.mockResolvedValue({
+      id: "check-1",
+      areaId: 1,
+      templateId: "tpl-1",
+      status: "too_large",
+      estimatedBytes: 20_000_000,
+      actualBytes: null,
+      checkedAt: new Date(Date.now() - 25 * 60 * 60 * 1000),
+    });
+
+    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    expect(snapshot.dataCount).toBe(2);
+    expect(upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({ status: "ok" }),
+      })
     );
   });
 });

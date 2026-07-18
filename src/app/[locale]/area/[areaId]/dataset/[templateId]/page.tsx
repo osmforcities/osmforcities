@@ -6,6 +6,7 @@ import { DatasetInteractiveSection } from "@/components/dataset/dataset-interact
 import { EmptyState } from "@/components/ui/empty-state";
 import { Link } from "@/i18n/navigation";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
+import { DatasetTooLargeError } from "@/lib/dataset-snapshot";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import {
   isValidTemplateIdentifier,
@@ -16,6 +17,7 @@ import {
   TemplateNotFoundError,
   AreaNotFoundError,
   DatasetCreationError,
+  DatasetTooLargeState,
 } from "@/components/ui/dataset-error-states";
 import { DatasetUpsellPage } from "@/components/dataset/dataset-upsell-page";
 import { auth } from "@/auth";
@@ -174,6 +176,26 @@ async function AreaTemplateDatasetView({
       </div>
     );
   } catch (error) {
+    if (error instanceof DatasetTooLargeError) {
+      const [template, areaInfo] = await Promise.all([
+        resolveTemplate(templateId),
+        getAreaDetailsById(areaId),
+      ]);
+      return (
+        <DatasetTooLargeState
+          templateName={template?.name ?? templateId}
+          areaName={areaInfo?.name ?? String(areaId)}
+          areaId={areaId}
+          overpassQuery={
+            template?.overpassQuery.replace(
+              /\{OSM_RELATION_ID\}/g,
+              String(areaId)
+            ) ?? null
+          }
+        />
+      );
+    }
+
     if (error instanceof Error) {
       if (error.message.startsWith("Template not found:")) {
         return <TemplateNotFoundError templateId={templateId} />;

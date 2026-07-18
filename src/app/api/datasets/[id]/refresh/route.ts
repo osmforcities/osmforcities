@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
+import {
+  fetchDatasetSnapshot,
+  DatasetTooLargeError,
+  DatasetSizeCheckTimeoutError,
+} from "@/lib/dataset-snapshot";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
@@ -54,7 +58,8 @@ export async function POST(
 
     const snapshot = await fetchDatasetSnapshot(
       dataset.areaId,
-      dataset.template.overpassQuery
+      dataset.template.overpassQuery,
+      dataset.templateId
     );
 
     const updatedDataset = await prisma.dataset.update({
@@ -99,6 +104,12 @@ export async function POST(
       lastChecked: updatedDataset.lastChecked,
     });
   } catch (error) {
+    if (error instanceof DatasetTooLargeError) {
+      return NextResponse.json({ error: error.message }, { status: 422 });
+    }
+    if (error instanceof DatasetSizeCheckTimeoutError) {
+      return NextResponse.json({ error: error.message }, { status: 503 });
+    }
     console.error("Error refreshing dataset:", error);
     return NextResponse.json(
       { error: "Failed to refresh dataset data" },

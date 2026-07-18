@@ -37,7 +37,8 @@ vi.mock("@/lib/template-resolver", () => ({
   }),
 }));
 
-vi.mock("@/lib/dataset-snapshot", () => ({
+vi.mock("@/lib/dataset-snapshot", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/dataset-snapshot")>()),
   fetchDatasetSnapshot: vi.fn(),
 }));
 
