@@ -385,7 +385,10 @@
     "recentChanges": "≤ 7 days ago",
     "mediumChanges": "8-30 days ago",
     "olderChanges": "31-90 days ago",
-    "veryOldChanges": "> 90 days ago"
+    "veryOldChanges": "> 90 days ago",
+    "legendViewLabel": "Color by",
+    "legendOther": "Other",
+    "legendMissing": "Missing"
   },
   "DatasetWatchButton": {
     "privateDataset": "Private Dataset"
