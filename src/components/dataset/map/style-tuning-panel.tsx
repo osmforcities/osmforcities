@@ -6,12 +6,23 @@ import {
   AGE_PALETTES,
   DEFAULT_STYLE_KNOBS,
   buildAgeColorExpression,
+  buildAgeOpacityExpression,
   buildLineWidth,
   buildPointRadiusForCount,
   buildPointStrokeWidth,
   buildPolygonStrokeWidth,
+  type AgeCategoryValues,
   type MapStyleKnobs,
 } from "./layers/map-layers";
+
+type AgeCategory = keyof AgeCategoryValues<number>;
+
+const AGE_CATEGORIES: { key: AgeCategory; label: string }[] = [
+  { key: "recent", label: "Recent" },
+  { key: "medium", label: "Medium" },
+  { key: "older", label: "Older" },
+  { key: "very-old", label: "Very old" },
+];
 
 // Dev-only live style tuner: writes straight to the map with
 // setPaintProperty, so knob changes restyle instantly without a recompile.
@@ -159,7 +170,11 @@ function StyleTuningPanelInner({ pointCount }: StyleTuningPanelProps) {
       buildPointRadiusForCount(pointCount, knobs)
     );
     setPaint("detailed-points", "circle-color", ageColor);
-    setPaint("detailed-points", "circle-opacity", knobs.point.opacity);
+    setPaint(
+      "detailed-points",
+      "circle-opacity",
+      buildAgeOpacityExpression(knobs.point.opacity)
+    );
     setPaint(
       "detailed-points",
       "circle-stroke-width",
@@ -241,14 +256,6 @@ function StyleTuningPanelInner({ pointCount }: StyleTuningPanelProps) {
 
       <Group title="Points" defaultOpen>
         <Knob
-          label="Radius z10"
-          value={knobs.point.radiusZ10}
-          min={0.5}
-          max={8}
-          step={0.5}
-          onChange={(v) => update((k) => (k.point.radiusZ10 = v))}
-        />
-        <Knob
           label="Radius z12"
           value={knobs.point.radiusZ12}
           min={0.5}
@@ -273,20 +280,20 @@ function StyleTuningPanelInner({ pointCount }: StyleTuningPanelProps) {
           onChange={(v) => update((k) => (k.point.radiusZ18 = v))}
         />
         <Knob
+          label="Stroke z12"
+          value={knobs.point.strokeZ12}
+          min={0}
+          max={2}
+          step={0.25}
+          onChange={(v) => update((k) => (k.point.strokeZ12 = v))}
+        />
+        <Knob
           label="Stroke z15"
           value={knobs.point.strokeZ15}
           min={0}
           max={4}
           step={0.5}
           onChange={(v) => update((k) => (k.point.strokeZ15 = v))}
-        />
-        <Knob
-          label="Opacity"
-          value={knobs.point.opacity}
-          min={0.2}
-          max={1}
-          step={0.05}
-          onChange={(v) => update((k) => (k.point.opacity = v))}
         />
         <ColorKnob
           label="Stroke color"
@@ -296,38 +303,31 @@ function StyleTuningPanelInner({ pointCount }: StyleTuningPanelProps) {
       </Group>
 
       <Group title="Radius boost by age" defaultOpen>
-        <Knob
-          label="Recent"
-          value={knobs.radiusBoost.recent}
-          min={-2}
-          max={6}
-          step={0.5}
-          onChange={(v) => update((k) => (k.radiusBoost.recent = v))}
-        />
-        <Knob
-          label="Medium"
-          value={knobs.radiusBoost.medium}
-          min={-2}
-          max={6}
-          step={0.5}
-          onChange={(v) => update((k) => (k.radiusBoost.medium = v))}
-        />
-        <Knob
-          label="Older"
-          value={knobs.radiusBoost.older}
-          min={-2}
-          max={6}
-          step={0.5}
-          onChange={(v) => update((k) => (k.radiusBoost.older = v))}
-        />
-        <Knob
-          label="Very old"
-          value={knobs.radiusBoost["very-old"]}
-          min={-2}
-          max={6}
-          step={0.5}
-          onChange={(v) => update((k) => (k.radiusBoost["very-old"] = v))}
-        />
+        {AGE_CATEGORIES.map(({ key, label }) => (
+          <Knob
+            key={key}
+            label={label}
+            value={knobs.radiusBoost[key]}
+            min={-2}
+            max={6}
+            step={0.5}
+            onChange={(v) => update((k) => (k.radiusBoost[key] = v))}
+          />
+        ))}
+      </Group>
+
+      <Group title="Opacity by age" defaultOpen>
+        {AGE_CATEGORIES.map(({ key, label }) => (
+          <Knob
+            key={key}
+            label={label}
+            value={knobs.point.opacity[key]}
+            min={0.1}
+            max={1}
+            step={0.05}
+            onChange={(v) => update((k) => (k.point.opacity[key] = v))}
+          />
+        ))}
       </Group>
 
       <Group title="Recent emphasis" defaultOpen>
@@ -367,26 +367,14 @@ function StyleTuningPanelInner({ pointCount }: StyleTuningPanelProps) {
             </option>
           </select>
         </label>
-        <ColorKnob
-          label="Recent"
-          value={knobs.colors.recent}
-          onChange={(v) => update((k) => (k.colors.recent = v))}
-        />
-        <ColorKnob
-          label="Medium"
-          value={knobs.colors.medium}
-          onChange={(v) => update((k) => (k.colors.medium = v))}
-        />
-        <ColorKnob
-          label="Older"
-          value={knobs.colors.older}
-          onChange={(v) => update((k) => (k.colors.older = v))}
-        />
-        <ColorKnob
-          label="Very old"
-          value={knobs.colors["very-old"]}
-          onChange={(v) => update((k) => (k.colors["very-old"] = v))}
-        />
+        {AGE_CATEGORIES.map(({ key, label }) => (
+          <ColorKnob
+            key={key}
+            label={label}
+            value={knobs.colors[key]}
+            onChange={(v) => update((k) => (k.colors[key] = v))}
+          />
+        ))}
       </Group>
 
       <Group title="Boundary" defaultOpen>
