@@ -138,6 +138,22 @@ describe("getOrCreateDataset — area details backfill", () => {
     });
   });
 
+  it("skips the update when Nominatim has nothing new", async () => {
+    mockDatasetFindFirst.mockResolvedValueOnce({
+      ...existingDatasetRow,
+      area: { ...existingDatasetRow.area, centerLat: null, centerLon: null },
+    } as never);
+    mockGetAreaDetailsById.mockResolvedValueOnce({
+      countryCode: "us",
+    } as never);
+
+    await getOrCreateDataset(1, "test-template", "en");
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // countryCode already set and no center returned: no write
+    expect(mockAreaUpdate).not.toHaveBeenCalled();
+  });
+
   it("does not backfill when countryCode and center are present", async () => {
     mockDatasetFindFirst.mockResolvedValueOnce(existingDatasetRow as never);
 

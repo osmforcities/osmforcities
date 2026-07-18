@@ -41,13 +41,17 @@ export async function getOrCreateDataset(
       void (async () => {
         try {
           const areaDetails = await getAreaDetailsById(areaId);
-          if (areaDetails) {
+          const hasNewCountryCode =
+            !dataset.area.countryCode && areaDetails?.countryCode;
+          const hasNewCenter =
+            dataset.area.centerLat == null && areaDetails?.centerLat != null;
+          if (hasNewCountryCode || hasNewCenter) {
             await prisma.area.update({
               where: { id: areaId },
               data: {
-                countryCode: areaDetails.countryCode ?? undefined,
-                centerLat: areaDetails.centerLat ?? undefined,
-                centerLon: areaDetails.centerLon ?? undefined,
+                countryCode: areaDetails?.countryCode ?? undefined,
+                centerLat: areaDetails?.centerLat ?? undefined,
+                centerLon: areaDetails?.centerLon ?? undefined,
               },
             });
           }
@@ -159,13 +163,16 @@ async function createDatasetOnDemand(
   if (area && (!area.countryCode || area.centerLat == null)) {
     try {
       const areaDetails = await getAreaDetailsById(areaId);
-      if (areaDetails) {
+      const hasNewCountryCode = !area.countryCode && areaDetails?.countryCode;
+      const hasNewCenter =
+        area.centerLat == null && areaDetails?.centerLat != null;
+      if (hasNewCountryCode || hasNewCenter) {
         area = await prisma.area.update({
           where: { id: areaId },
           data: {
-            countryCode: areaDetails.countryCode ?? undefined,
-            centerLat: areaDetails.centerLat ?? undefined,
-            centerLon: areaDetails.centerLon ?? undefined,
+            countryCode: areaDetails?.countryCode ?? undefined,
+            centerLat: areaDetails?.centerLat ?? undefined,
+            centerLon: areaDetails?.centerLon ?? undefined,
           },
         });
       }
