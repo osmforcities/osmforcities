@@ -63,13 +63,6 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
   // Theme selection - null means age theme, non-null means categorical theme
   const [selectedCategoricalTheme, setSelectedCategoricalTheme] = useState<CategoricalTheme | null>(null);
 
-  // Dev-only style tuning needs the point count for density-aware radius
-  const devPointCount = useMemo(() => {
-    if (process.env.NODE_ENV !== "development") return 0;
-    return (processedData?.features ?? []).filter(
-      (f) => f.geometry.type === "Point"
-    ).length;
-  }, [processedData?.features]);
   // Update filter if needed
   useEffect(() => {
     if (processedData?.availableTimeframes) {
@@ -165,7 +158,7 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
           >
             {boundary && <AoiBoundaryLayer boundary={boundary} />}
             <MemoizedMapLayers geoJSONData={processedData} categoricalTheme={selectedCategoricalTheme} />
-            <StyleTuningPanel pointCount={devPointCount} />
+            <StyleTuningPanel features={processedData.features} />
             {selectedFeature && (
               <Source
                 id="highlight-feature"

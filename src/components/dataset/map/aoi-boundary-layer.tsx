@@ -2,7 +2,7 @@
 
 import { Source, Layer } from "react-map-gl/maplibre";
 import type { FeatureCollection } from "geojson";
-import { BOUNDARY_STYLE } from "./layers/map-layers";
+import { BOUNDARY_STYLE } from "./layers/map-style";
 
 type AoiBoundaryLayerProps = {
   boundary: FeatureCollection;

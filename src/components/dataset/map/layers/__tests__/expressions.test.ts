@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { buildCircleColorExpression, buildCircleRadiusExpression } from '../expressions';
 import {
+  ageCase,
   buildPointRadiusForCount,
   buildPointStrokeWidth,
   buildLineWidth,
@@ -9,7 +10,7 @@ import {
   LINE_STYLE,
   POLYGON_STYLE,
   POINT_STYLE,
-} from '../map-layers';
+} from '../map-style';
 import type { CategoricalTheme, IntensityTheme } from '@/lib/map-themes/types';
 
 describe('buildCircleColorExpression', () => {
@@ -178,6 +179,36 @@ const noBoostKnobs = {
   radiusBoost: { recent: 0, medium: 0, older: 0, 'very-old': 0 },
   recent: { haloWidth: 0 },
 };
+
+describe('ageCase', () => {
+  it('collapses to the bare value when all categories match', () => {
+    expect(ageCase({ recent: 1, medium: 1, older: 1, 'very-old': 1 })).toBe(1);
+  });
+
+  it('skips branches equal to the fallback', () => {
+    expect(ageCase({ recent: 2, medium: 1, older: 1, 'very-old': 1 })).toEqual([
+      'case',
+      ['==', ['get', 'ageCategory'], 'recent'],
+      2,
+      1,
+    ]);
+  });
+
+  it('emits one branch per distinct category, fallback last', () => {
+    expect(
+      ageCase({ recent: 'a', medium: 'b', older: 'c', 'very-old': 'd' })
+    ).toEqual([
+      'case',
+      ['==', ['get', 'ageCategory'], 'recent'],
+      'a',
+      ['==', ['get', 'ageCategory'], 'medium'],
+      'b',
+      ['==', ['get', 'ageCategory'], 'older'],
+      'c',
+      'd',
+    ]);
+  });
+});
 
 describe('zoom-responsive styles', () => {
   it('buildPointRadiusForCount scales city-zoom radius by density and grows at high zoom', () => {

@@ -1,4 +1,5 @@
 import type { StyleSpecification } from "maplibre-gl";
+import { DEFAULT_STYLE_KNOBS } from "@/components/dataset/map/layers/map-style";
 
 type TileProvider = "cartodb" | "osm";
 
@@ -64,7 +65,10 @@ export const mapStyle = {
     {
       id: "basemap-mute",
       type: "background",
-      paint: { "background-color": "#ffffff", "background-opacity": 0.4 },
+      paint: {
+        "background-color": "#ffffff",
+        "background-opacity": DEFAULT_STYLE_KNOBS.basemapWashOpacity,
+      },
     },
   ],
 } satisfies StyleSpecification;

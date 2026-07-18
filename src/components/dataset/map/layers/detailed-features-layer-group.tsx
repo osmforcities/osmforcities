@@ -7,7 +7,7 @@ import {
   POINT_STYLE,
   AGE_SORT_KEY,
   buildPointRadiusForCount,
-} from "./map-layers";
+} from "./map-style";
 import { createSmallPolygonProxyPoints } from "./polygon-proxy-points";
 
 // Proxy circles carry small polygons at low zoom, then hand off to the

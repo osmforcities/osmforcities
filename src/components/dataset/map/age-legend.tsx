@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { AGE_COLORS } from "./layers/map-layers";
+import { AGE_COLORS } from "./layers/map-style";
 
 const AGE_LEGEND_ITEMS = [
   { key: "recent", color: AGE_COLORS.recent, labelKey: "recentChanges" },
