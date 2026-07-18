@@ -379,7 +379,9 @@
     "veryOldChanges": "> 90 días atrás",
     "legendViewLabel": "Colorear por",
     "legendOther": "Otros",
-    "legendMissing": "Sin valor"
+    "legendMissing": "Sin valor",
+    "collapseLegend": "Ocultar leyenda",
+    "expandLegend": "Mostrar leyenda"
   },
   "DatasetWatchButton": {
     "privateDataset": "Conjunto de Datos Privado"
