@@ -60,6 +60,24 @@ function normalizeBoundsToBbox(bounds: { minlat: number; minlon: number; maxlat:
   return [bounds.minlat, bounds.minlon, bounds.maxlat, bounds.maxlon];
 }
 
+function parseCenter(lat: string, lon: string): { centerLat?: number; centerLon?: number } {
+  const centerLat = parseFloat(lat);
+  const centerLon = parseFloat(lon);
+
+  if (
+    isNaN(centerLat) ||
+    isNaN(centerLon) ||
+    centerLat < -90 ||
+    centerLat > 90 ||
+    centerLon < -180 ||
+    centerLon > 180
+  ) {
+    return {};
+  }
+
+  return { centerLat, centerLon };
+}
+
 export function fromNominatim(result: NominatimResult): Area {
   validateId(result.osm_id);
 
@@ -67,6 +85,7 @@ export function fromNominatim(result: NominatimResult): Area {
   validateBBox(bbox);
 
   return {
+    ...parseCenter(result.lat, result.lon),
     id: result.osm_id,
     name: result.name?.trim() || result.display_name?.split(",")[0].trim() || "",
     displayName: result.display_name?.trim() || "",

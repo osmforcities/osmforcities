@@ -37,18 +37,22 @@ export async function getOrCreateDataset(
   let dataset = await getDatasetWithDetails(areaId, template.id, locale);
 
   if (dataset) {
-    if (!dataset.area.countryCode) {
+    if (!dataset.area.countryCode || dataset.area.centerLat == null) {
       void (async () => {
         try {
           const areaDetails = await getAreaDetailsById(areaId);
-          if (areaDetails?.countryCode) {
+          if (areaDetails) {
             await prisma.area.update({
               where: { id: areaId },
-              data: { countryCode: areaDetails.countryCode },
+              data: {
+                countryCode: areaDetails.countryCode ?? undefined,
+                centerLat: areaDetails.centerLat ?? undefined,
+                centerLon: areaDetails.centerLon ?? undefined,
+              },
             });
           }
         } catch (error) {
-          logger.error("Failed to backfill countryCode", { areaId, error });
+          logger.error("Failed to backfill area details", { areaId, error });
         }
       })();
     }
@@ -108,6 +112,8 @@ async function getDatasetWithDetails(areaId: number, templateId: string, locale:
           name: true,
           countryCode: true,
           bounds: true,
+          centerLat: true,
+          centerLon: true,
           geojson: true,
         },
       },
@@ -150,17 +156,21 @@ async function createDatasetOnDemand(
     where: { id: areaId },
   });
 
-  if (area && !area.countryCode) {
+  if (area && (!area.countryCode || area.centerLat == null)) {
     try {
       const areaDetails = await getAreaDetailsById(areaId);
-      if (areaDetails?.countryCode) {
+      if (areaDetails) {
         area = await prisma.area.update({
           where: { id: areaId },
-          data: { countryCode: areaDetails.countryCode },
+          data: {
+            countryCode: areaDetails.countryCode ?? undefined,
+            centerLat: areaDetails.centerLat ?? undefined,
+            centerLon: areaDetails.centerLon ?? undefined,
+          },
         });
       }
     } catch (error) {
-      logger.error("Failed to backfill countryCode", { areaId, error });
+      logger.error("Failed to backfill area details", { areaId, error });
     }
   }
 
@@ -176,8 +186,10 @@ async function createDatasetOnDemand(
       }
 
       // City OSM relations don't carry ISO3166 tags — Nominatim is the
-      // only reliable source for country code.
+      // only reliable source for country code and admin centre coordinates.
       const countryCode = areaDetails?.countryCode ?? null;
+      const centerLat = areaDetails?.centerLat ?? null;
+      const centerLon = areaDetails?.centerLon ?? null;
 
       if (osmData) {
         area = await prisma.area.upsert({
@@ -185,6 +197,8 @@ async function createDatasetOnDemand(
           update: {
             name: osmData.name,
             countryCode,
+            centerLat,
+            centerLon,
             bounds: osmData.bounds,
             geojson: JSON.parse(JSON.stringify(osmData.convertedGeojson)),
           },
@@ -192,6 +206,8 @@ async function createDatasetOnDemand(
             id: areaId,
             name: osmData.name,
             countryCode,
+            centerLat,
+            centerLon,
             bounds: osmData.bounds,
             geojson: JSON.parse(JSON.stringify(osmData.convertedGeojson)),
           },
@@ -202,6 +218,8 @@ async function createDatasetOnDemand(
           update: {
             name: areaDetails!.name,
             countryCode,
+            centerLat,
+            centerLon,
             bounds: areaDetails!.boundingBox
               ? JSON.stringify(areaDetails!.boundingBox)
               : null,
@@ -211,6 +229,8 @@ async function createDatasetOnDemand(
             id: areaId,
             name: areaDetails!.name,
             countryCode,
+            centerLat,
+            centerLon,
             bounds: areaDetails!.boundingBox
               ? JSON.stringify(areaDetails!.boundingBox)
               : null,
@@ -283,6 +303,8 @@ async function createDatasetOnDemand(
             name: true,
             countryCode: true,
             bounds: true,
+            centerLat: true,
+            centerLon: true,
             geojson: true,
           },
         },

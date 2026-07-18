@@ -40,11 +40,9 @@ export async function POST(req: NextRequest) {
 
   if (!area) {
     try {
-      const [fetched, countryCode] = await Promise.all([
+      const [fetched, areaDetails] = await Promise.all([
         fetchOsmRelationData(osmRelationId),
-        getAreaDetailsById(osmRelationId)
-          .then((details) => details?.countryCode ?? null)
-          .catch(() => null),
+        getAreaDetailsById(osmRelationId).catch(() => null),
       ]);
 
       if (!fetched)
@@ -58,7 +56,9 @@ export async function POST(req: NextRequest) {
           id: osmRelationId,
           name: fetched.name,
           bounds: fetched.bounds,
-          countryCode,
+          countryCode: areaDetails?.countryCode ?? null,
+          centerLat: areaDetails?.centerLat ?? null,
+          centerLon: areaDetails?.centerLon ?? null,
           geojson: JSON.parse(JSON.stringify(fetched.convertedGeojson)),
         },
       });

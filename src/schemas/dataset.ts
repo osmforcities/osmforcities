@@ -77,6 +77,8 @@ export const DatasetSchema = z.object({
     name: z.string(),
     countryCode: z.string().nullable(),
     bounds: z.string().nullable(),
+    centerLat: z.number().nullish(),
+    centerLon: z.number().nullish(),
     geojson: GeoJSONFeatureCollectionSchema.nullable(),
   }),
   savedBy: z
