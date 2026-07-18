@@ -1,7 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { MapPinOff } from "lucide-react";
 import { Link } from "@/components/ui/link";
+import { Link as NavLink } from "@/i18n/navigation";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export function TemplateNotFoundError({
   templateId,
@@ -216,6 +219,60 @@ export function DatasetCreationError({
             </ul>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+export function DatasetTooLargeState({
+  templateName,
+  areaName,
+  areaId,
+  overpassQuery,
+}: {
+  templateName: string;
+  areaName: string;
+  areaId: number;
+  overpassQuery: string | null;
+}) {
+  const t = useTranslations("DatasetPage");
+  const overpassTurboUrl = overpassQuery
+    ? `https://overpass-turbo.eu/?Q=${encodeURIComponent(overpassQuery)}`
+    : null;
+
+  return (
+    <div className="bg-gray-50">
+      <div
+        className="max-w-7xl mx-auto px-4 py-8 flex flex-col"
+        style={{ minHeight: "calc(100vh - var(--nav-height))" }}
+      >
+        <EmptyState
+          type="no-data"
+          icon={<MapPinOff className="w-16 h-16 text-gray-300 mb-4" />}
+          title={t("tooLargeTitle", {
+            dataset: templateName,
+            area: areaName,
+          })}
+          description={t.rich("tooLargeDescription", {
+            link: (chunks) =>
+              overpassTurboUrl ? (
+                <Link href={overpassTurboUrl} external variant="underline">
+                  {chunks}
+                </Link>
+              ) : (
+                chunks
+              ),
+          })}
+        />
+
+        <div className="text-center">
+          <NavLink
+            href={`/area/${areaId}`}
+            className="text-sm text-link hover:text-link-active hover:underline transition-colors"
+          >
+            {t("backToArea", { area: areaName })}
+          </NavLink>
+        </div>
       </div>
     </div>
   );

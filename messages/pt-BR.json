@@ -126,6 +126,8 @@
     "backToHome": "Voltar ao Início",
     "emptyTitle": "Nenhum {dataset} encontrado em {area}",
     "emptyDescription": "Este conjunto de dados ainda não tem feições nesta área. Pode não existir aqui, ou os dados ainda não foram mapeados no OpenStreetMap.",
+    "tooLargeTitle": "{dataset} em {area} é grande demais para exibir",
+    "tooLargeDescription": "Este conjunto de dados é grande demais para ser exibido como mapa. Tente um modelo mais específico ou <link>trabalhe com os dados brutos no Overpass Turbo</link>.",
     "backToArea": "← Voltar para {area}",
     "backToAreaLabel": "Voltar para {area}",
     "datasetStats": "Estatísticas do Conjunto de Dados",
