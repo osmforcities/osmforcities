@@ -104,13 +104,6 @@ export function DatasetActionsSection({
     <div className="pt-4 pb-2">
       <div className="border-t border-gray-300 mb-4"></div>
       <div className="flex flex-col gap-3">
-        {isFeatured && !dataset.canFeature && (
-          <div className="flex items-center gap-1.5 text-sm font-medium text-amber-600">
-            <Star className="h-4 w-4 fill-current" />
-            {t("featured")}
-          </div>
-        )}
-
         {dataset.canFeature && (
           <>
             <Button
@@ -167,18 +160,21 @@ export function DatasetActionsSection({
           {t("downloadData")}
         </Button>
 
-        {/* Save/Unsave Button */}
+        {/* Save/Unsave Button — disabled for signed-out visitors on public
+            featured pages (canSave false) */}
         <Button
           onClick={handleToggleSave}
-          disabled={isLoading || atLimit}
+          disabled={isLoading || atLimit || dataset.canSave === false}
           className="flex items-center gap-2 w-full h-10"
           variant={isSaved ? "default" : "outline"}
           title={
-            isSaved
-              ? t("unsaveTooltip")
-              : atLimit
-                ? t("saveLimitReached")
-                : t("saveTooltip")
+            dataset.canSave === false
+              ? t("signInToSave")
+              : isSaved
+                ? t("unsaveTooltip")
+                : atLimit
+                  ? t("saveLimitReached")
+                  : t("saveTooltip")
           }
           data-testid={isSaved ? "dataset-unsave-button" : "dataset-save-button"}
         >
@@ -187,7 +183,13 @@ export function DatasetActionsSection({
           ) : (
             <Bookmark className="h-4 w-4" />
           )}
-          {isSaved ? t("unsave") : atLimit ? t("saveLimitReached") : t("save")}
+          {dataset.canSave === false
+            ? t("signInToSave")
+            : isSaved
+              ? t("unsave")
+              : atLimit
+                ? t("saveLimitReached")
+                : t("save")}
         </Button>
         {atLimit && saveLimit !== undefined && (
           <p

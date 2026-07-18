@@ -29,6 +29,7 @@ function calculatePermissions(rawDataset: RawDataset, user: User | null) {
   return {
     canFeature: user?.isAdmin ?? false,
     canRefresh: user?.isAdmin ?? false,
+    canSave: !!user,
     canDelete: false,
     isFeatured: rawDataset.isFeatured ?? false,
   };

@@ -62,6 +62,30 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
       return <AreaNotFoundError areaId={areaId} />;
     }
 
+    // Featured datasets are public: render the full view without a session.
+    // Direct lookup only — anonymous visits must not create datasets.
+    const featuredDataset = await prisma.dataset.findFirst({
+      where: {
+        areaId: osmRelationId,
+        templateId: template.id,
+        isActive: true,
+        isFeatured: true,
+      },
+      select: { id: true },
+    });
+
+    if (featuredDataset) {
+      return (
+        <Suspense fallback={<DatasetLoadingSkeleton />}>
+          <AreaTemplateDatasetView
+            areaId={osmRelationId}
+            templateId={templateId}
+            session={null}
+          />
+        </Suspense>
+      );
+    }
+
     return (
       <>
         <TrackView

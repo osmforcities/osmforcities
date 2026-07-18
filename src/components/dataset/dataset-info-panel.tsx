@@ -2,6 +2,7 @@
 
 import type { Dataset } from "@/schemas/dataset";
 import { useTranslations } from "next-intl";
+import { Star } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -48,6 +49,15 @@ export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
         {t("datasetTitle", {
           template: dataset.template.name,
         })}
+        {dataset.isFeatured && (
+          <span
+            className="ml-2 inline-flex align-baseline text-amber-500"
+            title={pageT("featuredTooltip")}
+          >
+            <Star aria-hidden className="h-4 w-4 fill-current" />
+            <span className="sr-only">{pageT("featuredTooltip")}</span>
+          </span>
+        )}
       </h2>
 
       <div className="space-y-2">

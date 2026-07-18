@@ -96,6 +96,7 @@ export const DatasetSchema = z.object({
   isFeatured: z.boolean().optional(),
   canFeature: z.boolean().optional(),
   canRefresh: z.boolean().optional(),
+  canSave: z.boolean().optional(),
 });
 
 export type Dataset = z.infer<typeof DatasetSchema>;
