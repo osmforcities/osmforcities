@@ -5,7 +5,7 @@ import {
   convertOverpassToGeoJSON,
 } from "@/lib/overpass/transport";
 import { OverpassResponseSchema } from "@/types/overpass";
-import type { OSMRelation } from "@/types/osm";
+import type { OSMNode, OSMRelation } from "@/types/osm";
 import { BOUNDARY_SIMPLIFICATION_TOLERANCE } from "@/lib/constants";
 import { createLogger } from "@/lib/logger";
 import type { FeatureCollection } from "geojson";
@@ -101,16 +101,15 @@ export async function fetchOsmRelationData(relationId: number) {
   }
 
   const elements = validationResult.data.elements ?? [];
-  const rel = elements.find((e) => e.type === "relation") as
-    | OSMRelation
-    | undefined;
+  const rel = elements.find((e): e is OSMRelation => e.type === "relation");
   if (!rel) return null;
 
-  const adminCentreNode = elements.find((e) => e.type === "node");
-  const adminCentre =
-    adminCentreNode && adminCentreNode.type === "node"
-      ? { lat: adminCentreNode.lat, lon: adminCentreNode.lon }
-      : null;
+  const adminCentreNode = elements.find(
+    (e): e is OSMNode => e.type === "node"
+  );
+  const adminCentre = adminCentreNode
+    ? { lat: adminCentreNode.lat, lon: adminCentreNode.lon }
+    : null;
 
   // Exclude the admin_centre node from the stored area geojson
   const geojson = convertOverpassToGeoJSON({

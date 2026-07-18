@@ -19,6 +19,7 @@ vi.mock("@/lib/nominatim", () => ({
 import {
   isAreaInfoStale,
   refreshAreaInfo,
+  refreshAreaInfoIfStale,
   resolveAreaCenter,
 } from "@/lib/area-refresh";
 import { fetchOsmRelationData } from "@/lib/area-boundary";
@@ -84,6 +85,48 @@ describe("resolveAreaCenter", () => {
         { ...luandaNominatim, centerLat: undefined, centerLon: undefined } as never
       )
     ).toBeNull();
+  });
+});
+
+describe("refreshAreaInfoIfStale", () => {
+  const staleArea = {
+    id: 1802546,
+    bounds: luandaOsmData.bounds,
+    refreshedAt: null,
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("refreshes and returns the updated area when stale", async () => {
+    mockFetchOsmRelationData.mockResolvedValueOnce(luandaOsmData as never);
+    mockGetAreaDetailsById.mockResolvedValueOnce(luandaNominatim as never);
+    mockAreaUpdate.mockResolvedValueOnce({ id: 1802546, name: "Luanda" } as never);
+
+    const result = await refreshAreaInfoIfStale(staleArea);
+
+    expect(mockAreaUpdate).toHaveBeenCalledTimes(1);
+    expect(result).toEqual({ id: 1802546, name: "Luanda" });
+  });
+
+  it("returns the area untouched when fresh", async () => {
+    const freshArea = { ...staleArea, refreshedAt: new Date() };
+
+    const result = await refreshAreaInfoIfStale(freshArea);
+
+    expect(result).toBe(freshArea);
+    expect(mockFetchOsmRelationData).not.toHaveBeenCalled();
+    expect(mockAreaUpdate).not.toHaveBeenCalled();
+  });
+
+  it("returns the original area when the refresh fails", async () => {
+    mockFetchOsmRelationData.mockRejectedValueOnce(new Error("boom"));
+    mockGetAreaDetailsById.mockResolvedValueOnce(luandaNominatim as never);
+
+    const result = await refreshAreaInfoIfStale(staleArea);
+
+    expect(result).toBe(staleArea);
   });
 });
 

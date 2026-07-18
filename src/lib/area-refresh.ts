@@ -3,6 +3,9 @@ import { Prisma } from "@prisma/client";
 import { fetchOsmRelationData } from "@/lib/area-boundary";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { AREA_INFO_TTL_DAYS } from "@/lib/constants";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger("area-refresh");
 
 export function isAreaInfoStale(refreshedAt: Date | null): boolean {
   if (!refreshedAt) return true;
@@ -61,4 +64,22 @@ export async function refreshAreaInfo(
       ...(boundsChanged ? { geojson: Prisma.JsonNull } : {}),
     },
   });
+}
+
+type RefreshableArea = {
+  id: number;
+  bounds: string | null;
+  refreshedAt: Date | null;
+};
+
+export async function refreshAreaInfoIfStale<T extends RefreshableArea>(
+  area: T
+) {
+  if (!isAreaInfoStale(area.refreshedAt)) return area;
+  try {
+    return (await refreshAreaInfo(area.id, area.bounds)) ?? area;
+  } catch (error) {
+    logger.error("Failed to refresh area info", { areaId: area.id, error });
+    return area;
+  }
 }

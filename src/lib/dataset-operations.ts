@@ -3,11 +3,7 @@ import { getAreaDetailsById } from "@/lib/nominatim";
 import { resolveTemplate } from "@/lib/template-resolver";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { fetchOsmRelationData } from "@/lib/area-boundary";
-import {
-  isAreaInfoStale,
-  refreshAreaInfo,
-  resolveAreaCenter,
-} from "@/lib/area-refresh";
+import { refreshAreaInfoIfStale, resolveAreaCenter } from "@/lib/area-refresh";
 import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 import { Prisma } from "@prisma/client";
 import { trackEvent } from "@/lib/umami";
@@ -42,15 +38,7 @@ export async function getOrCreateDataset(
   let dataset = await getDatasetWithDetails(areaId, template.id, locale);
 
   if (dataset) {
-    if (isAreaInfoStale(dataset.area.refreshedAt)) {
-      void (async () => {
-        try {
-          await refreshAreaInfo(areaId, dataset.area.bounds);
-        } catch (error) {
-          logger.error("Failed to refresh area info", { areaId, error });
-        }
-      })();
-    }
+    void refreshAreaInfoIfStale(dataset.area);
     return { dataset, wasCreated: false };
   }
 
@@ -152,12 +140,8 @@ async function createDatasetOnDemand(
     where: { id: areaId },
   });
 
-  if (area && isAreaInfoStale(area.refreshedAt)) {
-    try {
-      area = (await refreshAreaInfo(areaId, area.bounds)) ?? area;
-    } catch (error) {
-      logger.error("Failed to refresh area info", { areaId, error });
-    }
+  if (area) {
+    area = await refreshAreaInfoIfStale(area);
   }
 
   if (!area) {
@@ -173,63 +157,35 @@ async function createDatasetOnDemand(
 
       // City OSM relations don't carry ISO3166 tags — Nominatim is the
       // only reliable source for country code.
-      const countryCode = areaDetails?.countryCode ?? null;
       const center = resolveAreaCenter(osmData, areaDetails);
-      const centerLat = center?.centerLat ?? null;
-      const centerLon = center?.centerLon ?? null;
-      const refreshedAt = new Date();
+      const shared = {
+        countryCode: areaDetails?.countryCode ?? null,
+        centerLat: center?.centerLat ?? null,
+        centerLon: center?.centerLon ?? null,
+        refreshedAt: new Date(),
+      };
 
-      if (osmData) {
-        area = await prisma.area.upsert({
-          where: { id: areaId },
-          update: {
+      const data = osmData
+        ? {
+            ...shared,
             name: osmData.name,
-            countryCode,
-            centerLat,
-            centerLon,
-            refreshedAt,
             bounds: osmData.bounds,
             geojson: JSON.parse(JSON.stringify(osmData.convertedGeojson)),
-          },
-          create: {
-            id: areaId,
-            name: osmData.name,
-            countryCode,
-            centerLat,
-            centerLon,
-            refreshedAt,
-            bounds: osmData.bounds,
-            geojson: JSON.parse(JSON.stringify(osmData.convertedGeojson)),
-          },
-        });
-      } else {
-        area = await prisma.area.upsert({
-          where: { id: areaId },
-          update: {
+          }
+        : {
+            ...shared,
             name: areaDetails!.name,
-            countryCode,
-            centerLat,
-            centerLon,
-            refreshedAt,
             bounds: areaDetails!.boundingBox
               ? JSON.stringify(areaDetails!.boundingBox)
               : null,
             geojson: Prisma.JsonNull,
-          },
-          create: {
-            id: areaId,
-            name: areaDetails!.name,
-            countryCode,
-            centerLat,
-            centerLon,
-            refreshedAt,
-            bounds: areaDetails!.boundingBox
-              ? JSON.stringify(areaDetails!.boundingBox)
-              : null,
-            geojson: Prisma.JsonNull,
-          },
-        });
-      }
+          };
+
+      area = await prisma.area.upsert({
+        where: { id: areaId },
+        update: data,
+        create: { id: areaId, ...data },
+      });
     } catch (error) {
       logger.error("Failed to fetch area data", { areaId, error });
       throw new Error(`Failed to fetch area data: ${areaId}`);

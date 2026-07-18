@@ -59,17 +59,20 @@ vi.mock("@/lib/nominatim", () => ({
 
 vi.mock("@/lib/area-refresh", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/area-refresh")>();
-  return { ...actual, refreshAreaInfo: vi.fn() };
+  return {
+    ...actual,
+    refreshAreaInfoIfStale: vi.fn((area: unknown) => Promise.resolve(area)),
+  };
 });
 
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
-import { refreshAreaInfo } from "@/lib/area-refresh";
+import { refreshAreaInfoIfStale } from "@/lib/area-refresh";
 import { prisma } from "@/lib/db";
 
 const mockFetchDatasetSnapshot = vi.mocked(fetchDatasetSnapshot);
 const mockDatasetFindFirst = vi.mocked(prisma.dataset.findFirst);
-const mockRefreshAreaInfo = vi.mocked(refreshAreaInfo);
+const mockRefreshAreaInfoIfStale = vi.mocked(refreshAreaInfoIfStale);
 
 const existingDatasetRow = {
   id: "ds-1",
@@ -118,50 +121,21 @@ describe("getOrCreateDataset — isFeatured passthrough", () => {
   });
 });
 
-describe("getOrCreateDataset — area info refresh trigger", () => {
+describe("getOrCreateDataset — area info refresh", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("refreshes area info when refreshedAt is null", async () => {
-    mockDatasetFindFirst.mockResolvedValueOnce({
-      ...existingDatasetRow,
-      area: { ...existingDatasetRow.area, refreshedAt: null },
-    } as never);
+  it("hands the area to refreshAreaInfoIfStale without blocking the response", async () => {
+    mockDatasetFindFirst.mockResolvedValueOnce(existingDatasetRow as never);
 
     await getOrCreateDataset(1, "test-template", "en");
     // Refresh is fire-and-forget; flush pending promises
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    expect(mockRefreshAreaInfo).toHaveBeenCalledWith(
-      1,
-      existingDatasetRow.area.bounds
+    expect(mockRefreshAreaInfoIfStale).toHaveBeenCalledWith(
+      existingDatasetRow.area
     );
-  });
-
-  it("refreshes area info when refreshedAt is older than the TTL", async () => {
-    const fortyDaysAgo = new Date(Date.now() - 40 * 24 * 60 * 60 * 1000);
-    mockDatasetFindFirst.mockResolvedValueOnce({
-      ...existingDatasetRow,
-      area: { ...existingDatasetRow.area, refreshedAt: fortyDaysAgo },
-    } as never);
-
-    await getOrCreateDataset(1, "test-template", "en");
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    expect(mockRefreshAreaInfo).toHaveBeenCalledWith(
-      1,
-      existingDatasetRow.area.bounds
-    );
-  });
-
-  it("does not refresh when area info is fresh", async () => {
-    mockDatasetFindFirst.mockResolvedValueOnce(existingDatasetRow as never);
-
-    await getOrCreateDataset(1, "test-template", "en");
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    expect(mockRefreshAreaInfo).not.toHaveBeenCalled();
   });
 });
 
