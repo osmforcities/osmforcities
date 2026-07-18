@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { MapPinOff } from "lucide-react";
+import { MapPinOff, ExternalLink } from "lucide-react";
 import { Link } from "@/components/ui/link";
 import { Link as NavLink } from "@/i18n/navigation";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -256,9 +256,20 @@ export function DatasetTooLargeState({
           description={t.rich("tooLargeDescription", {
             link: (chunks) =>
               overpassTurboUrl ? (
-                <Link href={overpassTurboUrl} external variant="underline">
+                // Plain inline anchor: the shared Link is inline-flex, which
+                // cannot wrap mid-phrase and forces the whole link to a new line
+                <a
+                  href={overpassTurboUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-link underline hover:text-link-active transition-colors"
+                >
                   {chunks}
-                </Link>
+                  <ExternalLink
+                    className="inline w-3 h-3 ml-1 align-[-2px]"
+                    aria-hidden="true"
+                  />
+                </a>
               ) : (
                 chunks
               ),
