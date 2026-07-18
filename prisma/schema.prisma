@@ -100,6 +100,8 @@ model Area {
   name        String
   countryCode String?
   bounds      String?
+  centerLat   Float?
+  centerLon   Float?
   geojson     Json?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

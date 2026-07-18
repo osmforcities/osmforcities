@@ -101,7 +101,8 @@ export default async function FeaturedPage({
                 name={resolvedTemplate.name}
                 city={dataset.cityName}
                 country={dataset.area.countryCode ?? ""}
-                category={resolvedTemplate.category?.name ?? "other"}
+                category={resolvedTemplate.category?.slug ?? "other"}
+                templateId={dataset.templateId}
                 href={getDatasetPath({ locale, areaId: dataset.areaId, templateId: dataset.templateId })}
                 stats={stats}
               />

@@ -54,6 +54,29 @@ describe("fromNominatim", () => {
     expect(area.country).toBe("Portugal");
   });
 
+  it("keeps center coordinates from lat/lon", () => {
+    const area = fromNominatim(mockNominatimCity);
+
+    expect(area.centerLat).toBe(38.7);
+    expect(area.centerLon).toBe(-9.1);
+  });
+
+  it("omits center when lat/lon are not numeric", () => {
+    const invalidCenter = { ...mockNominatimCity, lat: "abc", lon: "-9.1" };
+    const area = fromNominatim(invalidCenter);
+
+    expect(area.centerLat).toBeUndefined();
+    expect(area.centerLon).toBeUndefined();
+  });
+
+  it("omits center when lat/lon are out of range", () => {
+    const outOfRange = { ...mockNominatimCity, lat: "91", lon: "-9.1" };
+    const area = fromNominatim(outOfRange);
+
+    expect(area.centerLat).toBeUndefined();
+    expect(area.centerLon).toBeUndefined();
+  });
+
   it("reorders bbox from [minLat, maxLat, minLon, maxLon] to [minLat, minLon, maxLat, maxLon]", () => {
     const area = fromNominatim(mockNominatimCity);
 

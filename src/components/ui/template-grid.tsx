@@ -6,7 +6,7 @@ import { MapPin, Users, Pencil, Bookmark, Star } from "lucide-react";
 import { Card, CardHeader, CardFooter } from "@/components/ui/card";
 import { SearchInput } from "@/components/ui/search-input";
 import { EmptyState } from "@/components/ui/empty-state";
-import { getCategoryIcon } from "@/lib/category-icons";
+import { getTemplateIcon } from "@/lib/category-icons";
 import { formatRelativeTime, formatCompactNumber } from "@/lib/dataset-stats";
 import type { AreaDataType } from "@/lib/area-templates";
 import { useState, useMemo, useEffect } from "react";
@@ -250,7 +250,7 @@ export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridP
                   <CardHeader>
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-olive-100 text-olive-600 rounded-lg">
-                        {getCategoryIcon(template.category)}
+                        {getTemplateIcon(template.id, template.category)}
                       </div>
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900 group-hover:text-olive-700">

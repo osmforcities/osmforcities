@@ -87,7 +87,8 @@ export async function FeaturedDatasetMap() {
         template: resolvedTemplate.name,
         city: dataset.cityName,
       })}
-      category={resolvedTemplate.category?.name ?? "other"}
+      category={resolvedTemplate.category?.slug ?? "other"}
+      templateId={dataset.templateId}
       stats={stats}
       href={getDatasetPath({
         locale,

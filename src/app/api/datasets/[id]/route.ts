@@ -33,6 +33,8 @@ export async function GET(
             name: true,
             countryCode: true,
             bounds: true,
+            centerLat: true,
+            centerLon: true,
             geojson: true,
           },
         },

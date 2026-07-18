@@ -419,33 +419,21 @@ export function parseTemplates(config: LogicConfig): ParseResult {
 }
 
 /**
- * Get category and optional icon from a template (for icon generation)
+ * Collect category icons from the explicit categories section only
  */
-export function getTemplateCategoryIcon(obj: TemplateLogic): {
-  category: string;
-  icon?: string;
-} {
-  return { category: obj.category, icon: obj.icon };
+export function collectCategoryIcons(config: LogicConfig): Map<string, string> {
+  return new Map(Object.entries(config.categories || {}));
 }
 
 /**
- * Collect all unique icons from templates and categories
+ * Collect per-template icons (template id -> icon name)
  */
-export function collectIcons(config: LogicConfig): Map<string, string> {
+export function collectTemplateIcons(config: LogicConfig): Map<string, string> {
   const iconMap = new Map<string, string>();
-
-  for (const obj of Object.values(config.templates)) {
-    const { category, icon } = getTemplateCategoryIcon(obj);
-    if (category && icon && !iconMap.has(category)) {
-      iconMap.set(category, icon);
+  for (const [id, obj] of Object.entries(config.templates)) {
+    if (obj.icon) {
+      iconMap.set(id, obj.icon);
     }
   }
-
-  for (const [category, icon] of Object.entries(config.categories || {})) {
-    if (!iconMap.has(category)) {
-      iconMap.set(category, icon);
-    }
-  }
-
   return iconMap;
 }
