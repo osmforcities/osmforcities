@@ -15,6 +15,7 @@ vi.mock("@/lib/db", () => ({
         bounds: null,
         centerLat: 38.7,
         centerLon: -9.1,
+        refreshedAt: new Date(),
         geojson: null,
       }),
       update: vi.fn(),
@@ -57,15 +58,22 @@ vi.mock("@/lib/nominatim", () => ({
   getAreaDetailsById: vi.fn(),
 }));
 
+vi.mock("@/lib/area-refresh", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/area-refresh")>();
+  return {
+    ...actual,
+    refreshAreaInfoIfStale: vi.fn((area: unknown) => Promise.resolve(area)),
+  };
+});
+
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
-import { getAreaDetailsById } from "@/lib/nominatim";
+import { refreshAreaInfoIfStale } from "@/lib/area-refresh";
 import { prisma } from "@/lib/db";
 
 const mockFetchDatasetSnapshot = vi.mocked(fetchDatasetSnapshot);
 const mockDatasetFindFirst = vi.mocked(prisma.dataset.findFirst);
-const mockGetAreaDetailsById = vi.mocked(getAreaDetailsById);
-const mockAreaUpdate = vi.mocked(prisma.area.update);
+const mockRefreshAreaInfoIfStale = vi.mocked(refreshAreaInfoIfStale);
 
 const existingDatasetRow = {
   id: "ds-1",
@@ -86,9 +94,10 @@ const existingDatasetRow = {
     id: 1,
     name: "Test City",
     countryCode: "US",
-    bounds: null,
+    bounds: "38.69,-9.2,38.79,-9.1",
     centerLat: 38.7,
     centerLon: -9.1,
+    refreshedAt: new Date(),
     geojson: null,
   },
   user: null,
@@ -113,56 +122,21 @@ describe("getOrCreateDataset — isFeatured passthrough", () => {
   });
 });
 
-describe("getOrCreateDataset — area details backfill", () => {
+describe("getOrCreateDataset — area info refresh", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("backfills center coordinates when the area is missing them", async () => {
-    mockDatasetFindFirst.mockResolvedValueOnce({
-      ...existingDatasetRow,
-      area: { ...existingDatasetRow.area, centerLat: null, centerLon: null },
-    } as never);
-    mockGetAreaDetailsById.mockResolvedValueOnce({
-      countryCode: "pt",
-      centerLat: 38.7,
-      centerLon: -9.1,
-    } as never);
-
-    await getOrCreateDataset(1, "test-template", "en");
-    // Backfill is fire-and-forget; flush pending promises
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    expect(mockAreaUpdate).toHaveBeenCalledWith({
-      where: { id: 1 },
-      data: { countryCode: "pt", centerLat: 38.7, centerLon: -9.1 },
-    });
-  });
-
-  it("skips the update when Nominatim has nothing new", async () => {
-    mockDatasetFindFirst.mockResolvedValueOnce({
-      ...existingDatasetRow,
-      area: { ...existingDatasetRow.area, centerLat: null, centerLon: null },
-    } as never);
-    mockGetAreaDetailsById.mockResolvedValueOnce({
-      countryCode: "us",
-    } as never);
-
-    await getOrCreateDataset(1, "test-template", "en");
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    // countryCode already set and no center returned: no write
-    expect(mockAreaUpdate).not.toHaveBeenCalled();
-  });
-
-  it("does not backfill when countryCode and center are present", async () => {
+  it("hands the area to refreshAreaInfoIfStale without blocking the response", async () => {
     mockDatasetFindFirst.mockResolvedValueOnce(existingDatasetRow as never);
 
     await getOrCreateDataset(1, "test-template", "en");
+    // Refresh is fire-and-forget; flush pending promises
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    expect(mockGetAreaDetailsById).not.toHaveBeenCalled();
-    expect(mockAreaUpdate).not.toHaveBeenCalled();
+    expect(mockRefreshAreaInfoIfStale).toHaveBeenCalledWith(
+      existingDatasetRow.area
+    );
   });
 });
 

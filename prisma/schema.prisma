@@ -102,6 +102,7 @@ model Area {
   bounds      String?
   centerLat   Float?
   centerLon   Float?
+  refreshedAt DateTime?
   geojson     Json?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

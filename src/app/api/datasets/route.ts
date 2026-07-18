@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { CreateDatasetSchema } from "@/schemas/dataset";
 import { Prisma } from "@prisma/client";
 import { fetchOsmRelationData } from "@/lib/area-boundary";
+import { refreshAreaInfoIfStale, resolveAreaCenter } from "@/lib/area-refresh";
 import {
   fetchDatasetSnapshot,
   DatasetTooLargeError,
@@ -42,6 +43,10 @@ export async function POST(req: NextRequest) {
     where: { id: osmRelationId },
   });
 
+  if (area) {
+    area = await refreshAreaInfoIfStale(area);
+  }
+
   if (!area) {
     try {
       const [fetched, areaDetails] = await Promise.all([
@@ -55,14 +60,17 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
 
+      const center = resolveAreaCenter(fetched, areaDetails);
+
       area = await prisma.area.create({
         data: {
           id: osmRelationId,
           name: fetched.name,
           bounds: fetched.bounds,
           countryCode: areaDetails?.countryCode ?? null,
-          centerLat: areaDetails?.centerLat ?? null,
-          centerLon: areaDetails?.centerLon ?? null,
+          centerLat: center?.centerLat ?? null,
+          centerLon: center?.centerLon ?? null,
+          refreshedAt: new Date(),
           geojson: JSON.parse(JSON.stringify(fetched.convertedGeojson)),
         },
       });
