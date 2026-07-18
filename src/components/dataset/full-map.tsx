@@ -11,6 +11,7 @@ import { AoiBoundaryLayer } from "./map/aoi-boundary-layer";
 import { AgeLegend } from "./map/age-legend";
 import { MapLegend } from "./map/map-legend";
 import { MapDateFilterControl } from "./map/map-date-filter-control";
+import { StyleTuningPanel } from "./map/style-tuning-panel";
 import { useDateFilter, useMapData, useFeatureSelection } from "./map/hooks";
 import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
@@ -61,6 +62,7 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
 
   // Theme selection - null means age theme, non-null means categorical theme
   const [selectedCategoricalTheme, setSelectedCategoricalTheme] = useState<CategoricalTheme | null>(null);
+
   // Update filter if needed
   useEffect(() => {
     if (processedData?.availableTimeframes) {
@@ -156,6 +158,11 @@ export const DatasetFullMap = forwardRef<DatasetFullMapHandle, DatasetFullMapPro
           >
             {boundary && <AoiBoundaryLayer boundary={boundary} />}
             <MemoizedMapLayers geoJSONData={processedData} categoricalTheme={selectedCategoricalTheme} />
+            {/* Panel writes age paint to the shared layers; keep it out of
+                categorical-theme views so it cannot stomp their colors */}
+            {!selectedCategoricalTheme && (
+              <StyleTuningPanel features={processedData.features} />
+            )}
             {selectedFeature && (
               <Source
                 id="highlight-feature"

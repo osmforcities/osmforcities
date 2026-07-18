@@ -5,8 +5,9 @@ import {
   POLYGON_STYLE,
   LINE_STYLE,
   POINT_STYLE,
+  AGE_SORT_KEY,
   buildPointRadiusForCount,
-} from "./map-layers";
+} from "./map-style";
 import { createSmallPolygonProxyPoints } from "./polygon-proxy-points";
 
 // Proxy circles carry small polygons at low zoom, then hand off to the
@@ -48,6 +49,7 @@ export function DetailedFeaturesLayerGroup({
             "circle-opacity": PROXY_FADE,
             "circle-stroke-opacity": PROXY_FADE,
           }}
+          layout={{ "circle-sort-key": AGE_SORT_KEY }}
         />
       )}
 
@@ -71,6 +73,7 @@ export function DetailedFeaturesLayerGroup({
           features={lineFeatures}
           layerType="line"
           paint={LINE_STYLE}
+          layout={{ "line-sort-key": AGE_SORT_KEY }}
         />
       )}
 
@@ -92,6 +95,9 @@ export function DetailedFeaturesLayerGroup({
               : POINT_STYLE["circle-stroke-color"],
             "circle-stroke-width": categoricalTheme ? 1 : POINT_STYLE["circle-stroke-width"],
           }}
+          layout={
+            categoricalTheme ? undefined : { "circle-sort-key": AGE_SORT_KEY }
+          }
         />
       )}
     </>

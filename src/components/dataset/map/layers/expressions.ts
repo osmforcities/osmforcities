@@ -1,4 +1,4 @@
-import { AGE_COLORS } from "./map-layers";
+import { AGE_COLORS } from "./map-style";
 import type { MapTheme } from "@/lib/map-themes/types";
 import { PALETTES } from "@/lib/map-themes/palettes";
 
