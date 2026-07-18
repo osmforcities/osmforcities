@@ -6,7 +6,11 @@ import { BboxSchema, type Bbox } from "@/types/geojson";
 import type { DateFilter } from "../types/geojson";
 import type { Area } from "@/types/area";
 import type { useTranslations } from "next-intl";
-import { SUPPORTED_LOCALES } from "./constants";
+import {
+  SUPPORTED_LOCALES,
+  AREA_BOUNDS_MAX_SPAN_DEG,
+  DATASET_MAP_DEFAULT_ZOOM,
+} from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -51,7 +55,7 @@ export function calculateBbox(geojson: FeatureCollection): Bbox | null {
  * @param area - Area object with bounds property
  * @returns Bbox if valid, null otherwise
  */
-export function parseAreaBounds(area: Pick<Area, "bounds"> | { bounds: string | null }): Bbox | null {
+export function parseAreaBounds(area: Pick<Area, "bounds"> | { bounds?: string | null }): Bbox | null {
   if (!area?.bounds) return null;
 
   try {
@@ -71,6 +75,62 @@ export function parseAreaBounds(area: Pick<Area, "bounds"> | { bounds: string | 
   } catch {
     return null;
   }
+}
+
+/**
+ * Whether an area bbox is small enough that fitting it gives a good initial
+ * map view. Large bboxes are untrustworthy (scattered boundaries like Tokyo's
+ * outlying islands) and the map should center on the admin centre instead.
+ * @param bbox - GeoJSON bbox [minLon, minLat, maxLon, maxLat]
+ */
+export function isSmallAreaBounds(bbox: Bbox): boolean {
+  const [minLon, minLat, maxLon, maxLat] = bbox;
+  const latSpan = maxLat - minLat;
+  const midLat = (minLat + maxLat) / 2;
+  const lonSpan = (maxLon - minLon) * Math.cos((midLat * Math.PI) / 180);
+  return Math.max(latSpan, lonSpan) <= AREA_BOUNDS_MAX_SPAN_DEG;
+}
+
+export type InitialViewState =
+  | { bounds: Bbox; fitBoundsOptions: { padding: number } }
+  | { longitude: number; latitude: number; zoom: number };
+
+/**
+ * Initial view for the dataset map. Small area bboxes fit well; large ones
+ * are untrustworthy (scattered boundaries) so the admin centre at a fixed
+ * zoom wins. Falls back to area bounds, then data bounds, then world view.
+ */
+export function computeInitialViewState(
+  area: {
+    bounds?: string | null;
+    centerLat?: number | null;
+    centerLon?: number | null;
+  },
+  dataBounds: Bbox | null
+): InitialViewState {
+  const areaBounds = parseAreaBounds(area);
+
+  if (areaBounds && isSmallAreaBounds(areaBounds)) {
+    return { bounds: areaBounds, fitBoundsOptions: { padding: 20 } };
+  }
+
+  if (area.centerLat != null && area.centerLon != null) {
+    return {
+      longitude: area.centerLon,
+      latitude: area.centerLat,
+      zoom: DATASET_MAP_DEFAULT_ZOOM,
+    };
+  }
+
+  if (areaBounds) {
+    return { bounds: areaBounds, fitBoundsOptions: { padding: 20 } };
+  }
+
+  if (dataBounds) {
+    return { bounds: dataBounds, fitBoundsOptions: { padding: 20 } };
+  }
+
+  return { longitude: 0, latitude: 0, zoom: 2 };
 }
 
 export const getAvailableTimeframes = (features: Feature[]): DateFilter[] => {

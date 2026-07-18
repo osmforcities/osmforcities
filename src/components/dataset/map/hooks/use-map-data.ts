@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { FeatureCollection } from "geojson";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 import { processOSMFeaturesForVisualization } from "../../../../lib/osm-data-processor";
-import { calculateBbox, parseAreaBounds } from "../../../../lib/utils";
+import { calculateBbox, computeInitialViewState } from "../../../../lib/utils";
 import type { DateFilter } from "@/types/geojson";
 import type { Dataset } from "@/schemas/dataset";
 
@@ -32,29 +32,10 @@ export function useMapData({ dataset, dateFilter }: UseMapDataProps) {
     return calculateBbox(processedData);
   }, [processedData]);
 
-  const initialViewState = useMemo(() => {
-    const areaBounds = parseAreaBounds(dataset.area);
-
-    if (areaBounds) {
-      return {
-        bounds: areaBounds,
-        fitBoundsOptions: { padding: 20 },
-      };
-    }
-
-    if (dataBounds) {
-      return {
-        bounds: dataBounds,
-        fitBoundsOptions: { padding: 20 },
-      };
-    }
-
-    return {
-      longitude: 0,
-      latitude: 0,
-      zoom: 2,
-    };
-  }, [dataset.area, dataBounds]);
+  const initialViewState = useMemo(
+    () => computeInitialViewState(dataset.area, dataBounds),
+    [dataset.area, dataBounds]
+  );
 
   const hasFilteredData = Boolean(processedData?.features?.length);
 

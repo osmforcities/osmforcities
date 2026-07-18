@@ -8,6 +8,8 @@ export type Area = {
   addresstype?: string;
   boundingBox: [number, number, number, number];
   bounds?: string;
+  centerLat?: number;
+  centerLon?: number;
   countryCode?: string;
   country?: string;
   state?: string;
