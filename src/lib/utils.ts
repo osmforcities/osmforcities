@@ -95,9 +95,21 @@ export type InitialViewState =
   | { bounds: Bbox; fitBoundsOptions: { padding: number } }
   | { longitude: number; latitude: number; zoom: number };
 
-function isPointInBounds(lat: number, lon: number, bbox: Bbox): boolean {
+/** Tolerance (degrees, ~5.5 km) when testing whether a center is near the data. */
+const CENTER_NEAR_BOUNDS_TOLERANCE_DEG = 0.05;
+
+/**
+ * Whether the point is inside the bbox expanded by a tolerance margin. The
+ * admin centre can sit just outside a tight data bbox (e.g. a bank across
+ * the street from the bbox edge) — only a center far from the data signals
+ * a bad center.
+ */
+function isPointNearBounds(lat: number, lon: number, bbox: Bbox): boolean {
   const [minLon, minLat, maxLon, maxLat] = bbox;
-  return lat >= minLat && lat <= maxLat && lon >= minLon && lon <= maxLon;
+  const t = CENTER_NEAR_BOUNDS_TOLERANCE_DEG;
+  return (
+    lat >= minLat - t && lat <= maxLat + t && lon >= minLon - t && lon <= maxLon + t
+  );
 }
 
 /**
@@ -122,7 +134,7 @@ export function computeInitialViewState(
   }
 
   if (area.centerLat != null && area.centerLon != null) {
-    if (!dataBounds || isPointInBounds(area.centerLat, area.centerLon, dataBounds)) {
+    if (!dataBounds || isPointNearBounds(area.centerLat, area.centerLon, dataBounds)) {
       return {
         longitude: area.centerLon,
         latitude: area.centerLat,

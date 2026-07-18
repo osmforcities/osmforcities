@@ -73,6 +73,22 @@ describe("computeInitialViewState", () => {
     });
   });
 
+  it("centers when the center is just outside the data bounds (Altamira)", () => {
+    // Admin centre ~40 m north of the banks bbox edge — within tolerance
+    const altamiraBounds = "-9.645,-55.623871,-2.9887169,-51.6475378";
+    const dataBounds: Bbox = [-52.4477987, -3.6977382, -52.2098271, -3.204434];
+    const view = computeInitialViewState(
+      { bounds: altamiraBounds, centerLat: -3.204065, centerLon: -52.209961 },
+      dataBounds
+    );
+
+    expect(view).toEqual({
+      longitude: -52.209961,
+      latitude: -3.204065,
+      zoom: 12,
+    });
+  });
+
   it("fits data bounds when the center falls outside them (bad centroid)", () => {
     // Luanda: stored center is the empty province interior, data is in the city
     const luandaBounds = "-10.4562358,12.7897792,-8.5800243,14.6216669";
