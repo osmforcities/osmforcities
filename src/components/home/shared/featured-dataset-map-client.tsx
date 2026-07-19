@@ -10,18 +10,39 @@ import { useTranslations } from "next-intl";
 import type { FeatureCollection } from "geojson";
 import { mapStyle } from "@/lib/map-tiles";
 import { getTemplateIcon } from "@/lib/category-icons";
-import { calculateBbox } from "@/lib/utils";
-import type { Bbox } from "@/types/geojson";
+import { calculateBbox, computeInitialViewState } from "@/lib/utils";
+import type { InitialViewState } from "@/lib/utils";
 import type { ProcessedDatasetStats } from "@/lib/dataset-stats";
 import { DatasetStatsRow } from "@/components/ui/dataset-stats-row";
 import { MapLayers } from "@/components/dataset/map/layers";
 import { AoiBoundaryLayer } from "@/components/dataset/map/aoi-boundary-layer";
 import { processOSMFeaturesForVisualization } from "@/lib/osm-data-processor";
 
+function applyViewState(map: MapRef | null, viewState: InitialViewState) {
+  if (!map) return;
+  if ("bounds" in viewState) {
+    map.fitBounds(viewState.bounds, {
+      ...viewState.fitBoundsOptions,
+      duration: 0,
+    });
+  } else {
+    map.jumpTo({
+      center: [viewState.longitude, viewState.latitude],
+      zoom: viewState.zoom,
+    });
+  }
+}
+
+type FeaturedArea = {
+  bounds: string | null;
+  centerLat: number | null;
+  centerLon: number | null;
+};
+
 type FeaturedDatasetMapClientProps = {
   datasetId: string;
   areaId: number;
-  bounds: Bbox | null;
+  area: FeaturedArea;
   title: string;
   /** Category slug (icon fallback when the template has no icon) */
   category: string;
@@ -34,7 +55,7 @@ type FeaturedDatasetMapClientProps = {
 export function FeaturedDatasetMapClient({
   datasetId,
   areaId,
-  bounds,
+  area,
   title,
   category,
   templateId,
@@ -76,30 +97,30 @@ export function FeaturedDatasetMapClient({
   );
 
   // Client-side navigation swaps props without remounting the Map, so
-  // initialViewState alone would keep the old view. bounds is read via
+  // initialViewState alone would keep the old view. area is read via
   // ref because its identity changes every server render. The sync effect
   // must stay declared before the refit effect that reads it.
-  const boundsRef = useRef(bounds);
+  const areaRef = useRef(area);
   useEffect(() => {
-    boundsRef.current = bounds;
-  }, [bounds]);
+    areaRef.current = area;
+  }, [area]);
   useEffect(() => {
-    if (boundsRef.current) {
-      mapRef.current?.fitBounds(boundsRef.current, {
-        padding: 40,
-        duration: 0,
-      });
-    }
+    applyViewState(mapRef.current, computeInitialViewState(areaRef.current, null));
   }, [datasetId]);
 
-  // Server bounds cover most datasets; fit to the data when the area has none
+  // The far-center guard and the no-bounds fallback both need the data bbox,
+  // which only exists once the geojson arrives. Refit only when it changes
+  // the outcome, so the common case never jumps.
   useEffect(() => {
-    if (bounds || !geojson) return;
+    if (!geojson) return;
     const dataBounds = calculateBbox(geojson);
-    if (dataBounds) {
-      mapRef.current?.fitBounds(dataBounds, { padding: 40, duration: 0 });
+    if (!dataBounds) return;
+    const withData = computeInitialViewState(areaRef.current, dataBounds);
+    const withoutData = computeInitialViewState(areaRef.current, null);
+    if (JSON.stringify(withData) !== JSON.stringify(withoutData)) {
+      applyViewState(mapRef.current, withData);
     }
-  }, [bounds, geojson]);
+  }, [geojson]);
 
   const statItems = [
     { type: "features" as const, label: t("stats.features"), value: stats.features },
@@ -112,11 +133,7 @@ export function FeaturedDatasetMapClient({
       <Map
         ref={mapRef}
         mapStyle={mapStyle}
-        initialViewState={
-          bounds
-            ? { bounds, fitBoundsOptions: { padding: 40 } }
-            : { longitude: 0, latitude: 0, zoom: 1 }
-        }
+        initialViewState={computeInitialViewState(area, null)}
         dragPan
         scrollZoom={false}
         dragRotate={false}
