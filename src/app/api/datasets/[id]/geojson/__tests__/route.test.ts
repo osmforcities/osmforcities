@@ -4,8 +4,21 @@ import { prisma } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import { GET } from "../route";
 
-function makeRequest(id: string) {
-  return new NextRequest(`http://localhost:3000/api/datasets/${id}/geojson`);
+function makeRequest(id: string, search = "") {
+  return new NextRequest(
+    `http://localhost:3000/api/datasets/${id}/geojson${search}`
+  );
+}
+
+type Coordinates = number | Coordinates[];
+
+function collectNumbers(coords: Coordinates, out: number[] = []): number[] {
+  if (typeof coords === "number") {
+    out.push(coords);
+  } else {
+    coords.forEach((c) => collectNumbers(c, out));
+  }
+  return out;
 }
 
 describe("GET /api/datasets/[id]/geojson", () => {
@@ -51,6 +64,75 @@ describe("GET /api/datasets/[id]/geojson", () => {
     );
     const body = await response.json();
     expect(body.type).toBe("FeatureCollection");
+  });
+
+  it("should return a slim payload for ?slim", async () => {
+    await prisma.dataset.update({
+      where: { id: testDatasetId },
+      data: { isFeatured: true },
+    });
+
+    const response = await GET(makeRequest(testDatasetId, "?slim"), {
+      params: Promise.resolve({ id: testDatasetId }),
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("Content-Type")).toBe("application/geo+json");
+    expect(response.headers.get("Cache-Control")).toBe(
+      "public, max-age=300, s-maxage=300, stale-while-revalidate=3600"
+    );
+
+    const body = await response.json();
+    expect(body.type).toBe("FeatureCollection");
+    expect(body.features.length).toBeGreaterThan(0);
+
+    for (const feature of body.features) {
+      // Only the age-bucketing timestamp survives; all OSM tags dropped
+      const keys = Object.keys(feature.properties);
+      expect(
+        keys.every((key) => key === "@timestamp"),
+        `unexpected properties: ${keys.join(", ")}`
+      ).toBe(true);
+
+      // Geometry preserved with coordinates truncated to 6 decimals
+      expect(feature.geometry).toBeDefined();
+      for (const value of collectNumbers(feature.geometry.coordinates)) {
+        expect(value).toBe(Math.round(value * 1e6) / 1e6);
+      }
+    }
+  });
+
+  it("should return full properties without slim param", async () => {
+    await prisma.dataset.update({
+      where: { id: testDatasetId },
+      data: { isFeatured: true },
+    });
+
+    const response = await GET(makeRequest(testDatasetId), {
+      params: Promise.resolve({ id: testDatasetId }),
+    });
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    // Full payload keeps OSM metadata beyond @timestamp (e.g. @id, tags)
+    const hasExtraProps = body.features.some(
+      (feature: { properties: Record<string, unknown> }) =>
+        Object.keys(feature.properties).some((key) => key !== "@timestamp")
+    );
+    expect(hasExtraProps).toBe(true);
+  });
+
+  it("should return 404 for ?slim on a non-featured dataset", async () => {
+    await prisma.dataset.update({
+      where: { id: testDatasetId },
+      data: { isFeatured: false },
+    });
+
+    const response = await GET(makeRequest(testDatasetId, "?slim"), {
+      params: Promise.resolve({ id: testDatasetId }),
+    });
+
+    expect(response.status).toBe(404);
   });
 
   it("should return 404 for a non-featured dataset", async () => {

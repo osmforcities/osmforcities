@@ -1,10 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { FeatureCollection, Geometry } from "geojson";
 import { prisma } from "@/lib/db";
+
+type Coordinates = number | Coordinates[];
+
+// 6 decimals ~ 0.1m precision, plenty for map rendering
+const truncateCoordinates = (coords: Coordinates): Coordinates =>
+  typeof coords === "number"
+    ? Math.round(coords * 1e6) / 1e6
+    : coords.map(truncateCoordinates);
+
+const truncateGeometry = (geometry: Geometry): Geometry => {
+  if (geometry.type === "GeometryCollection") {
+    return {
+      ...geometry,
+      geometries: geometry.geometries.map(truncateGeometry),
+    };
+  }
+  return {
+    ...geometry,
+    coordinates: truncateCoordinates(geometry.coordinates) as never,
+  };
+};
+
+// Slim payload for the home hero map: truncated geometry plus the timestamp
+// used for age bucketing (see osm-data-processor.ts). Buckets stay client-side
+// because the response is cached and age is relative to now.
+const toSlimGeojson = (geojson: FeatureCollection): FeatureCollection => ({
+  type: "FeatureCollection",
+  features: geojson.features.map((feature) => {
+    const timestamp =
+      feature.properties?.["@timestamp"] ?? feature.properties?.timestamp;
+    return {
+      type: "Feature" as const,
+      geometry: truncateGeometry(feature.geometry),
+      properties: timestamp != null ? { "@timestamp": timestamp } : {},
+    };
+  }),
+});
 
 // Public endpoint: only featured datasets are exposed. Non-featured datasets
 // must 404 regardless of session so this route stays safe without middleware.
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -22,7 +60,12 @@ export async function GET(
       );
     }
 
-    return new NextResponse(JSON.stringify(dataset.geojson), {
+    const slim = request.nextUrl.searchParams.has("slim");
+    const body = slim
+      ? toSlimGeojson(dataset.geojson as unknown as FeatureCollection)
+      : dataset.geojson;
+
+    return new NextResponse(JSON.stringify(body), {
       status: 200,
       headers: {
         "Content-Type": "application/geo+json",
