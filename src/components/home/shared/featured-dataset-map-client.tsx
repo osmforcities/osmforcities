@@ -16,6 +16,7 @@ import type { ProcessedDatasetStats } from "@/lib/dataset-stats";
 import { DatasetStatsRow } from "@/components/ui/dataset-stats-row";
 import { MapLayers } from "@/components/dataset/map/layers";
 import { AoiBoundaryLayer } from "@/components/dataset/map/aoi-boundary-layer";
+import { AgeLegendCompact } from "@/components/dataset/map/age-legend";
 import { processOSMFeaturesForVisualization } from "@/lib/osm-data-processor";
 
 type FeaturedDatasetMapClientProps = {
@@ -134,6 +135,13 @@ export function FeaturedDatasetMapClient({
           <NavigationControl showCompass={false} visualizePitch={false} />
         </div>
       </Map>
+
+      {/* Bottom is owned by the info card on small screens, so the legend moves to the top-left corner there */}
+      {processedData && (
+        <div className="absolute left-3 top-3 sm:left-4 sm:top-auto sm:bottom-4">
+          <AgeLegendCompact />
+        </div>
+      )}
 
       <Link
         href={href}
