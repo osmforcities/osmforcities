@@ -11,6 +11,8 @@ export type LegendCategory = {
   label: string;
   color: string;
   count: number;
+  /** De-emphasize the label (synthetic rows like "Missing"). */
+  muted?: boolean;
 };
 
 /** One entry of the header view dropdown. */
@@ -138,7 +140,11 @@ export function InteractiveLegend({
               </span>
               <span
                 className={`flex-1 truncate ${
-                  hidden ? "text-gray-400" : "text-gray-700"
+                  hidden
+                    ? "text-gray-400"
+                    : category.muted
+                      ? "text-gray-500"
+                      : "text-gray-700"
                 }`}
               >
                 {category.label}

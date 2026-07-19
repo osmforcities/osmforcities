@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import type { Feature } from "geojson";
+import type { FilterSpecification } from "maplibre-gl";
 import { DetailedFeaturesLayerGroup } from ".";
 import type { CuratedTheme } from "@/lib/curated-themes";
 
@@ -8,7 +9,7 @@ type MapLayersProps = {
     features: Feature[];
   };
   curatedTheme: CuratedTheme | null;
-  visibilityFilter?: unknown[];
+  visibilityFilter?: FilterSpecification;
 };
 
 export function MapLayers({

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Feature } from "geojson";
+import type { FilterSpecification } from "maplibre-gl";
 import { MapLayer } from "./map-layer";
 import {
   POLYGON_STYLE,
@@ -25,7 +26,7 @@ type DetailedFeaturesLayerGroupProps = {
   lineFeatures: Feature[];
   pointFeatures: Feature[];
   curatedTheme: CuratedTheme | null;
-  visibilityFilter?: unknown[];
+  visibilityFilter?: FilterSpecification;
 };
 
 export function DetailedFeaturesLayerGroup({

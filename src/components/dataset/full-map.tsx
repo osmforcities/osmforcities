@@ -3,6 +3,7 @@
 import React, {
   useRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
   forwardRef,
   useMemo,
@@ -111,11 +112,19 @@ export const DatasetFullMap = forwardRef<
   const [activeViewId, setActiveViewId] = useState(AGE_VIEW_ID);
   const [hiddenIds, setHiddenIds] = useState<ReadonlySet<string>>(new Set());
 
-  // A stale view id (data changed underneath) falls back to the age view
   const activeTheme = useMemo(
     () => curatedThemes.find((theme) => theme.field === activeViewId) ?? null,
     [curatedThemes, activeViewId]
   );
+
+  // A stale view id (data changed underneath) resets to the age view so the
+  // hidden set cannot carry ids from the vanished view
+  useEffect(() => {
+    if (!activeTheme && activeViewId !== AGE_VIEW_ID) {
+      setActiveViewId(AGE_VIEW_ID);
+      setHiddenIds(new Set());
+    }
+  }, [activeTheme, activeViewId]);
 
   const views: LegendViewOption[] = useMemo(
     () => [
@@ -156,6 +165,7 @@ export const DatasetFullMap = forwardRef<
         label: t("legendMissing"),
         color: PALETTES.categorical.missing,
         count: activeTheme.missingCount,
+        muted: true,
       });
     }
     return rows;

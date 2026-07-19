@@ -31,7 +31,7 @@ const surfaceCategories: LegendCategory[] = [
   { id: "concrete", label: "concrete", color: PALETTES.categorical.tableau10[2], count: 96 },
   { id: "sand", label: "sand", color: PALETTES.categorical.tableau10[3], count: 12 },
   { id: OTHER_CATEGORY, label: "Other", color: PALETTES.categorical.other, count: 31 },
-  { id: MISSING_CATEGORY, label: "Missing", color: PALETTES.categorical.missing, count: 1406 },
+  { id: MISSING_CATEGORY, label: "Missing", color: PALETTES.categorical.missing, count: 1406, muted: true },
 ];
 
 /** Stateful wrapper so toggles and view switches work in the story canvas. */

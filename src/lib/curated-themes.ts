@@ -1,4 +1,8 @@
 import type { Feature } from "geojson";
+import type {
+  ExpressionSpecification,
+  FilterSpecification,
+} from "maplibre-gl";
 import {
   computeFilterDimensions,
   FILTERABLE_TAGS,
@@ -88,7 +92,7 @@ const tagValue = (field: string) => [
  */
 export function buildAgeVisibilityFilter(
   hidden: ReadonlySet<string>
-): unknown[] | undefined {
+): FilterSpecification | undefined {
   if (hidden.size === 0) return undefined;
   const [recent, medium, older, veryOld] = AGE_CATEGORY_ORDER;
   return [
@@ -100,7 +104,7 @@ export function buildAgeVisibilityFilter(
     ["==", ["get", "ageCategory"], older],
     !hidden.has(older),
     !hidden.has(veryOld),
-  ];
+  ] as FilterSpecification;
 }
 
 /**
@@ -111,7 +115,7 @@ export function buildAgeVisibilityFilter(
 export function buildTagVisibilityFilter(
   theme: CuratedTheme,
   hidden: ReadonlySet<string>
-): unknown[] | undefined {
+): FilterSpecification | undefined {
   if (hidden.size === 0) return undefined;
 
   const top = theme.topValues.map((v) => v.value.toLowerCase());
@@ -124,17 +128,18 @@ export function buildTagVisibilityFilter(
   if (visibleTop.length > 0) matchParts.push(visibleTop, true);
   if (hiddenTop.length > 0) matchParts.push(hiddenTop, false);
 
-  const valueVisibility =
+  const valueVisibility = (
     matchParts.length > 0
       ? ["match", tagValue(theme.field), ...matchParts, otherVisible]
-      : ["boolean", otherVisible];
+      : ["boolean", otherVisible]
+  ) as ExpressionSpecification;
 
   return [
     "case",
     ["!", ["has", theme.field]],
     missingVisible,
     valueVisibility,
-  ];
+  ] as FilterSpecification;
 }
 
 /**

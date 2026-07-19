@@ -8,7 +8,7 @@ type MapLayerProps = {
   layerType: "fill" | "line" | "circle";
   paint: Record<string, unknown>;
   layout?: Record<string, unknown>;
-  filter?: unknown[];
+  filter?: FilterSpecification;
   strokeLayer?: {
     id: string;
     type: "fill" | "line" | "circle";
@@ -26,9 +26,7 @@ export function MapLayer({
   filter,
   strokeLayer,
 }: MapLayerProps) {
-  const filterProps = filter
-    ? { filter: filter as FilterSpecification }
-    : undefined;
+  const filterProps = filter ? { filter } : undefined;
   return (
     <Source
       id={id}
