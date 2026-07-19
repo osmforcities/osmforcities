@@ -19,6 +19,9 @@ export type LegendViewOption = {
   label: string;
 };
 
+// Mirrors Tailwind's `sm` breakpoint: below it the card would blanket the map
+const BELOW_SM_BREAKPOINT = "(max-width: 640px)";
+
 type InteractiveLegendProps = {
   views: LegendViewOption[];
   activeViewId: string;
@@ -51,7 +54,7 @@ export function InteractiveLegend({
   // default (collapsed) is applied after mount instead of at init
   const [collapsed, setCollapsed] = useState(false);
   useEffect(() => {
-    if (window.matchMedia("(max-width: 640px)").matches) setCollapsed(true);
+    if (window.matchMedia(BELOW_SM_BREAKPOINT).matches) setCollapsed(true);
   }, []);
 
   if (collapsed) {

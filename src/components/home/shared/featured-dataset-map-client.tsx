@@ -138,7 +138,7 @@ export function FeaturedDatasetMapClient({
 
       {/* Bottom is owned by the info card on small screens, so the legend moves to the top-left corner there */}
       {processedData && (
-        <div className="absolute left-3 top-3 sm:left-4 sm:top-auto sm:bottom-4">
+        <div className="absolute start-3 top-3 sm:start-4 sm:top-auto sm:bottom-4">
           <AgeLegendCompact />
         </div>
       )}

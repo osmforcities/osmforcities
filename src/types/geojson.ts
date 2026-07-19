@@ -47,4 +47,3 @@ export type TooltipInfo = {
   feature: Feature;
 };
 
-export type DateFilter = "all" | "7days" | "30days" | "90days";

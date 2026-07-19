@@ -196,7 +196,7 @@ export const DatasetFullMap = forwardRef<
       <div className="flex-1 relative">
         {hasFilteredData && (
           /* Legend: the map's single control (#184) */
-          <div className="absolute z-10 top-4 right-4">
+          <div className="absolute z-10 top-4 end-4">
             <InteractiveLegend
               views={views}
               activeViewId={activeTheme ? activeTheme.field : AGE_VIEW_ID}

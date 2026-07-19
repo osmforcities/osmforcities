@@ -1,10 +1,7 @@
-// src/lib/map-palettes.ts
-
 /**
  * Color palettes for curated map themes.
- * Defined as named constants for easy extension (e.g., dark mode variants).
  *
- * Tableau 10: Color-blind friendly palette with high perceptual uniformity.
+ * Tableau 10: color-blind friendly palette with high perceptual uniformity.
  */
 export const PALETTES = {
   /**

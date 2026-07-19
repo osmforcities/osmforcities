@@ -1,5 +1,3 @@
-// src/lib/curated-themes.ts
-
 import type { Feature } from "geojson";
 import {
   computeFilterDimensions,
