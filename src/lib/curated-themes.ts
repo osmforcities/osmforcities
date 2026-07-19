@@ -3,6 +3,7 @@ import {
   computeFilterDimensions,
   FILTERABLE_TAGS,
   AGE_CATEGORY_ORDER,
+  type FilterDimension,
 } from "./filter-dimensions";
 import { PALETTES } from "./map-palettes";
 
@@ -39,7 +40,19 @@ export function buildCuratedThemes(
   features: Feature[],
   filterableTags: readonly string[] = FILTERABLE_TAGS
 ): CuratedTheme[] {
-  return computeFilterDimensions(features, filterableTags)
+  return buildCuratedThemesFromDimensions(
+    computeFilterDimensions(features, filterableTags)
+  );
+}
+
+/**
+ * Variant taking precomputed dimensions, so callers that also need the age
+ * dimension can run computeFilterDimensions once and derive both from it.
+ */
+export function buildCuratedThemesFromDimensions(
+  dimensions: FilterDimension[]
+): CuratedTheme[] {
+  return dimensions
     .filter((dim) => dim.kind === "tag")
     .map((dim) => {
       const topValues = dim.values.slice(0, TOP_VALUES_COUNT);

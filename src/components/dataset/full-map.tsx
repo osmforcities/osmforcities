@@ -28,7 +28,7 @@ import { mapStyle } from "@/lib/map-tiles";
 import { AGE_COLORS } from "./map/layers/map-style";
 import { PALETTES } from "@/lib/map-palettes";
 import {
-  buildCuratedThemes,
+  buildCuratedThemesFromDimensions,
   buildAgeVisibilityFilter,
   buildTagVisibilityFilter,
   OTHER_CATEGORY,
@@ -89,19 +89,22 @@ export const DatasetFullMap = forwardRef<
 
   const features = processedData?.features;
 
-  // Curated tag themes from the allow-list (#184) — no auto-detection
-  const curatedThemes = useMemo(
-    () => (features?.length ? buildCuratedThemes(features) : []),
+  // One pass over the features feeds both the curated tag themes and the
+  // age bucket counts for the legend rows
+  const filterDimensions = useMemo(
+    () => (features?.length ? computeFilterDimensions(features) : []),
     [features]
   );
 
-  // Age bucket counts for the legend rows (empty allow-list = age only)
+  // Curated tag themes from the allow-list (#184) — no auto-detection
+  const curatedThemes = useMemo(
+    () => buildCuratedThemesFromDimensions(filterDimensions),
+    [filterDimensions]
+  );
+
   const ageDimension = useMemo(
-    () =>
-      features?.length
-        ? computeFilterDimensions(features, []).find((d) => d.kind === "age")
-        : undefined,
-    [features]
+    () => filterDimensions.find((d) => d.kind === "age"),
+    [filterDimensions]
   );
 
   // Legend state: which view colors the map, which categories are hidden
