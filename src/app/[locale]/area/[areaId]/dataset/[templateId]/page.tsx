@@ -62,6 +62,30 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
       return <AreaNotFoundError areaId={areaId} />;
     }
 
+    // Featured datasets are public: render the full view without a session.
+    // Direct lookup only — anonymous visits must not create datasets.
+    const featuredDataset = await prisma.dataset.findFirst({
+      where: {
+        areaId: osmRelationId,
+        templateId: template.id,
+        isActive: true,
+        isFeatured: true,
+      },
+      select: { id: true },
+    });
+
+    if (featuredDataset) {
+      return (
+        <Suspense fallback={<DatasetLoadingSkeleton />}>
+          <AreaTemplateDatasetView
+            areaId={osmRelationId}
+            templateId={templateId}
+            session={null}
+          />
+        </Suspense>
+      );
+    }
+
     return (
       <>
         <TrackView
@@ -101,7 +125,9 @@ async function AreaTemplateDatasetView({
 
   try {
     const [result, areaInfo] = await Promise.all([
-      getOrCreateDataset(areaId, templateId, locale),
+      getOrCreateDataset(areaId, templateId, locale, {
+        allowCreate: !!session?.user,
+      }),
       getAreaDetailsById(areaId),
     ]);
 
@@ -203,6 +229,11 @@ async function AreaTemplateDatasetView({
 
       if (error.message.startsWith("Area not found:")) {
         return <AreaNotFoundError areaId={areaId.toString()} />;
+      }
+
+      // Anonymous view raced a dataset deactivation (allowCreate: false)
+      if (error.message.startsWith("Dataset not found:")) {
+        notFound();
       }
 
       if (error.message.includes("Template is not active:")) {
