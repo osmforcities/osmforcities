@@ -3,7 +3,6 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/db";
 import { processDatasetStats } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
-import { parseAreaBounds } from "@/lib/utils";
 import { getDatasetPath } from "@/lib/urls";
 import { HeroMap } from "./hero-map";
 import { FeaturedDatasetMapClient } from "./featured-dataset-map-client";
@@ -20,6 +19,8 @@ const FEATURED_DATASET_SELECT = {
       id: true,
       countryCode: true,
       bounds: true,
+      centerLat: true,
+      centerLon: true,
     },
   },
   template: {
@@ -82,7 +83,7 @@ export async function FeaturedDatasetMap() {
     <FeaturedDatasetMapClient
       datasetId={dataset.id}
       areaId={dataset.areaId}
-      bounds={parseAreaBounds(dataset.area)}
+      area={dataset.area}
       title={t("title", {
         template: resolvedTemplate.name,
         city: dataset.cityName,
