@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import type { FeatureCollection } from "geojson";
 import { processOSMFeaturesForVisualization } from "../osm-data-processor";
 
@@ -36,9 +36,7 @@ describe("processOSMFeaturesForVisualization — age categorization", () => {
   });
 
   it("falls back to very-old when the timestamp is unparsable", () => {
-    vi.spyOn(console, "warn").mockImplementation(() => {});
     expect(ageCategoryOf({ "@timestamp": "not-a-date" })).toBe("very-old");
     expect(ageCategoryOf({ timestamp: "??" })).toBe("very-old");
-    vi.restoreAllMocks();
   });
 });
