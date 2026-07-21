@@ -73,8 +73,11 @@ export function FeaturedDatasetMapClient({
     setBoundary(null);
 
     const controller = new AbortController();
-    // Marketing page: on failure keep the basemap + card, no error UI
-    fetch(`/api/datasets/${datasetId}/geojson`, { signal: controller.signal })
+    // Marketing page: on failure keep the basemap + card, no error UI.
+    // slim returns truncated geometry + @timestamp only (no OSM tags).
+    fetch(`/api/datasets/${datasetId}/geojson?slim`, {
+      signal: controller.signal,
+    })
       .then((response) => (response.ok ? response.json() : null))
       .then((data: FeatureCollection | null) => {
         if (data && !controller.signal.aborted) setGeojson(data);
