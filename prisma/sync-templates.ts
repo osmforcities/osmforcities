@@ -107,6 +107,30 @@ async function main() {
     environment: "environment-general",
   };
 
+  // Cached size-check verdicts are keyed by area+template only; a changed
+  // query must not stay blocked by a verdict computed for the old query
+  const existingQueries = new Map(
+    (
+      await prisma.template.findMany({
+        select: { id: true, overpassQuery: true },
+      })
+    ).map((t) => [t.id, t.overpassQuery])
+  );
+  const changedQueryIds = result.templates
+    .filter((t) => {
+      const existing = existingQueries.get(t.id);
+      return existing !== undefined && existing !== t.overpassQuery;
+    })
+    .map((t) => t.id);
+  if (changedQueryIds.length > 0) {
+    const { count } = await prisma.areaSizeCheck.deleteMany({
+      where: { templateId: { in: changedQueryIds } },
+    });
+    console.log(
+      `Invalidated ${count} size-check verdicts for ${changedQueryIds.length} templates with changed queries`
+    );
+  }
+
   // Upsert templates from YAML
   // Pass 1: upsert all templates without parent (ensures parents exist first)
   let upserted = 0;

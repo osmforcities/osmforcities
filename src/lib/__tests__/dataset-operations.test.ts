@@ -13,8 +13,12 @@ vi.mock("@/lib/db", () => ({
         name: "Test Area",
         countryCode: "US",
         bounds: null,
+        centerLat: 38.7,
+        centerLon: -9.1,
+        refreshedAt: new Date(),
         geojson: null,
       }),
+      update: vi.fn(),
     },
   },
 }));
@@ -33,7 +37,8 @@ vi.mock("@/lib/template-resolver", () => ({
   }),
 }));
 
-vi.mock("@/lib/dataset-snapshot", () => ({
+vi.mock("@/lib/dataset-snapshot", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/dataset-snapshot")>()),
   fetchDatasetSnapshot: vi.fn(),
 }));
 
@@ -53,12 +58,22 @@ vi.mock("@/lib/nominatim", () => ({
   getAreaDetailsById: vi.fn(),
 }));
 
+vi.mock("@/lib/area-refresh", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/area-refresh")>();
+  return {
+    ...actual,
+    refreshAreaInfoIfStale: vi.fn((area: unknown) => Promise.resolve(area)),
+  };
+});
+
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
+import { refreshAreaInfoIfStale } from "@/lib/area-refresh";
 import { prisma } from "@/lib/db";
 
 const mockFetchDatasetSnapshot = vi.mocked(fetchDatasetSnapshot);
 const mockDatasetFindFirst = vi.mocked(prisma.dataset.findFirst);
+const mockRefreshAreaInfoIfStale = vi.mocked(refreshAreaInfoIfStale);
 
 const existingDatasetRow = {
   id: "ds-1",
@@ -75,7 +90,16 @@ const existingDatasetRow = {
   isActive: true,
   isFeatured: true,
   template: { id: "tmpl-1", name: "Test", description: null, translations: [] },
-  area: { id: 1, name: "Test City", countryCode: "US", bounds: null, geojson: null },
+  area: {
+    id: 1,
+    name: "Test City",
+    countryCode: "US",
+    bounds: "38.69,-9.2,38.79,-9.1",
+    centerLat: 38.7,
+    centerLon: -9.1,
+    refreshedAt: new Date(),
+    geojson: null,
+  },
   user: null,
   savedBy: [],
 };
@@ -95,6 +119,24 @@ describe("getOrCreateDataset — isFeatured passthrough", () => {
     const selectArg = mockDatasetFindFirst.mock.calls[0]?.[0]?.select;
     expect(selectArg?.isFeatured).toBe(true);
     expect(dataset.isFeatured).toBe(true);
+  });
+});
+
+describe("getOrCreateDataset — area info refresh", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("hands the area to refreshAreaInfoIfStale without blocking the response", async () => {
+    mockDatasetFindFirst.mockResolvedValueOnce(existingDatasetRow as never);
+
+    await getOrCreateDataset(1, "test-template", "en");
+    // Refresh is fire-and-forget; flush pending promises
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(mockRefreshAreaInfoIfStale).toHaveBeenCalledWith(
+      existingDatasetRow.area
+    );
   });
 });
 

@@ -1,4 +1,3 @@
-import { headers } from "next/headers";
 import { NextRequest, after } from "next/server";
 import { logger } from "@/lib/logger";
 
@@ -26,25 +25,11 @@ export function getClientInfo(request: NextRequest): ClientInfo {
   };
 }
 
-export async function getClientInfoFromHeaders(): Promise<ClientInfo> {
-  const h = await headers();
-  return {
-    ip:
-      h.get("x-forwarded-for")?.split(",")[0].trim() ||
-      h.get("x-real-ip") ||
-      undefined,
-    userAgent: h.get("user-agent") || undefined,
-    language:
-      h.get("accept-language")?.split(",")[0].split(";")[0].trim() ||
-      undefined,
-    referrer: h.get("referer") || undefined,
-  };
-}
-
 // Best-effort, bounded by a 5s timeout, and never rejects: failures are logged
 // so tracking can never break a user flow. Await it only where the response can
-// wait; for user-facing routes/pages prefer `trackEventAfterResponse` (or wrap
-// in `after()`) so analytics never delays the response.
+// wait; for API routes prefer `trackEventAfterRequest` (or wrap in `after()`)
+// so analytics never delays the response. Page-view-type events belong in the
+// client (`TrackView` component) so scrapers that never run JS don't count.
 export async function trackEvent(
   eventName: string,
   url: string,
@@ -97,23 +82,6 @@ export async function trackEvent(
     }
   } catch (err) {
     logger.warn("Umami event error", { event: eventName, err });
-  }
-}
-
-// Fire-and-forget tracking for server components/pages: captures request client
-// info during render, then schedules the event to run after the response is sent
-// so analytics never blocks the render. De-duplicates the capture+after+track
-// pattern repeated across pages. Never rejects — a headers() failure is logged,
-// not propagated to the render.
-export async function trackEventAfterResponse(
-  eventName: string,
-  url: string,
-): Promise<void> {
-  try {
-    const clientInfo = await getClientInfoFromHeaders();
-    after(() => trackEvent(eventName, url, clientInfo));
-  } catch (err) {
-    logger.warn("trackEventAfterResponse error", { event: eventName, err });
   }
 }
 

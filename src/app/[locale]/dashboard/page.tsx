@@ -10,7 +10,7 @@ import { getTranslations, getLocale } from "next-intl/server";
 import { prisma } from "@/lib/db";
 import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
-import { trackEventAfterResponse } from "@/lib/umami";
+import { TrackView } from "@/components/analytics/track-view";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { MAX_SAVES_PER_USER } from "@/lib/constants";
 
@@ -55,10 +55,9 @@ export default async function Dashboard() {
   const tabT = await getTranslations("TabLayout");
   const savedDatasets = await getSavedDatasets(user.id);
 
-  await trackEventAfterResponse(ANALYTICS_EVENTS.SAVED_DATASETS_VIEW, "/datasets/saved/view");
-
   return (
     <div className="min-h-screen bg-white dark:bg-black">
+      <TrackView event={ANALYTICS_EVENTS.SAVED_DATASETS_VIEW} url="/datasets/saved/view" />
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-8">
           <div>

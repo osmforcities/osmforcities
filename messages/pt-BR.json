@@ -126,7 +126,10 @@
     "backToHome": "Voltar ao Início",
     "emptyTitle": "Nenhum {dataset} encontrado em {area}",
     "emptyDescription": "Este conjunto de dados ainda não tem feições nesta área. Pode não existir aqui, ou os dados ainda não foram mapeados no OpenStreetMap.",
+    "tooLargeTitle": "{dataset} em {area} é grande demais para exibir",
+    "tooLargeDescription": "Este conjunto de dados é grande demais para ser exibido como mapa. Tente um modelo mais específico ou <link>trabalhe com os dados brutos no Overpass Turbo</link>.",
     "backToArea": "← Voltar para {area}",
+    "backToAreaLabel": "Voltar para {area}",
     "datasetStats": "Estatísticas do Conjunto de Dados",
     "category": "Categoria",
     "totalFeatures": "Total de Feições",
@@ -157,7 +160,7 @@
     "datasetDetails": "Detalhes do Conjunto de Dados",
     "datasetDescription": "Este conjunto de dados monitora características de {template} em {city}.",
     "backToDatasets": "voltar aos conjuntos de dados",
-    "datasetTitle": "{template} em {city}",
+    "datasetTitle": "{template}",
     "invalidData": "Dados Inválidos",
     "invalidDataMessage": "O conjunto de dados contém dados GeoJSON inválidos.",
     "downloadGeoJSON": "Baixar GeoJSON",
@@ -176,12 +179,14 @@
     "dataFetched": "Dados obtidos {time}",
     "dataNotFetched": "Dados ainda não obtidos",
     "save": "Salvar",
+    "signInToSave": "Entre para salvar",
     "unsave": "Remover",
     "saveTooltip": "Salvar para visitar depois",
     "unsaveTooltip": "Remover dos salvos",
     "saveLimitReached": "Limite de salvos atingido",
     "saveLimitMessage": "Você pode salvar até {limit, number} conjuntos de dados. Remova um pelo seu painel primeiro. <link>Ir para o painel</link>.",
     "featured": "Destacado",
+    "featuredTooltip": "Este é um conjunto de dados em destaque",
     "feature": "Destacar",
     "unfeature": "Remover destaque",
     "featureTitle": "Destacar este conjunto na página inicial",
@@ -367,18 +372,16 @@
     "meta": "Meta",
     "noAdditionalInfo": "Nenhuma informação adicional disponível",
     "colon": ":",
-    "showData": "Mostrar dados",
-    "showAll": "Todos",
-    "last7Days": "Últimos 7 dias",
-    "last30Days": "Últimos 30 dias",
-    "last90Days": "Últimos 90 dias",
-    "age": "Idade",
-    "noDataInTimeframe": "Nenhum dado encontrado no período selecionado",
     "lastEditedLegend": "Última Edição",
     "recentChanges": "≤ 7 dias atrás",
     "mediumChanges": "8-30 dias atrás",
     "olderChanges": "31-90 dias atrás",
-    "veryOldChanges": "> 90 dias atrás"
+    "veryOldChanges": "> 90 dias atrás",
+    "legendViewLabel": "Colorir por",
+    "legendOther": "Outros",
+    "legendMissing": "Sem valor",
+    "collapseLegend": "Ocultar legenda",
+    "expandLegend": "Mostrar legenda"
   },
   "DatasetWatchButton": {
     "privateDataset": "Conjunto de Dados Privado"
@@ -403,6 +406,15 @@
       "exploreDatasets": "Explorar conjuntos de dados",
       "seeHowItWorks": "Veja como funciona",
       "osmAttribution": "© Colaboradores do OpenStreetMap"
+    },
+    "featuredDataset": {
+      "title": "{template} em {city}",
+      "viewDataset": "Ver conjunto de dados",
+      "stats": {
+        "features": "Elementos",
+        "contributors": "Contribuidores",
+        "lastEdited": "Última edição"
+      }
     },
     "features": {
       "subtitle": "Recursos",

@@ -82,7 +82,7 @@ test.describe("Dashboard Tab Navigation", () => {
   });
 
   test.describe("Tab Navigation", () => {
-    test("should navigate to users page when clicking Users tab", async ({
+    test("should navigate to users and templates pages via admin tabs", async ({
       page,
     }) => {
       // Login as admin user
@@ -92,79 +92,19 @@ test.describe("Dashboard Tab Navigation", () => {
       await page.click('button[type="submit"]');
       await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
 
-      // Click Users tab
+      // Click Users tab — should navigate + render DashboardTabs on the page
       await page.getByTestId("tab-users").click();
+      await expect(page).toHaveURL(/\/en\/users$/);
+      await expect(page.getByTestId("tab-saved")).toBeVisible();
+      await expect(page.getByTestId("tab-templates")).toBeVisible();
 
-      // Should navigate to users page
-      await expect(page).toHaveURL("http://localhost:3000/en/users");
-
-      // Should see users page content
-      await expect(
-        page.locator(".border.border-gray-200").first()
-      ).toBeVisible();
-    });
-
-    test("should navigate to templates page when clicking Templates tab", async ({
-      page,
-    }) => {
-      // Login as admin user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', adminUser.email);
-      await page.fill('input[name="password"]', adminUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
-
-      // Click Templates tab
+      // Click Templates tab from the users page
       await page.getByTestId("tab-templates").click();
-
-      // Should navigate to templates page
-      await expect(page).toHaveURL("http://localhost:3000/en/templates");
-
-      // Should see templates page content
+      await expect(page).toHaveURL(/\/en\/templates$/);
       await expect(page.getByRole("heading", { name: "Templates" })).toBeVisible();
     });
 
-    test("should show DashboardTabs on users page with correct active tab", async ({ page }) => {
-      // Login as admin user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', adminUser.email);
-      await page.fill('input[name="password"]', adminUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
-
-      // Click Users tab
-      await page.getByTestId("tab-users").click();
-
-      // Should see DashboardTabs with all three tabs
-      await expect(page.getByTestId("tab-saved")).toBeVisible();
-      await expect(page.getByTestId("tab-users")).toBeVisible();
-      await expect(page.getByTestId("tab-templates")).toBeVisible();
-
-      // Should be on users page
-      await expect(page).toHaveURL("http://localhost:3000/en/users");
-    });
-
-    test("should show DashboardTabs on templates page with correct active tab", async ({ page }) => {
-      // Login as admin user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', adminUser.email);
-      await page.fill('input[name="password"]', adminUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
-
-      // Click Templates tab
-      await page.getByTestId("tab-templates").click();
-
-      // Should see DashboardTabs with all three tabs
-      await expect(page.getByTestId("tab-saved")).toBeVisible();
-      await expect(page.getByTestId("tab-users")).toBeVisible();
-      await expect(page.getByTestId("tab-templates")).toBeVisible();
-
-      // Should be on templates page
-      await expect(page).toHaveURL("http://localhost:3000/en/templates");
-    });
-
-    test("should handle navigation back to home from users page", async ({
+    test("should navigate back to dashboard from an admin page", async ({
       page,
     }) => {
       // Login as admin user
@@ -186,31 +126,6 @@ test.describe("Dashboard Tab Navigation", () => {
       await expect(page.getByTestId("tab-saved")).toBeVisible();
       await expect(page.getByTestId("tab-users")).toBeVisible();
       await expect(page.getByTestId("tab-templates")).toBeVisible();
-    });
-
-    test("should handle navigation between admin pages", async ({ page }) => {
-      // Login as admin user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', adminUser.email);
-      await page.fill('input[name="password"]', adminUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
-
-      // Navigate to users page
-      await page.getByTestId("tab-users").click();
-      await expect(page).toHaveURL("http://localhost:3000/en/users");
-
-      // Navigate to templates page from users page
-      await page.getByTestId("tab-templates").click();
-      await expect(page).toHaveURL("http://localhost:3000/en/templates");
-
-      // Navigate back to users page from templates page
-      await page.getByTestId("tab-users").click();
-      await expect(page).toHaveURL("http://localhost:3000/en/users");
-
-      // Navigate back to dashboard from users page
-      await page.getByTestId("tab-saved").click();
-      await expect(page).toHaveURL("http://localhost:3000/en/dashboard");
     });
   });
 
@@ -238,25 +153,8 @@ test.describe("Dashboard Tab Navigation", () => {
       expect(hasGrid || isEmpty).toBe(true);
     });
 
-    test("should show empty state when no datasets are followed", async ({
-      page,
-    }) => {
-      // Login as regular user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', regularUser.email);
-      await page.fill('input[name="password"]', regularUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
-
-      // Check empty state
-      await expect(page.getByTestId("dashboard-empty-state")).toBeVisible();
-      await expect(
-        page.getByTestId("dashboard-empty-state-title")
-      ).toBeVisible();
-      await expect(
-        page.getByTestId("dashboard-empty-state-description")
-      ).toBeVisible();
-    });
+    // Note: "should show empty state when no datasets are followed" removed —
+    // duplicates dashboard.spec.ts empty-state coverage.
 
     test("should show saved datasets when user has saved datasets", async ({
       page,
@@ -423,31 +321,9 @@ test.describe("Dashboard Tab Navigation", () => {
     });
   });
 
-  test.describe("Cross-browser Compatibility", () => {
-    test("should work in different browsers", async ({ page, browserName }) => {
-      // Login as admin user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', adminUser.email);
-      await page.fill('input[name="password"]', adminUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
-
-      // Check all tabs are visible
-      await expect(page.getByTestId("tab-saved")).toBeVisible();
-      await expect(page.getByTestId("tab-users")).toBeVisible();
-      await expect(page.getByTestId("tab-templates")).toBeVisible();
-
-      // Test navigation to users page
-      await page.getByTestId("tab-users").click();
-      await expect(page).toHaveURL("http://localhost:3000/en/users");
-
-      // Test navigation to templates page
-      await page.getByTestId("tab-templates").click();
-      await expect(page).toHaveURL("http://localhost:3000/en/templates");
-
-      console.log(`Tab navigation works correctly in ${browserName}`);
-    });
-  });
+  // Note: "Cross-browser Compatibility" describe removed — only chromium is
+  // configured in playwright.config.ts, so the test never actually exercised
+  // other browsers and was misleading.
 
   test.describe("Error Handling", () => {
     test("should handle failed navigation gracefully", async ({ page }) => {

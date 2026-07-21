@@ -1,4 +1,5 @@
 import type { StyleSpecification } from "maplibre-gl";
+import { DEFAULT_STYLE_KNOBS } from "@/components/dataset/map/layers/map-style";
 
 type TileProvider = "cartodb" | "osm";
 
@@ -57,5 +58,17 @@ export const mapStyle = {
       attribution: tileConfig.attribution,
     },
   },
-  layers: [{ id: "tiles", type: "raster", source: "tiles" }],
+  layers: [
+    { id: "tiles", type: "raster", source: "tiles" },
+    // Translucent wash mutes the raster basemap so data layers stay the
+    // most saturated thing on screen (ciclomapa-style figure/ground)
+    {
+      id: "basemap-mute",
+      type: "background",
+      paint: {
+        "background-color": "#ffffff",
+        "background-opacity": DEFAULT_STYLE_KNOBS.basemapWashOpacity,
+      },
+    },
+  ],
 } satisfies StyleSpecification;

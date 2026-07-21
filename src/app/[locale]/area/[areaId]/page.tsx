@@ -4,7 +4,7 @@ import { getAreaDetailsById } from "@/lib/nominatim";
 import { getAreaDataTypes } from "@/lib/area-templates";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { DatasetGrid } from "@/components/ui/template-grid";
-import { trackEventAfterResponse } from "@/lib/umami";
+import { TrackView } from "@/components/analytics/track-view";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { auth } from "@/auth";
 
@@ -36,13 +36,6 @@ export default async function AreaPage({ params, searchParams }: AreaPageProps) 
     notFound();
   }
 
-  await trackEventAfterResponse(
-    session?.user
-      ? ANALYTICS_EVENTS.AREA_VIEW_LOGGED_IN
-      : ANALYTICS_EVENTS.AREA_VIEW_LOGGED_OUT,
-    `/area/${areaId}/view`,
-  );
-
   const breadcrumbItems = [
     { label: navT("home"), href: "/" },
     { label: areaInfo.country || "Area" },
@@ -51,6 +44,14 @@ export default async function AreaPage({ params, searchParams }: AreaPageProps) 
 
   return (
     <div className="min-h-screen bg-gray-50 lg:min-h-0 lg:h-[calc(100dvh_-_var(--nav-height))] lg:flex lg:flex-col lg:overflow-hidden">
+      <TrackView
+        event={
+          session?.user
+            ? ANALYTICS_EVENTS.AREA_VIEW_LOGGED_IN
+            : ANALYTICS_EVENTS.AREA_VIEW_LOGGED_OUT
+        }
+        url={`/area/${areaId}/view`}
+      />
       {/* Header (fixed on desktop) */}
       <div className="max-w-7xl w-full mx-auto px-6 pt-8 pb-10 lg:flex-shrink-0">
         <div className="mb-6">

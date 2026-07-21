@@ -29,6 +29,7 @@ function calculatePermissions(rawDataset: RawDataset, user: User | null) {
   return {
     canFeature: user?.isAdmin ?? false,
     canRefresh: user?.isAdmin ?? false,
+    canSave: !!user,
     canDelete: false,
     isFeatured: rawDataset.isFeatured ?? false,
   };
@@ -62,6 +63,11 @@ export function transformDataset(
 
   return DatasetSchema.parse({
     ...rawDataset,
+    // The transformed dataset is serialized to the client (public on
+    // featured pages) — never ship the owner record or saver userIds;
+    // the UI only needs isSaved/savedCount
+    user: null,
+    savedBy: undefined,
     geojson: rawDataset.geojson as FeatureCollection | null,
     bbox: rawDataset.bbox as number[] | null,
     template: {

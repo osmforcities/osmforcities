@@ -3,27 +3,35 @@
  *
  * Run with: pnpm generate-icons
  *
- * This script reads templates.yml and generates a getCategoryIcon function
- * that maps category names to Lucide React icon components.
+ * Reads templates.yml and generates:
+ * - getCategoryIcon: category slug -> icon (from the categories section only)
+ * - getTemplateIcon: template slug -> icon, falling back to getCategoryIcon
+ *
+ * All icon names are validated against lucide-react exports; generation
+ * fails listing any unknown names.
  */
 
-import { loadTemplatesYaml, collectIcons } from "./lib/template-parser";
+import {
+  loadTemplatesYaml,
+  collectCategoryIcons,
+  collectTemplateIcons,
+} from "./lib/template-parser";
 import { writeFileSync } from "fs";
 import { join } from "path";
+import * as lucide from "lucide-react";
+
+const FALLBACK_ICON = "MapPin";
 
 /**
- * Get all unique icon names used in templates
+ * Fail generation if any icon name is not a lucide-react export
  */
-function getUsedIconNames(
-  config: ReturnType<typeof loadTemplatesYaml>,
-): Set<string> {
-  const iconMap = collectIcons(config);
-  const icons = new Set<string>(Array.from(iconMap.values()));
-
-  // Always include MapPin as fallback
-  icons.add("MapPin");
-
-  return icons;
+function validateIconNames(icons: Set<string>): void {
+  const unknown = Array.from(icons).filter((name) => !(name in lucide));
+  if (unknown.length > 0) {
+    throw new Error(
+      `Unknown lucide-react icon name(s) in templates.yml: ${unknown.join(", ")}`,
+    );
+  }
 }
 
 /**
@@ -31,30 +39,23 @@ function getUsedIconNames(
  */
 function buildImportStatement(icons: Set<string>): string {
   const sortedIcons = Array.from(icons).sort();
-
-  if (sortedIcons.length === 0) {
-    return `import { MapPin } from "lucide-react";`;
-  }
-
   return `import {
   ${sortedIcons.join(",\n  ")}
 } from "lucide-react";`;
 }
 
 /**
- * Build switch case for getCategoryIcon function
+ * Build switch cases mapping keys to icon JSX
  */
-function buildCategorySwitch(icons: Map<string, string>): string {
-  const cases = Array.from(icons.entries())
+function buildSwitchCases(icons: Map<string, string>): string {
+  return Array.from(icons.entries())
     .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([category, icon]) => {
-      const lowerCat = category.toLowerCase();
-      const jsx = `<${icon} className="w-5 h-5" />`;
-      return `    case "${lowerCat}":
-      return ${jsx};`;
-    });
-
-  return cases.join("\n");
+    .map(([key, icon]) => {
+      const lowerKey = key.toLowerCase();
+      return `    case "${lowerKey}":
+      return <${icon} className="w-5 h-5" />;`;
+    })
+    .join("\n");
 }
 
 /**
@@ -62,40 +63,66 @@ function buildCategorySwitch(icons: Map<string, string>): string {
  */
 function generateIconsFileContent(): {
   content: string;
-  icons: Map<string, string>;
+  categoryIcons: Map<string, string>;
+  templateIcons: Map<string, string>;
 } {
   const config = loadTemplatesYaml();
-  const iconMap = collectIcons(config);
+  const categoryIcons = collectCategoryIcons(config);
+  const templateIcons = collectTemplateIcons(config);
 
-  const importStatement = buildImportStatement(getUsedIconNames(config));
-  const switchCases = buildCategorySwitch(iconMap);
+  const usedIcons = new Set<string>([
+    ...categoryIcons.values(),
+    ...templateIcons.values(),
+    FALLBACK_ICON,
+  ]);
+  validateIconNames(usedIcons);
+
+  const importStatement = buildImportStatement(usedIcons);
+  const categoryCases = buildSwitchCases(categoryIcons);
+  const templateCases = buildSwitchCases(templateIcons);
   const timestamp = new Date().toISOString();
 
   const content = `${importStatement}
 
 /**
- * Get appropriate icon for a category
+ * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
  * Generated: ${timestamp}
  * Regenerate with: pnpm generate-icons
+ */
+
+/**
+ * Get the icon for a category (case-insensitive)
  *
- * @param category - Category name (case-insensitive)
- * @returns React component for the category icon
  * @example
- * const icon = getCategoryIcon("education"); // Returns School icon
- * const icon = getCategoryIcon("HEALTHCARE"); // Returns Hospital icon
+ * getCategoryIcon("education"); // Returns School icon
  */
 export function getCategoryIcon(category: string) {
   switch (category.toLowerCase()) {
-${switchCases}
+${categoryCases}
     default:
-      return <MapPin className="w-5 h-5" />;
+      return <${FALLBACK_ICON} className="w-5 h-5" />;
+  }
+}
+
+/**
+ * Get the icon for a template (case-insensitive template slug),
+ * falling back to the template's category icon
+ *
+ * @example
+ * getTemplateIcon("drinking-water", "amenities"); // Returns Droplet icon
+ */
+export function getTemplateIcon(templateId: string, category: string) {
+  switch (templateId.toLowerCase()) {
+${templateCases}
+    default:
+      return getCategoryIcon(category);
   }
 }
 `;
 
-  return { content, icons: iconMap };
+  return { content, categoryIcons, templateIcons };
 }
 
 /**
@@ -111,10 +138,11 @@ function writeIconsFile(content: string): void {
  */
 function generateIcons(): void {
   try {
-    const { content, icons } = generateIconsFileContent();
+    const { content, categoryIcons, templateIcons } =
+      generateIconsFileContent();
     writeIconsFile(content);
     console.log(
-      `Generated src/lib/category-icons.tsx with ${icons.size} category mappings`,
+      `Generated src/lib/category-icons.tsx with ${categoryIcons.size} category and ${templateIcons.size} template mappings`,
     );
   } catch (error) {
     console.error("Failed to generate icons:", error);

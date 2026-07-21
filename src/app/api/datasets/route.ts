@@ -4,7 +4,12 @@ import { prisma } from "@/lib/db";
 import { CreateDatasetSchema } from "@/schemas/dataset";
 import { Prisma } from "@prisma/client";
 import { fetchOsmRelationData } from "@/lib/area-boundary";
-import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
+import { refreshAreaInfoIfStale, resolveAreaCenter } from "@/lib/area-refresh";
+import {
+  fetchDatasetSnapshot,
+  DatasetTooLargeError,
+  DatasetSizeCheckTimeoutError,
+} from "@/lib/dataset-snapshot";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
@@ -38,13 +43,15 @@ export async function POST(req: NextRequest) {
     where: { id: osmRelationId },
   });
 
+  if (area) {
+    area = await refreshAreaInfoIfStale(area);
+  }
+
   if (!area) {
     try {
-      const [fetched, countryCode] = await Promise.all([
+      const [fetched, areaDetails] = await Promise.all([
         fetchOsmRelationData(osmRelationId),
-        getAreaDetailsById(osmRelationId)
-          .then((details) => details?.countryCode ?? null)
-          .catch(() => null),
+        getAreaDetailsById(osmRelationId).catch(() => null),
       ]);
 
       if (!fetched)
@@ -53,12 +60,17 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
 
+      const center = resolveAreaCenter(fetched, areaDetails);
+
       area = await prisma.area.create({
         data: {
           id: osmRelationId,
           name: fetched.name,
           bounds: fetched.bounds,
-          countryCode,
+          countryCode: areaDetails?.countryCode ?? null,
+          centerLat: center?.centerLat ?? null,
+          centerLon: center?.centerLon ?? null,
+          refreshedAt: new Date(),
           geojson: JSON.parse(JSON.stringify(fetched.convertedGeojson)),
         },
       });
@@ -72,7 +84,11 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const snapshot = await fetchDatasetSnapshot(area.id, template.overpassQuery);
+    const snapshot = await fetchDatasetSnapshot(
+      area.id,
+      template.overpassQuery,
+      template.id
+    );
 
     const dataset = await prisma.dataset.create({
       data: {
@@ -92,6 +108,14 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(dataset, { status: 201 });
   } catch (err) {
+    if (err instanceof DatasetTooLargeError) {
+      return NextResponse.json({ error: err.message }, { status: 422 });
+    }
+
+    if (err instanceof DatasetSizeCheckTimeoutError) {
+      return NextResponse.json({ error: err.message }, { status: 503 });
+    }
+
     if (
       err instanceof Prisma.PrismaClientKnownRequestError &&
       err.code === "P2002"

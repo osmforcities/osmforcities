@@ -3,7 +3,7 @@ import { Search, FileX } from "lucide-react";
 type EmptyStateProps = {
   type: "no-data" | "no-results";
   title: string;
-  description: string;
+  description: React.ReactNode;
   icon?: React.ReactNode;
 };
 

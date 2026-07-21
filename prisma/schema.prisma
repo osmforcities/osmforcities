@@ -100,6 +100,9 @@ model Area {
   name        String
   countryCode String?
   bounds      String?
+  centerLat   Float?
+  centerLon   Float?
+  refreshedAt DateTime?
   geojson     Json?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -149,6 +152,19 @@ model DatasetSave {
 
   @@unique([userId, datasetId])
   @@map("dataset_saves")
+}
+
+model AreaSizeCheck {
+  id             String   @id @default(cuid())
+  areaId         Int
+  templateId     String
+  status         String
+  estimatedBytes Int?
+  actualBytes    Int?
+  checkedAt      DateTime @default(now())
+
+  @@unique([areaId, templateId])
+  @@map("area_size_checks")
 }
 
 enum ReportFrequency {

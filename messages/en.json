@@ -127,7 +127,10 @@
     "backToHome": "Back to Home",
     "emptyTitle": "No {dataset} found in {area}",
     "emptyDescription": "This dataset has no features in this area yet. It may not exist here, or the data has not been mapped in OpenStreetMap.",
+    "tooLargeTitle": "{dataset} in {area} is too large to display",
+    "tooLargeDescription": "This dataset is too large to display as a map. Try a more specific template, or <link>work with the raw data in Overpass Turbo</link>.",
     "backToArea": "← Back to {area}",
+    "backToAreaLabel": "Back to {area}",
     "datasetStats": "Dataset Stats",
     "category": "Category",
     "totalFeatures": "Total Features",
@@ -158,7 +161,7 @@
     "datasetDetails": "Dataset Details",
     "datasetDescription": "This dataset monitors {template} features in {city}.",
     "backToDatasets": "← back to datasets",
-    "datasetTitle": "{template} in {city}",
+    "datasetTitle": "{template}",
     "invalidData": "Invalid Data",
     "invalidDataMessage": "The dataset contains invalid GeoJSON data.",
     "downloadGeoJSON": "Download GeoJSON",
@@ -177,12 +180,14 @@
     "dataFetched": "Data fetched {time}",
     "dataNotFetched": "Data not yet fetched",
     "save": "Save",
+    "signInToSave": "Sign in to save",
     "unsave": "Unsave",
     "saveTooltip": "Save to revisit later",
     "unsaveTooltip": "Remove from saved",
     "saveLimitReached": "Save limit reached",
     "saveLimitMessage": "You can save up to {limit, number} datasets. Unsave one from your dashboard first. <link>Go to dashboard</link>.",
     "featured": "Featured",
+    "featuredTooltip": "This is a featured dataset",
     "feature": "Feature",
     "unfeature": "Unfeature",
     "featureTitle": "Feature this dataset on homepage",
@@ -369,18 +374,16 @@
     "meta": "Meta",
     "noAdditionalInfo": "No additional information available",
     "colon": ":",
-    "showData": "Show data",
-    "showAll": "All",
-    "last7Days": "Last 7 days",
-    "last30Days": "Last 30 days",
-    "last90Days": "Last 90 days",
-    "age": "Age",
-    "noDataInTimeframe": "No data found in the selected time period",
     "lastEditedLegend": "Last Edited",
     "recentChanges": "≤ 7 days ago",
     "mediumChanges": "8-30 days ago",
     "olderChanges": "31-90 days ago",
-    "veryOldChanges": "> 90 days ago"
+    "veryOldChanges": "> 90 days ago",
+    "legendViewLabel": "Color by",
+    "legendOther": "Other",
+    "legendMissing": "Missing",
+    "collapseLegend": "Hide legend",
+    "expandLegend": "Show legend"
   },
   "DatasetWatchButton": {
     "privateDataset": "Private Dataset"
@@ -405,6 +408,15 @@
       "seeHowItWorks": "See how it works",
       "exploreDatasets": "Explore datasets",
       "osmAttribution": "© OpenStreetMap contributors"
+    },
+    "featuredDataset": {
+      "title": "{template} in {city}",
+      "viewDataset": "View dataset",
+      "stats": {
+        "features": "Features",
+        "contributors": "Contributors",
+        "lastEdited": "Last edited"
+      }
     },
     "features": {
       "subtitle": "Features",

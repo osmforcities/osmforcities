@@ -1,12 +1,15 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { bbox } from "@turf/bbox";
-import type { FeatureCollection, Feature } from "geojson";
+import type { FeatureCollection } from "geojson";
 import { BboxSchema, type Bbox } from "@/types/geojson";
-import type { DateFilter } from "../types/geojson";
 import type { Area } from "@/types/area";
 import type { useTranslations } from "next-intl";
-import { SUPPORTED_LOCALES } from "./constants";
+import {
+  SUPPORTED_LOCALES,
+  AREA_BOUNDS_MAX_SPAN_DEG,
+  DATASET_MAP_DEFAULT_ZOOM,
+} from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -51,7 +54,7 @@ export function calculateBbox(geojson: FeatureCollection): Bbox | null {
  * @param area - Area object with bounds property
  * @returns Bbox if valid, null otherwise
  */
-export function parseAreaBounds(area: Pick<Area, "bounds"> | { bounds: string | null }): Bbox | null {
+export function parseAreaBounds(area: Pick<Area, "bounds"> | { bounds?: string | null }): Bbox | null {
   if (!area?.bounds) return null;
 
   try {
@@ -73,37 +76,71 @@ export function parseAreaBounds(area: Pick<Area, "bounds"> | { bounds: string | 
   }
 }
 
-export const getAvailableTimeframes = (features: Feature[]): DateFilter[] => {
-  const availableTimeframes: DateFilter[] = ["all"];
+/**
+ * Whether an area bbox is small enough that fitting it gives a good initial
+ * map view. Large bboxes are untrustworthy (scattered boundaries like Tokyo's
+ * outlying islands) and the map should center on the admin centre instead.
+ * @param bbox - GeoJSON bbox [minLon, minLat, maxLon, maxLat]
+ */
+export function isSmallAreaBounds(bbox: Bbox): boolean {
+  const [minLon, minLat, maxLon, maxLat] = bbox;
+  const latSpan = maxLat - minLat;
+  const midLat = (minLat + maxLat) / 2;
+  const lonSpan = (maxLon - minLon) * Math.cos((midLat * Math.PI) / 180);
+  return Math.max(latSpan, lonSpan) <= AREA_BOUNDS_MAX_SPAN_DEG;
+}
 
-  // Check if there are features in each timeframe by calculating age on-demand
-  const has7Days = features.some((f) => {
-    const timestamp = f.properties?.["@timestamp"] || f.properties?.timestamp;
-    if (!timestamp) return false;
-    const age = calculateAge(timestamp);
-    return age <= 7;
-  });
+export type InitialViewState =
+  | { bounds: Bbox; fitBoundsOptions: { padding: number } }
+  | { longitude: number; latitude: number; zoom: number };
 
-  const has30Days = features.some((f) => {
-    const timestamp = f.properties?.["@timestamp"] || f.properties?.timestamp;
-    if (!timestamp) return false;
-    const age = calculateAge(timestamp);
-    return age <= 30;
-  });
+/** ~5.5 km: the admin centre can sit just outside a tight data bbox */
+const CENTER_NEAR_BOUNDS_TOLERANCE_DEG = 0.05;
 
-  const has90Days = features.some((f) => {
-    const timestamp = f.properties?.["@timestamp"] || f.properties?.timestamp;
-    if (!timestamp) return false;
-    const age = calculateAge(timestamp);
-    return age <= 90;
-  });
+function isPointNearBounds(lat: number, lon: number, bbox: Bbox): boolean {
+  const [minLon, minLat, maxLon, maxLat] = bbox;
+  const t = CENTER_NEAR_BOUNDS_TOLERANCE_DEG;
+  return (
+    lat >= minLat - t && lat <= maxLat + t && lon >= minLon - t && lon <= maxLon + t
+  );
+}
 
-  if (has7Days) availableTimeframes.push("7days");
-  if (has30Days) availableTimeframes.push("30days");
-  if (has90Days) availableTimeframes.push("90days");
+export function computeInitialViewState(
+  area: {
+    bounds?: string | null;
+    centerLat?: number | null;
+    centerLon?: number | null;
+  },
+  dataBounds: Bbox | null
+): InitialViewState {
+  const areaBounds = parseAreaBounds(area);
 
-  return availableTimeframes;
-};
+  if (areaBounds && isSmallAreaBounds(areaBounds)) {
+    return { bounds: areaBounds, fitBoundsOptions: { padding: 20 } };
+  }
+
+  if (area.centerLat != null && area.centerLon != null) {
+    if (!dataBounds || isPointNearBounds(area.centerLat, area.centerLon, dataBounds)) {
+      return {
+        longitude: area.centerLon,
+        latitude: area.centerLat,
+        zoom: DATASET_MAP_DEFAULT_ZOOM,
+      };
+    }
+    // A center far from the data is a bad center (e.g. a Nominatim centroid)
+    return { bounds: dataBounds, fitBoundsOptions: { padding: 20 } };
+  }
+
+  if (areaBounds) {
+    return { bounds: areaBounds, fitBoundsOptions: { padding: 20 } };
+  }
+
+  if (dataBounds) {
+    return { bounds: dataBounds, fitBoundsOptions: { padding: 20 } };
+  }
+
+  return { longitude: 0, latitude: 0, zoom: 2 };
+}
 
 export const calculateAge = (timestamp: string) => {
   const featureDate = new Date(timestamp);
@@ -118,23 +155,6 @@ export const calculateAge = (timestamp: string) => {
   const ageInDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   return ageInDays;
-};
-
-export const filterFeaturesByDate = (
-  features: Feature[],
-  dateFilter: DateFilter
-): Feature[] => {
-  if (dateFilter === "all") return features;
-
-  const maxAge = dateFilter === "7days" ? 7 : dateFilter === "30days" ? 30 : 90;
-
-  return features.filter((feature) => {
-    const timestamp =
-      feature.properties?.["@timestamp"] || feature.properties?.timestamp;
-    if (!timestamp) return false;
-    const age = calculateAge(timestamp);
-    return age <= maxAge;
-  });
 };
 
 /**

@@ -3,10 +3,10 @@ import { notFound } from "next/navigation";
 import { getTranslations, getLocale } from "next-intl/server";
 import { transformDataset } from "@/lib/dataset/transform";
 import { DatasetInteractiveSection } from "@/components/dataset/dataset-interactive-section";
-import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Link } from "@/i18n/navigation";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
+import { DatasetTooLargeError } from "@/lib/dataset-snapshot";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import {
   isValidTemplateIdentifier,
@@ -17,12 +17,12 @@ import {
   TemplateNotFoundError,
   AreaNotFoundError,
   DatasetCreationError,
+  DatasetTooLargeState,
 } from "@/components/ui/dataset-error-states";
 import { DatasetUpsellPage } from "@/components/dataset/dataset-upsell-page";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import type { TranslationFunction } from "@/lib/types";
-import { trackEventAfterResponse } from "@/lib/umami";
+import { TrackView } from "@/components/analytics/track-view";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { getAreaBoundary } from "@/lib/area-boundary";
 import { MAX_SAVES_PER_USER } from "@/lib/constants";
@@ -38,7 +38,6 @@ type DatasetPageProps = {
 
 export default async function DatasetPage({ params }: DatasetPageProps) {
   const { areaId, templateId } = await params;
-  const navT = await getTranslations("Navigation");
 
   const osmRelationId = parseInt(areaId, 10);
   if (isNaN(osmRelationId) || osmRelationId <= 0) {
@@ -63,17 +62,42 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
       return <AreaNotFoundError areaId={areaId} />;
     }
 
-    await trackEventAfterResponse(
-      ANALYTICS_EVENTS.DATASET_UPSELL_VIEW,
-      `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/upsell`,
-    );
+    // Featured datasets are public: render the full view without a session.
+    // Direct lookup only — anonymous visits must not create datasets.
+    const featuredDataset = await prisma.dataset.findFirst({
+      where: {
+        areaId: osmRelationId,
+        templateId: template.id,
+        isActive: true,
+        isFeatured: true,
+      },
+      select: { id: true },
+    });
+
+    if (featuredDataset) {
+      return (
+        <Suspense fallback={<DatasetLoadingSkeleton />}>
+          <AreaTemplateDatasetView
+            areaId={osmRelationId}
+            templateId={templateId}
+            session={null}
+          />
+        </Suspense>
+      );
+    }
 
     return (
-      <DatasetUpsellPage
-        datasetName={template.name}
-        areaName={areaInfo.name}
-        areaId={areaId}
-      />
+      <>
+        <TrackView
+          event={ANALYTICS_EVENTS.DATASET_UPSELL_VIEW}
+          url={`/area/${areaId}/dataset/${encodeURIComponent(templateId)}/upsell`}
+        />
+        <DatasetUpsellPage
+          datasetName={template.name}
+          areaName={areaInfo.name}
+          areaId={areaId}
+        />
+      </>
     );
   }
 
@@ -82,7 +106,6 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
       <AreaTemplateDatasetView
         areaId={osmRelationId}
         templateId={templateId}
-        navT={navT}
         session={session}
       />
     </Suspense>
@@ -92,19 +115,19 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
 async function AreaTemplateDatasetView({
   areaId,
   templateId,
-  navT,
   session,
 }: {
   areaId: number;
   templateId: string;
-  navT: TranslationFunction;
   session: Awaited<ReturnType<typeof auth>> | null;
 }) {
   const locale = await getLocale();
 
   try {
     const [result, areaInfo] = await Promise.all([
-      getOrCreateDataset(areaId, templateId, locale),
+      getOrCreateDataset(areaId, templateId, locale, {
+        allowCreate: !!session?.user,
+      }),
       getAreaDetailsById(areaId),
     ]);
 
@@ -129,33 +152,25 @@ async function AreaTemplateDatasetView({
 
     const dataset = transformDataset(result.dataset, session?.user || null, locale, { isSaved, skipTemplateResolution: true });
 
-    await trackEventAfterResponse(
-      ANALYTICS_EVENTS.DATASET_DETAIL_VIEW,
-      `/area/${areaId}/dataset/${encodeURIComponent(templateId)}/view`,
+    const trackDetailView = (
+      <TrackView
+        event={ANALYTICS_EVENTS.DATASET_DETAIL_VIEW}
+        url={`/area/${areaId}/dataset/${encodeURIComponent(templateId)}/view`}
+      />
     );
 
     const areaName = areaInfo?.name || dataset.area.name;
-    const breadcrumbItems = [
-      { label: navT("home"), href: "/" },
-      { label: areaInfo?.country || "Area" },
-      ...(areaInfo?.state ? [{ label: areaInfo.state }] : []),
-      { label: areaName, href: `/area/${areaId}` },
-      { label: dataset.template.name },
-    ];
 
     // Empty state: dataset has no features in this area.
     if (result.dataset.dataCount === 0) {
       const datasetT = await getTranslations("DatasetPage");
       return (
         <div className="bg-gray-50">
+          {trackDetailView}
           <div
             className="max-w-7xl mx-auto px-4 py-8 flex flex-col"
             style={{ minHeight: "calc(100vh - var(--nav-height))" }}
           >
-            <div className="mb-8 flex-shrink-0">
-              <BreadcrumbNav items={breadcrumbItems} />
-            </div>
-
             <EmptyState
               type="no-data"
               title={datasetT("emptyTitle", {
@@ -181,20 +196,32 @@ async function AreaTemplateDatasetView({
     const boundary = await getAreaBoundary(areaId);
 
     return (
-      <div className="bg-gray-50">
-        <div
-          className="max-w-7xl mx-auto px-4 py-8 flex flex-col"
-          style={{ minHeight: "calc(100vh - var(--nav-height))" }}
-        >
-          <div className="mb-8 flex-shrink-0">
-            <BreadcrumbNav items={breadcrumbItems} />
-          </div>
-
-          <DatasetInteractiveSection dataset={dataset} boundary={boundary} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
-        </div>
+      <div className="bg-gray-50 lg:h-[calc(100dvh_-_var(--nav-height))] lg:flex lg:overflow-hidden">
+        {trackDetailView}
+        <DatasetInteractiveSection dataset={dataset} boundary={boundary} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
       </div>
     );
   } catch (error) {
+    if (error instanceof DatasetTooLargeError) {
+      const [template, areaInfo] = await Promise.all([
+        resolveTemplate(templateId),
+        getAreaDetailsById(areaId),
+      ]);
+      return (
+        <DatasetTooLargeState
+          templateName={template?.name ?? templateId}
+          areaName={areaInfo?.name ?? String(areaId)}
+          areaId={areaId}
+          overpassQuery={
+            template?.overpassQuery.replace(
+              /\{OSM_RELATION_ID\}/g,
+              String(areaId)
+            ) ?? null
+          }
+        />
+      );
+    }
+
     if (error instanceof Error) {
       if (error.message.startsWith("Template not found:")) {
         return <TemplateNotFoundError templateId={templateId} />;
@@ -202,6 +229,11 @@ async function AreaTemplateDatasetView({
 
       if (error.message.startsWith("Area not found:")) {
         return <AreaNotFoundError areaId={areaId.toString()} />;
+      }
+
+      // Anonymous view raced a dataset deactivation (allowCreate: false)
+      if (error.message.startsWith("Dataset not found:")) {
+        notFound();
       }
 
       if (error.message.includes("Template is not active:")) {

@@ -77,6 +77,8 @@ export const DatasetSchema = z.object({
     name: z.string(),
     countryCode: z.string().nullable(),
     bounds: z.string().nullable(),
+    centerLat: z.number().nullish(),
+    centerLon: z.number().nullish(),
     geojson: GeoJSONFeatureCollectionSchema.nullable(),
   }),
   savedBy: z
@@ -94,6 +96,9 @@ export const DatasetSchema = z.object({
   isFeatured: z.boolean().optional(),
   canFeature: z.boolean().optional(),
   canRefresh: z.boolean().optional(),
+  // Optional: producers other than transformDataset omit it, and omission
+  // must mean "allowed" — check with === false, never truthiness
+  canSave: z.boolean().optional(),
 });
 
 export type Dataset = z.infer<typeof DatasetSchema>;

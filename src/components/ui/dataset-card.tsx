@@ -1,18 +1,19 @@
 "use client";
 
 import { Link } from "react-aria-components";
-import { MapPin, Users, Pencil, Bookmark } from "lucide-react";
-import { getCategoryIcon } from "@/lib/category-icons";
-
-export type StatType = "features" | "contributors" | "lastEdited" | "savedBy";
+import { getTemplateIcon } from "@/lib/category-icons";
+import { DatasetStatsRow, type DatasetStat } from "@/components/ui/dataset-stats-row";
 
 export interface DatasetCardProps {
   name: string;
   city: string;
   country: string;
+  /** Category slug (icon fallback when the template has no icon) */
   category: string;
+  /** Template slug for the template-specific icon */
+  templateId?: string;
   href: string;
-  stats: Array<{ label: string; value: string | number; type: StatType }>;
+  stats: DatasetStat[];
 }
 
 /**
@@ -47,38 +48,17 @@ function getCountryFlag(country: string): string {
   return flagMap[country.toLowerCase()] ?? "🌐";
 }
 
-/**
- * Format number in compact notation (1.2k, 2M, etc.)
- */
-export function formatCompactNumber(value: number | string): string {
-  const num = typeof value === 'string' ? parseInt(value.replace(/,/g, ''), 10) : value;
-  if (num < 1000) return num.toString();
-  if (num < 1000000) return `${(num / 1000).toFixed(1).replace(/\.0$/, '')}k`;
-  return `${(num / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
-}
-
-function formatStatValue(type: StatType, value: string | number): string {
-  if (type === "lastEdited") return String(value);
-  return formatCompactNumber(value);
-}
-
-function getStatIcon(type: StatType) {
-  if (type === "contributors") return Users;
-  if (type === "lastEdited") return Pencil;
-  if (type === "savedBy") return Bookmark;
-  return MapPin;
-}
-
 export function DatasetCard({
   name,
   city,
   country,
   category,
+  templateId,
   href,
   stats,
 }: DatasetCardProps) {
   const flag = getCountryFlag(country);
-  const categoryIcon = getCategoryIcon(category);
+  const categoryIcon = getTemplateIcon(templateId ?? "", category);
 
   return (
     <Link
@@ -98,18 +78,7 @@ export function DatasetCard({
           <p className="text-sm text-neutral-500 dark:text-neutral-400">{flag} <span className="ml-1">{city}</span></p>
         </div>
 
-        {/* Stats */}
-        <div className="flex items-center gap-3 text-[10px] mt-2">
-          {stats.map((stat) => {
-            const StatIcon = getStatIcon(stat.type);
-            return (
-              <div key={stat.type} aria-label={stat.label} className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400">
-                <StatIcon className="w-2.5 h-2.5" />
-                <span className="font-medium">{formatStatValue(stat.type, stat.value)}</span>
-              </div>
-            );
-          })}
-        </div>
+        <DatasetStatsRow stats={stats} className="mt-2" />
       </div>
     </Link>
   );
