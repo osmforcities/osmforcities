@@ -26,14 +26,16 @@ const truncateGeometry = (geometry: Geometry): Geometry => {
 // Slim payload for the home hero map: truncated geometry plus the timestamp
 // used for age bucketing (see osm-data-processor.ts). Buckets stay client-side
 // because the response is cached and age is relative to now.
-const toSlimGeojson = (geojson: FeatureCollection): FeatureCollection => ({
+const toSlimGeojson = (
+  geojson: FeatureCollection
+): FeatureCollection<Geometry | null> => ({
   type: "FeatureCollection",
   features: geojson.features.map((feature) => {
     const timestamp =
       feature.properties?.["@timestamp"] ?? feature.properties?.timestamp;
     return {
       type: "Feature" as const,
-      geometry: truncateGeometry(feature.geometry),
+      geometry: feature.geometry ? truncateGeometry(feature.geometry) : null,
       properties: timestamp != null ? { "@timestamp": timestamp } : {},
     };
   }),
