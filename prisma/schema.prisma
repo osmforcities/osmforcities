@@ -98,6 +98,7 @@ model TemplateTranslation {
 model Area {
   id          Int       @id
   name        String
+  names       Json?
   countryCode String?
   bounds      String?
   centerLat   Float?

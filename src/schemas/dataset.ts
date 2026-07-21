@@ -75,6 +75,7 @@ export const DatasetSchema = z.object({
   area: z.object({
     id: z.number(),
     name: z.string(),
+    names: z.record(z.string(), z.string()).nullish(),
     countryCode: z.string().nullable(),
     bounds: z.string().nullable(),
     centerLat: z.number().nullish(),
