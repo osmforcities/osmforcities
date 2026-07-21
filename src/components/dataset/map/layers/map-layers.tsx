@@ -1,16 +1,22 @@
 import { useMemo } from "react";
 import type { Feature } from "geojson";
+import type { FilterSpecification } from "maplibre-gl";
 import { DetailedFeaturesLayerGroup } from ".";
-import type { CategoricalTheme } from "@/lib/map-themes";
+import type { CuratedTheme } from "@/lib/curated-themes";
 
 type MapLayersProps = {
   geoJSONData: {
     features: Feature[];
   };
-  categoricalTheme: CategoricalTheme | null;
+  curatedTheme: CuratedTheme | null;
+  visibilityFilter?: FilterSpecification;
 };
 
-export function MapLayers({ geoJSONData, categoricalTheme }: MapLayersProps) {
+export function MapLayers({
+  geoJSONData,
+  curatedTheme,
+  visibilityFilter,
+}: MapLayersProps) {
   // Stable array identities so downstream geometry work (proxy centroids)
   // only recomputes when the data actually changes
   const { polygonFeatures, lineFeatures, pointFeatures } = useMemo(
@@ -34,7 +40,8 @@ export function MapLayers({ geoJSONData, categoricalTheme }: MapLayersProps) {
       polygonFeatures={polygonFeatures}
       lineFeatures={lineFeatures}
       pointFeatures={pointFeatures}
-      categoricalTheme={categoricalTheme}
+      curatedTheme={curatedTheme}
+      visibilityFilter={visibilityFilter}
     />
   );
 }
