@@ -47,11 +47,3 @@ export type TooltipInfo = {
   feature: Feature;
 };
 
-export type DateFilter = "all" | "7days" | "30days" | "90days";
-
-export const DATE_FILTER_OPTIONS = [
-  { value: "all" as const, labelKey: "showAll" },
-  { value: "7days" as const, labelKey: "last7Days" },
-  { value: "30days" as const, labelKey: "last30Days" },
-  { value: "90days" as const, labelKey: "last90Days" },
-] as const;

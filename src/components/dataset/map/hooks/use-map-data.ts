@@ -3,15 +3,13 @@ import { FeatureCollection } from "geojson";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 import { processOSMFeaturesForVisualization } from "../../../../lib/osm-data-processor";
 import { calculateBbox, computeInitialViewState } from "../../../../lib/utils";
-import type { DateFilter } from "@/types/geojson";
 import type { Dataset } from "@/schemas/dataset";
 
 type UseMapDataProps = {
   dataset: Dataset;
-  dateFilter: DateFilter;
 };
 
-export function useMapData({ dataset, dateFilter }: UseMapDataProps) {
+export function useMapData({ dataset }: UseMapDataProps) {
   const processedData = useMemo(() => {
     if (!dataset.geojson) return null;
 
@@ -20,12 +18,12 @@ export function useMapData({ dataset, dateFilter }: UseMapDataProps) {
         dataset.geojson
       ) as FeatureCollection;
 
-      return processOSMFeaturesForVisualization(rawGeoJSONData, dateFilter);
+      return processOSMFeaturesForVisualization(rawGeoJSONData);
     } catch (error) {
       console.error("Error processing GeoJSON data:", error);
       return null;
     }
-  }, [dataset.geojson, dateFilter]);
+  }, [dataset.geojson]);
 
   const dataBounds = useMemo(() => {
     if (!processedData?.features?.length) return null;

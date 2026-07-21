@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
 import type { MapLayerMouseEvent } from "react-map-gl/maplibre";
 import type { Feature } from "geojson";
-import type { DateFilter } from "../../../../types/geojson";
 
 export function useFeatureSelection(
   onFeatureSelect?: (feature: Feature | null) => void
@@ -38,24 +37,5 @@ export function useFeatureSelection(
     handleMouseLeave,
     handleDeselect,
     cursor,
-  };
-}
-
-export function useDateFilter() {
-  const [dateFilter, setDateFilter] = useState<DateFilter>("all");
-
-  const updateFilterIfNeeded = useCallback(
-    (availableTimeframes: DateFilter[]) => {
-      if (!availableTimeframes.includes(dateFilter)) {
-        setDateFilter("all");
-      }
-    },
-    [dateFilter]
-  );
-
-  return {
-    dateFilter,
-    setDateFilter,
-    updateFilterIfNeeded,
   };
 }

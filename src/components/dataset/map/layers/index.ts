@@ -6,10 +6,3 @@ export { DetailedFeaturesLayerGroup } from "./detailed-features-layer-group";
 
 // Utility components
 export { MapLayer } from "./map-layer";
-
-// Expression utilities for styling
-export {
-  createAgeColorExpression,
-  buildCircleColorExpression,
-  buildCircleRadiusExpression,
-} from "./expressions";
