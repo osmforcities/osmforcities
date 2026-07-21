@@ -1,5 +1,47 @@
 # osmforcities
 
+## 1.14.0
+
+### Added
+
+- Full-bleed, map-first layout for dataset pages [#349]
+- Featured dataset hero map with info card on the home page [#356]
+- Public pages for featured datasets [#373]
+- Interactive map legend with curated color themes [#374]
+- Zoom-responsive map rendering with a viridis-based data-age palette [#372]
+- Dataset size cap at 25 MB with cached size-check verdicts [#363]
+
+### Changed
+
+- Center dataset and featured hero maps on the OSM admin_centre for large areas [#369], [#371]
+- Slim the featured hero-map GeoJSON payload — Sao Paulo 10 MB -> 2.5 MB, Amsterdam 5.1 MB -> 2.3 MB [#377]
+- Per-template map icons with category fallback [#365]
+- Add filter-dimension computation helper (groundwork for the filter panel, epic #184) [#355]
+- Audit and slim down the Playwright test suite [#351]
+
+### Fixed
+
+- Consistent zoom-to-area for the featured hero card [#376]
+- Count only real dataset views by firing analytics events client-side, excluding scrapers [#353]
+- Broken dataset links in report emails [#352]
+- Lazy TTL refresh on area info to avoid stale/blocking lookups [#371]
+
+[#349]: https://github.com/osmforcities/osmforcities/pull/349
+[#351]: https://github.com/osmforcities/osmforcities/pull/351
+[#352]: https://github.com/osmforcities/osmforcities/pull/352
+[#353]: https://github.com/osmforcities/osmforcities/pull/353
+[#355]: https://github.com/osmforcities/osmforcities/pull/355
+[#356]: https://github.com/osmforcities/osmforcities/pull/356
+[#363]: https://github.com/osmforcities/osmforcities/pull/363
+[#365]: https://github.com/osmforcities/osmforcities/pull/365
+[#369]: https://github.com/osmforcities/osmforcities/pull/369
+[#371]: https://github.com/osmforcities/osmforcities/pull/371
+[#372]: https://github.com/osmforcities/osmforcities/pull/372
+[#373]: https://github.com/osmforcities/osmforcities/pull/373
+[#374]: https://github.com/osmforcities/osmforcities/pull/374
+[#376]: https://github.com/osmforcities/osmforcities/pull/376
+[#377]: https://github.com/osmforcities/osmforcities/pull/377
+
 ## 1.13.0
 
 ### Added
@@ -74,6 +116,7 @@
 - Map themes: code quality improvements and translations [#298]
 
 ### Fixed
+
 - Explore page: removed locale prefix from navigation links [#311]
 - Explore page query performance with geojson exclusion and indexes [#309]
 - Migration: added IF EXISTS guard to DROP INDEX [#309]
@@ -318,7 +361,7 @@ users can browse highlighted datasets and navigate the catalog without signing i
 
   - Fix user reports to include watched datasets instead of owned
   - Update deprecated /watched link to dashboard in user reports
-  - Change cookie prefix from **Host- to **Secure- for better compatibility
+  - Change cookie prefix from **Host- to**Secure- for better compatibility
 
 ## 1.2.0
 
