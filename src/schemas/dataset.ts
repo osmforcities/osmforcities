@@ -65,6 +65,9 @@ export const DatasetSchema = z.object({
     }).nullable(),
     description: z.string().nullable(),
     filterableTags: z.array(z.string()).optional(),
+    // Query criteria (e.g. ["highway=bus_stop"]); their keys are excluded from
+    // the Most-used-tags list since they are ~100% by definition.
+    tags: z.array(z.string()).optional(),
   }),
   user: z
     .object({

@@ -64,6 +64,17 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
     const features = gj.features;
     const now = Date.now();
 
+    // Keys used by the template's Overpass query (e.g. "highway=bus_stop" ->
+    // "highway"). They match ~100% of features by definition, so exclude them
+    // from the Most-used-tags list where they'd only crowd out real signal.
+    const queryKeys = new Set<string>();
+    for (const kv of dataset.template.tags ?? []) {
+      for (const cond of kv.split(/[;&]/)) {
+        const key = cond.split("=")[0]?.trim();
+        if (key) queryKeys.add(key);
+      }
+    }
+
     let points = 0;
     let lines = 0;
     let areas = 0;
@@ -97,7 +108,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       const props = (f.properties ?? {}) as Record<string, unknown>;
 
       for (const key in props) {
-        if (key.startsWith("@") || NON_TAG_KEYS.has(key)) continue;
+        if (key.startsWith("@") || NON_TAG_KEYS.has(key) || queryKeys.has(key))
+          continue;
         tagCounts.set(key, (tagCounts.get(key) ?? 0) + 1);
       }
 
@@ -118,9 +130,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
 
     const total = features.length;
 
-    const topTags = [...tagCounts.entries()]
+    const sortedTags = [...tagCounts.entries()]
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 8)
       .map(([key, count]) => ({ key, pct: (count / total) * 100 }));
 
     const editorBands = [0, 0, 0, 0];
@@ -133,7 +144,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       areas,
       lineKm,
       areaKm2,
-      topTags,
+      sortedTags,
       // Percentages of the timestamped features, so the four bands sum to 100.
       featureBandPct: featureBands.map((c) =>
         timestamped > 0 ? (c / timestamped) * 100 : 0
@@ -142,7 +153,29 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       editorBands,
       editorTotal: editorLatest.size,
     };
-  }, [dataset.geojson]);
+  }, [dataset.geojson, dataset.template.tags]);
+
+  // Group tags that share the same displayed percentage onto one line, capped
+  // at five lines, so the section stays dense but shows more than five tags.
+  const tagGroups = useMemo(() => {
+    if (!derived) return [];
+    const MAX_LINES = 5;
+    const MAX_KEYS = 4;
+    const groups: { label: string; keys: string[]; pct: number; extra: number }[] =
+      [];
+    for (const { key, pct } of derived.sortedTags) {
+      const label = formatPct(pct);
+      let g = groups[groups.length - 1];
+      if (!g || g.label !== label) {
+        if (groups.length >= MAX_LINES) break;
+        g = { label, keys: [], pct, extra: 0 };
+        groups.push(g);
+      }
+      if (g.keys.length < MAX_KEYS) g.keys.push(key);
+      else g.extra++;
+    }
+    return groups;
+  }, [derived]);
 
   const recencyLabels = [
     t("band90d"),
@@ -233,9 +266,9 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   const editors = dataset.stats?.editorsCount;
 
   return (
-    <div className="flex flex-1 flex-col gap-5">
-      {/* Overview */}
-      <Section eyebrow={t("overview")}>
+    <div className="flex flex-1 flex-col gap-4">
+      {/* Overview — icon + unit carry the label, so no eyebrow. */}
+      <Section>
         <Headline
           value={nf.format(dataset.dataCount)}
           unit={t("unitFeatures")}
@@ -251,7 +284,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       </Section>
 
       {/* Activity */}
-      <Section eyebrow={t("activity")}>
+      <Section>
         <Headline
           value={changesets != null ? nf.format(changesets) : "—"}
           unit={t("unitEdits")}
@@ -263,7 +296,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       </Section>
 
       {/* Community */}
-      <Section eyebrow={t("community")}>
+      <Section>
         <Headline
           value={editors != null ? nf.format(editors) : "—"}
           unit={t("unitMappers")}
@@ -274,26 +307,28 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
         )}
       </Section>
 
-      {/* Most used tags */}
-      {derived && derived.topTags.length > 0 && (
+      {/* Most used tags — keeps its eyebrow: the code-font list has no headline
+          to name it. Rows group tags sharing a percentage, capped at 5 lines. */}
+      {tagGroups.length > 0 && (
         <Section eyebrow={t("mostUsedTags")}>
-          <div className="flex flex-col gap-2">
-            {derived.topTags.map(({ key, pct }) => (
-              <div key={key} className="flex flex-col gap-1">
-                <div className="flex items-baseline justify-between gap-2">
-                  <code className="min-w-0 truncate font-mono text-[11.5px] text-gray-900">
-                    {key}
-                  </code>
-                  <span className="flex-none text-[11px] tabular-nums text-gray-500">
-                    {formatPct(pct)}
-                  </span>
-                </div>
-                <div className="h-1 overflow-hidden rounded-full bg-olive-100">
+          <div className="flex flex-col gap-1.5">
+            {tagGroups.map((g) => (
+              <div key={g.label} className="flex items-center gap-2">
+                <code className="min-w-0 flex-1 truncate font-mono text-[11.5px] text-gray-900">
+                  {g.keys.join(" · ")}
+                  {g.extra > 0 && (
+                    <span className="text-gray-400">{` +${g.extra}`}</span>
+                  )}
+                </code>
+                <div className="h-1 w-14 flex-none overflow-hidden rounded-full bg-olive-100">
                   <span
                     className="block h-full rounded-full bg-olive-500"
-                    style={{ width: `${pct}%` }}
+                    style={{ width: `${g.pct}%` }}
                   />
                 </div>
+                <span className="w-9 flex-none text-right text-[11px] tabular-nums text-gray-500">
+                  {g.label}
+                </span>
               </div>
             ))}
           </div>
@@ -307,14 +342,16 @@ function Section({
   eyebrow,
   children,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   children: ReactNode;
 }) {
   return (
-    <section className="flex flex-col gap-3">
-      <p className="text-[10px] font-bold uppercase tracking-[0.09em] text-gray-400">
-        {eyebrow}
-      </p>
+    <section className="flex flex-col gap-2.5">
+      {eyebrow && (
+        <p className="text-[10px] font-bold uppercase tracking-[0.09em] text-gray-400">
+          {eyebrow}
+        </p>
+      )}
       {children}
     </section>
   );
@@ -331,7 +368,7 @@ function Headline({
 }) {
   return (
     <div className="flex items-baseline gap-2.5">
-      <span className="text-[32px] font-extrabold leading-none tracking-tight tabular-nums">
+      <span className="text-[28px] font-extrabold leading-none tracking-tight tabular-nums">
         {value}
       </span>
       <span className="text-[13px] font-semibold text-gray-500">{unit}</span>
