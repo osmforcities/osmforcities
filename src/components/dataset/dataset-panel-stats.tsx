@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import type { ReactNode } from "react";
 import type { Feature } from "geojson";
 import { useTranslations, useLocale } from "next-intl";
-import { MapPin, Users, Circle, Spline, Pentagon } from "lucide-react";
+import { MapPin, Users, Circle, Spline, Pentagon, Tag } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import area from "@turf/area";
 import length from "@turf/length";
@@ -40,6 +40,18 @@ function ageBand(ageMs: number): 0 | 1 | 2 | 3 {
   if (days <= 730) return 2;
   return 3;
 }
+
+type GeomItem = {
+  count: number;
+  pct: number;
+  colorClass: string;
+  textClass: string;
+  icon: LucideIcon;
+  filled: boolean;
+  label: string;
+  lower: string;
+  display: string;
+};
 
 const RECENCY_COLORS = [
   "bg-olive-600",
@@ -188,49 +200,57 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   // Geometry types share the panel's olive palette (600/400/200) rather than a
   // separate categorical set — the legend icons carry the point/line/area
   // meaning, so color only needs to separate the three slices.
-  const geomItems = derived
+  const geomItems: GeomItem[] | null = derived
     ? [
         {
+          count: derived.points,
           pct: (derived.points / derived.total) * 100,
           colorClass: "bg-olive-600",
           textClass: "text-olive-600",
           icon: Circle,
+          filled: true,
           label: t("geomPoints"),
-          value: nf.format(derived.points),
-          sub: undefined as string | undefined,
+          lower: t("geomPointsLower"),
+          // Nodes carry no length/area metric, so surface their count instead.
+          display: nf.format(derived.points),
         },
         {
+          count: derived.lines,
           pct: (derived.lines / derived.total) * 100,
           colorClass: "bg-olive-400",
           textClass: "text-olive-400",
           icon: Spline,
+          filled: false,
           label: t("geomLines"),
-          value: nf.format(derived.lines),
-          sub:
-            derived.lines > 0 ? `${formatKm(derived.lineKm, nf)} km` : undefined,
+          lower: t("geomLinesLower"),
+          display: `${formatKm(derived.lineKm, nf)} km`,
         },
         {
+          count: derived.areas,
           pct: (derived.areas / derived.total) * 100,
           colorClass: "bg-olive-300",
           textClass: "text-olive-300",
           icon: Pentagon,
+          filled: false,
           label: t("geomAreas"),
-          value: nf.format(derived.areas),
-          sub:
-            derived.areas > 0
-              ? `${formatKm(derived.areaKm2, nf)} km²`
-              : undefined,
+          lower: t("geomAreasLower"),
+          display: `${formatKm(derived.areaKm2, nf)} km²`,
         },
       ]
     : null;
-  const geomSegments: BarSegment[] | null = geomItems
-    ? geomItems.map(({ pct, colorClass, label, value }) => ({
-        pct,
-        colorClass,
-        label,
-        value,
-      }))
-    : null;
+  // Legend/bar only show geometry types actually present. When exactly one is
+  // present the bar is a meaningless solid block, so we render a sentence.
+  const geomPresent = geomItems ? geomItems.filter((g) => g.count > 0) : [];
+  const soleGeom = geomPresent.length === 1 ? geomPresent[0] : null;
+  const geomSegments: BarSegment[] | null =
+    geomPresent.length > 0
+      ? geomPresent.map(({ pct, colorClass, label, display }) => ({
+          pct,
+          colorClass,
+          label,
+          value: display,
+        }))
+      : null;
 
   // --- Freshness (recency of each feature's last edit) --------------------
   // Prefer the per-feature geojson timestamps; fall back to the stored
@@ -284,122 +304,148 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
 
   return (
     <div className="flex flex-1 flex-col gap-4">
-      {/* Mappers — moved above Features so the feature-describing blocks (type,
-          freshness, tags) stay together below. First recency bar on the panel,
-          so it carries the shared recency legend. Edits ride in the headline. */}
+      {/* Mappers — first recency bar on the panel, so it carries the shared
+          recency legend. Kept above Features so the feature-describing blocks
+          (type, freshness) stay together below. */}
       <Section>
-        <Headline
+        <SectionHeader
+          title={t("titleMappers")}
           value={editors != null ? nf.format(editors) : "—"}
-          unit={t("unitMappers")}
           icon={Users}
         />
         {mappersSegments && (
-          <SubBlock eyebrow={t("mappersActiveRecently")}>
+          <SubBlock eyebrow={t("activeRecently")} unit="%">
             <SegmentedBar
               segments={mappersSegments}
               showLegend={false}
-              ariaLabel={t("mappersActiveRecently")}
+              ariaLabel={t("activeRecently")}
             />
             <RecencyLegend labels={recencyLabels} />
           </SubBlock>
         )}
       </Section>
 
-      {/* Features — the main stat, then three sub-blocks that all describe the
-          features themselves: geometry mix, edit recency, and tag coverage. */}
-      <Section>
-        <Headline
+      {/* Features — the main stat, then two sub-blocks describing the features:
+          geometry mix and edit recency. */}
+      <Section divided>
+        <SectionHeader
+          title={t("titleFeatures")}
           value={nf.format(dataset.dataCount)}
-          unit={t("unitFeatures")}
           icon={MapPin}
         />
-        {geomSegments && geomItems && (
-          <SubBlock eyebrow={t("featuresByType")}>
+        {geomSegments && soleGeom == null && (
+          <SubBlock eyebrow={t("byType")}>
             <SegmentedBar
               segments={geomSegments}
               showLegend={false}
-              ariaLabel={t("featuresByType")}
+              ariaLabel={t("byType")}
             />
-            <GeomLegend items={geomItems} />
+            <GeomLegend items={geomPresent} />
+          </SubBlock>
+        )}
+        {soleGeom && (
+          <SubBlock eyebrow={t("byType")}>
+            <p className="flex items-center gap-1.5 text-[12px] text-gray-500">
+              <soleGeom.icon
+                className={`size-3.5 flex-none ${
+                  soleGeom.filled ? "fill-current " : ""
+                }${soleGeom.textClass}`}
+                aria-hidden
+              />
+              {t("allFeaturesAre", {
+                count: nf.format(soleGeom.count),
+                type: soleGeom.lower,
+              })}
+            </p>
           </SubBlock>
         )}
         {freshnessSegments && (
-          <SubBlock eyebrow={t("featuresRecentlyEdited")}>
+          <SubBlock eyebrow={t("recentlyEdited")} unit="%">
             <SegmentedBar
               segments={freshnessSegments}
               showLegend={false}
-              ariaLabel={t("featuresRecentlyEdited")}
+              ariaLabel={t("recentlyEdited")}
             />
             <RecencyLegend labels={recencyLabels} />
           </SubBlock>
         )}
-        {tagGroups.length > 0 && (
-          <SubBlock
-            eyebrow={t("mostUsedTags")}
-            className="border-t border-gray-200 pt-3"
-          >
-            <div className="flex flex-col gap-1.5">
-              {tagGroups.map((g) => (
-                <div key={g.label} className="flex items-center gap-2">
-                  <code className="min-w-0 flex-1 truncate font-mono text-[11.5px] text-gray-900">
-                    {g.keys.join(" · ")}
-                    {g.extra > 0 && (
-                      <span className="text-gray-400">{` +${g.extra}`}</span>
-                    )}
-                  </code>
-                  <div className="h-1 w-14 flex-none overflow-hidden rounded-full bg-olive-100">
-                    <span
-                      className="block h-full rounded-full bg-olive-500"
-                      style={{ width: `${g.pct}%` }}
-                    />
-                  </div>
-                  <span className="w-9 flex-none text-right text-[11px] tabular-nums text-gray-500">
-                    {g.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </SubBlock>
-        )}
       </Section>
+
+      {/* Tags — its own section: a leading tag icon + title, then the ranked
+          key-presence list. */}
+      {tagGroups.length > 0 && (
+        <Section divided>
+          <SectionTitle title={t("titleTags")} icon={Tag} />
+          <div className="flex flex-col gap-1.5">
+            {tagGroups.map((g) => (
+              <div key={g.label} className="flex items-center gap-2">
+                <code className="min-w-0 flex-1 truncate font-mono text-[11.5px] text-gray-900">
+                  {g.keys.join(" · ")}
+                  {g.extra > 0 && (
+                    <span className="text-gray-400">{` +${g.extra}`}</span>
+                  )}
+                </code>
+                <div className="h-1 w-14 flex-none overflow-hidden rounded-full bg-olive-100">
+                  <span
+                    className="block h-full rounded-full bg-olive-500"
+                    style={{ width: `${g.pct}%` }}
+                  />
+                </div>
+                <span className="w-9 flex-none text-right text-[11px] tabular-nums text-gray-500">
+                  {g.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
     </div>
   );
 }
 
+// A top-level panel section. `divided` draws the separator rule that sets it
+// apart from the section above (Features, Tags).
 function Section({
-  eyebrow,
+  divided,
   children,
 }: {
-  eyebrow?: string;
+  divided?: boolean;
   children: ReactNode;
 }) {
   return (
-    <section className="flex flex-col gap-2.5">
-      {eyebrow && (
-        <p className="text-[10px] font-bold uppercase tracking-[0.09em] text-gray-400">
-          {eyebrow}
-        </p>
-      )}
+    <section
+      className={`flex flex-col gap-2.5${
+        divided ? " border-t border-gray-200 pt-4" : ""
+      }`}
+    >
       {children}
     </section>
   );
 }
 
-// An eyebrow-labeled block nested inside a section (e.g. "Features by type").
-// Lighter than a full Section — used for the sub-bars under Features.
+// An eyebrow-labeled block nested inside a section (e.g. "By type"). `unit`
+// renders a muted marker on the right of the eyebrow (e.g. "%") to signal what
+// the bar's proportions represent when the bar itself shows no numbers.
 function SubBlock({
   eyebrow,
+  unit,
   children,
   className,
 }: {
   eyebrow: string;
+  unit?: string;
   children: ReactNode;
   className?: string;
 }) {
   return (
     <div className={`flex flex-col gap-1.5${className ? ` ${className}` : ""}`}>
-      <p className="text-[10px] font-bold uppercase tracking-[0.09em] text-gray-400">
-        {eyebrow}
+      <p className="flex items-baseline justify-between text-[10px] font-bold uppercase tracking-[0.09em] text-gray-400">
+        <span>{eyebrow}</span>
+        {unit && (
+          <span className="font-semibold normal-case tracking-normal text-gray-300">
+            {unit}
+          </span>
+        )}
       </p>
       {children}
     </div>
@@ -424,48 +470,53 @@ function RecencyLegend({ labels }: { labels: string[] }) {
   );
 }
 
-// Compact geometry legend: one colored glyph per type (point/line/area) instead
-// of words, matching each bar slice's color. Counts are dropped (the bar already
-// shows the proportion); only the total length/area — which lives nowhere else —
-// rides along as a muted sub.
-function GeomLegend({
-  items,
-}: {
-  items: {
-    icon: LucideIcon;
-    textClass: string;
-    label: string;
-    sub?: string;
-  }[];
-}) {
+// Compact geometry legend: one colored glyph per present type, matching its bar
+// slice's color. Nodes carry no length/area, so they show their formatted count;
+// lines/areas show total km / km² (which lives nowhere else on the panel).
+function GeomLegend({ items }: { items: GeomItem[] }) {
   return (
     <div className="mt-0.5 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gray-400">
-      {items.map(({ icon: Icon, textClass, label, sub }) => (
+      {items.map(({ icon: Icon, textClass, filled, label, display }) => (
         <span key={label} className="inline-flex items-center gap-1.5">
-          <Icon className={`size-3.5 flex-none ${textClass}`} aria-label={label} />
-          {sub != null && <span className="tabular-nums">{sub}</span>}
+          <Icon
+            className={`size-3.5 flex-none ${filled ? "fill-current " : ""}${textClass}`}
+            aria-label={label}
+          />
+          <span className="tabular-nums">{display}</span>
         </span>
       ))}
     </div>
   );
 }
 
-function Headline({
+// Section header for a stat section: title (left) + headline number, icon right.
+function SectionHeader({
+  title,
   value,
-  unit,
   icon: Icon,
 }: {
+  title: string;
   value: string;
-  unit: string;
   icon: LucideIcon;
 }) {
   return (
     <div className="flex items-baseline gap-2.5">
-      <span className="text-[28px] font-extrabold leading-none tracking-tight tabular-nums">
+      <span className="text-[13px] font-semibold text-gray-500">{title}</span>
+      <span className="ml-auto text-[28px] font-extrabold leading-none tracking-tight tabular-nums">
         {value}
       </span>
-      <span className="text-[13px] font-semibold text-gray-500">{unit}</span>
-      <Icon className="ml-auto size-5 self-center text-olive-600" aria-hidden />
+      <Icon className="size-5 self-center text-olive-600" aria-hidden />
+    </div>
+  );
+}
+
+// Section header for a section with no headline number (Tags): leading icon +
+// title, mirroring the stat header's type/weight for a consistent section rhythm.
+function SectionTitle({ title, icon: Icon }: { title: string; icon: LucideIcon }) {
+  return (
+    <div className="flex items-center gap-2">
+      <Icon className="size-5 flex-none text-olive-600" aria-hidden />
+      <span className="text-[13px] font-semibold text-gray-500">{title}</span>
     </div>
   );
 }
