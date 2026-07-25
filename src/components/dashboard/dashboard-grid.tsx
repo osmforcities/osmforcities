@@ -1,9 +1,10 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { GridList, GridListItem } from "react-aria-components";
 import { Card, CardHeader, CardFooter } from "@/components/ui/card";
 import { getTemplateIcon } from "@/lib/category-icons";
+import { resolveDatasetAreaName } from "@/lib/area-name";
 import { QuotaIndicator } from "@/components/dashboard/quota-indicator";
 
 type Dataset = {
@@ -18,6 +19,8 @@ type Dataset = {
   };
   area: {
     id: number;
+    name: string;
+    names?: unknown;
     countryCode: string | null;
   };
   _count?: {
@@ -38,6 +41,7 @@ type DashboardGridProps = {
  */
 export function DashboardGrid({ datasets, saveLimit }: DashboardGridProps) {
   const t = useTranslations("TabLayout");
+  const locale = useLocale();
 
   if (datasets.length === 0) {
     return (
@@ -98,11 +102,13 @@ export function DashboardGrid({ datasets, saveLimit }: DashboardGridProps) {
         data-testid="saved-datasets-grid"
         aria-label={t("savedDatasetsGridLabel")}
       >
-        {(dataset) => (
+        {(dataset) => {
+          const areaName = resolveDatasetAreaName(dataset, locale);
+          return (
           <GridListItem key={dataset.id} className="group h-full">
             <Card
               href={`/area/${dataset.area.id}/dataset/${dataset.template.id}`}
-              description={`${dataset.template.category.slug} dataset for ${dataset.cityName}`}
+              description={`${dataset.template.category.slug} dataset for ${areaName}`}
             >
               <CardHeader>
                 <div className="flex items-center gap-3">
@@ -114,7 +120,7 @@ export function DashboardGrid({ datasets, saveLimit }: DashboardGridProps) {
                       {dataset.template.name}
                     </h3>
                     <p className="text-sm text-gray-500">
-                      {dataset.cityName}
+                      {areaName}
                       {dataset.area.countryCode &&
                         ` (${dataset.area.countryCode})`}
                     </p>
@@ -145,7 +151,8 @@ export function DashboardGrid({ datasets, saveLimit }: DashboardGridProps) {
               </CardFooter>
             </Card>
           </GridListItem>
-        )}
+          );
+        }}
       </GridList>
     </div>
   );

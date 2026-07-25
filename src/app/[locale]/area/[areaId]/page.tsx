@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getAreaDetailsById } from "@/lib/nominatim";
+import { resolveAreaName } from "@/lib/area-name";
 import { getAreaDataTypes } from "@/lib/area-templates";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { DatasetGrid } from "@/components/ui/template-grid";
@@ -27,7 +28,7 @@ export default async function AreaPage({ params, searchParams }: AreaPageProps) 
   }
 
   const [areaInfo, dataTypes, session] = await Promise.all([
-    getAreaDetailsById(osmRelationId),
+    getAreaDetailsById(osmRelationId, locale),
     getAreaDataTypes(osmRelationId, locale),
     auth(),
   ]);
@@ -35,6 +36,8 @@ export default async function AreaPage({ params, searchParams }: AreaPageProps) 
   if (!areaInfo) {
     notFound();
   }
+
+  const areaName = resolveAreaName(areaInfo, locale);
 
   const breadcrumbItems = [
     { label: navT("home"), href: "/" },
@@ -58,7 +61,7 @@ export default async function AreaPage({ params, searchParams }: AreaPageProps) 
           <BreadcrumbNav items={breadcrumbItems} />
         </div>
         <h1 className="text-4xl lg:text-5xl font-bold tracking-tight text-gray-900">
-          {areaInfo.name}
+          {areaName}
         </h1>
       </div>
 

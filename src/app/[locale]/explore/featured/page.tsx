@@ -3,6 +3,7 @@ import { DatasetCard } from "@/components/ui/dataset-card";
 import { ExplorePageLayout, ExploreSectionHeader } from "@/components/explore/explore-components";
 import { processDatasetStats } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
+import { resolveDatasetAreaName } from "@/lib/area-name";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
 import { getDatasetPath } from "@/lib/urls";
@@ -34,6 +35,8 @@ const DATASET_SELECT = {
   area: {
     select: {
       id: true,
+      name: true,
+      names: true,
       countryCode: true,
     },
   },
@@ -99,7 +102,7 @@ export default async function FeaturedPage({
               <DatasetCard
                 key={dataset.id}
                 name={resolvedTemplate.name}
-                city={dataset.cityName}
+                city={resolveDatasetAreaName(dataset, locale)}
                 country={dataset.area.countryCode ?? ""}
                 category={resolvedTemplate.category?.slug ?? "other"}
                 templateId={dataset.templateId}

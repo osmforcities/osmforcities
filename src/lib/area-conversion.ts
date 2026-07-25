@@ -1,6 +1,7 @@
 import type { Area } from "@/types/area";
 import type { NominatimResult } from "@/schemas/nominatim";
 import type { OSMRelation } from "@/types/osm";
+import { extractOsmNames } from "@/lib/area-name";
 
 export class InvalidAreaError extends Error {
   constructor(message: string) {
@@ -88,6 +89,7 @@ export function fromNominatim(result: NominatimResult): Area {
     ...parseCenter(result.lat, result.lon),
     id: result.osm_id,
     name: result.name?.trim() || result.display_name?.split(",")[0].trim() || "",
+    names: extractOsmNames(result.namedetails ?? undefined),
     displayName: result.display_name?.trim() || "",
     osmType: result.osm_type,
     class: result.class,
