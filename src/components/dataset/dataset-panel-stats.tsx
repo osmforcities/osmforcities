@@ -375,7 +375,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           key-presence list. */}
       {tagGroups.length > 0 && (
         <Section divided>
-          <SectionTitle title={t("titleTags")} icon={Tag} />
+          <SectionHeader title={t("titleTags")} icon={Tag} />
           <div className="flex flex-col gap-1.5">
             {tagGroups.map((g) => (
               <div key={g.label} className="flex items-center gap-2">
@@ -489,34 +489,34 @@ function GeomLegend({ items }: { items: GeomItem[] }) {
   );
 }
 
-// Section header for a stat section: title (left) + headline number, icon right.
+// Section header: title (left) is the dominant label that anchors the section;
+// the headline number is secondary (smaller); the icon always trails on the
+// right. `value` is optional — number-less sections (Tags) keep the same rhythm.
 function SectionHeader({
   title,
   value,
   icon: Icon,
 }: {
   title: string;
-  value: string;
+  value?: string;
   icon: LucideIcon;
 }) {
   return (
     <div className="flex items-baseline gap-2.5">
-      <span className="text-[13px] font-semibold text-gray-500">{title}</span>
-      <span className="ml-auto text-[28px] font-extrabold leading-none tracking-tight tabular-nums">
-        {value}
+      <span className="text-lg font-semibold leading-tight text-gray-900">
+        {title}
       </span>
-      <Icon className="size-5 self-center text-olive-600" aria-hidden />
-    </div>
-  );
-}
-
-// Section header for a section with no headline number (Tags): leading icon +
-// title, mirroring the stat header's type/weight for a consistent section rhythm.
-function SectionTitle({ title, icon: Icon }: { title: string; icon: LucideIcon }) {
-  return (
-    <div className="flex items-center gap-2">
-      <Icon className="size-5 flex-none text-olive-600" aria-hidden />
-      <span className="text-[13px] font-semibold text-gray-500">{title}</span>
+      {value != null && (
+        <span className="ml-auto text-[15px] font-bold tabular-nums text-gray-600">
+          {value}
+        </span>
+      )}
+      <Icon
+        className={`size-[18px] self-center text-olive-600${
+          value == null ? " ml-auto" : ""
+        }`}
+        aria-hidden
+      />
     </div>
   );
 }
