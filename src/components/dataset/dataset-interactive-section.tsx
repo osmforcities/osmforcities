@@ -9,6 +9,7 @@ import { Link } from "@/i18n/navigation";
 import { DatasetMapWrapper, type DatasetFullMapHandle } from "@/components/dataset/map-wrapper";
 import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
 import { DatasetStatsTable } from "@/components/dataset/dataset-stats-table";
+import { DatasetTimestamps } from "@/components/dataset/dataset-timestamps";
 import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
 import { FeatureDetailPanel } from "@/components/dataset/feature-detail-panel";
 
@@ -54,26 +55,43 @@ export function DatasetInteractiveSection({
             }}
           />
         ) : (
-          <>
-            {/* Return to the area's dataset list */}
-            <Link
-              href={`/area/${dataset.area.id}`}
-              className="inline-flex items-center gap-1 mb-4 text-xs text-gray-500 hover:text-gray-800 hover:underline transition-colors"
-            >
-              <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />
-              {t("allDatasetsInArea")}
-            </Link>
-            <div className="flex-1 overflow-y-auto space-y-6" data-testid="dataset-sidebar-default">
+          <div
+            className="flex flex-col flex-1 min-h-0"
+            data-testid="dataset-sidebar-default"
+          >
+            {/* Section 1 — title area: back link + dataset info. Fixed at top,
+                never scrolls. */}
+            <div className="shrink-0">
+              <Link
+                href={`/area/${dataset.area.id}`}
+                className="inline-flex items-center gap-1 mb-4 text-xs text-gray-500 hover:text-gray-800 hover:underline transition-colors"
+              >
+                <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />
+                {t("allDatasetsInArea")}
+              </Link>
               <DatasetInfoPanel dataset={dataset} />
-              <DatasetStatsTable dataset={dataset} lastChecked={lastChecked} />
             </div>
+
+            {/* Section 2 — stats cards: the only scrollable region. Framed by top
+                and bottom rules so the scroll boundary is clear. Cards flex their
+                height and center when there's room (see DatasetStatsTable). */}
+            <div className="flex-1 min-h-0 overflow-y-auto flex flex-col border-y border-gray-200 my-4 py-4">
+              <DatasetStatsTable dataset={dataset} />
+            </div>
+
+            {/* Section 3 — timestamps: fixed height at the bottom. */}
+            <div className="shrink-0">
+              <DatasetTimestamps dataset={dataset} lastChecked={lastChecked} />
+            </div>
+
+            {/* Section 4 — action buttons: fixed height at the bottom. */}
             <DatasetActionsSection
               dataset={dataset}
               savedCount={savedCount}
               saveLimit={saveLimit}
               onRefreshed={setLastChecked}
             />
-          </>
+          </div>
         )}
       </aside>
 

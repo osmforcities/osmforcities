@@ -111,15 +111,14 @@ export function DatasetActionsSection({
   };
 
   return (
-    <div className="pt-4 pb-2">
-      <div className="border-t border-gray-300 mb-4"></div>
-      <div className="flex flex-col gap-3">
+    <div className="pt-3 pb-2">
+      <div className="flex flex-col gap-2">
         {dataset.canFeature && (
           <>
             <Button
               onClick={handleToggleFeatured}
               disabled={isFeaturingLoading}
-              className="flex items-center gap-2 w-full h-10"
+              className="w-full h-9 text-sm"
               variant={isFeatured ? "default" : "outline"}
               title={isFeatured ? t("unfeatureTitle") : t("featureTitle")}
             >
@@ -139,7 +138,7 @@ export function DatasetActionsSection({
           <Button
             onClick={handleRefresh}
             disabled={!dataset.isActive || isRefreshing}
-            className="flex items-center gap-2 w-full h-10"
+            className="w-full h-9 text-sm"
             variant="outline"
             title={
               !dataset.isActive
@@ -158,7 +157,7 @@ export function DatasetActionsSection({
         <Button
           onClick={() => downloadDataset(dataset)}
           disabled={!dataset.geojson}
-          className="flex items-center gap-2 w-full h-10"
+          className="w-full h-9 text-sm"
           variant="outline"
           title={
             !dataset.geojson
@@ -175,7 +174,7 @@ export function DatasetActionsSection({
         <Button
           onClick={handleToggleSave}
           disabled={isLoading || atLimit || dataset.canSave === false}
-          className="flex items-center gap-2 w-full h-10"
+          className="w-full h-9 text-sm"
           variant={isSaved ? "default" : "outline"}
           title={saveLabel.title}
           data-testid={isSaved ? "dataset-unsave-button" : "dataset-save-button"}

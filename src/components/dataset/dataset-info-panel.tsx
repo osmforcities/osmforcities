@@ -36,21 +36,22 @@ export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
           )}
         </h2>
 
-        {/* Area context (secondary to the title), links to the area's datasets */}
-        <Link
-          href={`/area/${dataset.area.id}`}
-          className="inline-flex items-start gap-1 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
-        >
-          <MapPin className="size-4 flex-shrink-0 mt-px" aria-hidden />
-          <span>{dataset.area.name}</span>
-        </Link>
+        {/* Place + category share one metadata line. Place links to the area's
+            datasets; the category is a facet chip (drop-in link to a category
+            filter later keeps the same chip idiom). Wraps within the sidebar. */}
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <Link
+            href={`/area/${dataset.area.id}`}
+            className="inline-flex items-start gap-1 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+          >
+            <MapPin className="size-4 flex-shrink-0 mt-px" aria-hidden />
+            <span>{dataset.area.name}</span>
+          </Link>
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-olive-50 text-olive-700 border border-olive-100">
+            {category}
+          </span>
+        </div>
       </div>
-
-      {/* Category shown as a facet pill; drop-in link to a category filter later
-          keeps the same chip idiom. */}
-      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
-        {category}
-      </span>
     </div>
   );
 }
