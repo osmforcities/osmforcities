@@ -111,7 +111,7 @@ export function DatasetActionsSection({
   };
 
   return (
-    <div className="pt-3 pb-2">
+    <div className="pt-2">
       <div className="flex flex-col gap-2">
         {dataset.canFeature && (
           <>

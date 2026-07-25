@@ -1,13 +1,24 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useMemo } from "react";
+import type { ReactNode } from "react";
 import type { Dataset } from "@/schemas/dataset";
 import { useTranslations, useLocale } from "next-intl";
-import { Layers, Users, Frame, LayoutGrid, Activity, CalendarClock } from "lucide-react";
+import {
+  Layers,
+  Users,
+  UserCheck,
+  LandPlot,
+  MapPin,
+  Clock,
+  Circle,
+  Spline,
+  Hexagon,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import area from "@turf/area";
-import bbox from "@turf/bbox";
-import convex from "@turf/convex";
+import { formatCompactNumber } from "@/lib/dataset-stats";
+import { StatTile } from "@/components/ui/stat-tile";
 
 type DatasetStatsTableProps = {
   dataset: Dataset;
@@ -20,10 +31,10 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
   const locale = useLocale();
   const nf = useMemo(() => new Intl.NumberFormat(locale), [locale]);
 
-  // Total city area — the municipality boundary polygon. Stable and SSR-safe
-  // (@turf/area on a polygon is deterministic across runtimes). Shown as its own
-  // stat for geographic scale/context.
-  const cityAreaKm2 = useMemo(() => {
+  // Total land area — the boundary polygon. Stable and SSR-safe (@turf/area on a
+  // polygon is deterministic across runtimes). Shown as its own stat for
+  // geographic scale/context.
+  const landAreaKm2 = useMemo(() => {
     const gj = dataset.area.geojson;
     if (!gj) return null;
     try {
@@ -34,97 +45,79 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
     }
   }, [dataset.area.geojson]);
 
-  // Area actually covered by the data = convex hull of the features. Used ONLY as
-  // the density denominator (not shown), so density reflects how packed the data
-  // is within its own extent rather than being diluted by empty administrative
-  // land. Computed CLIENT-SIDE ONLY: @turf/convex diverges between Node (SSR) and
-  // the browser on large geometries (SSR → null → bbox fallback while the browser
-  // builds the hull), which caused hydration mismatches. Deferring to after mount
-  // keeps SSR and the first client paint identical. Falls back to the bounding box
-  // when a hull can't be built (< 3 points / collinear features).
-  const [coveredKm2, setCoveredKm2] = useState<number | null>(null);
-
-  useEffect(() => {
-    const gj = dataset.geojson;
-
-    let poly: unknown = null;
-    if (gj) {
-      try {
-        poly = convex(gj as Parameters<typeof convex>[0]);
-      } catch {
-        poly = null;
-      }
+  // Points/lines/areas breakdown of the dataset's own geometry. Derived from the
+  // geojson feature types — deterministic, so SSR-safe. Null when there's no geojson.
+  const geomBreakdown = useMemo(() => {
+    const gj = dataset.geojson as { features?: unknown[] } | null;
+    if (!gj || !Array.isArray(gj.features)) return null;
+    let points = 0;
+    let lines = 0;
+    let areas = 0;
+    for (const f of gj.features) {
+      const type = (f as { geometry?: { type?: string } })?.geometry?.type;
+      if (type === "Point" || type === "MultiPoint") points++;
+      else if (type === "LineString" || type === "MultiLineString") lines++;
+      else if (type === "Polygon" || type === "MultiPolygon") areas++;
     }
+    return { points, lines, areas };
+  }, [dataset.geojson]);
 
-    if (!poly) {
-      const bb =
-        dataset.bbox ??
-        (gj ? (bbox(gj as Parameters<typeof bbox>[0]) as number[]) : null);
-      if (bb && bb.length >= 4) {
-        const [minX, minY, maxX, maxY] = bb;
-        poly = {
-          type: "Feature",
-          properties: {},
-          geometry: {
-            type: "Polygon",
-            coordinates: [
-              [
-                [minX, minY],
-                [maxX, minY],
-                [maxX, maxY],
-                [minX, maxY],
-                [minX, minY],
-              ],
-            ],
-          },
-        };
-      }
-    }
+  // Density over the full administrative area — features per km² of the boundary.
+  // Boundary-based (not a data-derived hull) so it's deterministic, SSR-safe, and
+  // comparable across datasets/cities regardless of geometry type.
+  const density = landAreaKm2 ? dataset.dataCount / landAreaKm2 : null;
+  const activeMappers = dataset.stats?.recentActivity?.editors;
+  const stalePct = dataset.stats?.qualityMetrics?.staleElementsPercentage;
 
-    if (!poly) {
-      setCoveredKm2(null);
-      return;
-    }
-    try {
-      const m2 = area(poly as Parameters<typeof area>[0]);
-      setCoveredKm2(m2 > 0 ? m2 / 1_000_000 : null);
-    } catch {
-      setCoveredKm2(null);
-    }
-  }, [dataset.geojson, dataset.bbox]);
-
-  const density = coveredKm2 ? dataset.dataCount / coveredKm2 : null;
-  const recentEdits = dataset.stats?.recentActivity?.elementsEdited;
-  const freshness =
-    dataset.stats?.qualityMetrics?.recentlyUpdatedElementsPercentage;
+  // Rows for the standalone composition card (one geometry type per line).
+  const geomRows = geomBreakdown
+    ? [
+        { icon: Circle, label: t("geomPoints"), count: geomBreakdown.points },
+        { icon: Spline, label: t("geomLines"), count: geomBreakdown.lines },
+        { icon: Hexagon, label: t("geomAreas"), count: geomBreakdown.areas },
+      ]
+    : null;
 
   const tiles: {
     icon: LucideIcon;
     label: string;
     tip: string;
-    value: string;
+    value: ReactNode;
+    sub?: ReactNode;
   }[] = [
+    // Order groups the grid into rows: [Features | Land area] (size),
+    // [Mappers | Mappers·90d] (people, kept adjacent), [Density | Stale] (quality).
     {
       icon: Layers,
       label: t("features"),
       tip: t("featuresTip"),
-      value: nf.format(dataset.dataCount),
+      value: formatCompactNumber(dataset.dataCount),
+    },
+    {
+      icon: LandPlot,
+      label: t("landArea"),
+      tip: t("landAreaTip"),
+      value:
+        landAreaKm2 != null
+          ? `${formatCompactNumber(Math.round(landAreaKm2))} km²`
+          : DASH,
     },
     {
       icon: Users,
       label: t("editors"),
       tip: t("editorsTip"),
-      value: nf.format(dataset.stats?.editorsCount || 0),
+      value: formatCompactNumber(dataset.stats?.editorsCount || 0),
+      sub: t("editorsWindow"),
     },
     {
-      icon: Frame,
-      label: t("cityArea"),
-      tip: t("cityAreaTip"),
-      value:
-        cityAreaKm2 != null ? `${nf.format(Math.round(cityAreaKm2))} km²` : DASH,
+      icon: UserCheck,
+      label: t("activeMappers"),
+      tip: t("activeMappersTip"),
+      value: activeMappers != null ? formatCompactNumber(activeMappers) : DASH,
+      sub: t("activeMappersWindow"),
     },
     {
-      icon: LayoutGrid,
+      icon: MapPin,
       label: t("density"),
       tip: t("densityTip"),
       value:
@@ -133,18 +126,13 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
               density >= 10 ? Math.round(density) : Math.round(density * 10) / 10
             )} /km²`
           : DASH,
+      sub: t("densityScope"),
     },
     {
-      icon: Activity,
-      label: t("recentEdits"),
-      tip: t("recentEditsTip"),
-      value: recentEdits != null ? nf.format(recentEdits) : DASH,
-    },
-    {
-      icon: CalendarClock,
-      label: t("recentlyUpdated"),
-      tip: t("recentlyUpdatedTip"),
-      value: freshness != null ? `${Math.round(freshness)}%` : DASH,
+      icon: Clock,
+      label: t("stale"),
+      tip: t("staleTip"),
+      value: stalePct != null ? `${Math.round(stalePct)}%` : DASH,
     },
   ];
 
@@ -156,27 +144,37 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
     // alignment when it overflows — so a short section scrolls from the first card
     // instead of clipping it. `min-h-0` lets the flex-1 grid shrink to its rows' min.
     <dl className="grid flex-1 min-h-0 auto-rows-[minmax(4rem,7rem)] grid-cols-2 gap-2 [align-content:safe_center]">
-      {tiles.map(({ icon: Icon, label, tip, value }) => (
-        <div
-          key={label}
-          title={tip}
-          className="flex flex-col items-center justify-center gap-1 rounded-lg border border-olive-100 bg-olive-50 px-2.5 py-2 text-center"
-        >
-          {/* icon trails the value/number; value scales fluidly with viewport
-              height (a proxy for card height in this layout) and the icon tracks
-              it via em units */}
-          <dd className="flex items-center justify-center gap-1.5 text-[clamp(1.125rem,1.7vh,1.5rem)] font-bold leading-none text-gray-900">
-            {value}
-            <Icon
-              className="size-[1.15em] flex-shrink-0 text-olive-600"
-              aria-hidden
-            />
-          </dd>
-          <dt className="text-[10px] font-semibold uppercase leading-tight tracking-wide text-gray-500">
-            {label}
-          </dt>
-        </div>
+      {tiles.map(({ icon, label, tip, value, sub }, i) => (
+        <StatTile
+          key={i}
+          icon={icon}
+          label={label}
+          value={value}
+          sub={sub}
+          tip={tip}
+        />
       ))}
+      {geomRows && (
+        <div className="col-span-2 flex flex-col justify-center gap-1.5 rounded-lg border border-olive-100 bg-olive-50 px-3 py-2.5">
+          <div className="text-[10px] font-semibold uppercase leading-tight tracking-wide text-gray-500">
+            {t("composition")}
+          </div>
+          {geomRows.map(({ icon: Icon, label, count }) => (
+            <div
+              key={label}
+              className="flex items-center justify-between text-xs text-gray-700"
+            >
+              <span className="flex items-center gap-1.5">
+                <Icon className="size-3.5 flex-shrink-0 text-olive-600" aria-hidden />
+                {label}
+              </span>
+              <span className="font-bold text-gray-900">
+                {formatCompactNumber(count)}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </dl>
   );
 }

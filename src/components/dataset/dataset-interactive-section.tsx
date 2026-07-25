@@ -65,10 +65,12 @@ export function DatasetInteractiveSection({
             <div className="shrink-0">
               <Link
                 href={`/area/${dataset.area.id}`}
+                title={t("allDatasetsInArea")}
+                aria-label={t("allDatasetsInArea")}
                 className="inline-flex items-center gap-1 mb-4 text-xs text-gray-500 hover:text-gray-800 hover:underline transition-colors"
               >
                 <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />
-                {t("allDatasetsInArea")}
+                {t("back")}
               </Link>
               <DatasetInfoPanel dataset={dataset} />
               <div className="mt-2">
