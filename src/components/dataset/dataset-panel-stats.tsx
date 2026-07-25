@@ -49,8 +49,9 @@ type GeomItem = {
   icon: LucideIcon;
   filled: boolean;
   label: string;
-  lower: string;
   display: string;
+  // Shown in the legend when count is 0 (e.g. "no lines").
+  noneLabel: string;
 };
 
 const RECENCY_COLORS = [
@@ -200,7 +201,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   // A stacked proportion bar (like the recency bars), with a compact legend
   // beneath. Geometry types use the olive ramp capped at the button color
   // (500/400/300); the legend icons carry the point/line/area meaning, so color
-  // only needs to separate the slices.
+  // only needs to separate the slices. The legend always lists all three types:
+  // present ones show count (+ km/km²); absent ones read "no lines" etc.
   const geomItems: GeomItem[] | null = derived
     ? [
         {
@@ -211,9 +213,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Circle,
           filled: true,
           label: t("geomPoints"),
-          lower: t("geomPointsLower"),
-          // Nodes carry no length/area metric, so surface their count instead.
           display: nf.format(derived.points),
+          noneLabel: t("geomNone", { type: t("geomPointsLower") }),
         },
         {
           count: derived.lines,
@@ -223,8 +224,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Spline,
           filled: false,
           label: t("geomLines"),
-          lower: t("geomLinesLower"),
-          display: `${formatKm(derived.lineKm, nf)} km`,
+          display: `${nf.format(derived.lines)} · ${formatKm(derived.lineKm, nf)} km`,
+          noneLabel: t("geomNone", { type: t("geomLinesLower") }),
         },
         {
           count: derived.areas,
@@ -234,15 +235,14 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Pentagon,
           filled: false,
           label: t("geomAreas"),
-          lower: t("geomAreasLower"),
-          display: `${formatKm(derived.areaKm2, nf)} km²`,
+          display: `${nf.format(derived.areas)} · ${formatKm(derived.areaKm2, nf)} km²`,
+          noneLabel: t("geomNone", { type: t("geomAreasLower") }),
         },
       ]
     : null;
-  // Legend/bar only show geometry types actually present. When exactly one is
-  // present the bar is a meaningless solid block, so we render a sentence.
+  // The bar shows only present types (a single type fills it 100%); the legend
+  // below carries the full three-type breakdown, including the absent ones.
   const geomPresent = geomItems ? geomItems.filter((g) => g.count > 0) : [];
-  const soleGeom = geomPresent.length === 1 ? geomPresent[0] : null;
   const geomSegments: BarSegment[] | null =
     geomPresent.length > 0
       ? geomPresent.map(({ pct, colorClass, label, display }) => ({
@@ -334,30 +334,14 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           value={nf.format(dataset.dataCount)}
           icon={MapPin}
         />
-        {geomSegments && soleGeom == null && (
+        {geomSegments && geomItems && (
           <SubBlock eyebrow={t("byType")}>
             <SegmentedBar
               segments={geomSegments}
               showLegend={false}
               ariaLabel={t("byType")}
             />
-            <GeomLegend items={geomPresent} />
-          </SubBlock>
-        )}
-        {soleGeom && (
-          <SubBlock eyebrow={t("byType")}>
-            <p className="flex items-center gap-1.5 text-[12px] text-gray-500">
-              <soleGeom.icon
-                className={`size-3.5 flex-none ${
-                  soleGeom.filled ? "fill-current " : ""
-                }${soleGeom.textClass}`}
-                aria-hidden
-              />
-              {t("allFeaturesAre", {
-                count: nf.format(soleGeom.count),
-                type: soleGeom.lower,
-              })}
-            </p>
+            <GeomLegend items={geomItems} />
           </SubBlock>
         )}
         {freshnessSegments && (
@@ -469,19 +453,24 @@ function RecencyLegend({ labels }: { labels: string[] }) {
   );
 }
 
-// Compact geometry legend: one colored glyph per present type, matching its bar
-// slice's color. Nodes carry no length/area, so they show their formatted count;
-// lines/areas show total km / km² (which lives nowhere else on the panel).
+// Compact geometry legend: one colored glyph per type, always listing all three.
+// Present types show count (+ km/km² for lines/areas); absent types read
+// "no lines" etc. and are dimmed so the present ones lead.
 function GeomLegend({ items }: { items: GeomItem[] }) {
   return (
     <div className="mt-0.5 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gray-400">
-      {items.map(({ icon: Icon, textClass, filled, label, display }) => (
-        <span key={label} className="inline-flex items-center gap-1.5">
+      {items.map(({ icon: Icon, textClass, filled, label, display, noneLabel, count }) => (
+        <span
+          key={label}
+          className={`inline-flex items-center gap-1.5${count === 0 ? " opacity-60" : ""}`}
+        >
           <Icon
-            className={`size-3.5 flex-none ${filled ? "fill-current " : ""}${textClass}`}
+            className={`size-3.5 flex-none ${filled ? "fill-current " : ""}${
+              count === 0 ? "text-gray-300" : textClass
+            }`}
             aria-label={label}
           />
-          <span className="tabular-nums">{display}</span>
+          <span className="tabular-nums">{count > 0 ? display : noneLabel}</span>
         </span>
       ))}
     </div>
