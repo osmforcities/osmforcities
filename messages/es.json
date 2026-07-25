@@ -673,5 +673,50 @@
       "title": "{area} - Conjuntos de Datos - OSM for Cities",
       "description": "Explora conjuntos de datos de OpenStreetMap para {area}"
     }
+  },
+  "TagLabel": {
+    "shelter": "Marquesina",
+    "bench": "Banco",
+    "covered": "Cubierto",
+    "lit": "Iluminado",
+    "tactile_paving": "Pavimento táctil",
+    "bicycle_parking": "Tipo",
+    "capacity": "Capacidad",
+    "access": "Acceso",
+    "fee": "Tarifa"
+  },
+  "TagValue": {
+    "__common__": {
+      "yes": "Sí",
+      "no": "No",
+      "limited": "Limitado"
+    },
+    "access": {
+      "private": "Privado",
+      "customers": "Clientes",
+      "permissive": "Permisivo",
+      "designated": "Designado",
+      "permit": "Con permiso"
+    },
+    "bicycle_parking": {
+      "stands": "Soportes",
+      "wide_stands": "Soportes anchos",
+      "low_stands": "Soportes bajos",
+      "large_stands": "Soportes grandes",
+      "wall_loops": "Anclajes de pared",
+      "safe_loops": "Anclajes seguros",
+      "ground_slots": "Ranuras en el suelo",
+      "rack": "Rack",
+      "two-tier": "Dos niveles",
+      "shed": "Cobertizo",
+      "floor": "Suelo",
+      "lockers": "Casilleros",
+      "building": "Edificio",
+      "bollard": "Bolardo",
+      "anchors": "Anclajes",
+      "handlebar_holder": "Soporte de manillar",
+      "crossbar": "Barra",
+      "informal": "Informal"
+    }
   }
 }

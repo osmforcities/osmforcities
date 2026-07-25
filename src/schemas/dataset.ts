@@ -64,6 +64,7 @@ export const DatasetSchema = z.object({
       slug: z.string(),
     }).nullable(),
     description: z.string().nullable(),
+    filterableTags: z.array(z.string()).optional(),
   }),
   user: z
     .object({

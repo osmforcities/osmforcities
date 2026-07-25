@@ -11,6 +11,7 @@ export async function resolveTemplate(identifier: TemplateIdentifier) {
       description: true,
       category: true,
       tags: true,
+      filterableTags: true,
       overpassQuery: true,
       isActive: true,
       deprecatesAt: true,

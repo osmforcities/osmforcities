@@ -12,7 +12,7 @@ import {
 import { PALETTES } from "./map-palettes";
 
 /**
- * A curated categorical theme for an allow-listed tag (#184). Unlike the old
+ * A curated categorical theme for an allow-listed tag. Unlike the old
  * auto-detected themes, curation means the tag was explicitly approved as
  * meaningful to color by — no scoring, no coverage gating.
  */
@@ -26,6 +26,18 @@ export type CuratedTheme = {
   otherCount: number;
   /** Features lacking the tag entirely */
   missingCount: number;
+  /** topValues are already in final display order; the legend must not re-sort them. */
+  presorted: boolean;
+};
+
+/** One toggleable row of the active legend view. */
+export type LegendCategory = {
+  id: string;
+  label: string;
+  color: string;
+  count: number;
+  /** De-emphasize the label (synthetic rows like "Missing"). */
+  muted?: boolean;
 };
 
 /** Legend/category ids for the synthetic buckets of a tag view. */
@@ -49,6 +61,28 @@ export function buildCuratedThemes(
   );
 }
 
+/** A value is numeric if it is an integer or decimal (e.g. capacity "12"). */
+const NUMERIC_VALUE = /^-?\d+(\.\d+)?$/;
+
+/** True when the dimension is numeric — every shown value parses as a number. */
+export function isNumericValues(
+  values: Array<{ value: string; count: number }>
+): boolean {
+  return values.length > 0 && values.every((v) => NUMERIC_VALUE.test(v.value));
+}
+
+/**
+ * Order legend rows for display: numeric fields ascending (2,4,6,...), otherwise
+ * keep the incoming count-desc order (the component re-sorts categorical rows by
+ * localized label). Returns a new array only when it sorts.
+ */
+export function sortForDisplay(
+  values: Array<{ value: string; count: number }>
+): Array<{ value: string; count: number }> {
+  if (!isNumericValues(values)) return values;
+  return [...values].sort((a, b) => Number(a.value) - Number(b.value));
+}
+
 /**
  * Variant taking precomputed dimensions, so callers that also need the age
  * dimension can run computeFilterDimensions once and derive both from it.
@@ -59,7 +93,14 @@ export function buildCuratedThemesFromDimensions(
   return dimensions
     .filter((dim) => dim.kind === "tag")
     .map((dim) => {
-      const topValues = dim.values.slice(0, TOP_VALUES_COUNT);
+      // Keep the top values (dim.values is count-desc); sortForDisplay orders
+      // numeric fields ascending and leaves categorical ones for the component.
+      const selected = dim.values.slice(0, TOP_VALUES_COUNT);
+      const topValues = sortForDisplay(selected);
+      // sortForDisplay returns a new array only for numeric fields (it sorts
+      // them); an identical reference means categorical, so the component
+      // re-sorts those by localized label instead.
+      const presorted = topValues !== selected;
       const otherCount = dim.values
         .slice(TOP_VALUES_COUNT)
         .reduce((sum, v) => sum + v.count, 0);
@@ -75,8 +116,56 @@ export function buildCuratedThemesFromDimensions(
         topValues,
         otherCount,
         missingCount: dim.missing,
+        presorted,
       };
     });
+}
+
+/**
+ * Assemble the legend rows for a curated tag theme: one localized, colored row
+ * per top value, sorted by localized label unless the theme is presorted
+ * (numeric), then the synthetic Other/Missing rows appended last. Pure — the
+ * caller supplies the localizers (labels + value formatter) so it stays testable
+ * and free of next-intl.
+ */
+export function buildLegendRows(
+  theme: CuratedTheme,
+  opts: {
+    localizeValue: (value: string) => string;
+    locale: string;
+    otherLabel: string;
+    missingLabel: string;
+  }
+): LegendCategory[] {
+  const rows: LegendCategory[] = theme.topValues.map(({ value, count }) => ({
+    id: value.toLowerCase(),
+    label: opts.localizeValue(value),
+    color: theme.colorMap.get(value.toLowerCase())!,
+    count,
+  }));
+  // Localized categorical rows read as unsorted in count order, so sort them by
+  // label. Presorted (numeric) rows are already ordered and left as-is.
+  if (!theme.presorted) {
+    rows.sort((a, b) => a.label.localeCompare(b.label, opts.locale));
+  }
+  if (theme.otherCount > 0) {
+    rows.push({
+      id: OTHER_CATEGORY,
+      label: opts.otherLabel,
+      color: PALETTES.categorical.other,
+      count: theme.otherCount,
+    });
+  }
+  if (theme.missingCount > 0) {
+    rows.push({
+      id: MISSING_CATEGORY,
+      label: opts.missingLabel,
+      color: PALETTES.categorical.missing,
+      count: theme.missingCount,
+      muted: true,
+    });
+  }
+  return rows;
 }
 
 /** Normalized tag accessor: lowercased string value of the field. */

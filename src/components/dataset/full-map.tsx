@@ -12,7 +12,7 @@ import React, {
 import Map, { Source, Layer } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import type { Dataset } from "@/schemas/dataset";
 import { MapLayers } from "./map/layers";
 import { AoiBoundaryLayer } from "./map/aoi-boundary-layer";
@@ -27,15 +27,14 @@ import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
 import { mapStyle } from "@/lib/map-tiles";
 import { AGE_COLORS } from "./map/layers/map-style";
-import { PALETTES } from "@/lib/map-palettes";
 import {
   buildCuratedThemesFromDimensions,
   buildAgeVisibilityFilter,
   buildTagVisibilityFilter,
-  OTHER_CATEGORY,
-  MISSING_CATEGORY,
+  buildLegendRows,
 } from "@/lib/curated-themes";
 import { computeFilterDimensions } from "@/lib/filter-dimensions";
+import { tagLabel, tagValue, type MessageResolver } from "@/lib/tag-i18n";
 
 export interface DatasetFullMapHandle {
   deselectFeature: () => void;
@@ -64,6 +63,11 @@ export const DatasetFullMap = forwardRef<
   DatasetFullMapProps
 >(({ dataset, boundary, onFeatureSelect }, ref) => {
   const t = useTranslations("DatasetMap");
+  // next-intl types message keys as literals; tag keys/values are dynamic (OSM
+  // data), so widen the translator to the loose MessageResolver shape.
+  const tTagLabel = useTranslations("TagLabel") as unknown as MessageResolver;
+  const tTagValue = useTranslations("TagValue") as unknown as MessageResolver;
+  const locale = useLocale();
   const mapRef = useRef<MapRef | null>(null);
 
   const {
@@ -92,12 +96,21 @@ export const DatasetFullMap = forwardRef<
 
   // One pass over the features feeds both the curated tag themes and the
   // age bucket counts for the legend rows
+  // Schema types this optional (input/output asymmetry at the API boundary), so
+  // memoize the []-fallback to a stable reference the filterDimensions dep can use.
+  const filterableTags = useMemo(
+    () => dataset.template.filterableTags ?? [],
+    [dataset.template.filterableTags]
+  );
   const filterDimensions = useMemo(
-    () => (features?.length ? computeFilterDimensions(features) : []),
-    [features]
+    () =>
+      features?.length
+        ? computeFilterDimensions(features, filterableTags)
+        : [],
+    [features, filterableTags]
   );
 
-  // Curated tag themes from the allow-list (#184) — no auto-detection
+  // Curated tag themes from the allow-list — no auto-detection
   const curatedThemes = useMemo(
     () => buildCuratedThemesFromDimensions(filterDimensions),
     [filterDimensions]
@@ -129,9 +142,12 @@ export const DatasetFullMap = forwardRef<
   const views: LegendViewOption[] = useMemo(
     () => [
       { id: AGE_VIEW_ID, label: t("lastEditedLegend") },
-      ...curatedThemes.map((theme) => ({ id: theme.field, label: theme.field })),
+      ...curatedThemes.map((theme) => ({
+        id: theme.field,
+        label: tagLabel(tTagLabel, theme.field),
+      })),
     ],
-    [curatedThemes, t]
+    [curatedThemes, t, tTagLabel]
   );
 
   const categories: LegendCategory[] = useMemo(() => {
@@ -143,33 +159,13 @@ export const DatasetFullMap = forwardRef<
         count,
       }));
     }
-    const rows: LegendCategory[] = activeTheme.topValues.map(
-      ({ value, count }) => ({
-        id: value.toLowerCase(),
-        label: value,
-        color: activeTheme.colorMap.get(value.toLowerCase())!,
-        count,
-      })
-    );
-    if (activeTheme.otherCount > 0) {
-      rows.push({
-        id: OTHER_CATEGORY,
-        label: t("legendOther"),
-        color: PALETTES.categorical.other,
-        count: activeTheme.otherCount,
-      });
-    }
-    if (activeTheme.missingCount > 0) {
-      rows.push({
-        id: MISSING_CATEGORY,
-        label: t("legendMissing"),
-        color: PALETTES.categorical.missing,
-        count: activeTheme.missingCount,
-        muted: true,
-      });
-    }
-    return rows;
-  }, [activeTheme, ageDimension, t]);
+    return buildLegendRows(activeTheme, {
+      localizeValue: (value) => tagValue(tTagValue, activeTheme.field, value),
+      locale,
+      otherLabel: t("legendOther"),
+      missingLabel: t("legendMissing"),
+    });
+  }, [activeTheme, ageDimension, t, tTagValue, locale]);
 
   const visibilityFilter = useMemo(
     () =>
@@ -208,7 +204,7 @@ export const DatasetFullMap = forwardRef<
       {/* Map */}
       <div className="flex-1 relative">
         {hasFilteredData && (
-          /* Legend: the map's single control (#184) */
+          /* Legend: the map's single control */
           <div className="absolute z-10 top-4 end-4">
             <InteractiveLegend
               views={views}

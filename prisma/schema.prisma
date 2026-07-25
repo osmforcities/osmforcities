@@ -73,6 +73,7 @@ model Template {
   parent        Template?             @relation("TemplateHierarchy", fields: [parentId], references: [id])
   children      Template[]            @relation("TemplateHierarchy")
   tags          String[]
+  filterableTags String[]             @default([])
   isActive      Boolean               @default(true)
   deprecatesAt  DateTime?
   createdAt     DateTime              @default(now())
