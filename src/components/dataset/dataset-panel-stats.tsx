@@ -11,6 +11,7 @@ import length from "@turf/length";
 import type { Dataset } from "@/schemas/dataset";
 import { SegmentedBar, type BarSegment } from "@/components/ui/segmented-bar";
 import { formatCompactNumber } from "@/lib/dataset-stats";
+import { tagLabel, type MessageResolver } from "@/lib/tag-i18n";
 
 type DatasetPanelStatsProps = {
   dataset: Dataset;
@@ -64,6 +65,7 @@ const RECENCY_COLORS = [
 
 export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   const t = useTranslations("DatasetPage");
+  const tTagLabel = useTranslations("TagLabel") as unknown as MessageResolver;
   const locale = useLocale();
   const nf = useMemo(() => new Intl.NumberFormat(locale), [locale]);
 
@@ -190,6 +192,22 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
     }
     return groups;
   }, [derived]);
+
+  // Critical-tag coverage: for each of the template's filterable (curated) tags,
+  // the share of features that carry it. Absent tags read 0% — that gap is the
+  // signal. Replaces the Most-used list for templates that curate a list.
+  const coverageItems = useMemo(() => {
+    const filterable = dataset.template.filterableTags ?? [];
+    if (!derived || filterable.length === 0) return [];
+    const pctByKey = new Map(derived.sortedTags.map((s) => [s.key, s.pct]));
+    return filterable
+      .map((key) => ({
+        key,
+        label: tagLabel(tTagLabel, key),
+        pct: pctByKey.get(key) ?? 0,
+      }))
+      .sort((a, b) => b.pct - a.pct);
+  }, [derived, dataset.template.filterableTags, tTagLabel]);
 
   const recencyLabels = [
     t("band90d"),
@@ -360,28 +378,47 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
 
       {/* Tags — its own section: a leading tag icon + title, then the ranked
           key-presence list. */}
-      {tagGroups.length > 0 && (
+      {(coverageItems.length > 0 || tagGroups.length > 0) && (
         <Section divided>
           <SectionHeader title={t("titleTags")} icon={Tag} />
-          <SubBlock eyebrow={t("mostUsedTags")}>
-            <div className="flex flex-col gap-1.5">
-              {tagGroups.map((g) => (
-                <StatRow
-                  key={g.label}
-                  pct={g.pct}
-                  leading={
-                    <code className="block truncate font-mono text-[11.5px] text-gray-900">
-                      {g.keys.join(" · ")}
-                      {g.extra > 0 && (
-                        <span className="text-gray-400">{` +${nf.format(g.extra)}`}</span>
-                      )}
-                    </code>
-                  }
-                  value={g.label}
-                />
-              ))}
-            </div>
-          </SubBlock>
+          {coverageItems.length > 0 ? (
+            <SubBlock eyebrow={t("tagCoverage")}>
+              <div className="flex flex-col gap-1.5">
+                {coverageItems.map((c) => (
+                  <StatRow
+                    key={c.key}
+                    pct={c.pct}
+                    leading={
+                      <span className="block truncate text-[12px] text-gray-700">
+                        {c.label}
+                      </span>
+                    }
+                    value={formatPct(c.pct)}
+                  />
+                ))}
+              </div>
+            </SubBlock>
+          ) : (
+            <SubBlock eyebrow={t("mostUsedTags")}>
+              <div className="flex flex-col gap-1.5">
+                {tagGroups.map((g) => (
+                  <StatRow
+                    key={g.label}
+                    pct={g.pct}
+                    leading={
+                      <code className="block truncate font-mono text-[11.5px] text-gray-900">
+                        {g.keys.join(" · ")}
+                        {g.extra > 0 && (
+                          <span className="text-gray-400">{` +${nf.format(g.extra)}`}</span>
+                        )}
+                      </code>
+                    }
+                    value={g.label}
+                  />
+                ))}
+              </div>
+            </SubBlock>
+          )}
         </Section>
       )}
     </div>
