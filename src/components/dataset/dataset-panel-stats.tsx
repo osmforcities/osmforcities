@@ -202,7 +202,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   // beneath. Geometry types use the olive ramp capped at the button color
   // (500/400/300); the legend icons carry the point/line/area meaning, so color
   // only needs to separate the slices. The legend always lists all three types:
-  // present ones show count (+ km/km²); absent ones read "no lines" etc.
+  // points show their count, lines their total length, areas their total area;
+  // absent types read "no lines" etc.
   const geomItems: GeomItem[] | null = derived
     ? [
         {
@@ -224,7 +225,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Spline,
           filled: false,
           label: t("geomLines"),
-          display: `${nf.format(derived.lines)} · ${formatKm(derived.lineKm, nf)} km`,
+          display: `${formatKm(derived.lineKm, nf)} km`,
           noneLabel: t("geomNone", { type: t("geomLinesLower") }),
         },
         {
@@ -235,7 +236,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Pentagon,
           filled: false,
           label: t("geomAreas"),
-          display: `${nf.format(derived.areas)} · ${formatKm(derived.areaKm2, nf)} km²`,
+          display: `${formatKm(derived.areaKm2, nf)} km²`,
           noneLabel: t("geomNone", { type: t("geomAreasLower") }),
         },
       ]
