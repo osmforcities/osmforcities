@@ -1,19 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Button, Checkbox } from "react-aria-components";
 import { Check, ChevronUp, Layers } from "lucide-react";
+import type { LegendCategory } from "@/lib/curated-themes";
 
-/** One toggleable row of the active view. */
-export type LegendCategory = {
-  id: string;
-  label: string;
-  color: string;
-  count: number;
-  /** De-emphasize the label (synthetic rows like "Missing"). */
-  muted?: boolean;
-};
+export type { LegendCategory };
 
 /** One entry of the header view dropdown. */
 export type LegendViewOption = {
@@ -39,7 +32,7 @@ type InteractiveLegendProps = {
  * color swatch doubles as the checkbox (checkmark = visible, hollow =
  * hidden) so toggling reads as an affordance, not decoration. Collapsible;
  * starts collapsed on small screens where the card would blanket the map.
- * Fully controlled; filter state lives in the map container. Epic #184.
+ * Fully controlled; filter state lives in the map container.
  */
 export function InteractiveLegend({
   views,
@@ -50,6 +43,7 @@ export function InteractiveLegend({
   onToggle,
 }: InteractiveLegendProps) {
   const t = useTranslations("DatasetMap");
+  const locale = useLocale();
   const activeView = views.find((v) => v.id === activeViewId);
 
   // SSR markup must match the first client render, so the small-screen
@@ -150,7 +144,7 @@ export function InteractiveLegend({
                 {category.label}
               </span>
               <span className="text-gray-400 tabular-nums">
-                {category.count.toLocaleString()}
+                {category.count.toLocaleString(locale)}
               </span>
             </Checkbox>
           );

@@ -7,6 +7,7 @@ import {
 import { OverpassResponseSchema } from "@/types/overpass";
 import type { OSMNode, OSMRelation } from "@/types/osm";
 import { BOUNDARY_SIMPLIFICATION_TOLERANCE } from "@/lib/constants";
+import { extractOsmNames } from "@/lib/area-name";
 import { createLogger } from "@/lib/logger";
 import type { FeatureCollection } from "geojson";
 
@@ -119,6 +120,7 @@ export async function fetchOsmRelationData(relationId: number) {
 
   return {
     name: rel.tags?.name || `Relation ${relationId}`,
+    names: extractOsmNames(rel.tags),
     bounds: rel.bounds
       ? `${rel.bounds.minlat},${rel.bounds.minlon},${rel.bounds.maxlat},${rel.bounds.maxlon}`
       : null,

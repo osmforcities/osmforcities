@@ -5,6 +5,7 @@ import { CreateDatasetSchema } from "@/schemas/dataset";
 import { Prisma } from "@prisma/client";
 import { fetchOsmRelationData } from "@/lib/area-boundary";
 import { refreshAreaInfoIfStale, resolveAreaCenter } from "@/lib/area-refresh";
+import { mergeAreaNames, toStoredNames } from "@/lib/area-name";
 import {
   fetchDatasetSnapshot,
   DatasetTooLargeError,
@@ -62,10 +63,13 @@ export async function POST(req: NextRequest) {
 
       const center = resolveAreaCenter(fetched, areaDetails);
 
+      const mergedNames = mergeAreaNames(areaDetails?.names, fetched.names);
+
       area = await prisma.area.create({
         data: {
           id: osmRelationId,
           name: fetched.name,
+          names: toStoredNames(mergedNames),
           bounds: fetched.bounds,
           countryCode: areaDetails?.countryCode ?? null,
           centerLat: center?.centerLat ?? null,

@@ -674,5 +674,50 @@
       "title": "{area} - Conjuntos de Dados - OSM for Cities",
       "description": "Explore conjuntos de dados do OpenStreetMap para {area}"
     }
+  },
+  "TagLabel": {
+    "shelter": "Abrigo",
+    "bench": "Banco",
+    "covered": "Coberto",
+    "lit": "Iluminado",
+    "tactile_paving": "Piso tátil",
+    "bicycle_parking": "Tipo",
+    "capacity": "Capacidade",
+    "access": "Acesso",
+    "fee": "Tarifa"
+  },
+  "TagValue": {
+    "__common__": {
+      "yes": "Sim",
+      "no": "Não",
+      "limited": "Limitado"
+    },
+    "access": {
+      "private": "Privado",
+      "customers": "Clientes",
+      "permissive": "Permissivo",
+      "designated": "Designado",
+      "permit": "Com permissão"
+    },
+    "bicycle_parking": {
+      "stands": "Suportes",
+      "wide_stands": "Suportes largos",
+      "low_stands": "Suportes baixos",
+      "large_stands": "Suportes grandes",
+      "wall_loops": "Fixação na parede",
+      "safe_loops": "Fixação segura",
+      "ground_slots": "Ranhuras no chão",
+      "rack": "Rack",
+      "two-tier": "Dois níveis",
+      "shed": "Galpão",
+      "floor": "Piso",
+      "lockers": "Armários",
+      "building": "Edifício",
+      "bollard": "Pilarete",
+      "anchors": "Âncoras",
+      "handlebar_holder": "Suporte de guidão",
+      "crossbar": "Barra",
+      "informal": "Informal"
+    }
   }
 }

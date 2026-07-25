@@ -18,6 +18,7 @@ export interface LogicEntry {
   category: string;
   icon?: string;
   parent?: string;
+  filterableTags?: string[];
 }
 
 /**
@@ -28,6 +29,7 @@ export interface TemplateLogic {
   category: string;
   icon?: string;
   parent?: string;
+  filterableTags?: string[];
 }
 
 /**
@@ -61,6 +63,7 @@ export interface TemplateConfig {
   parent?: string;
   name?: string;
   description?: string;
+  filterableTags?: string[];
 }
 
 /**
@@ -73,6 +76,7 @@ export interface ParsedTemplate {
   overpassQuery: string;
   category: string;
   tags: string[];
+  filterableTags: string[];
   parent?: string;
 }
 
@@ -220,6 +224,7 @@ export function buildTemplate(config: TemplateConfig): ParsedTemplate {
     parent,
     name: configName,
     description: configDesc,
+    filterableTags,
   } = config;
 
   if (!isValidId(id)) {
@@ -247,6 +252,7 @@ export function buildTemplate(config: TemplateConfig): ParsedTemplate {
     overpassQuery,
     category,
     tags,
+    filterableTags: filterableTags ?? [],
     parent,
   };
 }
@@ -264,13 +270,31 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
     const config = yaml.load(file) as {
       templates?: unknown[];
       categories?: Record<string, string>;
+      filterableTags?: Record<string, unknown>;
     };
 
     if (!config?.templates || !Array.isArray(config.templates)) {
       throw new Error("Invalid templates.yml: templates must be an array");
     }
 
+    // Sparse per-template allow-list of tag keys that become legend views.
+    // Templates absent from this map fall back to the age view only.
+    const filterableByIdRaw = config.filterableTags ?? {};
+    const filterableById = new Map<string, string[]>();
+    for (const [id, tags] of Object.entries(filterableByIdRaw)) {
+      // Guard hand-edited YAML: a scalar/object or non-string array element would
+      // otherwise disable the template silently or produce "[object Object]" keys.
+      if (!Array.isArray(tags) || tags.some((tag) => typeof tag !== "string")) {
+        console.warn(
+          `templates.yml: filterableTags for "${id}" must be a string array`,
+        );
+        continue;
+      }
+      filterableById.set(id, tags.map((tag) => tag.trim()).filter(Boolean));
+    }
+
     const entries: LogicEntry[] = [];
+    const seenIds = new Set<string>();
     for (const row of config.templates) {
       const arr = Array.isArray(row) ? row : [row];
       const id = String(arr[0] ?? "");
@@ -279,6 +303,7 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
       const iconRaw = arr[3];
       const parentRaw = arr[4];
       if (id && query && category) {
+        seenIds.add(id);
         entries.push({
           id,
           query,
@@ -291,8 +316,19 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
             parentRaw !== undefined && parentRaw !== null && String(parentRaw) !== ""
               ? String(parentRaw)
               : undefined,
+          filterableTags: filterableById.get(id),
         });
       }
+    }
+
+    // Surface typo'd/stale ids under `filterableTags:` — they attach to nothing
+    // and would silently leave a template age-only. Warn rather than throw so a
+    // bad key never blocks the seed.
+    const unmatched = [...filterableById.keys()].filter((id) => !seenIds.has(id));
+    if (unmatched.length > 0) {
+      console.warn(
+        `templates.yml: filterableTags references unknown template id(s): ${unmatched.join(", ")}`,
+      );
     }
 
     return {
@@ -351,6 +387,7 @@ export function loadTemplatesYaml(
       category: entry.category,
       icon: entry.icon,
       parent: entry.parent,
+      filterableTags: entry.filterableTags,
     };
   }
   return { templates, categories };
@@ -395,6 +432,7 @@ export function parseTemplates(config: LogicConfig): ParseResult {
         category: obj.category,
         icon: obj.icon,
         parent: obj.parent,
+        filterableTags: obj.filterableTags,
       };
       const template = buildTemplate(parsed);
       templates.push(template);

@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { ArrowLeft } from "lucide-react";
 import type { Feature, FeatureCollection } from "geojson";
 import type { Dataset } from "@/schemas/dataset";
 import { Link } from "@/i18n/navigation";
+import { resolveAreaName } from "@/lib/area-name";
 import { DatasetMapWrapper, type DatasetFullMapHandle } from "@/components/dataset/map-wrapper";
 import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
 import { DatasetStatsTable } from "@/components/dataset/dataset-stats-table";
@@ -30,6 +31,8 @@ export function DatasetInteractiveSection({
   const [lastChecked, setLastChecked] = useState(dataset.lastChecked);
   const mapRef = useRef<DatasetFullMapHandle>(null);
   const t = useTranslations("DatasetPage");
+  const locale = useLocale();
+  const areaName = resolveAreaName(dataset.area, locale);
 
   useEffect(() => {
     // Expose test hook in test mode or development
@@ -65,12 +68,11 @@ export function DatasetInteractiveSection({
             <div className="shrink-0">
               <Link
                 href={`/area/${dataset.area.id}`}
-                title={t("allDatasetsInArea")}
-                aria-label={t("allDatasetsInArea")}
+                aria-label={t("backToAreaLabel", { area: areaName })}
                 className="inline-flex items-center gap-1 mb-4 text-xs text-gray-500 hover:text-gray-800 hover:underline transition-colors"
               >
                 <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />
-                {t("back")}
+                {areaName}
               </Link>
               <DatasetInfoPanel dataset={dataset} />
               <div className="mt-2">

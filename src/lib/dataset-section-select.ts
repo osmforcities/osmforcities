@@ -13,6 +13,8 @@ export const DATASET_SELECT = {
   area: {
     select: {
       id: true,
+      name: true,
+      names: true,
       countryCode: true,
     },
   },

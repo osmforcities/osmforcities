@@ -21,6 +21,22 @@ import type { CuratedTheme } from "@/lib/curated-themes";
 import { buildCuratedColorExpression } from "@/lib/curated-themes";
 import { PALETTES } from "@/lib/map-palettes";
 
+// Shared circle paint for the point + proxy-point layers. In a curated tag view
+// the color comes from the theme expression; otherwise it falls back to the
+// count-scaled default point style. Callers add their own opacity (e.g. the
+// proxy fade) on top.
+function buildThemePointPaint(themeColor: unknown[] | null, count: number) {
+  return {
+    ...POINT_STYLE,
+    "circle-radius": themeColor ? 4 : buildPointRadiusForCount(count),
+    "circle-color": themeColor ?? POINT_STYLE["circle-color"],
+    "circle-stroke-color": themeColor
+      ? PALETTES.categorical.stroke
+      : POINT_STYLE["circle-stroke-color"],
+    "circle-stroke-width": themeColor ? 1 : POINT_STYLE["circle-stroke-width"],
+  };
+}
+
 type DetailedFeaturesLayerGroupProps = {
   polygonFeatures: Feature[];
   lineFeatures: Feature[];
@@ -36,9 +52,14 @@ export function DetailedFeaturesLayerGroup({
   curatedTheme,
   visibilityFilter,
 }: DetailedFeaturesLayerGroupProps) {
+  // Small polygons are subpixel at city-wide zoom, so they get a circle proxy
+  // at their centroid until the real footprint resolves (~zoom 14). This must
+  // apply to curated tag views too — otherwise a category made only of small
+  // polygons (e.g. covered=roof) is invisible on the map. Proxies keep the
+  // feature properties, so they colour by theme like any other point.
   const proxyPoints = useMemo(
-    () => (curatedTheme ? [] : createSmallPolygonProxyPoints(polygonFeatures)),
-    [curatedTheme, polygonFeatures]
+    () => createSmallPolygonProxyPoints(polygonFeatures),
+    [polygonFeatures]
   );
 
   const themeColor = useMemo(
@@ -55,8 +76,7 @@ export function DetailedFeaturesLayerGroup({
           layerType="circle"
           filter={visibilityFilter}
           paint={{
-            ...POINT_STYLE,
-            "circle-radius": buildPointRadiusForCount(proxyPoints.length),
+            ...buildThemePointPaint(themeColor, proxyPoints.length),
             "circle-opacity": PROXY_FADE,
             "circle-stroke-opacity": PROXY_FADE,
           }}
@@ -114,19 +134,7 @@ export function DetailedFeaturesLayerGroup({
           features={pointFeatures}
           layerType="circle"
           filter={visibilityFilter}
-          paint={{
-            ...POINT_STYLE,
-            "circle-radius": themeColor
-              ? 4
-              : buildPointRadiusForCount(pointFeatures.length),
-            "circle-color": themeColor ?? POINT_STYLE["circle-color"],
-            "circle-stroke-color": themeColor
-              ? PALETTES.categorical.stroke
-              : POINT_STYLE["circle-stroke-color"],
-            "circle-stroke-width": themeColor
-              ? 1
-              : POINT_STYLE["circle-stroke-width"],
-          }}
+          paint={buildThemePointPaint(themeColor, pointFeatures.length)}
           layout={themeColor ? undefined : { "circle-sort-key": AGE_SORT_KEY }}
         />
       )}

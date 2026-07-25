@@ -154,6 +154,7 @@ async function main() {
         overpassQuery: template.overpassQuery,
         category: { connect: { id: categoryId } },
         tags: template.tags,
+        filterableTags: template.filterableTags,
         updatedAt: new Date(),
       },
       create: {
@@ -163,6 +164,7 @@ async function main() {
         overpassQuery: template.overpassQuery,
         category: { connect: { id: categoryId } },
         tags: template.tags,
+        filterableTags: template.filterableTags,
       },
     });
     upserted++;

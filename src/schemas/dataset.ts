@@ -64,6 +64,7 @@ export const DatasetSchema = z.object({
       slug: z.string(),
     }).nullable(),
     description: z.string().nullable(),
+    filterableTags: z.array(z.string()).optional(),
   }),
   user: z
     .object({
@@ -75,6 +76,7 @@ export const DatasetSchema = z.object({
   area: z.object({
     id: z.number(),
     name: z.string(),
+    names: z.record(z.string(), z.string()).nullish(),
     countryCode: z.string().nullable(),
     bounds: z.string().nullable(),
     centerLat: z.number().nullish(),

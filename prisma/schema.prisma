@@ -73,6 +73,7 @@ model Template {
   parent        Template?             @relation("TemplateHierarchy", fields: [parentId], references: [id])
   children      Template[]            @relation("TemplateHierarchy")
   tags          String[]
+  filterableTags String[]             @default([])
   isActive      Boolean               @default(true)
   deprecatesAt  DateTime?
   createdAt     DateTime              @default(now())
@@ -98,6 +99,7 @@ model TemplateTranslation {
 model Area {
   id          Int       @id
   name        String
+  names       Json?
   countryCode String?
   bounds      String?
   centerLat   Float?
