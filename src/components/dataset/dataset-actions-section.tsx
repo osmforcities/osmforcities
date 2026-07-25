@@ -3,7 +3,15 @@
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/components/ui/link";
-import { Download, RefreshCw, Bookmark, BookmarkMinus, Star } from "lucide-react";
+import {
+  Download,
+  RefreshCw,
+  Bookmark,
+  BookmarkCheck,
+  Share2,
+  Check,
+  Star,
+} from "lucide-react";
 import type { Dataset } from "@/schemas/dataset";
 import { useDatasetDownload } from "@/hooks/useDatasetDownload";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
@@ -33,22 +41,22 @@ export function DatasetActionsSection({
   const [isFeatured, setIsFeatured] = useState(dataset.isFeatured ?? false);
   const [isFeaturingLoading, setIsFeaturingLoading] = useState(false);
   const [hasFeatureError, setHasFeatureError] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
 
   const atLimit =
-    !isSaved &&
-    saveLimit !== undefined &&
-    saveCount >= saveLimit;
+    !isSaved && saveLimit !== undefined && saveCount >= saveLimit;
 
   // One save-button state drives label and tooltip so they cannot drift.
   // canSave === false: signed-out visitor on a public featured page
   // (undefined means the producer predates the field — allowed)
-  const saveLabel = dataset.canSave === false
-    ? { text: t("signInToSave"), title: t("signInToSave") }
-    : isSaved
-      ? { text: t("unsave"), title: t("unsaveTooltip") }
-      : atLimit
-        ? { text: t("saveLimitReached"), title: t("saveLimitReached") }
-        : { text: t("save"), title: t("saveTooltip") };
+  const saveLabel =
+    dataset.canSave === false
+      ? { text: t("signInToSave"), title: t("signInToSave") }
+      : isSaved
+        ? { text: t("unsave"), title: t("unsaveTooltip") }
+        : atLimit
+          ? { text: t("saveLimitReached"), title: t("saveLimitReached") }
+          : { text: t("save"), title: t("saveTooltip") };
 
   const handleToggleSave = async () => {
     try {
@@ -73,6 +81,16 @@ export function DatasetActionsSection({
       }
     } catch (error) {
       console.error("Error toggling save:", error);
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    } catch (error) {
+      console.error("Error copying dataset link:", error);
     }
   };
 
@@ -110,99 +128,117 @@ export function DatasetActionsSection({
     }
   };
 
+  const showAdmin = dataset.canFeature || dataset.canRefresh;
+
   return (
-    <div className="pt-2">
-      <div className="flex flex-col gap-2">
-        {dataset.canFeature && (
-          <>
-            <Button
-              onClick={handleToggleFeatured}
-              disabled={isFeaturingLoading}
-              className="w-full h-9 text-sm"
-              variant={isFeatured ? "default" : "outline"}
-              title={isFeatured ? t("unfeatureTitle") : t("featureTitle")}
-            >
-              <Star className={`h-4 w-4 ${isFeatured ? "fill-current" : ""}`} />
-              {isFeatured ? t("unfeature") : t("feature")}
-            </Button>
-            {hasFeatureError && (
-              <p role="alert" className="text-sm text-red-600">
-                {t("featureError")}
-              </p>
-            )}
-          </>
+    <div className="flex flex-col gap-2.5 pt-2">
+      {/* Primary CTA — Save. Filled to invite use; switches to outline once done. */}
+      <Button
+        onClick={handleToggleSave}
+        disabled={isLoading || atLimit || dataset.canSave === false}
+        className="h-9 w-full text-sm"
+        variant={isSaved ? "outline" : "default"}
+        title={saveLabel.title}
+        data-testid={isSaved ? "dataset-unsave-button" : "dataset-save-button"}
+      >
+        {isSaved ? (
+          <BookmarkCheck className="h-4 w-4" />
+        ) : (
+          <Bookmark className="h-4 w-4" />
         )}
+        {saveLabel.text}
+      </Button>
+      {atLimit && saveLimit !== undefined && (
+        <p
+          role="alert"
+          data-testid="save-limit-message"
+          className="text-sm text-amber-700 dark:text-amber-500"
+        >
+          {t.rich("saveLimitMessage", {
+            limit: saveLimit,
+            link: (chunks) => (
+              <Link href="/dashboard" size="sm" variant="underline">
+                {chunks}
+              </Link>
+            ),
+          })}
+        </p>
+      )}
 
-        {/* Refresh is an admin-only control */}
-        {dataset.canRefresh && (
-          <Button
-            onClick={handleRefresh}
-            disabled={!dataset.isActive || isRefreshing}
-            className="w-full h-9 text-sm"
-            variant="outline"
-            title={
-              !dataset.isActive
-                ? "Only active datasets can be refreshed"
-                : "Update dataset with latest OpenStreetMap data"
-            }
-          >
-            <RefreshCw
-              className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
-            />
-            {isRefreshing ? t("refreshing") : t("refreshData")}
-          </Button>
-        )}
-
-        {/* Download Button */}
+      {/* Secondary toolbar — icon actions, grows by adding an icon not a row. */}
+      <div className="flex gap-2">
         <Button
           onClick={() => downloadDataset(dataset)}
           disabled={!dataset.geojson}
-          className="w-full h-9 text-sm"
+          className="h-9 flex-1"
           variant="outline"
-          title={
-            !dataset.geojson
-              ? "No data available for download"
-              : "Download dataset as GeoJSON file"
-          }
+          title={t("downloadData")}
+          aria-label={t("downloadData")}
         >
           <Download className="h-4 w-4" />
-          {t("downloadData")}
         </Button>
-
-        {/* Save/Unsave Button — disabled for signed-out visitors on public
-            featured pages (canSave false) */}
         <Button
-          onClick={handleToggleSave}
-          disabled={isLoading || atLimit || dataset.canSave === false}
-          className="w-full h-9 text-sm"
-          variant={isSaved ? "default" : "outline"}
-          title={saveLabel.title}
-          data-testid={isSaved ? "dataset-unsave-button" : "dataset-save-button"}
+          onClick={handleShare}
+          className="h-9 flex-1"
+          variant="outline"
+          title={t("shareTooltip")}
+          aria-label={shareCopied ? t("shareCopied") : t("share")}
         >
-          {isSaved ? (
-            <BookmarkMinus className="h-4 w-4" />
+          {shareCopied ? (
+            <Check className="h-4 w-4 text-olive-600" />
           ) : (
-            <Bookmark className="h-4 w-4" />
+            <Share2 className="h-4 w-4" />
           )}
-          {saveLabel.text}
         </Button>
-        {atLimit && saveLimit !== undefined && (
-          <p
-            role="alert"
-            data-testid="save-limit-message"
-            className="text-sm text-amber-700 dark:text-amber-500"
-          >
-            {t.rich("saveLimitMessage", {
-              limit: saveLimit,
-              link: (chunks) => (
-                <Link href="/dashboard" size="sm" variant="underline">
-                  {chunks}
-                </Link>
-              ),
-            })}
-          </p>
-        )}
       </div>
+
+      {/* Admin cluster — not rendered at all for regular users. */}
+      {showAdmin && (
+        <div className="mt-0.5 flex flex-col gap-2 border-t border-dashed border-gray-200 pt-2.5">
+          <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-gray-400">
+            {t("admin")}
+          </p>
+          <div className="flex gap-2">
+            {dataset.canRefresh && (
+              <Button
+                onClick={handleRefresh}
+                disabled={!dataset.isActive || isRefreshing}
+                className="h-8 flex-1 text-xs"
+                variant="outline"
+                title={
+                  !dataset.isActive
+                    ? "Only active datasets can be refreshed"
+                    : "Update dataset with latest OpenStreetMap data"
+                }
+              >
+                <RefreshCw
+                  className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`}
+                />
+                {isRefreshing ? t("refreshing") : t("refreshData")}
+              </Button>
+            )}
+            {dataset.canFeature && (
+              <Button
+                onClick={handleToggleFeatured}
+                disabled={isFeaturingLoading}
+                className="h-8 flex-1 text-xs"
+                variant="outline"
+                title={isFeatured ? t("unfeatureTitle") : t("featureTitle")}
+              >
+                <Star
+                  className={`h-3.5 w-3.5 ${isFeatured ? "fill-current" : ""}`}
+                />
+                {isFeatured ? t("unfeature") : t("feature")}
+              </Button>
+            )}
+          </div>
+          {hasFeatureError && (
+            <p role="alert" className="text-sm text-red-600">
+              {t("featureError")}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,0 +1,357 @@
+"use client";
+
+import { useMemo } from "react";
+import type { ReactNode } from "react";
+import type { Feature } from "geojson";
+import { useTranslations, useLocale } from "next-intl";
+import { MapPin, Pencil, Users } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import area from "@turf/area";
+import length from "@turf/length";
+import type { Dataset } from "@/schemas/dataset";
+import { SegmentedBar, type BarSegment } from "@/components/ui/segmented-bar";
+
+type DatasetPanelStatsProps = {
+  dataset: Dataset;
+};
+
+// Property keys carried by osmtogeojson output that are NOT real OSM tags — the
+// combined id, the "@"-prefixed internals, per-element metadata, and app-added
+// fields. Mirrors the filters in feature-detail-panel.tsx so the tag list counts
+// only genuine tags.
+const NON_TAG_KEYS = new Set([
+  "id",
+  "user",
+  "timestamp",
+  "version",
+  "changeset",
+  "ageCategory",
+  "uid",
+]);
+
+const DAY = 86_400_000;
+
+// Exclusive recency bands, matching the cutoffs used server-side in
+// dataset-snapshot.ts (90 days, 365 days, 730 days).
+function ageBand(ageMs: number): 0 | 1 | 2 | 3 {
+  const days = ageMs / DAY;
+  if (days <= 90) return 0;
+  if (days <= 365) return 1;
+  if (days <= 730) return 2;
+  return 3;
+}
+
+const RECENCY_COLORS = [
+  "bg-olive-600",
+  "bg-olive-400",
+  "bg-gray-300",
+  "bg-gray-200",
+] as const;
+
+export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
+  const t = useTranslations("DatasetPage");
+  const locale = useLocale();
+  const nf = useMemo(() => new Intl.NumberFormat(locale), [locale]);
+
+  // Single pass over the dataset geojson derives every bar on the panel. Same
+  // deterministic, SSR-safe pattern as the map's own feature processing; null
+  // when the dataset ships stats but no geojson (very large datasets).
+  const derived = useMemo(() => {
+    const gj = dataset.geojson as { features?: Feature[] } | null;
+    if (!gj || !Array.isArray(gj.features) || gj.features.length === 0) {
+      return null;
+    }
+    const features = gj.features;
+    const now = Date.now();
+
+    let points = 0;
+    let lines = 0;
+    let areas = 0;
+    let lineKm = 0;
+    let areaKm2 = 0;
+    const tagCounts = new Map<string, number>();
+    const editorLatest = new Map<string, number>();
+    const featureBands = [0, 0, 0, 0];
+    let timestamped = 0;
+
+    for (const f of features) {
+      const geomType = f.geometry?.type;
+      if (geomType === "Point" || geomType === "MultiPoint") {
+        points++;
+      } else if (geomType === "LineString" || geomType === "MultiLineString") {
+        lines++;
+        try {
+          lineKm += length(f);
+        } catch {
+          /* skip malformed geometry */
+        }
+      } else if (geomType === "Polygon" || geomType === "MultiPolygon") {
+        areas++;
+        try {
+          areaKm2 += area(f) / 1_000_000;
+        } catch {
+          /* skip malformed geometry */
+        }
+      }
+
+      const props = (f.properties ?? {}) as Record<string, unknown>;
+
+      for (const key in props) {
+        if (key.startsWith("@") || NON_TAG_KEYS.has(key)) continue;
+        tagCounts.set(key, (tagCounts.get(key) ?? 0) + 1);
+      }
+
+      const tsRaw = props["timestamp"];
+      if (typeof tsRaw === "string") {
+        const ts = Date.parse(tsRaw);
+        if (!Number.isNaN(ts)) {
+          featureBands[ageBand(now - ts)]++;
+          timestamped++;
+          const user = props["user"];
+          if (typeof user === "string") {
+            const prev = editorLatest.get(user);
+            if (prev === undefined || ts > prev) editorLatest.set(user, ts);
+          }
+        }
+      }
+    }
+
+    const total = features.length;
+
+    const topTags = [...tagCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([key, count]) => ({ key, pct: (count / total) * 100 }));
+
+    const editorBands = [0, 0, 0, 0];
+    for (const ts of editorLatest.values()) editorBands[ageBand(now - ts)]++;
+
+    return {
+      total,
+      points,
+      lines,
+      areas,
+      lineKm,
+      areaKm2,
+      topTags,
+      // Percentages of the timestamped features, so the four bands sum to 100.
+      featureBandPct: featureBands.map((c) =>
+        timestamped > 0 ? (c / timestamped) * 100 : 0
+      ),
+      timestamped,
+      editorBands,
+      editorTotal: editorLatest.size,
+    };
+  }, [dataset.geojson]);
+
+  const recencyLabels = [
+    t("band90d"),
+    t("band90dTo1y"),
+    t("band1yTo2y"),
+    t("band2yPlus"),
+  ];
+
+  // --- Overview -----------------------------------------------------------
+  const geomSegments: BarSegment[] | null = derived
+    ? [
+        {
+          pct: (derived.points / derived.total) * 100,
+          colorClass: "bg-olive-600",
+          label: t("geomPoints"),
+          value: nf.format(derived.points),
+        },
+        {
+          pct: (derived.lines / derived.total) * 100,
+          colorClass: "bg-blue-600",
+          label: t("geomLines"),
+          value: nf.format(derived.lines),
+          sub:
+            derived.lines > 0 ? `(${formatKm(derived.lineKm, nf)} km)` : undefined,
+        },
+        {
+          pct: (derived.areas / derived.total) * 100,
+          colorClass: "bg-orange-600",
+          label: t("geomAreas"),
+          value: nf.format(derived.areas),
+          sub:
+            derived.areas > 0
+              ? `(${formatKm(derived.areaKm2, nf)} km²)`
+              : undefined,
+        },
+      ]
+    : null;
+
+  // --- Activity (recency of edited features) ------------------------------
+  // Prefer the per-feature geojson timestamps; fall back to the stored
+  // cumulative percentages (3-band) when geojson is absent.
+  const stale = dataset.stats?.qualityMetrics?.staleElementsPercentage;
+  const within1y = dataset.stats?.qualityMetrics?.recentlyUpdatedElementsPercentage;
+  let activitySegments: BarSegment[] | null = null;
+  if (derived && derived.timestamped > 0) {
+    activitySegments = derived.featureBandPct.map((pct, i) => ({
+      pct,
+      colorClass: RECENCY_COLORS[i],
+      label: recencyLabels[i],
+      value: formatPct(pct),
+    }));
+  } else if (stale != null && within1y != null) {
+    const midPct = Math.max(0, 100 - within1y - stale);
+    activitySegments = [
+      {
+        pct: within1y,
+        colorClass: RECENCY_COLORS[1],
+        label: t("bandWithin1y"),
+        value: formatPct(within1y),
+      },
+      {
+        pct: midPct,
+        colorClass: RECENCY_COLORS[2],
+        label: t("band1yTo2y"),
+        value: formatPct(midPct),
+      },
+      {
+        pct: stale,
+        colorClass: RECENCY_COLORS[3],
+        label: t("band2yPlus"),
+        value: formatPct(stale),
+      },
+    ];
+  }
+
+  // --- Community (recency of each mapper's latest edit) -------------------
+  const communitySegments: BarSegment[] | null =
+    derived && derived.editorTotal > 0
+      ? derived.editorBands.map((count, i) => ({
+          pct: (count / derived.editorTotal) * 100,
+          colorClass: RECENCY_COLORS[i],
+          label: recencyLabels[i],
+          value: nf.format(count),
+        }))
+      : null;
+
+  const changesets = dataset.stats?.changesetsCount;
+  const editors = dataset.stats?.editorsCount;
+
+  return (
+    <div className="flex flex-1 flex-col gap-5">
+      {/* Overview */}
+      <Section eyebrow={t("overview")}>
+        <Headline
+          value={nf.format(dataset.dataCount)}
+          unit={t("unitFeatures")}
+          icon={MapPin}
+        />
+        {geomSegments && (
+          <SegmentedBar
+            variant="dots"
+            segments={geomSegments}
+            ariaLabel={t("overview")}
+          />
+        )}
+      </Section>
+
+      {/* Activity */}
+      <Section eyebrow={t("activity")}>
+        <Headline
+          value={changesets != null ? nf.format(changesets) : "—"}
+          unit={t("unitEdits")}
+          icon={Pencil}
+        />
+        {activitySegments && (
+          <SegmentedBar segments={activitySegments} ariaLabel={t("activity")} />
+        )}
+      </Section>
+
+      {/* Community */}
+      <Section eyebrow={t("community")}>
+        <Headline
+          value={editors != null ? nf.format(editors) : "—"}
+          unit={t("unitMappers")}
+          icon={Users}
+        />
+        {communitySegments && (
+          <SegmentedBar segments={communitySegments} ariaLabel={t("community")} />
+        )}
+      </Section>
+
+      {/* Most used tags */}
+      {derived && derived.topTags.length > 0 && (
+        <Section eyebrow={t("mostUsedTags")}>
+          <div className="flex flex-col gap-2">
+            {derived.topTags.map(({ key, pct }) => (
+              <div key={key} className="flex flex-col gap-1">
+                <div className="flex items-baseline justify-between gap-2">
+                  <code className="min-w-0 truncate font-mono text-[11.5px] text-gray-900">
+                    {key}
+                  </code>
+                  <span className="flex-none text-[11px] tabular-nums text-gray-500">
+                    {formatPct(pct)}
+                  </span>
+                </div>
+                <div className="h-1 overflow-hidden rounded-full bg-olive-100">
+                  <span
+                    className="block h-full rounded-full bg-olive-500"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+    </div>
+  );
+}
+
+function Section({
+  eyebrow,
+  children,
+}: {
+  eyebrow: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="flex flex-col gap-3">
+      <p className="text-[10px] font-bold uppercase tracking-[0.09em] text-gray-400">
+        {eyebrow}
+      </p>
+      {children}
+    </section>
+  );
+}
+
+function Headline({
+  value,
+  unit,
+  icon: Icon,
+}: {
+  value: string;
+  unit: string;
+  icon: LucideIcon;
+}) {
+  return (
+    <div className="flex items-baseline gap-2.5">
+      <span className="text-[32px] font-extrabold leading-none tracking-tight tabular-nums">
+        {value}
+      </span>
+      <span className="text-[13px] font-semibold text-gray-500">{unit}</span>
+      <Icon className="ml-auto size-5 self-center text-olive-600" aria-hidden />
+    </div>
+  );
+}
+
+// One decimal below 10, whole numbers above; a nonzero total that would round
+// to 0 shows "<0.1" so a handful of tiny features doesn't read as "0".
+function formatKm(n: number, nf: Intl.NumberFormat): string {
+  if (n > 0 && n < 0.05) return "<0.1";
+  const v = n >= 10 ? Math.round(n) : Math.round(n * 10) / 10;
+  return nf.format(v);
+}
+
+function formatPct(pct: number): string {
+  // Keep a decimal for near-full values so they don't misleadingly read "100%".
+  if (pct > 0 && pct < 100 && Math.round(pct) === 100) {
+    return `${pct.toFixed(1)}%`;
+  }
+  return `${Math.round(pct)}%`;
+}

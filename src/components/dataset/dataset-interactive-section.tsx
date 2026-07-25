@@ -9,7 +9,7 @@ import { Link } from "@/i18n/navigation";
 import { resolveAreaName } from "@/lib/area-name";
 import { DatasetMapWrapper, type DatasetFullMapHandle } from "@/components/dataset/map-wrapper";
 import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
-import { DatasetStatsTable } from "@/components/dataset/dataset-stats-table";
+import { DatasetPanelStats } from "@/components/dataset/dataset-panel-stats";
 import { DatasetTimestamps } from "@/components/dataset/dataset-timestamps";
 import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
 import { FeatureDetailPanel } from "@/components/dataset/feature-detail-panel";
@@ -80,11 +80,10 @@ export function DatasetInteractiveSection({
               </div>
             </div>
 
-            {/* Section 2 — stats cards: the only scrollable region. Framed by top
-                and bottom rules so the scroll boundary is clear. Cards flex their
-                height and center when there's room (see DatasetStatsTable). */}
+            {/* Section 2 — tiered stats: the only scrollable region. Framed by top
+                and bottom rules so the scroll boundary is clear. */}
             <div className="flex-1 min-h-0 overflow-y-auto flex flex-col border-y border-gray-200 my-4 py-4">
-              <DatasetStatsTable dataset={dataset} />
+              <DatasetPanelStats dataset={dataset} />
             </div>
 
             {/* Section 3 — action buttons: fixed height at the bottom. */}
