@@ -44,12 +44,13 @@ function ageBand(ageMs: number): 0 | 1 | 2 | 3 {
 type GeomItem = {
   count: number;
   pct: number;
+  colorClass: string;
   textClass: string;
   icon: LucideIcon;
   filled: boolean;
   label: string;
-  // Length/area metric for lines/areas (e.g. "1.8 km"); undefined for points.
-  metric?: string;
+  lower: string;
+  display: string;
 };
 
 const RECENCY_COLORS = [
@@ -196,40 +197,61 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   ];
 
   // --- Features by type ---------------------------------------------------
-  // Always three fixed rows (points/lines/areas), even at 0, so the section
-  // keeps one stable shape across every dataset. Each row mirrors a tag row:
-  // icon + label, a share bar, and the count (+ km/km² for lines/areas). The
-  // per-type icon tint carries type identity; the bar color stays uniform.
+  // A stacked proportion bar (like the recency bars), with a compact legend
+  // beneath. Geometry types use the olive ramp capped at the button color
+  // (500/400/300); the legend icons carry the point/line/area meaning, so color
+  // only needs to separate the slices.
   const geomItems: GeomItem[] | null = derived
     ? [
         {
           count: derived.points,
           pct: (derived.points / derived.total) * 100,
+          colorClass: "bg-olive-500",
           textClass: "text-olive-500",
           icon: Circle,
           filled: true,
           label: t("geomPoints"),
+          lower: t("geomPointsLower"),
+          // Nodes carry no length/area metric, so surface their count instead.
+          display: nf.format(derived.points),
         },
         {
           count: derived.lines,
           pct: (derived.lines / derived.total) * 100,
+          colorClass: "bg-olive-400",
           textClass: "text-olive-400",
           icon: Spline,
           filled: false,
           label: t("geomLines"),
-          metric: `${formatKm(derived.lineKm, nf)} km`,
+          lower: t("geomLinesLower"),
+          display: `${formatKm(derived.lineKm, nf)} km`,
         },
         {
           count: derived.areas,
           pct: (derived.areas / derived.total) * 100,
+          colorClass: "bg-olive-300",
           textClass: "text-olive-300",
           icon: Pentagon,
           filled: false,
           label: t("geomAreas"),
-          metric: `${formatKm(derived.areaKm2, nf)} km²`,
+          lower: t("geomAreasLower"),
+          display: `${formatKm(derived.areaKm2, nf)} km²`,
         },
       ]
     : null;
+  // Legend/bar only show geometry types actually present. When exactly one is
+  // present the bar is a meaningless solid block, so we render a sentence.
+  const geomPresent = geomItems ? geomItems.filter((g) => g.count > 0) : [];
+  const soleGeom = geomPresent.length === 1 ? geomPresent[0] : null;
+  const geomSegments: BarSegment[] | null =
+    geomPresent.length > 0
+      ? geomPresent.map(({ pct, colorClass, label, display }) => ({
+          pct,
+          colorClass,
+          label,
+          value: display,
+        }))
+      : null;
 
   // --- Freshness (recency of each feature's last edit) --------------------
   // Prefer the per-feature geojson timestamps; fall back to the stored
@@ -312,36 +334,30 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           value={nf.format(dataset.dataCount)}
           icon={MapPin}
         />
-        {geomItems && (
+        {geomSegments && soleGeom == null && (
           <SubBlock eyebrow={t("byType")}>
-            <div className="flex flex-col gap-1.5">
-              {geomItems.map((g) => (
-                <StatRow
-                  key={g.label}
-                  pct={g.pct}
-                  valueClassName="w-24"
-                  leading={
-                    <span className="flex min-w-0 items-center gap-1.5">
-                      <g.icon
-                        className={`size-3.5 flex-none ${
-                          g.filled ? "fill-current " : ""
-                        }${g.textClass}`}
-                        aria-hidden
-                      />
-                      <span className="truncate">{g.label}</span>
-                    </span>
-                  }
-                  value={
-                    <>
-                      {nf.format(g.count)}
-                      {g.metric && (
-                        <span className="text-gray-400">{` · ${g.metric}`}</span>
-                      )}
-                    </>
-                  }
-                />
-              ))}
-            </div>
+            <SegmentedBar
+              segments={geomSegments}
+              showLegend={false}
+              ariaLabel={t("byType")}
+            />
+            <GeomLegend items={geomPresent} />
+          </SubBlock>
+        )}
+        {soleGeom && (
+          <SubBlock eyebrow={t("byType")}>
+            <p className="flex items-center gap-1.5 text-[12px] text-gray-500">
+              <soleGeom.icon
+                className={`size-3.5 flex-none ${
+                  soleGeom.filled ? "fill-current " : ""
+                }${soleGeom.textClass}`}
+                aria-hidden
+              />
+              {t("allFeaturesAre", {
+                count: nf.format(soleGeom.count),
+                type: soleGeom.lower,
+              })}
+            </p>
           </SubBlock>
         )}
         {freshnessSegments && (
@@ -453,9 +469,27 @@ function RecencyLegend({ labels }: { labels: string[] }) {
   );
 }
 
-// One list row shared by the Features-by-type and Most-used-tags sections: a
-// leading label (icon+name or tag key), a share bar, and a right-aligned value.
-// One grammar for both keeps the two list sections visually consistent.
+// Compact geometry legend: one colored glyph per present type, matching its bar
+// slice's color. Nodes carry no length/area, so they show their formatted count;
+// lines/areas show total km / km² (which lives nowhere else on the panel).
+function GeomLegend({ items }: { items: GeomItem[] }) {
+  return (
+    <div className="mt-0.5 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gray-400">
+      {items.map(({ icon: Icon, textClass, filled, label, display }) => (
+        <span key={label} className="inline-flex items-center gap-1.5">
+          <Icon
+            className={`size-3.5 flex-none ${filled ? "fill-current " : ""}${textClass}`}
+            aria-label={label}
+          />
+          <span className="tabular-nums">{display}</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+// A list row used by the Most-used-tags section: a leading label (tag key), a
+// share bar, and a right-aligned value.
 function StatRow({
   leading,
   pct,
