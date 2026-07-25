@@ -69,7 +69,7 @@ export function DatasetInteractiveSection({
               <Link
                 href={`/area/${dataset.area.id}`}
                 aria-label={t("backToAreaLabel", { area: areaName })}
-                className="inline-flex items-center gap-1 mb-4 text-xs text-gray-500 hover:text-gray-800 hover:underline transition-colors"
+                className="inline-flex items-center gap-1 mb-3 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
               >
                 <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />
                 {areaName}
@@ -82,7 +82,7 @@ export function DatasetInteractiveSection({
 
             {/* Section 2 — tiered stats: the only scrollable region. Framed by top
                 and bottom rules so the scroll boundary is clear. */}
-            <div className="flex-1 min-h-0 overflow-y-auto flex flex-col border-y border-gray-200 my-4 py-4">
+            <div className="flex-1 min-h-0 overflow-y-auto flex flex-col border-y border-gray-200 my-4 py-4 pr-3">
               <DatasetPanelStats dataset={dataset} />
             </div>
 
