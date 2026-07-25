@@ -25,13 +25,13 @@ export function DatasetTimestamps({
       icon: Pencil,
       label: t("lastEdited"),
       tip: t("lastEditedTip"),
-      value: formatRelativeTime(dataset.stats?.mostRecentElement, locale),
+      value: formatRelativeTime(dataset.stats?.mostRecentElement, locale, "narrow"),
     },
     {
       icon: RefreshCw,
       label: t("lastCheckedLabel"),
       tip: t("lastCheckedTip"),
-      value: formatRelativeTime(lastChecked, locale),
+      value: formatRelativeTime(lastChecked, locale, "narrow"),
     },
   ];
 

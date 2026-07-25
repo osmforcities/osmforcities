@@ -32,7 +32,11 @@ export function formatCompactNumber(value: number | string): string {
   return `${(num / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
 }
 
-export function formatRelativeTime(timestamp: string | Date | null | undefined, locale: string): string {
+export function formatRelativeTime(
+  timestamp: string | Date | null | undefined,
+  locale: string,
+  style: "long" | "short" | "narrow" = "long"
+): string {
   if (!timestamp) return "—";
 
   const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
@@ -40,7 +44,7 @@ export function formatRelativeTime(timestamp: string | Date | null | undefined, 
 
   const diffMs = date.getTime() - Date.now();
   const absSec = Math.abs(diffMs / 1000);
-  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style });
 
   if (absSec < 60) return rtf.format(Math.round(diffMs / 1000), "second");
   if (absSec < 3600) return rtf.format(Math.round(diffMs / 60000), "minute");
