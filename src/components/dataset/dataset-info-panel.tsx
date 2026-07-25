@@ -13,9 +13,13 @@ export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
   const category = dataset.template.category?.name ?? "other";
 
   return (
-    <div className="space-y-1.5">
+    // Title (left) + category facet chip pinned top-right. The chip stays on the
+    // title's top edge (self-start) even when the heading wraps to two lines; the
+    // area name is carried by the back link above. Drop-in link to a category
+    // filter later keeps the same chip idiom.
+    <div className="flex items-start gap-2">
       <h2
-        className="text-2xl font-semibold leading-tight"
+        className="min-w-0 flex-1 text-2xl font-semibold leading-tight"
         data-testid="dataset-template-name"
       >
         {t("datasetTitle", {
@@ -34,14 +38,9 @@ export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
         )}
       </h2>
 
-      {/* Category facet chip on its own line (the area name is carried by the
-          back link above; drop-in link to a category filter later keeps the
-          same chip idiom). */}
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-olive-50 text-olive-700 border border-olive-100">
-          {category}
-        </span>
-      </div>
+      <span className="mt-0.5 inline-flex flex-none items-center rounded-full border border-olive-100 bg-olive-50 px-2 py-0.5 text-xs font-semibold text-olive-700">
+        {category}
+      </span>
     </div>
   );
 }
