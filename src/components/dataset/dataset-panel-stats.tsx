@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import type { ReactNode } from "react";
 import type { Feature } from "geojson";
 import { useTranslations, useLocale } from "next-intl";
-import { MapPin, Pencil, Users } from "lucide-react";
+import { MapPin, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import area from "@turf/area";
 import length from "@turf/length";
@@ -214,14 +214,14 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       ]
     : null;
 
-  // --- Activity (recency of edited features) ------------------------------
+  // --- Freshness (recency of each feature's last edit) --------------------
   // Prefer the per-feature geojson timestamps; fall back to the stored
   // cumulative percentages (3-band) when geojson is absent.
   const stale = dataset.stats?.qualityMetrics?.staleElementsPercentage;
   const within1y = dataset.stats?.qualityMetrics?.recentlyUpdatedElementsPercentage;
-  let activitySegments: BarSegment[] | null = null;
+  let freshnessSegments: BarSegment[] | null = null;
   if (derived && derived.timestamped > 0) {
-    activitySegments = derived.featureBandPct.map((pct, i) => ({
+    freshnessSegments = derived.featureBandPct.map((pct, i) => ({
       pct,
       colorClass: RECENCY_COLORS[i],
       label: recencyLabels[i],
@@ -229,7 +229,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
     }));
   } else if (stale != null && within1y != null) {
     const midPct = Math.max(0, 100 - within1y - stale);
-    activitySegments = [
+    freshnessSegments = [
       {
         pct: within1y,
         colorClass: RECENCY_COLORS[1],
@@ -251,8 +251,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
     ];
   }
 
-  // --- Community (recency of each mapper's latest edit) -------------------
-  const communitySegments: BarSegment[] | null =
+  // --- Mappers (recency of each mapper's latest edit) --------------------
+  const mappersSegments: BarSegment[] | null =
     derived && derived.editorTotal > 0
       ? derived.editorBands.map((count, i) => ({
           pct: (count / derived.editorTotal) * 100,
@@ -264,10 +264,36 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
 
   const changesets = dataset.stats?.changesetsCount;
   const editors = dataset.stats?.editorsCount;
+  const mappersUnit =
+    changesets != null
+      ? `${t("unitMappers")} · ${nf.format(changesets)} ${t("unitEdits")}`
+      : t("unitMappers");
 
   return (
     <div className="flex flex-1 flex-col gap-4">
-      {/* Overview — icon + unit carry the label, so no eyebrow. */}
+      {/* Mappers — moved above Features so the feature-describing blocks (type,
+          freshness, tags) stay together below. First recency bar on the panel,
+          so it carries the shared recency legend. Edits ride in the headline. */}
+      <Section eyebrow={t("mappersActiveRecently")}>
+        <Headline
+          value={editors != null ? nf.format(editors) : "—"}
+          unit={mappersUnit}
+          icon={Users}
+        />
+        {mappersSegments && (
+          <>
+            <SegmentedBar
+              segments={mappersSegments}
+              showLegend={false}
+              ariaLabel={t("mappersActiveRecently")}
+            />
+            <RecencyLegend labels={recencyLabels} />
+          </>
+        )}
+      </Section>
+
+      {/* Features — the main stat, then three sub-blocks that all describe the
+          features themselves: geometry mix, edit recency, and tag coverage. */}
       <Section>
         <Headline
           value={nf.format(dataset.dataCount)}
@@ -275,65 +301,49 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon={MapPin}
         />
         {geomSegments && (
-          <SegmentedBar
-            variant="dots"
-            segments={geomSegments}
-            ariaLabel={t("overview")}
-          />
+          <SubBlock eyebrow={t("featuresByType")}>
+            <SegmentedBar
+              variant="dots"
+              segments={geomSegments}
+              ariaLabel={t("featuresByType")}
+            />
+          </SubBlock>
         )}
-      </Section>
-
-      {/* Activity */}
-      <Section>
-        <Headline
-          value={changesets != null ? nf.format(changesets) : "—"}
-          unit={t("unitEdits")}
-          icon={Pencil}
-        />
-        {activitySegments && (
-          <SegmentedBar segments={activitySegments} ariaLabel={t("activity")} />
+        {freshnessSegments && (
+          <SubBlock eyebrow={t("featuresRecentlyEdited")}>
+            <SegmentedBar
+              segments={freshnessSegments}
+              showLegend={false}
+              ariaLabel={t("featuresRecentlyEdited")}
+            />
+          </SubBlock>
         )}
-      </Section>
-
-      {/* Community */}
-      <Section>
-        <Headline
-          value={editors != null ? nf.format(editors) : "—"}
-          unit={t("unitMappers")}
-          icon={Users}
-        />
-        {communitySegments && (
-          <SegmentedBar segments={communitySegments} ariaLabel={t("community")} />
-        )}
-      </Section>
-
-      {/* Most used tags — keeps its eyebrow: the code-font list has no headline
-          to name it. Rows group tags sharing a percentage, capped at 5 lines. */}
-      {tagGroups.length > 0 && (
-        <Section eyebrow={t("mostUsedTags")}>
-          <div className="flex flex-col gap-1.5">
-            {tagGroups.map((g) => (
-              <div key={g.label} className="flex items-center gap-2">
-                <code className="min-w-0 flex-1 truncate font-mono text-[11.5px] text-gray-900">
-                  {g.keys.join(" · ")}
-                  {g.extra > 0 && (
-                    <span className="text-gray-400">{` +${g.extra}`}</span>
-                  )}
-                </code>
-                <div className="h-1 w-14 flex-none overflow-hidden rounded-full bg-olive-100">
-                  <span
-                    className="block h-full rounded-full bg-olive-500"
-                    style={{ width: `${g.pct}%` }}
-                  />
+        {tagGroups.length > 0 && (
+          <SubBlock eyebrow={t("mostUsedTags")}>
+            <div className="flex flex-col gap-1.5">
+              {tagGroups.map((g) => (
+                <div key={g.label} className="flex items-center gap-2">
+                  <code className="min-w-0 flex-1 truncate font-mono text-[11.5px] text-gray-900">
+                    {g.keys.join(" · ")}
+                    {g.extra > 0 && (
+                      <span className="text-gray-400">{` +${g.extra}`}</span>
+                    )}
+                  </code>
+                  <div className="h-1 w-14 flex-none overflow-hidden rounded-full bg-olive-100">
+                    <span
+                      className="block h-full rounded-full bg-olive-500"
+                      style={{ width: `${g.pct}%` }}
+                    />
+                  </div>
+                  <span className="w-9 flex-none text-right text-[11px] tabular-nums text-gray-500">
+                    {g.label}
+                  </span>
                 </div>
-                <span className="w-9 flex-none text-right text-[11px] tabular-nums text-gray-500">
-                  {g.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        </Section>
-      )}
+              ))}
+            </div>
+          </SubBlock>
+        )}
+      </Section>
     </div>
   );
 }
@@ -354,6 +364,43 @@ function Section({
       )}
       {children}
     </section>
+  );
+}
+
+// An eyebrow-labeled block nested inside a section (e.g. "Features by type").
+// Lighter than a full Section — used for the sub-bars under Features.
+function SubBlock({
+  eyebrow,
+  children,
+}: {
+  eyebrow: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <p className="text-[10px] font-bold uppercase tracking-[0.09em] text-gray-400">
+        {eyebrow}
+      </p>
+      {children}
+    </div>
+  );
+}
+
+// The recency color scale, shown once and shared by every recency bar on the
+// panel (feature freshness + mapper activity use identical buckets and colors).
+function RecencyLegend({ labels }: { labels: string[] }) {
+  return (
+    <div className="mt-0.5 flex flex-wrap gap-x-3.5 gap-y-1 text-[11px] text-gray-400">
+      {labels.map((label, i) => (
+        <span key={i} className="inline-flex items-center gap-1.5">
+          <span
+            aria-hidden
+            className={`size-2 flex-none rounded-sm ${RECENCY_COLORS[i]}`}
+          />
+          {label}
+        </span>
+      ))}
+    </div>
   );
 }
 

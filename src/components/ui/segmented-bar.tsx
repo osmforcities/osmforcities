@@ -18,6 +18,9 @@ type SegmentedBarProps = {
   /** "dots" shows a color swatch per legend entry (categorical); "terse" omits
    *  swatches — the bar's left-to-right order already carries the mapping. */
   variant?: "dots" | "terse";
+  /** When false, render only the bar (no legend) — used when several bars share
+   *  a single external legend. Segment values still feed the aria-label. */
+  showLegend?: boolean;
   ariaLabel: string;
   className?: string;
 };
@@ -30,15 +33,21 @@ type SegmentedBarProps = {
 export function SegmentedBar({
   segments,
   variant = "terse",
+  showLegend = true,
   ariaLabel,
   className,
 }: SegmentedBarProps) {
   const visible = segments.filter((s) => s.pct > 0);
+  // Fold the per-segment values into the aria-label so screen readers still get
+  // the breakdown even when the visual legend is hidden.
+  const fullLabel = `${ariaLabel}: ${visible
+    .map((s) => `${s.label} ${s.value}`)
+    .join(", ")}`;
   return (
     <div className={className}>
       <div
         role="img"
-        aria-label={ariaLabel}
+        aria-label={fullLabel}
         className="flex h-2.5 gap-px overflow-hidden rounded-full bg-olive-100"
       >
         {visible.map((s, i) => (
@@ -49,6 +58,7 @@ export function SegmentedBar({
           />
         ))}
       </div>
+      {!showLegend ? null : (
       <div
         className={`mt-2.5 flex flex-wrap text-xs ${
           variant === "dots"
@@ -72,6 +82,7 @@ export function SegmentedBar({
           </span>
         ))}
       </div>
+      )}
     </div>
   );
 }
