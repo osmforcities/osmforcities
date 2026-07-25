@@ -4,16 +4,9 @@ import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Button, Checkbox } from "react-aria-components";
 import { Check, ChevronUp, Layers } from "lucide-react";
+import type { LegendCategory } from "@/lib/curated-themes";
 
-/** One toggleable row of the active view. */
-export type LegendCategory = {
-  id: string;
-  label: string;
-  color: string;
-  count: number;
-  /** De-emphasize the label (synthetic rows like "Missing"). */
-  muted?: boolean;
-};
+export type { LegendCategory };
 
 /** One entry of the header view dropdown. */
 export type LegendViewOption = {

@@ -27,13 +27,11 @@ import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
 import { mapStyle } from "@/lib/map-tiles";
 import { AGE_COLORS } from "./map/layers/map-style";
-import { PALETTES } from "@/lib/map-palettes";
 import {
   buildCuratedThemesFromDimensions,
   buildAgeVisibilityFilter,
   buildTagVisibilityFilter,
-  OTHER_CATEGORY,
-  MISSING_CATEGORY,
+  buildLegendRows,
 } from "@/lib/curated-themes";
 import { computeFilterDimensions } from "@/lib/filter-dimensions";
 import { tagLabel, tagValue, type MessageResolver } from "@/lib/tag-i18n";
@@ -161,37 +159,12 @@ export const DatasetFullMap = forwardRef<
         count,
       }));
     }
-    const rows: LegendCategory[] = activeTheme.topValues.map(
-      ({ value, count }) => ({
-        id: value.toLowerCase(),
-        label: tagValue(tTagValue, activeTheme.field, value),
-        color: activeTheme.colorMap.get(value.toLowerCase())!,
-        count,
-      })
-    );
-    // Localized categorical rows read as unsorted in count order, so sort them by
-    // label. Presorted (numeric) rows are already ordered and left as-is.
-    if (!activeTheme.presorted) {
-      rows.sort((a, b) => a.label.localeCompare(b.label, locale));
-    }
-    if (activeTheme.otherCount > 0) {
-      rows.push({
-        id: OTHER_CATEGORY,
-        label: t("legendOther"),
-        color: PALETTES.categorical.other,
-        count: activeTheme.otherCount,
-      });
-    }
-    if (activeTheme.missingCount > 0) {
-      rows.push({
-        id: MISSING_CATEGORY,
-        label: t("legendMissing"),
-        color: PALETTES.categorical.missing,
-        count: activeTheme.missingCount,
-        muted: true,
-      });
-    }
-    return rows;
+    return buildLegendRows(activeTheme, {
+      localizeValue: (value) => tagValue(tTagValue, activeTheme.field, value),
+      locale,
+      otherLabel: t("legendOther"),
+      missingLabel: t("legendMissing"),
+    });
   }, [activeTheme, ageDimension, t, tTagValue, locale]);
 
   const visibilityFilter = useMemo(

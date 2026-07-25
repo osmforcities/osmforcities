@@ -7,10 +7,12 @@ import {
   buildAgeVisibilityFilter,
   buildTagVisibilityFilter,
   buildCuratedColorExpression,
+  buildLegendRows,
   sortForDisplay,
   OTHER_CATEGORY,
   MISSING_CATEGORY,
   TOP_VALUES_COUNT,
+  type CuratedTheme,
 } from "../curated-themes";
 import { PALETTES } from "../map-palettes";
 
@@ -72,6 +74,60 @@ describe("buildCuratedThemes — numeric display order", () => {
     expect(theme.topValues.map((v) => v.value)).toEqual(["2", "5", "10"]);
     // colors are assigned in the displayed (numeric) order
     expect(theme.colorMap.get("2")).toBe(PALETTES.categorical.tableau10[0]);
+  });
+});
+
+describe("buildLegendRows", () => {
+  // count-desc input where the alphabetical order differs, so a sort is visible
+  const baseTheme: CuratedTheme = {
+    field: "surface",
+    colorMap: new Map([
+      ["zebra", "#z"],
+      ["apple", "#a"],
+    ]),
+    topValues: [
+      { value: "zebra", count: 3 },
+      { value: "apple", count: 1 },
+    ],
+    otherCount: 0,
+    missingCount: 0,
+    presorted: false,
+  };
+  const opts = {
+    localizeValue: (v: string) => v,
+    locale: "en",
+    otherLabel: "Other",
+    missingLabel: "Missing",
+  };
+
+  it("sorts categorical rows by localized label", () => {
+    const rows = buildLegendRows(baseTheme, opts);
+    expect(rows.map((r) => r.id)).toEqual(["apple", "zebra"]);
+  });
+
+  it("keeps presorted (numeric) rows in their given order", () => {
+    const rows = buildLegendRows({ ...baseTheme, presorted: true }, opts);
+    expect(rows.map((r) => r.id)).toEqual(["zebra", "apple"]);
+  });
+
+  it("applies the value localizer to labels and sorts on the result", () => {
+    const rows = buildLegendRows(baseTheme, {
+      ...opts,
+      localizeValue: (v) => v.toUpperCase(),
+    });
+    expect(rows.map((r) => r.label)).toEqual(["APPLE", "ZEBRA"]);
+  });
+
+  it("appends Other then Missing (muted) after the value rows", () => {
+    const rows = buildLegendRows(
+      { ...baseTheme, otherCount: 5, missingCount: 2 },
+      opts
+    );
+    expect(rows.slice(0, 2).map((r) => r.id)).toEqual(["apple", "zebra"]);
+    const [other, missing] = rows.slice(-2);
+    expect(other.id).toBe(OTHER_CATEGORY);
+    expect(missing.id).toBe(MISSING_CATEGORY);
+    expect(missing.muted).toBe(true);
   });
 });
 

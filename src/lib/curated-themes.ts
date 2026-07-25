@@ -30,6 +30,16 @@ export type CuratedTheme = {
   presorted: boolean;
 };
 
+/** One toggleable row of the active legend view. */
+export type LegendCategory = {
+  id: string;
+  label: string;
+  color: string;
+  count: number;
+  /** De-emphasize the label (synthetic rows like "Missing"). */
+  muted?: boolean;
+};
+
 /** Legend/category ids for the synthetic buckets of a tag view. */
 export const OTHER_CATEGORY = "__other__";
 export const MISSING_CATEGORY = "__missing__";
@@ -87,7 +97,10 @@ export function buildCuratedThemesFromDimensions(
       // numeric fields ascending and leaves categorical ones for the component.
       const selected = dim.values.slice(0, TOP_VALUES_COUNT);
       const topValues = sortForDisplay(selected);
-      const presorted = isNumericValues(selected);
+      // sortForDisplay returns a new array only for numeric fields (it sorts
+      // them); an identical reference means categorical, so the component
+      // re-sorts those by localized label instead.
+      const presorted = topValues !== selected;
       const otherCount = dim.values
         .slice(TOP_VALUES_COUNT)
         .reduce((sum, v) => sum + v.count, 0);
@@ -106,6 +119,53 @@ export function buildCuratedThemesFromDimensions(
         presorted,
       };
     });
+}
+
+/**
+ * Assemble the legend rows for a curated tag theme: one localized, colored row
+ * per top value, sorted by localized label unless the theme is presorted
+ * (numeric), then the synthetic Other/Missing rows appended last. Pure — the
+ * caller supplies the localizers (labels + value formatter) so it stays testable
+ * and free of next-intl.
+ */
+export function buildLegendRows(
+  theme: CuratedTheme,
+  opts: {
+    localizeValue: (value: string) => string;
+    locale: string;
+    otherLabel: string;
+    missingLabel: string;
+  }
+): LegendCategory[] {
+  const rows: LegendCategory[] = theme.topValues.map(({ value, count }) => ({
+    id: value.toLowerCase(),
+    label: opts.localizeValue(value),
+    color: theme.colorMap.get(value.toLowerCase())!,
+    count,
+  }));
+  // Localized categorical rows read as unsorted in count order, so sort them by
+  // label. Presorted (numeric) rows are already ordered and left as-is.
+  if (!theme.presorted) {
+    rows.sort((a, b) => a.label.localeCompare(b.label, opts.locale));
+  }
+  if (theme.otherCount > 0) {
+    rows.push({
+      id: OTHER_CATEGORY,
+      label: opts.otherLabel,
+      color: PALETTES.categorical.other,
+      count: theme.otherCount,
+    });
+  }
+  if (theme.missingCount > 0) {
+    rows.push({
+      id: MISSING_CATEGORY,
+      label: opts.missingLabel,
+      color: PALETTES.categorical.missing,
+      count: theme.missingCount,
+      muted: true,
+    });
+  }
+  return rows;
 }
 
 /** Normalized tag accessor: lowercased string value of the field. */
