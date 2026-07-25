@@ -4,12 +4,13 @@ import { useMemo } from "react";
 import type { ReactNode } from "react";
 import type { Feature } from "geojson";
 import { useTranslations, useLocale } from "next-intl";
-import { MapPin, Users, Circle, Spline, Pentagon, Tag } from "lucide-react";
+import { MapPin, Users, Target, Spline, Pentagon, Tag } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import area from "@turf/area";
 import length from "@turf/length";
 import type { Dataset } from "@/schemas/dataset";
 import { SegmentedBar, type BarSegment } from "@/components/ui/segmented-bar";
+import { formatCompactNumber } from "@/lib/dataset-stats";
 
 type DatasetPanelStatsProps = {
   dataset: Dataset;
@@ -211,10 +212,10 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           pct: (derived.points / derived.total) * 100,
           colorClass: "bg-olive-500",
           textClass: "text-olive-500",
-          icon: Circle,
-          filled: true,
+          icon: Target,
+          filled: false,
           label: t("geomPoints"),
-          display: nf.format(derived.points),
+          display: formatCompactNumber(derived.points),
           noneLabel: t("geomNone", { type: t("geomPointsLower") }),
         },
         {
@@ -312,7 +313,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       <Section>
         <SectionHeader
           title={t("titleMappers")}
-          value={editors != null ? nf.format(editors) : "—"}
+          value={editors != null ? formatCompactNumber(editors) : "—"}
           icon={Users}
         />
         {mappersSegments && (
@@ -332,7 +333,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       <Section divided>
         <SectionHeader
           title={t("titleFeatures")}
-          value={nf.format(dataset.dataCount)}
+          value={formatCompactNumber(dataset.dataCount)}
           icon={MapPin}
         />
         {geomSegments && geomItems && (
