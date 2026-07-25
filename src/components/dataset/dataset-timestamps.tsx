@@ -10,7 +10,9 @@ type DatasetTimestampsProps = {
   lastChecked?: Date | string | null;
 };
 
-// Provenance timestamps shown in the title area as dataset freshness metadata.
+// Provenance freshness metadata, rendered as neutral chips on the title-area
+// chip row (alongside the category facet chip). Icons carry edited-vs-fetched;
+// neutral styling keeps them distinct from the olive category facet.
 export function DatasetTimestamps({
   dataset,
   lastChecked,
@@ -34,14 +36,18 @@ export function DatasetTimestamps({
   ];
 
   return (
-    <dl className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+    <>
       {rows.map(({ icon: Icon, label, tip, value }) => (
-        <div key={label} title={tip} className="inline-flex items-center gap-1">
-          <Icon className="size-3.5 flex-shrink-0 text-gray-400" aria-hidden />
-          <dt>{label}</dt>
-          <dd className="font-medium text-gray-700">{value}</dd>
-        </div>
+        <span
+          key={label}
+          title={tip}
+          aria-label={`${label} ${value}`}
+          className="inline-flex flex-none items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[11px] text-gray-600"
+        >
+          <Icon className="size-3 flex-shrink-0 text-gray-400" aria-hidden />
+          <span className="font-medium text-gray-700">{value}</span>
+        </span>
       ))}
-    </dl>
+    </>
   );
 }

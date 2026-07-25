@@ -66,9 +66,8 @@ export function DatasetInteractiveSection({
                 timestamps (surfaced up top as decision-relevant provenance).
                 Fixed at top, never scrolls. */}
             <div className="shrink-0">
-              {/* Breadcrumb row: back link to the area (left) + category facet
-                  chip (right), sharing one line above the title. */}
-              <div className="mb-3 flex items-center justify-between gap-2">
+              {/* Back link to the area — its own row, the single nav control. */}
+              <div className="mb-3 flex">
                 <Link
                   href={`/area/${dataset.area.id}`}
                   aria-label={t("backToAreaLabel", { area: areaName })}
@@ -77,12 +76,14 @@ export function DatasetInteractiveSection({
                   <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />
                   <span className="truncate">{areaName}</span>
                 </Link>
+              </div>
+              <DatasetInfoPanel dataset={dataset} />
+              {/* Metadata chip row: category facet (olive) + freshness chips
+                  (edited, fetched) sharing one line below the title. */}
+              <div className="mt-2 flex flex-wrap items-center gap-1.5">
                 <span className="inline-flex flex-none items-center rounded-full border border-olive-100 bg-olive-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-olive-700">
                   {dataset.template.category?.name ?? "other"}
                 </span>
-              </div>
-              <DatasetInfoPanel dataset={dataset} />
-              <div className="mt-2">
                 <DatasetTimestamps dataset={dataset} lastChecked={lastChecked} />
               </div>
             </div>
