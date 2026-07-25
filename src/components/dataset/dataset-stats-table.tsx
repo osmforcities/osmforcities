@@ -162,10 +162,15 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
           title={tip}
           className="flex flex-col items-center justify-center gap-1 rounded-lg border border-olive-100 bg-olive-50 px-2.5 py-2 text-center"
         >
-          {/* icon trails the value/number */}
-          <dd className="flex items-center justify-center gap-1.5 text-lg font-bold leading-none text-gray-900">
+          {/* icon trails the value/number; value scales fluidly with viewport
+              height (a proxy for card height in this layout) and the icon tracks
+              it via em units */}
+          <dd className="flex items-center justify-center gap-1.5 text-[clamp(1.125rem,1.7vh,1.5rem)] font-bold leading-none text-gray-900">
             {value}
-            <Icon className="size-4 flex-shrink-0 text-olive-600" aria-hidden />
+            <Icon
+              className="size-[1.15em] flex-shrink-0 text-olive-600"
+              aria-hidden
+            />
           </dd>
           <dt className="text-[10px] font-semibold uppercase leading-tight tracking-wide text-gray-500">
             {label}

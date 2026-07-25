@@ -17,7 +17,7 @@ export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
     <div className="space-y-3">
       <div className="space-y-1">
         <h2
-          className="text-xl font-semibold leading-tight"
+          className="text-2xl font-semibold leading-tight"
           data-testid="dataset-template-name"
         >
           {t("datasetTitle", {
@@ -30,7 +30,7 @@ export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
               className="ml-2 inline-flex align-baseline text-amber-500"
               title={t("featuredTooltip")}
             >
-              <Star aria-hidden className="h-4 w-4 fill-current" />
+              <Star aria-hidden className="h-5 w-5 fill-current" />
               <span className="sr-only">{t("featured")}</span>
             </span>
           )}
@@ -42,9 +42,9 @@ export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <Link
             href={`/area/${dataset.area.id}`}
-            className="inline-flex items-start gap-1 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+            className="inline-flex items-start gap-1 text-base text-gray-600 hover:text-gray-900 hover:underline transition-colors"
           >
-            <MapPin className="size-4 flex-shrink-0 mt-px" aria-hidden />
+            <MapPin className="size-4 flex-shrink-0 mt-0.5" aria-hidden />
             <span>{dataset.area.name}</span>
           </Link>
           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-olive-50 text-olive-700 border border-olive-100">

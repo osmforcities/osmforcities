@@ -59,8 +59,9 @@ export function DatasetInteractiveSection({
             className="flex flex-col flex-1 min-h-0"
             data-testid="dataset-sidebar-default"
           >
-            {/* Section 1 — title area: back link + dataset info. Fixed at top,
-                never scrolls. */}
+            {/* Section 1 — title area: back link, dataset info, and freshness
+                timestamps (surfaced up top as decision-relevant provenance).
+                Fixed at top, never scrolls. */}
             <div className="shrink-0">
               <Link
                 href={`/area/${dataset.area.id}`}
@@ -70,6 +71,9 @@ export function DatasetInteractiveSection({
                 {t("allDatasetsInArea")}
               </Link>
               <DatasetInfoPanel dataset={dataset} />
+              <div className="mt-2">
+                <DatasetTimestamps dataset={dataset} lastChecked={lastChecked} />
+              </div>
             </div>
 
             {/* Section 2 — stats cards: the only scrollable region. Framed by top
@@ -79,12 +83,7 @@ export function DatasetInteractiveSection({
               <DatasetStatsTable dataset={dataset} />
             </div>
 
-            {/* Section 3 — timestamps: fixed height at the bottom. */}
-            <div className="shrink-0">
-              <DatasetTimestamps dataset={dataset} lastChecked={lastChecked} />
-            </div>
-
-            {/* Section 4 — action buttons: fixed height at the bottom. */}
+            {/* Section 3 — action buttons: fixed height at the bottom. */}
             <DatasetActionsSection
               dataset={dataset}
               savedCount={savedCount}
