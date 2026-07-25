@@ -1,7 +1,7 @@
 "use client";
 
 import type { Dataset } from "@/schemas/dataset";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import {
   Table,
   TableBody,
@@ -10,6 +10,7 @@ import {
   Cell,
   Column,
 } from "react-aria-components";
+import { formatRelativeTime } from "@/lib/dataset-stats";
 
 type DatasetStatsTableProps = {
   dataset: Dataset;
@@ -22,55 +23,25 @@ type TableRowData = {
 
 export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
   const t = useTranslations("DatasetPage");
-  const pageT = useTranslations("DatasetPage");
+  const locale = useLocale();
 
-  const dataRows: TableRowData[] = [
+  const rows: TableRowData[] = [
     {
-      label: pageT("totalFeatures"),
+      label: t("totalFeatures"),
       value: dataset.dataCount.toLocaleString(),
     },
     {
-      label: pageT("totalEditors"),
+      label: t("totalEditors"),
       value: (dataset.stats?.editorsCount || 0).toLocaleString(),
     },
     {
-      label: pageT("changesets"),
-      value: (dataset.stats?.changesetsCount || 0).toLocaleString(),
+      label: t("lastEdited"),
+      value: formatRelativeTime(dataset.stats?.mostRecentElement, locale),
     },
   ];
 
-  const activityRows: TableRowData[] = [];
-
-  if (dataset.stats?.recentActivity) {
-    const elementsEdited = dataset.stats.recentActivity.elementsEdited;
-    const editorsCount = dataset.stats?.editorsCount || 0;
-
-    let activityLevel;
-    if (elementsEdited > 50) {
-      activityLevel = pageT("veryActive");
-    } else if (elementsEdited > 10) {
-      activityLevel = pageT("active");
-    } else {
-      activityLevel = pageT("lowActivity");
-    }
-
-    let communityStrength;
-    if (editorsCount > 5) {
-      communityStrength = pageT("strongCommunity");
-    } else if (editorsCount > 1) {
-      communityStrength = pageT("someContributors");
-    } else {
-      communityStrength = pageT("singleEditor");
-    }
-
-    activityRows.push(
-      { label: pageT("activityLevel"), value: activityLevel },
-      { label: pageT("communityStrength"), value: communityStrength }
-    );
-  }
-
-  const renderTable = (rows: TableRowData[], ariaLabel: string) => (
-    <Table aria-label={ariaLabel} className="w-full">
+  return (
+    <Table aria-label={t("dataMetrics")} className="w-full">
       <TableHeader>
         <Column isRowHeader className="sr-only">
           {t("property")}
@@ -88,25 +59,5 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
         ))}
       </TableBody>
     </Table>
-  );
-
-  return (
-    <div className="space-y-6">
-      {/* Data Overview */}
-      <div className="space-y-2">
-        <h3 className="text-sm font-semibold">{t("dataMetrics")}</h3>
-        {renderTable(dataRows, t("dataMetrics"))}
-      </div>
-
-      {/* Activity Assessment */}
-      {activityRows.length > 0 && (
-        <div className="space-y-2">
-          <h3 className="text-sm font-semibold">
-            {pageT("communityActivity")}
-          </h3>
-          {renderTable(activityRows, pageT("overallAssessment"))}
-        </div>
-      )}
-    </div>
   );
 }

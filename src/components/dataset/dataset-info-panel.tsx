@@ -3,44 +3,17 @@
 import type { Dataset } from "@/schemas/dataset";
 import { useTranslations } from "next-intl";
 import { Star } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  Row,
-  Cell,
-  Column,
-} from "react-aria-components";
 
 type DatasetInfoPanelProps = {
   dataset: Dataset;
 };
 
-type InfoRowData = {
-  label: string;
-  value: string;
-  isPill?: boolean;
-};
-
 export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
   const t = useTranslations("DatasetPage");
-
-  const basicInfoRows: InfoRowData[] = [
-    { label: t("category"), value: dataset.template.category?.name ?? "other", isPill: true },
-    {
-      label: t("status"),
-      value: dataset.isActive ? t("active") : t("inactive"),
-      isPill: true,
-    },
-    {
-      label: t("visibility"),
-      value: t("public"),
-      isPill: true,
-    },
-  ];
+  const category = dataset.template.category?.name ?? "other";
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <h2
         className="text-xl font-semibold leading-tight"
         data-testid="dataset-template-name"
@@ -61,38 +34,11 @@ export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
         )}
       </h2>
 
-      <div className="space-y-2">
-        <h3 className="text-sm font-semibold">{t("basicInfo")}</h3>
-        <Table aria-label={t("basicInfo")} className="w-full">
-          <TableHeader>
-            <Column isRowHeader className="sr-only">
-              {t("property")}
-            </Column>
-            <Column className="sr-only">{t("value")}</Column>
-          </TableHeader>
-          <TableBody>
-            {basicInfoRows.map((row, index) => (
-              <Row
-                key={index}
-                className="border-b border-gray-200 last:border-b-0"
-              >
-                <Cell className="py-2 text-sm text-gray-700">{row.label}</Cell>
-                <Cell className="text-right py-2 text-sm">
-                  {row.isPill ? (
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
-                      {row.value}
-                    </span>
-                  ) : (
-                    <span className="font-semibold text-gray-900">
-                      {row.value}
-                    </span>
-                  )}
-                </Cell>
-              </Row>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      {/* Category shown as a facet pill; drop-in link to a category filter later
+          keeps the same chip idiom. */}
+      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
+        {category}
+      </span>
     </div>
   );
 }
