@@ -48,7 +48,7 @@ export function DatasetInteractiveSection({
   return (
     <div className="flex flex-col lg:flex-row lg:flex-1 lg:h-full lg:min-h-0 lg:overflow-hidden">
       {/* Side Panel */}
-      <aside className="bg-white border-b lg:border-b-0 lg:border-r border-gray-200 p-6 flex flex-col lg:w-96 lg:flex-shrink-0 lg:h-full">
+      <aside className="bg-white border-b lg:border-b-0 lg:border-r border-gray-200 px-6 py-4 flex flex-col lg:w-96 lg:flex-shrink-0 lg:h-full">
         {selectedFeature ? (
           <FeatureDetailPanel
             feature={selectedFeature}
@@ -67,7 +67,7 @@ export function DatasetInteractiveSection({
                 Fixed at top, never scrolls. */}
             <div className="shrink-0">
               {/* Back link to the area — its own row, the single nav control. */}
-              <div className="mb-3 flex">
+              <div className="mb-2 flex">
                 <Link
                   href={`/area/${dataset.area.id}`}
                   aria-label={t("backToAreaLabel", { area: areaName })}
@@ -90,7 +90,7 @@ export function DatasetInteractiveSection({
 
             {/* Section 2 — tiered stats: the only scrollable region. Framed by top
                 and bottom rules so the scroll boundary is clear. */}
-            <div className="flex-1 min-h-0 overflow-y-auto flex flex-col border-y border-gray-200 my-4 py-4 pr-3">
+            <div className="flex-1 min-h-0 overflow-y-auto flex flex-col border-y border-gray-200 my-3 py-3 pr-3">
               <DatasetPanelStats dataset={dataset} />
             </div>
 
