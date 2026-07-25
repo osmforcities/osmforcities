@@ -33,10 +33,10 @@ async function main() {
     try {
       await refreshAreaInfo(area.id, area.bounds);
       refreshed++;
-      console.log(`  [${refreshed + failed}/${areas.length}] area ${area.id} ✓`);
+      console.log(`  [${refreshed + failed}/${areas.length}] area ${area.id} ok`);
     } catch (error) {
       failed++;
-      console.error(`  [${refreshed + failed}/${areas.length}] area ${area.id} ✗`, error);
+      console.error(`  [${refreshed + failed}/${areas.length}] area ${area.id} FAILED`, error);
     }
   }
 
