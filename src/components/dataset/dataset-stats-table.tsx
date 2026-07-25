@@ -14,6 +14,7 @@ import { formatRelativeTime } from "@/lib/dataset-stats";
 
 type DatasetStatsTableProps = {
   dataset: Dataset;
+  lastChecked?: Date | string | null;
 };
 
 type TableRowData = {
@@ -21,7 +22,10 @@ type TableRowData = {
   value: string;
 };
 
-export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
+export function DatasetStatsTable({
+  dataset,
+  lastChecked,
+}: DatasetStatsTableProps) {
   const t = useTranslations("DatasetPage");
   const locale = useLocale();
 
@@ -37,6 +41,10 @@ export function DatasetStatsTable({ dataset }: DatasetStatsTableProps) {
     {
       label: t("lastEdited"),
       value: formatRelativeTime(dataset.stats?.mostRecentElement, locale),
+    },
+    {
+      label: t("lastCheckedLabel"),
+      value: formatRelativeTime(lastChecked, locale),
     },
   ];
 

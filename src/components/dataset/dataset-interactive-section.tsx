@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { MapPin } from "lucide-react";
+import { MapPin, LayoutGrid } from "lucide-react";
 import type { Feature, FeatureCollection } from "geojson";
 import type { Dataset } from "@/schemas/dataset";
 import { Link } from "@/i18n/navigation";
@@ -26,6 +26,7 @@ export function DatasetInteractiveSection({
   saveLimit,
 }: DatasetInteractiveSectionProps) {
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
+  const [lastChecked, setLastChecked] = useState(dataset.lastChecked);
   const mapRef = useRef<DatasetFullMapHandle>(null);
   const t = useTranslations("DatasetPage");
 
@@ -54,19 +55,31 @@ export function DatasetInteractiveSection({
           />
         ) : (
           <>
-            <Link
-              href={`/area/${dataset.area.id}`}
-              aria-label={t("viewAreaLabel", { area: dataset.area.name })}
-              className="flex items-start gap-1 mb-4 text-xs font-bold uppercase tracking-wide text-olive-600 hover:underline transition-colors"
-            >
-              <MapPin className="size-3.5 flex-shrink-0 mt-px" aria-hidden />
-              <span>{dataset.area.name}</span>
-            </Link>
+            <div className="mb-4 space-y-1">
+              {/* Place label (context) */}
+              <p className="flex items-start gap-1 text-xs font-bold uppercase tracking-wide text-olive-600">
+                <MapPin className="size-3.5 flex-shrink-0 mt-px" aria-hidden />
+                <span>{dataset.area.name}</span>
+              </p>
+              {/* Explicit browse affordance to the area's dataset list */}
+              <Link
+                href={`/area/${dataset.area.id}`}
+                className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 hover:underline transition-colors"
+              >
+                <LayoutGrid className="size-3 flex-shrink-0" aria-hidden />
+                {t("allDatasetsInArea", { area: dataset.area.name })}
+              </Link>
+            </div>
             <div className="flex-1 overflow-y-auto space-y-6" data-testid="dataset-sidebar-default">
               <DatasetInfoPanel dataset={dataset} />
-              <DatasetStatsTable dataset={dataset} />
+              <DatasetStatsTable dataset={dataset} lastChecked={lastChecked} />
             </div>
-            <DatasetActionsSection dataset={dataset} savedCount={savedCount} saveLimit={saveLimit} />
+            <DatasetActionsSection
+              dataset={dataset}
+              savedCount={savedCount}
+              saveLimit={saveLimit}
+              onRefreshed={setLastChecked}
+            />
           </>
         )}
       </aside>

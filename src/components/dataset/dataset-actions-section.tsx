@@ -1,28 +1,28 @@
 "use client";
 
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/components/ui/link";
-import { Download, RefreshCw, Bookmark, BookmarkMinus, Star, Clock } from "lucide-react";
+import { Download, RefreshCw, Bookmark, BookmarkMinus, Star } from "lucide-react";
 import type { Dataset } from "@/schemas/dataset";
 import { useDatasetDownload } from "@/hooks/useDatasetDownload";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
-import { formatRelativeTime } from "@/lib/dataset-stats";
 import { useState } from "react";
 
 type DatasetActionsSectionProps = {
   dataset: Dataset;
   savedCount?: number;
   saveLimit?: number;
+  onRefreshed?: (lastChecked: Date) => void;
 };
 
 export function DatasetActionsSection({
   dataset,
   savedCount = 0,
   saveLimit,
+  onRefreshed,
 }: DatasetActionsSectionProps) {
   const t = useTranslations("DatasetPage");
-  const locale = useLocale();
   const { downloadDataset } = useDatasetDownload();
   const { saveDataset, unsaveDataset, refreshDataset, isLoading } =
     useDatasetActions();
@@ -30,7 +30,6 @@ export function DatasetActionsSection({
   const [isSaved, setIsSaved] = useState(dataset.isSaved || false);
   const [saveCount, setSaveCount] = useState(savedCount);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [lastChecked, setLastChecked] = useState(dataset.lastChecked);
   const [isFeatured, setIsFeatured] = useState(dataset.isFeatured ?? false);
   const [isFeaturingLoading, setIsFeaturingLoading] = useState(false);
   const [hasFeatureError, setHasFeatureError] = useState(false);
@@ -100,7 +99,7 @@ export function DatasetActionsSection({
     try {
       const result = await refreshDataset(dataset.id);
       if (result.success) {
-        setLastChecked(result.lastChecked ?? new Date());
+        onRefreshed?.(result.lastChecked ?? new Date());
       } else {
         console.error("Failed to refresh dataset:", result.error);
       }
@@ -204,16 +203,6 @@ export function DatasetActionsSection({
             })}
           </p>
         )}
-
-        {/* Last-fetched caption, shown to everyone (admins also get the refresh control) */}
-        <p className="flex items-center gap-1 pt-1 text-xs text-muted-foreground">
-          <Clock className="h-3 w-3" />
-          {lastChecked
-            ? t("dataFetched", {
-                time: formatRelativeTime(lastChecked, locale),
-              })
-            : t("dataNotFetched")}
-        </p>
       </div>
     </div>
   );
