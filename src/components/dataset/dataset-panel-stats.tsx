@@ -274,21 +274,21 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       {/* Mappers — moved above Features so the feature-describing blocks (type,
           freshness, tags) stay together below. First recency bar on the panel,
           so it carries the shared recency legend. Edits ride in the headline. */}
-      <Section eyebrow={t("mappersActiveRecently")}>
+      <Section>
         <Headline
           value={editors != null ? nf.format(editors) : "—"}
           unit={mappersUnit}
           icon={Users}
         />
         {mappersSegments && (
-          <>
+          <SubBlock eyebrow={t("mappersActiveRecently")}>
             <SegmentedBar
               segments={mappersSegments}
               showLegend={false}
               ariaLabel={t("mappersActiveRecently")}
             />
             <RecencyLegend labels={recencyLabels} />
-          </>
+          </SubBlock>
         )}
       </Section>
 
@@ -319,7 +319,10 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           </SubBlock>
         )}
         {tagGroups.length > 0 && (
-          <SubBlock eyebrow={t("mostUsedTags")}>
+          <SubBlock
+            eyebrow={t("mostUsedTags")}
+            className="border-t border-gray-200 pt-3"
+          >
             <div className="flex flex-col gap-1.5">
               {tagGroups.map((g) => (
                 <div key={g.label} className="flex items-center gap-2">
@@ -372,12 +375,14 @@ function Section({
 function SubBlock({
   eyebrow,
   children,
+  className,
 }: {
   eyebrow: string;
   children: ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className={`flex flex-col gap-1.5${className ? ` ${className}` : ""}`}>
       <p className="text-[10px] font-bold uppercase tracking-[0.09em] text-gray-400">
         {eyebrow}
       </p>
