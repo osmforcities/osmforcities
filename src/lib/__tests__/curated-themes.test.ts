@@ -7,6 +7,7 @@ import {
   buildAgeVisibilityFilter,
   buildTagVisibilityFilter,
   buildCuratedColorExpression,
+  sortForDisplay,
   OTHER_CATEGORY,
   MISSING_CATEGORY,
   TOP_VALUES_COUNT,
@@ -18,6 +19,61 @@ const feature = (properties: Record<string, unknown> | null): Feature =>
 
 const surfaceFeatures = (values: string[]) =>
   values.map((surface) => feature({ surface }));
+
+describe("sortForDisplay", () => {
+  it("sorts numeric values ascending", () => {
+    const sorted = sortForDisplay([
+      { value: "10", count: 3 },
+      { value: "2", count: 2 },
+      { value: "5", count: 1 },
+    ]);
+    expect(sorted.map((v) => v.value)).toEqual(["2", "5", "10"]);
+  });
+
+  it("keeps count order for non-numeric values", () => {
+    const values = [
+      { value: "asphalt", count: 3 },
+      { value: "gravel", count: 1 },
+    ];
+    expect(sortForDisplay(values)).toEqual(values);
+  });
+
+  it("keeps count order when values are mixed numeric/non-numeric", () => {
+    const values = [
+      { value: "yes", count: 3 },
+      { value: "2", count: 1 },
+    ];
+    expect(sortForDisplay(values)).toEqual(values);
+  });
+
+  it("handles decimals and negatives numerically", () => {
+    const sorted = sortForDisplay([
+      { value: "1.5", count: 1 },
+      { value: "-2", count: 1 },
+      { value: "10", count: 1 },
+    ]);
+    expect(sorted.map((v) => v.value)).toEqual(["-2", "1.5", "10"]);
+  });
+});
+
+describe("buildCuratedThemes — numeric display order", () => {
+  it("selects top values by count but displays them ascending numerically", () => {
+    const features = [
+      feature({ capacity: "10" }),
+      feature({ capacity: "10" }),
+      feature({ capacity: "10" }),
+      feature({ capacity: "2" }),
+      feature({ capacity: "2" }),
+      feature({ capacity: "5" }),
+    ];
+
+    const [theme] = buildCuratedThemes(features, ["capacity"]);
+
+    expect(theme.topValues.map((v) => v.value)).toEqual(["2", "5", "10"]);
+    // colors are assigned in the displayed (numeric) order
+    expect(theme.colorMap.get("2")).toBe(PALETTES.categorical.tableau10[0]);
+  });
+});
 
 describe("buildCuratedThemes", () => {
   it("builds one theme per allow-listed tag present, skipping absent tags", () => {

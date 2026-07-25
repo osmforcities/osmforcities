@@ -24,11 +24,10 @@ export type FilterDimension = {
 };
 
 /**
- * Allow-list of tag keys that become filter dimensions. Introduced progressively:
- * grow this list as more tags prove useful to filter on.
- *
- * TODO(#184): move allow-list to per-template config (templates.yml) so datasets
- * expose the tags meaningful to them (e.g. trees -> genus/leaf_type).
+ * Default allow-list of tag keys that become filter dimensions, used only when a
+ * caller omits the `filterableTags` argument. The dataset map always passes a
+ * template's explicit list (empty -> age-only), so this default does not act as a
+ * per-template fallback; per-template lists live in templates.yml.
  */
 export const FILTERABLE_TAGS: readonly string[] = [
   "surface",

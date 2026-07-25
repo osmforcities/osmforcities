@@ -285,14 +285,38 @@ describe("template-parser", () => {
     it("loads templates.yml array format and returns entries + categories", () => {
       const { entries, categories } = loadTemplatesLogic("./prisma");
       expect(entries.length).toBeGreaterThan(0);
-      expect(entries[0]).toEqual({
+      const byId = new Map(entries.map((e) => [e.id, e]));
+      expect(byId.get("bicycle-parking")).toEqual({
         id: "bicycle-parking",
         query: "amenity=bicycle_parking",
         category: "transportation",
         icon: "Bike",
+        parent: "bicycle-infrastructure",
+        filterableTags: [
+          "bicycle_parking",
+          "covered",
+          "capacity",
+          "access",
+          "fee",
+        ],
       });
       expect(categories.transportation).toBe("Car");
       expect(categories.agriculture).toBe("Wheat");
+    });
+
+    it("attaches per-template filterableTags from the map (curated only)", () => {
+      const { entries } = loadTemplatesLogic("./prisma");
+      const byId = new Map(entries.map((e) => [e.id, e]));
+      // Curated templates carry their list
+      expect(byId.get("bus-stops")?.filterableTags).toEqual([
+        "shelter",
+        "bench",
+        "covered",
+        "lit",
+        "tactile_paving",
+      ]);
+      // Uncurated templates have no list (age-only in the legend)
+      expect(byId.get("hospitals")?.filterableTags).toBeUndefined();
     });
   });
 

@@ -12,7 +12,7 @@ import {
 import { PALETTES } from "./map-palettes";
 
 /**
- * A curated categorical theme for an allow-listed tag (#184). Unlike the old
+ * A curated categorical theme for an allow-listed tag. Unlike the old
  * auto-detected themes, curation means the tag was explicitly approved as
  * meaningful to color by — no scoring, no coverage gating.
  */
@@ -26,6 +26,8 @@ export type CuratedTheme = {
   otherCount: number;
   /** Features lacking the tag entirely */
   missingCount: number;
+  /** topValues are already in final display order; the legend must not re-sort them. */
+  presorted: boolean;
 };
 
 /** Legend/category ids for the synthetic buckets of a tag view. */
@@ -49,6 +51,28 @@ export function buildCuratedThemes(
   );
 }
 
+/** A value is numeric if it is an integer or decimal (e.g. capacity "12"). */
+const NUMERIC_VALUE = /^-?\d+(\.\d+)?$/;
+
+/** True when the dimension is numeric — every shown value parses as a number. */
+export function isNumericValues(
+  values: Array<{ value: string; count: number }>
+): boolean {
+  return values.length > 0 && values.every((v) => NUMERIC_VALUE.test(v.value));
+}
+
+/**
+ * Order legend rows for display: numeric fields ascending (2,4,6,...), otherwise
+ * keep the incoming count-desc order (the component re-sorts categorical rows by
+ * localized label). Returns a new array only when it sorts.
+ */
+export function sortForDisplay(
+  values: Array<{ value: string; count: number }>
+): Array<{ value: string; count: number }> {
+  if (!isNumericValues(values)) return values;
+  return [...values].sort((a, b) => Number(a.value) - Number(b.value));
+}
+
 /**
  * Variant taking precomputed dimensions, so callers that also need the age
  * dimension can run computeFilterDimensions once and derive both from it.
@@ -59,7 +83,11 @@ export function buildCuratedThemesFromDimensions(
   return dimensions
     .filter((dim) => dim.kind === "tag")
     .map((dim) => {
-      const topValues = dim.values.slice(0, TOP_VALUES_COUNT);
+      // Keep the top values (dim.values is count-desc); sortForDisplay orders
+      // numeric fields ascending and leaves categorical ones for the component.
+      const selected = dim.values.slice(0, TOP_VALUES_COUNT);
+      const topValues = sortForDisplay(selected);
+      const presorted = isNumericValues(selected);
       const otherCount = dim.values
         .slice(TOP_VALUES_COUNT)
         .reduce((sum, v) => sum + v.count, 0);
@@ -75,6 +103,7 @@ export function buildCuratedThemesFromDimensions(
         topValues,
         otherCount,
         missingCount: dim.missing,
+        presorted,
       };
     });
 }

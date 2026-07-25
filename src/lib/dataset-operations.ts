@@ -92,6 +92,7 @@ async function getDatasetWithDetails(areaId: number, templateId: string, locale:
             },
           },
           tags: true,
+          filterableTags: true,
           translations: {
             select: {
               locale: true,
@@ -252,6 +253,7 @@ async function createDatasetOnDemand(
               },
             },
             tags: true,
+            filterableTags: true,
             translations: {
               select: {
                 locale: true,
@@ -380,6 +382,7 @@ export async function getDatasetMetadata(
           description: true,
           category: true,
           tags: true,
+          filterableTags: true,
           translations: true,
         },
       },

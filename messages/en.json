@@ -666,5 +666,50 @@
       "title": "{area} - Datasets - OSM for Cities",
       "description": "Explore OpenStreetMap datasets for {area}"
     }
+  },
+  "TagLabel": {
+    "shelter": "Shelter",
+    "bench": "Bench",
+    "covered": "Covered",
+    "lit": "Lit",
+    "tactile_paving": "Tactile paving",
+    "bicycle_parking": "Type",
+    "capacity": "Capacity",
+    "access": "Access",
+    "fee": "Fee"
+  },
+  "TagValue": {
+    "__common__": {
+      "yes": "Yes",
+      "no": "No",
+      "limited": "Limited"
+    },
+    "access": {
+      "private": "Private",
+      "customers": "Customers",
+      "permissive": "Permissive",
+      "designated": "Designated",
+      "permit": "By permit"
+    },
+    "bicycle_parking": {
+      "stands": "Stands",
+      "wide_stands": "Wide stands",
+      "low_stands": "Low stands",
+      "large_stands": "Large stands",
+      "wall_loops": "Wall loops",
+      "safe_loops": "Safe loops",
+      "ground_slots": "Ground slots",
+      "rack": "Rack",
+      "two-tier": "Two-tier",
+      "shed": "Shed",
+      "floor": "Floor",
+      "lockers": "Lockers",
+      "building": "Building",
+      "bollard": "Bollard",
+      "anchors": "Anchors",
+      "handlebar_holder": "Handlebar holder",
+      "crossbar": "Crossbar",
+      "informal": "Informal"
+    }
   }
 }

@@ -276,6 +276,14 @@ templates:
   # =========================
   # Vegetation requiring attention during extreme weather events
   - ["vegetation-risk-context","natural=tree;natural=tree_row;natural=wood","emergency","TriangleAlert"]
+# Per-template filterable-tag allow-list.
+# Curated OSM tag keys that become interactive-legend views for a template.
+# Templates absent here show the age ("Recent edits") view only.
+# Add tag-key labels to messages/*.json (TagLabel) and controlled values (TagValue).
+filterableTags:
+  bus-stops:       [shelter, bench, covered, lit, tactile_paving]
+  bicycle-parking: [bicycle_parking, covered, capacity, access, fee]
+
 # Category to icon mapping (fallback for templates without icon)
 categories:
   transportation: Car
