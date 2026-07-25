@@ -44,17 +44,16 @@ function ageBand(ageMs: number): 0 | 1 | 2 | 3 {
 type GeomItem = {
   count: number;
   pct: number;
-  colorClass: string;
   textClass: string;
   icon: LucideIcon;
   filled: boolean;
   label: string;
-  lower: string;
-  display: string;
+  // Length/area metric for lines/areas (e.g. "1.8 km"); undefined for points.
+  metric?: string;
 };
 
 const RECENCY_COLORS = [
-  "bg-olive-600",
+  "bg-olive-500",
   "bg-olive-400",
   "bg-gray-300",
   "bg-gray-200",
@@ -196,61 +195,41 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
     t("band2yPlus"),
   ];
 
-  // --- Overview -----------------------------------------------------------
-  // Geometry types share the panel's olive palette (600/400/200) rather than a
-  // separate categorical set — the legend icons carry the point/line/area
-  // meaning, so color only needs to separate the three slices.
+  // --- Features by type ---------------------------------------------------
+  // Always three fixed rows (points/lines/areas), even at 0, so the section
+  // keeps one stable shape across every dataset. Each row mirrors a tag row:
+  // icon + label, a share bar, and the count (+ km/km² for lines/areas). The
+  // per-type icon tint carries type identity; the bar color stays uniform.
   const geomItems: GeomItem[] | null = derived
     ? [
         {
           count: derived.points,
           pct: (derived.points / derived.total) * 100,
-          colorClass: "bg-olive-600",
-          textClass: "text-olive-600",
+          textClass: "text-olive-500",
           icon: Circle,
           filled: true,
           label: t("geomPoints"),
-          lower: t("geomPointsLower"),
-          // Nodes carry no length/area metric, so surface their count instead.
-          display: nf.format(derived.points),
         },
         {
           count: derived.lines,
           pct: (derived.lines / derived.total) * 100,
-          colorClass: "bg-olive-400",
           textClass: "text-olive-400",
           icon: Spline,
           filled: false,
           label: t("geomLines"),
-          lower: t("geomLinesLower"),
-          display: `${formatKm(derived.lineKm, nf)} km`,
+          metric: `${formatKm(derived.lineKm, nf)} km`,
         },
         {
           count: derived.areas,
           pct: (derived.areas / derived.total) * 100,
-          colorClass: "bg-olive-300",
           textClass: "text-olive-300",
           icon: Pentagon,
           filled: false,
           label: t("geomAreas"),
-          lower: t("geomAreasLower"),
-          display: `${formatKm(derived.areaKm2, nf)} km²`,
+          metric: `${formatKm(derived.areaKm2, nf)} km²`,
         },
       ]
     : null;
-  // Legend/bar only show geometry types actually present. When exactly one is
-  // present the bar is a meaningless solid block, so we render a sentence.
-  const geomPresent = geomItems ? geomItems.filter((g) => g.count > 0) : [];
-  const soleGeom = geomPresent.length === 1 ? geomPresent[0] : null;
-  const geomSegments: BarSegment[] | null =
-    geomPresent.length > 0
-      ? geomPresent.map(({ pct, colorClass, label, display }) => ({
-          pct,
-          colorClass,
-          label,
-          value: display,
-        }))
-      : null;
 
   // --- Freshness (recency of each feature's last edit) --------------------
   // Prefer the per-feature geojson timestamps; fall back to the stored
@@ -333,30 +312,36 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           value={nf.format(dataset.dataCount)}
           icon={MapPin}
         />
-        {geomSegments && soleGeom == null && (
+        {geomItems && (
           <SubBlock eyebrow={t("byType")}>
-            <SegmentedBar
-              segments={geomSegments}
-              showLegend={false}
-              ariaLabel={t("byType")}
-            />
-            <GeomLegend items={geomPresent} />
-          </SubBlock>
-        )}
-        {soleGeom && (
-          <SubBlock eyebrow={t("byType")}>
-            <p className="flex items-center gap-1.5 text-[12px] text-gray-500">
-              <soleGeom.icon
-                className={`size-3.5 flex-none ${
-                  soleGeom.filled ? "fill-current " : ""
-                }${soleGeom.textClass}`}
-                aria-hidden
-              />
-              {t("allFeaturesAre", {
-                count: nf.format(soleGeom.count),
-                type: soleGeom.lower,
-              })}
-            </p>
+            <div className="flex flex-col gap-1.5">
+              {geomItems.map((g) => (
+                <StatRow
+                  key={g.label}
+                  pct={g.pct}
+                  valueClassName="w-24"
+                  leading={
+                    <span className="flex min-w-0 items-center gap-1.5">
+                      <g.icon
+                        className={`size-3.5 flex-none ${
+                          g.filled ? "fill-current " : ""
+                        }${g.textClass}`}
+                        aria-hidden
+                      />
+                      <span className="truncate">{g.label}</span>
+                    </span>
+                  }
+                  value={
+                    <>
+                      {nf.format(g.count)}
+                      {g.metric && (
+                        <span className="text-gray-400">{` · ${g.metric}`}</span>
+                      )}
+                    </>
+                  }
+                />
+              ))}
+            </div>
           </SubBlock>
         )}
         {freshnessSegments && (
@@ -376,27 +361,25 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       {tagGroups.length > 0 && (
         <Section divided>
           <SectionHeader title={t("titleTags")} icon={Tag} />
-          <div className="flex flex-col gap-1.5">
-            {tagGroups.map((g) => (
-              <div key={g.label} className="flex items-center gap-2">
-                <code className="min-w-0 flex-1 truncate font-mono text-[11.5px] text-gray-900">
-                  {g.keys.join(" · ")}
-                  {g.extra > 0 && (
-                    <span className="text-gray-400">{` +${g.extra}`}</span>
-                  )}
-                </code>
-                <div className="h-1 w-14 flex-none overflow-hidden rounded-full bg-olive-100">
-                  <span
-                    className="block h-full rounded-full bg-olive-500"
-                    style={{ width: `${g.pct}%` }}
-                  />
-                </div>
-                <span className="w-9 flex-none text-right text-[11px] tabular-nums text-gray-500">
-                  {g.label}
-                </span>
-              </div>
-            ))}
-          </div>
+          <SubBlock eyebrow={t("mostUsedTags")}>
+            <div className="flex flex-col gap-1.5">
+              {tagGroups.map((g) => (
+                <StatRow
+                  key={g.label}
+                  pct={g.pct}
+                  leading={
+                    <code className="block truncate font-mono text-[11.5px] text-gray-900">
+                      {g.keys.join(" · ")}
+                      {g.extra > 0 && (
+                        <span className="text-gray-400">{` +${nf.format(g.extra)}`}</span>
+                      )}
+                    </code>
+                  }
+                  value={g.label}
+                />
+              ))}
+            </div>
+          </SubBlock>
         </Section>
       )}
     </div>
@@ -470,21 +453,34 @@ function RecencyLegend({ labels }: { labels: string[] }) {
   );
 }
 
-// Compact geometry legend: one colored glyph per present type, matching its bar
-// slice's color. Nodes carry no length/area, so they show their formatted count;
-// lines/areas show total km / km² (which lives nowhere else on the panel).
-function GeomLegend({ items }: { items: GeomItem[] }) {
+// One list row shared by the Features-by-type and Most-used-tags sections: a
+// leading label (icon+name or tag key), a share bar, and a right-aligned value.
+// One grammar for both keeps the two list sections visually consistent.
+function StatRow({
+  leading,
+  pct,
+  value,
+  valueClassName = "w-9",
+}: {
+  leading: ReactNode;
+  pct: number;
+  value: ReactNode;
+  valueClassName?: string;
+}) {
   return (
-    <div className="mt-0.5 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gray-400">
-      {items.map(({ icon: Icon, textClass, filled, label, display }) => (
-        <span key={label} className="inline-flex items-center gap-1.5">
-          <Icon
-            className={`size-3.5 flex-none ${filled ? "fill-current " : ""}${textClass}`}
-            aria-label={label}
-          />
-          <span className="tabular-nums">{display}</span>
-        </span>
-      ))}
+    <div className="flex items-center gap-2">
+      <div className="min-w-0 flex-1">{leading}</div>
+      <div className="h-1 w-14 flex-none overflow-hidden rounded-full bg-olive-100">
+        <span
+          className="block h-full rounded-full bg-olive-500"
+          style={{ width: `${Math.min(pct, 100)}%` }}
+        />
+      </div>
+      <span
+        className={`flex-none text-right text-[11px] tabular-nums text-gray-500 ${valueClassName}`}
+      >
+        {value}
+      </span>
     </div>
   );
 }
@@ -512,7 +508,7 @@ function SectionHeader({
         </span>
       )}
       <Icon
-        className={`size-[18px] self-center text-olive-600${
+        className={`size-[18px] self-center text-olive-500${
           value == null ? " ml-auto" : ""
         }`}
         aria-hidden
