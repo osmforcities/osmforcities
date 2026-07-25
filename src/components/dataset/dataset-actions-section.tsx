@@ -131,12 +131,12 @@ export function DatasetActionsSection({
   const showAdmin = dataset.canFeature || dataset.canRefresh;
 
   return (
-    <div className="flex flex-col gap-2.5 pt-2">
+    <div className="flex flex-col gap-2 pt-2">
       {/* Primary CTA — Save. Filled to invite use; switches to outline once done. */}
       <Button
         onClick={handleToggleSave}
         disabled={isLoading || atLimit || dataset.canSave === false}
-        className="h-9 w-full text-sm"
+        className="h-8 w-full text-sm"
         variant={isSaved ? "outline" : "default"}
         title={saveLabel.title}
         data-testid={isSaved ? "dataset-unsave-button" : "dataset-save-button"}
@@ -170,7 +170,7 @@ export function DatasetActionsSection({
         <Button
           onClick={() => downloadDataset(dataset)}
           disabled={!dataset.geojson}
-          className="h-9 flex-1"
+          className="h-8 flex-1"
           variant="outline"
           title={t("downloadData")}
           aria-label={t("downloadData")}
@@ -179,7 +179,7 @@ export function DatasetActionsSection({
         </Button>
         <Button
           onClick={handleShare}
-          className="h-9 flex-1"
+          className="h-8 flex-1"
           variant="outline"
           title={t("shareTooltip")}
           aria-label={shareCopied ? t("shareCopied") : t("share")}

@@ -325,30 +325,10 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
 
   return (
     <div className="flex flex-1 flex-col gap-4">
-      {/* Mappers — first recency bar on the panel, so it carries the shared
-          recency legend. Kept above Features so the feature-describing blocks
-          (type, freshness) stay together below. */}
+      {/* Features — the headline stat, given top billing. Two sub-blocks
+          describe the features: geometry mix and edit recency, separated by a
+          light intra-section rule. */}
       <Section>
-        <SectionHeader
-          title={t("titleMappers")}
-          value={editors != null ? formatCompactNumber(editors) : "—"}
-          icon={Users}
-        />
-        {mappersSegments && (
-          <SubBlock eyebrow={t("activeRecently")} unit="%">
-            <SegmentedBar
-              segments={mappersSegments}
-              showLegend={false}
-              ariaLabel={t("activeRecently")}
-            />
-            <RecencyLegend labels={recencyLabels} />
-          </SubBlock>
-        )}
-      </Section>
-
-      {/* Features — the main stat, then two sub-blocks describing the features:
-          geometry mix and edit recency. */}
-      <Section divided>
         <SectionHeader
           title={t("titleFeatures")}
           value={formatCompactNumber(dataset.dataCount)}
@@ -365,11 +345,31 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           </SubBlock>
         )}
         {freshnessSegments && (
-          <SubBlock eyebrow={t("recentlyEdited")} unit="%">
+          <SubBlock eyebrow={t("recentlyEdited")} unit="%" divider>
             <SegmentedBar
               segments={freshnessSegments}
               showLegend={false}
               ariaLabel={t("recentlyEdited")}
+            />
+            <RecencyLegend labels={recencyLabels} />
+          </SubBlock>
+        )}
+      </Section>
+
+      {/* Mappers — secondary to Features; its recency bar reuses the shared
+          recency legend/colors. */}
+      <Section divided>
+        <SectionHeader
+          title={t("titleMappers")}
+          value={editors != null ? formatCompactNumber(editors) : "—"}
+          icon={Users}
+        />
+        {mappersSegments && (
+          <SubBlock eyebrow={t("activeRecently")} unit="%">
+            <SegmentedBar
+              segments={mappersSegments}
+              showLegend={false}
+              ariaLabel={t("activeRecently")}
             />
             <RecencyLegend labels={recencyLabels} />
           </SubBlock>
@@ -453,14 +453,22 @@ function SubBlock({
   unit,
   children,
   className,
+  divider,
 }: {
   eyebrow: string;
   unit?: string;
   children: ReactNode;
   className?: string;
+  // Draws a light rule + extra top padding above the block, separating it from
+  // a preceding chart in the same section (subordinate to the section divider).
+  divider?: boolean;
 }) {
   return (
-    <div className={`flex flex-col gap-1.5${className ? ` ${className}` : ""}`}>
+    <div
+      className={`flex flex-col gap-1.5${
+        divider ? " mt-1 border-t border-gray-100 pt-3" : ""
+      }${className ? ` ${className}` : ""}`}
+    >
       <p className="flex items-baseline justify-between text-[10px] font-bold uppercase tracking-[0.09em] text-gray-400">
         <span>{eyebrow}</span>
         {unit && (
