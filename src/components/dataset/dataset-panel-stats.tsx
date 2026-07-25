@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import type { ReactNode } from "react";
 import type { Feature } from "geojson";
 import { useTranslations, useLocale } from "next-intl";
-import { MapPin, Users } from "lucide-react";
+import { MapPin, Users, Circle, Spline, Pentagon } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import area from "@turf/area";
 import length from "@turf/length";
@@ -185,33 +185,51 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   ];
 
   // --- Overview -----------------------------------------------------------
-  const geomSegments: BarSegment[] | null = derived
+  // Geometry types share the panel's olive palette (600/400/200) rather than a
+  // separate categorical set — the legend icons carry the point/line/area
+  // meaning, so color only needs to separate the three slices.
+  const geomItems = derived
     ? [
         {
           pct: (derived.points / derived.total) * 100,
           colorClass: "bg-olive-600",
+          textClass: "text-olive-600",
+          icon: Circle,
           label: t("geomPoints"),
           value: nf.format(derived.points),
+          sub: undefined as string | undefined,
         },
         {
           pct: (derived.lines / derived.total) * 100,
-          colorClass: "bg-blue-600",
+          colorClass: "bg-olive-400",
+          textClass: "text-olive-400",
+          icon: Spline,
           label: t("geomLines"),
           value: nf.format(derived.lines),
           sub:
-            derived.lines > 0 ? `(${formatKm(derived.lineKm, nf)} km)` : undefined,
+            derived.lines > 0 ? `${formatKm(derived.lineKm, nf)} km` : undefined,
         },
         {
           pct: (derived.areas / derived.total) * 100,
-          colorClass: "bg-orange-600",
+          colorClass: "bg-olive-300",
+          textClass: "text-olive-300",
+          icon: Pentagon,
           label: t("geomAreas"),
           value: nf.format(derived.areas),
           sub:
             derived.areas > 0
-              ? `(${formatKm(derived.areaKm2, nf)} km²)`
+              ? `${formatKm(derived.areaKm2, nf)} km²`
               : undefined,
         },
       ]
+    : null;
+  const geomSegments: BarSegment[] | null = geomItems
+    ? geomItems.map(({ pct, colorClass, label, value }) => ({
+        pct,
+        colorClass,
+        label,
+        value,
+      }))
     : null;
 
   // --- Freshness (recency of each feature's last edit) --------------------
@@ -262,12 +280,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
         }))
       : null;
 
-  const changesets = dataset.stats?.changesetsCount;
   const editors = dataset.stats?.editorsCount;
-  const mappersUnit =
-    changesets != null
-      ? `${t("unitMappers")} · ${nf.format(changesets)} ${t("unitEdits")}`
-      : t("unitMappers");
 
   return (
     <div className="flex flex-1 flex-col gap-4">
@@ -277,7 +290,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       <Section>
         <Headline
           value={editors != null ? nf.format(editors) : "—"}
-          unit={mappersUnit}
+          unit={t("unitMappers")}
           icon={Users}
         />
         {mappersSegments && (
@@ -300,13 +313,14 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           unit={t("unitFeatures")}
           icon={MapPin}
         />
-        {geomSegments && (
+        {geomSegments && geomItems && (
           <SubBlock eyebrow={t("featuresByType")}>
             <SegmentedBar
-              variant="dots"
               segments={geomSegments}
+              showLegend={false}
               ariaLabel={t("featuresByType")}
             />
+            <GeomLegend items={geomItems} />
           </SubBlock>
         )}
         {freshnessSegments && (
@@ -316,6 +330,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
               showLegend={false}
               ariaLabel={t("featuresRecentlyEdited")}
             />
+            <RecencyLegend labels={recencyLabels} />
           </SubBlock>
         )}
         {tagGroups.length > 0 && (
@@ -403,6 +418,32 @@ function RecencyLegend({ labels }: { labels: string[] }) {
             className={`size-2 flex-none rounded-sm ${RECENCY_COLORS[i]}`}
           />
           {label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+// Compact geometry legend: one colored glyph per type (point/line/area) instead
+// of words, matching each bar slice's color. Counts are dropped (the bar already
+// shows the proportion); only the total length/area — which lives nowhere else —
+// rides along as a muted sub.
+function GeomLegend({
+  items,
+}: {
+  items: {
+    icon: LucideIcon;
+    textClass: string;
+    label: string;
+    sub?: string;
+  }[];
+}) {
+  return (
+    <div className="mt-0.5 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gray-400">
+      {items.map(({ icon: Icon, textClass, label, sub }) => (
+        <span key={label} className="inline-flex items-center gap-1.5">
+          <Icon className={`size-3.5 flex-none ${textClass}`} aria-label={label} />
+          {sub != null && <span className="tabular-nums">{sub}</span>}
         </span>
       ))}
     </div>
