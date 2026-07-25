@@ -66,14 +66,21 @@ export function DatasetInteractiveSection({
                 timestamps (surfaced up top as decision-relevant provenance).
                 Fixed at top, never scrolls. */}
             <div className="shrink-0">
-              <Link
-                href={`/area/${dataset.area.id}`}
-                aria-label={t("backToAreaLabel", { area: areaName })}
-                className="inline-flex items-center gap-1 mb-3 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
-              >
-                <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />
-                {areaName}
-              </Link>
+              {/* Breadcrumb row: back link to the area (left) + category facet
+                  chip (right), sharing one line above the title. */}
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <Link
+                  href={`/area/${dataset.area.id}`}
+                  aria-label={t("backToAreaLabel", { area: areaName })}
+                  className="inline-flex min-w-0 items-center gap-1 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+                >
+                  <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />
+                  <span className="truncate">{areaName}</span>
+                </Link>
+                <span className="inline-flex flex-none items-center rounded-full border border-olive-100 bg-olive-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-olive-700">
+                  {dataset.template.category?.name ?? "other"}
+                </span>
+              </div>
               <DatasetInfoPanel dataset={dataset} />
               <div className="mt-2">
                 <DatasetTimestamps dataset={dataset} lastChecked={lastChecked} />
