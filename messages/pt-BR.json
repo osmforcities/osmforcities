@@ -129,6 +129,7 @@
     "tooLargeTitle": "{dataset} em {area} é grande demais para exibir",
     "tooLargeDescription": "Este conjunto de dados é grande demais para ser exibido como mapa. Tente um modelo mais específico ou <link>trabalhe com os dados brutos no Overpass Turbo</link>.",
     "backToArea": "← Voltar para {area}",
+    "backToAreaLabel": "Voltar para {area}",
     "allDatasetsInArea": "Todos os conjuntos de dados nesta área",
     "back": "Voltar",
     "datasetStats": "Estatísticas do Conjunto de Dados",

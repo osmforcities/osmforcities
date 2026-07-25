@@ -130,6 +130,7 @@
     "tooLargeTitle": "{dataset} in {area} is too large to display",
     "tooLargeDescription": "This dataset is too large to display as a map. Try a more specific template, or <link>work with the raw data in Overpass Turbo</link>.",
     "backToArea": "← Back to {area}",
+    "backToAreaLabel": "Back to {area}",
     "allDatasetsInArea": "All datasets in this area",
     "back": "Back",
     "datasetStats": "Dataset Stats",
