@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import type { ReactNode } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { MapPin, Users, Target, Spline, Pentagon, Tag } from "lucide-react";
@@ -23,11 +23,19 @@ type GeomItem = {
   icon: LucideIcon;
   filled: boolean;
   label: string;
-  lowerLabel: string;
   display: string;
   // null for points, which have no separate measure
   measure: string | null;
   noneLabel: string;
+};
+
+// One row of a breakdown popover. `measure` rides in a paren beside the label
+// (geometry length/area); null for count-only rows (points, recency bands).
+type DetailItem = {
+  label: string;
+  count: number;
+  colorClass: string;
+  measure?: string | null;
 };
 
 // Indexed like RECENCY_BANDS: freshest -> oldest.
@@ -43,11 +51,6 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   const tTagLabel = useTranslations("TagLabel") as unknown as MessageResolver;
   const locale = useLocale();
   const nf = useMemo(() => new Intl.NumberFormat(locale), [locale]);
-  // For joining absent geometry types: "lines or areas".
-  const listFormat = useMemo(
-    () => new Intl.ListFormat(locale, { type: "disjunction" }),
-    [locale]
-  );
 
   const tagCounts = dataset.stats?.tagCounts ?? null;
 
@@ -125,7 +128,6 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Target,
           filled: false,
           label: t("geomPoints"),
-          lowerLabel: t("geomPointsLower"),
           display: formatCompactNumber(geometryMix.points),
           measure: null,
           noneLabel: t("geomNone", { type: t("geomPointsLower") }),
@@ -138,7 +140,6 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Spline,
           filled: false,
           label: t("geomLines"),
-          lowerLabel: t("geomLinesLower"),
           display: formatLength(geometryMix.lineKm, nf),
           measure: formatLength(geometryMix.lineKm, nf),
           noneLabel: t("geomNone", { type: t("geomLinesLower") }),
@@ -151,7 +152,6 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Pentagon,
           filled: false,
           label: t("geomAreas"),
-          lowerLabel: t("geomAreasLower"),
           display: formatArea(geometryMix.areaKm2, nf),
           measure: formatArea(geometryMix.areaKm2, nf),
           noneLabel: t("geomNone", { type: t("geomAreasLower") }),
@@ -168,59 +168,15 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           value: display,
         }))
       : null;
-  // Two absent types collapse into one row ("No lines or areas") instead of
-  // two near-duplicate lines.
-  const geomAbsent = geomItems ? geomItems.filter((g) => g.count === 0) : [];
-  const geomAbsentLine =
-    geomAbsent.length === 0
-      ? null
-      : geomAbsent.length === 1
-        ? capitalize(geomAbsent[0].noneLabel)
-        : capitalize(
-            t("geomNone", {
-              type: listFormat.format(geomAbsent.map((g) => g.lowerLabel)),
-            })
-          );
-  const geomDetail = geomItems ? (
-    <div className="flex flex-col gap-2">
-      <p className="border-b border-white/15 pb-1.5 tabular-nums text-gray-400">
-        {t("geomTotalFeatures", { count: geomTotal })}
-      </p>
-      <div className="flex flex-col gap-2">
-        {geomPresent.map(
-          ({ label, lowerLabel, count, pct, measure, colorClass }) => (
-            <div key={label} className="flex flex-col">
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="flex items-center gap-1.5 font-semibold text-white">
-                  <span
-                    aria-hidden
-                    className={`size-1.5 flex-none rounded-full ${colorClass}`}
-                  />
-                  {`${nf.format(count)} ${lowerLabel}`}
-                </span>
-                <span className="whitespace-nowrap tabular-nums text-white">
-                  {formatPct(pct)}
-                </span>
-              </div>
-              {measure && (
-                <p className="pl-3 tabular-nums text-gray-400">
-                  {t("geomMeasureTotal", { measure })}
-                </p>
-              )}
-            </div>
-          ))}
-        {geomAbsentLine && (
-          <div className="flex items-center gap-1.5 text-gray-500">
-            <span
-              aria-hidden
-              className="size-1.5 flex-none rounded-full bg-gray-600"
-            />
-            {geomAbsentLine}
-          </div>
-        )}
-      </div>
-    </div>
-  ) : null;
+  // Absent types keep their measure hidden — a "0" row needs no "(0 m)".
+  const geomDetailItems: DetailItem[] | null = geomItems
+    ? geomItems.map(({ label, count, colorClass, measure }) => ({
+        label,
+        count,
+        colorClass,
+        measure: count > 0 ? measure : null,
+      }))
+    : null;
 
   // --- Freshness ------------------------------------------------------------
   // Persisted bands, else legacy qualityMetrics.
@@ -278,7 +234,16 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
               segments={geomSegments}
               showLegend={false}
               ariaLabel={t("geometryMix")}
-              detail={geomDetail}
+              detail={
+                geomDetailItems && (
+                  <BreakdownDetail
+                    title={t("detailTitleGeometry")}
+                    items={geomDetailItems}
+                    totalLabel={t("detailTotal")}
+                    nf={nf}
+                  />
+                )
+              }
             />
             <GeomLegend items={geomItems} />
           </SubBlock>
@@ -289,6 +254,16 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
               segments={freshnessSegments}
               showLegend={false}
               ariaLabel={t("recentlyEdited")}
+              detail={
+                editBands && (
+                  <BreakdownDetail
+                    title={t("detailTitleFreshness")}
+                    items={recencyDetailItems(editBands, recencyLabels)}
+                    totalLabel={t("detailTotal")}
+                    nf={nf}
+                  />
+                )
+              }
             />
             <RecencyLegend labels={recencyLabels} />
           </SubBlock>
@@ -307,6 +282,16 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
               segments={mappersSegments}
               showLegend={false}
               ariaLabel={t("activeRecently")}
+              detail={
+                mapperBands && (
+                  <BreakdownDetail
+                    title={t("detailTitleMappers")}
+                    items={recencyDetailItems(mapperBands, recencyLabels)}
+                    totalLabel={t("detailTotal")}
+                    nf={nf}
+                  />
+                )
+              }
             />
             <RecencyLegend labels={recencyLabels} />
           </SubBlock>
@@ -369,6 +354,63 @@ function Section({ children }: { children: ReactNode }) {
     <section className="flex flex-col gap-2.5 rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
       {children}
     </section>
+  );
+}
+
+function recencyDetailItems(bands: number[], labels: string[]): DetailItem[] {
+  return bands.map((count, i) => ({
+    label: labels[i],
+    count,
+    colorClass: RECENCY_COLORS[i],
+  }));
+}
+
+// Shared bar-popover body: a title, label-led rows with aligned count/share
+// columns, and a closing Total row. Rendered inside SegmentedBar's dark Dialog.
+function BreakdownDetail({
+  title,
+  items,
+  totalLabel,
+  nf,
+}: {
+  title: string;
+  items: DetailItem[];
+  totalLabel: string;
+  nf: Intl.NumberFormat;
+}) {
+  const total = items.reduce((sum, it) => sum + it.count, 0);
+  return (
+    <div>
+      <p className="mb-2 border-b border-white/15 pb-1.5 text-gray-400">{title}</p>
+      <div className="grid grid-cols-[1fr_auto_auto] items-baseline gap-x-3.5 gap-y-2">
+        {items.map(({ label, count, colorClass, measure }) => (
+        <Fragment key={label}>
+          <span className="flex items-baseline gap-1.5 text-white">
+            <span
+              aria-hidden
+              className={`size-1.5 flex-none self-center rounded-full ${colorClass}`}
+            />
+            {label}
+            {measure && <span className="text-gray-400">{`(${measure})`}</span>}
+          </span>
+          <span className="text-right font-semibold tabular-nums text-white">
+            {nf.format(count)}
+          </span>
+          <span className="min-w-[3ch] text-right tabular-nums text-gray-400">
+            {formatPct(total > 0 ? (count / total) * 100 : 0)}
+          </span>
+        </Fragment>
+        ))}
+        <div className="col-span-3 border-t border-white/15" />
+        <span className="pl-3 text-gray-400">{totalLabel}</span>
+        <span className="text-right font-semibold tabular-nums text-white">
+          {nf.format(total)}
+        </span>
+        <span className="min-w-[3ch] text-right tabular-nums text-gray-400">
+          {formatPct(100)}
+        </span>
+      </div>
+    </div>
   );
 }
 
@@ -515,10 +557,6 @@ function formatArea(km2: number, nf: Intl.NumberFormat): string {
   if (km2 < 0.01) return `${nf.format(Math.round(km2 * 1_000_000))} m²`;
   if (km2 < 1) return `${nf.format(round1(km2 * 100))} ha`;
   return `${nf.format(round1(km2))} km²`;
-}
-
-function capitalize(s: string): string {
-  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function formatPct(pct: number): string {
