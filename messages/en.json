@@ -132,6 +132,8 @@
     "backToArea": "← Back to {area}",
     "backToAreaLabel": "Back to {area}",
     "allDatasetsInArea": "All datasets in this area",
+    "categoryFacetLabel": "Category: {category}. View all {category} datasets in {area}.",
+    "categoryUncategorized": "Other",
     "back": "Back",
     "datasetStats": "Dataset Stats",
     "features": "Features",
