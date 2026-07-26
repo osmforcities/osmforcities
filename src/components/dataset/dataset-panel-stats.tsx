@@ -36,10 +36,10 @@ type GeomItem = {
   icon: LucideIcon;
   filled: boolean;
   label: string;
-  lowerLabel: string; // "points", for count-led rows like "134 points"
+  lowerLabel: string;
   display: string;
-  measure: string | null; // "142.4 km" / "8.3 km²"; null for points
-  noneLabel: string; // "no lines"
+  measure: string | null; // null for points, which have no separate measure
+  noneLabel: string;
 };
 
 // Indexed like RECENCY_BANDS: freshest -> oldest.

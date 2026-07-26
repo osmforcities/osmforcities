@@ -2,21 +2,21 @@ import type { ReactNode } from "react";
 import { Button, Dialog, DialogTrigger, Popover } from "react-aria-components";
 
 export type BarSegment = {
-  pct: number; // 0-100
-  colorClass: string; // Tailwind bg class, e.g. "bg-olive-600"
-  label: string; // e.g. "Points" or "Last 90d"
-  value: string; // bold legend value, e.g. "18,307" or "7%"
-  sub?: ReactNode; // muted parenthetical, e.g. "(12.4 km)"
+  pct: number;
+  colorClass: string;
+  label: string;
+  value: string;
+  sub?: ReactNode; // muted parenthetical rendered after value
 };
 
 type SegmentedBarProps = {
   segments: BarSegment[];
-  variant?: "dots" | "terse"; // "dots" adds a color swatch per legend entry
-  showLegend?: boolean; // false when several bars share one external legend
+  variant?: "dots" | "terse";
+  showLegend?: boolean;
   ariaLabel: string;
   className?: string;
-  // Breakdown revealed on press/tap/keyboard of the whole bar (Popover, same
-  // pattern as the freshness pills) instead of per-slice hover targets.
+  // Renders the whole bar as a Popover trigger instead of a static element,
+  // showing this on press/tap/keyboard rather than per-slice hover.
   detail?: ReactNode;
 };
 
