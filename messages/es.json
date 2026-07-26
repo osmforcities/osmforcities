@@ -156,6 +156,7 @@
     "geomLinesLower": "líneas",
     "geomAreasLower": "áreas",
     "geomNone": "sin {type}",
+    "geomTotalFeatures": "{count, plural, =1 {# elemento en total} other {# elementos en total}}",
     "titleMappers": "Mapeadores",
     "titleFeatures": "Elementos",
     "titleTags": "Etiquetas",

@@ -219,47 +219,62 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   // Full breakdown shown on press/tap/keyboard of the whole bar (one large
   // target, rather than sliver-thin per-slice hit areas). Lists all three
   // types like the legend; absent rows read "no lines" etc. Each present row
-  // leads with its share% (the new info the popover adds), then ONE secondary
-  // number — the measure that actually matters for that type (length for
-  // lines, area for areas, count for points, which has no separate measure).
+  // leads with its physical size (length/area — for points that's just the
+  // count, since it has no separate measure), then its share%. Lines/areas
+  // also get the raw element count parenthetically next to the % — a
+  // "63 m" measure alone doesn't say whether that's 1 long line or 20 short
+  // ones, so the count is the missing piece there. Points skip it: their
+  // measure column already IS the count, so repeating it would be redundant.
   // A 3-column grid (not a flex row) so the measure and % each land on their
   // own fixed column across rows, instead of drifting with content length.
+  // A footer line gives the total feature count the percentages are relative
+  // to, so the breakdown reads standalone without the section header above it.
   const geomDetail = geomItems ? (
-    <div className="grid grid-cols-[auto_auto_auto] items-baseline gap-x-3 gap-y-1.5">
-      {geomItems.map(({ label, count, pct, measure, colorClass, noneLabel }) =>
-        count > 0 ? (
-          <div key={label} className="contents">
-            <span className="flex items-center gap-1.5 text-gray-300">
+    <div className="flex flex-col gap-1.5">
+      <div className="grid grid-cols-[auto_auto_auto] items-baseline gap-x-3 gap-y-1.5">
+        {geomItems.map(({ label, count, pct, measure, colorClass, noneLabel }) =>
+          count > 0 ? (
+            <div key={label} className="contents">
+              <span className="flex items-center gap-1.5 text-gray-300">
+                <span
+                  aria-hidden
+                  className={`size-1.5 flex-none rounded-full ${colorClass}`}
+                />
+                {label}
+              </span>
+              <span className="text-left tabular-nums text-gray-400">
+                {measure ?? nf.format(count)}
+              </span>
+              <span className="text-right tabular-nums">
+                <span className="font-semibold text-white">
+                  {formatPct(pct)}
+                </span>
+                {measure ? (
+                  <span className="ml-1 text-gray-500">{`(${nf.format(count)})`}</span>
+                ) : null}
+              </span>
+            </div>
+          ) : (
+            // Absent type: dot stays for visual consistency with the rows
+            // above, but the label isn't repeated next to its own "no lines"
+            // value — that would just say "lines" twice. Occupies only the
+            // label column; the row has no measure/% to align.
+            <span
+              key={label}
+              className="flex items-center gap-1.5 text-gray-500"
+            >
               <span
                 aria-hidden
-                className={`size-1.5 flex-none rounded-full ${colorClass}`}
+                className="size-1.5 flex-none rounded-full bg-gray-600"
               />
-              {label}
+              {capitalize(noneLabel)}
             </span>
-            <span className="text-left tabular-nums text-gray-400">
-              {measure ?? nf.format(count)}
-            </span>
-            <span className="text-right font-semibold tabular-nums text-white">
-              {formatPct(pct)}
-            </span>
-          </div>
-        ) : (
-          // Absent type: dot stays for visual consistency with the rows
-          // above, but the label isn't repeated next to its own "no lines"
-          // value — that would just say "lines" twice. Occupies only the
-          // label column; the row has no measure/% to align.
-          <span
-            key={label}
-            className="flex items-center gap-1.5 text-gray-500"
-          >
-            <span
-              aria-hidden
-              className="size-1.5 flex-none rounded-full bg-gray-600"
-            />
-            {capitalize(noneLabel)}
-          </span>
-        )
-      )}
+          )
+        )}
+      </div>
+      <p className="border-t border-white/15 pt-1.5 tabular-nums text-gray-500">
+        {t("geomTotalFeatures", { count: geomTotal })}
+      </p>
     </div>
   ) : null;
 
