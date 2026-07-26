@@ -23,7 +23,6 @@ type GeomItem = {
   icon: LucideIcon;
   label: string;
   display: string;
-  // null for points, which have no separate measure
   measure: string | null;
   noneLabel: string;
 };
@@ -50,15 +49,6 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   const tTagLabel = useTranslations("TagLabel") as unknown as MessageResolver;
   const locale = useLocale();
   const nf = useMemo(() => new Intl.NumberFormat(locale), [locale]);
-  // Compact digits for footprint m² (105K / 105 mil).
-  const compactNf = useMemo(
-    () =>
-      new Intl.NumberFormat(locale, {
-        notation: "compact",
-        maximumFractionDigits: 1,
-      }),
-    [locale]
-  );
 
   const tagCounts = dataset.stats?.tagCounts ?? null;
 
@@ -125,17 +115,15 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
 
   // --- Geometry mix -------------------------------------------------------
   const geometryMix = dataset.stats?.geometryMix ?? null;
-  // Only count-bearing types render a segment (see geomPresent), so this
-  // denominator is only ever divided into positive counts.
-  const geomTotal = geometryMix
-    ? geometryMix.points + geometryMix.lines + geometryMix.areas
-    : 0;
   let geomItems: GeomItem[] | null = null;
   if (geometryMix) {
-    // Format each measure once; a 0-count type carries no measure, so the
-    // popover shows its label alone (never "(0 m)").
+    // Only count-bearing types render a segment (see geomPresent), so this
+    // denominator is only ever divided into positive counts.
+    const geomTotal = geometryMix.points + geometryMix.lines + geometryMix.areas;
+    // A 0-count type carries no measure, so the popover shows its label alone
+    // (never "(0 m)") — see the `> 0 ? fmt : null` guards below.
     const lineFmt = formatLength(geometryMix.lineKm, nf);
-    const areaFmt = formatArea(geometryMix.areaKm2, nf, compactNf);
+    const areaFmt = formatArea(geometryMix.areaKm2, nf);
     geomItems = [
       {
         count: geometryMix.points,
@@ -428,7 +416,6 @@ function SubBlock({
   unit?: string;
   children: ReactNode;
   className?: string;
-  // extra top space when stacked after another chart
   spaced?: boolean;
 }) {
   return (
@@ -560,14 +547,17 @@ function formatLength(km: number, nf: Intl.NumberFormat): string {
 
 // m² up to 1 km², then km² (avoids "500M m²" at city scale). Hectares dropped —
 // weak reader intuition; cf. iD, which keeps m² primary and shows ha only as a
-// secondary hint.
-function formatArea(
-  km2: number,
-  nf: Intl.NumberFormat,
-  compactNf: Intl.NumberFormat
-): string {
+// secondary hint. Footprint m² uses compact digits (105K / 105 mil), built in
+// the same locale as `nf`.
+function formatArea(km2: number, nf: Intl.NumberFormat): string {
   if (km2 <= 0) return `0 m²`;
-  if (km2 < 1) return `${compactNf.format(Math.round(km2 * 1_000_000))} m²`;
+  if (km2 < 1) {
+    const compactNf = new Intl.NumberFormat(nf.resolvedOptions().locale, {
+      notation: "compact",
+      maximumFractionDigits: 1,
+    });
+    return `${compactNf.format(Math.round(km2 * 1_000_000))} m²`;
+  }
   return `${nf.format(round1(km2))} km²`;
 }
 
