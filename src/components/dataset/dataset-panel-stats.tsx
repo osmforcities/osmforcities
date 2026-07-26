@@ -23,12 +23,14 @@ type GeomItem = {
   icon: LucideIcon;
   filled: boolean;
   label: string;
+  lowerLabel: string;
   display: string;
-  // Shown in the legend when count is 0 (e.g. "no lines").
+  // null for points, which have no separate measure
+  measure: string | null;
   noneLabel: string;
 };
 
-// One color per RECENCY_BANDS entry, in order (freshest olive -> oldest gray).
+// Indexed like RECENCY_BANDS: freshest -> oldest.
 const RECENCY_COLORS = [
   "bg-olive-500",
   "bg-olive-400",
@@ -41,12 +43,16 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   const tTagLabel = useTranslations("TagLabel") as unknown as MessageResolver;
   const locale = useLocale();
   const nf = useMemo(() => new Intl.NumberFormat(locale), [locale]);
+  // For joining absent geometry types: "lines or areas".
+  const listFormat = useMemo(
+    () => new Intl.ListFormat(locale, { type: "disjunction" }),
+    [locale]
+  );
 
   const tagCounts = dataset.stats?.tagCounts ?? null;
 
-  // Keys used by the template's Overpass query (e.g. "highway=bus_stop" ->
-  // "highway"). They match ~100% of features by definition, so exclude them from
-  // the Most-used list where they'd only crowd out real signal.
+  // Query keys (e.g. "highway" from "highway=bus_stop") match ~100% of
+  // features by definition, so exclude them from Most-used-tags.
   const queryKeys = useMemo(() => {
     const keys = new Set<string>();
     for (const kv of dataset.template.tags ?? []) {
@@ -67,8 +73,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       .map((tc) => ({ key: tc.key, pct: (tc.count / total) * 100 }));
   }, [tagCounts, queryKeys, dataset.dataCount]);
 
-  // Group tags that share the same displayed percentage onto one line, capped
-  // at five lines, so the section stays dense but shows more than five tags.
+  // Groups tags sharing the same displayed %, capped at 5 lines.
   const tagGroups = useMemo(() => {
     const MAX_LINES = 5;
     const MAX_KEYS = 4;
@@ -88,9 +93,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
     return groups;
   }, [sortedTags]);
 
-  // Critical-tag coverage: for each of the template's filterable (curated) tags,
-  // the share of features that carry it. Absent tags read 0% — that gap is the
-  // signal. Shown above the Most-used list for templates that curate a list.
+  // Share of features carrying each of the template's curated tags; absent = 0%.
   const coverageItems = useMemo(() => {
     const filterable = dataset.template.filterableTags ?? [];
     if (!tagCounts || filterable.length === 0) return [];
@@ -109,13 +112,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
 
   const recencyLabels = RECENCY_BANDS.map((band) => t(band.labelKey));
 
-  // --- Features by type ---------------------------------------------------
-  // A stacked proportion bar (like the recency bars), with a compact legend
-  // beneath. Geometry types use the olive ramp capped at the button color
-  // (500/400/300); the legend icons carry the point/line/area meaning, so color
-  // only needs to separate the slices. The legend always lists all three types:
-  // points show their count, lines their total length, areas their total area;
-  // absent types read "no lines" etc. The mix's own total is the bar denominator.
+  // --- Geometry mix -------------------------------------------------------
   const geometryMix = dataset.stats?.geometryMix ?? null;
   const geomTotal = geometryMix?.total ?? 0;
   const geomItems: GeomItem[] | null = geometryMix
@@ -128,7 +125,9 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Target,
           filled: false,
           label: t("geomPoints"),
+          lowerLabel: t("geomPointsLower"),
           display: formatCompactNumber(geometryMix.points),
+          measure: null,
           noneLabel: t("geomNone", { type: t("geomPointsLower") }),
         },
         {
@@ -139,7 +138,9 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Spline,
           filled: false,
           label: t("geomLines"),
-          display: `${formatKm(geometryMix.lineKm, nf)} km`,
+          lowerLabel: t("geomLinesLower"),
+          display: formatLength(geometryMix.lineKm, nf),
+          measure: formatLength(geometryMix.lineKm, nf),
           noneLabel: t("geomNone", { type: t("geomLinesLower") }),
         },
         {
@@ -150,13 +151,13 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Pentagon,
           filled: false,
           label: t("geomAreas"),
-          display: `${formatKm(geometryMix.areaKm2, nf)} km²`,
+          lowerLabel: t("geomAreasLower"),
+          display: formatArea(geometryMix.areaKm2, nf),
+          measure: formatArea(geometryMix.areaKm2, nf),
           noneLabel: t("geomNone", { type: t("geomAreasLower") }),
         },
       ]
     : null;
-  // The bar shows only present types (a single type fills it 100%); the legend
-  // below carries the full three-type breakdown, including the absent ones.
   const geomPresent = geomItems ? geomItems.filter((g) => g.count > 0) : [];
   const geomSegments: BarSegment[] | null =
     geomPresent.length > 0
@@ -167,9 +168,62 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           value: display,
         }))
       : null;
+  // Two absent types collapse into one row ("No lines or areas") instead of
+  // two near-duplicate lines.
+  const geomAbsent = geomItems ? geomItems.filter((g) => g.count === 0) : [];
+  const geomAbsentLine =
+    geomAbsent.length === 0
+      ? null
+      : geomAbsent.length === 1
+        ? capitalize(geomAbsent[0].noneLabel)
+        : capitalize(
+            t("geomNone", {
+              type: listFormat.format(geomAbsent.map((g) => g.lowerLabel)),
+            })
+          );
+  const geomDetail = geomItems ? (
+    <div className="flex flex-col gap-2">
+      <p className="border-b border-white/15 pb-1.5 tabular-nums text-gray-400">
+        {t("geomTotalFeatures", { count: geomTotal })}
+      </p>
+      <div className="flex flex-col gap-2">
+        {geomPresent.map(
+          ({ label, lowerLabel, count, pct, measure, colorClass }) => (
+            <div key={label} className="flex flex-col">
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="flex items-center gap-1.5 font-semibold text-white">
+                  <span
+                    aria-hidden
+                    className={`size-1.5 flex-none rounded-full ${colorClass}`}
+                  />
+                  {`${nf.format(count)} ${lowerLabel}`}
+                </span>
+                <span className="whitespace-nowrap tabular-nums text-white">
+                  {formatPct(pct)}
+                </span>
+              </div>
+              {measure && (
+                <p className="pl-3 tabular-nums text-gray-400">
+                  {t("geomMeasureTotal", { measure })}
+                </p>
+              )}
+            </div>
+          ))}
+        {geomAbsentLine && (
+          <div className="flex items-center gap-1.5 text-gray-500">
+            <span
+              aria-hidden
+              className="size-1.5 flex-none rounded-full bg-gray-600"
+            />
+            {geomAbsentLine}
+          </div>
+        )}
+      </div>
+    </div>
+  ) : null;
 
-  // --- Freshness (recency of each feature's last edit) --------------------
-  // Priority: persisted bands -> legacy 3-band qualityMetrics.
+  // --- Freshness ------------------------------------------------------------
+  // Persisted bands, else legacy qualityMetrics.
   const editBands = bandsIfPopulated(dataset.stats?.editRecencyBands);
   const stale = dataset.stats?.qualityMetrics?.staleElementsPercentage;
   const within1y = dataset.stats?.qualityMetrics?.recentlyUpdatedElementsPercentage;
@@ -200,7 +254,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
     ];
   }
 
-  // --- Mappers (recency of each mapper's latest edit) --------------------
+  // --- Mappers --------------------------------------------------------------
   const mapperBands = bandsIfPopulated(dataset.stats?.mapperRecencyBands);
   const mappersSegments: BarSegment[] | null = mapperBands
     ? recencyBandSegments(mapperBands, recencyLabels, (_pct, count) =>
@@ -212,9 +266,6 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
 
   return (
     <div className="flex flex-1 flex-col gap-4">
-      {/* Features — the headline stat, given top billing. Two sub-blocks
-          describe the features: geometry mix and edit recency, separated by a
-          light intra-section rule. */}
       <Section>
         <SectionHeader
           title={t("titleFeatures")}
@@ -222,11 +273,12 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon={MapPin}
         />
         {geomSegments && geomItems && (
-          <SubBlock eyebrow={t("byType")}>
+          <SubBlock eyebrow={t("geometryMix")}>
             <SegmentedBar
               segments={geomSegments}
               showLegend={false}
-              ariaLabel={t("byType")}
+              ariaLabel={t("geometryMix")}
+              detail={geomDetail}
             />
             <GeomLegend items={geomItems} />
           </SubBlock>
@@ -243,8 +295,6 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
         )}
       </Section>
 
-      {/* Mappers — secondary to Features; its recency bar reuses the shared
-          recency legend/colors. */}
       <Section>
         <SectionHeader
           title={t("titleMappers")}
@@ -263,8 +313,6 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
         )}
       </Section>
 
-      {/* Tags — its own section. Curated templates show Critical coverage first;
-          the Most-used list (all non-query tags) follows, so both stories show. */}
       {(coverageItems.length > 0 || tagGroups.length > 0) && (
         <Section>
           <SectionHeader title={t("titleTags")} icon={Tag} />
@@ -316,9 +364,6 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   );
 }
 
-// A top-level panel section, rendered as a separated white card sitting in the
-// tinted stats well (see dataset-interactive-section). Cards self-separate via
-// the root flex `gap-4`.
 function Section({ children }: { children: ReactNode }) {
   return (
     <section className="flex flex-col gap-2.5 rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
@@ -327,9 +372,6 @@ function Section({ children }: { children: ReactNode }) {
   );
 }
 
-// An eyebrow-labeled block nested inside a section card (e.g. "By type"). `unit`
-// renders a muted marker on the right of the eyebrow (e.g. "%") to signal what
-// the bar's proportions represent when the bar itself shows no numbers.
 function SubBlock({
   eyebrow,
   unit,
@@ -341,9 +383,7 @@ function SubBlock({
   unit?: string;
   children: ReactNode;
   className?: string;
-  // Adds extra top space when this block follows another chart in the same card.
-  // The card outline already frames the group, so sub-sections separate with
-  // whitespace + their eyebrow labels rather than an internal rule.
+  // extra top space when stacked after another chart
   spaced?: boolean;
 }) {
   return (
@@ -365,8 +405,6 @@ function SubBlock({
   );
 }
 
-// The recency color scale, shown once and shared by every recency bar on the
-// panel (feature freshness + mapper activity use identical buckets and colors).
 function RecencyLegend({ labels }: { labels: string[] }) {
   return (
     <div className="mt-0.5 flex flex-wrap gap-x-3.5 gap-y-1 text-[11px] text-gray-400">
@@ -383,9 +421,6 @@ function RecencyLegend({ labels }: { labels: string[] }) {
   );
 }
 
-// Compact geometry legend: one colored glyph per type, always listing all three.
-// Present types show count (+ km/km² for lines/areas); absent types read
-// "no lines" etc. and are dimmed so the present ones lead.
 function GeomLegend({ items }: { items: GeomItem[] }) {
   return (
     <div className="mt-0.5 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gray-400">
@@ -407,8 +442,6 @@ function GeomLegend({ items }: { items: GeomItem[] }) {
   );
 }
 
-// A list row used by the Most-used-tags section: a leading label (tag key), a
-// share bar, and a right-aligned value.
 function StatRow({
   leading,
   pct,
@@ -438,9 +471,6 @@ function StatRow({
   );
 }
 
-// Section header: title (left) is the dominant label that anchors the section;
-// the headline number is secondary (smaller); the icon always trails on the
-// right. `value` is optional — number-less sections (Tags) keep the same rhythm.
 function SectionHeader({
   title,
   value,
@@ -470,29 +500,40 @@ function SectionHeader({
   );
 }
 
-// One decimal below 10, whole numbers above; a nonzero total that would round
-// to 0 shows "<0.1" so a handful of tiny features doesn't read as "0".
-function formatKm(n: number, nf: Intl.NumberFormat): string {
-  if (n > 0 && n < 0.05) return "<0.1";
-  const v = n >= 10 ? Math.round(n) : Math.round(n * 10) / 10;
-  return nf.format(v);
+function round1(n: number): number {
+  return n >= 100 ? Math.round(n) : Math.round(n * 10) / 10;
+}
+
+function formatLength(km: number, nf: Intl.NumberFormat): string {
+  if (km <= 0) return `0 m`;
+  if (km < 1) return `${nf.format(Math.round(km * 1000))} m`;
+  return `${nf.format(round1(km))} km`;
+}
+
+function formatArea(km2: number, nf: Intl.NumberFormat): string {
+  if (km2 <= 0) return `0 m²`;
+  if (km2 < 0.01) return `${nf.format(Math.round(km2 * 1_000_000))} m²`;
+  if (km2 < 1) return `${nf.format(round1(km2 * 100))} ha`;
+  return `${nf.format(round1(km2))} km²`;
+}
+
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function formatPct(pct: number): string {
-  // Keep a decimal for near-full values so they don't misleadingly read "100%".
+  if (pct > 0 && pct < 1) return "<1%"; // avoid a misleading "0%" for a nonzero count
   if (pct > 0 && pct < 100 && Math.round(pct) === 100) {
-    return `${pct.toFixed(1)}%`;
+    return `${pct.toFixed(1)}%`; // avoid a misleading "100%" short of full
   }
   return `${Math.round(pct)}%`;
 }
 
-// Well-formed, non-empty band array or null (all-zero = no signal, fall through).
 function bandsIfPopulated(bands: number[] | undefined): number[] | null {
   if (!bands || bands.length !== RECENCY_BANDS.length) return null;
   return bands.some((c) => c > 0) ? bands : null;
 }
 
-// Percentages are of the band sum, so the bands total 100%.
 function recencyBandSegments(
   bands: number[],
   labels: string[],
