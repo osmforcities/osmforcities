@@ -4,6 +4,15 @@ import { RECENCY_BANDS } from "@/lib/dataset-recency";
 
 export const RecencyBandsSchema = z.array(z.number()).length(RECENCY_BANDS.length);
 
+export const GeometryMixSchema = z.object({
+  total: z.number(),
+  points: z.number(),
+  lines: z.number(),
+  areas: z.number(),
+  lineKm: z.number(),
+  areaKm2: z.number(),
+});
+
 export const DatasetStatsSchema = z.object({
   lastEdited: z.coerce.date().nullable().optional(),
   editorsCount: z.number(),
@@ -37,6 +46,10 @@ export const DatasetStatsSchema = z.object({
   // client-side derivation.
   editRecencyBands: RecencyBandsSchema.optional(),
   mapperRecencyBands: RecencyBandsSchema.optional(),
+
+  // Feature geometry split + measures. Optional: older datasets fall back to
+  // client-side derivation.
+  geometryMix: GeometryMixSchema.optional(),
 });
 
 export const CreateDatasetSchema = z.object({
