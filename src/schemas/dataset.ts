@@ -5,7 +5,6 @@ import { RECENCY_BANDS } from "@/lib/dataset-recency";
 export const RecencyBandsSchema = z.array(z.number()).length(RECENCY_BANDS.length);
 
 export const GeometryMixSchema = z.object({
-  total: z.number().int().nonnegative(),
   points: z.number().int().nonnegative(),
   lines: z.number().int().nonnegative(),
   areas: z.number().int().nonnegative(),

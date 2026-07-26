@@ -132,7 +132,6 @@ describe("fetchDatasetSnapshot", () => {
     const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
     // 2 node fixtures -> 2 Point features, no lines/areas.
     expect(snapshot.stats.geometryMix).toEqual({
-      total: 2,
       points: 2,
       lines: 0,
       areas: 0,
