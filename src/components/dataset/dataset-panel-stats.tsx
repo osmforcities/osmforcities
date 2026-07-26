@@ -38,7 +38,8 @@ type GeomItem = {
   label: string;
   lowerLabel: string;
   display: string;
-  measure: string | null; // null for points, which have no separate measure
+  // null for points, which have no separate measure
+  measure: string | null;
   noneLabel: string;
 };
 
@@ -420,7 +421,8 @@ function SubBlock({
   unit?: string;
   children: ReactNode;
   className?: string;
-  spaced?: boolean; // extra top space when stacked after another chart
+  // extra top space when stacked after another chart
+  spaced?: boolean;
 }) {
   return (
     <div

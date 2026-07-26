@@ -6,7 +6,8 @@ export type BarSegment = {
   colorClass: string;
   label: string;
   value: string;
-  sub?: ReactNode; // muted parenthetical rendered after value
+  // muted parenthetical rendered after value
+  sub?: ReactNode;
 };
 
 type SegmentedBarProps = {
