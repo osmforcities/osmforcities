@@ -188,6 +188,7 @@
     "recentChangesets": "Recent Changesets",
     "lastChecked": "Last Checked: {date}",
     "downloadData": "Download Data",
+    "download": "Download",
     "datasetDetails": "Dataset Details",
     "datasetDescription": "This dataset monitors {template} features in {city}.",
     "backToDatasets": "← back to datasets",

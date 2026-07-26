@@ -187,6 +187,7 @@
     "recentChangesets": "Conjuntos de Mudanças Recentes",
     "lastChecked": "Última Verificação: {date}",
     "downloadData": "Baixar Dados",
+    "download": "Baixar",
     "datasetDetails": "Detalhes do Conjunto de Dados",
     "datasetDescription": "Este conjunto de dados monitora características de {template} em {city}.",
     "backToDatasets": "voltar aos conjuntos de dados",

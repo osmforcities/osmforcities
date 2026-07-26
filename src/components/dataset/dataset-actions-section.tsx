@@ -180,21 +180,23 @@ export function DatasetActionsSection({
         </p>
       )}
 
-      {/* Secondary toolbar — icon actions, grows by adding an icon not a row. */}
+      {/* Secondary toolbar — labelled icon actions, mirroring the primary and
+          admin rows. */}
       <div className="flex gap-2">
         <Button
           onClick={() => downloadDataset(dataset)}
           disabled={!dataset.geojson}
-          className="h-8 flex-1"
+          className="h-8 flex-1 text-sm"
           variant="outline"
           title={t("downloadData")}
           aria-label={t("downloadData")}
         >
           <Download className="h-4 w-4" />
+          {t("download")}
         </Button>
         <Button
           onClick={handleShare}
-          className="h-8 flex-1"
+          className="h-8 flex-1 text-sm"
           variant="outline"
           title={t("shareTooltip")}
           aria-label={shareCopied ? t("shareCopied") : t("share")}
@@ -202,10 +204,13 @@ export function DatasetActionsSection({
           {shareCopied ? (
             <span className="inline-flex items-center gap-1.5 text-olive-600">
               <Check className="h-4 w-4" />
-              <span className="text-xs font-medium">{t("shareCopied")}</span>
+              <span className="font-medium">{t("shareCopied")}</span>
             </span>
           ) : (
-            <Share2 className="h-4 w-4" />
+            <>
+              <Share2 className="h-4 w-4" />
+              {t("share")}
+            </>
           )}
         </Button>
       </div>
