@@ -99,7 +99,7 @@ export function DatasetInteractiveSection({
               role="region"
               aria-label={t("statsRegion")}
               tabIndex={0}
-              className="flex-1 min-h-0 overflow-y-auto flex flex-col border-y border-gray-200 my-3 -mx-6 bg-gray-50 px-6 py-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive-500"
+              className="flex-1 min-h-0 overflow-y-auto [scrollbar-gutter:stable_both-edges] flex flex-col border-y border-gray-200 my-3 -mx-6 bg-gray-50 px-6 py-3 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-olive-500"
             >
               <DatasetPanelStats dataset={dataset} />
             </div>
