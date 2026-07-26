@@ -42,7 +42,6 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   const locale = useLocale();
   const nf = useMemo(() => new Intl.NumberFormat(locale), [locale]);
 
-  // Stored counts only — no client fallback (see dataset-tags).
   const tagCounts = dataset.stats?.tagCounts ?? null;
 
   // Keys used by the template's Overpass query (e.g. "highway=bus_stop" ->
@@ -116,9 +115,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   // (500/400/300); the legend icons carry the point/line/area meaning, so color
   // only needs to separate the slices. The legend always lists all three types:
   // points show their count, lines their total length, areas their total area;
-  // absent types read "no lines" etc.
-  // Persisted mix only; its own total is the bar denominator, so the section is
-  // self-contained.
+  // absent types read "no lines" etc. The mix's own total is the bar denominator.
   const geometryMix = dataset.stats?.geometryMix ?? null;
   const geomTotal = geometryMix?.total ?? 0;
   const geomItems: GeomItem[] | null = geometryMix
