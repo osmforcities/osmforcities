@@ -41,7 +41,7 @@ export function SegmentedBar({
       role={interactive ? undefined : "img"}
       aria-label={interactive ? undefined : fullLabel}
       aria-hidden={interactive ? true : undefined}
-      className="flex h-2.5 gap-px overflow-hidden rounded-full bg-olive-100 group-data-[focus-visible]:ring-2 group-data-[focus-visible]:ring-gray-800 group-data-[focus-visible]:ring-offset-1"
+      className="flex h-2.5 gap-px overflow-hidden rounded-full bg-olive-100 ring-gray-800 ring-offset-1 group-data-[focus-visible]:ring-2 group-aria-expanded:ring-2"
     >
       {visible.map((s, i) => (
         <span

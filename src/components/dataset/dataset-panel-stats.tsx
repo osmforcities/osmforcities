@@ -237,8 +237,9 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
               detail={
                 geomDetailItems && (
                   <BreakdownDetail
+                    title={t("detailTitleGeometry")}
                     items={geomDetailItems}
-                    totalLabel={t("detailTotalFeatures")}
+                    totalLabel={t("detailTotal")}
                     nf={nf}
                   />
                 )
@@ -256,8 +257,9 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
               detail={
                 editBands && (
                   <BreakdownDetail
+                    title={t("detailTitleFreshness")}
                     items={recencyDetailItems(editBands, recencyLabels)}
-                    totalLabel={t("detailTotalFeatures")}
+                    totalLabel={t("detailTotal")}
                     nf={nf}
                   />
                 )
@@ -283,8 +285,9 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
               detail={
                 mapperBands && (
                   <BreakdownDetail
+                    title={t("detailTitleMappers")}
                     items={recencyDetailItems(mapperBands, recencyLabels)}
-                    totalLabel={t("detailTotalMappers")}
+                    totalLabel={t("detailTotal")}
                     nf={nf}
                   />
                 )
@@ -362,21 +365,25 @@ function recencyDetailItems(bands: number[], labels: string[]): DetailItem[] {
   }));
 }
 
-// Shared bar-popover body: label-led rows with aligned count/share columns and
-// a closing Total row. Rendered inside SegmentedBar's dark Dialog.
+// Shared bar-popover body: a title, label-led rows with aligned count/share
+// columns, and a closing Total row. Rendered inside SegmentedBar's dark Dialog.
 function BreakdownDetail({
+  title,
   items,
   totalLabel,
   nf,
 }: {
+  title: string;
   items: DetailItem[];
   totalLabel: string;
   nf: Intl.NumberFormat;
 }) {
   const total = items.reduce((sum, it) => sum + it.count, 0);
   return (
-    <div className="grid grid-cols-[1fr_auto_auto] items-baseline gap-x-3.5 gap-y-2">
-      {items.map(({ label, count, colorClass, measure }) => (
+    <div>
+      <p className="mb-2 border-b border-white/15 pb-1.5 text-gray-400">{title}</p>
+      <div className="grid grid-cols-[1fr_auto_auto] items-baseline gap-x-3.5 gap-y-2">
+        {items.map(({ label, count, colorClass, measure }) => (
         <Fragment key={label}>
           <span className="flex items-baseline gap-1.5 text-white">
             <span
@@ -393,15 +400,16 @@ function BreakdownDetail({
             {formatPct(total > 0 ? (count / total) * 100 : 0)}
           </span>
         </Fragment>
-      ))}
-      <div className="col-span-3 border-t border-white/15" />
-      <span className="pl-3 text-gray-400">{totalLabel}</span>
-      <span className="text-right font-semibold tabular-nums text-white">
-        {nf.format(total)}
-      </span>
-      <span className="min-w-[3ch] text-right tabular-nums text-gray-400">
-        {formatPct(100)}
-      </span>
+        ))}
+        <div className="col-span-3 border-t border-white/15" />
+        <span className="pl-3 text-gray-400">{totalLabel}</span>
+        <span className="text-right font-semibold tabular-nums text-white">
+          {nf.format(total)}
+        </span>
+        <span className="min-w-[3ch] text-right tabular-nums text-gray-400">
+          {formatPct(100)}
+        </span>
+      </div>
     </div>
   );
 }
