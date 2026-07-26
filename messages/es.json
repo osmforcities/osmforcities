@@ -176,6 +176,7 @@
     "admin": "Admin",
     "lastEdited": "Editado",
     "lastCheckedLabel": "Obtenido",
+    "fetchCadence": "Los conjuntos de datos se sincronizan una vez al día en OSM for Cities; este es el retraso actual con OpenStreetMap.",
     "saves": "Guardados",
     "avgAgeDays": "Edad Promedio (días)",
     "recentActivity": "Actividad Reciente (Últimos 3 Meses)",
