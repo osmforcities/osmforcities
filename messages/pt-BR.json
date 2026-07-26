@@ -157,6 +157,7 @@
     "geomAreasLower": "áreas",
     "geomNone": "sem {type}",
     "geomTotalFeatures": "{count, plural, =1 {# elemento no total} other {# elementos no total}}",
+    "geomMeasureTotal": "{measure} no total",
     "titleMappers": "Mapeadores",
     "titleFeatures": "Feições",
     "titleTags": "Tags",

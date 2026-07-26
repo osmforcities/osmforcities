@@ -39,6 +39,8 @@ type GeomItem = {
   icon: LucideIcon;
   filled: boolean;
   label: string;
+  // Lowercase singular/plural noun for count-led tooltip rows ("134 points").
+  lowerLabel: string;
   display: string;
   // Linear/area measure string for the hover detail (e.g. "142.4 km",
   // "8.3 km²"); null for points, whose measure is just the count.
@@ -60,6 +62,12 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   const tTagLabel = useTranslations("TagLabel") as unknown as MessageResolver;
   const locale = useLocale();
   const nf = useMemo(() => new Intl.NumberFormat(locale), [locale]);
+  // Joins absent geometry types ("lines or areas") when 2+ are absent, so the
+  // tooltip can fold them into one muted row instead of two near-duplicates.
+  const listFormat = useMemo(
+    () => new Intl.ListFormat(locale, { type: "disjunction" }),
+    [locale]
+  );
 
   // Panel bars derived from the geojson; null when none is shipped.
   const derived = useMemo(() => {
@@ -174,6 +182,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Target,
           filled: false,
           label: t("geomPoints"),
+          lowerLabel: t("geomPointsLower"),
           display: formatCompactNumber(geometryMix.points),
           measure: null,
           noneLabel: t("geomNone", { type: t("geomPointsLower") }),
@@ -186,6 +195,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Spline,
           filled: false,
           label: t("geomLines"),
+          lowerLabel: t("geomLinesLower"),
           display: formatLength(geometryMix.lineKm, nf),
           measure: formatLength(geometryMix.lineKm, nf),
           noneLabel: t("geomNone", { type: t("geomLinesLower") }),
@@ -198,6 +208,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Pentagon,
           filled: false,
           label: t("geomAreas"),
+          lowerLabel: t("geomAreasLower"),
           display: formatArea(geometryMix.areaKm2, nf),
           measure: formatArea(geometryMix.areaKm2, nf),
           noneLabel: t("geomNone", { type: t("geomAreasLower") }),
@@ -217,64 +228,65 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
         }))
       : null;
   // Full breakdown shown on press/tap/keyboard of the whole bar (one large
-  // target, rather than sliver-thin per-slice hit areas). Lists all three
-  // types like the legend; absent rows read "no lines" etc. Each present row
-  // leads with its physical size (length/area — for points that's just the
-  // count, since it has no separate measure), then its share%. Lines/areas
-  // also get the raw element count parenthetically next to the % — a
-  // "63 m" measure alone doesn't say whether that's 1 long line or 20 short
-  // ones, so the count is the missing piece there. Points skip it: their
-  // measure column already IS the count, so repeating it would be redundant.
-  // A 3-column grid (not a flex row) so the measure and % each land on their
-  // own fixed column across rows, instead of drifting with content length.
-  // A footer line gives the total feature count the percentages are relative
-  // to, so the breakdown reads standalone without the section header above it.
+  // target, rather than sliver-thin per-slice hit areas). The total leads
+  // (BLUF) since every row's % is relative to it. Each present row is
+  // count-led ("134 points") so the row states what it is without a separate
+  // count column; lines/areas add a measure sub-line ("80.7 ha total") since
+  // a row of counts alone can't say how long/large that geometry actually is.
+  // Absent types collapse to one muted row: a single absent type reads
+  // "No lines"; two collapse into one line via Intl.ListFormat ("No lines or
+  // areas") rather than two near-duplicate lines once the bar is visibly one
+  // solid color.
+  const geomAbsent = geomItems ? geomItems.filter((g) => g.count === 0) : [];
+  const geomAbsentLine =
+    geomAbsent.length === 0
+      ? null
+      : geomAbsent.length === 1
+        ? capitalize(geomAbsent[0].noneLabel)
+        : capitalize(
+            t("geomNone", {
+              type: listFormat.format(geomAbsent.map((g) => g.lowerLabel)),
+            })
+          );
   const geomDetail = geomItems ? (
-    <div className="flex flex-col gap-1.5">
-      <div className="grid grid-cols-[auto_auto_auto] items-baseline gap-x-3 gap-y-1.5">
-        {geomItems.map(({ label, count, pct, measure, colorClass, noneLabel }) =>
-          count > 0 ? (
-            <div key={label} className="contents">
-              <span className="flex items-center gap-1.5 text-gray-300">
-                <span
-                  aria-hidden
-                  className={`size-1.5 flex-none rounded-full ${colorClass}`}
-                />
-                {label}
-              </span>
-              <span className="text-left tabular-nums text-gray-400">
-                {measure ?? nf.format(count)}
-              </span>
-              <span className="text-right tabular-nums">
-                <span className="font-semibold text-white">
-                  {formatPct(pct)}
-                </span>
-                {measure ? (
-                  <span className="ml-1 text-gray-500">{`(${nf.format(count)})`}</span>
-                ) : null}
-              </span>
-            </div>
-          ) : (
-            // Absent type: dot stays for visual consistency with the rows
-            // above, but the label isn't repeated next to its own "no lines"
-            // value — that would just say "lines" twice. Occupies only the
-            // label column; the row has no measure/% to align.
-            <span
-              key={label}
-              className="flex items-center gap-1.5 text-gray-500"
-            >
-              <span
-                aria-hidden
-                className="size-1.5 flex-none rounded-full bg-gray-600"
-              />
-              {capitalize(noneLabel)}
-            </span>
-          )
-        )}
-      </div>
-      <p className="border-t border-white/15 pt-1.5 tabular-nums text-gray-500">
+    <div className="flex flex-col gap-2">
+      <p className="border-b border-white/15 pb-1.5 tabular-nums text-gray-400">
         {t("geomTotalFeatures", { count: geomTotal })}
       </p>
+      <div className="flex flex-col gap-2">
+        {geomItems
+          .filter((g) => g.count > 0)
+          .map(({ label, lowerLabel, count, pct, measure, colorClass }) => (
+            <div key={label} className="flex flex-col">
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="flex items-center gap-1.5 font-semibold text-white">
+                  <span
+                    aria-hidden
+                    className={`size-1.5 flex-none rounded-full ${colorClass}`}
+                  />
+                  {`${nf.format(count)} ${lowerLabel}`}
+                </span>
+                <span className="whitespace-nowrap tabular-nums text-white">
+                  {formatPct(pct)}
+                </span>
+              </div>
+              {measure && (
+                <p className="pl-3 tabular-nums text-gray-400">
+                  {t("geomMeasureTotal", { measure })}
+                </p>
+              )}
+            </div>
+          ))}
+        {geomAbsentLine && (
+          <div className="flex items-center gap-1.5 text-gray-500">
+            <span
+              aria-hidden
+              className="size-1.5 flex-none rounded-full bg-gray-600"
+            />
+            {geomAbsentLine}
+          </div>
+        )}
+      </div>
     </div>
   ) : null;
 
@@ -610,6 +622,10 @@ function capitalize(s: string): string {
 }
 
 function formatPct(pct: number): string {
+  // A nonzero share that rounds down to 0 would misleadingly read as "gone" —
+  // e.g. "1 (0%)" contradicts itself. Mirrors the near-100 case below, which
+  // exists for the same reason at the other end of the scale.
+  if (pct > 0 && pct < 1) return "<1%";
   // Keep a decimal for near-full values so they don't misleadingly read "100%".
   if (pct > 0 && pct < 100 && Math.round(pct) === 100) {
     return `${pct.toFixed(1)}%`;
