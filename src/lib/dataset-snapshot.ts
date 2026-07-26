@@ -8,6 +8,7 @@ import {
 } from "@/lib/overpass/transport";
 import type { OverpassData } from "@/types/overpass";
 import { calculateBbox } from "@/lib/utils";
+import { computeRecencyBands } from "@/lib/dataset-recency";
 import type { Bbox } from "@/types/geojson";
 import { prisma } from "@/lib/db";
 import {
@@ -100,6 +101,9 @@ export interface DatasetStats {
     staleElementsPercentage: number;
     recentlyUpdatedElementsPercentage: number;
   };
+  // Set from the geojson in fetchDatasetSnapshot, not extractDatasetStats.
+  editRecencyBands?: number[];
+  mapperRecencyBands?: number[];
 }
 
 export interface DatasetSnapshot {
@@ -268,6 +272,13 @@ export async function fetchDatasetSnapshot(
   await recordSizeCheck(areaId, templateId, "ok", { estimatedBytes });
   const geojson = convertOverpassToGeoJSON(overpassData);
   const stats = extractDatasetStats(overpassData);
+  // From geojson features, not raw Overpass elements, so the counts match the
+  // panel's feature-based derivation.
+  const { editRecencyBands, mapperRecencyBands } = computeRecencyBands(
+    geojson.features
+  );
+  stats.editRecencyBands = editRecencyBands;
+  stats.mapperRecencyBands = mapperRecencyBands;
   const bbox = calculateBbox(geojson);
   return {
     geojson,

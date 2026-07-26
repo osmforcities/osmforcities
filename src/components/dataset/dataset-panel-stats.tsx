@@ -11,6 +11,7 @@ import length from "@turf/length";
 import type { Dataset } from "@/schemas/dataset";
 import { SegmentedBar, type BarSegment } from "@/components/ui/segmented-bar";
 import { formatCompactNumber } from "@/lib/dataset-stats";
+import { computeRecencyBands, RECENCY_BANDS } from "@/lib/dataset-recency";
 import { tagLabel, type MessageResolver } from "@/lib/tag-i18n";
 
 type DatasetPanelStatsProps = {
@@ -31,18 +32,6 @@ const NON_TAG_KEYS = new Set([
   "uid",
 ]);
 
-const DAY = 86_400_000;
-
-// Exclusive recency bands, matching the cutoffs used server-side in
-// dataset-snapshot.ts (90 days, 365 days, 730 days).
-function ageBand(ageMs: number): 0 | 1 | 2 | 3 {
-  const days = ageMs / DAY;
-  if (days <= 90) return 0;
-  if (days <= 365) return 1;
-  if (days <= 730) return 2;
-  return 3;
-}
-
 type GeomItem = {
   count: number;
   pct: number;
@@ -56,6 +45,7 @@ type GeomItem = {
   noneLabel: string;
 };
 
+// One color per RECENCY_BANDS entry, in order (freshest olive -> oldest gray).
 const RECENCY_COLORS = [
   "bg-olive-500",
   "bg-olive-400",
@@ -69,9 +59,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   const locale = useLocale();
   const nf = useMemo(() => new Intl.NumberFormat(locale), [locale]);
 
-  // Single pass over the dataset geojson derives every bar on the panel. Same
-  // deterministic, SSR-safe pattern as the map's own feature processing; null
-  // when the dataset ships stats but no geojson (very large datasets).
+  // Panel bars derived from the geojson; null when none is shipped.
   const derived = useMemo(() => {
     const gj = dataset.geojson as { features?: Feature[] } | null;
     if (!gj || !Array.isArray(gj.features) || gj.features.length === 0) {
@@ -97,9 +85,6 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
     let lineKm = 0;
     let areaKm2 = 0;
     const tagCounts = new Map<string, number>();
-    const editorLatest = new Map<string, number>();
-    const featureBands = [0, 0, 0, 0];
-    let timestamped = 0;
 
     for (const f of features) {
       const geomType = f.geometry?.type;
@@ -128,20 +113,6 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           continue;
         tagCounts.set(key, (tagCounts.get(key) ?? 0) + 1);
       }
-
-      const tsRaw = props["timestamp"];
-      if (typeof tsRaw === "string") {
-        const ts = Date.parse(tsRaw);
-        if (!Number.isNaN(ts)) {
-          featureBands[ageBand(now - ts)]++;
-          timestamped++;
-          const user = props["user"];
-          if (typeof user === "string") {
-            const prev = editorLatest.get(user);
-            if (prev === undefined || ts > prev) editorLatest.set(user, ts);
-          }
-        }
-      }
     }
 
     const total = features.length;
@@ -150,8 +121,11 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       .sort((a, b) => b[1] - a[1])
       .map(([key, count]) => ({ key, pct: (count / total) * 100 }));
 
-    const editorBands = [0, 0, 0, 0];
-    for (const ts of editorLatest.values()) editorBands[ageBand(now - ts)]++;
+    // Same helper the server uses, so this matches the stored bands.
+    const { editRecencyBands, mapperRecencyBands } = computeRecencyBands(
+      features,
+      now
+    );
 
     return {
       total,
@@ -161,13 +135,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       lineKm,
       areaKm2,
       sortedTags,
-      // Percentages of the timestamped features, so the four bands sum to 100.
-      featureBandPct: featureBands.map((c) =>
-        timestamped > 0 ? (c / timestamped) * 100 : 0
-      ),
-      timestamped,
-      editorBands,
-      editorTotal: editorLatest.size,
+      editRecencyBands,
+      mapperRecencyBands,
     };
   }, [dataset.geojson, dataset.template.tags]);
 
@@ -209,12 +178,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       .sort((a, b) => b.pct - a.pct);
   }, [derived, dataset.template.filterableTags, tTagLabel]);
 
-  const recencyLabels = [
-    t("band90d"),
-    t("band90dTo1y"),
-    t("band1yTo2y"),
-    t("band2yPlus"),
-  ];
+  const recencyLabels = RECENCY_BANDS.map((band) => t(band.labelKey));
 
   // --- Features by type ---------------------------------------------------
   // A stacked proportion bar (like the recency bars), with a compact legend
@@ -274,18 +238,15 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       : null;
 
   // --- Freshness (recency of each feature's last edit) --------------------
-  // Prefer the per-feature geojson timestamps; fall back to the stored
-  // cumulative percentages (3-band) when geojson is absent.
+  // Priority: persisted bands -> geojson-derived -> legacy 3-band qualityMetrics.
+  const editBands =
+    bandsIfPopulated(dataset.stats?.editRecencyBands) ??
+    bandsIfPopulated(derived?.editRecencyBands);
   const stale = dataset.stats?.qualityMetrics?.staleElementsPercentage;
   const within1y = dataset.stats?.qualityMetrics?.recentlyUpdatedElementsPercentage;
   let freshnessSegments: BarSegment[] | null = null;
-  if (derived && derived.timestamped > 0) {
-    freshnessSegments = derived.featureBandPct.map((pct, i) => ({
-      pct,
-      colorClass: RECENCY_COLORS[i],
-      label: recencyLabels[i],
-      value: formatPct(pct),
-    }));
+  if (editBands) {
+    freshnessSegments = recencyBandSegments(editBands, recencyLabels, formatPct);
   } else if (stale != null && within1y != null) {
     const midPct = Math.max(0, 100 - within1y - stale);
     freshnessSegments = [
@@ -311,15 +272,14 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   }
 
   // --- Mappers (recency of each mapper's latest edit) --------------------
-  const mappersSegments: BarSegment[] | null =
-    derived && derived.editorTotal > 0
-      ? derived.editorBands.map((count, i) => ({
-          pct: (count / derived.editorTotal) * 100,
-          colorClass: RECENCY_COLORS[i],
-          label: recencyLabels[i],
-          value: nf.format(count),
-        }))
-      : null;
+  const mapperBands =
+    bandsIfPopulated(dataset.stats?.mapperRecencyBands) ??
+    bandsIfPopulated(derived?.mapperRecencyBands);
+  const mappersSegments: BarSegment[] | null = mapperBands
+    ? recencyBandSegments(mapperBands, recencyLabels, (_pct, count) =>
+        nf.format(count)
+      )
+    : null;
 
   const editors = dataset.stats?.editorsCount;
 
@@ -601,4 +561,28 @@ function formatPct(pct: number): string {
     return `${pct.toFixed(1)}%`;
   }
   return `${Math.round(pct)}%`;
+}
+
+// Well-formed, non-empty band array or null (all-zero = no signal, fall through).
+function bandsIfPopulated(bands: number[] | undefined): number[] | null {
+  if (!bands || bands.length !== RECENCY_BANDS.length) return null;
+  return bands.some((c) => c > 0) ? bands : null;
+}
+
+// Percentages are of the band sum, so the bands total 100%.
+function recencyBandSegments(
+  bands: number[],
+  labels: string[],
+  formatValue: (pct: number, count: number) => string
+): BarSegment[] {
+  const total = bands.reduce((a, b) => a + b, 0);
+  return bands.map((count, i) => {
+    const pct = total > 0 ? (count / total) * 100 : 0;
+    return {
+      pct,
+      colorClass: RECENCY_COLORS[i],
+      label: labels[i],
+      value: formatValue(pct, count),
+    };
+  });
 }

@@ -1,5 +1,8 @@
 import { z } from "zod";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
+import { RECENCY_BANDS } from "@/lib/dataset-recency";
+
+export const RecencyBandsSchema = z.array(z.number()).length(RECENCY_BANDS.length);
 
 export const DatasetStatsSchema = z.object({
   lastEdited: z.coerce.date().nullable().optional(),
@@ -29,6 +32,11 @@ export const DatasetStatsSchema = z.object({
       recentlyUpdatedElementsPercentage: z.number(),
     })
     .optional(),
+
+  // Feature-based recency distributions. Optional: older datasets fall back to
+  // client-side derivation.
+  editRecencyBands: RecencyBandsSchema.optional(),
+  mapperRecencyBands: RecencyBandsSchema.optional(),
 });
 
 export const CreateDatasetSchema = z.object({
