@@ -13,6 +13,11 @@ export const GeometryMixSchema = z.object({
   areaKm2: z.number(),
 });
 
+export const TagCountSchema = z.object({
+  key: z.string(),
+  count: z.number(),
+});
+
 export const DatasetStatsSchema = z.object({
   lastEdited: z.coerce.date().nullable().optional(),
   editorsCount: z.number(),
@@ -50,6 +55,10 @@ export const DatasetStatsSchema = z.object({
   // Feature geometry split + measures. Optional: older datasets fall back to
   // client-side derivation.
   geometryMix: GeometryMixSchema.optional(),
+
+  // Per-key tag presence counts, sorted desc. Optional: absent until a dataset is
+  // (re)snapshotted — the panel reads these stored counts only, no client fallback.
+  tagCounts: z.array(TagCountSchema).optional(),
 });
 
 export const CreateDatasetSchema = z.object({

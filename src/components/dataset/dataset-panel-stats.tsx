@@ -2,31 +2,18 @@
 
 import { useMemo } from "react";
 import type { ReactNode } from "react";
-import type { Feature } from "geojson";
 import { useTranslations, useLocale } from "next-intl";
 import { MapPin, Users, Target, Spline, Pentagon, Tag } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Dataset } from "@/schemas/dataset";
 import { SegmentedBar, type BarSegment } from "@/components/ui/segmented-bar";
 import { formatCompactNumber } from "@/lib/dataset-stats";
-import { computeRecencyBands, RECENCY_BANDS } from "@/lib/dataset-recency";
-import { computeGeometryMix } from "@/lib/dataset-geometry";
+import { RECENCY_BANDS } from "@/lib/dataset-recency";
 import { tagLabel, type MessageResolver } from "@/lib/tag-i18n";
 
 type DatasetPanelStatsProps = {
   dataset: Dataset;
 };
-
-// Non-tag properties from osmtogeojson output. Mirrors feature-detail-panel.tsx.
-const NON_TAG_KEYS = new Set([
-  "id",
-  "user",
-  "timestamp",
-  "version",
-  "changeset",
-  "ageCategory",
-  "uid",
-]);
 
 type GeomItem = {
   count: number;
@@ -62,64 +49,37 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
     [locale]
   );
 
-  // Derived from the geojson; null when none is shipped.
-  const derived = useMemo(() => {
-    const gj = dataset.geojson as { features?: Feature[] } | null;
-    if (!gj || !Array.isArray(gj.features) || gj.features.length === 0) {
-      return null;
-    }
-    const features = gj.features;
-    const now = Date.now();
+  const tagCounts = dataset.stats?.tagCounts ?? null;
 
-    // Query keys (e.g. "highway" from "highway=bus_stop") match ~100% of
-    // features by definition, so exclude them from Most-used-tags.
-    const queryKeys = new Set<string>();
+  // Query keys (e.g. "highway" from "highway=bus_stop") match ~100% of
+  // features by definition, so exclude them from Most-used-tags.
+  const queryKeys = useMemo(() => {
+    const keys = new Set<string>();
     for (const kv of dataset.template.tags ?? []) {
       for (const cond of kv.split(/[;&]/)) {
         const key = cond.split("=")[0]?.trim();
-        if (key) queryKeys.add(key);
+        if (key) keys.add(key);
       }
     }
+    return keys;
+  }, [dataset.template.tags]);
 
-    const tagCounts = new Map<string, number>();
-    for (const f of features) {
-      const props = (f.properties ?? {}) as Record<string, unknown>;
-      for (const key in props) {
-        if (key.startsWith("@") || NON_TAG_KEYS.has(key) || queryKeys.has(key))
-          continue;
-        tagCounts.set(key, (tagCounts.get(key) ?? 0) + 1);
-      }
-    }
-
-    const total = features.length;
-
-    const sortedTags = [...tagCounts.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .map(([key, count]) => ({ key, pct: (count / total) * 100 }));
-
-    // Same helpers the server uses, matching stored values.
-    const { editRecencyBands, mapperRecencyBands } = computeRecencyBands(
-      features,
-      now
-    );
-    const geometryMix = computeGeometryMix(features);
-
-    return {
-      sortedTags,
-      editRecencyBands,
-      mapperRecencyBands,
-      geometryMix,
-    };
-  }, [dataset.geojson, dataset.template.tags]);
+  // Non-query tags, each with its share of features (count / dataCount).
+  const sortedTags = useMemo(() => {
+    if (!tagCounts) return [];
+    const total = dataset.dataCount;
+    return tagCounts
+      .filter((tc) => !queryKeys.has(tc.key))
+      .map((tc) => ({ key: tc.key, pct: (tc.count / total) * 100 }));
+  }, [tagCounts, queryKeys, dataset.dataCount]);
 
   // Groups tags sharing the same displayed %, capped at 5 lines.
   const tagGroups = useMemo(() => {
-    if (!derived) return [];
     const MAX_LINES = 5;
     const MAX_KEYS = 4;
     const groups: { label: string; keys: string[]; pct: number; extra: number }[] =
       [];
-    for (const { key, pct } of derived.sortedTags) {
+    for (const { key, pct } of sortedTags) {
       const label = formatPct(pct);
       let g = groups[groups.length - 1];
       if (!g || g.label !== label) {
@@ -131,13 +91,16 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       else g.extra++;
     }
     return groups;
-  }, [derived]);
+  }, [sortedTags]);
 
   // Share of features carrying each of the template's curated tags; absent = 0%.
   const coverageItems = useMemo(() => {
     const filterable = dataset.template.filterableTags ?? [];
-    if (!derived || filterable.length === 0) return [];
-    const pctByKey = new Map(derived.sortedTags.map((s) => [s.key, s.pct]));
+    if (!tagCounts || filterable.length === 0) return [];
+    const total = dataset.dataCount;
+    const pctByKey = new Map(
+      tagCounts.map((tc) => [tc.key, (tc.count / total) * 100])
+    );
     return filterable
       .map((key) => ({
         key,
@@ -145,13 +108,12 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
         pct: pctByKey.get(key) ?? 0,
       }))
       .sort((a, b) => b.pct - a.pct);
-  }, [derived, dataset.template.filterableTags, tTagLabel]);
+  }, [tagCounts, dataset.dataCount, dataset.template.filterableTags, tTagLabel]);
 
   const recencyLabels = RECENCY_BANDS.map((band) => t(band.labelKey));
 
   // --- Geometry mix -------------------------------------------------------
-  // Persisted mix if present, else derived from geojson.
-  const geometryMix = dataset.stats?.geometryMix ?? derived?.geometryMix ?? null;
+  const geometryMix = dataset.stats?.geometryMix ?? null;
   const geomTotal = geometryMix?.total ?? 0;
   const geomItems: GeomItem[] | null = geometryMix
     ? [
@@ -261,10 +223,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   ) : null;
 
   // --- Freshness ------------------------------------------------------------
-  // Priority: persisted bands -> geojson-derived -> legacy qualityMetrics.
-  const editBands =
-    bandsIfPopulated(dataset.stats?.editRecencyBands) ??
-    bandsIfPopulated(derived?.editRecencyBands);
+  // Persisted bands, else legacy qualityMetrics.
+  const editBands = bandsIfPopulated(dataset.stats?.editRecencyBands);
   const stale = dataset.stats?.qualityMetrics?.staleElementsPercentage;
   const within1y = dataset.stats?.qualityMetrics?.recentlyUpdatedElementsPercentage;
   let freshnessSegments: BarSegment[] | null = null;
@@ -295,9 +255,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   }
 
   // --- Mappers --------------------------------------------------------------
-  const mapperBands =
-    bandsIfPopulated(dataset.stats?.mapperRecencyBands) ??
-    bandsIfPopulated(derived?.mapperRecencyBands);
+  const mapperBands = bandsIfPopulated(dataset.stats?.mapperRecencyBands);
   const mappersSegments: BarSegment[] | null = mapperBands
     ? recencyBandSegments(mapperBands, recencyLabels, (_pct, count) =>
         nf.format(count)
@@ -358,7 +316,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       {(coverageItems.length > 0 || tagGroups.length > 0) && (
         <Section>
           <SectionHeader title={t("titleTags")} icon={Tag} />
-          {coverageItems.length > 0 ? (
+          {coverageItems.length > 0 && (
             <SubBlock eyebrow={t("tagCoverage")}>
               <div className="flex flex-col gap-1.5">
                 {coverageItems.map((c) => (
@@ -375,8 +333,12 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
                 ))}
               </div>
             </SubBlock>
-          ) : (
-            <SubBlock eyebrow={t("mostUsedTags")}>
+          )}
+          {tagGroups.length > 0 && (
+            <SubBlock
+              eyebrow={t("mostUsedTags")}
+              spaced={coverageItems.length > 0}
+            >
               <div className="flex flex-col gap-1.5">
                 {tagGroups.map((g) => (
                   <StatRow
