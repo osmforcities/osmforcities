@@ -216,18 +216,19 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           value: display,
         }))
       : null;
-  // Full breakdown shown on hover/focus of the whole bar (one large target,
-  // rather than sliver-thin per-slice hit areas). Lists all three types like the
-  // legend; absent rows read "no lines" etc. Each present row leads with its
-  // share% (the new info hovering adds), then ONE secondary number — the
-  // measure that actually matters for that type (length for lines, area for
-  // areas, count for points, which has no separate measure). Showing count
-  // AND measure side by side would just repeat the same size two ways.
+  // Full breakdown shown on press/tap/keyboard of the whole bar (one large
+  // target, rather than sliver-thin per-slice hit areas). Lists all three
+  // types like the legend; absent rows read "no lines" etc. Each present row
+  // leads with its share% (the new info the popover adds), then ONE secondary
+  // number — the measure that actually matters for that type (length for
+  // lines, area for areas, count for points, which has no separate measure).
+  // A 3-column grid (not a flex row) so the measure and % each land on their
+  // own fixed column across rows, instead of drifting with content length.
   const geomDetail = geomItems ? (
-    <div className="flex flex-col gap-1.5">
+    <div className="grid grid-cols-[auto_auto_auto] items-baseline gap-x-3 gap-y-1.5">
       {geomItems.map(({ label, count, pct, measure, colorClass, noneLabel }) =>
         count > 0 ? (
-          <div key={label} className="flex items-baseline justify-between gap-3">
+          <div key={label} className="contents">
             <span className="flex items-center gap-1.5 text-gray-300">
               <span
                 aria-hidden
@@ -235,26 +236,28 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
               />
               {label}
             </span>
-            <span className="tabular-nums">
-              <span className="font-semibold text-white">
-                {formatPct(pct)}
-              </span>
-              <span className="ml-1.5 text-gray-400">
-                {measure ?? nf.format(count)}
-              </span>
+            <span className="text-left tabular-nums text-gray-400">
+              {measure ?? nf.format(count)}
+            </span>
+            <span className="text-right font-semibold tabular-nums text-white">
+              {formatPct(pct)}
             </span>
           </div>
         ) : (
           // Absent type: dot stays for visual consistency with the rows
           // above, but the label isn't repeated next to its own "no lines"
-          // value — that would just say "lines" twice.
-          <div key={label} className="flex items-center gap-1.5 text-gray-500">
+          // value — that would just say "lines" twice. Occupies only the
+          // label column; the row has no measure/% to align.
+          <span
+            key={label}
+            className="flex items-center gap-1.5 text-gray-500"
+          >
             <span
               aria-hidden
               className="size-1.5 flex-none rounded-full bg-gray-600"
             />
             {capitalize(noneLabel)}
-          </div>
+          </span>
         )
       )}
     </div>
