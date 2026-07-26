@@ -226,8 +226,8 @@ export function DatasetActionsSection({
                 variant="outline"
                 title={
                   !dataset.isActive
-                    ? "Only active datasets can be refreshed"
-                    : "Update dataset with latest OpenStreetMap data"
+                    ? "Only active datasets can be synced"
+                    : "Sync with the latest OpenStreetMap data"
                 }
               >
                 <RefreshCw
