@@ -177,6 +177,7 @@
     "admin": "Admin",
     "lastEdited": "Edited",
     "lastCheckedLabel": "Fetched",
+    "fetchCadence": "Datasets are synced once a day in OSM for Cities, this is the current delay to OpenStreetMap.",
     "saves": "Saves",
     "avgAgeDays": "Avg Age (days)",
     "recentActivity": "Recent Activity (Last 3 Months)",
