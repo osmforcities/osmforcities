@@ -160,6 +160,7 @@
     "titleMappers": "Mappers",
     "titleFeatures": "Features",
     "titleTags": "Tags",
+    "statsRegion": "Dataset statistics",
     "byType": "By type",
     "mostUsedTags": "Most used tags",
     "tagCoverage": "Critical coverage",
