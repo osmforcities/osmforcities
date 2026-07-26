@@ -40,6 +40,9 @@ type GeomItem = {
   filled: boolean;
   label: string;
   display: string;
+  // Linear/area measure string for the hover detail (e.g. "142.4 km",
+  // "8.3 km²"); null for points, whose measure is just the count.
+  measure: string | null;
   // Shown in the legend when count is 0 (e.g. "no lines").
   noneLabel: string;
 };
@@ -149,13 +152,14 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
 
   const recencyLabels = RECENCY_BANDS.map((band) => t(band.labelKey));
 
-  // --- Features by type ---------------------------------------------------
+  // --- Geometry mix -------------------------------------------------------
   // A stacked proportion bar (like the recency bars), with a compact legend
   // beneath. Geometry types use the olive ramp capped at the button color
   // (500/400/300); the legend icons carry the point/line/area meaning, so color
   // only needs to separate the slices. The legend always lists all three types:
   // points show their count, lines their total length, areas their total area;
-  // absent types read "no lines" etc.
+  // absent types read "no lines" etc. Hovering/focusing the whole bar reveals a
+  // `detail` breakdown (count + share% + measure per present type).
   // Persisted mix if present, else derived from geojson; its own total is the
   // bar denominator, so the section is self-contained.
   const geometryMix = dataset.stats?.geometryMix ?? derived?.geometryMix ?? null;
@@ -171,6 +175,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           filled: false,
           label: t("geomPoints"),
           display: formatCompactNumber(geometryMix.points),
+          measure: null,
           noneLabel: t("geomNone", { type: t("geomPointsLower") }),
         },
         {
@@ -181,7 +186,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Spline,
           filled: false,
           label: t("geomLines"),
-          display: `${formatKm(geometryMix.lineKm, nf)} km`,
+          display: formatLength(geometryMix.lineKm, nf),
+          measure: formatLength(geometryMix.lineKm, nf),
           noneLabel: t("geomNone", { type: t("geomLinesLower") }),
         },
         {
@@ -192,7 +198,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Pentagon,
           filled: false,
           label: t("geomAreas"),
-          display: `${formatKm(geometryMix.areaKm2, nf)} km²`,
+          display: formatArea(geometryMix.areaKm2, nf),
+          measure: formatArea(geometryMix.areaKm2, nf),
           noneLabel: t("geomNone", { type: t("geomAreasLower") }),
         },
       ]
@@ -209,6 +216,43 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           value: display,
         }))
       : null;
+  // Full breakdown shown on hover/focus of the whole bar (one large target,
+  // rather than sliver-thin per-slice hit areas). Lists all three types like the
+  // legend: present rows get share% + count + measure; absent rows read
+  // "no lines" etc. Aligned 4-column grid: [dot + label] [share%] [count] [measure].
+  const geomDetail = geomItems ? (
+    <div className="grid grid-cols-[auto_auto_auto_auto] items-baseline gap-x-3 gap-y-1 tabular-nums">
+      {geomItems.map(({ label, count, pct, measure, colorClass, noneLabel }) =>
+        count > 0 ? (
+          <div key={label} className="contents">
+            <span className="flex items-center gap-1.5 pr-1 text-gray-200">
+              <span
+                aria-hidden
+                className={`size-1.5 flex-none rounded-full ${colorClass}`}
+              />
+              {label}
+            </span>
+            <span className="text-right font-semibold text-white">
+              {formatPct(pct)}
+            </span>
+            <span className="text-right text-gray-400">{nf.format(count)}</span>
+            <span className="text-right text-gray-400">{measure ?? ""}</span>
+          </div>
+        ) : (
+          <div key={label} className="contents text-gray-500">
+            <span className="flex items-center gap-1.5 pr-1">
+              <span
+                aria-hidden
+                className="size-1.5 flex-none rounded-full bg-gray-600"
+              />
+              {label}
+            </span>
+            <span className="col-span-3 text-right">{noneLabel}</span>
+          </div>
+        )
+      )}
+    </div>
+  ) : null;
 
   // --- Freshness (recency of each feature's last edit) --------------------
   // Priority: persisted bands -> geojson-derived -> legacy 3-band qualityMetrics.
@@ -268,11 +312,12 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon={MapPin}
         />
         {geomSegments && geomItems && (
-          <SubBlock eyebrow={t("byType")}>
+          <SubBlock eyebrow={t("geometryMix")}>
             <SegmentedBar
               segments={geomSegments}
               showLegend={false}
-              ariaLabel={t("byType")}
+              ariaLabel={t("geometryMix")}
+              detail={geomDetail}
             />
             <GeomLegend items={geomItems} />
           </SubBlock>
@@ -512,12 +557,26 @@ function SectionHeader({
   );
 }
 
-// One decimal below 10, whole numbers above; a nonzero total that would round
-// to 0 shows "<0.1" so a handful of tiny features doesn't read as "0".
-function formatKm(n: number, nf: Intl.NumberFormat): string {
-  if (n > 0 && n < 0.05) return "<0.1";
-  const v = n >= 10 ? Math.round(n) : Math.round(n * 10) / 10;
-  return nf.format(v);
+// One decimal below 100, whole numbers above.
+function round1(n: number): number {
+  return n >= 100 ? Math.round(n) : Math.round(n * 10) / 10;
+}
+
+// Adaptive length: metres under 1 km, kilometres above. Keeps small totals
+// legible ("850 m") instead of collapsing to "0.9 km".
+function formatLength(km: number, nf: Intl.NumberFormat): string {
+  if (km <= 0) return `0 m`;
+  if (km < 1) return `${nf.format(Math.round(km * 1000))} m`;
+  return `${nf.format(round1(km))} km`;
+}
+
+// Adaptive area: m² under 1 ha, hectares under 1 km², km² above — so a few
+// building footprints read "8,400 m²" or "3.2 ha" rather than "0 km²".
+function formatArea(km2: number, nf: Intl.NumberFormat): string {
+  if (km2 <= 0) return `0 m²`;
+  if (km2 < 0.01) return `${nf.format(Math.round(km2 * 1_000_000))} m²`;
+  if (km2 < 1) return `${nf.format(round1(km2 * 100))} ha`;
+  return `${nf.format(round1(km2))} km²`;
 }
 
 function formatPct(pct: number): string {
