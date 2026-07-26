@@ -225,18 +225,16 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   // AND measure side by side would just repeat the same size two ways.
   const geomDetail = geomItems ? (
     <div className="flex flex-col gap-1.5">
-      {geomItems.map(({ label, count, pct, measure, colorClass, noneLabel }) => (
-        <div key={label} className="flex items-baseline justify-between gap-3">
-          <span className="flex items-center gap-1.5 text-gray-300">
-            <span
-              aria-hidden
-              className={`size-1.5 flex-none rounded-full ${
-                count > 0 ? colorClass : "bg-gray-600"
-              }`}
-            />
-            {label}
-          </span>
-          {count > 0 ? (
+      {geomItems.map(({ label, count, pct, measure, colorClass, noneLabel }) =>
+        count > 0 ? (
+          <div key={label} className="flex items-baseline justify-between gap-3">
+            <span className="flex items-center gap-1.5 text-gray-300">
+              <span
+                aria-hidden
+                className={`size-1.5 flex-none rounded-full ${colorClass}`}
+              />
+              {label}
+            </span>
             <span className="tabular-nums">
               <span className="font-semibold text-white">
                 {formatPct(pct)}
@@ -245,11 +243,20 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
                 {measure ?? nf.format(count)}
               </span>
             </span>
-          ) : (
-            <span className="text-gray-500">{noneLabel}</span>
-          )}
-        </div>
-      ))}
+          </div>
+        ) : (
+          // Absent type: dot stays for visual consistency with the rows
+          // above, but the label isn't repeated next to its own "no lines"
+          // value — that would just say "lines" twice.
+          <div key={label} className="flex items-center gap-1.5 text-gray-500">
+            <span
+              aria-hidden
+              className="size-1.5 flex-none rounded-full bg-gray-600"
+            />
+            {capitalize(noneLabel)}
+          </div>
+        )
+      )}
     </div>
   ) : null;
 
@@ -576,6 +583,12 @@ function formatArea(km2: number, nf: Intl.NumberFormat): string {
   if (km2 < 0.01) return `${nf.format(Math.round(km2 * 1_000_000))} m²`;
   if (km2 < 1) return `${nf.format(round1(km2 * 100))} ha`;
   return `${nf.format(round1(km2))} km²`;
+}
+
+// The legend uses noneLabel lowercase, inline after an icon ("no lines"); the
+// tooltip shows it as its own line, so it needs sentence case ("No lines").
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function formatPct(pct: number): string {
