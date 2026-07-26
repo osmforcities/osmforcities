@@ -2,7 +2,9 @@ import { z } from "zod";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 import { RECENCY_BANDS } from "@/lib/dataset-recency";
 
-export const RecencyBandsSchema = z.array(z.number()).length(RECENCY_BANDS.length);
+export const RecencyBandsSchema = z
+  .array(z.number().int().nonnegative())
+  .length(RECENCY_BANDS.length);
 
 export const GeometryMixSchema = z.object({
   points: z.number().int().nonnegative(),
