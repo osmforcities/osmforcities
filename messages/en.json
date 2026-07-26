@@ -172,7 +172,7 @@
     "tagCoverage": "Critical coverage",
     "recentlyEdited": "Recently edited",
     "activeRecently": "Active recently",
-    "band90d": "Last 90d",
+    "band90d": "≤ 90d",
     "band90dTo1y": "90d–1y",
     "band1yTo2y": "1y–2y",
     "band2yPlus": "2y+",
