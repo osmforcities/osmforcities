@@ -8,6 +8,7 @@ import type { Dataset } from "@/schemas/dataset";
 import { Link } from "@/i18n/navigation";
 import { resolveAreaName } from "@/lib/area-name";
 import { DatasetMapWrapper, type DatasetFullMapHandle } from "@/components/dataset/map-wrapper";
+import { CategoryFacet } from "@/components/dataset/category-facet";
 import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
 import { DatasetPanelStats } from "@/components/dataset/dataset-panel-stats";
 import { DatasetTimestamps } from "@/components/dataset/dataset-timestamps";
@@ -81,9 +82,7 @@ export function DatasetInteractiveSection({
               {/* Metadata chip row: category facet (olive) + freshness chips
                   (edited, fetched) sharing one line below the title. */}
               <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                <span className="inline-flex flex-none items-center rounded-full border border-olive-100 bg-olive-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-olive-700">
-                  {dataset.template.category?.name ?? "other"}
-                </span>
+                <CategoryFacet dataset={dataset} areaName={areaName} />
                 <DatasetTimestamps dataset={dataset} lastChecked={lastChecked} />
               </div>
             </div>

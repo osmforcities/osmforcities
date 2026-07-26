@@ -131,6 +131,8 @@
     "backToArea": "← Voltar para {area}",
     "backToAreaLabel": "Voltar para {area}",
     "allDatasetsInArea": "Todos os conjuntos de dados nesta área",
+    "categoryFacetLabel": "Categoria: {category}. Ver todos os conjuntos de dados de {category} em {area}.",
+    "categoryUncategorized": "Outros",
     "back": "Voltar",
     "datasetStats": "Estatísticas do Conjunto de Dados",
     "features": "Feições",
