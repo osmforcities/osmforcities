@@ -200,7 +200,10 @@ export function DatasetActionsSection({
           aria-label={shareCopied ? t("shareCopied") : t("share")}
         >
           {shareCopied ? (
-            <Check className="h-4 w-4 text-olive-600" />
+            <span className="inline-flex items-center gap-1.5 text-olive-600">
+              <Check className="h-4 w-4" />
+              <span className="text-xs font-medium">{t("shareCopied")}</span>
+            </span>
           ) : (
             <Share2 className="h-4 w-4" />
           )}
