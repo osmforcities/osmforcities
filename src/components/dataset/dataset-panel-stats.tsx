@@ -50,6 +50,15 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   const tTagLabel = useTranslations("TagLabel") as unknown as MessageResolver;
   const locale = useLocale();
   const nf = useMemo(() => new Intl.NumberFormat(locale), [locale]);
+  // Compact digits for footprint m² (105K / 105 mil).
+  const compactNf = useMemo(
+    () =>
+      new Intl.NumberFormat(locale, {
+        notation: "compact",
+        maximumFractionDigits: 1,
+      }),
+    [locale]
+  );
 
   const tagCounts = dataset.stats?.tagCounts ?? null;
 
@@ -126,7 +135,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
     // Format each measure once; a 0-count type carries no measure, so the
     // popover shows its label alone (never "(0 m)").
     const lineFmt = formatLength(geometryMix.lineKm, nf);
-    const areaFmt = formatArea(geometryMix.areaKm2, nf);
+    const areaFmt = formatArea(geometryMix.areaKm2, nf, compactNf);
     geomItems = [
       {
         count: geometryMix.points,
@@ -540,8 +549,8 @@ function round1(n: number): number {
   return n >= 100 ? Math.round(n) : Math.round(n * 10) / 10;
 }
 
-// Number is locale-formatted; the SI symbols (m, km, m², ha, km²) are
-// locale-invariant. Intl `style:"unit"` can't render m²/km² — square-meter and
+// Numbers are locale-formatted; the SI symbols (m, km, m², km²) are appended as
+// literals. Intl `style:"unit"` can't render m²/km² — square-meter and
 // square-kilometer aren't ECMA-402-sanctioned unit identifiers (they throw).
 function formatLength(km: number, nf: Intl.NumberFormat): string {
   if (km <= 0) return `0 m`;
@@ -549,10 +558,16 @@ function formatLength(km: number, nf: Intl.NumberFormat): string {
   return `${nf.format(round1(km))} km`;
 }
 
-function formatArea(km2: number, nf: Intl.NumberFormat): string {
+// m² up to 1 km², then km² (avoids "500M m²" at city scale). Hectares dropped —
+// weak reader intuition; cf. iD, which keeps m² primary and shows ha only as a
+// secondary hint.
+function formatArea(
+  km2: number,
+  nf: Intl.NumberFormat,
+  compactNf: Intl.NumberFormat
+): string {
   if (km2 <= 0) return `0 m²`;
-  if (km2 < 0.01) return `${nf.format(Math.round(km2 * 1_000_000))} m²`;
-  if (km2 < 1) return `${nf.format(round1(km2 * 100))} ha`;
+  if (km2 < 1) return `${compactNf.format(Math.round(km2 * 1_000_000))} m²`;
   return `${nf.format(round1(km2))} km²`;
 }
 
