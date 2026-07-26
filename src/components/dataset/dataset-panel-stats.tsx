@@ -561,9 +561,9 @@ function SectionHeader({
 }) {
   return (
     <div className="flex items-baseline gap-2.5">
-      <span className="text-lg font-semibold leading-tight text-gray-900">
+      <h3 className="text-lg font-semibold leading-tight text-gray-900">
         {title}
-      </span>
+      </h3>
       {value != null && (
         <span className="ml-auto text-[15px] font-bold tabular-nums text-gray-600">
           {value}
