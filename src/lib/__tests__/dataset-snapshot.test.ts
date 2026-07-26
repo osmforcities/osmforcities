@@ -141,6 +141,12 @@ describe("fetchDatasetSnapshot", () => {
     });
   });
 
+  it("persists tag counts from the geojson features", async () => {
+    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    // Both node fixtures carry a `name` tag -> one entry, count 2.
+    expect(snapshot.stats.tagCounts).toEqual([{ key: "name", count: 2 }]);
+  });
+
   it("returns bbox as null when no features produced", async () => {
     vi.stubGlobal(
       "fetch",
