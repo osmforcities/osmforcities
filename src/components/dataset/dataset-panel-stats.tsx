@@ -144,8 +144,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Spline,
           filled: false,
           label: t("geomLines"),
-          display: formatLength(geometryMix.lineKm, locale),
-          measure: formatLength(geometryMix.lineKm, locale),
+          display: formatLength(geometryMix.lineKm, nf),
+          measure: formatLength(geometryMix.lineKm, nf),
           noneLabel: t("geomNone", { type: t("geomLinesLower") }),
         },
         {
@@ -156,8 +156,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Pentagon,
           filled: false,
           label: t("geomAreas"),
-          display: formatArea(geometryMix.areaKm2, locale),
-          measure: formatArea(geometryMix.areaKm2, locale),
+          display: formatArea(geometryMix.areaKm2, nf),
+          measure: formatArea(geometryMix.areaKm2, nf),
           noneLabel: t("geomNone", { type: t("geomAreasLower") }),
         },
       ]
@@ -550,33 +550,20 @@ function round1(n: number): number {
   return n >= 100 ? Math.round(n) : Math.round(n * 10) / 10;
 }
 
-// Locale-aware unit rendering ("104 m", "77,5 ha", "128 km") so both the number
-// and the symbol localize, instead of hard-coding suffixes.
-function formatUnit(
-  locale: string,
-  value: number,
-  unit: string,
-  maximumFractionDigits: number
-): string {
-  return new Intl.NumberFormat(locale, {
-    style: "unit",
-    unit,
-    unitDisplay: "short",
-    maximumFractionDigits,
-  }).format(value);
+// Number is locale-formatted; the SI symbols (m, km, m², ha, km²) are
+// locale-invariant. Intl `style:"unit"` can't render m²/km² — square-meter and
+// square-kilometer aren't ECMA-402-sanctioned unit identifiers (they throw).
+function formatLength(km: number, nf: Intl.NumberFormat): string {
+  if (km <= 0) return `0 m`;
+  if (km < 1) return `${nf.format(Math.round(km * 1000))} m`;
+  return `${nf.format(round1(km))} km`;
 }
 
-function formatLength(km: number, locale: string): string {
-  if (km <= 0) return formatUnit(locale, 0, "meter", 0);
-  if (km < 1) return formatUnit(locale, Math.round(km * 1000), "meter", 0);
-  return formatUnit(locale, round1(km), "kilometer", 1);
-}
-
-function formatArea(km2: number, locale: string): string {
-  if (km2 <= 0) return formatUnit(locale, 0, "square-meter", 0);
-  if (km2 < 0.01) return formatUnit(locale, Math.round(km2 * 1_000_000), "square-meter", 0);
-  if (km2 < 1) return formatUnit(locale, round1(km2 * 100), "hectare", 1);
-  return formatUnit(locale, round1(km2), "square-kilometer", 1);
+function formatArea(km2: number, nf: Intl.NumberFormat): string {
+  if (km2 <= 0) return `0 m²`;
+  if (km2 < 0.01) return `${nf.format(Math.round(km2 * 1_000_000))} m²`;
+  if (km2 < 1) return `${nf.format(round1(km2 * 100))} ha`;
+  return `${nf.format(round1(km2))} km²`;
 }
 
 function formatPct(pct: number): string {

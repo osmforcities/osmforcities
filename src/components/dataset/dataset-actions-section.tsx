@@ -108,6 +108,8 @@ export function DatasetActionsSection({
       }, 2000);
     } catch (error) {
       console.error("Error copying dataset link:", error);
+      if (shareTimer.current) clearTimeout(shareTimer.current);
+      setShareCopied(false);
       setStatusMessage(t("linkCopyFailed"));
     }
   };
