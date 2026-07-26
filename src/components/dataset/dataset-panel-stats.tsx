@@ -218,39 +218,38 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       : null;
   // Full breakdown shown on hover/focus of the whole bar (one large target,
   // rather than sliver-thin per-slice hit areas). Lists all three types like the
-  // legend: present rows get share% + count + measure; absent rows read
-  // "no lines" etc. Aligned 4-column grid: [dot + label] [share%] [count] [measure].
+  // legend; absent rows read "no lines" etc. Each present row leads with its
+  // share% (the new info hovering adds), then ONE secondary number — the
+  // measure that actually matters for that type (length for lines, area for
+  // areas, count for points, which has no separate measure). Showing count
+  // AND measure side by side would just repeat the same size two ways.
   const geomDetail = geomItems ? (
-    <div className="grid grid-cols-[auto_auto_auto_auto] items-baseline gap-x-3 gap-y-1 tabular-nums">
-      {geomItems.map(({ label, count, pct, measure, colorClass, noneLabel }) =>
-        count > 0 ? (
-          <div key={label} className="contents">
-            <span className="flex items-center gap-1.5 pr-1 text-gray-200">
-              <span
-                aria-hidden
-                className={`size-1.5 flex-none rounded-full ${colorClass}`}
-              />
-              {label}
+    <div className="flex flex-col gap-1.5">
+      {geomItems.map(({ label, count, pct, measure, colorClass, noneLabel }) => (
+        <div key={label} className="flex items-baseline justify-between gap-3">
+          <span className="flex items-center gap-1.5 text-gray-300">
+            <span
+              aria-hidden
+              className={`size-1.5 flex-none rounded-full ${
+                count > 0 ? colorClass : "bg-gray-600"
+              }`}
+            />
+            {label}
+          </span>
+          {count > 0 ? (
+            <span className="tabular-nums">
+              <span className="font-semibold text-white">
+                {formatPct(pct)}
+              </span>
+              <span className="ml-1.5 text-gray-400">
+                {measure ?? nf.format(count)}
+              </span>
             </span>
-            <span className="text-right font-semibold text-white">
-              {formatPct(pct)}
-            </span>
-            <span className="text-right text-gray-400">{nf.format(count)}</span>
-            <span className="text-right text-gray-400">{measure ?? ""}</span>
-          </div>
-        ) : (
-          <div key={label} className="contents text-gray-500">
-            <span className="flex items-center gap-1.5 pr-1">
-              <span
-                aria-hidden
-                className="size-1.5 flex-none rounded-full bg-gray-600"
-              />
-              {label}
-            </span>
-            <span className="col-span-3 text-right">{noneLabel}</span>
-          </div>
-        )
-      )}
+          ) : (
+            <span className="text-gray-500">{noneLabel}</span>
+          )}
+        </div>
+      ))}
     </div>
   ) : null;
 
