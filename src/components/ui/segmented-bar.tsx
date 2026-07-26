@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Button, Tooltip, TooltipTrigger } from "react-aria-components";
+import { Button, Dialog, DialogTrigger, Popover } from "react-aria-components";
 
 export type BarSegment = {
   /** Width of the segment as a percentage of the bar (0–100). */
@@ -24,9 +24,10 @@ type SegmentedBarProps = {
   showLegend?: boolean;
   ariaLabel: string;
   className?: string;
-  /** Optional breakdown revealed on hover / focus / tap of the WHOLE bar. When
-   *  set, the entire bar becomes a single tooltip trigger (one large target)
-   *  rather than exposing each — potentially sliver-thin — slice individually. */
+  /** Optional breakdown revealed on press / tap / keyboard of the WHOLE bar
+   *  (same Popover pattern as the freshness pills). When set, the entire bar
+   *  becomes a single trigger (one large target) rather than exposing each —
+   *  potentially sliver-thin — slice individually. */
   detail?: ReactNode;
 };
 
@@ -35,10 +36,12 @@ type SegmentedBarProps = {
  * shared by the Overview (geometry), Activity, and Community sections of the
  * dataset panel. Segments keep a min width so a rare slice stays visible.
  *
- * When `detail` is provided the whole bar is a focusable tooltip trigger; the
- * hit area is padded vertically so the thin (10px) bar is still easy to hit,
- * and the tooltip shows the full breakdown at once. Bars without `detail`
- * render exactly as before (a static `img` with the values in its aria-label).
+ * When `detail` is provided the whole bar is a focusable Popover trigger (the
+ * same `DialogTrigger`/`Popover`/`Dialog` pattern as the freshness pills) —
+ * touch-friendly, unlike a hover-only Tooltip. The hit area is padded
+ * vertically so the thin (10px) bar is still easy to hit. Bars without
+ * `detail` render exactly as before (a static `img` with the values in its
+ * aria-label).
  */
 export function SegmentedBar({
   segments,
@@ -74,21 +77,23 @@ export function SegmentedBar({
   return (
     <div className={className}>
       {interactive ? (
-        <TooltipTrigger delay={0}>
+        <DialogTrigger>
           {/* Padded, full-width button so the whole 10px bar is an easy target. */}
           <Button
             aria-label={fullLabel}
-            className="group block w-full cursor-help py-1.5 outline-none"
+            className="group block w-full cursor-pointer py-1.5 outline-none"
           >
             {bar}
           </Button>
-          <Tooltip
-            offset={6}
-            className="rounded-md bg-gray-900 px-3 py-2 text-xs text-white shadow-lg outline-none"
-          >
-            {detail}
-          </Tooltip>
-        </TooltipTrigger>
+          <Popover offset={6} className="outline-none">
+            <Dialog
+              aria-label={ariaLabel}
+              className="rounded-md bg-gray-900 px-3 py-2 text-xs text-white shadow-lg outline-none"
+            >
+              {detail}
+            </Dialog>
+          </Popover>
+        </DialogTrigger>
       ) : (
         bar
       )}
