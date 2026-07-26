@@ -9,6 +9,7 @@ import {
 import type { OverpassData } from "@/types/overpass";
 import { calculateBbox } from "@/lib/utils";
 import { computeRecencyBands } from "@/lib/dataset-recency";
+import { computeGeometryMix, type GeometryMix } from "@/lib/dataset-geometry";
 import type { Bbox } from "@/types/geojson";
 import { prisma } from "@/lib/db";
 import {
@@ -104,6 +105,7 @@ export interface DatasetStats {
   // Set from the geojson in fetchDatasetSnapshot, not extractDatasetStats.
   editRecencyBands?: number[];
   mapperRecencyBands?: number[];
+  geometryMix?: GeometryMix;
 }
 
 export interface DatasetSnapshot {
@@ -279,6 +281,7 @@ export async function fetchDatasetSnapshot(
   );
   stats.editRecencyBands = editRecencyBands;
   stats.mapperRecencyBands = mapperRecencyBands;
+  stats.geometryMix = computeGeometryMix(geojson.features);
   const bbox = calculateBbox(geojson);
   return {
     geojson,

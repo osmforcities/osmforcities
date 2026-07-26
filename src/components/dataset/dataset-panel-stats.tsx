@@ -6,12 +6,11 @@ import type { Feature } from "geojson";
 import { useTranslations, useLocale } from "next-intl";
 import { MapPin, Users, Target, Spline, Pentagon, Tag } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import area from "@turf/area";
-import length from "@turf/length";
 import type { Dataset } from "@/schemas/dataset";
 import { SegmentedBar, type BarSegment } from "@/components/ui/segmented-bar";
 import { formatCompactNumber } from "@/lib/dataset-stats";
 import { computeRecencyBands, RECENCY_BANDS } from "@/lib/dataset-recency";
+import { computeGeometryMix } from "@/lib/dataset-geometry";
 import { tagLabel, type MessageResolver } from "@/lib/tag-i18n";
 
 type DatasetPanelStatsProps = {
@@ -79,35 +78,9 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       }
     }
 
-    let points = 0;
-    let lines = 0;
-    let areas = 0;
-    let lineKm = 0;
-    let areaKm2 = 0;
     const tagCounts = new Map<string, number>();
-
     for (const f of features) {
-      const geomType = f.geometry?.type;
-      if (geomType === "Point" || geomType === "MultiPoint") {
-        points++;
-      } else if (geomType === "LineString" || geomType === "MultiLineString") {
-        lines++;
-        try {
-          lineKm += length(f);
-        } catch {
-          /* skip malformed geometry */
-        }
-      } else if (geomType === "Polygon" || geomType === "MultiPolygon") {
-        areas++;
-        try {
-          areaKm2 += area(f) / 1_000_000;
-        } catch {
-          /* skip malformed geometry */
-        }
-      }
-
       const props = (f.properties ?? {}) as Record<string, unknown>;
-
       for (const key in props) {
         if (key.startsWith("@") || NON_TAG_KEYS.has(key) || queryKeys.has(key))
           continue;
@@ -121,22 +94,18 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       .sort((a, b) => b[1] - a[1])
       .map(([key, count]) => ({ key, pct: (count / total) * 100 }));
 
-    // Same helper the server uses, so this matches the stored bands.
+    // Same helpers the server uses, so these match the stored values.
     const { editRecencyBands, mapperRecencyBands } = computeRecencyBands(
       features,
       now
     );
+    const geometryMix = computeGeometryMix(features);
 
     return {
-      total,
-      points,
-      lines,
-      areas,
-      lineKm,
-      areaKm2,
       sortedTags,
       editRecencyBands,
       mapperRecencyBands,
+      geometryMix,
     };
   }, [dataset.geojson, dataset.template.tags]);
 
@@ -187,39 +156,43 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   // only needs to separate the slices. The legend always lists all three types:
   // points show their count, lines their total length, areas their total area;
   // absent types read "no lines" etc.
-  const geomItems: GeomItem[] | null = derived
+  // Persisted mix if present, else derived from geojson; its own total is the
+  // bar denominator, so the section is self-contained.
+  const geometryMix = dataset.stats?.geometryMix ?? derived?.geometryMix ?? null;
+  const geomTotal = geometryMix?.total ?? 0;
+  const geomItems: GeomItem[] | null = geometryMix
     ? [
         {
-          count: derived.points,
-          pct: (derived.points / derived.total) * 100,
+          count: geometryMix.points,
+          pct: (geometryMix.points / geomTotal) * 100,
           colorClass: "bg-olive-500",
           textClass: "text-olive-500",
           icon: Target,
           filled: false,
           label: t("geomPoints"),
-          display: formatCompactNumber(derived.points),
+          display: formatCompactNumber(geometryMix.points),
           noneLabel: t("geomNone", { type: t("geomPointsLower") }),
         },
         {
-          count: derived.lines,
-          pct: (derived.lines / derived.total) * 100,
+          count: geometryMix.lines,
+          pct: (geometryMix.lines / geomTotal) * 100,
           colorClass: "bg-olive-400",
           textClass: "text-olive-400",
           icon: Spline,
           filled: false,
           label: t("geomLines"),
-          display: `${formatKm(derived.lineKm, nf)} km`,
+          display: `${formatKm(geometryMix.lineKm, nf)} km`,
           noneLabel: t("geomNone", { type: t("geomLinesLower") }),
         },
         {
-          count: derived.areas,
-          pct: (derived.areas / derived.total) * 100,
+          count: geometryMix.areas,
+          pct: (geometryMix.areas / geomTotal) * 100,
           colorClass: "bg-olive-300",
           textClass: "text-olive-300",
           icon: Pentagon,
           filled: false,
           label: t("geomAreas"),
-          display: `${formatKm(derived.areaKm2, nf)} km²`,
+          display: `${formatKm(geometryMix.areaKm2, nf)} km²`,
           noneLabel: t("geomNone", { type: t("geomAreasLower") }),
         },
       ]
