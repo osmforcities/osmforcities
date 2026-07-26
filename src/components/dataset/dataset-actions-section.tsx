@@ -126,7 +126,7 @@ export function DatasetActionsSection({
       const result = await refreshDataset(dataset.id);
       if (result.success) {
         onRefreshed?.(result.lastChecked ?? new Date());
-        setStatusMessage(t("datasetUpdated"));
+        setStatusMessage(t("datasetSynced"));
       } else {
         console.error("Failed to refresh dataset:", result.error);
         setStatusMessage("");
