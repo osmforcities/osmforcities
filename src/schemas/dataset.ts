@@ -5,17 +5,17 @@ import { RECENCY_BANDS } from "@/lib/dataset-recency";
 export const RecencyBandsSchema = z.array(z.number()).length(RECENCY_BANDS.length);
 
 export const GeometryMixSchema = z.object({
-  total: z.number(),
-  points: z.number(),
-  lines: z.number(),
-  areas: z.number(),
-  lineKm: z.number(),
-  areaKm2: z.number(),
+  total: z.number().int().nonnegative(),
+  points: z.number().int().nonnegative(),
+  lines: z.number().int().nonnegative(),
+  areas: z.number().int().nonnegative(),
+  lineKm: z.number().nonnegative(),
+  areaKm2: z.number().nonnegative(),
 });
 
 export const TagCountSchema = z.object({
   key: z.string(),
-  count: z.number(),
+  count: z.number().int().nonnegative(),
 });
 
 export const DatasetStatsSchema = z.object({
@@ -47,13 +47,13 @@ export const DatasetStatsSchema = z.object({
     })
     .optional(),
 
-  // Feature-based recency distributions. Optional: older datasets fall back to
-  // client-side derivation.
+  // Feature-based recency distributions. Optional: absent until a dataset is
+  // (re)snapshotted — the panel hides the band charts, no client fallback.
   editRecencyBands: RecencyBandsSchema.optional(),
   mapperRecencyBands: RecencyBandsSchema.optional(),
 
-  // Feature geometry split + measures. Optional: older datasets fall back to
-  // client-side derivation.
+  // Feature geometry split + measures. Optional: absent until a dataset is
+  // (re)snapshotted — the panel hides the geometry block, no client fallback.
   geometryMix: GeometryMixSchema.optional(),
 
   // Per-key tag presence counts, sorted desc. Optional: absent until a dataset is

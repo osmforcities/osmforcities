@@ -69,7 +69,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
 
   // Non-query tags, each with its share of features (count / dataCount).
   const sortedTags = useMemo(() => {
-    if (!tagCounts) return [];
+    if (!tagCounts || dataset.dataCount <= 0) return [];
     const total = dataset.dataCount;
     return tagCounts
       .filter((tc) => !queryKeys.has(tc.key))
@@ -99,7 +99,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   // Share of features carrying each of the template's curated tags; absent = 0%.
   const coverageItems = useMemo(() => {
     const filterable = dataset.template.filterableTags ?? [];
-    if (!tagCounts || filterable.length === 0) return [];
+    if (!tagCounts || filterable.length === 0 || dataset.dataCount <= 0) return [];
     const total = dataset.dataCount;
     const pctByKey = new Map(
       tagCounts.map((tc) => [tc.key, (tc.count / total) * 100])
@@ -117,7 +117,11 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
 
   // --- Geometry mix -------------------------------------------------------
   const geometryMix = dataset.stats?.geometryMix ?? null;
-  const geomTotal = geometryMix?.total ?? 0;
+  // Denominator from the classified counts, floored at 1 so a zero/inconsistent
+  // snapshot can't yield Infinity%/NaN% (empty mixes render no segments anyway).
+  const geomTotal = geometryMix
+    ? Math.max(1, geometryMix.points + geometryMix.lines + geometryMix.areas)
+    : 0;
   const geomItems: GeomItem[] | null = geometryMix
     ? [
         {
@@ -140,8 +144,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Spline,
           filled: false,
           label: t("geomLines"),
-          display: formatLength(geometryMix.lineKm, nf),
-          measure: formatLength(geometryMix.lineKm, nf),
+          display: formatLength(geometryMix.lineKm, locale),
+          measure: formatLength(geometryMix.lineKm, locale),
           noneLabel: t("geomNone", { type: t("geomLinesLower") }),
         },
         {
@@ -152,8 +156,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           icon: Pentagon,
           filled: false,
           label: t("geomAreas"),
-          display: formatArea(geometryMix.areaKm2, nf),
-          measure: formatArea(geometryMix.areaKm2, nf),
+          display: formatArea(geometryMix.areaKm2, locale),
+          measure: formatArea(geometryMix.areaKm2, locale),
           noneLabel: t("geomNone", { type: t("geomAreasLower") }),
         },
       ]
@@ -546,17 +550,33 @@ function round1(n: number): number {
   return n >= 100 ? Math.round(n) : Math.round(n * 10) / 10;
 }
 
-function formatLength(km: number, nf: Intl.NumberFormat): string {
-  if (km <= 0) return `0 m`;
-  if (km < 1) return `${nf.format(Math.round(km * 1000))} m`;
-  return `${nf.format(round1(km))} km`;
+// Locale-aware unit rendering ("104 m", "77,5 ha", "128 km") so both the number
+// and the symbol localize, instead of hard-coding suffixes.
+function formatUnit(
+  locale: string,
+  value: number,
+  unit: string,
+  maximumFractionDigits: number
+): string {
+  return new Intl.NumberFormat(locale, {
+    style: "unit",
+    unit,
+    unitDisplay: "short",
+    maximumFractionDigits,
+  }).format(value);
 }
 
-function formatArea(km2: number, nf: Intl.NumberFormat): string {
-  if (km2 <= 0) return `0 m²`;
-  if (km2 < 0.01) return `${nf.format(Math.round(km2 * 1_000_000))} m²`;
-  if (km2 < 1) return `${nf.format(round1(km2 * 100))} ha`;
-  return `${nf.format(round1(km2))} km²`;
+function formatLength(km: number, locale: string): string {
+  if (km <= 0) return formatUnit(locale, 0, "meter", 0);
+  if (km < 1) return formatUnit(locale, Math.round(km * 1000), "meter", 0);
+  return formatUnit(locale, round1(km), "kilometer", 1);
+}
+
+function formatArea(km2: number, locale: string): string {
+  if (km2 <= 0) return formatUnit(locale, 0, "square-meter", 0);
+  if (km2 < 0.01) return formatUnit(locale, Math.round(km2 * 1_000_000), "square-meter", 0);
+  if (km2 < 1) return formatUnit(locale, round1(km2 * 100), "hectare", 1);
+  return formatUnit(locale, round1(km2), "square-kilometer", 1);
 }
 
 function formatPct(pct: number): string {

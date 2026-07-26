@@ -94,6 +94,7 @@ function TimestampPill({
   label: string;
   note?: string | null;
 }) {
+  const t = useTranslations("DatasetPage");
   const content = (
     <>
       <Icon className="size-3 flex-shrink-0 text-gray-400" aria-hidden />
@@ -103,13 +104,14 @@ function TimestampPill({
 
   if (!relative) {
     return (
-      <span aria-label={label} className={PILL_CLASS}>
+      <span className={PILL_CLASS}>
+        <span className="sr-only">{label}</span>
         {content}
       </span>
     );
   }
 
-  const description = `${label} ${relative}`;
+  const description = t("timestampDescription", { label, relative });
 
   return (
     <DialogTrigger>

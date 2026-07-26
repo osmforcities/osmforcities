@@ -50,5 +50,7 @@ export function computeGeometryMix(features: Feature[]): GeometryMix {
     }
   }
 
-  return { total: features.length, points, lines, areas, lineKm, areaKm2 };
+  // total counts only classified geometries so the segmented bar's denominator
+  // matches its segments (null/unsupported geometries are excluded).
+  return { total: points + lines + areas, points, lines, areas, lineKm, areaKm2 };
 }

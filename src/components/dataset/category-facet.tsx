@@ -28,7 +28,7 @@ export function CategoryFacet({ dataset, areaName }: CategoryFacetProps) {
 
   return (
     <Link
-      href={`/area/${dataset.area.id}?category=${category.slug}`}
+      href={`/area/${dataset.area.id}?category=${encodeURIComponent(category.slug)}`}
       aria-label={t("categoryFacetLabel", {
         category: category.name,
         area: areaName,
