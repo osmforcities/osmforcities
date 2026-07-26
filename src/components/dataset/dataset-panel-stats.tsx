@@ -17,20 +17,6 @@ type DatasetPanelStatsProps = {
   dataset: Dataset;
 };
 
-// Property keys carried by osmtogeojson output that are NOT real OSM tags — the
-// combined id, the "@"-prefixed internals, per-element metadata, and app-added
-// fields. Mirrors the filters in feature-detail-panel.tsx so the tag list counts
-// only genuine tags.
-const NON_TAG_KEYS = new Set([
-  "id",
-  "user",
-  "timestamp",
-  "version",
-  "changeset",
-  "ageCategory",
-  "uid",
-]);
-
 type GeomItem = {
   count: number;
   pct: number;
@@ -67,33 +53,6 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
     const features = gj.features;
     const now = Date.now();
 
-    // Keys used by the template's Overpass query (e.g. "highway=bus_stop" ->
-    // "highway"). They match ~100% of features by definition, so exclude them
-    // from the Most-used-tags list where they'd only crowd out real signal.
-    const queryKeys = new Set<string>();
-    for (const kv of dataset.template.tags ?? []) {
-      for (const cond of kv.split(/[;&]/)) {
-        const key = cond.split("=")[0]?.trim();
-        if (key) queryKeys.add(key);
-      }
-    }
-
-    const tagCounts = new Map<string, number>();
-    for (const f of features) {
-      const props = (f.properties ?? {}) as Record<string, unknown>;
-      for (const key in props) {
-        if (key.startsWith("@") || NON_TAG_KEYS.has(key) || queryKeys.has(key))
-          continue;
-        tagCounts.set(key, (tagCounts.get(key) ?? 0) + 1);
-      }
-    }
-
-    const total = features.length;
-
-    const sortedTags = [...tagCounts.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .map(([key, count]) => ({ key, pct: (count / total) * 100 }));
-
     // Same helpers the server uses, so these match the stored values.
     const { editRecencyBands, mapperRecencyBands } = computeRecencyBands(
       features,
@@ -102,22 +61,46 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
     const geometryMix = computeGeometryMix(features);
 
     return {
-      sortedTags,
       editRecencyBands,
       mapperRecencyBands,
       geometryMix,
     };
-  }, [dataset.geojson, dataset.template.tags]);
+  }, [dataset.geojson]);
+
+  // Stored counts only — no client fallback (see dataset-tags).
+  const tagCounts = dataset.stats?.tagCounts ?? null;
+
+  // Keys used by the template's Overpass query (e.g. "highway=bus_stop" ->
+  // "highway"). They match ~100% of features by definition, so exclude them from
+  // the Most-used list where they'd only crowd out real signal.
+  const queryKeys = useMemo(() => {
+    const keys = new Set<string>();
+    for (const kv of dataset.template.tags ?? []) {
+      for (const cond of kv.split(/[;&]/)) {
+        const key = cond.split("=")[0]?.trim();
+        if (key) keys.add(key);
+      }
+    }
+    return keys;
+  }, [dataset.template.tags]);
+
+  // Non-query tags, each with its share of features (count / dataCount).
+  const sortedTags = useMemo(() => {
+    if (!tagCounts) return [];
+    const total = dataset.dataCount;
+    return tagCounts
+      .filter((tc) => !queryKeys.has(tc.key))
+      .map((tc) => ({ key: tc.key, pct: (tc.count / total) * 100 }));
+  }, [tagCounts, queryKeys, dataset.dataCount]);
 
   // Group tags that share the same displayed percentage onto one line, capped
   // at five lines, so the section stays dense but shows more than five tags.
   const tagGroups = useMemo(() => {
-    if (!derived) return [];
     const MAX_LINES = 5;
     const MAX_KEYS = 4;
     const groups: { label: string; keys: string[]; pct: number; extra: number }[] =
       [];
-    for (const { key, pct } of derived.sortedTags) {
+    for (const { key, pct } of sortedTags) {
       const label = formatPct(pct);
       let g = groups[groups.length - 1];
       if (!g || g.label !== label) {
@@ -129,15 +112,18 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       else g.extra++;
     }
     return groups;
-  }, [derived]);
+  }, [sortedTags]);
 
   // Critical-tag coverage: for each of the template's filterable (curated) tags,
   // the share of features that carry it. Absent tags read 0% — that gap is the
-  // signal. Replaces the Most-used list for templates that curate a list.
+  // signal. Shown above the Most-used list for templates that curate a list.
   const coverageItems = useMemo(() => {
     const filterable = dataset.template.filterableTags ?? [];
-    if (!derived || filterable.length === 0) return [];
-    const pctByKey = new Map(derived.sortedTags.map((s) => [s.key, s.pct]));
+    if (!tagCounts || filterable.length === 0) return [];
+    const total = dataset.dataCount;
+    const pctByKey = new Map(
+      tagCounts.map((tc) => [tc.key, (tc.count / total) * 100])
+    );
     return filterable
       .map((key) => ({
         key,
@@ -145,7 +131,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
         pct: pctByKey.get(key) ?? 0,
       }))
       .sort((a, b) => b.pct - a.pct);
-  }, [derived, dataset.template.filterableTags, tTagLabel]);
+  }, [tagCounts, dataset.dataCount, dataset.template.filterableTags, tTagLabel]);
 
   const recencyLabels = RECENCY_BANDS.map((band) => t(band.labelKey));
 
@@ -309,12 +295,12 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
         )}
       </Section>
 
-      {/* Tags — its own section: a leading tag icon + title, then the ranked
-          key-presence list. */}
+      {/* Tags — its own section. Curated templates show Critical coverage first;
+          the Most-used list (all non-query tags) follows, so both stories show. */}
       {(coverageItems.length > 0 || tagGroups.length > 0) && (
         <Section>
           <SectionHeader title={t("titleTags")} icon={Tag} />
-          {coverageItems.length > 0 ? (
+          {coverageItems.length > 0 && (
             <SubBlock eyebrow={t("tagCoverage")}>
               <div className="flex flex-col gap-1.5">
                 {coverageItems.map((c) => (
@@ -331,8 +317,12 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
                 ))}
               </div>
             </SubBlock>
-          ) : (
-            <SubBlock eyebrow={t("mostUsedTags")}>
+          )}
+          {tagGroups.length > 0 && (
+            <SubBlock
+              eyebrow={t("mostUsedTags")}
+              spaced={coverageItems.length > 0}
+            >
               <div className="flex flex-col gap-1.5">
                 {tagGroups.map((g) => (
                   <StatRow
