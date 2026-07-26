@@ -2,15 +2,13 @@
 
 import { useMemo } from "react";
 import type { ReactNode } from "react";
-import type { Feature } from "geojson";
 import { useTranslations, useLocale } from "next-intl";
 import { MapPin, Users, Target, Spline, Pentagon, Tag } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Dataset } from "@/schemas/dataset";
 import { SegmentedBar, type BarSegment } from "@/components/ui/segmented-bar";
 import { formatCompactNumber } from "@/lib/dataset-stats";
-import { computeRecencyBands, RECENCY_BANDS } from "@/lib/dataset-recency";
-import { computeGeometryMix } from "@/lib/dataset-geometry";
+import { RECENCY_BANDS } from "@/lib/dataset-recency";
 import { tagLabel, type MessageResolver } from "@/lib/tag-i18n";
 
 type DatasetPanelStatsProps = {
@@ -44,30 +42,6 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   const locale = useLocale();
   const nf = useMemo(() => new Intl.NumberFormat(locale), [locale]);
 
-  // Panel bars derived from the geojson; null when none is shipped.
-  const derived = useMemo(() => {
-    const gj = dataset.geojson as { features?: Feature[] } | null;
-    if (!gj || !Array.isArray(gj.features) || gj.features.length === 0) {
-      return null;
-    }
-    const features = gj.features;
-    const now = Date.now();
-
-    // Same helpers the server uses, so these match the stored values.
-    const { editRecencyBands, mapperRecencyBands } = computeRecencyBands(
-      features,
-      now
-    );
-    const geometryMix = computeGeometryMix(features);
-
-    return {
-      editRecencyBands,
-      mapperRecencyBands,
-      geometryMix,
-    };
-  }, [dataset.geojson]);
-
-  // Stored counts only — no client fallback (see dataset-tags).
   const tagCounts = dataset.stats?.tagCounts ?? null;
 
   // Keys used by the template's Overpass query (e.g. "highway=bus_stop" ->
@@ -141,10 +115,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   // (500/400/300); the legend icons carry the point/line/area meaning, so color
   // only needs to separate the slices. The legend always lists all three types:
   // points show their count, lines their total length, areas their total area;
-  // absent types read "no lines" etc.
-  // Persisted mix if present, else derived from geojson; its own total is the
-  // bar denominator, so the section is self-contained.
-  const geometryMix = dataset.stats?.geometryMix ?? derived?.geometryMix ?? null;
+  // absent types read "no lines" etc. The mix's own total is the bar denominator.
+  const geometryMix = dataset.stats?.geometryMix ?? null;
   const geomTotal = geometryMix?.total ?? 0;
   const geomItems: GeomItem[] | null = geometryMix
     ? [
@@ -197,10 +169,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       : null;
 
   // --- Freshness (recency of each feature's last edit) --------------------
-  // Priority: persisted bands -> geojson-derived -> legacy 3-band qualityMetrics.
-  const editBands =
-    bandsIfPopulated(dataset.stats?.editRecencyBands) ??
-    bandsIfPopulated(derived?.editRecencyBands);
+  // Priority: persisted bands -> legacy 3-band qualityMetrics.
+  const editBands = bandsIfPopulated(dataset.stats?.editRecencyBands);
   const stale = dataset.stats?.qualityMetrics?.staleElementsPercentage;
   const within1y = dataset.stats?.qualityMetrics?.recentlyUpdatedElementsPercentage;
   let freshnessSegments: BarSegment[] | null = null;
@@ -231,9 +201,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   }
 
   // --- Mappers (recency of each mapper's latest edit) --------------------
-  const mapperBands =
-    bandsIfPopulated(dataset.stats?.mapperRecencyBands) ??
-    bandsIfPopulated(derived?.mapperRecencyBands);
+  const mapperBands = bandsIfPopulated(dataset.stats?.mapperRecencyBands);
   const mappersSegments: BarSegment[] | null = mapperBands
     ? recencyBandSegments(mapperBands, recencyLabels, (_pct, count) =>
         nf.format(count)
