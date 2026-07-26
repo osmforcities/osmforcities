@@ -2,47 +2,24 @@ import type { ReactNode } from "react";
 import { Button, Dialog, DialogTrigger, Popover } from "react-aria-components";
 
 export type BarSegment = {
-  /** Width of the segment as a percentage of the bar (0–100). */
-  pct: number;
-  /** Tailwind background class, e.g. "bg-olive-600". Used for the bar and the dot. */
-  colorClass: string;
-  /** Legend label, e.g. "Points" or "Last 90d". */
-  label: string;
-  /** Bold legend value, e.g. "18,307" or "7%". */
-  value: string;
-  /** Optional muted parenthetical after the value, e.g. "(12.4 km)". */
-  sub?: ReactNode;
+  pct: number; // 0-100
+  colorClass: string; // Tailwind bg class, e.g. "bg-olive-600"
+  label: string; // e.g. "Points" or "Last 90d"
+  value: string; // bold legend value, e.g. "18,307" or "7%"
+  sub?: ReactNode; // muted parenthetical, e.g. "(12.4 km)"
 };
 
 type SegmentedBarProps = {
   segments: BarSegment[];
-  /** "dots" shows a color swatch per legend entry (categorical); "terse" omits
-   *  swatches — the bar's left-to-right order already carries the mapping. */
-  variant?: "dots" | "terse";
-  /** When false, render only the bar (no legend) — used when several bars share
-   *  a single external legend. Segment values still feed the aria-label. */
-  showLegend?: boolean;
+  variant?: "dots" | "terse"; // "dots" adds a color swatch per legend entry
+  showLegend?: boolean; // false when several bars share one external legend
   ariaLabel: string;
   className?: string;
-  /** Optional breakdown revealed on press / tap / keyboard of the WHOLE bar
-   *  (same Popover pattern as the freshness pills). When set, the entire bar
-   *  becomes a single trigger (one large target) rather than exposing each —
-   *  potentially sliver-thin — slice individually. */
+  // Breakdown revealed on press/tap/keyboard of the whole bar (Popover, same
+  // pattern as the freshness pills) instead of per-slice hover targets.
   detail?: ReactNode;
 };
 
-/**
- * A stacked proportion bar with a compact legend beneath it. One visual grammar
- * shared by the Overview (geometry), Activity, and Community sections of the
- * dataset panel. Segments keep a min width so a rare slice stays visible.
- *
- * When `detail` is provided the whole bar is a focusable Popover trigger (the
- * same `DialogTrigger`/`Popover`/`Dialog` pattern as the freshness pills) —
- * touch-friendly, unlike a hover-only Tooltip. The hit area is padded
- * vertically so the thin (10px) bar is still easy to hit. Bars without
- * `detail` render exactly as before (a static `img` with the values in its
- * aria-label).
- */
 export function SegmentedBar({
   segments,
   variant = "terse",
