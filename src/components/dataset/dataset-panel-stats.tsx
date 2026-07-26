@@ -254,9 +254,8 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
         {t("geomTotalFeatures", { count: geomTotal })}
       </p>
       <div className="flex flex-col gap-2">
-        {geomItems
-          .filter((g) => g.count > 0)
-          .map(({ label, lowerLabel, count, pct, measure, colorClass }) => (
+        {geomPresent.map(
+          ({ label, lowerLabel, count, pct, measure, colorClass }) => (
             <div key={label} className="flex flex-col">
               <div className="flex items-baseline justify-between gap-3">
                 <span className="flex items-center gap-1.5 font-semibold text-white">
