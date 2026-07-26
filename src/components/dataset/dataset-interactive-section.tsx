@@ -88,9 +88,14 @@ export function DatasetInteractiveSection({
               </div>
             </div>
 
-            {/* Section 2 — tiered stats: the only scrollable region. Framed by top
-                and bottom rules so the scroll boundary is clear. */}
-            <div className="flex-1 min-h-0 overflow-y-auto flex flex-col border-y border-gray-200 my-3 py-3 pr-3">
+            {/* Section 2 — the only scrollable region; focusable + labelled so
+                keyboard-only users can scroll it (WCAG 2.1.1). */}
+            <div
+              role="region"
+              aria-label={t("statsRegion")}
+              tabIndex={0}
+              className="flex-1 min-h-0 overflow-y-auto flex flex-col border-y border-gray-200 my-3 py-3 pr-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-olive-500 focus-visible:ring-inset"
+            >
               <DatasetPanelStats dataset={dataset} />
             </div>
 
