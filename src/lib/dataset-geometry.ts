@@ -4,17 +4,14 @@
  * the server and the dataset panel classify and measure identically.
  *
  * The server precomputes each dataset's mix from its geojson and persists it in
- * `Dataset.stats` (dataset-snapshot.ts). The panel renders the stored mix,
- * falling back to computing it here from the geojson for datasets saved before
- * it was persisted (dataset-panel-stats.tsx). Turf area/length runs once at
- * snapshot time instead of on every render.
+ * `Dataset.stats` (dataset-snapshot.ts); the panel renders the stored mix only.
+ * Turf area/length runs once at snapshot time instead of on every render.
  */
 import area from "@turf/area";
 import length from "@turf/length";
 import type { Feature } from "geojson";
 
 export interface GeometryMix {
-  total: number; // feature count the mix was computed over (bar denominator)
   points: number;
   lines: number;
   areas: number;
@@ -50,5 +47,5 @@ export function computeGeometryMix(features: Feature[]): GeometryMix {
     }
   }
 
-  return { total: features.length, points, lines, areas, lineKm, areaKm2 };
+  return { points, lines, areas, lineKm, areaKm2 };
 }

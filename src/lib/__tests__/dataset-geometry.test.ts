@@ -25,7 +25,6 @@ describe("computeGeometryMix", () => {
       feat({ type: "Polygon", coordinates: [RING] }),
       feat({ type: "MultiPolygon", coordinates: [[RING]] }),
     ]);
-    expect(mix.total).toBe(6);
     expect(mix.points).toBe(2);
     expect(mix.lines).toBe(2);
     expect(mix.areas).toBe(2);
@@ -55,7 +54,6 @@ describe("computeGeometryMix", () => {
 
   it("returns all zeros for empty input", () => {
     expect(computeGeometryMix([])).toEqual({
-      total: 0,
       points: 0,
       lines: 0,
       areas: 0,

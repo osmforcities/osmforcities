@@ -21,7 +21,6 @@ type GeomItem = {
   colorClass: string;
   textClass: string;
   icon: LucideIcon;
-  filled: boolean;
   label: string;
   display: string;
   // null for points, which have no separate measure
@@ -69,7 +68,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
 
   // Non-query tags, each with its share of features (count / dataCount).
   const sortedTags = useMemo(() => {
-    if (!tagCounts) return [];
+    if (!tagCounts || dataset.dataCount <= 0) return [];
     const total = dataset.dataCount;
     return tagCounts
       .filter((tc) => !queryKeys.has(tc.key))
@@ -99,7 +98,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   // Share of features carrying each of the template's curated tags; absent = 0%.
   const coverageItems = useMemo(() => {
     const filterable = dataset.template.filterableTags ?? [];
-    if (!tagCounts || filterable.length === 0) return [];
+    if (!tagCounts || filterable.length === 0 || dataset.dataCount <= 0) return [];
     const total = dataset.dataCount;
     const pctByKey = new Map(
       tagCounts.map((tc) => [tc.key, (tc.count / total) * 100])
@@ -117,47 +116,53 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
 
   // --- Geometry mix -------------------------------------------------------
   const geometryMix = dataset.stats?.geometryMix ?? null;
-  const geomTotal = geometryMix?.total ?? 0;
-  const geomItems: GeomItem[] | null = geometryMix
-    ? [
-        {
-          count: geometryMix.points,
-          pct: (geometryMix.points / geomTotal) * 100,
-          colorClass: "bg-olive-500",
-          textClass: "text-olive-500",
-          icon: Target,
-          filled: false,
-          label: t("geomPoints"),
-          display: formatCompactNumber(geometryMix.points),
-          measure: null,
-          noneLabel: t("geomNone", { type: t("geomPointsLower") }),
-        },
-        {
-          count: geometryMix.lines,
-          pct: (geometryMix.lines / geomTotal) * 100,
-          colorClass: "bg-olive-400",
-          textClass: "text-olive-400",
-          icon: Spline,
-          filled: false,
-          label: t("geomLines"),
-          display: formatLength(geometryMix.lineKm, nf),
-          measure: formatLength(geometryMix.lineKm, nf),
-          noneLabel: t("geomNone", { type: t("geomLinesLower") }),
-        },
-        {
-          count: geometryMix.areas,
-          pct: (geometryMix.areas / geomTotal) * 100,
-          colorClass: "bg-olive-300",
-          textClass: "text-olive-300",
-          icon: Pentagon,
-          filled: false,
-          label: t("geomAreas"),
-          display: formatArea(geometryMix.areaKm2, nf),
-          measure: formatArea(geometryMix.areaKm2, nf),
-          noneLabel: t("geomNone", { type: t("geomAreasLower") }),
-        },
-      ]
-    : null;
+  // Only count-bearing types render a segment (see geomPresent), so this
+  // denominator is only ever divided into positive counts.
+  const geomTotal = geometryMix
+    ? geometryMix.points + geometryMix.lines + geometryMix.areas
+    : 0;
+  let geomItems: GeomItem[] | null = null;
+  if (geometryMix) {
+    // Format each measure once; a 0-count type carries no measure, so the
+    // popover shows its label alone (never "(0 m)").
+    const lineFmt = formatLength(geometryMix.lineKm, nf);
+    const areaFmt = formatArea(geometryMix.areaKm2, nf);
+    geomItems = [
+      {
+        count: geometryMix.points,
+        pct: (geometryMix.points / geomTotal) * 100,
+        colorClass: "bg-olive-500",
+        textClass: "text-olive-500",
+        icon: Target,
+        label: t("geomPoints"),
+        display: formatCompactNumber(geometryMix.points),
+        measure: null,
+        noneLabel: t("geomNone", { type: t("geomPointsLower") }),
+      },
+      {
+        count: geometryMix.lines,
+        pct: (geometryMix.lines / geomTotal) * 100,
+        colorClass: "bg-olive-400",
+        textClass: "text-olive-400",
+        icon: Spline,
+        label: t("geomLines"),
+        display: lineFmt,
+        measure: geometryMix.lines > 0 ? lineFmt : null,
+        noneLabel: t("geomNone", { type: t("geomLinesLower") }),
+      },
+      {
+        count: geometryMix.areas,
+        pct: (geometryMix.areas / geomTotal) * 100,
+        colorClass: "bg-olive-300",
+        textClass: "text-olive-300",
+        icon: Pentagon,
+        label: t("geomAreas"),
+        display: areaFmt,
+        measure: geometryMix.areas > 0 ? areaFmt : null,
+        noneLabel: t("geomNone", { type: t("geomAreasLower") }),
+      },
+    ];
+  }
   const geomPresent = geomItems ? geomItems.filter((g) => g.count > 0) : [];
   const geomSegments: BarSegment[] | null =
     geomPresent.length > 0
@@ -168,15 +173,6 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           value: display,
         }))
       : null;
-  // Absent types keep their measure hidden — a "0" row needs no "(0 m)".
-  const geomDetailItems: DetailItem[] | null = geomItems
-    ? geomItems.map(({ label, count, colorClass, measure }) => ({
-        label,
-        count,
-        colorClass,
-        measure: count > 0 ? measure : null,
-      }))
-    : null;
 
   // --- Freshness ------------------------------------------------------------
   // Persisted bands, else legacy qualityMetrics.
@@ -235,14 +231,12 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
               showLegend={false}
               ariaLabel={t("geometryMix")}
               detail={
-                geomDetailItems && (
-                  <BreakdownDetail
-                    title={t("detailTitleGeometry")}
-                    items={geomDetailItems}
-                    totalLabel={t("detailTotal")}
-                    nf={nf}
-                  />
-                )
+                <BreakdownDetail
+                  title={t("detailTitleGeometry")}
+                  items={geomItems}
+                  totalLabel={t("detailTotal")}
+                  nf={nf}
+                />
               }
             />
             <GeomLegend items={geomItems} />
@@ -466,13 +460,13 @@ function RecencyLegend({ labels }: { labels: string[] }) {
 function GeomLegend({ items }: { items: GeomItem[] }) {
   return (
     <div className="mt-0.5 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gray-400">
-      {items.map(({ icon: Icon, textClass, filled, label, display, noneLabel, count }) => (
+      {items.map(({ icon: Icon, textClass, label, display, noneLabel, count }) => (
         <span
           key={label}
           className={`inline-flex items-center gap-1.5${count === 0 ? " opacity-60" : ""}`}
         >
           <Icon
-            className={`size-3.5 flex-none ${filled ? "fill-current " : ""}${
+            className={`size-3.5 flex-none ${
               count === 0 ? "text-gray-300" : textClass
             }`}
             aria-label={label}
@@ -546,6 +540,9 @@ function round1(n: number): number {
   return n >= 100 ? Math.round(n) : Math.round(n * 10) / 10;
 }
 
+// Number is locale-formatted; the SI symbols (m, km, m², ha, km²) are
+// locale-invariant. Intl `style:"unit"` can't render m²/km² — square-meter and
+// square-kilometer aren't ECMA-402-sanctioned unit identifiers (they throw).
 function formatLength(km: number, nf: Intl.NumberFormat): string {
   if (km <= 0) return `0 m`;
   if (km < 1) return `${nf.format(Math.round(km * 1000))} m`;

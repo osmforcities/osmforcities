@@ -15,7 +15,7 @@ import {
 import type { Dataset } from "@/schemas/dataset";
 import { useDatasetDownload } from "@/hooks/useDatasetDownload";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type DatasetActionsSectionProps = {
   dataset: Dataset;
@@ -45,6 +45,15 @@ export function DatasetActionsSection({
   // Polite announcement for async action outcomes (share/refresh) so screen-reader
   // users get feedback the visual-only icon/label changes don't provide.
   const [statusMessage, setStatusMessage] = useState("");
+  // Handle for the share "copied" reset, so overlapping clicks and unmount don't
+  // leave a stale timer firing setState.
+  const shareTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (shareTimer.current) clearTimeout(shareTimer.current);
+    },
+    []
+  );
 
   const atLimit =
     !isSaved && saveLimit !== undefined && saveCount >= saveLimit;
@@ -88,17 +97,22 @@ export function DatasetActionsSection({
   };
 
   const handleShare = async () => {
+    if (shareTimer.current) clearTimeout(shareTimer.current);
     try {
       await navigator.clipboard.writeText(window.location.href);
       setShareCopied(true);
       setStatusMessage(t("linkCopied"));
-      setTimeout(() => {
-        setShareCopied(false);
-        setStatusMessage("");
-      }, 2000);
     } catch (error) {
       console.error("Error copying dataset link:", error);
+      setShareCopied(false);
+      setStatusMessage(t("linkCopyFailed"));
     }
+    // Clear the transient share state (label + sr-only announcement) after a
+    // beat, whether the copy succeeded or failed.
+    shareTimer.current = setTimeout(() => {
+      setShareCopied(false);
+      setStatusMessage("");
+    }, 2000);
   };
 
   const handleToggleFeatured = async () => {
@@ -231,8 +245,8 @@ export function DatasetActionsSection({
                 variant="outline"
                 title={
                   !dataset.isActive
-                    ? "Only active datasets can be synced"
-                    : "Sync with the latest OpenStreetMap data"
+                    ? t("refreshInactiveTitle")
+                    : t("refreshTitle")
                 }
               >
                 <RefreshCw
