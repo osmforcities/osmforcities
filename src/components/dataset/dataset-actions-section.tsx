@@ -42,6 +42,9 @@ export function DatasetActionsSection({
   const [isFeaturingLoading, setIsFeaturingLoading] = useState(false);
   const [hasFeatureError, setHasFeatureError] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
+  // Polite announcement for async action outcomes (share/refresh) so screen-reader
+  // users get feedback the visual-only icon/label changes don't provide.
+  const [statusMessage, setStatusMessage] = useState("");
 
   const atLimit =
     !isSaved && saveLimit !== undefined && saveCount >= saveLimit;
@@ -88,7 +91,11 @@ export function DatasetActionsSection({
     try {
       await navigator.clipboard.writeText(window.location.href);
       setShareCopied(true);
-      setTimeout(() => setShareCopied(false), 2000);
+      setStatusMessage(t("linkCopied"));
+      setTimeout(() => {
+        setShareCopied(false);
+        setStatusMessage("");
+      }, 2000);
     } catch (error) {
       console.error("Error copying dataset link:", error);
     }
@@ -114,15 +121,19 @@ export function DatasetActionsSection({
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
+    setStatusMessage(t("refreshing"));
     try {
       const result = await refreshDataset(dataset.id);
       if (result.success) {
         onRefreshed?.(result.lastChecked ?? new Date());
+        setStatusMessage(t("datasetUpdated"));
       } else {
         console.error("Failed to refresh dataset:", result.error);
+        setStatusMessage("");
       }
     } catch (error) {
       console.error("Error refreshing dataset:", error);
+      setStatusMessage("");
     } finally {
       setIsRefreshing(false);
     }
@@ -132,6 +143,10 @@ export function DatasetActionsSection({
 
   return (
     <div className="flex flex-col gap-2 pt-2">
+      {/* Screen-reader announcements for async action outcomes (share/refresh). */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {statusMessage}
+      </div>
       {/* Primary CTA — Save. Filled to invite use; switches to outline once done. */}
       <Button
         onClick={handleToggleSave}
@@ -203,6 +218,7 @@ export function DatasetActionsSection({
               <Button
                 onClick={handleRefresh}
                 disabled={!dataset.isActive || isRefreshing}
+                aria-busy={isRefreshing}
                 className="h-8 flex-1 text-xs"
                 variant="outline"
                 title={
@@ -212,7 +228,7 @@ export function DatasetActionsSection({
                 }
               >
                 <RefreshCw
-                  className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`}
+                  className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin motion-reduce:animate-none" : ""}`}
                 />
                 {isRefreshing ? t("refreshing") : t("refreshData")}
               </Button>

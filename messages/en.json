@@ -173,6 +173,8 @@
     "bandWithin1y": "Within 1y",
     "share": "Share",
     "shareCopied": "Copied",
+    "linkCopied": "Link copied to clipboard",
+    "datasetUpdated": "Dataset updated",
     "shareTooltip": "Copy link to this dataset",
     "admin": "Admin",
     "lastEdited": "Edited",

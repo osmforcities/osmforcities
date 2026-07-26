@@ -172,6 +172,8 @@
     "bandWithin1y": "En 1 año",
     "share": "Compartir",
     "shareCopied": "Copiado",
+    "linkCopied": "Enlace copiado al portapapeles",
+    "datasetUpdated": "Conjunto de datos actualizado",
     "shareTooltip": "Copiar enlace a este conjunto de datos",
     "admin": "Admin",
     "lastEdited": "Editado",
