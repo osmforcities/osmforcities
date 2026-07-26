@@ -88,9 +88,13 @@ export function DatasetInteractiveSection({
               </div>
             </div>
 
-            {/* Section 2 — tiered stats: the only scrollable region. Framed by top
-                and bottom rules so the scroll boundary is clear. */}
-            <div className="flex-1 min-h-0 overflow-y-auto flex flex-col border-y border-gray-200 my-3 py-3 pr-3">
+            {/* Section 2 — tiered stats: the only scrollable region. A tinted
+                well framed by top and bottom rules; the white stat cards inside
+                read as cards against it. Breaks out of the aside's px-6 gutters
+                (-mx-6) so the well spans full width and its scrollbar sits flush
+                to the container's right edge; the inner px-6 keeps card content
+                aligned with the header above. */}
+            <div className="flex-1 min-h-0 overflow-y-auto flex flex-col border-y border-gray-200 my-3 -mx-6 bg-gray-50 px-6 py-3">
               <DatasetPanelStats dataset={dataset} />
             </div>
 

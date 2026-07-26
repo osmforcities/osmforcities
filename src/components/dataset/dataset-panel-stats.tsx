@@ -345,7 +345,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
           </SubBlock>
         )}
         {freshnessSegments && (
-          <SubBlock eyebrow={t("recentlyEdited")} unit="%" divider>
+          <SubBlock eyebrow={t("recentlyEdited")} unit="%" spaced>
             <SegmentedBar
               segments={freshnessSegments}
               showLegend={false}
@@ -358,7 +358,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
 
       {/* Mappers — secondary to Features; its recency bar reuses the shared
           recency legend/colors. */}
-      <Section divided>
+      <Section>
         <SectionHeader
           title={t("titleMappers")}
           value={editors != null ? formatCompactNumber(editors) : "—"}
@@ -379,7 +379,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
       {/* Tags — its own section: a leading tag icon + title, then the ranked
           key-presence list. */}
       {(coverageItems.length > 0 || tagGroups.length > 0) && (
-        <Section divided>
+        <Section>
           <SectionHeader title={t("titleTags")} icon={Tag} />
           {coverageItems.length > 0 ? (
             <SubBlock eyebrow={t("tagCoverage")}>
@@ -425,27 +425,18 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
   );
 }
 
-// A top-level panel section. `divided` draws the separator rule that sets it
-// apart from the section above (Features, Tags).
-function Section({
-  divided,
-  children,
-}: {
-  divided?: boolean;
-  children: ReactNode;
-}) {
+// A top-level panel section, rendered as a separated white card sitting in the
+// tinted stats well (see dataset-interactive-section). Cards self-separate via
+// the root flex `gap-4`.
+function Section({ children }: { children: ReactNode }) {
   return (
-    <section
-      className={`flex flex-col gap-2.5${
-        divided ? " border-t border-gray-200 pt-4" : ""
-      }`}
-    >
+    <section className="flex flex-col gap-2.5 rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
       {children}
     </section>
   );
 }
 
-// An eyebrow-labeled block nested inside a section (e.g. "By type"). `unit`
+// An eyebrow-labeled block nested inside a section card (e.g. "By type"). `unit`
 // renders a muted marker on the right of the eyebrow (e.g. "%") to signal what
 // the bar's proportions represent when the bar itself shows no numbers.
 function SubBlock({
@@ -453,21 +444,22 @@ function SubBlock({
   unit,
   children,
   className,
-  divider,
+  spaced,
 }: {
   eyebrow: string;
   unit?: string;
   children: ReactNode;
   className?: string;
-  // Draws a light rule + extra top padding above the block, separating it from
-  // a preceding chart in the same section (subordinate to the section divider).
-  divider?: boolean;
+  // Adds extra top space when this block follows another chart in the same card.
+  // The card outline already frames the group, so sub-sections separate with
+  // whitespace + their eyebrow labels rather than an internal rule.
+  spaced?: boolean;
 }) {
   return (
     <div
-      className={`flex flex-col gap-1.5${
-        divider ? " mt-1 border-t border-gray-100 pt-3" : ""
-      }${className ? ` ${className}` : ""}`}
+      className={`flex flex-col gap-1.5${spaced ? " mt-2.5" : ""}${
+        className ? ` ${className}` : ""
+      }`}
     >
       <p className="flex items-baseline justify-between text-[10px] font-bold uppercase tracking-[0.09em] text-gray-400">
         <span>{eyebrow}</span>
