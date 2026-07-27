@@ -8,8 +8,10 @@ import type { Dataset } from "@/schemas/dataset";
 import { Link } from "@/i18n/navigation";
 import { resolveAreaName } from "@/lib/area-name";
 import { DatasetMapWrapper, type DatasetFullMapHandle } from "@/components/dataset/map-wrapper";
+import { CategoryFacet } from "@/components/dataset/category-facet";
 import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
-import { DatasetStatsTable } from "@/components/dataset/dataset-stats-table";
+import { DatasetPanelStats } from "@/components/dataset/dataset-panel-stats";
+import { DatasetTimestamps } from "@/components/dataset/dataset-timestamps";
 import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
 import { FeatureDetailPanel } from "@/components/dataset/feature-detail-panel";
 
@@ -27,6 +29,7 @@ export function DatasetInteractiveSection({
   saveLimit,
 }: DatasetInteractiveSectionProps) {
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
+  const [lastChecked, setLastChecked] = useState(dataset.lastChecked);
   const mapRef = useRef<DatasetFullMapHandle>(null);
   const t = useTranslations("DatasetPage");
   const locale = useLocale();
@@ -46,7 +49,7 @@ export function DatasetInteractiveSection({
   return (
     <div className="flex flex-col lg:flex-row lg:flex-1 lg:h-full lg:min-h-0 lg:overflow-hidden">
       {/* Side Panel */}
-      <aside className="bg-white border-b lg:border-b-0 lg:border-r border-gray-200 p-6 flex flex-col lg:w-96 lg:flex-shrink-0 lg:h-full">
+      <aside className="bg-white border-b lg:border-b-0 lg:border-r border-gray-200 px-6 py-4 flex flex-col lg:w-96 lg:flex-shrink-0 lg:h-full">
         {selectedFeature ? (
           <FeatureDetailPanel
             feature={selectedFeature}
@@ -56,21 +59,58 @@ export function DatasetInteractiveSection({
             }}
           />
         ) : (
-          <>
-            <Link
-              href={`/area/${dataset.area.id}`}
-              aria-label={t("backToAreaLabel", { area: areaName })}
-              className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 -ml-1 mb-4 transition-colors"
-            >
-              <ArrowLeft className="size-4" />
-              {areaName}
-            </Link>
-            <div className="flex-1 overflow-y-auto space-y-6" data-testid="dataset-sidebar-default">
+          <div
+            className="flex flex-col flex-1 min-h-0"
+            data-testid="dataset-sidebar-default"
+          >
+            {/* Section 1 — title area: back link, dataset info, and freshness
+                timestamps (surfaced up top as decision-relevant provenance).
+                Fixed at top, never scrolls. */}
+            <div className="shrink-0">
+              {/* Back link to the area — its own row, the single nav control. */}
+              <div className="mb-2 flex">
+                <Link
+                  href={`/area/${dataset.area.id}`}
+                  aria-label={t("backToAreaLabel", { area: areaName })}
+                  className="inline-flex min-w-0 items-center gap-1 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+                >
+                  <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />
+                  <span className="truncate">{areaName}</span>
+                </Link>
+              </div>
               <DatasetInfoPanel dataset={dataset} />
-              <DatasetStatsTable dataset={dataset} />
+              {/* Metadata chip row: category facet (olive) + freshness chips
+                  (edited, fetched) sharing one line below the title. */}
+              <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                <CategoryFacet dataset={dataset} areaName={areaName} />
+                <DatasetTimestamps dataset={dataset} lastChecked={lastChecked} />
+              </div>
             </div>
-            <DatasetActionsSection dataset={dataset} savedCount={savedCount} saveLimit={saveLimit} />
-          </>
+
+            {/* Section 2 — tiered stats: the only scrollable region. A tinted
+                well framed by top and bottom rules; the white stat cards inside
+                read as cards against it. Breaks out of the aside's px-6 gutters
+                (-mx-6) so the well spans full width and its scrollbar sits flush
+                to the container's right edge; the inner px-6 keeps card content
+                aligned with the header above. Focusable + labelled so keyboard-
+                only users can reach and scroll it (WCAG 2.1.1). */}
+            <div
+              role="region"
+              aria-label={t("statsRegion")}
+              tabIndex={0}
+              className="flex-1 min-h-0 overflow-y-auto [scrollbar-gutter:stable_both-edges] flex flex-col border-y border-gray-200 my-3 -mx-6 bg-gray-50 px-6 py-3 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-olive-500"
+            >
+              <DatasetPanelStats dataset={dataset} />
+            </div>
+
+            {/* Section 3 — action buttons: fixed height at the bottom. */}
+            <DatasetActionsSection
+              dataset={dataset}
+              savedCount={savedCount}
+              saveLimit={saveLimit}
+              onRefreshed={setLastChecked}
+            />
+          </div>
         )}
       </aside>
 
