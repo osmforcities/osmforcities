@@ -17,7 +17,7 @@ templates:
   - ["ev-charging","amenity=charging_station","transportation","Zap"]
   - ["railway-stations","railway=station","transportation","Train","public-transit"]
   - ["tram-stops","railway=tram_stop","transportation","TramFront","public-transit"]
-  - ["subway-entrances","railway=subway_entrance","transportation","TrainFront","public-transit"]
+  - ["subway-entrances","railway=subway_entrance","transportation","TrainFrontTunnel","public-transit"]
   - ["transit-platforms","public_transport=platform","transportation","RailSymbol","public-transit"]
   - ["ferry-terminals","amenity=ferry_terminal","transportation","Ship"]
   - ["taxi-ranks","amenity=taxi","transportation","CarTaxiFront"]

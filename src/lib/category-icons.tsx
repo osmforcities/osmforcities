@@ -112,7 +112,7 @@ import {
   Tractor,
   TrafficCone,
   Train,
-  TrainFront,
+  TrainFrontTunnel,
   TramFront,
   Trash2,
   TreeDeciduous,
@@ -139,7 +139,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-28T16:06:16.978Z
+ * Generated: 2026-07-28T17:02:03.919Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -580,7 +580,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "street-trees":
       return <TreeDeciduous className="w-5 h-5" />;
     case "subway-entrances":
-      return <TrainFront className="w-5 h-5" />;
+      return <TrainFrontTunnel className="w-5 h-5" />;
     case "supermarkets":
       return <ShoppingCart className="w-5 h-5" />;
     case "surveillance":
