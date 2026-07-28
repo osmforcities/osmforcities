@@ -139,7 +139,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-28T17:02:03.919Z
+ * Generated: 2026-07-28T17:05:24.680Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -262,7 +262,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "bicycle-rental":
       return <Bike className="w-5 h-5" />;
     case "bicycle-shop":
-      return <Bike className="w-5 h-5" />;
+      return <Store className="w-5 h-5" />;
     case "bridges":
       return <Waypoints className="w-5 h-5" />;
     case "bunker-silos":

@@ -10,7 +10,7 @@ templates:
   - ["bicycle-infrastructure","amenity=bicycle_parking;amenity=bicycle_rental;shop=bicycle","transportation","Bike"]
   - ["bicycle-parking","amenity=bicycle_parking","transportation","Bike","bicycle-infrastructure"]
   - ["bicycle-rental","amenity=bicycle_rental","transportation","Bike","bicycle-infrastructure"]
-  - ["bicycle-shop","shop=bicycle","transportation","Bike","bicycle-infrastructure"]
+  - ["bicycle-shop","shop=bicycle","transportation","Store","bicycle-infrastructure"]
   # Parent template for public transit
   - ["public-transit","highway=bus_stop;railway=station;railway=tram_stop;railway=subway_entrance;public_transport=platform","transportation","Train"]
   - ["bus-stops","highway=bus_stop","transportation","Bus","public-transit"]
