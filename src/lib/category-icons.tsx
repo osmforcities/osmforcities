@@ -140,7 +140,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-28T15:16:29.042Z
+ * Generated: 2026-07-28T15:52:51.756Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -426,11 +426,7 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Home className="w-5 h-5" />;
     case "ice-cream":
       return <IceCreamCone className="w-5 h-5" />;
-    case "ice-hockey":
-      return <Snowflake className="w-5 h-5" />;
     case "ice-rinks":
-      return <Snowflake className="w-5 h-5" />;
-    case "ice-skating":
       return <Snowflake className="w-5 h-5" />;
     case "information-boards":
       return <Info className="w-5 h-5" />;
@@ -470,8 +466,6 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <MoonStar className="w-5 h-5" />;
     case "mud":
       return <Droplets className="w-5 h-5" />;
-    case "multi-sport":
-      return <Trophy className="w-5 h-5" />;
     case "museums":
       return <Landmark className="w-5 h-5" />;
     case "natural-surfaces":
