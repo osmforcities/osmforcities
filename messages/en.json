@@ -677,7 +677,9 @@
     "bicycle_parking": "Type",
     "capacity": "Capacity",
     "access": "Access",
-    "fee": "Fee"
+    "fee": "Fee",
+    "crossing": "Crossing",
+    "crossing:markings": "Markings"
   },
   "TagValue": {
     "__common__": {

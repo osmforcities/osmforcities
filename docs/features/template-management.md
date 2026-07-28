@@ -100,6 +100,10 @@ active/featured set bounded.
   keys that each exist as one colorable key. Dropped `network` (wiki doesn't emphasize
   it; ~0% outside Germany). Excluded connectors though the wiki calls them essential —
   OSM fragments them across count-valued `socket:*` keys, so no single key colors "type".
+- **crossings** — `[crossing, crossing:markings, tactile_paving]`. Both `crossing`
+  (classic) and `crossing:markings` (newer split) are kept — communities favor one or the
+  other, so coverage is regional. Dropped `kerb` (6-15% in most cities; it belongs on the
+  separate sidewalk `barrier=kerb` node, not the crossing — same sibling-node trap).
 - **tram-stops — rejected.** `railway=tram_stop` marks the trackside point; amenities
   live on the separate `public_transport=platform` node, so the queried node has nothing
   to filter. Check the interesting tags sit on the queried element, not a sibling.

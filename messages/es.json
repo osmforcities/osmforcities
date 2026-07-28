@@ -686,7 +686,9 @@
     "bicycle_parking": "Tipo",
     "capacity": "Capacidad",
     "access": "Acceso",
-    "fee": "Tarifa"
+    "fee": "Tarifa",
+    "crossing": "Cruce",
+    "crossing:markings": "Marcas viales"
   },
   "TagValue": {
     "__common__": {
