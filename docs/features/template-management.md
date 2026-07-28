@@ -186,8 +186,8 @@ active/featured set bounded.
 ## Validation the sync enforces
 
 `prisma/lib/template-parser.ts` fails `pnpm db:sync`/CI on: unknown parent id, and a
-`demonstrators` section that is malformed (scalar/array root, unknown template id,
-missing/non-integer `area`, non-string `note`). An unknown template id under
+`demonstrators` section that is malformed (scalar/array root, unknown template id, an
+`area` that is not a positive integer, non-string `note`). An unknown template id under
 `filterableTags` is a non-blocking **warning**, not an error — a typo there only leaves
 that one template age-view-only, so it never blocks the seed/deploy. Tests:
 `prisma/lib/__tests__/template-parser.test.ts`.
