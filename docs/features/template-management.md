@@ -15,6 +15,14 @@ YAML is the source of truth; deploy runs the sync. No admin UI.
   substituted per area at fetch time.
 - **Sub-template** — a template with a `parent`. Use when the query is a strict subset
   of a broader template (`bus-stops` under `public-transit`). Standalone → top-level.
+- **Parent (umbrella)** — a template whose query is the union of its children, giving a
+  combined dataset plus hierarchy grouping. Only worth it when the children form **one
+  coherent thing a user would pull as a whole**, ideally sharing a tag vocabulary —
+  `public-transit` (every passenger interface, shared accessibility tags) earns it. Do
+  **not** wrap unlike things: an umbrella over bike parking + bike-share + a retail bike
+  shop has no shared "Color by" and its combined dataset is an age-view blob, so those
+  belong as top-level templates in their own categories. An umbrella is also a standing
+  daily-refresh cost if seeded — add one only when the combined view has real value.
 - **filterableTags** — an allow-list of OSM tag *keys* (top-level `filterableTags:` map)
   that become interactive-legend "Color by" views + the "Critical coverage" stat block.
   Absent → age view only. Each key needs a `TagLabel` in every `messages/*.json`.
