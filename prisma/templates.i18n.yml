@@ -72,6 +72,15 @@ templates:
       en: Subway Entrances
       pt: Acessos ao metrô
       es: Accesos de metro
+  transit-platforms:
+    name:
+      en: Transit Platforms
+      pt: Plataformas de transporte público
+      es: Andenes de transporte público
+    desc:
+      en: Transit Platforms
+      pt: Plataformas de transporte público
+      es: Andenes de transporte público
   ferry-terminals:
     name:
       en: Ferry Terminals

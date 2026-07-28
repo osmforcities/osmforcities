@@ -12,12 +12,13 @@ templates:
   - ["bicycle-rental","amenity=bicycle_rental","transportation","Bike","bicycle-infrastructure"]
   - ["bicycle-shop","shop=bicycle","transportation","Bike","bicycle-infrastructure"]
   # Parent template for public transit
-  - ["public-transit","highway=bus_stop;railway=station;railway=tram_stop;railway=subway_entrance","transportation","Train"]
+  - ["public-transit","highway=bus_stop;railway=station;railway=tram_stop;railway=subway_entrance;public_transport=platform","transportation","Train"]
   - ["bus-stops","highway=bus_stop","transportation","Bus","public-transit"]
   - ["ev-charging","amenity=charging_station","transportation","Zap"]
   - ["railway-stations","railway=station","transportation","Train","public-transit"]
   - ["tram-stops","railway=tram_stop","transportation","TramFront","public-transit"]
   - ["subway-entrances","railway=subway_entrance","transportation","TrainFront","public-transit"]
+  - ["transit-platforms","public_transport=platform","transportation","RailSymbol","public-transit"]
   - ["ferry-terminals","amenity=ferry_terminal","transportation","Ship"]
   - ["taxi-ranks","amenity=taxi","transportation","CarTaxiFront"]
   - ["parking","amenity=parking;amenity=parking_space","transportation","SquareParking"]
@@ -288,6 +289,7 @@ filterableTags:
   ev-charging:     [capacity, operator, access, fee]
   crossings:       [crossing, crossing:markings, tactile_paving]
   railway-stations: [station, wheelchair, operator, network]
+  transit-platforms: [tactile_paving, wheelchair, shelter, bench, lit]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -319,6 +321,10 @@ demonstrators:
     - { area: 347950,  note: "Barcelona, ES - near-complete operator/network tagging" }
     - { area: 71525,   note: "Paris, FR - large set, varied networks/operators, strong accessibility" }
     - { area: 62428,   note: "Munich, DE - good wheelchair coverage, mixed train/subway modes" }
+  transit-platforms:
+    - { area: 62428,   note: "Munich, DE - dense multimodal platforms, near-complete tactile_paving/bench/shelter/lit, strong wheelchair" }
+    - { area: 419203,  note: "Utrecht, NL - well-tagged bus/tram platforms, good tactile_paving + shelter" }
+    - { area: 54517,   note: "Rennes, FR - meticulous accessibility (wheelchair/tactile/bench high), Western Europe representative" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:

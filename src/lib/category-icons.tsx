@@ -77,6 +77,7 @@ import {
   Phone,
   Pill,
   RadioTower,
+  RailSymbol,
   Recycle,
   RockingChair,
   Route,
@@ -138,7 +139,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-15T16:48:47.042Z
+ * Generated: 2026-07-28T16:06:16.978Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -614,6 +615,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Signpost className="w-5 h-5" />;
     case "tram-stops":
       return <TramFront className="w-5 h-5" />;
+    case "transit-platforms":
+      return <RailSymbol className="w-5 h-5" />;
     case "trees-with-species":
       return <Leaf className="w-5 h-5" />;
     case "tunnels":

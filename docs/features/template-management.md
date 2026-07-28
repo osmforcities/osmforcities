@@ -113,9 +113,18 @@ active/featured set bounded.
   accessibility tags sit on the station node itself. Dropped `public_transport` (=station
   everywhere, single-valued) and the `train`/`subway`/`light_rail` boolean siblings (mode
   is already in `station=`); excluded `ref`/`name` (unique codes/labels, not categories).
-- **tram-stops — rejected.** `railway=tram_stop` marks the trackside point; amenities
-  live on the separate `public_transport=platform` node, so the queried node has nothing
-  to filter. Check the interesting tags sit on the queried element, not a sibling.
+- **transit-platforms** — `[tactile_paving, wheelchair, shelter, bench, lit]`, the wiki's
+  platform accessibility/comfort tags. Multimodal (`public_transport=platform` covers bus,
+  tram, train, subway) and multi-geometry (nodes/ways/areas), so it is the network-wide
+  accessibility lens the trackside `tram-stops` node can't be. `tactile_paving` splits
+  ~50/50 in Munich; `wheelchair` is a yes/limited/no ternary. Dropped `covered` (near-absent,
+  same trap as bus-stops) and `operator`/`network` (MVV-only, ~0% outside Munich). Child of
+  `public-transit`; the parent query was widened to include `public_transport=platform` so
+  the umbrella covers every interface and the child stays a strict subset.
+- **tram-stops — filterable tags rejected.** `railway=tram_stop` marks the trackside point;
+  the passenger amenities live on the separate `public_transport=platform` node (now its own
+  `transit-platforms` template), so the queried tram_stop node has nothing to filter — kept as
+  an age-view-only dataset. Check the interesting tags sit on the queried element, not a sibling.
 
 ## Validation the sync enforces
 
