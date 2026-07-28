@@ -690,13 +690,28 @@
     "crossing": "Cruce",
     "crossing:markings": "Marcas viales",
     "station": "Tipo de estación",
-    "wheelchair": "Acceso silla de ruedas"
+    "wheelchair": "Acceso silla de ruedas",
+    "operator:type": "Tipo de operador",
+    "emergency": "Atención de urgencias",
+    "healthcare:speciality": "Especialidad",
+    "dispensing": "Dispensación"
   },
   "TagValue": {
     "__common__": {
       "yes": "Sí",
       "no": "No",
       "limited": "Limitado"
+    },
+    "operator:type": {
+      "public": "Público",
+      "private": "Privado",
+      "government": "Gubernamental",
+      "religious": "Religioso",
+      "university": "Universitario",
+      "ngo": "ONG",
+      "business": "Empresa",
+      "military": "Militar",
+      "private_non_profit": "Privado sin fines de lucro"
     },
     "access": {
       "private": "Privado",

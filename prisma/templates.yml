@@ -288,6 +288,12 @@ filterableTags:
   ev-charging:     [capacity, operator, access, fee]
   crossings:       [crossing, crossing:markings, tactile_paving]
   railway-stations: [station, wheelchair, operator, network]
+  hospitals:   [operator:type, emergency, wheelchair, operator]
+  clinics:     [healthcare:speciality, operator:type, wheelchair, operator]
+  doctors:     [healthcare:speciality, wheelchair]
+  dentists:    [wheelchair]
+  pharmacies:  [dispensing, wheelchair]
+  veterinary:  [wheelchair]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -319,6 +325,37 @@ demonstrators:
     - { area: 347950,  note: "Barcelona, ES - near-complete operator/network tagging" }
     - { area: 71525,   note: "Paris, FR - large set, varied networks/operators, strong accessibility" }
     - { area: 62428,   note: "Munich, DE - good wheelchair coverage, mixed train/subway modes" }
+  hospitals:
+    - { area: 62428,   note: "Munich, DE - excellent operator/emergency/wheelchair coverage across the German clinic network" }
+    - { area: 71525,   note: "Paris, FR - large hospital set, clean operator + operator:type + wheelchair tagging" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, strong operator/operator:type/emergency across public and private networks" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, solid emergency + operator:type tagging" }
+    - { area: 1293250, note: "Taipei, TW - East Asian representative, strong emergency coverage across military/university/private hospitals" }
+  clinics:
+    - { area: 62428,   note: "Munich, DE - clean operator/operator:type/wheelchair tagging, well-bucketed specialties" }
+    - { area: 1293250, note: "Taipei, TW - large sample, rich clean specialty distribution led by traditional_chinese_medicine" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, strong operator/operator:type, distinctive public-health specialty tagging" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, large municipal clinic network" }
+  doctors:
+    - { area: 62428,   note: "Munich, DE - largest sample (935), rich clean specialty distribution, strong wheelchair coverage" }
+    - { area: 1293250, note: "Taipei, TW - excellent wheelchair coverage, clean specialty buckets" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative" }
+    - { area: 347950,  note: "Barcelona, ES - Iberian representative, distinct specialty mix" }
+  dentists:
+    - { area: 62428,   note: "Munich, DE - largest sample, strong 3-way wheelchair split" }
+    - { area: 1293250, note: "Taipei, TW - large sample, solid wheelchair coverage" }
+  pharmacies:
+    - { area: 62428,   note: "Munich, DE - 91% wheelchair coverage, near-complete dispensing tagging" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, strong dispensing coverage" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, solid dispensing + wheelchair" }
+    - { area: 1293250, note: "Taipei, TW - East Asian representative" }
+  health-post:
+    - { area: 103703,  note: "Manila, PH - only tested city with meaningful health_post data; thin sample but real healthcare provider-type variety" }
+  nursing-home:
+    - { area: 62428,   note: "Munich, DE - largest sample found despite the tag's near-total deprecation elsewhere; thin data, honest outlier pick" }
+  veterinary:
+    - { area: 62428,   note: "Munich, DE - 44% wheelchair coverage, clean 3-way split" }
+    - { area: 1293250, note: "Taipei, TW - 28% wheelchair coverage, clean 3-way split" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:

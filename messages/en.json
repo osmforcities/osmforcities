@@ -681,13 +681,28 @@
     "crossing": "Crossing",
     "crossing:markings": "Markings",
     "station": "Station type",
-    "wheelchair": "Wheelchair access"
+    "wheelchair": "Wheelchair access",
+    "operator:type": "Operator type",
+    "emergency": "Emergency care",
+    "healthcare:speciality": "Specialty",
+    "dispensing": "Dispensing"
   },
   "TagValue": {
     "__common__": {
       "yes": "Yes",
       "no": "No",
       "limited": "Limited"
+    },
+    "operator:type": {
+      "public": "Public",
+      "private": "Private",
+      "government": "Government",
+      "religious": "Religious",
+      "university": "University",
+      "ngo": "NGO",
+      "business": "Business",
+      "military": "Military",
+      "private_non_profit": "Private non-profit"
     },
     "access": {
       "private": "Private",

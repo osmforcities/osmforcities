@@ -116,6 +116,42 @@ active/featured set bounded.
 - **tram-stops — rejected.** `railway=tram_stop` marks the trackside point; amenities
   live on the separate `public_transport=platform` node, so the queried node has nothing
   to filter. Check the interesting tags sit on the queried element, not a sibling.
+- **hospitals** — `[operator:type, emergency, wheelchair, operator]`. New trap:
+  `healthcare=hospital` duplicates `amenity=hospital` everywhere (single-valued, not a
+  filter) — same shape as `railway-stations`' `public_transport` drop. Dropped
+  `healthcare:speciality` too: multi-value semicolon strings fragment into a long tail of
+  near-unique combinations here (unlike doctors/clinics, see below). Dropped
+  `ref:FR:FINESS`/`type:FR:FINESS` — well covered but France-only opaque registry codes.
+- **clinics** — `[healthcare:speciality, operator:type, wheelchair, operator]`. Kept
+  `healthcare:speciality` here (and for doctors): despite the same multi-value shape as
+  hospitals, the single-value buckets (`psychiatry`, `paediatrics`,
+  `traditional_chinese_medicine`...) are clean and well-populated — it's the primary
+  civic-classification signal the wiki documents this key for. Judgment call, not a
+  mechanical rule: check the actual value distribution, don't just pattern-match on key
+  name.
+- **doctors** — `[healthcare:speciality, wheelchair]`. New trap: `operator` here is a
+  solo practitioner's name (e.g. "Dr. med. Frederic Hollay"), functionally identical to
+  `name` — not a network/operator classification. Same trap hit dentists and veterinary.
+  Dropped `operator`/`operator:type` for all three.
+- **dentists** — `[wheelchair]` only. `healthcare:speciality` coverage was too thin
+  (~16%) and its top value ("dentist") just repeats the amenity itself.
+- **pharmacies** — `[dispensing, wheelchair]`. New trap: `brand` (chain name) is clean
+  and wiki-relevant where present (Pacheco/Droga Raia in Brazil, similar in South Africa)
+  but ~0% in Germany's independent-pharmacy market — same single-market-skew that
+  dropped ev-charging's `network`. Dropped despite being wiki-documented.
+- **health-post — screen-and-skip.** `amenity=health_post` is globally rare: 0 results
+  in 4 of 6 tested cities across 4 continents. Where present (Manila, thin sample),
+  `healthcare=*` genuinely varies (`community_health_worker`/`health_aide`/`centre`) —
+  confirming it is *not* always a duplicate of `amenity` (contrast with hospitals above);
+  it just wasn't well-populated enough here to filter on. Age view only.
+- **nursing-home — screen-and-skip.** `amenity=nursing_home` is wiki-flagged deprecated
+  in favor of `amenity=social_facility` + `social_facility=nursing_home`; live data
+  confirms near-total migration away from it (single digits per city, 0 in Paris).
+  Updating the base query to the newer tag is a separate follow-up, out of scope for a
+  filterableTags-only pass. Age view only.
+- **veterinary** — `[wheelchair]` only. `emergency` was a plausible wiki-adjacent
+  hypothesis but tested at 0% everywhere — a reminder that "wiki-documented" is necessary
+  but not sufficient; always confirm against real coverage before keeping a key.
 
 ## Validation the sync enforces
 
