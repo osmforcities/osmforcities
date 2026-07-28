@@ -83,6 +83,12 @@ For each key added: add a `TagLabel` in en/es/pt-BR (values fall back to the raw
 so `TagValue` labels are optional), re-sync, reload to confirm. If measurement is
 delegated to a subagent, it must do the wiki cross-check too — not report coverage alone.
 
+Don't translate values that are standardized indexes or codes (`isced:level` = ISCED
+levels 0-8, `capacity` counts): leave them raw, no `TagValue` map. The code is the
+canonical form and its ordering is meaningful; a localized word list would only obscure
+it. Only add `TagValue` labels for keys whose values are opaque enum strings (`wlan`,
+`government`).
+
 ### Accessibility as a transversal signal
 
 - **`wheelchair`** — always shortlist **and keep** for any enterable-building /
