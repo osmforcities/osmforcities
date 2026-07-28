@@ -690,7 +690,11 @@
     "crossing": "Travessia",
     "crossing:markings": "Faixa de pedestres",
     "station": "Tipo de estação",
-    "wheelchair": "Acesso para cadeirantes"
+    "wheelchair": "Acesso para cadeirantes",
+    "stars": "Estrelas",
+    "internet_access": "Acesso à internet",
+    "shower": "Chuveiro",
+    "power_supply": "Fornecimento de energia"
   },
   "TagValue": {
     "__common__": {

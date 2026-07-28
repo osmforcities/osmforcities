@@ -51,7 +51,6 @@ templates:
   - ["campsites","tourism=camp_site","tourism","Tent"]
   - ["alpine-huts","tourism=alpine_hut","tourism","Mountain"]
   - ["caravan-sites","tourism=caravan_site","tourism","Caravan"]
-  - ["chalets","tourism=chalet","tourism","Home"]
   - ["wilderness-huts","tourism=wilderness_hut","tourism","Tent"]
 # Culture
   - ["cinemas","amenity=cinema","culture","Film"]
@@ -288,6 +287,11 @@ filterableTags:
   ev-charging:     [capacity, operator, access, fee]
   crossings:       [crossing, crossing:markings, tactile_paving]
   railway-stations: [station, wheelchair, operator, network]
+  hotels:           [stars, wheelchair, internet_access]
+  attractions:      [wheelchair]
+  campsites:        [shower, power_supply]
+  hotel-guesthouse: [wheelchair, internet_access]
+  alpine-huts:      [operator, capacity]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -319,6 +323,22 @@ demonstrators:
     - { area: 347950,  note: "Barcelona, ES - near-complete operator/network tagging" }
     - { area: 71525,   note: "Paris, FR - large set, varied networks/operators, strong accessibility" }
     - { area: 62428,   note: "Munich, DE - good wheelchair coverage, mixed train/subway modes" }
+  hotels:
+    - { area: 71525,   note: "Paris, FR - large set, strong stars/wheelchair/internet_access tagging" }
+    - { area: 347950,  note: "Barcelona, ES - well-rounded coverage across all three keys" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, weaker but real coverage" }
+  attractions:
+    - { area: 71525,   note: "Paris, FR - wheelchair coverage clearly varied (yes/no/limited)" }
+    - { area: 347950,  note: "Barcelona, ES - highest wheelchair coverage observed" }
+  campsites:
+    - { area: 435514,  note: "Prague, CZ - largest in-city sample, shower/power_supply both present" }
+    - { area: 62428,   note: "Munich, DE - small sample but confirms the same signal outside CZ" }
+  hotel-guesthouse:
+    - { area: 435514,  note: "Prague, CZ - strong internet_access tagging (wlan), real wheelchair split" }
+    - { area: 347950,  note: "Barcelona, ES - three-way wheelchair split (yes/limited/no)" }
+  alpine-huts:
+    - { area: 104836,  note: "Chamonix-Mont-Blanc, FR - CAF-operated huts, strong operator tagging" }
+    - { area: 1685406, note: "Zermatt, CH - near-complete capacity tagging, SAC-operated huts" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:

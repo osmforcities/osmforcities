@@ -681,7 +681,11 @@
     "crossing": "Crossing",
     "crossing:markings": "Markings",
     "station": "Station type",
-    "wheelchair": "Wheelchair access"
+    "wheelchair": "Wheelchair access",
+    "stars": "Stars",
+    "internet_access": "Internet access",
+    "shower": "Shower",
+    "power_supply": "Power supply"
   },
   "TagValue": {
     "__common__": {

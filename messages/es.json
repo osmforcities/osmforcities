@@ -690,7 +690,11 @@
     "crossing": "Cruce",
     "crossing:markings": "Marcas viales",
     "station": "Tipo de estación",
-    "wheelchair": "Acceso silla de ruedas"
+    "wheelchair": "Acceso silla de ruedas",
+    "stars": "Estrellas",
+    "internet_access": "Acceso a internet",
+    "shower": "Ducha",
+    "power_supply": "Suministro eléctrico"
   },
   "TagValue": {
     "__common__": {
