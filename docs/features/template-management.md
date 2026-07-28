@@ -48,47 +48,54 @@ Prereqs: local dev server, signed in (osmforcities-dev-auth), Overpass tunnel up
 
 ### Tuning `filterableTags` from the dashboard
 
-Start from the OSM wiki page for the selector — it names the tags that describe the
+Shortlist from the OSM wiki page for the selector — it names the tags that describe the
 feature's real-world usability (for `amenity=charging_station`: capacity, connector,
-access, operator, fee). Shortlist those, then keep a key only if it is **both** well
-covered on the dashboard (a meaningful share of features carry it) **and** not the same
-value on every feature (or coloring is one flat blob), **and** exists as a single
-colorable key. Drop a key when near-absent (`covered` on bus-stops), truly single-valued
-everywhere (`public_transport=platform`, PTv2-co-tagged on every stop), not
-wiki-relevant, or fragmented across many keys (EV connectors live in count-valued
-`socket:type2`/`socket:type2_combo`/… with no single key to color by). Exception: a key
-the wiki marks essential to usability or equity (`capacity`, `wheelchair`) stays even
-near-absent — a large Missing share is the signal, not a reason to hide the filter. Use
-wiki-importance and common sense here, not just the coverage number.
+access, operator, fee). Then decide per key:
 
-Coverage never qualifies a key on its own — a well-covered `ref` or `name` is still just
-a unique code, not a filter. Confirm every candidate against the OSM wiki first. If this
-measurement is delegated to a subagent, the subagent must do the wiki cross-check too
-(usability-relevance per key), not report Overpass/dashboard coverage alone.
+**Keep** a key only when all three hold:
 
-A *skewed* distribution is fine and valuable: `operator` on `bicycle-rental` is mostly
-one value (a city has one bike-share system), but the stray outliers it surfaces — a
-second operator, a mis-tagged dock — are exactly the deviations OSM for Cities exists to
-flag. Don't require an even spread.
+- **Wiki-relevant** — describes usability/equity, not identity. Coverage never qualifies
+  a key on its own: a well-covered `ref` or `name` is a unique code, not a filter.
+- **Colorable** — exists as one single key. Not fragmented across siblings (EV connectors
+  live in count-valued `socket:type2`/`socket:type2_combo`/… — no single key to color by).
+- **Well-covered with variance** — a meaningful share of features carry it, and not the
+  same value on every one (or coloring is one flat blob).
 
-Tune both ways, using the dashboard's "Most used tags" as the menu: **reduce**
-near-zero keys; **widen** a high-usage varied key (coverage can be regional — the legend
-handles Missing). For each key added, add a `TagLabel` in en/es/pt-BR; values fall back
-to the raw string, so `TagValue` labels are optional. Re-sync and reload to confirm.
+**Drop** a key when:
+
+- **Near-absent** — `covered` on bus-stops.
+- **Single-valued everywhere** — `public_transport=platform`, PTv2-co-tagged on every stop.
+- **Not wiki-relevant** — `ref`, `name`.
+- **Fragmented** across many keys (see EV connectors above).
+
+**Exceptions to the rules:**
+
+- **Wiki-essential equity/usability keys** (`capacity`, `wheelchair`) stay even when
+  near-absent — a large Missing share is the signal, not a reason to hide the filter.
+  Use wiki-importance and common sense, not the coverage number alone.
+- **Skewed is fine.** `operator` on `bicycle-rental` is mostly one value (one bike-share
+  system per city), but the stray outliers — a second operator, a mis-tagged dock — are
+  exactly the deviations OSM for Cities exists to flag. Don't require an even spread.
+
+Tune both ways off the dashboard's "Most used tags" menu: **reduce** near-zero keys,
+**widen** a high-usage varied key (coverage can be regional — the legend handles Missing).
+For each key added: add a `TagLabel` in en/es/pt-BR (values fall back to the raw string,
+so `TagValue` labels are optional), re-sync, reload to confirm. If measurement is
+delegated to a subagent, it must do the wiki cross-check too — not report coverage alone.
 
 ### Accessibility as a transversal signal
 
-`wheelchair` — always shortlist and keep for any enterable-building/staffed-amenity
-template (shops, healthcare, education, government, culture, tourism, food, transit).
-Low coverage is not a reason to drop it (see the coverage exception above). Skip
-shortlisting only when there's nothing to enter: outdoor/natural features, street
-furniture, `parking` (use `capacity:disabled` instead), unstaffed infra
-(`bicycle-parking`, `bicycle-rental`, `taxi-ranks`).
-
-Blind/visually-impaired tags (`tactile_paving`, `kerb`, `traffic_signals:sound`/
-`:vibration`) are a separate, narrower track — pedestrian-path templates only
-(crossings, bus-stops, platforms, subway-entrances; see Worked examples). Don't add
-them to a POI template just because `wheelchair` applies there.
+- **`wheelchair`** — always shortlist **and keep** for any enterable-building /
+  staffed-amenity template (shops, healthcare, education, government, culture, tourism,
+  food, transit). Low coverage is not a reason to drop it (equity-essential exception
+  above).
+- **Skip `wheelchair`** only when there's nothing to enter: outdoor/natural features,
+  street furniture, `parking` (use `capacity:disabled` instead), unstaffed infra
+  (`bicycle-parking`, `bicycle-rental`, `taxi-ranks`).
+- **Blind/visually-impaired tags** (`tactile_paving`, `kerb`, `traffic_signals:sound`/
+  `:vibration`) are a separate, narrower track — pedestrian-path templates only
+  (crossings, bus-stops, platforms, subway-entrances; see Worked examples). Don't add
+  them to a POI template just because `wheelchair` applies there.
 
 ### Picking demonstrators
 
@@ -140,9 +147,15 @@ active/featured set bounded.
 
 ## Validation the sync enforces
 
-`prisma/lib/template-parser.ts` fails `pnpm db:sync`/CI on: unknown parent id, and a
-`demonstrators` section that is malformed (scalar/array root, unknown template id, an
-`area` that is not a positive integer, non-string `note`). An unknown template id under
-`filterableTags` is a non-blocking **warning**, not an error — a typo there only leaves
-that one template age-view-only, so it never blocks the seed/deploy. Tests:
-`prisma/lib/__tests__/template-parser.test.ts`.
+`prisma/lib/template-parser.ts` (tests: `prisma/lib/__tests__/template-parser.test.ts`).
+
+**Fails** `pnpm db:sync`/CI on:
+
+- Unknown parent id.
+- Malformed `demonstrators` — scalar/array root, unknown template id, `area` that is not
+  a positive integer, non-string `note`.
+
+**Warns** (non-blocking):
+
+- Unknown template id under `filterableTags` — a typo there only leaves that one template
+  age-view-only, so it never blocks the seed/deploy.
