@@ -14,6 +14,7 @@ import {
   Building,
   Building2,
   Bus,
+  BusFront,
   Cable,
   Camera,
   Car,
@@ -67,6 +68,7 @@ import {
   MapPin,
   Martini,
   Medal,
+  Milestone,
   Milk,
   MoonStar,
   Mountain,
@@ -113,6 +115,7 @@ import {
   TrafficCone,
   Train,
   TrainFrontTunnel,
+  TrainTrack,
   TramFront,
   Trash2,
   TreeDeciduous,
@@ -139,7 +142,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-28T22:03:04.474Z
+ * Generated: 2026-07-28T22:27:23.641Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -259,8 +262,12 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Waypoints className="w-5 h-5" />;
     case "bunker-silos":
       return <Warehouse className="w-5 h-5" />;
+    case "bus-lanes":
+      return <Milestone className="w-5 h-5" />;
     case "bus-stops":
       return <Bus className="w-5 h-5" />;
+    case "busways":
+      return <BusFront className="w-5 h-5" />;
     case "butchers":
       return <Beef className="w-5 h-5" />;
     case "cafes":
@@ -511,6 +518,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Beer className="w-5 h-5" />;
     case "pumping-station":
       return <Gauge className="w-5 h-5" />;
+    case "rail-tracks":
+      return <TrainTrack className="w-5 h-5" />;
     case "railway-stations":
       return <Train className="w-5 h-5" />;
     case "recycling":

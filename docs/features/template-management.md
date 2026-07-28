@@ -194,6 +194,53 @@ active/featured set bounded.
   `transit-platforms` template), so the queried tram_stop node has nothing to filter — kept as
   an age-view-only dataset. Check the interesting tags sit on the queried element, not a sibling.
 
+### Linear-network templates (ways)
+
+- **roads** — `[surface, maxspeed, lit, sidewalk]`. All near-universal in well-mapped cities
+  (Munich surface 99%, maxspeed 97%, lit 90%, sidewalk 51%). `surface` looks single-valued in a
+  European capital (all asphalt) but carries the paved/unpaved signal that matters in the Global
+  South — pick at least one demonstrator (e.g. Rio) that shows the variance. Dropped `name`
+  (identity, not a filter) and `lanes` (numeric count, poor color-by).
+- **footways** — `[surface, lit, smoothness]`. `surface` 72%, `lit` 46%, `smoothness` 25% in
+  Munich. Even on a pedestrian path the blind/kerb a11y keys stay off: `tactile_paving` 0.6%,
+  `wheelchair` 4%, `incline` 1% — that data lives on the crossing nodes, not the footway ways.
+  `surface`/`smoothness` are the accessibility-quality proxies that actually sit on the way.
+- **cycleways** — `[surface, lit, oneway, smoothness]`. Strong across cycling cities (Utrecht/
+  Munich 59–89%). `segregated`/`width` too sparse to keep.
+
+### Rail and bus additions
+
+- **rail-tracks** — `[railway, electrified, usage, service]`. Query is the union
+  `railway=tram;railway=subway;railway=light_rail;railway=rail`, and the discriminating key
+  `railway` is the star color-by (tram vs subway vs mainline) — the same pattern as `parking`'s
+  `parking` type. `electrified` 91%, `service` 51%, `usage` 33% in Munich. Dropped `gauge`
+  (99% present but single-valued — a code, not a filter) and `maxspeed` (numeric). Top-level, not
+  a child of `public-transit` (tracks aren't a subset of the stops union).
+- **busways** vs **bus-lanes** — two clean templates for one messy reality. BRT is tagged two
+  structurally different ways: physically **segregated** corridors as `highway=busway` (separate
+  ways — Rio 1185, SP corredores 572) and **on-street** lanes as `busway:*=lane` attributes on the
+  road (Bogotá Transmilenio, SP faixas). `busways` = `highway=busway` (`[surface]`); `bus-lanes` =
+  `busway=lane;busway:left=lane;busway:right=lane;busway:both=lane`, age-view only because its
+  color-by would be fragmented across those sibling keys. Keeping them separate avoids mixing
+  separate-way corridors with attributed road geometry in one legend.
+- **traffic-calming** — `[traffic_calming]`. The value *is* the type (hump/bump/table/island/dip),
+  a textbook color-by. Sparse in Germany (Munich 152) but heavily mapped in Latin America
+  (São Paulo 7k+ "lombadas") — demonstrate there.
+- **speed-cameras — query fixed.** The template queried `man_made=speed_camera` (≈0 features
+  everywhere); the feature is actually tagged `highway=speed_camera` (São Paulo 878). Union both.
+  `[maxspeed]` is the enforced-limit color-by, 97% covered. **Lesson: confirm the query tag itself
+  matches real features before tuning — a near-empty dataset is often a wrong selector, not a
+  missing city.**
+
+Traffic-signs, traffic-lights, bridges and tunnels stay age-view only: sign values are
+country-specific codes (not colorable), and the useful bridge/tunnel/acoustic-signal attributes
+sit on the sibling road or crossing node, not the queried element.
+
+> Category note: all transport templates live under the single `transport` category (the former
+> `transportation` / `transport_infrastructure` / `traffic` split was consolidated — see the
+> `categories:` map). Merging categories is YAML-only; emptied categories drop out of the browse
+> UI, which lists only categories that have templates.
+
 ## Validation the sync enforces
 
 `prisma/lib/template-parser.ts` (tests: `prisma/lib/__tests__/template-parser.test.ts`).

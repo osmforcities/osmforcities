@@ -108,6 +108,33 @@ templates:
       en: Parking
       pt: Estacionamentos
       es: Estacionamientos
+  rail-tracks:
+    name:
+      en: Rail Tracks
+      pt: Trilhos ferroviários
+      es: Vías férreas
+    desc:
+      en: Tram, subway, light rail and mainline railway tracks
+      pt: Trilhos de bonde, metrô, VLT e ferrovias
+      es: Vías de tranvía, metro, tren ligero y ferrocarril
+  busways:
+    name:
+      en: Busways
+      pt: Corredores de ônibus
+      es: Corredores de autobús
+    desc:
+      en: Dedicated bus rapid transit corridors
+      pt: Corredores exclusivos de ônibus (BRT)
+      es: Corredores exclusivos de autobús (BRT)
+  bus-lanes:
+    name:
+      en: Bus Lanes
+      pt: Faixas de ônibus
+      es: Carriles de autobús
+    desc:
+      en: On-street exclusive bus lanes
+      pt: Faixas exclusivas de ônibus na via
+      es: Carriles exclusivos de autobús en la vía
   atms:
     name:
       en: Atms

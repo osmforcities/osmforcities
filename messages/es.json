@@ -693,7 +693,16 @@
     "wheelchair": "Acceso silla de ruedas",
     "parking": "Tipo",
     "surface": "Superficie",
-    "traffic_signals:sound": "Señal acústica"
+    "traffic_signals:sound": "Señal acústica",
+    "smoothness": "Regularidad",
+    "oneway": "Sentido único",
+    "maxspeed": "Límite de velocidad",
+    "sidewalk": "Acera",
+    "railway": "Tipo de vía",
+    "electrified": "Electrificación",
+    "usage": "Uso",
+    "service": "Vía de servicio",
+    "traffic_calming": "Tipo"
   },
   "TagValue": {
     "__common__": {
@@ -757,6 +766,60 @@
     "traffic_signals:sound": {
       "locate": "Solo localización",
       "walk": "Solo cruce"
+    },
+    "smoothness": {
+      "excellent": "Excelente",
+      "good": "Bueno",
+      "intermediate": "Intermedio",
+      "bad": "Malo",
+      "very_bad": "Muy malo",
+      "horrible": "Horrible",
+      "very_horrible": "Pésimo",
+      "impassable": "Intransitable"
+    },
+    "oneway": {
+      "-1": "Sentido inverso"
+    },
+    "sidewalk": {
+      "both": "Ambos lados",
+      "left": "Lado izquierdo",
+      "right": "Lado derecho",
+      "separate": "Mapeada por separado",
+      "none": "Ninguna"
+    },
+    "railway": {
+      "tram": "Tranvía",
+      "subway": "Metro",
+      "light_rail": "Tren ligero",
+      "rail": "Ferrocarril"
+    },
+    "electrified": {
+      "contact_line": "Catenaria",
+      "rail": "Tercer riel"
+    },
+    "usage": {
+      "main": "Línea principal",
+      "branch": "Ramal",
+      "industrial": "Industrial",
+      "tourism": "Turístico",
+      "military": "Militar"
+    },
+    "service": {
+      "yard": "Patio de maniobras",
+      "siding": "Apartadero",
+      "spur": "Ramal de servicio",
+      "crossover": "Cruce"
+    },
+    "traffic_calming": {
+      "hump": "Reductor",
+      "bump": "Badén",
+      "table": "Paso elevado",
+      "island": "Isleta",
+      "dip": "Depresión",
+      "cushion": "Cojín reductor",
+      "chicane": "Chicana",
+      "choker": "Estrechamiento",
+      "rumble_strip": "Banda sonora"
     }
   }
 }

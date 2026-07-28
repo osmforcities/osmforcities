@@ -684,7 +684,16 @@
     "wheelchair": "Wheelchair access",
     "parking": "Type",
     "surface": "Surface",
-    "traffic_signals:sound": "Acoustic signal"
+    "traffic_signals:sound": "Acoustic signal",
+    "smoothness": "Smoothness",
+    "oneway": "One-way",
+    "maxspeed": "Speed limit",
+    "sidewalk": "Sidewalk",
+    "railway": "Rail type",
+    "electrified": "Electrification",
+    "usage": "Usage",
+    "service": "Service track",
+    "traffic_calming": "Type"
   },
   "TagValue": {
     "__common__": {
@@ -748,6 +757,60 @@
     "traffic_signals:sound": {
       "locate": "Locate only",
       "walk": "Walk only"
+    },
+    "smoothness": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "intermediate": "Intermediate",
+      "bad": "Bad",
+      "very_bad": "Very bad",
+      "horrible": "Horrible",
+      "very_horrible": "Very horrible",
+      "impassable": "Impassable"
+    },
+    "oneway": {
+      "-1": "Reverse direction"
+    },
+    "sidewalk": {
+      "both": "Both sides",
+      "left": "Left side",
+      "right": "Right side",
+      "separate": "Separately mapped",
+      "none": "None"
+    },
+    "railway": {
+      "tram": "Tram",
+      "subway": "Subway",
+      "light_rail": "Light rail",
+      "rail": "Mainline rail"
+    },
+    "electrified": {
+      "contact_line": "Overhead line",
+      "rail": "Third rail"
+    },
+    "usage": {
+      "main": "Main line",
+      "branch": "Branch line",
+      "industrial": "Industrial",
+      "tourism": "Tourism",
+      "military": "Military"
+    },
+    "service": {
+      "yard": "Yard",
+      "siding": "Siding",
+      "spur": "Spur",
+      "crossover": "Crossover"
+    },
+    "traffic_calming": {
+      "hump": "Hump",
+      "bump": "Bump",
+      "table": "Table",
+      "island": "Island",
+      "dip": "Dip",
+      "cushion": "Cushion",
+      "chicane": "Chicane",
+      "choker": "Choker",
+      "rumble_strip": "Rumble strip"
     }
   }
 }

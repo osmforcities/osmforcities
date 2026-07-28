@@ -19,6 +19,11 @@ templates:
   - ["ferry-terminals","amenity=ferry_terminal","transport","Ship"]
   - ["taxi-ranks","amenity=taxi","transport","CarTaxiFront"]
   - ["parking","amenity=parking;amenity=parking_space","transport","SquareParking"]
+  # Rail network (tracks/lines) - complements public-transit stops
+  - ["rail-tracks","railway=tram;railway=subway;railway=light_rail;railway=rail","transport","TrainTrack"]
+  # Bus rapid transit: segregated corridors (highway=busway) and on-street lanes
+  - ["busways","highway=busway","transport","BusFront"]
+  - ["bus-lanes","busway=lane;busway:left=lane;busway:right=lane;busway:both=lane","transport","Milestone"]
 # Financial
   - ["atms","amenity=atm","financial","Banknote"]
   - ["banks","amenity=bank","financial","Landmark"]
@@ -182,7 +187,7 @@ templates:
 # Traffic
   - ["traffic-signs","traffic_sign=*","transport","Signpost"]
   - ["traffic-lights","highway=traffic_signals","transport","Lightbulb"]
-  - ["speed-cameras","man_made=speed_camera","transport","Camera"]
+  - ["speed-cameras","highway=speed_camera;man_made=speed_camera","transport","Camera"]
   - ["traffic-calming","traffic_calming=*","transport","TrafficCone"]
 # Housing
   - ["apartments","building=apartments","housing","Building2"]
@@ -292,6 +297,13 @@ filterableTags:
   taxi-ranks:       [capacity, operator]
   ferry-terminals:  [operator, network, wheelchair]
   parking:          [parking, access, fee, capacity, surface]
+  rail-tracks:      [railway, electrified, usage, service]
+  busways:          [surface]
+  roads:            [surface, maxspeed, lit, sidewalk]
+  footways:         [surface, lit, smoothness]
+  cycleways:        [surface, lit, oneway, smoothness]
+  traffic-calming:  [traffic_calming]
+  speed-cameras:    [maxspeed]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -342,6 +354,35 @@ demonstrators:
     - { area: 62768,   note: "Freiburg, DE - near-complete parking-type/access tagging, compact dataset" }
     - { area: 62591,   note: "Munster, DE - strong parking-type/access/capacity across many lots" }
     - { area: 59874,   note: "Nantes, FR - well-tagged parking-type/access, high fee coverage" }
+  rail-tracks:
+    - { area: 62428,   note: "Munich, DE - full mix: tram, U-Bahn subway, S-Bahn/mainline rail; electrified/service dense" }
+    - { area: 62422,   note: "Berlin, DE - extensive U-Bahn/S-Bahn/tram/rail network, strong railway-type variance" }
+    - { area: 271110,  note: "Amsterdam, NL - tram + metro + rail, good electrified/usage tagging" }
+  busways:
+    - { area: 2697338, note: "Rio de Janeiro, BR - BRT corridors (TransOeste/TransCarioca) mapped as highway=busway" }
+    - { area: 298285,  note: "Sao Paulo, BR - corredores de onibus as dedicated busways, surface tagged" }
+  bus-lanes:
+    - { area: 7426387, note: "Bogota, CO - Transmilenio trunk mapped as busway:left/right=lane on avenues" }
+    - { area: 298285,  note: "Sao Paulo, BR - faixas exclusivas de onibus as busway=lane on roads" }
+  roads:
+    - { area: 62428,   note: "Munich, DE - near-complete surface/maxspeed/lit; speed-zone variance" }
+    - { area: 419203,  note: "Utrecht, NL - meticulous road attributes, high sidewalk coverage" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - surface variance (paved/unpaved) for the color-by" }
+  footways:
+    - { area: 62428,   note: "Munich, DE - surface 72%, lit 46%, smoothness 25% across a dense path network" }
+    - { area: 419203,  note: "Utrecht, NL - thorough footway surface/lit tagging" }
+    - { area: 54517,   note: "Rennes, FR - well-maintained pedestrian-path attributes" }
+  cycleways:
+    - { area: 419203,  note: "Utrecht, NL - cycling capital, near-complete surface/lit/oneway/smoothness" }
+    - { area: 62428,   note: "Munich, DE - surface 89%, oneway/lit/smoothness all strong" }
+    - { area: 271110,  note: "Amsterdam, NL - dense cycleway network, rich attributes" }
+  traffic-calming:
+    - { area: 298285,  note: "Sao Paulo, BR - 7k+ features, varied values (hump/bump/table/island/dip)" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - heavy lombada tagging, good value spread" }
+    - { area: 1376330, note: "Mexico City, MX - dense traffic-calming across the metro area" }
+  speed-cameras:
+    - { area: 298285,  note: "Sao Paulo, BR - 878 highway=speed_camera, maxspeed 97% (enforced-limit color-by)" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - dense radar mapping with maxspeed" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:
