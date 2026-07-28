@@ -56,38 +56,62 @@ Prereqs: local dev server, signed in (osmforcities-dev-auth), Overpass tunnel up
 
 ### Tuning `filterableTags` from the dashboard
 
-Start from the OSM wiki page for the selector — it names the tags that describe the
+Shortlist from the OSM wiki page for the selector — it names the tags that describe the
 feature's real-world usability (for `amenity=charging_station`: capacity, connector,
-access, operator, fee). **Wiki-relevance is the gate, not coverage.** Keep a candidate key
-when the wiki treats it as describing the feature's usability, quality, or accessibility,
-it exists as a single colorable key, and it is not the same value on every feature.
-**Low or regional coverage is never on its own a reason to drop a wiki-endorsed key** — the
-legend renders Missing, and the handful of features that do carry it are exactly the
-deviations and gaps OSM for Cities exists to surface (a taxi rank's `capacity` mapped in
-one German city; a ferry `network` present in only a couple of cities). Drop a key only for a *structural*
-reason: not wiki-relevant, a unique code/label (`ref`, `name`), truly single-valued
-everywhere (`public_transport=platform` co-tagged on every stop; `network`/`operator` =
-one authority per city), fragmented across many keys with no single key to color by (EV
-connectors live in count-valued `socket:type2`/`socket:type2_combo`/…), or data that lives
-on a sibling node, not the queried element.
+access, operator, fee). Then decide per key:
 
-Coverage cuts neither way by itself: a well-covered `ref` or `name` is still a unique code,
-not a filter, while a sparsely-covered but wiki-relevant key earns its place. The wiki
-cross-check — usability/quality/accessibility relevance per key — is the decision. If this
-is delegated to a subagent, the subagent must do the wiki cross-check too, not report
-Overpass/dashboard coverage alone.
+**Keep** a key only when all three hold:
 
-A *skewed* distribution is fine and valuable: `operator` on `bicycle-rental` is mostly
-one value (a city has one bike-share system), but the stray outliers it surfaces — a
-second operator, a mis-tagged dock — are exactly the deviations OSM for Cities exists to
-flag. Don't require an even spread, and don't require high coverage either.
+- **Wiki-relevant** — describes usability/equity, not identity. Coverage never qualifies
+  a key on its own: a well-covered `ref` or `name` is a unique code, not a filter.
+- **Colorable** — exists as one single key. Not fragmented across siblings (EV connectors
+  live in count-valued `socket:type2`/`socket:type2_combo`/… — no single key to color by).
+- **Well-covered with variance** — a meaningful share of features carry it, and not the
+  same value on every one (or coloring is one flat blob).
 
-Tune using the dashboard's "Most used tags" plus the wiki: **add** any wiki-relevant,
-single-key, non-single-valued tag even when sparse; **drop** only unique codes, keys that
-are single-valued everywhere, off-wiki keys, and sibling-node keys. Coverage guides which
-cities make good demonstrators, not which keys make the list. For each key added, add a
-`TagLabel` in en/es/pt-BR; values fall back to the raw string, so `TagValue` labels are
-optional. Re-sync and reload to confirm.
+**Drop** a key when:
+
+- **Near-absent** — `covered` on bus-stops.
+- **Single-valued everywhere** — `public_transport=platform`, PTv2-co-tagged on every stop.
+- **Not wiki-relevant** — `ref`, `name`.
+- **Fragmented** across many keys (see EV connectors above).
+- **Sibling-node** — the data lives on a different element than the queried one (`kerb`
+  on the sidewalk node, not the crossing).
+
+**Exceptions to the rules:**
+
+- **Wiki-essential equity/usability keys** (`capacity`, `wheelchair`) stay even when
+  near-absent — a large Missing share is the signal, not a reason to hide the filter.
+  Use wiki-importance and common sense, not the coverage number alone.
+- **Skewed is fine.** `operator` on `bicycle-rental` is mostly one value (one bike-share
+  system per city), but the stray outliers — a second operator, a mis-tagged dock — are
+  exactly the deviations OSM for Cities exists to flag. Don't require an even spread.
+
+Tune both ways off the dashboard's "Most used tags" menu: **reduce** near-zero keys,
+**widen** a high-usage varied key (coverage can be regional — the legend handles Missing).
+For each key added: add a `TagLabel` in en/es/pt-BR (values fall back to the raw string,
+so `TagValue` labels are optional), re-sync, reload to confirm. If measurement is
+delegated to a subagent, it must do the wiki cross-check too — not report coverage alone.
+
+Don't translate values that are standardized indexes or codes (`isced:level` = ISCED
+levels 0-8, `capacity` counts): leave them raw, no `TagValue` map. The code is the
+canonical form and its ordering is meaningful; a localized word list would only obscure
+it. Only add `TagValue` labels for keys whose values are opaque enum strings (`wlan`,
+`government`, `parking`, `surface`).
+
+### Accessibility as a transversal signal
+
+- **`wheelchair`** — always shortlist **and keep** for any enterable-building /
+  staffed-amenity template (shops, healthcare, education, government, culture, tourism,
+  food, transit). Low coverage is not a reason to drop it (equity-essential exception
+  above).
+- **Skip `wheelchair`** only when there's nothing to enter: outdoor/natural features,
+  street furniture, `parking` (use `capacity:disabled` instead), unstaffed infra
+  (`bicycle-parking`, `bicycle-rental`, `taxi-ranks`).
+- **Blind/visually-impaired tags** (`tactile_paving`, `kerb`, `traffic_signals:sound`/
+  `:vibration`) are a separate, narrower track — pedestrian-path templates only
+  (crossings, bus-stops, platforms, subway-entrances; see Worked examples). Don't add
+  them to a POI template just because `wheelchair` applies there.
 
 ### Picking demonstrators
 
@@ -150,10 +174,12 @@ active/featured set bounded.
 - **subway-entrances** — `[wheelchair]`. A single key, but `railway=subway_entrance` carries
   wheelchair on ~99% of entrances in Munich / ~83% in Barcelona, well split no/yes/limited —
   the clearest accessibility lens for a metro network. `ref`/`name` excluded (unique codes).
-- **taxi-ranks** — `[capacity, operator, wheelchair]`. `capacity` is well covered in German
-  cities (Munich 65%, Berlin 41%) and sparse elsewhere — regional, kept. `operator` is a
-  single firm in most cities but genuinely multi-valued in London's minicab market, so it
-  survives (the deviation lens). Dropped `network` (0% in every city checked — no data to color).
+- **taxi-ranks** — `[capacity, operator]`. `capacity` is well covered in German cities
+  (Munich 65%, Berlin 41%) and sparse elsewhere — regional, kept. `operator` is a single
+  firm in most cities but genuinely multi-valued in London's minicab market, so it survives
+  (the deviation lens). Dropped `network` (0% in every city checked — no data to color) and
+  `wheelchair` — a taxi rank is unstaffed street infra with nothing to enter, so it falls
+  under the a11y "skip wheelchair" list, not the equity-keep exception.
 - **ferry-terminals** — `[operator, network, wheelchair]`. Sparse template, but `operator` and
   `network` are genuinely multi-valued in ferry cities (Stockholm SL/Waxholmsbolaget/Stromma;
   Oslo several fjord lines) — not the one-authority-per-city case, so both stay. Amsterdam even
@@ -170,9 +196,15 @@ active/featured set bounded.
 
 ## Validation the sync enforces
 
-`prisma/lib/template-parser.ts` fails `pnpm db:sync`/CI on: unknown parent id, and a
-`demonstrators` section that is malformed (scalar/array root, unknown template id, an
-`area` that is not a positive integer, non-string `note`). An unknown template id under
-`filterableTags` is a non-blocking **warning**, not an error — a typo there only leaves
-that one template age-view-only, so it never blocks the seed/deploy. Tests:
-`prisma/lib/__tests__/template-parser.test.ts`.
+`prisma/lib/template-parser.ts` (tests: `prisma/lib/__tests__/template-parser.test.ts`).
+
+**Fails** `pnpm db:sync`/CI on:
+
+- Unknown parent id.
+- Malformed `demonstrators` — scalar/array root, unknown template id, `area` that is not
+  a positive integer, non-string `note`.
+
+**Warns** (non-blocking):
+
+- Unknown template id under `filterableTags` — a typo there only leaves that one template
+  age-view-only, so it never blocks the seed/deploy.

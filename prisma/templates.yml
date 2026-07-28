@@ -289,7 +289,7 @@ filterableTags:
   railway-stations: [station, wheelchair, operator, network]
   transit-platforms: [tactile_paving, wheelchair, shelter, bench, lit]
   subway-entrances: [wheelchair]
-  taxi-ranks:       [capacity, operator, wheelchair]
+  taxi-ranks:       [capacity, operator]
   ferry-terminals:  [operator, network, wheelchair]
   parking:          [parking, access, fee, capacity, surface]
 
@@ -331,7 +331,7 @@ demonstrators:
     - { area: 62428,   note: "Munich, DE - every U-Bahn entrance tagged wheelchair (no/yes/limited split)" }
     - { area: 347950,  note: "Barcelona, ES - metro entrances broadly tagged wheelchair" }
   taxi-ranks:
-    - { area: 62428,   note: "Munich, DE - high capacity coverage, some wheelchair-accessible ranks" }
+    - { area: 62428,   note: "Munich, DE - high capacity coverage across ranks" }
     - { area: 62422,   note: "Berlin, DE - strong capacity tagging across ranks" }
     - { area: 175342,  note: "London, GB - varied operator (private minicab firms), the deviation lens" }
   ferry-terminals:

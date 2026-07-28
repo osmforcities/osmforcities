@@ -315,6 +315,7 @@ describe("template-parser", () => {
         "bench",
         "lit",
         "tactile_paving",
+        "wheelchair",
         "operator",
       ]);
       // Uncurated templates have no list (age-only in the legend)
