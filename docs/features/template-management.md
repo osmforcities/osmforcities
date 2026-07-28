@@ -86,6 +86,15 @@ Best-tagged cities sometimes cluster in one region — balance best-data against
 geographic diversity. Record each in `demonstrators:` with a short qualitative `note`
 (no percentages — they drift).
 
+Also check a few megacities (NYC, London, Tokyo, São Paulo) even without a strong
+community-strength signal — municipal open-data imports (giveaway tags: `source`,
+`source_ref`, `note:<lang>`) can make them the largest sample by an order of magnitude,
+which is worth more than a mid-size city with cleaner-looking percentages. But check
+the other direction too: a huge population is no guarantee of coverage — cities with
+weak local OSM communities (checked Lagos, Addis Ababa for this domain) can come back
+essentially empty (1-27 features, 0% on every filterableTag) despite being major world
+cities. That's a coverage gap to note, not a reason to doubt the template.
+
 ### Seed / feature (Overpass budget)
 
 Every persisted dataset is a standing daily-refresh cost: the cron
