@@ -672,6 +672,8 @@
     "lit": "Lit",
     "tactile_paving": "Tactile paving",
     "operator": "Operator",
+    "network": "Network",
+    "bicycle_rental": "Type",
     "bicycle_parking": "Type",
     "capacity": "Capacity",
     "access": "Access",

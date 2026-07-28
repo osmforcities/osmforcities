@@ -681,6 +681,8 @@
     "lit": "Iluminado",
     "tactile_paving": "Pavimento táctil",
     "operator": "Operador",
+    "network": "Red",
+    "bicycle_rental": "Tipo",
     "bicycle_parking": "Tipo",
     "capacity": "Capacidad",
     "access": "Acceso",

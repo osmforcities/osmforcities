@@ -53,27 +53,21 @@ Lucide `icon` (validated by `pnpm generate-icons`). Add name/description to
 
 A key belongs in the allow-list only if it is **both**:
 
-- **well covered** — a meaningful share of features carry it (read the Critical
-  coverage block), and
-- **multi-valued** — it takes more than one value, so coloring produces a real legend
-  rather than one flat color.
+- **well covered** — a meaningful share of features carry it, and
+- **not the same value on every feature** — or coloring is one flat blob.
 
-Both tests matter. `public_transport` sits near 100% on bus stops but is almost always
-the single value `platform` (PTv2 co-tags `highway=bus_stop` with
-`public_transport=platform`), so it colors as one blob — high coverage, no diversity,
-not a good view. A yes/no key like `shelter`, or a many-valued key like `operator`,
-passes both tests.
+Drop a key only when it is near-absent (`covered` on bus-stops) or truly single-valued
+everywhere (`public_transport=platform`, which PTv2 co-tags on every stop). A *skewed*
+distribution is fine and even valuable: `operator` on `bicycle-rental` is mostly one
+value (a city has one bike-share system), but the stray outliers it surfaces — a second
+operator, a mis-tagged dock — are exactly the data deviations OSM for Cities exists to
+flag. Don't require an even spread.
 
 Tune in both directions, using the dashboard's "Most used tags" list as the menu:
 
-- **Reduce** — drop keys whose coverage is near-zero across the demonstrators. (The
-  `bus-stops` allow-list dropped `covered` for this reason: it is redundant with
-  `shelter` and barely tagged anywhere.)
-- **Widen** — promote a high-usage, multi-valued key into the list. (`operator` was
-  added to `bus-stops`. Note coverage can be regional — some communities tag `operator`
-  on every stop, others almost never — so a widened key may render richly in one
-  demonstrator and mostly "Missing" in another. That is acceptable and itself
-  informative; the legend handles Missing.)
+- **Reduce** — drop keys near-zero across the demonstrators.
+- **Widen** — promote a high-usage, varied key. Coverage can be regional (rich in one
+  demonstrator, mostly "Missing" in another); that is fine — the legend handles Missing.
 
 For every key added, add a `TagLabel` in `messages/en.json`, `es.json`, and
 `pt-BR.json`. Values render from `TagValue` with a raw fallback, so controlled-value
@@ -109,6 +103,16 @@ dataset-page toggle. Keep the total active/featured set bounded.
 Commit `templates.yml`, `templates.i18n.yml`, and any `messages/*.json`. Do not open a
 PR or push until the maintainer says so. On merge, deploy runs `db:sync`; templates
 removed from the YAML soft-deprecate (30 days) then delete.
+
+## Worked examples
+
+- **bus-stops** — tags sit on the node, so `shelter`/`bench`/`lit`/`tactile_paving` are
+  well-covered binaries. Dropped `covered` (near-absent), added `operator`.
+- **bicycle-rental** — `[bicycle_rental, operator, network, capacity]`. Skewed (one
+  bike-share system per city) but kept: the outliers are worth surfacing.
+- **tram-stops — rejected.** `railway=tram_stop` marks the trackside point; amenities
+  live on the separate `public_transport=platform` node, so the queried node has nothing
+  to filter. Check the interesting tags sit on the queried element, not a sibling.
 
 ## Validation the sync enforces
 

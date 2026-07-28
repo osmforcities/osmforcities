@@ -284,6 +284,7 @@ templates:
 filterableTags:
   bus-stops:       [shelter, bench, lit, tactile_paving, operator]
   bicycle-parking: [bicycle_parking, covered, capacity, access, fee]
+  bicycle-rental:  [bicycle_rental, operator, network, capacity]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -296,6 +297,11 @@ demonstrators:
     - { area: 2697338, note: "Rio de Janeiro, BR - best-maintained stop tagging in Latin America" }
     - { area: 79604,   note: "Cape Town, ZA - African representative, active community" }
     - { area: 1293250, note: "Taipei, TW - East Asia representative" }
+  bicycle-rental:
+    - { area: 71525,   note: "Paris, FR - Velib, large and thoroughly tagged dock network" }
+    - { area: 347950,  note: "Barcelona, ES - Bicing, complete operator/network/capacity tagging" }
+    - { area: 1634158, note: "Montreal, CA - Bixi, North American representative" }
+    - { area: 1376330, note: "Mexico City, MX - Ecobici, Latin American representative" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:
