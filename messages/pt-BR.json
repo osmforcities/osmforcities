@@ -704,7 +704,8 @@
     "drinking_water": "Potável",
     "display": "Mostrador",
     "support": "Fixação",
-    "visibility": "Visibilidade"
+    "visibility": "Visibilidade",
+    "post_box:type": "Tipo de caixa"
   },
   "TagValue": {
     "__common__": {
@@ -755,6 +756,11 @@
       "area": "Área",
       "street": "Rua",
       "house": "Casa"
+    },
+    "post_box:type": {
+      "pillar": "Caixa coluna",
+      "lamp": "Caixa de poste",
+      "wall": "Caixa de parede"
     },
     "toilets:disposal": {
       "flush": "Descarga",

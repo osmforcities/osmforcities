@@ -218,6 +218,31 @@ active/featured set bounded.
   evidence the community moved to a different tagging scheme for the same concept —
   check sibling `tourism=information`/`information=*` style sub-tagging before
   concluding a feature isn't mapped.
+- **post-boxes — added.** `[post_box:type]`. `amenity=post_box` is 409k features
+  globally — the single biggest gap found in this domain. `operator`/`brand` are
+  near-universal (97-100%) but useless: one national postal monopoly per country
+  (Deutsche Post 99.9% in Munich/Berlin, La Poste 100% in Paris) — classic flat
+  pattern, same as `waste-disposal`'s `access`. `post_box:type` (pillar/lamp/wall
+  mounting style) is thinner (4.7-19%) but the only key with real variety. Do not
+  confuse with `amenity=letter_box` (private residential mailboxes, opposite
+  direction — incoming mail, not a public amenity) — checked the wiki specifically
+  to avoid picking the wrong tag here.
+- **give-box — added, thin/regional.** `[wheelchair, covered]`. `amenity=give_box`
+  (community free-sharing boxes / "Little Free Pantries") is only 1.4k features
+  globally, and heavily concentrated in one city's specific movement (Munich's
+  "Kreislaufschränke", 22 features vs. Berlin's 11, Paris's 1). Where present,
+  `wheelchair` (56% Munich) and `covered` (40% Munich) are real and skewed-but-
+  varied. Two demonstrators only, both German — same shape as `bottle-return`,
+  added because the signal is real where it exists, not because it's broadly
+  viable yet.
+- **Considered and rejected: `grit_bin`.** `amenity=grit_bin` (roadside salt/sand
+  bins) has real volume in its home region (443 in London, 399 in Munich) but
+  every tag is under 5% coverage everywhere — essentially bare nodes. Unlike
+  `waste-basket`/`shower` (added anyway for volume), `grit_bin` is also narrowly
+  regional (UK/Nordic winter-road safety) with no accessibility or usability
+  angle to justify seeding it purely for coverage stats. Not added.
+- **Confirmed not a candidate: `letter_box`.** Private residential mailboxes
+  (incoming mail to an address), not a public amenity — see post-boxes above.
 
 ## Validation the sync enforces
 

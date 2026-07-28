@@ -180,6 +180,24 @@ templates:
       en: Luggage Lockers
       pt: Guarda-volumes
       es: Consignas de equipaje
+  post-boxes:
+    name:
+      en: Post Boxes
+      pt: Caixas de coleta postal
+      es: Buzones de correos
+    desc:
+      en: Post Boxes
+      pt: Caixas de coleta postal
+      es: Buzones de correos
+  give-box:
+    name:
+      en: Give Boxes
+      pt: Armários de doação
+      es: Armarios de intercambio
+    desc:
+      en: Give Boxes
+      pt: Armários de doação
+      es: Armarios de intercambio
   hospitals:
     name:
       en: Hospitals

@@ -47,6 +47,7 @@ import {
   Fuel,
   Gauge,
   Gem,
+  Gift,
   Glasses,
   Goal,
   GraduationCap,
@@ -66,6 +67,7 @@ import {
   Lightbulb,
   Luggage,
   Mail,
+  Mailbox,
   MapPin,
   Martini,
   Medal,
@@ -142,7 +144,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-28T21:47:10.235Z
+ * Generated: 2026-07-28T22:16:51.815Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -386,6 +388,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <DoorOpen className="w-5 h-5" />;
     case "geyser":
       return <Droplets className="w-5 h-5" />;
+    case "give-box":
+      return <Gift className="w-5 h-5" />;
     case "glaciers":
       return <MountainSnow className="w-5 h-5" />;
     case "golf":
@@ -504,6 +508,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <ToyBrick className="w-5 h-5" />;
     case "police-stations":
       return <Siren className="w-5 h-5" />;
+    case "post-boxes":
+      return <Mailbox className="w-5 h-5" />;
     case "post-offices":
       return <Mail className="w-5 h-5" />;
     case "poultry-yards":

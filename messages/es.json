@@ -704,7 +704,8 @@
     "drinking_water": "Potable",
     "display": "Esfera",
     "support": "Montaje",
-    "visibility": "Visibilidad"
+    "visibility": "Visibilidad",
+    "post_box:type": "Tipo de buzón"
   },
   "TagValue": {
     "__common__": {
@@ -755,6 +756,11 @@
       "area": "Área",
       "street": "Calle",
       "house": "Casa"
+    },
+    "post_box:type": {
+      "pillar": "Buzón de columna",
+      "lamp": "Buzón de farola",
+      "wall": "Buzón de pared"
     },
     "toilets:disposal": {
       "flush": "Cisterna",

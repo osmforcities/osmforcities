@@ -695,7 +695,8 @@
     "drinking_water": "Drinkable",
     "display": "Display",
     "support": "Mounting",
-    "visibility": "Visibility"
+    "visibility": "Visibility",
+    "post_box:type": "Box type"
   },
   "TagValue": {
     "__common__": {
@@ -746,6 +747,11 @@
       "area": "Area",
       "street": "Street",
       "house": "House"
+    },
+    "post_box:type": {
+      "pillar": "Pillar box",
+      "lamp": "Lamp box",
+      "wall": "Wall box"
     },
     "toilets:disposal": {
       "flush": "Flush",

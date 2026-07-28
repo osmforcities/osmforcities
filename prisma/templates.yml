@@ -32,6 +32,8 @@ templates:
   - ["shower","amenity=shower","amenities","ShowerHead"]
   - ["public-bookcase","amenity=public_bookcase","amenities","BookOpen"]
   - ["luggage-lockers","amenity=luggage_locker","amenities","Luggage"]
+  - ["post-boxes","amenity=post_box","amenities","Mailbox"]
+  - ["give-box","amenity=give_box","amenities","Gift"]
 # Healthcare
   - ["hospitals","amenity=hospital","healthcare","Hospital"]
   - ["clinics","amenity=clinic","healthcare","Stethoscope"]
@@ -306,6 +308,8 @@ filterableTags:
   fountains:       [drinking_water]
   clocks:          [display, support, visibility]
   information-boards: [information]
+  post-boxes:      [post_box:type]
+  give-box:        [wheelchair, covered]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -380,6 +384,13 @@ demonstrators:
   information-boards:
     - { area: 71525,   note: "Paris, FR - 2.1k features, near-universal information sub-tag (board/terminal/map/guidepost)" }
     - { area: 62428,   note: "Munich, DE - 1.6k features, strong guidepost/board/map split" }
+  post-boxes:
+    - { area: 62422,   note: "Berlin, DE - 2.4k features, largest volume, clean lamp/pillar/wall split" }
+    - { area: 62428,   note: "Munich, DE - 747 features, strong post_box:type coverage" }
+    - { area: 71525,   note: "Paris, FR - 1.2k features, thinner type coverage but huge volume" }
+  give-box:
+    - { area: 62428,   note: "Munich, DE - 22 features, Kreislaufschraenke movement, best wheelchair/covered coverage" }
+    - { area: 62422,   note: "Berlin, DE - 11 features, weaker but present; template is Germany-concentrated overall" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:
