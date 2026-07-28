@@ -290,7 +290,7 @@ describe("template-parser", () => {
       expect(byId.get("bicycle-parking")).toEqual({
         id: "bicycle-parking",
         query: "amenity=bicycle_parking",
-        category: "transportation",
+        category: "transport",
         icon: "Bike",
         filterableTags: [
           "bicycle_parking",
@@ -302,7 +302,7 @@ describe("template-parser", () => {
       });
       // parent parsing (5th element) is still exercised by public-transit children
       expect(byId.get("bus-stops")?.parent).toBe("public-transit");
-      expect(categories.transportation).toBe("Car");
+      expect(categories.transport).toBe("Car");
       expect(categories.agriculture).toBe("Wheat");
     });
 

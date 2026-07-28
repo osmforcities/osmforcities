@@ -6,19 +6,19 @@
 
 templates:
 # Transportation
-  - ["bicycle-parking","amenity=bicycle_parking","transportation","Bike"]
-  - ["bicycle-rental","amenity=bicycle_rental","transportation","Bike"]
+  - ["bicycle-parking","amenity=bicycle_parking","transport","Bike"]
+  - ["bicycle-rental","amenity=bicycle_rental","transport","Bike"]
   # Parent template for public transit
-  - ["public-transit","highway=bus_stop;railway=station;railway=tram_stop;railway=subway_entrance;public_transport=platform","transportation","Train"]
-  - ["bus-stops","highway=bus_stop","transportation","Bus","public-transit"]
-  - ["ev-charging","amenity=charging_station","transportation","Zap"]
-  - ["railway-stations","railway=station","transportation","Train","public-transit"]
-  - ["tram-stops","railway=tram_stop","transportation","TramFront","public-transit"]
-  - ["subway-entrances","railway=subway_entrance","transportation","TrainFrontTunnel","public-transit"]
-  - ["transit-platforms","public_transport=platform","transportation","RailSymbol","public-transit"]
-  - ["ferry-terminals","amenity=ferry_terminal","transportation","Ship"]
-  - ["taxi-ranks","amenity=taxi","transportation","CarTaxiFront"]
-  - ["parking","amenity=parking;amenity=parking_space","transportation","SquareParking"]
+  - ["public-transit","highway=bus_stop;railway=station;railway=tram_stop;railway=subway_entrance;public_transport=platform","transport","Train"]
+  - ["bus-stops","highway=bus_stop","transport","Bus","public-transit"]
+  - ["ev-charging","amenity=charging_station","transport","Zap"]
+  - ["railway-stations","railway=station","transport","Train","public-transit"]
+  - ["tram-stops","railway=tram_stop","transport","TramFront","public-transit"]
+  - ["subway-entrances","railway=subway_entrance","transport","TrainFrontTunnel","public-transit"]
+  - ["transit-platforms","public_transport=platform","transport","RailSymbol","public-transit"]
+  - ["ferry-terminals","amenity=ferry_terminal","transport","Ship"]
+  - ["taxi-ranks","amenity=taxi","transport","CarTaxiFront"]
+  - ["parking","amenity=parking;amenity=parking_space","transport","SquareParking"]
 # Financial
   - ["atms","amenity=atm","financial","Banknote"]
   - ["banks","amenity=bank","financial","Landmark"]
@@ -173,17 +173,17 @@ templates:
   - ["pumping-station","man_made=pumping_station","infrastructure","Gauge"]
   - ["utility-pole","man_made=utility_pole","infrastructure","Cable"]
 # Transport infrastructure
-  - ["roads","highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=unclassified","transport_infrastructure","Route"]
-  - ["footways","highway=footway;highway=path","transport_infrastructure","Footprints"]
-  - ["cycleways","highway=cycleway","transport_infrastructure","Bike"]
-  - ["bridges","man_made=bridge","transport_infrastructure","Waypoints"]
-  - ["tunnels","tunnel=yes;tunnel=building_passage","transport_infrastructure","Route"]
-  - ["crossings","highway=crossing","transport_infrastructure","Footprints"]
+  - ["roads","highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=unclassified","transport","Route"]
+  - ["footways","highway=footway;highway=path","transport","Footprints"]
+  - ["cycleways","highway=cycleway","transport","Bike"]
+  - ["bridges","man_made=bridge","transport","Waypoints"]
+  - ["tunnels","tunnel=yes;tunnel=building_passage","transport","Route"]
+  - ["crossings","highway=crossing","transport","Footprints"]
 # Traffic
-  - ["traffic-signs","traffic_sign=*","traffic","Signpost"]
-  - ["traffic-lights","highway=traffic_signals","traffic","Lightbulb"]
-  - ["speed-cameras","man_made=speed_camera","traffic","Camera"]
-  - ["traffic-calming","traffic_calming=*","traffic","TrafficCone"]
+  - ["traffic-signs","traffic_sign=*","transport","Signpost"]
+  - ["traffic-lights","highway=traffic_signals","transport","Lightbulb"]
+  - ["speed-cameras","man_made=speed_camera","transport","Camera"]
+  - ["traffic-calming","traffic_calming=*","transport","TrafficCone"]
 # Housing
   - ["apartments","building=apartments","housing","Building2"]
   - ["houses","building=house;building=detached;building=semidetached_house;building=terrace","housing","Home"]
@@ -345,9 +345,7 @@ demonstrators:
 
 # Category to icon mapping (fallback for templates without icon)
 categories:
-  transportation: Car
   transport: Car
-  transport_infrastructure: Route
   financial: DollarSign
   amenities: Heart
   healthcare: Hospital
@@ -364,7 +362,6 @@ categories:
   services: Wrench
   nature: Leaf
   infrastructure: Gauge
-  traffic: TrafficCone
   housing: Building2
   sports: Trophy
   public: Info
