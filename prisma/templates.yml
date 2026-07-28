@@ -296,13 +296,13 @@ filterableTags:
   schools:          [operator, operator:type, wheelchair, isced:level]
   universities:     [operator, operator:type, wheelchair]
   libraries:        [operator, operator:type, wheelchair, internet_access]
-  kindergarten:     [operator, operator:type]
+  kindergarten:     [operator, operator:type, wheelchair]
   college:          [operator, operator:type, wheelchair]
-  childcare:          [operator, operator:type]
+  childcare:          [operator, operator:type, wheelchair]
   driving-school:     [operator, wheelchair]
-  music-school:       [operator, operator:type]
-  language-school:    [operator, operator:type]
-  research-institute: [operator, operator:type]
+  music-school:       [operator, operator:type, wheelchair]
+  language-school:    [operator, operator:type, wheelchair]
+  research-institute: [operator, operator:type, wheelchair]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:

@@ -56,7 +56,10 @@ value on every feature (or coloring is one flat blob), **and** exists as a singl
 colorable key. Drop a key when near-absent (`covered` on bus-stops), truly single-valued
 everywhere (`public_transport=platform`, PTv2-co-tagged on every stop), not
 wiki-relevant, or fragmented across many keys (EV connectors live in count-valued
-`socket:type2`/`socket:type2_combo`/… with no single key to color by).
+`socket:type2`/`socket:type2_combo`/… with no single key to color by). Exception: a key
+the wiki marks essential to usability or equity (`capacity`, `wheelchair`) stays even
+near-absent — a large Missing share is the signal, not a reason to hide the filter. Use
+wiki-importance and common sense here, not just the coverage number.
 
 Coverage never qualifies a key on its own — a well-covered `ref` or `name` is still just
 a unique code, not a filter. Confirm every candidate against the OSM wiki first. If this
@@ -75,25 +78,17 @@ to the raw string, so `TagValue` labels are optional. Re-sync and reload to conf
 
 ### Accessibility as a transversal signal
 
-`wheelchair` is a default shortlist item for **every template whose queried element is
-an enterable building or staffed amenity** (shops, healthcare, education, government,
-culture, tourism, food, transit stops/stations) — the OSM wiki documents it across all
-of these, not just a curated subset. It's still gated by the normal coverage/variance
-rule (drop if near-absent or flat), but skipping the wiki check itself is not an option:
-always shortlist it first.
+`wheelchair` — always shortlist and keep for any enterable-building/staffed-amenity
+template (shops, healthcare, education, government, culture, tourism, food, transit).
+Low coverage is not a reason to drop it (see the coverage exception above). Skip
+shortlisting only when there's nothing to enter: outdoor/natural features, street
+furniture, `parking` (use `capacity:disabled` instead), unstaffed infra
+(`bicycle-parking`, `bicycle-rental`, `taxi-ranks`).
 
-Reasonable exceptions — skip shortlisting, nothing to "enter": outdoor/natural features
-(`waterfall`, `dam`, `viewpoints`), street furniture (`benches`, `telephones`,
-`emergency-phones`, `recycling`, `waste-disposal`), `parking` (use the more specific
-`capacity:disabled` instead), unstaffed infrastructure (`bicycle-parking`,
-`bicycle-rental`, `taxi-ranks`).
-
-Blind/visually-impaired tags (`tactile_paving`, `kerb`, `traffic_signals:sound`,
-`traffic_signals:vibration`) are a separate track: they live on pedestrian-path
-elements, not POI buildings, so they only apply to pedestrian-infrastructure templates
-(crossings, bus-stops, platforms, subway-entrances) — see `crossings`/`bus-stops` in
-Worked examples. Not every template category has one; don't force it onto a POI
-template just because `wheelchair` is present there.
+Blind/visually-impaired tags (`tactile_paving`, `kerb`, `traffic_signals:sound`/
+`:vibration`) are a separate, narrower track — pedestrian-path templates only
+(crossings, bus-stops, platforms, subway-entrances; see Worked examples). Don't add
+them to a POI template just because `wheelchair` applies there.
 
 ### Picking demonstrators
 
@@ -136,11 +131,9 @@ active/featured set bounded.
   everywhere, single-valued) and the `train`/`subway`/`light_rail` boolean siblings (mode
   is already in `station=`); excluded `ref`/`name` (unique codes/labels, not categories).
 - **kindergarten / childcare / music-school / language-school / research-institute** —
-  `wheelchair` shortlisted per the transversal rule (all are enterable buildings) but
-  dropped for all five: 0-31% coverage across demonstrator cities, mostly single digits,
-  several on samples under 20 features. Same "regionally near-zero" bar that already
-  dropped `preschool` on kindergarten (17.7% max). The rule says shortlist it — it
-  doesn't say keep it.
+  `wheelchair` added to all five despite low coverage (0-31% across demonstrator
+  cities, several samples under 20 features): it's an equity-essential key per the
+  wiki, so the near-absent rule doesn't apply — the Missing share is itself useful.
 - **tram-stops — rejected.** `railway=tram_stop` marks the trackside point; amenities
   live on the separate `public_transport=platform` node, so the queried node has nothing
   to filter. Check the interesting tags sit on the queried element, not a sibling.
