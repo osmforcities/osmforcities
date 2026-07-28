@@ -287,7 +287,7 @@ filterableTags:
   ev-charging:     [capacity, operator, access, fee]
   crossings:       [crossing, crossing:markings, tactile_paving]
   railway-stations: [station, wheelchair, operator, network]
-  transit-platforms: [tactile_paving, wheelchair, shelter, bench, lit, covered]
+  transit-platforms: [tactile_paving, wheelchair, shelter, bench, lit]
   subway-entrances: [wheelchair]
   taxi-ranks:       [capacity, operator, wheelchair]
   ferry-terminals:  [operator, network, wheelchair]

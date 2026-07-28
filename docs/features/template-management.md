@@ -64,7 +64,7 @@ it exists as a single colorable key, and it is not the same value on every featu
 **Low or regional coverage is never on its own a reason to drop a wiki-endorsed key** — the
 legend renders Missing, and the handful of features that do carry it are exactly the
 deviations and gaps OSM for Cities exists to surface (a taxi rank's `capacity` mapped in
-one city; a platform's `covered` on a few stations). Drop a key only for a *structural*
+one German city; a ferry `network` present in only a couple of cities). Drop a key only for a *structural*
 reason: not wiki-relevant, a unique code/label (`ref`, `name`), truly single-valued
 everywhere (`public_transport=platform` co-tagged on every stop; `network`/`operator` =
 one authority per city), fragmented across many keys with no single key to color by (EV
@@ -114,8 +114,9 @@ active/featured set bounded.
 ## Worked examples
 
 - **bus-stops** — tags sit on the node, so `shelter`/`bench`/`lit`/`tactile_paving` are
-  well-covered binaries. Dropped `covered` — a platform-roof tag, not a standard
-  `highway=bus_stop` key (it belongs on `transit-platforms`); added `operator`.
+  well-covered binaries. Dropped `covered` — for a stop the dedicated-shelter question is
+  `shelter`; `covered` is a structural roofing key (its wiki home is rain-protected
+  `bicycle-parking`), so it is redundant here. Added `operator`.
 - **bicycle-rental** — `[bicycle_rental, operator, network, capacity]`. Skewed (one
   system per city) but kept: the outliers are worth surfacing.
 - **ev-charging** — `[capacity, operator, access, fee]`: the wiki's usability-critical
@@ -130,15 +131,18 @@ active/featured set bounded.
   accessibility tags sit on the station node itself. Dropped `public_transport` (=station
   everywhere, single-valued) and the `train`/`subway`/`light_rail` boolean siblings (mode
   is already in `station=`); excluded `ref`/`name` (unique codes/labels, not categories).
-- **transit-platforms** — `[tactile_paving, wheelchair, shelter, bench, lit, covered]`, the
-  wiki's platform accessibility/comfort tags. Multimodal (`public_transport=platform` covers
-  bus, tram, train, subway) and multi-geometry (nodes/ways/areas), so it is the network-wide
+- **transit-platforms** — `[tactile_paving, wheelchair, shelter, bench, lit]`, the wiki's
+  platform accessibility/comfort tags. Multimodal (`public_transport=platform` covers bus,
+  tram, train, subway) and multi-geometry (nodes/ways/areas), so it is the network-wide
   accessibility lens the trackside `tram-stops` node can't be. `tactile_paving` splits ~50/50
-  in Munich; `wheelchair` is a yes/limited/no ternary; `covered` is sparse (~1-4%) but a real
-  yes/no/roof split and wiki-relevant, so it stays. Dropped `operator`/`network` (MVV = one
-  authority per city, single-valued). Child of `public-transit`; the parent query was widened
-  to include `public_transport=platform` so the umbrella covers every interface and the child
-  stays a strict subset.
+  in Munich; `wheelchair` is a yes/limited/no ternary. Dropped `covered` — for a stop the
+  weather-protection question is `shelter` (already listed); `covered` is a structural roofing
+  key the wiki reserves for things *under* a roof (its real home is `bicycle-parking`). Also
+  dropped `operator`/`network` (MVV = one authority per city, single-valued) and platform
+  *mode* (bus/tram/train/subway live in separate boolean keys — no single key to color a
+  "type" view). Child of `public-transit`; the parent query was widened to include
+  `public_transport=platform` so the umbrella covers every interface and the child stays a
+  strict subset.
 - **subway-entrances** — `[wheelchair]`. A single key, but `railway=subway_entrance` carries
   wheelchair on ~99% of entrances in Munich / ~83% in Barcelona, well split no/yes/limited —
   the clearest accessibility lens for a metro network. `ref`/`name` excluded (unique codes).
