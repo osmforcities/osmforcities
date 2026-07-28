@@ -111,6 +111,7 @@ templates:
   - ["pubs","amenity=pub","food","Beer"]
   - ["ice-cream","amenity=ice_cream","food","IceCreamCone"]
   - ["food-court","amenity=food_court","food","ChefHat"]
+  - ["food-vending","amenity=vending_machine&vending=food;amenity=vending_machine&vending=drinks;amenity=vending_machine&vending=coffee;amenity=vending_machine&vending=water;amenity=vending_machine&vending=milk;amenity=vending_machine&vending=ice_cream;amenity=vending_machine&vending=bread;amenity=vending_machine&vending=sweets;amenity=vending_machine&vending=pizza","food","CupSoda"]
 # Leisure
   - ["parks","leisure=park","leisure","TreePine"]
   - ["playgrounds","leisure=playground","leisure","ToyBrick"]
@@ -295,6 +296,7 @@ filterableTags:
   bars:             [wheelchair, outdoor_seating, smoking]
   pubs:             [wheelchair, outdoor_seating, smoking, internet_access]
   ice-cream:        [wheelchair, outdoor_seating, takeaway]
+  food-vending:     [vending, operator, brand]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -349,6 +351,9 @@ demonstrators:
     - { area: 71525,   note: "Paris, FR - wheelchair/outdoor_seating/takeaway all present despite small dataset" }
     - { area: 451516,  note: "Wroclaw, PL - consistent wheelchair/outdoor_seating/takeaway signal" }
     - { area: 1376330, note: "Mexico City, MX - Latin American representative, outdoor_seating stands out" }
+  food-vending:
+    - { area: 19631009, note: "Tokyo 23 Wards, JP - 6.4k machines, full vending-type diversity (drinks/coffee/food/ice_cream/milk/sweets/water)" }
+    - { area: 71525,     note: "Paris, FR - smaller set but richest operator (78%) and brand (69%) tagging" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:

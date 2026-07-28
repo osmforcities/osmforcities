@@ -689,7 +689,9 @@
     "delivery": "Delivery",
     "diet:vegetarian": "Vegetarian options",
     "internet_access": "Internet access",
-    "smoking": "Smoking"
+    "smoking": "Smoking",
+    "vending": "Type",
+    "brand": "Brand"
   },
   "TagValue": {
     "__common__": {

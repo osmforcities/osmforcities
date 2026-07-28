@@ -698,7 +698,9 @@
     "delivery": "Entrega a domicilio",
     "diet:vegetarian": "Opciones vegetarianas",
     "internet_access": "Acceso a internet",
-    "smoking": "Se permite fumar"
+    "smoking": "Se permite fumar",
+    "vending": "Tipo",
+    "brand": "Marca"
   },
   "TagValue": {
     "__common__": {

@@ -145,6 +145,20 @@ active/featured set bounded.
   cities but on raw samples of 3-7 features — too small to trust as a legend. No
   filterableTags added (age view only); no demonstrators picked, since no city shows the
   template distinctly well. Revisit if OSM coverage of food courts grows.
+- **food-vending** — `[vending, operator, brand]`. `vending` is baked into the query
+  itself (100% coverage everywhere) and is the payoff key: in Tokyo it splits 6.4k
+  machines into drinks (6,244) vs coffee/food/ice_cream/milk/sweets/water (3-63 each) —
+  a heavily skewed but genuinely useful "Type" view, same pattern as `bicycle-rental`'s
+  `operator`. `operator`/`brand` are regional (9-78% / 5-69% across Tokyo/Paris/Wrocław)
+  but real in at least one strong city each. Dropped `wheelchair` (0-2% everywhere; also a
+  poor conceptual fit — accessibility isn't a meaningful attribute for a vending machine).
+- **canteens — rejected.** `amenity=canteen` returned zero features in 5 of 6 test cities
+  (Paris, Wrocław, Barcelona, Mexico City, Tokyo); only Munich had any data (16 features).
+  Even there, `access` (the key that would carry a students-vs-employees food-security
+  signal) only showed `private`/Missing — no city demonstrated the school-canteen use
+  case the tag is meant to capture. Empty in most cities fails the propose bar outright;
+  not added. Revisit if OSM coverage grows, or if a country-specific school-meal tagging
+  convention turns up (e.g. Brazil's merenda escolar, mapped some other way).
 
 ## Validation the sync enforces
 

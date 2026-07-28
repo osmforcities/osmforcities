@@ -29,6 +29,7 @@ import {
   Croissant,
   Cross,
   Crosshair,
+  CupSoda,
   Cylinder,
   Dog,
   DollarSign,
@@ -139,7 +140,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-28T15:16:12.496Z
+ * Generated: 2026-07-28T15:50:12.921Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -365,6 +366,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Dumbbell className="w-5 h-5" />;
     case "food-court":
       return <ChefHat className="w-5 h-5" />;
+    case "food-vending":
+      return <CupSoda className="w-5 h-5" />;
     case "football":
       return <Volleyball className="w-5 h-5" />;
     case "footways":

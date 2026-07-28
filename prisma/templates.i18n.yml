@@ -792,6 +792,15 @@ templates:
       en: Food Courts
       pt: Praças de alimentação
       es: Patios de comidas
+  food-vending:
+    name:
+      en: Food & Drink Vending
+      pt: Vending machines de alimentos
+      es: Máquinas expendedoras de alimentos
+    desc:
+      en: Food & Drink Vending
+      pt: Vending machines de alimentos
+      es: Máquinas expendedoras de alimentos
   parks:
     name:
       en: Parks
