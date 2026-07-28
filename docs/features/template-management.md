@@ -150,15 +150,38 @@ active/featured set bounded.
   never exceeded 14% — a reminder that Overpass-only frontloading needs a dashboard
   spot-check before it's trusted, not just a wiki cross-reference. Dropped `capacity`
   (numeric, Barcelona-only outlier).
-- **waste-disposal, telephones, internet-access — screen-and-skip.** All three have
-  real feature counts (waste-disposal 190-479, telephones 34-335, though
-  internet-access is 0-4 everywhere and its own wiki page flags `amenity=internet` as
-  a documented tagging mistake — usage is normally `internet_access=*` as an attribute
-  on cafes/libraries, not a standalone node). Every wiki-relevant key on all three is
-  either near-flat (telephones' `operator` is 197/198 one value in Rio; waste-disposal's
-  `access` is 97% "private" in Munich) or below a "meaningful share" floor (waste-
-  disposal's `waste` key tops out at 26%). Age-view only; a valid, confirmed outcome
-  per the epic's screen-and-skip rule, not a gap to fill later.
+- **waste-disposal, telephones — screen-and-skip.** Both have real feature counts
+  (waste-disposal 190-479, telephones 34-335) but every wiki-relevant key is either
+  near-flat (telephones' `operator` is 197/198 one value in Rio; waste-disposal's
+  `access` is 97% "private" in Munich) or below a "meaningful share" floor
+  (waste-disposal's `waste` key tops out at 26%). Age-view only; a valid, confirmed
+  outcome per the epic's screen-and-skip rule, not a gap to fill later.
+- **internet-access — rejected, removed from `templates.yml`.** 0-4 features
+  everywhere checked (Paris: 1 feature, 3 years stale). The tag's own OSM wiki page
+  flags `amenity=internet` as a documented tagging mistake — real internet access is
+  tagged as an attribute (`internet_access=wlan`) on cafes/libraries, not a standalone
+  node. Unlike screen-and-skip (real dataset, no color-by), this selector itself
+  doesn't map anything real; removed rather than kept as an empty age-view template.
+- **waste-basket — added, screen-and-skip.** `amenity=waste_basket` is 1.2M+ features
+  globally (taginfo) and was completely absent from `templates.yml` despite being
+  near-universal street furniture — the clearest "add" gap found in this domain.
+  But real coverage is thin everywhere checked (Munich 7.3k features, `waste` key at
+  33%; Paris 5.9k features, `waste` at 18%; Rennes `waste` at 15%): high volume,
+  low tag richness. No filterableTags; seeded for volume/coverage stats, not a
+  color-by legend. A useful contrast to internet-access: huge dataset, thin tags,
+  still worth adding — the Propose bar is about the *feature* mattering, not every
+  candidate key panning out.
+- **bottle-return — added, single-demonstrator.** `amenity=vending_machine` +
+  `vending=bottle_return` (reverse vending / deposit-return machines). Checked 15
+  cities including NYC (16 features, all bare — no operator, nothing to filter) and
+  10 more European/American cities (0-6 features each, mostly bare or empty:
+  Paris/Rio/Montreal/LA/Taipei/Oslo/Copenhagen all 0). Only **Berlin** (15 features)
+  showed real tag richness: `operator` names five different supermarket chains
+  (Netto, Kaufland, Rewe, Lidl, Studierendenwerk). `filterableTags: [operator]`,
+  demonstrators limited to Berlin alone — this is thinner than every other kept
+  template in this batch, closer to `ferry-terminals` (sparse, operator-only) than
+  to a normal 3-5-demonstrator pick. Worth revisiting if OSM coverage of deposit
+  machines improves; don't widen the demonstrator list without re-checking coverage.
 
 ## Validation the sync enforces
 

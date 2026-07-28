@@ -83,7 +83,8 @@ templates:
   - ["waste-disposal","amenity=waste_disposal","services","Trash2"]
   - ["benches","amenity=bench","services","RockingChair"]
   - ["telephones","amenity=telephone","services","Phone"]
-  - ["internet-access","amenity=internet_access","services","Wifi"]
+  - ["waste-basket","amenity=waste_basket","services","Trash"]
+  - ["bottle-return","amenity=vending_machine&vending=bottle_return","services","Undo2"]
 # Shops
   - ["supermarkets","shop=supermarket","shops","ShoppingCart"]
   - ["bakeries","shop=bakery","shops","Croissant"]
@@ -294,6 +295,7 @@ filterableTags:
   post-offices:    [operator, brand, wheelchair]
   parcel-lockers:  [brand, operator]
   recycling:       [recycling_type, operator]
+  bottle-return:   [operator]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -349,6 +351,8 @@ demonstrators:
     - { area: 62428,   note: "Munich, DE - 1.2k features, recycling_type near-universal" }
     - { area: 54517,   note: "Rennes, FR - operator coverage clearest here" }
     - { area: 347950,  note: "Barcelona, ES - 4.3k features, largest volume" }
+  bottle-return:
+    - { area: 62422,   note: "Berlin, DE - only city checked (of 15) with real operator diversity: Netto, Kaufland, Rewe, Lidl" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:

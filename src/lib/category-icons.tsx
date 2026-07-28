@@ -113,6 +113,7 @@ import {
   Train,
   TrainFront,
   TramFront,
+  Trash,
   Trash2,
   TreeDeciduous,
   TreePalm,
@@ -121,6 +122,7 @@ import {
   TriangleAlert,
   Trophy,
   Tv,
+  Undo2,
   Users,
   Utensils,
   UtensilsCrossed,
@@ -129,7 +131,6 @@ import {
   Waves,
   Waypoints,
   Wheat,
-  Wifi,
   Wrench,
   Zap
 } from "lucide-react";
@@ -138,7 +139,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-15T16:48:47.042Z
+ * Generated: 2026-07-28T16:08:21.995Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -262,6 +263,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Bike className="w-5 h-5" />;
     case "bicycle-shop":
       return <Bike className="w-5 h-5" />;
+    case "bottle-return":
+      return <Undo2 className="w-5 h-5" />;
     case "bridges":
       return <Waypoints className="w-5 h-5" />;
     case "bunker-silos":
@@ -428,8 +431,6 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Snowflake className="w-5 h-5" />;
     case "information-boards":
       return <Info className="w-5 h-5" />;
-    case "internet-access":
-      return <Wifi className="w-5 h-5" />;
     case "irrigated-green":
       return <Droplet className="w-5 h-5" />;
     case "jewelry":
@@ -632,6 +633,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Binoculars className="w-5 h-5" />;
     case "walls":
       return <BrickWall className="w-5 h-5" />;
+    case "waste-basket":
+      return <Trash className="w-5 h-5" />;
     case "waste-disposal":
       return <Trash2 className="w-5 h-5" />;
     case "wastewater-plant":

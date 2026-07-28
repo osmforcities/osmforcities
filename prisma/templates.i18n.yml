@@ -540,6 +540,24 @@ templates:
       en: Waste Disposal
       pt: Descarte de resíduos
       es: Eliminación de residuos
+  waste-basket:
+    name:
+      en: Waste Baskets
+      pt: Lixeiras
+      es: Papeleras
+    desc:
+      en: Waste Baskets
+      pt: Lixeiras
+      es: Papeleras
+  bottle-return:
+    name:
+      en: Bottle Return Machines
+      pt: Máquinas de retorno de garrafas
+      es: Máquinas de retorno de botellas
+    desc:
+      en: Bottle Return Machines
+      pt: Máquinas de retorno de garrafas
+      es: Máquinas de retorno de botellas
   benches:
     name:
       en: Benches
