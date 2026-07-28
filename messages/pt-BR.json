@@ -692,7 +692,8 @@
     "station": "Tipo de estação",
     "wheelchair": "Acesso para cadeirantes",
     "parking": "Tipo",
-    "surface": "Superfície"
+    "surface": "Superfície",
+    "traffic_signals:sound": "Sinal sonoro"
   },
   "TagValue": {
     "__common__": {
@@ -752,6 +753,10 @@
       "ground": "Terra",
       "dirt": "Terra batida",
       "grass": "Grama"
+    },
+    "traffic_signals:sound": {
+      "locate": "Apenas localização",
+      "walk": "Apenas travessia"
     }
   }
 }

@@ -683,7 +683,8 @@
     "station": "Station type",
     "wheelchair": "Wheelchair access",
     "parking": "Type",
-    "surface": "Surface"
+    "surface": "Surface",
+    "traffic_signals:sound": "Acoustic signal"
   },
   "TagValue": {
     "__common__": {
@@ -743,6 +744,10 @@
       "ground": "Ground",
       "dirt": "Dirt",
       "grass": "Grass"
+    },
+    "traffic_signals:sound": {
+      "locate": "Locate only",
+      "walk": "Walk only"
     }
   }
 }

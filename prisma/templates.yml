@@ -281,11 +281,11 @@ templates:
 # Add tag-key labels to messages/*.json (TagLabel) and controlled values (TagValue).
 # Tuning process (widen/reduce from the dashboard): docs/features/template-management.md.
 filterableTags:
-  bus-stops:       [shelter, bench, lit, tactile_paving, operator]
+  bus-stops:       [shelter, bench, lit, tactile_paving, wheelchair, operator]
   bicycle-parking: [bicycle_parking, covered, capacity, access, fee]
   bicycle-rental:  [bicycle_rental, operator, network, capacity]
   ev-charging:     [capacity, operator, access, fee]
-  crossings:       [crossing, crossing:markings, tactile_paving]
+  crossings:       [crossing, crossing:markings, tactile_paving, traffic_signals:sound]
   railway-stations: [station, wheelchair, operator, network]
   transit-platforms: [tactile_paving, wheelchair, shelter, bench, lit]
   subway-entrances: [wheelchair]

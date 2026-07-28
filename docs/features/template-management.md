@@ -116,17 +116,21 @@ active/featured set bounded.
 - **bus-stops** — tags sit on the node, so `shelter`/`bench`/`lit`/`tactile_paving` are
   well-covered binaries. Dropped `covered` — for a stop the dedicated-shelter question is
   `shelter`; `covered` is a structural roofing key (its wiki home is rain-protected
-  `bicycle-parking`), so it is redundant here. Added `operator`.
+  `bicycle-parking`), so it is redundant here. Added `operator` and `wheelchair` (boarding
+  accessibility — yes/limited/no, ~51% Munich / ~83% Rennes).
 - **bicycle-rental** — `[bicycle_rental, operator, network, capacity]`. Skewed (one
   system per city) but kept: the outliers are worth surfacing.
 - **ev-charging** — `[capacity, operator, access, fee]`: the wiki's usability-critical
   keys that each exist as one colorable key. Dropped `network` (wiki doesn't emphasize
   it; ~0% outside Germany). Excluded connectors though the wiki calls them essential —
   OSM fragments them across count-valued `socket:*` keys, so no single key colors "type".
-- **crossings** — `[crossing, crossing:markings, tactile_paving]`. Both `crossing`
-  (classic) and `crossing:markings` (newer split) are kept — communities favor one or the
-  other, so coverage is regional. Dropped `kerb` (6-15% in most cities; it belongs on the
-  separate sidewalk `barrier=kerb` node, not the crossing — same sibling-node trap).
+- **crossings** — `[crossing, crossing:markings, tactile_paving, traffic_signals:sound]`.
+  Both `crossing` (classic) and `crossing:markings` (newer split) are kept — communities
+  favor one or the other, so coverage is regional. `traffic_signals:sound` is the acoustic
+  visually-impaired signal (yes/no/locate/walk) — ~26% of all crossings but ~94% of the
+  signalized subset, well varied; its tactile companion `traffic_signals:vibration` is an
+  available add. Dropped `kerb` (6-15% in most cities; it belongs on the separate sidewalk
+  `barrier=kerb` node, not the crossing — same sibling-node trap).
 - **railway-stations** — `[station, wheelchair, operator, network]`; the mode and
   accessibility tags sit on the station node itself. Dropped `public_transport` (=station
   everywhere, single-valued) and the `train`/`subway`/`light_rail` boolean siblings (mode
