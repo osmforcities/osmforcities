@@ -193,6 +193,10 @@ active/featured set bounded.
   the passenger amenities live on the separate `public_transport=platform` node (now its own
   `transit-platforms` template), so the queried tram_stop node has nothing to filter — kept as
   an age-view-only dataset. Check the interesting tags sit on the queried element, not a sibling.
+- **kindergarten / childcare / music-school / language-school / research-institute** —
+  `wheelchair` added to all five despite low coverage (0-31% across demonstrator
+  cities, several samples under 20 features): it's an equity-essential key per the
+  wiki, so the near-absent rule doesn't apply — the Missing share is itself useful.
 
 ### Linear-network templates (ways)
 

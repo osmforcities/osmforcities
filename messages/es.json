@@ -690,7 +690,7 @@
     "crossing": "Cruce",
     "crossing:markings": "Marcas viales",
     "station": "Tipo de estación",
-    "wheelchair": "Acceso silla de ruedas",
+    "wheelchair": "Acceso para silla de ruedas",
     "parking": "Tipo",
     "surface": "Superficie",
     "traffic_signals:sound": "Señal acústica",
@@ -702,7 +702,10 @@
     "electrified": "Electrificación",
     "usage": "Uso",
     "service": "Vía de servicio",
-    "traffic_calming": "Tipo"
+    "traffic_calming": "Tipo",
+    "operator:type": "Tipo de operador",
+    "isced:level": "Nivel educativo",
+    "internet_access": "Acceso a internet"
   },
   "TagValue": {
     "__common__": {
@@ -820,6 +823,19 @@
       "chicane": "Chicana",
       "choker": "Estrechamiento",
       "rumble_strip": "Banda sonora"
+    },
+    "operator:type": {
+      "public": "Público",
+      "private": "Privado",
+      "government": "Gobierno",
+      "religious": "Religioso",
+      "ngo": "ONG",
+      "community": "Comunidad",
+      "university": "Universidad"
+    },
+    "internet_access": {
+      "wlan": "Wi-Fi",
+      "terminal": "Terminal"
     }
   }
 }

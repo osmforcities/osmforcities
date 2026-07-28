@@ -693,7 +693,10 @@
     "electrified": "Electrification",
     "usage": "Usage",
     "service": "Service track",
-    "traffic_calming": "Type"
+    "traffic_calming": "Type",
+    "operator:type": "Operator type",
+    "isced:level": "Education level",
+    "internet_access": "Internet access"
   },
   "TagValue": {
     "__common__": {
@@ -811,6 +814,19 @@
       "chicane": "Chicane",
       "choker": "Choker",
       "rumble_strip": "Rumble strip"
+    },
+    "operator:type": {
+      "public": "Public",
+      "private": "Private",
+      "government": "Government",
+      "religious": "Religious",
+      "ngo": "NGO",
+      "community": "Community",
+      "university": "University"
+    },
+    "internet_access": {
+      "wlan": "Wi-Fi",
+      "terminal": "Terminal"
     }
   }
 }
