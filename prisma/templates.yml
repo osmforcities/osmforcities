@@ -295,7 +295,7 @@ filterableTags:
   railway-stations: [station, wheelchair, operator, network]
   hotels:           [stars, wheelchair, internet_access]
   attractions:      [wheelchair]
-  campsites:        [shower, power_supply]
+  campsites:        [shower, power_supply, wheelchair]
   hotel-guesthouse: [wheelchair, internet_access]
   alpine-huts:      [operator, capacity]
   chalets:          [operator, internet_access]
@@ -349,7 +349,7 @@ demonstrators:
     - { area: 347950,  note: "Barcelona, ES - highest wheelchair coverage observed" }
   campsites:
     - { area: 435514,  note: "Prague, CZ - largest in-city sample, shower/power_supply both present" }
-    - { area: 62428,   note: "Munich, DE - small sample but confirms the same signal outside CZ" }
+    - { area: 62428,   note: "Munich, DE - small sample but confirms the same signal outside CZ; wheelchair shows a real Yes/Limited split, not flat" }
   hotel-guesthouse:
     - { area: 435514,  note: "Prague, CZ - strong internet_access tagging (wlan), real wheelchair split" }
     - { area: 347950,  note: "Barcelona, ES - three-way wheelchair split (yes/limited/no)" }
