@@ -690,7 +690,7 @@
     "crossing": "Cruce",
     "crossing:markings": "Marcas viales",
     "station": "Tipo de estación",
-    "wheelchair": "Acceso silla de ruedas",
+    "wheelchair": "Acceso para silla de ruedas",
     "cuisine": "Cocina",
     "outdoor_seating": "Terraza",
     "indoor_seating": "Asientos interiores",
@@ -702,7 +702,9 @@
     "vending": "Tipo",
     "brand": "Marca",
     "real_ale": "Cerveza real (real ale)",
-    "food": "Sirve comida"
+    "food": "Sirve comida",
+    "operator:type": "Tipo de operador",
+    "isced:level": "Nivel educativo"
   },
   "TagValue": {
     "__common__": {
@@ -736,6 +738,19 @@
       "handlebar_holder": "Soporte de manillar",
       "crossbar": "Barra",
       "informal": "Informal"
+    },
+    "operator:type": {
+      "public": "Público",
+      "private": "Privado",
+      "government": "Gobierno",
+      "religious": "Religioso",
+      "ngo": "ONG",
+      "community": "Comunidad",
+      "university": "Universidad"
+    },
+    "internet_access": {
+      "wlan": "Wi-Fi",
+      "terminal": "Terminal"
     }
   }
 }
