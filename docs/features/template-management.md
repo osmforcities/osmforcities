@@ -182,6 +182,42 @@ active/featured set bounded.
   template in this batch, closer to `ferry-terminals` (sparse, operator-only) than
   to a normal 3-5-demonstrator pick. Worth revisiting if OSM coverage of deposit
   machines improves; don't widen the demonstrator list without re-checking coverage.
+- **shower — added, screen-and-skip.** `amenity=shower` is 36k features globally. Real
+  and legitimate (Paris's historic "bains-douches" municipal bathhouses, Barcelona's
+  beach showers — 56 features) but every wiki key is flat where it has volume:
+  Barcelona `access` is 90% "yes", `fee` is 100% "no". Small-N cities (Paris 17,
+  Munich 12) don't have enough features to trust a percentage either way. Added for
+  coverage/volume, no color-by.
+- **public-bookcase — added.** `[public_bookcase:type]`. Coverage is regional
+  (Munich 60%, Paris 19%, Berlin 60%) but the value itself is genuinely categorical
+  and distinct per city: Munich favors `metal_cabinet`, Berlin favors `phone_box`
+  (repurposed telephone booths). Dropped `operator` — in practice these are
+  near-unique community-group names (one operator per bookcase), the same
+  "unique code, not a category" trap as `ref`/`name`.
+- **luggage-lockers — added.** `[fee, operator]`. Thin globally (1.6k features on
+  taginfo) but concentrated at major train hubs: Paris 26, Berlin 22, Munich 15
+  (Hauptbahnhof cluster), each with real `fee` (58-87%, skewed but real — a locker
+  that's suddenly free is worth surfacing) and `operator` (13-42%, named companies:
+  ZeitLager, etc.) coverage. Dropped `indoor` — present but every value is a
+  variant of "yes" (`yes`/`room`), not a real binary split.
+- **Public-category consolidation.** `fountains` → `amenities` with
+  `[drinking_water]` (15-23% coverage, real no/yes/unknown split — tells you if
+  the fountain is potable, not just decorative). `clocks` → `services` with
+  `[display, support, visibility]` (all 27-48% coverage across Munich/Paris, real
+  diversity: analog/digital/sundial; wall/pole/roof/street_lamp/…; area/street/house).
+  `guideposts` (`tourism=guidepost`) and `markers`
+  (`tourism=information;tourism=guidepost`) **removed** — `guideposts` returned 0
+  features in every city checked; real-world guideposts are tagged
+  `tourism=information` + `information=guidepost`, which `markers` was already
+  redundantly re-querying. `information-boards` (`tourism=information`) → `services`,
+  kept as the single template, with the `information` sub-tag promoted to
+  `filterableTags` (`board`/`terminal`/`map`/`guidepost`/`office`/`route_marker`) —
+  97% coverage in Paris (2.1k features), 100% in Munich (1.6k features). The `public`
+  category is now empty and removed from the icon-fallback map. Lesson: a template
+  whose primary selector returns 0 features everywhere isn't a tuning problem, it's
+  evidence the community moved to a different tagging scheme for the same concept —
+  check sibling `tourism=information`/`information=*` style sub-tagging before
+  concluding a feature isn't mapped.
 
 ## Validation the sync enforces
 

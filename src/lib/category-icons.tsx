@@ -10,6 +10,7 @@ import {
   Beer,
   Bike,
   Binoculars,
+  BookOpen,
   BrickWall,
   Building,
   Building2,
@@ -63,6 +64,7 @@ import {
   Leaf,
   LibraryBig,
   Lightbulb,
+  Luggage,
   Mail,
   MapPin,
   Martini,
@@ -89,6 +91,7 @@ import {
   Shirt,
   ShoppingBag,
   ShoppingCart,
+  ShowerHead,
   Shrub,
   Signpost,
   Siren,
@@ -139,7 +142,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-28T16:18:15.785Z
+ * Generated: 2026-07-28T21:47:10.235Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -181,8 +184,6 @@ export function getCategoryIcon(category: string) {
       return <TreePine className="w-5 h-5" />;
     case "nature":
       return <Leaf className="w-5 h-5" />;
-    case "public":
-      return <Info className="w-5 h-5" />;
     case "religion":
       return <Landmark className="w-5 h-5" />;
     case "services":
@@ -401,8 +402,6 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Sprout className="w-5 h-5" />;
     case "greenhouses":
       return <Sprout className="w-5 h-5" />;
-    case "guideposts":
-      return <Signpost className="w-5 h-5" />;
     case "gymnasiums":
       return <Dumbbell className="w-5 h-5" />;
     case "hardware":
@@ -441,14 +440,14 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <LibraryBig className="w-5 h-5" />;
     case "livestock-buildings":
       return <PawPrint className="w-5 h-5" />;
+    case "luggage-lockers":
+      return <Luggage className="w-5 h-5" />;
     case "managed-green":
       return <Leaf className="w-5 h-5" />;
     case "manure-storage":
       return <Package className="w-5 h-5" />;
     case "marinas":
       return <Anchor className="w-5 h-5" />;
-    case "markers":
-      return <MapPin className="w-5 h-5" />;
     case "mast":
       return <RadioTower className="w-5 h-5" />;
     case "meadows":
@@ -511,6 +510,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Egg className="w-5 h-5" />;
     case "prisons":
       return <Fence className="w-5 h-5" />;
+    case "public-bookcase":
+      return <BookOpen className="w-5 h-5" />;
     case "public-toilets":
       return <Toilet className="w-5 h-5" />;
     case "public-transit":
@@ -547,6 +548,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Target className="w-5 h-5" />;
     case "shopping-malls":
       return <ShoppingBag className="w-5 h-5" />;
+    case "shower":
+      return <ShowerHead className="w-5 h-5" />;
     case "shrine":
       return <Landmark className="w-5 h-5" />;
     case "silos":

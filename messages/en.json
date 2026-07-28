@@ -689,13 +689,20 @@
     "man_made": "Fixture type",
     "bottle": "Bottle refill",
     "brand": "Brand",
-    "recycling_type": "Recycling type"
+    "recycling_type": "Recycling type",
+    "public_bookcase:type": "Container type",
+    "information": "Type",
+    "drinking_water": "Drinkable",
+    "display": "Display",
+    "support": "Mounting",
+    "visibility": "Visibility"
   },
   "TagValue": {
     "__common__": {
       "yes": "Yes",
       "no": "No",
-      "limited": "Limited"
+      "limited": "Limited",
+      "unknown": "Unknown"
     },
     "access": {
       "private": "Private",
@@ -703,6 +710,42 @@
       "permissive": "Permissive",
       "designated": "Designated",
       "permit": "By permit"
+    },
+    "public_bookcase:type": {
+      "metal_cabinet": "Metal cabinet",
+      "glass_cabinet": "Glass cabinet",
+      "wooden_cabinet": "Wooden cabinet",
+      "phone_box": "Repurposed phone box",
+      "shelf": "Shelf",
+      "reading_box": "Reading box"
+    },
+    "information": {
+      "board": "Info board",
+      "terminal": "Terminal",
+      "map": "Map",
+      "guidepost": "Guidepost",
+      "office": "Tourist office",
+      "route_marker": "Route marker"
+    },
+    "display": {
+      "analog": "Analog",
+      "digital": "Digital",
+      "sundial": "Sundial"
+    },
+    "support": {
+      "wall": "Wall",
+      "wall_mounted": "Wall-mounted",
+      "pole": "Pole",
+      "roof": "Roof",
+      "ground": "Ground",
+      "pillar": "Pillar",
+      "billboard": "Billboard",
+      "street_lamp": "Street lamp"
+    },
+    "visibility": {
+      "area": "Area",
+      "street": "Street",
+      "house": "House"
     },
     "toilets:disposal": {
       "flush": "Flush",

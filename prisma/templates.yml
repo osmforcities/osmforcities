@@ -29,6 +29,9 @@ templates:
   - ["drinking-water","amenity=drinking_water","amenities","Droplet"]
   - ["post-offices","amenity=post_office","amenities","Mail"]
   - ["parcel-lockers","amenity=parcel_locker","amenities","Package"]
+  - ["shower","amenity=shower","amenities","ShowerHead"]
+  - ["public-bookcase","amenity=public_bookcase","amenities","BookOpen"]
+  - ["luggage-lockers","amenity=luggage_locker","amenities","Luggage"]
 # Healthcare
   - ["hospitals","amenity=hospital","healthcare","Hospital"]
   - ["clinics","amenity=clinic","healthcare","Stethoscope"]
@@ -210,11 +213,13 @@ templates:
   - ["climbing","sport=climbing","sports","Mountain"]
   - ["equestrian","sport=equestrian","sports","PawPrint"]
 # Public facilities
-  - ["fountains","amenity=fountain","public","Droplets"]
-  - ["clocks","amenity=clock","public","Clock"]
-  - ["guideposts","tourism=guidepost","public","Signpost"]
-  - ["information-boards","tourism=information","public","Info"]
-  - ["markers","tourism=information;tourism=guidepost","public","MapPin"]
+  - ["fountains","amenity=fountain","amenities","Droplets"]
+  - ["clocks","amenity=clock","services","Clock"]
+  # Consolidated: tourism=information covers guideposts/boards/maps/route markers via
+  # the information= sub-tag (color-by). Replaces the former guideposts + markers
+  # templates, which were dead/redundant (guideposts alone returns 0 features in most
+  # cities - real guidepost data lives under tourism=information&information=guidepost).
+  - ["information-boards","tourism=information","services","Info"]
 # Religion
   - ["places-of-worship","amenity=place_of_worship","religion","Landmark"]
   - ["church","religion=christian","religion","Church"]
@@ -296,6 +301,11 @@ filterableTags:
   parcel-lockers:  [brand, operator]
   recycling:       [recycling_type, operator]
   bottle-return:   [operator]
+  public-bookcase: [public_bookcase:type]
+  luggage-lockers:  [fee, operator]
+  fountains:       [drinking_water]
+  clocks:          [display, support, visibility]
+  information-boards: [information]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -353,6 +363,23 @@ demonstrators:
     - { area: 347950,  note: "Barcelona, ES - 4.3k features, largest volume" }
   bottle-return:
     - { area: 62422,   note: "Berlin, DE - only city checked (of 15) with real operator diversity: Netto, Kaufland, Rewe, Lidl" }
+  public-bookcase:
+    - { area: 62428,   note: "Munich, DE - 81 features, 60% type coverage, metal_cabinet dominant" }
+    - { area: 71525,   note: "Paris, FR - 174 features, largest volume" }
+    - { area: 62422,   note: "Berlin, DE - 123 features, 60% type coverage, phone_box dominant (repurposed booths)" }
+  luggage-lockers:
+    - { area: 71525,   note: "Paris, FR - 26 features, best fee/operator coverage" }
+    - { area: 62422,   note: "Berlin, DE - 22 features, strong indoor/fee tagging" }
+    - { area: 62428,   note: "Munich, DE - 15 features, Hauptbahnhof cluster" }
+  fountains:
+    - { area: 62428,   note: "Munich, DE - 571 features, largest volume, clean drinking_water split" }
+    - { area: 71525,   note: "Paris, FR - 305 features, real no/yes drinking_water split" }
+  clocks:
+    - { area: 62428,   note: "Munich, DE - 100 features, display/support/visibility all present" }
+    - { area: 71525,   note: "Paris, FR - 392 features, largest volume, rich support diversity" }
+  information-boards:
+    - { area: 71525,   note: "Paris, FR - 2.1k features, near-universal information sub-tag (board/terminal/map/guidepost)" }
+    - { area: 62428,   note: "Munich, DE - 1.6k features, strong guidepost/board/map split" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:
@@ -378,7 +405,6 @@ categories:
   traffic: TrafficCone
   housing: Building2
   sports: Trophy
-  public: Info
   religion: Landmark
   barriers: Square
   agriculture: Wheat

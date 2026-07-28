@@ -153,6 +153,33 @@ templates:
       en: Parcel Lockers
       pt: Lockers de encomendas
       es: Consignas de paquetes
+  shower:
+    name:
+      en: Showers
+      pt: Chuveiros públicos
+      es: Duchas públicas
+    desc:
+      en: Showers
+      pt: Chuveiros públicos
+      es: Duchas públicas
+  public-bookcase:
+    name:
+      en: Public Bookcases
+      pt: Estantes públicas de livros
+      es: Estanterías públicas de libros
+    desc:
+      en: Public Bookcases
+      pt: Estantes públicas de livros
+      es: Estanterías públicas de libros
+  luggage-lockers:
+    name:
+      en: Luggage Lockers
+      pt: Guarda-volumes
+      es: Consignas de equipaje
+    desc:
+      en: Luggage Lockers
+      pt: Guarda-volumes
+      es: Consignas de equipaje
   hospitals:
     name:
       en: Hospitals
@@ -1593,33 +1620,15 @@ templates:
       en: Clocks
       pt: Relógios públicos
       es: Relojes públicos
-  guideposts:
-    name:
-      en: Guideposts
-      pt: Marcos de trilha
-      es: Hitos de senderismo
-    desc:
-      en: Guideposts
-      pt: Marcos de trilha
-      es: Hitos de senderismo
   information-boards:
     name:
-      en: Information Boards
-      pt: Painéis informativos
-      es: Paneles informativos
+      en: Wayfinding & Information
+      pt: Sinalização e informação
+      es: Señalización e información
     desc:
-      en: Information Boards
-      pt: Painéis informativos
-      es: Paneles informativos
-  markers:
-    name:
-      en: Markers
-      pt: Marcadores e painéis
-      es: Marcadores y paneles
-    desc:
-      en: Markers
-      pt: Marcadores e painéis
-      es: Marcadores y paneles
+      en: Wayfinding & Information
+      pt: Sinalização e informação
+      es: Señalización e información
   places-of-worship:
     name:
       en: Places Of Worship

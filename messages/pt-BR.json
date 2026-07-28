@@ -698,13 +698,20 @@
     "man_made": "Tipo de estrutura",
     "bottle": "Reabastecer garrafa",
     "brand": "Marca",
-    "recycling_type": "Tipo de reciclagem"
+    "recycling_type": "Tipo de reciclagem",
+    "public_bookcase:type": "Tipo de móvel",
+    "information": "Tipo",
+    "drinking_water": "Potável",
+    "display": "Mostrador",
+    "support": "Fixação",
+    "visibility": "Visibilidade"
   },
   "TagValue": {
     "__common__": {
       "yes": "Sim",
       "no": "Não",
-      "limited": "Limitado"
+      "limited": "Limitado",
+      "unknown": "Desconhecido"
     },
     "access": {
       "private": "Privado",
@@ -712,6 +719,42 @@
       "permissive": "Permissivo",
       "designated": "Designado",
       "permit": "Com permissão"
+    },
+    "public_bookcase:type": {
+      "metal_cabinet": "Armário metálico",
+      "glass_cabinet": "Armário de vidro",
+      "wooden_cabinet": "Armário de madeira",
+      "phone_box": "Cabine telefônica reaproveitada",
+      "shelf": "Prateleira",
+      "reading_box": "Caixa de leitura"
+    },
+    "information": {
+      "board": "Painel informativo",
+      "terminal": "Terminal",
+      "map": "Mapa",
+      "guidepost": "Marco de trilha",
+      "office": "Posto de turismo",
+      "route_marker": "Marcador de rota"
+    },
+    "display": {
+      "analog": "Analógico",
+      "digital": "Digital",
+      "sundial": "Relógio de sol"
+    },
+    "support": {
+      "wall": "Parede",
+      "wall_mounted": "Fixado na parede",
+      "pole": "Poste",
+      "roof": "Telhado",
+      "ground": "Chão",
+      "pillar": "Pilar",
+      "billboard": "Outdoor",
+      "street_lamp": "Poste de luz"
+    },
+    "visibility": {
+      "area": "Área",
+      "street": "Rua",
+      "house": "Casa"
     },
     "toilets:disposal": {
       "flush": "Descarga",

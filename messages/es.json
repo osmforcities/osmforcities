@@ -698,13 +698,20 @@
     "man_made": "Tipo de instalación",
     "bottle": "Rellenar botella",
     "brand": "Marca",
-    "recycling_type": "Tipo de reciclaje"
+    "recycling_type": "Tipo de reciclaje",
+    "public_bookcase:type": "Tipo de mueble",
+    "information": "Tipo",
+    "drinking_water": "Potable",
+    "display": "Esfera",
+    "support": "Montaje",
+    "visibility": "Visibilidad"
   },
   "TagValue": {
     "__common__": {
       "yes": "Sí",
       "no": "No",
-      "limited": "Limitado"
+      "limited": "Limitado",
+      "unknown": "Desconocido"
     },
     "access": {
       "private": "Privado",
@@ -712,6 +719,42 @@
       "permissive": "Permisivo",
       "designated": "Designado",
       "permit": "Con permiso"
+    },
+    "public_bookcase:type": {
+      "metal_cabinet": "Armario metálico",
+      "glass_cabinet": "Armario de vidrio",
+      "wooden_cabinet": "Armario de madera",
+      "phone_box": "Cabina telefónica reutilizada",
+      "shelf": "Estante",
+      "reading_box": "Caja de lectura"
+    },
+    "information": {
+      "board": "Panel informativo",
+      "terminal": "Terminal",
+      "map": "Mapa",
+      "guidepost": "Hito de senderismo",
+      "office": "Oficina de turismo",
+      "route_marker": "Marcador de ruta"
+    },
+    "display": {
+      "analog": "Analógico",
+      "digital": "Digital",
+      "sundial": "Reloj de sol"
+    },
+    "support": {
+      "wall": "Pared",
+      "wall_mounted": "Montado en pared",
+      "pole": "Poste",
+      "roof": "Tejado",
+      "ground": "Suelo",
+      "pillar": "Pilar",
+      "billboard": "Cartelera",
+      "street_lamp": "Farola"
+    },
+    "visibility": {
+      "area": "Área",
+      "street": "Calle",
+      "house": "Casa"
     },
     "toilets:disposal": {
       "flush": "Cisterna",
