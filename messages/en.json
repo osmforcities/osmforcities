@@ -679,7 +679,9 @@
     "access": "Access",
     "fee": "Fee",
     "crossing": "Crossing",
-    "crossing:markings": "Markings"
+    "crossing:markings": "Markings",
+    "station": "Station type",
+    "wheelchair": "Wheelchair access"
   },
   "TagValue": {
     "__common__": {

@@ -287,6 +287,7 @@ filterableTags:
   bicycle-rental:  [bicycle_rental, operator, network, capacity]
   ev-charging:     [capacity, operator, access, fee]
   crossings:       [crossing, crossing:markings, tactile_paving]
+  railway-stations: [station, wheelchair, operator, network]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -313,6 +314,11 @@ demonstrators:
     - { area: 54517,   note: "Rennes, FR - meticulous accessibility tagging (crossing/markings/tactile all high)" }
     - { area: 62428,   note: "Munich, DE - dense classic crossing + tactile_paving tagging" }
     - { area: 419203,  note: "Utrecht, NL - near-complete crossing:markings, strong tactile_paving" }
+  railway-stations:
+    - { area: 1293250, note: "Taipei, TW - fully tagged metro, every key present and clean" }
+    - { area: 347950,  note: "Barcelona, ES - near-complete operator/network tagging" }
+    - { area: 71525,   note: "Paris, FR - large set, varied networks/operators, strong accessibility" }
+    - { area: 62428,   note: "Munich, DE - good wheelchair coverage, mixed train/subway modes" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:

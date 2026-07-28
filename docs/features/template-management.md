@@ -58,6 +58,11 @@ everywhere (`public_transport=platform`, PTv2-co-tagged on every stop), not
 wiki-relevant, or fragmented across many keys (EV connectors live in count-valued
 `socket:type2`/`socket:type2_combo`/… with no single key to color by).
 
+Coverage never qualifies a key on its own — a well-covered `ref` or `name` is still just
+a unique code, not a filter. Confirm every candidate against the OSM wiki first. If this
+measurement is delegated to a subagent, the subagent must do the wiki cross-check too
+(usability-relevance per key), not report Overpass/dashboard coverage alone.
+
 A *skewed* distribution is fine and valuable: `operator` on `bicycle-rental` is mostly
 one value (a city has one bike-share system), but the stray outliers it surfaces — a
 second operator, a mis-tagged dock — are exactly the deviations OSM for Cities exists to
@@ -104,6 +109,10 @@ active/featured set bounded.
   (classic) and `crossing:markings` (newer split) are kept — communities favor one or the
   other, so coverage is regional. Dropped `kerb` (6-15% in most cities; it belongs on the
   separate sidewalk `barrier=kerb` node, not the crossing — same sibling-node trap).
+- **railway-stations** — `[station, wheelchair, operator, network]`; the mode and
+  accessibility tags sit on the station node itself. Dropped `public_transport` (=station
+  everywhere, single-valued) and the `train`/`subway`/`light_rail` boolean siblings (mode
+  is already in `station=`); excluded `ref`/`name` (unique codes/labels, not categories).
 - **tram-stops — rejected.** `railway=tram_stop` marks the trackside point; amenities
   live on the separate `public_transport=platform` node, so the queried node has nothing
   to filter. Check the interesting tags sit on the queried element, not a sibling.

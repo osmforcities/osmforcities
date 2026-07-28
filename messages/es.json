@@ -688,7 +688,9 @@
     "access": "Acceso",
     "fee": "Tarifa",
     "crossing": "Cruce",
-    "crossing:markings": "Marcas viales"
+    "crossing:markings": "Marcas viales",
+    "station": "Tipo de estación",
+    "wheelchair": "Acceso silla de ruedas"
   },
   "TagValue": {
     "__common__": {

@@ -688,7 +688,9 @@
     "access": "Acesso",
     "fee": "Tarifa",
     "crossing": "Travessia",
-    "crossing:markings": "Faixa de pedestres"
+    "crossing:markings": "Faixa de pedestres",
+    "station": "Tipo de estação",
+    "wheelchair": "Acesso para cadeirantes"
   },
   "TagValue": {
     "__common__": {
