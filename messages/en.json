@@ -706,6 +706,18 @@
       "elliptical_trainer": "Elliptical trainer",
       "exercise_bike": "Exercise bike"
     },
+    "location": {
+      "outdoor": "Outdoor",
+      "indoor": "Indoor",
+      "roof": "Rooftop",
+      "underground": "Underground"
+    },
+    "seasonal": {
+      "winter": "Winter",
+      "spring": "Spring",
+      "summer": "Summer",
+      "autumn": "Autumn"
+    },
     "access": {
       "private": "Private",
       "customers": "Customers",

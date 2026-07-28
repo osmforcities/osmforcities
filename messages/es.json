@@ -715,6 +715,18 @@
       "elliptical_trainer": "Elíptica",
       "exercise_bike": "Bicicleta estática"
     },
+    "location": {
+      "outdoor": "Al aire libre",
+      "indoor": "Cubierta",
+      "roof": "En azotea",
+      "underground": "Subterránea"
+    },
+    "seasonal": {
+      "winter": "Invierno",
+      "spring": "Primavera",
+      "summer": "Verano",
+      "autumn": "Otoño"
+    },
     "access": {
       "private": "Privado",
       "customers": "Clientes",
