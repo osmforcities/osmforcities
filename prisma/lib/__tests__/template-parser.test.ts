@@ -317,7 +317,7 @@ describe("template-parser", () => {
         "operator",
       ]);
       // Uncurated templates have no list (age-only in the legend)
-      expect(byId.get("schools")?.filterableTags).toBeUndefined();
+      expect(byId.get("atms")?.filterableTags).toBeUndefined();
     });
   });
 

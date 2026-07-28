@@ -686,7 +686,9 @@
     "emergency": "Emergency care",
     "healthcare:speciality": "Specialty",
     "dispensing": "Dispensing",
-    "brand": "Brand"
+    "brand": "Brand",
+    "isced:level": "Education level",
+    "internet_access": "Internet access"
   },
   "TagValue": {
     "__common__": {
@@ -731,6 +733,19 @@
       "handlebar_holder": "Handlebar holder",
       "crossbar": "Crossbar",
       "informal": "Informal"
+    },
+    "operator:type": {
+      "public": "Public",
+      "private": "Private",
+      "government": "Government",
+      "religious": "Religious",
+      "ngo": "NGO",
+      "community": "Community",
+      "university": "University"
+    },
+    "internet_access": {
+      "wlan": "Wi-Fi",
+      "terminal": "Terminal"
     }
   }
 }
