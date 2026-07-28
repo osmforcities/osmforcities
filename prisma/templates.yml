@@ -48,6 +48,7 @@ templates:
   - ["counselling-services","healthcare=counselling","healthcare","Ear"]
   - ["speech-therapists","healthcare=speech_therapist","healthcare","MessageCircle"]
   - ["occupational-therapists","healthcare=occupational_therapist","healthcare","HandHelping"]
+  - ["alternative-medicine","healthcare=alternative","healthcare","Leaf"]
 # Education
   - ["schools","amenity=school","education","School"]
   - ["universities","amenity=university","education","GraduationCap"]
@@ -317,6 +318,7 @@ filterableTags:
   counselling-services: [wheelchair, operator]
   speech-therapists: [wheelchair]
   occupational-therapists: [wheelchair]
+  alternative-medicine: [healthcare:speciality, wheelchair]
   optometrists: [wheelchair]
   health-post: [wheelchair]
   nursing-home: [wheelchair]
@@ -422,6 +424,11 @@ demonstrators:
     - { area: 62428,   note: "Munich, DE - only city with usable wheelchair coverage (18%)" }
   occupational-therapists:
     - { area: 62428,   note: "Munich, DE - 50% wheelchair coverage, clean 3-way split" }
+  alternative-medicine:
+    - { area: 175905,  note: "New York City, US - largest sample (170), acupuncture/chiropractic/massage/herbalism well split" }
+    - { area: 207359,  note: "Los Angeles, US - chiropractic-led (84% speciality coverage)" }
+    - { area: 1293250, note: "Taipei, TW - best wheelchair coverage (40%), traditional_chinese_medicine-led" }
+    - { area: 5326784, note: "Madrid, ES - European representative, chiropractic/acupuncture/osteopathy/naturopathy mix" }
   schools:
     - { area: 451516,  note: "Wroclaw, PL - near-complete operator/operator:type/isced:level tagging" }
     - { area: 419203,  note: "Utrecht, NL - strong isced:level, operator, wheelchair coverage" }

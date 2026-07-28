@@ -261,6 +261,16 @@ active/featured set bounded.
   `wheelchair` added to all five despite low coverage (0-31% across demonstrator
   cities, several samples under 20 features): it's an equity-essential key per the
   wiki, so the near-absent rule doesn't apply — the Missing share is itself useful.
+- **Post-merge gap check: `healthcare=hospice` vs `healthcare=alternative`.** Neither
+  had been screened in the original batch. `hospice` is a genuine dead end — 1 result
+  across all 8 demonstrator cities, rarer than `health-post`; not added. `alternative`
+  (complementary/alternative medicine) was a real miss: 282 features across 5 of 8
+  cities (NYC 170, LA 51, Taipei 35, Madrid 19, Rio 7), with a clean
+  `healthcare:speciality` split (acupuncture, chiropractic, massage, herbalism,
+  traditional_chinese_medicine, osteopathy) — stronger coverage than podiatrists or
+  speech-therapists, which already shipped. `[healthcare:speciality, wheelchair]`;
+  dropped `operator` for the same solo-practitioner trap as doctors/dentists (mostly
+  individual names, e.g. "Dr. Gerald Sciascia").
 
 ## Validation the sync enforces
 

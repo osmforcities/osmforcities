@@ -315,6 +315,15 @@ templates:
       en: Occupational Therapists
       pt: Terapeutas ocupacionais
       es: Terapeutas ocupacionales
+  alternative-medicine:
+    name:
+      en: Alternative Medicine
+      pt: Medicina alternativa
+      es: Medicina alternativa
+    desc:
+      en: Alternative Medicine
+      pt: Medicina alternativa
+      es: Medicina alternativa
   schools:
     name:
       en: Schools
