@@ -44,6 +44,11 @@ templates:
   - ["libraries","amenity=library","education","LibraryBig"]
   - ["kindergarten","amenity=kindergarten","education","Baby"]
   - ["college","amenity=college","education","GraduationCap"]
+  - ["childcare","amenity=childcare","education","Backpack"]
+  - ["driving-school","amenity=driving_school","education","Car"]
+  - ["music-school","amenity=music_school","education","Music"]
+  - ["language-school","amenity=language_school","education","Languages"]
+  - ["research-institute","amenity=research_institute","education","Microscope"]
 # Tourism
   - ["hotels","tourism=hotel","tourism","Hotel"]
   - ["attractions","tourism=attraction","tourism","Star"]
@@ -294,6 +299,16 @@ filterableTags:
   hotel-guesthouse: [wheelchair, internet_access]
   alpine-huts:      [operator, capacity]
   chalets:          [operator, internet_access]
+  schools:          [operator, operator:type, wheelchair, isced:level]
+  universities:     [operator, operator:type, wheelchair]
+  libraries:        [operator, operator:type, wheelchair, internet_access]
+  kindergarten:     [operator, operator:type, wheelchair]
+  college:          [operator, operator:type, wheelchair]
+  childcare:          [operator, operator:type, wheelchair]
+  driving-school:     [operator, wheelchair]
+  music-school:       [operator, operator:type, wheelchair]
+  language-school:    [operator, operator:type, wheelchair]
+  research-institute: [operator, operator:type, wheelchair]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -343,6 +358,55 @@ demonstrators:
     - { area: 1685406, note: "Zermatt, CH - near-complete capacity tagging, SAC-operated huts" }
   chalets:
     - { area: 1629145, note: "Madeira, PT - small but individually curated, varied internet_access; most other regions (Algarve bulk import, Sintra, Douro, Porto) show near-zero tag coverage despite real feature counts" }
+  schools:
+    - { area: 451516,  note: "Wroclaw, PL - near-complete operator/operator:type/isced:level tagging" }
+    - { area: 419203,  note: "Utrecht, NL - strong isced:level, operator, wheelchair coverage" }
+    - { area: 71525,   note: "Paris, FR - operator:type near-universal (public/private split)" }
+    - { area: 62428,   note: "Munich, DE - solid wheelchair and operator coverage" }
+    - { area: 1293250, note: "Taipei, TW - East Asia representative" }
+  universities:
+    - { area: 451516,  note: "Wroclaw, PL - operator well-covered across campuses" }
+    - { area: 419203,  note: "Utrecht, NL - strong operator and wheelchair tagging" }
+    - { area: 71525,   note: "Paris, FR - operator:type public/private split clearly tagged" }
+    - { area: 62428,   note: "Munich, DE - best wheelchair coverage of the sample" }
+    - { area: 1293250, note: "Taipei, TW - East Asia representative" }
+  libraries:
+    - { area: 175905,  note: "New York, US - exemplary operator/operator:type tagging, North America representative" }
+    - { area: 62422,   note: "Berlin, DE - large sample, strong wheelchair and internet_access coverage" }
+    - { area: 451516,  note: "Wroclaw, PL - near-complete operator tagging" }
+    - { area: 71525,   note: "Paris, FR - strong internet_access and wheelchair coverage" }
+    - { area: 1293250, note: "Taipei, TW - all four keys represented, East Asia diversity" }
+  kindergarten:
+    - { area: 451516,  note: "Wroclaw, PL - near-complete operator/operator:type tagging" }
+    - { area: 62428,   note: "Munich, DE - large sample, solid operator coverage" }
+    - { area: 71525,   note: "Paris, FR - decent operator/operator:type split" }
+    - { area: 419203,  note: "Utrecht, NL - regional diversity" }
+  college:
+    - { area: 451516,  note: "Wroclaw, PL - near-complete operator/operator:type tagging" }
+    - { area: 71525,   note: "Paris, FR - operator:type near half coverage" }
+    - { area: 419203,  note: "Utrecht, NL - best wheelchair coverage of the sample" }
+    - { area: 62428,   note: "Munich, DE - balanced operator/wheelchair tagging" }
+    - { area: 1293250, note: "Taipei, TW - East Asia representative" }
+  childcare:
+    - { area: 419203,  note: "Utrecht, NL - best operator coverage of the sample" }
+    - { area: 71525,   note: "Paris, FR - operator:type near a third coverage" }
+    - { area: 62428,   note: "Munich, DE - large sample, solid operator/operator:type split" }
+  driving-school:
+    - { area: 62428,   note: "Munich, DE - best wheelchair and operator coverage" }
+    - { area: 71525,   note: "Paris, FR - large sample, moderate wheelchair coverage" }
+    - { area: 451516,  note: "Wroclaw, PL - decent operator tagging" }
+  music-school:
+    - { area: 451516,  note: "Wroclaw, PL - near-complete operator/operator:type tagging (small sample)" }
+    - { area: 62428,   note: "Munich, DE - largest sample, moderate operator coverage" }
+    - { area: 71525,   note: "Paris, FR - moderate operator:type coverage" }
+  language-school:
+    - { area: 62428,   note: "Munich, DE - best operator/operator:type coverage" }
+    - { area: 451516,  note: "Wroclaw, PL - decent operator/operator:type split" }
+    - { area: 71525,   note: "Paris, FR - largest sample, moderate operator:type coverage" }
+  research-institute:
+    - { area: 62428,   note: "Munich, DE - best operator/operator:type coverage (small sample)" }
+    - { area: 451516,  note: "Wroclaw, PL - consistent operator/operator:type pairing (small sample)" }
+    - { area: 71525,   note: "Paris, FR - largest sample among candidates" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:

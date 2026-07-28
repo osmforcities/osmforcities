@@ -694,7 +694,9 @@
     "stars": "Estrelas",
     "internet_access": "Acesso à internet",
     "shower": "Chuveiro",
-    "power_supply": "Fornecimento de energia"
+    "power_supply": "Fornecimento de energia",
+    "operator:type": "Tipo de operador",
+    "isced:level": "Nível educacional"
   },
   "TagValue": {
     "__common__": {
@@ -728,6 +730,19 @@
       "handlebar_holder": "Suporte de guidão",
       "crossbar": "Barra",
       "informal": "Informal"
+    },
+    "operator:type": {
+      "public": "Público",
+      "private": "Privado",
+      "government": "Governo",
+      "religious": "Religioso",
+      "ngo": "ONG",
+      "community": "Comunidade",
+      "university": "Universidade"
+    },
+    "internet_access": {
+      "wlan": "Wi-Fi",
+      "terminal": "Terminal"
     }
   }
 }
