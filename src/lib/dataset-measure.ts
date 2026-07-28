@@ -12,7 +12,7 @@ function round1(n: number): number {
 }
 
 export function formatLength(km: number, nf: Intl.NumberFormat): string {
-  if (km <= 0) return `0 m`;
+  if (km <= 0) return `${nf.format(0)} m`;
   if (km < 1) return `${nf.format(Math.round(km * 1000))} m`;
   return `${nf.format(round1(km))} km`;
 }
@@ -23,7 +23,7 @@ export function formatLength(km: number, nf: Intl.NumberFormat): string {
 // (e.g. "145,000 m²" / "145.000 m²"), so there is no compact-notation kilo
 // symbol to reconcile with the SI unit — the legend has room for it.
 export function formatArea(km2: number, nf: Intl.NumberFormat): string {
-  if (km2 <= 0) return `0 m²`;
+  if (km2 <= 0) return `${nf.format(0)} m²`;
   if (km2 < 1) return `${nf.format(Math.round(km2 * 1_000_000))} m²`;
   return `${nf.format(round1(km2))} km²`;
 }

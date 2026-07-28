@@ -20,6 +20,12 @@ describe("formatArea", () => {
     expect(formatArea(-5, nf("en"))).toBe("0 m²");
   });
 
+  it("localizes the zero digit for non-Latin locales", () => {
+    // fa-IR uses Eastern-Arabic-Indic digits; the zero must go through nf too.
+    expect(formatArea(0, nf("fa-IR"))).toBe(`${nf("fa-IR").format(0)} m²`);
+    expect(formatArea(0, nf("fa-IR"))).not.toBe("0 m²");
+  });
+
   it("uses locale grouping for the m² count", () => {
     // pt-BR groups thousands with a dot: 23.000
     expect(formatArea(0.023, nf("pt-BR"))).toBe("23.000 m²");
@@ -34,5 +40,9 @@ describe("formatLength", () => {
 
   it("renders zero as 0 m", () => {
     expect(formatLength(0, nf("en"))).toBe("0 m");
+  });
+
+  it("localizes the zero digit for non-Latin locales", () => {
+    expect(formatLength(0, nf("fa-IR"))).toBe(`${nf("fa-IR").format(0)} m`);
   });
 });
