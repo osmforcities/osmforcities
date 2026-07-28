@@ -73,6 +73,28 @@ near-zero keys; **widen** a high-usage varied key (coverage can be regional — 
 handles Missing). For each key added, add a `TagLabel` in en/es/pt-BR; values fall back
 to the raw string, so `TagValue` labels are optional. Re-sync and reload to confirm.
 
+### Accessibility as a transversal signal
+
+`wheelchair` is a default shortlist item for **every template whose queried element is
+an enterable building or staffed amenity** (shops, healthcare, education, government,
+culture, tourism, food, transit stops/stations) — the OSM wiki documents it across all
+of these, not just a curated subset. It's still gated by the normal coverage/variance
+rule (drop if near-absent or flat), but skipping the wiki check itself is not an option:
+always shortlist it first.
+
+Reasonable exceptions — skip shortlisting, nothing to "enter": outdoor/natural features
+(`waterfall`, `dam`, `viewpoints`), street furniture (`benches`, `telephones`,
+`emergency-phones`, `recycling`, `waste-disposal`), `parking` (use the more specific
+`capacity:disabled` instead), unstaffed infrastructure (`bicycle-parking`,
+`bicycle-rental`, `taxi-ranks`).
+
+Blind/visually-impaired tags (`tactile_paving`, `kerb`, `traffic_signals:sound`,
+`traffic_signals:vibration`) are a separate track: they live on pedestrian-path
+elements, not POI buildings, so they only apply to pedestrian-infrastructure templates
+(crossings, bus-stops, platforms, subway-entrances) — see `crossings`/`bus-stops` in
+Worked examples. Not every template category has one; don't force it onto a POI
+template just because `wheelchair` is present there.
+
 ### Picking demonstrators
 
 Up to ~5 cities with strong, well-maintained tagging. Two signals, in order:
@@ -113,6 +135,12 @@ active/featured set bounded.
   accessibility tags sit on the station node itself. Dropped `public_transport` (=station
   everywhere, single-valued) and the `train`/`subway`/`light_rail` boolean siblings (mode
   is already in `station=`); excluded `ref`/`name` (unique codes/labels, not categories).
+- **kindergarten / childcare / music-school / language-school / research-institute** —
+  `wheelchair` shortlisted per the transversal rule (all are enterable buildings) but
+  dropped for all five: 0-31% coverage across demonstrator cities, mostly single digits,
+  several on samples under 20 features. Same "regionally near-zero" bar that already
+  dropped `preschool` on kindergarten (17.7% max). The rule says shortlist it — it
+  doesn't say keep it.
 - **tram-stops — rejected.** `railway=tram_stop` marks the trackside point; amenities
   live on the separate `public_transport=platform` node, so the queried node has nothing
   to filter. Check the interesting tags sit on the queried element, not a sibling.
