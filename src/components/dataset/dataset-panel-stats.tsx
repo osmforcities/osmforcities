@@ -133,7 +133,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
         textClass: "text-olive-500",
         icon: Target,
         label: t("geomPoints"),
-        display: formatCompactNumber(geometryMix.points),
+        display: nf.format(geometryMix.points),
         measure: null,
         noneLabel: t("geomNone", { type: t("geomPointsLower") }),
       },
