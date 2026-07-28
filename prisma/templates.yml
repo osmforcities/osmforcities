@@ -309,10 +309,13 @@ filterableTags:
   psychotherapists: [wheelchair]
   physiotherapists: [wheelchair]
   podiatrists: [wheelchair]
-  rehabilitation-centres: [operator]
+  rehabilitation-centres: [operator, wheelchair]
   counselling-services: [wheelchair, operator]
   speech-therapists: [wheelchair]
   occupational-therapists: [wheelchair]
+  optometrists: [wheelchair]
+  health-post: [wheelchair]
+  nursing-home: [wheelchair]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:

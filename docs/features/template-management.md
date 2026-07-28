@@ -68,6 +68,14 @@ one value (a city has one bike-share system), but the stray outliers it surfaces
 second operator, a mis-tagged dock — are exactly the deviations OSM for Cities exists to
 flag. Don't require an even spread.
 
+**`wheelchair` is exempt from the coverage bar — always include it, even at 0%
+coverage.** Every other key on this page gets dropped for being near-absent; wheelchair
+doesn't, because the product's civic purpose is exposing accessibility gaps, and a
+`Missing: 100%` bucket *is* the finding, not a reason to hide the filter. Applies across
+every template in a category regardless of current tagging density (confirmed on
+`health-post`, `nursing-home`, `optometrists` — all had ~0% wheelchair coverage in every
+city checked and still carry the filter).
+
 Tune both ways, using the dashboard's "Most used tags" as the menu: **reduce**
 near-zero keys; **widen** a high-usage varied key (coverage can be regional — the legend
 handles Missing). For each key added, add a `TagLabel` in en/es/pt-BR; values fall back
@@ -139,16 +147,18 @@ active/featured set bounded.
   and wiki-relevant where present (Pacheco/Droga Raia in Brazil, similar in South Africa)
   but ~0% in Germany's independent-pharmacy market — same single-market-skew that
   dropped ev-charging's `network`. Dropped despite being wiki-documented.
-- **health-post — screen-and-skip.** `amenity=health_post` is globally rare: 0 results
-  in 4 of 6 tested cities across 4 continents. Where present (Manila, thin sample),
-  `healthcare=*` genuinely varies (`community_health_worker`/`health_aide`/`centre`) —
-  confirming it is *not* always a duplicate of `amenity` (contrast with hospitals above);
-  it just wasn't well-populated enough here to filter on. Age view only.
-- **nursing-home — screen-and-skip.** `amenity=nursing_home` is wiki-flagged deprecated
-  in favor of `amenity=social_facility` + `social_facility=nursing_home`; live data
-  confirms near-total migration away from it (single digits per city, 0 in Paris).
-  Updating the base query to the newer tag is a separate follow-up, out of scope for a
-  filterableTags-only pass. Age view only.
+- **health-post — near-empty, `[wheelchair]` only.** `amenity=health_post` is globally
+  rare: 0 results in 4 of 6 tested cities across 4 continents. Where present (Manila,
+  thin sample), `healthcare=*` genuinely varies (`community_health_worker`/
+  `health_aide`/`centre`) — confirming it is *not* always a duplicate of `amenity`
+  (contrast with hospitals above) — but not well-populated enough to justify its own
+  filter. `wheelchair` carried anyway per the exemption above, despite ~0% coverage.
+- **nursing-home — near-empty, `[wheelchair]` only.** `amenity=nursing_home` is
+  wiki-flagged deprecated in favor of `amenity=social_facility` +
+  `social_facility=nursing_home`; live data confirms near-total migration away from it
+  (single digits per city, 0 in Paris). Updating the base query to the newer tag is a
+  separate follow-up, out of scope for a filterableTags-only pass. `wheelchair` carried
+  anyway per the exemption above.
 - **veterinary** — `[wheelchair]` only. `emergency` was a plausible wiki-adjacent
   hypothesis but tested at 0% everywhere — a reminder that "wiki-documented" is necessary
   but not sufficient; always confirm against real coverage before keeping a key.
@@ -208,17 +218,18 @@ active/featured set bounded.
     one kept filterableTag is genuinely strong there), and skipped for
     dentists/veterinary/physiotherapists/psychotherapists (where NYC's coverage on the
     *only* kept filterableTag, wheelchair, is worse than the existing demonstrators).
-- **optometrists** (`healthcare=optometrist`) — no filterableTags, age view only.
-  Wiki-documented and real (125 across 8 cities), but `wheelchair` is weak everywhere
-  tested (0-10%) and `brand` in its best city (NYC, 29%) is a single-chain artifact
-  (100% "Cohen's Fashion Optical") rather than a generalizable signal.
+- **optometrists** (`healthcare=optometrist`) — `[wheelchair]` only, kept solely under
+  the exemption above (0-10% coverage everywhere tested). `brand` in its best city (NYC,
+  29%) is a single-chain artifact (100% "Cohen's Fashion Optical"), not a generalizable
+  signal — dropped.
 - **podiatrists** — `[wheelchair]`. Same solo-practitioner `operator` trap. Munich (50%)
   is the only city with usable wheelchair coverage; Paris has 3x the raw count but
   wheelchair coverage under 10%.
-- **rehabilitation-centres** (`healthcare=rehabilitation`) — `[operator]`, the inverse
-  of the usual pattern: `wheelchair` is weak everywhere (11-13%) but `operator` here is
-  genuinely institutional (Legacy Healing, VillageCare, Jamaica Hospital, Ensign
-  Group), not the solo-practitioner trap — worth checking per template, not assuming.
+- **rehabilitation-centres** (`healthcare=rehabilitation`) — `[operator, wheelchair]`.
+  `operator` here is genuinely institutional (Legacy Healing, VillageCare, Jamaica
+  Hospital, Ensign Group), not the solo-practitioner trap — worth checking per
+  template, not assuming. `wheelchair` is weak everywhere (11-13%) but carried per the
+  exemption above.
 - **counselling-services** — `[wheelchair, operator]`. Munich only demonstrator (39%
   both); `healthcare:counselling` sub-tag exists but too thin (6 features) to use.
 - **speech-therapists** — `[wheelchair]` only, Munich (18%), the weakest coverage kept
