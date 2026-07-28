@@ -114,6 +114,38 @@ describe("fetchDatasetSnapshot", () => {
     expect(snapshot.stats.editorsCount).toBe(2);
   });
 
+  it("persists recency bands summing to the timestamped features / distinct mappers", async () => {
+    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    // Exact buckets depend on the current date (covered in dataset-recency
+    // tests); here assert shape and totals: 2 timestamped features, 2 mappers.
+    expect(snapshot.stats.editRecencyBands).toHaveLength(4);
+    expect(snapshot.stats.mapperRecencyBands).toHaveLength(4);
+    expect(
+      snapshot.stats.editRecencyBands?.reduce((a, b) => a + b, 0)
+    ).toBe(2);
+    expect(
+      snapshot.stats.mapperRecencyBands?.reduce((a, b) => a + b, 0)
+    ).toBe(2);
+  });
+
+  it("persists geometry mix from the geojson features", async () => {
+    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    // 2 node fixtures -> 2 Point features, no lines/areas.
+    expect(snapshot.stats.geometryMix).toEqual({
+      points: 2,
+      lines: 0,
+      areas: 0,
+      lineKm: 0,
+      areaKm2: 0,
+    });
+  });
+
+  it("persists tag counts from the geojson features", async () => {
+    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    // Both node fixtures carry a `name` tag -> one entry, count 2.
+    expect(snapshot.stats.tagCounts).toEqual([{ key: "name", count: 2 }]);
+  });
+
   it("returns bbox as null when no features produced", async () => {
     vi.stubGlobal(
       "fetch",

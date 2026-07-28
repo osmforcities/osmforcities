@@ -1,5 +1,23 @@
 import { z } from "zod";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
+import { RECENCY_BANDS } from "@/lib/dataset-recency";
+
+export const RecencyBandsSchema = z
+  .array(z.number().int().nonnegative())
+  .length(RECENCY_BANDS.length);
+
+export const GeometryMixSchema = z.object({
+  points: z.number().int().nonnegative(),
+  lines: z.number().int().nonnegative(),
+  areas: z.number().int().nonnegative(),
+  lineKm: z.number().nonnegative(),
+  areaKm2: z.number().nonnegative(),
+});
+
+export const TagCountSchema = z.object({
+  key: z.string(),
+  count: z.number().int().nonnegative(),
+});
 
 export const DatasetStatsSchema = z.object({
   lastEdited: z.coerce.date().nullable().optional(),
@@ -29,6 +47,19 @@ export const DatasetStatsSchema = z.object({
       recentlyUpdatedElementsPercentage: z.number(),
     })
     .optional(),
+
+  // Feature-based recency distributions. Optional: absent until a dataset is
+  // (re)snapshotted — the panel hides the band charts, no client fallback.
+  editRecencyBands: RecencyBandsSchema.optional(),
+  mapperRecencyBands: RecencyBandsSchema.optional(),
+
+  // Feature geometry split + measures. Optional: absent until a dataset is
+  // (re)snapshotted — the panel hides the geometry block, no client fallback.
+  geometryMix: GeometryMixSchema.optional(),
+
+  // Per-key tag presence counts, sorted desc. Optional: absent until a dataset is
+  // (re)snapshotted — the panel reads these stored counts only, no client fallback.
+  tagCounts: z.array(TagCountSchema).optional(),
 });
 
 export const CreateDatasetSchema = z.object({
@@ -65,6 +96,9 @@ export const DatasetSchema = z.object({
     }).nullable(),
     description: z.string().nullable(),
     filterableTags: z.array(z.string()).optional(),
+    // Query criteria (e.g. ["highway=bus_stop"]); their keys are excluded from
+    // the Most-used-tags list since they are ~100% by definition.
+    tags: z.array(z.string()).optional(),
   }),
   user: z
     .object({

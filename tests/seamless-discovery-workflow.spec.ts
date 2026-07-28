@@ -97,8 +97,10 @@ test.describe("Seamless Discovery Workflow", () => {
     await expect(
       page.getByRole("heading", { name: new RegExp(template.name) })
     ).toBeVisible();
+    // Breadcrumb back-link (the category chip also names the area, so match the
+    // breadcrumb specifically to avoid a strict-mode 2-element match).
     await expect(
-      page.getByRole("link", { name: /Test City/ })
+      page.getByRole("link", { name: /Back to Test City/ })
     ).toBeVisible();
   });
 
