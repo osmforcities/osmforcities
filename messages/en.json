@@ -671,6 +671,7 @@
     "covered": "Covered",
     "lit": "Lit",
     "tactile_paving": "Tactile paving",
+    "operator": "Operator",
     "bicycle_parking": "Type",
     "capacity": "Capacity",
     "access": "Access",

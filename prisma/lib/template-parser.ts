@@ -33,11 +33,22 @@ export interface TemplateLogic {
 }
 
 /**
+ * A curated demonstrator city for a template: an OSM relation id whose data
+ * shows the template at its best. Validated only, never written to the DB.
+ */
+export interface Demonstrator {
+  area: number;
+  note?: string;
+}
+
+/**
  * Logic-only config from templates.yml (used by parseTemplates and collectIcons)
  */
 export interface LogicConfig {
   templates: Record<string, TemplateLogic>;
   categories?: Record<string, string>;
+  // Raw so validateDemonstrators can report shape errors on hand-edited YAML.
+  demonstrators?: Record<string, unknown>;
 }
 
 /**
@@ -263,6 +274,7 @@ export function buildTemplate(config: TemplateConfig): ParsedTemplate {
 export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
   entries: LogicEntry[];
   categories: Record<string, string>;
+  demonstrators: Record<string, unknown>;
 } {
   const filePath = join(basePath, LOGIC_FILE);
   try {
@@ -271,6 +283,7 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
       templates?: unknown[];
       categories?: Record<string, string>;
       filterableTags?: Record<string, unknown>;
+      demonstrators?: Record<string, unknown>;
     };
 
     if (!config?.templates || !Array.isArray(config.templates)) {
@@ -334,6 +347,7 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
     return {
       entries,
       categories: config.categories ?? {},
+      demonstrators: config.demonstrators ?? {},
     };
   } catch (error) {
     if (error instanceof Error) {
@@ -379,7 +393,7 @@ export function loadTemplatesI18n(
 export function loadTemplatesYaml(
   basePath: string = DEFAULT_PRISMA,
 ): LogicConfig {
-  const { entries, categories } = loadTemplatesLogic(basePath);
+  const { entries, categories, demonstrators } = loadTemplatesLogic(basePath);
   const templates: Record<string, TemplateLogic> = {};
   for (const entry of entries) {
     templates[entry.id] = {
@@ -390,7 +404,61 @@ export function loadTemplatesYaml(
       filterableTags: entry.filterableTags,
     };
   }
-  return { templates, categories };
+  return { templates, categories, demonstrators };
+}
+
+/**
+ * Validate the `demonstrators:` section against the set of known template ids.
+ * A typo'd id or malformed relation id fails the sync loudly instead of pointing
+ * the workflow at nothing. One error per problem; an empty/absent section is valid.
+ */
+export function validateDemonstrators(
+  demonstrators: Record<string, unknown> | undefined,
+  knownIds: Set<string>,
+): ValidationError[] {
+  const errors: ValidationError[] = [];
+  if (!demonstrators) return errors;
+
+  for (const [templateId, list] of Object.entries(demonstrators)) {
+    if (!knownIds.has(templateId)) {
+      errors.push({
+        field: "demonstrators",
+        message: `demonstrators references unknown template id: "${templateId}"`,
+      });
+      continue;
+    }
+    if (!Array.isArray(list)) {
+      errors.push({
+        field: "demonstrators",
+        message: `demonstrators for "${templateId}" must be a list`,
+      });
+      continue;
+    }
+    list.forEach((entry, i) => {
+      if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
+        errors.push({
+          field: "demonstrators",
+          message: `demonstrators["${templateId}"][${i}] must be an object with an "area"`,
+        });
+        return;
+      }
+      const { area, note } = entry as { area?: unknown; note?: unknown };
+      if (typeof area !== "number" || !Number.isInteger(area) || area <= 0) {
+        errors.push({
+          field: "demonstrators",
+          message: `demonstrators["${templateId}"][${i}].area must be a positive integer OSM relation id`,
+        });
+      }
+      if (note !== undefined && typeof note !== "string") {
+        errors.push({
+          field: "demonstrators",
+          message: `demonstrators["${templateId}"][${i}].note must be a string`,
+        });
+      }
+    });
+  }
+
+  return errors;
 }
 
 /**
@@ -452,6 +520,8 @@ export function parseTemplates(config: LogicConfig): ParseResult {
       });
     }
   }
+
+  errors.push(...validateDemonstrators(config.demonstrators, parsedIds));
 
   return { templates, errors, warnings };
 }

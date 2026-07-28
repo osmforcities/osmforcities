@@ -280,9 +280,22 @@ templates:
 # Curated OSM tag keys that become interactive-legend views for a template.
 # Templates absent here show the age ("Recent edits") view only.
 # Add tag-key labels to messages/*.json (TagLabel) and controlled values (TagValue).
+# Tuning process (widen/reduce from the dashboard): docs/features/template-management.md.
 filterableTags:
-  bus-stops:       [shelter, bench, covered, lit, tactile_paving]
+  bus-stops:       [shelter, bench, lit, tactile_paving, operator]
   bicycle-parking: [bicycle_parking, covered, capacity, access, fee]
+
+# Curated demonstrator cities per template (OSM relation ids).
+# Cities whose real data best shows the template in the dashboard. Curation-only:
+# validated by sync (template-parser.ts) but never written to the DB. Selection
+# process: docs/features/template-management.md.
+demonstrators:
+  bus-stops:
+    - { area: 54517,   note: "Rennes, FR - Western Europe, near-complete stop amenity tagging" }
+    - { area: 451516,  note: "Wroclaw, PL - Central Europe, thorough public-transport mapping" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - best-maintained stop tagging in Latin America" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, active community" }
+    - { area: 1293250, note: "Taipei, TW - East Asia representative" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:

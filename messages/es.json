@@ -680,6 +680,7 @@
     "covered": "Cubierto",
     "lit": "Iluminado",
     "tactile_paving": "Pavimento táctil",
+    "operator": "Operador",
     "bicycle_parking": "Tipo",
     "capacity": "Capacidad",
     "access": "Acceso",
