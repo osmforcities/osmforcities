@@ -285,6 +285,7 @@ filterableTags:
   bus-stops:       [shelter, bench, lit, tactile_paving, operator]
   bicycle-parking: [bicycle_parking, covered, capacity, access, fee]
   bicycle-rental:  [bicycle_rental, operator, network, capacity]
+  ev-charging:     [capacity, operator, access, fee]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -302,6 +303,11 @@ demonstrators:
     - { area: 347950,  note: "Barcelona, ES - Bicing, complete operator/network/capacity tagging" }
     - { area: 1634158, note: "Montreal, CA - Bixi, North American representative" }
     - { area: 1376330, note: "Mexico City, MX - Ecobici, Latin American representative" }
+  ev-charging:
+    - { area: 406091,  note: "Oslo, NO - EV-adoption capital, near-complete capacity/access tagging" }
+    - { area: 62428,   note: "Munich, DE - strong operator/fee tagging, active German community" }
+    - { area: 419203,  note: "Utrecht, NL - well-rounded amenity tagging, dense Dutch network" }
+    - { area: 1634158, note: "Montreal, CA - North American representative, thorough capacity/operator/access tagging" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:
