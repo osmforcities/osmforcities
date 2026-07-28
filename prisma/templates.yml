@@ -45,7 +45,7 @@ templates:
   - ["optometrists","healthcare=optometrist","healthcare","Eye"]
   - ["podiatrists","healthcare=podiatrist","healthcare","Footprints"]
   - ["rehabilitation-centres","healthcare=rehabilitation","healthcare","Accessibility"]
-  - ["counselling-services","healthcare=counselling","healthcare","MessageCircleHeart"]
+  - ["counselling-services","healthcare=counselling","healthcare","Ear"]
   - ["speech-therapists","healthcare=speech_therapist","healthcare","MessageCircle"]
   - ["occupational-therapists","healthcare=occupational_therapist","healthcare","HandHelping"]
 # Education

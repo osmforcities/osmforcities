@@ -39,6 +39,7 @@ import {
   Droplet,
   Droplets,
   Dumbbell,
+  Ear,
   Egg,
   Eye,
   Factory,
@@ -74,7 +75,6 @@ import {
   Martini,
   Medal,
   MessageCircle,
-  MessageCircleHeart,
   Milk,
   MoonStar,
   Mountain,
@@ -146,7 +146,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-28T15:51:39.888Z
+ * Generated: 2026-07-28T16:51:37.170Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -317,7 +317,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "convenience":
       return <Store className="w-5 h-5" />;
     case "counselling-services":
-      return <MessageCircleHeart className="w-5 h-5" />;
+      return <Ear className="w-5 h-5" />;
     case "courts":
       return <Scale className="w-5 h-5" />;
     case "cowsheds":
