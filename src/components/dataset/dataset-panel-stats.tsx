@@ -8,6 +8,7 @@ import type { LucideIcon } from "lucide-react";
 import type { Dataset } from "@/schemas/dataset";
 import { SegmentedBar, type BarSegment } from "@/components/ui/segmented-bar";
 import { formatCompactNumber } from "@/lib/dataset-stats";
+import { formatArea, formatLength } from "@/lib/dataset-measure";
 import { RECENCY_BANDS } from "@/lib/dataset-recency";
 import { tagLabel, type MessageResolver } from "@/lib/tag-i18n";
 
@@ -132,7 +133,7 @@ export function DatasetPanelStats({ dataset }: DatasetPanelStatsProps) {
         textClass: "text-olive-500",
         icon: Target,
         label: t("geomPoints"),
-        display: formatCompactNumber(geometryMix.points),
+        display: nf.format(geometryMix.points),
         measure: null,
         noneLabel: t("geomNone", { type: t("geomPointsLower") }),
       },
@@ -512,53 +513,22 @@ function SectionHeader({
   value?: string;
   icon: LucideIcon;
 }) {
+  // Icon leads as the section marker (left, beside the title); the stat stands
+  // alone at the right as the one bold value. Keeps the icon anchored to the
+  // section identity across all headers, whether or not a value is present.
   return (
-    <div className="flex items-baseline gap-2.5">
+    <div className="flex items-center gap-2">
+      <Icon className="size-[18px] shrink-0 text-olive-500" aria-hidden />
       <h3 className="text-lg font-semibold leading-tight text-gray-900">
         {title}
       </h3>
       {value != null && (
-        <span className="ml-auto text-[15px] font-bold tabular-nums text-gray-600">
+        <span className="ml-auto text-lg font-bold tabular-nums text-gray-900">
           {value}
         </span>
       )}
-      <Icon
-        className={`size-[18px] self-center text-olive-500${
-          value == null ? " ml-auto" : ""
-        }`}
-        aria-hidden
-      />
     </div>
   );
-}
-
-function round1(n: number): number {
-  return n >= 100 ? Math.round(n) : Math.round(n * 10) / 10;
-}
-
-// Numbers are locale-formatted; the SI symbols (m, km, m², km²) are appended as
-// literals. Intl `style:"unit"` can't render m²/km² — square-meter and
-// square-kilometer aren't ECMA-402-sanctioned unit identifiers (they throw).
-function formatLength(km: number, nf: Intl.NumberFormat): string {
-  if (km <= 0) return `0 m`;
-  if (km < 1) return `${nf.format(Math.round(km * 1000))} m`;
-  return `${nf.format(round1(km))} km`;
-}
-
-// m² up to 1 km², then km² (avoids "500M m²" at city scale). Hectares dropped —
-// weak reader intuition; cf. iD, which keeps m² primary and shows ha only as a
-// secondary hint. Footprint m² uses compact digits (105K / 105 mil), built in
-// the same locale as `nf`.
-function formatArea(km2: number, nf: Intl.NumberFormat): string {
-  if (km2 <= 0) return `0 m²`;
-  if (km2 < 1) {
-    const compactNf = new Intl.NumberFormat(nf.resolvedOptions().locale, {
-      notation: "compact",
-      maximumFractionDigits: 1,
-    });
-    return `${compactNf.format(Math.round(km2 * 1_000_000))} m²`;
-  }
-  return `${nf.format(round1(km2))} km²`;
 }
 
 function formatPct(pct: number): string {
