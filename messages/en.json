@@ -671,10 +671,17 @@
     "covered": "Covered",
     "lit": "Lit",
     "tactile_paving": "Tactile paving",
+    "operator": "Operator",
+    "network": "Network",
+    "bicycle_rental": "Type",
     "bicycle_parking": "Type",
     "capacity": "Capacity",
     "access": "Access",
-    "fee": "Fee"
+    "fee": "Fee",
+    "crossing": "Crossing",
+    "crossing:markings": "Markings",
+    "station": "Station type",
+    "wheelchair": "Wheelchair access"
   },
   "TagValue": {
     "__common__": {

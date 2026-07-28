@@ -680,10 +680,17 @@
     "covered": "Coberto",
     "lit": "Iluminado",
     "tactile_paving": "Piso tátil",
+    "operator": "Operador",
+    "network": "Rede",
+    "bicycle_rental": "Tipo",
     "bicycle_parking": "Tipo",
     "capacity": "Capacidade",
     "access": "Acesso",
-    "fee": "Tarifa"
+    "fee": "Tarifa",
+    "crossing": "Travessia",
+    "crossing:markings": "Faixa de pedestres",
+    "station": "Tipo de estação",
+    "wheelchair": "Acesso para cadeirantes"
   },
   "TagValue": {
     "__common__": {
