@@ -120,6 +120,9 @@ templates:
   - ["stadiums","leisure=stadium","leisure","Trophy"]
   - ["pitches","leisure=pitch","leisure","Goal"]
   - ["golf-courses","leisure=golf_course","leisure","LandPlot"]
+  - ["tracks","leisure=track","leisure","Repeat"]
+  - ["fitness-stations","leisure=fitness_station","leisure","PersonStanding"]
+  - ["ice-rinks","leisure=ice_rink","leisure","Snowflake"]
   - ["nature-reserves","leisure=nature_reserve","leisure","Trees"]
   - ["marinas","leisure=marina","leisure","Anchor"]
   - ["dog-parks","leisure=dog_park","leisure","Dog"]
@@ -288,6 +291,14 @@ filterableTags:
   ev-charging:     [capacity, operator, access, fee]
   crossings:       [crossing, crossing:markings, tactile_paving]
   railway-stations: [station, wheelchair, operator, network]
+  pitches:         [sport, surface, lit]
+  sports-centres:  [sport]
+  swimming-pools:  [access, location]
+  playgrounds:     [access]
+  stadiums:        [sport]
+  tracks:          [sport, surface, lit]
+  fitness-stations: [fitness_station]
+  ice-rinks:       [sport, seasonal]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -319,6 +330,46 @@ demonstrators:
     - { area: 347950,  note: "Barcelona, ES - near-complete operator/network tagging" }
     - { area: 71525,   note: "Paris, FR - large set, varied networks/operators, strong accessibility" }
     - { area: 62428,   note: "Munich, DE - good wheelchair coverage, mixed train/subway modes" }
+  pitches:
+    - { area: 62428,   note: "Munich, DE - best surface/lit coverage of any city checked" }
+    - { area: 71525,   note: "Paris, FR - strong all-round sport/surface/lit tagging" }
+    - { area: 347950,  note: "Barcelona, ES - near-universal sport tagging (99.8%)" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - large sample, Latin American representative" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, strong sport/surface" }
+  sports-centres:
+    - { area: 79604,   note: "Cape Town, ZA - best sport-tag coverage (75%)" }
+    - { area: 347950,  note: "Barcelona, ES - strong sport tagging (66%)" }
+    - { area: 71525,   note: "Paris, FR - strong sport tagging (64%)" }
+    - { area: 62428,   note: "Munich, DE - solid sport tagging (58%)" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative" }
+  swimming-pools:
+    - { area: 1634158, note: "Montreal, CA - best-balanced access/location split, North American representative" }
+    - { area: 62428,   note: "Munich, DE - dense pool tagging with strong access split" }
+    - { area: 71525,   note: "Paris, FR - well-rounded access/location tagging" }
+    - { area: 347950,  note: "Barcelona, ES - strong access coverage" }
+  playgrounds:
+    - { area: 71525,   note: "Paris, FR - near-complete access (public/private) tagging" }
+    - { area: 62428,   note: "Munich, DE - strong access coverage" }
+    - { area: 347950,  note: "Barcelona, ES - solid access coverage" }
+    - { area: 1634158, note: "Montreal, CA - North American representative" }
+  stadiums:
+    - { area: 2697338, note: "Rio de Janeiro, BR - largest sample (29 stadiums), strong sport tagging" }
+    - { area: 71525,   note: "Paris, FR - near-complete sport tagging" }
+    - { area: 62428,   note: "Munich, DE - solid sport/wheelchair tagging" }
+    - { area: 347950,  note: "Barcelona, ES - solid sport tagging" }
+  tracks:
+    - { area: 62428,   note: "Munich, DE - best surface/lit coverage" }
+    - { area: 71525,   note: "Paris, FR - near-universal sport/surface tagging" }
+    - { area: 79604,   note: "Cape Town, ZA - strong sport/surface (61%), African representative" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - large sample (80 tracks), Latin American representative" }
+  fitness-stations:
+    - { area: 71525,   note: "Paris, FR - best equipment-type tagging (fitness_station 50%)" }
+    - { area: 62428,   note: "Munich, DE - strong equipment-type tagging (42%)" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - large sample (219), Brazil's outdoor-gym culture" }
+    - { area: 347950,  note: "Barcelona, ES - moderate equipment-type tagging" }
+  ice-rinks:
+    - { area: 1634158, note: "Montreal, CA - by far the strongest sample (64 rinks), clear seasonal/sport split" }
+    - { area: 406091,  note: "Oslo, NO - cold-climate representative, though thin (8 rinks)" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:

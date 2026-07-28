@@ -681,13 +681,27 @@
     "crossing": "Crossing",
     "crossing:markings": "Markings",
     "station": "Station type",
-    "wheelchair": "Wheelchair access"
+    "wheelchair": "Wheelchair access",
+    "sport": "Sport",
+    "surface": "Surface",
+    "location": "Location",
+    "seasonal": "Seasonal",
+    "fitness_station": "Type"
   },
   "TagValue": {
     "__common__": {
       "yes": "Yes",
       "no": "No",
       "limited": "Limited"
+    },
+    "fitness_station": {
+      "horizontal_bar": "Horizontal bar",
+      "parallel_bars": "Parallel bars",
+      "horizontal_ladder": "Horizontal ladder",
+      "sit-up": "Sit-up bench",
+      "sign": "Instruction sign",
+      "elliptical_trainer": "Elliptical trainer",
+      "exercise_bike": "Exercise bike"
     },
     "access": {
       "private": "Private",

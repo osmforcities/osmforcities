@@ -690,13 +690,27 @@
     "crossing": "Travessia",
     "crossing:markings": "Faixa de pedestres",
     "station": "Tipo de estação",
-    "wheelchair": "Acesso para cadeirantes"
+    "wheelchair": "Acesso para cadeirantes",
+    "sport": "Esporte",
+    "surface": "Superfície",
+    "location": "Localização",
+    "seasonal": "Sazonal",
+    "fitness_station": "Tipo"
   },
   "TagValue": {
     "__common__": {
       "yes": "Sim",
       "no": "Não",
       "limited": "Limitado"
+    },
+    "fitness_station": {
+      "horizontal_bar": "Barra horizontal",
+      "parallel_bars": "Barras paralelas",
+      "horizontal_ladder": "Escada horizontal",
+      "sit-up": "Banco abdominal",
+      "sign": "Placa de instruções",
+      "elliptical_trainer": "Elíptico",
+      "exercise_bike": "Bicicleta ergométrica"
     },
     "access": {
       "private": "Privado",

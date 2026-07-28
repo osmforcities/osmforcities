@@ -864,6 +864,33 @@ templates:
       en: Golf Courses
       pt: Campos de golfe
       es: Campos de golf
+  tracks:
+    name:
+      en: Tracks
+      pt: Pistas
+      es: Pistas
+    desc:
+      en: Tracks
+      pt: Pistas
+      es: Pistas
+  fitness-stations:
+    name:
+      en: Fitness Stations
+      pt: Estações de ginástica
+      es: Estaciones de ejercicio
+    desc:
+      en: Fitness Stations
+      pt: Estações de ginástica
+      es: Estaciones de ejercicio
+  ice-rinks:
+    name:
+      en: Ice Rinks
+      pt: Pistas de gelo
+      es: Pistas de hielo
+    desc:
+      en: Ice Rinks
+      pt: Pistas de gelo
+      es: Pistas de hielo
   nature-reserves:
     name:
       en: Nature Reserves

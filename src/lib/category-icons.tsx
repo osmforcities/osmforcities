@@ -74,10 +74,12 @@ import {
   Package,
   Palette,
   PawPrint,
+  PersonStanding,
   Phone,
   Pill,
   RadioTower,
   Recycle,
+  Repeat,
   RockingChair,
   Route,
   Sandwich,
@@ -138,7 +140,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-15T16:48:47.042Z
+ * Generated: 2026-07-28T15:16:29.042Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -362,6 +364,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <FireExtinguisher className="w-5 h-5" />;
     case "fitness-centers":
       return <Dumbbell className="w-5 h-5" />;
+    case "fitness-stations":
+      return <PersonStanding className="w-5 h-5" />;
     case "football":
       return <Volleyball className="w-5 h-5" />;
     case "footways":
@@ -423,6 +427,8 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "ice-cream":
       return <IceCreamCone className="w-5 h-5" />;
     case "ice-hockey":
+      return <Snowflake className="w-5 h-5" />;
+    case "ice-rinks":
       return <Snowflake className="w-5 h-5" />;
     case "ice-skating":
       return <Snowflake className="w-5 h-5" />;
@@ -606,6 +612,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <RadioTower className="w-5 h-5" />;
     case "town-halls":
       return <Landmark className="w-5 h-5" />;
+    case "tracks":
+      return <Repeat className="w-5 h-5" />;
     case "traffic-calming":
       return <TrafficCone className="w-5 h-5" />;
     case "traffic-lights":
