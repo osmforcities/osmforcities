@@ -110,6 +110,7 @@ templates:
   - ["bars","amenity=bar","food","Martini"]
   - ["pubs","amenity=pub","food","Beer"]
   - ["ice-cream","amenity=ice_cream","food","IceCreamCone"]
+  - ["food-court","amenity=food_court","food","ChefHat"]
 # Leisure
   - ["parks","leisure=park","leisure","TreePine"]
   - ["playgrounds","leisure=playground","leisure","ToyBrick"]

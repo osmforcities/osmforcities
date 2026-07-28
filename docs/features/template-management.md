@@ -116,6 +116,35 @@ active/featured set bounded.
 - **tram-stops — rejected.** `railway=tram_stop` marks the trackside point; amenities
   live on the separate `public_transport=platform` node, so the queried node has nothing
   to filter. Check the interesting tags sit on the queried element, not a sibling.
+- **restaurants** — `[cuisine, wheelchair, outdoor_seating, takeaway, delivery,
+  diet:vegetarian]`. `takeaway`/`delivery` swing hard by region (2-9% in Paris vs
+  26-29% in Wrocław) but are kept — both real, both wiki-core, coverage is regional.
+  Dropped `smoking`/`internet_access`/`reservation`/`capacity` (all under 15% and
+  inconsistent across three regions).
+- **cafes** — `[cuisine, outdoor_seating, indoor_seating, wheelchair, takeaway,
+  internet_access]`. `indoor_seating` wasn't an initial wiki-fetch candidate — it
+  surfaced unprompted in "Most used tags" at 37-42% in Paris; the wiki does document it
+  as the seating-type counterpart to `outdoor_seating`, so it was added and kept (14-37%
+  in Europe, near-zero in Mexico City — regional, same as `crossing:markings`).
+- **fast-food** — `[cuisine, takeaway, outdoor_seating, wheelchair, delivery]`. Dropped
+  `drive_through` despite wiki emphasis: 2-5% across Paris/Wrocław/Mexico City (car-heavy
+  Mexico City included) — structurally rare at dense urban scale, not a regional pocket.
+- **bars** — `[wheelchair, outdoor_seating, smoking]`. Dropped `live_music`/`microbrewery`
+  (0-1% in all three test regions despite wiki "useful combination" billing — an event
+  attribute and a rare specialty, not stable physical facts to color by).
+- **pubs** — `[wheelchair, outdoor_seating, smoking, internet_access]`. Dropped
+  `food`/`real_ale`/`microbrewery`/`live_music` (0-8% everywhere, including Paris/Wrocław
+  where the template otherwise performs well) and excluded `wheelchair` from the
+  candidate list only by oversight in the pub wiki page itself — the generic
+  `Key:wheelchair` page treats it as universal, and dashboard data confirmed 30-49%.
+- **ice-cream** — `[wheelchair, outdoor_seating, takeaway]`. Small dataset everywhere
+  (80-227 features per city) but the three keys are consistently present (4-48%);
+  dropped `self_service` (0% in all three cities tested).
+- **food-court — screen-and-skip.** `amenity=food_court` is genuinely thin: 6-27 features
+  across Paris/Wrocław/Barcelona/Mexico City. `wheelchair` showed 40-57% in three of four
+  cities but on raw samples of 3-7 features — too small to trust as a legend. No
+  filterableTags added (age view only); no demonstrators picked, since no city shows the
+  template distinctly well. Revisit if OSM coverage of food courts grows.
 
 ## Validation the sync enforces
 
