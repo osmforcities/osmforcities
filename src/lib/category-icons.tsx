@@ -146,7 +146,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-28T16:51:37.170Z
+ * Generated: 2026-07-28T21:37:04.612Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -490,8 +490,6 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <BedDouble className="w-5 h-5" />;
     case "occupational-therapists":
       return <HandHelping className="w-5 h-5" />;
-    case "optician":
-      return <Glasses className="w-5 h-5" />;
     case "opticians":
       return <Glasses className="w-5 h-5" />;
     case "optometrists":

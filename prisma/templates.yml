@@ -110,7 +110,6 @@ templates:
   - ["furniture","shop=furniture","shops","Sofa"]
   - ["electronics","shop=electronics","shops","Tv"]
   - ["mobile-phone","shop=mobile_phone","shops","Smartphone"]
-  - ["optician","shop=optician","shops","Glasses"]
   - ["shoes","shop=shoes","shops","Footprints"]
   - ["jewelry","shop=jewelry","shops","Gem"]
 # Food

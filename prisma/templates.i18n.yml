@@ -792,15 +792,6 @@ templates:
       en: Mobile Phone
       pt: Celulares
       es: Teléfonos móviles
-  optician:
-    name:
-      en: Optician
-      pt: Óticas
-      es: Ópticas
-    desc:
-      en: Optician
-      pt: Óticas
-      es: Ópticas
   shoes:
     name:
       en: Shoes
