@@ -1,4 +1,5 @@
 import {
+  Activity,
   Ambulance,
   Anchor,
   Antenna,
@@ -10,6 +11,7 @@ import {
   Beer,
   Bike,
   Binoculars,
+  Brain,
   BrickWall,
   Building,
   Building2,
@@ -41,6 +43,7 @@ import {
   Fence,
   Film,
   FireExtinguisher,
+  FlaskConical,
   Flower2,
   Footprints,
   Fuel,
@@ -138,7 +141,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-15T16:48:47.042Z
+ * Generated: 2026-07-28T15:32:14.060Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -452,6 +455,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <RadioTower className="w-5 h-5" />;
     case "meadows":
       return <Leaf className="w-5 h-5" />;
+    case "medical-laboratories":
+      return <FlaskConical className="w-5 h-5" />;
     case "memorials":
       return <Landmark className="w-5 h-5" />;
     case "mobile-phone":
@@ -478,6 +483,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <BedDouble className="w-5 h-5" />;
     case "optician":
       return <Glasses className="w-5 h-5" />;
+    case "opticians":
+      return <Glasses className="w-5 h-5" />;
     case "orchards":
       return <Apple className="w-5 h-5" />;
     case "parcel-lockers":
@@ -490,6 +497,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Mountain className="w-5 h-5" />;
     case "pharmacies":
       return <Pill className="w-5 h-5" />;
+    case "physiotherapists":
+      return <Activity className="w-5 h-5" />;
     case "pig-sties":
       return <PawPrint className="w-5 h-5" />;
     case "pipeline":
@@ -510,6 +519,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Egg className="w-5 h-5" />;
     case "prisons":
       return <Fence className="w-5 h-5" />;
+    case "psychotherapists":
+      return <Brain className="w-5 h-5" />;
     case "public-toilets":
       return <Toilet className="w-5 h-5" />;
     case "public-transit":

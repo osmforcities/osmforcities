@@ -694,7 +694,8 @@
     "operator:type": "Tipo de operador",
     "emergency": "Atendimento de emergência",
     "healthcare:speciality": "Especialidade",
-    "dispensing": "Dispensação"
+    "dispensing": "Dispensação",
+    "brand": "Marca"
   },
   "TagValue": {
     "__common__": {

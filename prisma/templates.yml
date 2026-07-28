@@ -38,6 +38,10 @@ templates:
   - ["health-post","amenity=health_post","healthcare","Cross"]
   - ["nursing-home","amenity=nursing_home","healthcare","BedDouble"]
   - ["veterinary","amenity=veterinary","healthcare","PawPrint"]
+  - ["opticians","shop=optician","healthcare","Glasses"]
+  - ["medical-laboratories","healthcare=laboratory","healthcare","FlaskConical"]
+  - ["psychotherapists","healthcare=psychotherapist","healthcare","Brain"]
+  - ["physiotherapists","healthcare=physiotherapist","healthcare","Activity"]
 # Education
   - ["schools","amenity=school","education","School"]
   - ["universities","amenity=university","education","GraduationCap"]
@@ -294,6 +298,10 @@ filterableTags:
   dentists:    [wheelchair]
   pharmacies:  [dispensing, wheelchair]
   veterinary:  [wheelchair]
+  opticians:   [wheelchair, brand]
+  medical-laboratories: [healthcare:speciality, wheelchair, operator]
+  psychotherapists: [wheelchair]
+  physiotherapists: [wheelchair]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -356,6 +364,17 @@ demonstrators:
   veterinary:
     - { area: 62428,   note: "Munich, DE - 44% wheelchair coverage, clean 3-way split" }
     - { area: 1293250, note: "Taipei, TW - 28% wheelchair coverage, clean 3-way split" }
+  opticians:
+    - { area: 62428,   note: "Munich, DE - 76% wheelchair coverage, clean chain-brand tagging (Apollo-Optik, Fielmann)" }
+    - { area: 1293250, note: "Taipei, TW - large sample (217), strong wheelchair + brand coverage" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, real chain-brand data (Oticas Carol)" }
+  medical-laboratories:
+    - { area: 71525,   note: "Paris, FR - large sample (171), near-complete specialty tagging (biology vs radiology split)" }
+  psychotherapists:
+    - { area: 62428,   note: "Munich, DE - largest sample (128), clean wheelchair split" }
+    - { area: 1293250, note: "Taipei, TW - smaller sample, confirms the tag outside Europe" }
+  physiotherapists:
+    - { area: 62428,   note: "Munich, DE - largest sample found (160); tag is Europe-heavy, Taipei/Rio too thin to include" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:

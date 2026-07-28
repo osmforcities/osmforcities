@@ -685,7 +685,8 @@
     "operator:type": "Operator type",
     "emergency": "Emergency care",
     "healthcare:speciality": "Specialty",
-    "dispensing": "Dispensing"
+    "dispensing": "Dispensing",
+    "brand": "Brand"
   },
   "TagValue": {
     "__common__": {

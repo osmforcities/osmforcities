@@ -225,6 +225,42 @@ templates:
       en: Veterinary
       pt: Veterinários
       es: Veterinaria
+  opticians:
+    name:
+      en: Opticians
+      pt: Óticas
+      es: Ópticas
+    desc:
+      en: Opticians
+      pt: Óticas
+      es: Ópticas
+  medical-laboratories:
+    name:
+      en: Medical Laboratories
+      pt: Laboratórios médicos
+      es: Laboratorios médicos
+    desc:
+      en: Medical Laboratories
+      pt: Laboratórios médicos
+      es: Laboratorios médicos
+  psychotherapists:
+    name:
+      en: Psychotherapists
+      pt: Psicoterapeutas
+      es: Psicoterapeutas
+    desc:
+      en: Psychotherapists
+      pt: Psicoterapeutas
+      es: Psicoterapeutas
+  physiotherapists:
+    name:
+      en: Physiotherapists
+      pt: Fisioterapeutas
+      es: Fisioterapeutas
+    desc:
+      en: Physiotherapists
+      pt: Fisioterapeutas
+      es: Fisioterapeutas
   schools:
     name:
       en: Schools

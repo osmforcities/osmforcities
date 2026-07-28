@@ -152,6 +152,36 @@ active/featured set bounded.
 - **veterinary** — `[wheelchair]` only. `emergency` was a plausible wiki-adjacent
   hypothesis but tested at 0% everywhere — a reminder that "wiki-documented" is necessary
   but not sufficient; always confirm against real coverage before keeping a key.
+- **New templates added mid-batch: opticians, medical-laboratories, psychotherapists,
+  physiotherapists.** All 8 original healthcare templates query `amenity=*`, but the
+  wiki documents 23 `healthcare=*` values meant to be used *standalone* with no
+  `amenity` tag at all (physiotherapist, psychotherapist, laboratory, rehabilitation,
+  blood_donation, dialysis, hospice, optometrist...) — an entire class of allied-health
+  facilities invisible to an amenity-only template set. Added the four with clear
+  civic value and real coverage; left the rest (mostly niche or unverified) for a
+  future pass. `shop=optician` doesn't use `healthcare=*` at all — different key,
+  same "wiki-documented but missing" gap.
+  - **opticians** (`shop=optician`) — `[wheelchair, brand]`. Same trap as pharmacies:
+    `operator` is an individual owner's name where opticians are independent
+    (Germany), so dropped; `brand` is the real chain signal (Apollo-Optik, Fielmann,
+    Oticas Carol, 寶島眼鏡) and, unlike pharmacies' `brand`, has decent coverage in
+    every city tested, not just chain-heavy markets.
+  - **medical-laboratories** (`healthcare=laboratory`) — `[healthcare:speciality,
+    wheelchair, operator]`. Kept `healthcare:speciality` despite 80%+ of Paris labs
+    being the single value `biology` — the minority `radiology`/other buckets are a
+    real, civically useful distinction (where to get an X-ray vs a blood test), same
+    judgment call as `dispensing` on pharmacies. Data is heavily France-skewed (171 in
+    Paris vs 6 in Munich, 33 in Rio) — real global unevenness, not a France-only tag,
+    but only Paris cleared the coverage bar for a demonstrator.
+  - **psychotherapists** / **physiotherapists** (`healthcare=psychotherapist` /
+    `healthcare=physiotherapist`) — `[wheelchair]` only for both. Same solo-
+    practitioner `operator` trap as doctors/dentists/veterinary. Dropped
+    `healthcare:speciality` too: low coverage (14-29%) and top value is redundant
+    with the template's own tag (e.g. `psychotherapist` on a psychotherapist). Both
+    tags are Europe-heavy in practice — Taipei and Rio came back with 3-6 features for
+    physiotherapists (other cities likely fold this into `amenity=clinic` +
+    `healthcare:speciality=physiotherapy` instead, per the clinics entry above), so
+    physiotherapists shipped with a single demonstrator city.
 
 ## Validation the sync enforces
 
