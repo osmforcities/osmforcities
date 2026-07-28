@@ -182,6 +182,48 @@ active/featured set bounded.
     physiotherapists (other cities likely fold this into `amenity=clinic` +
     `healthcare:speciality=physiotherapy` instead, per the clinics entry above), so
     physiotherapists shipped with a single demonstrator city.
+- **Demonstrator pool had a blind spot: no North American city.** A full coverage sweep
+  of the remaining ~20 standalone `healthcare=*` values across Munich/Paris/Rio/
+  Taipei/Cape Town looked thin for several (optometrist 12 total, rehabilitation 14,
+  dialysis 5). Adding New York City, Los Angeles, and Madrid to the same sweep changed
+  the totals substantially (optometrist 125, rehabilitation 65, dialysis 42) — NYC
+  alone carries most of that swing. **A 5-city demonstrator pool without North America
+  will systematically undercount US-tagging-convention-heavy values.** Lesson for
+  future domain batches: include at least one large US city in the first coverage
+  pass, not as an afterthought.
+  - Added **podiatrist (79→124), counselling (39→65), speech_therapist (32→52),
+    occupational_therapist (21→30)** as new templates on the strength of the corrected
+    numbers — all comfortably real, multi-city.
+  - Deliberately did **not** add `dialysis` despite a much bigger corrected total (42):
+    37 of 42 come from NYC+LA alone, near-zero elsewhere — a single-market skew, same
+    disqualifying pattern as ev-charging's `network` in #406. `blood_donation` (29) is
+    thinner in total but present in all 8 cities tested, the more honest "real but
+    modest" signal — deferred, not added, pending its own coverage pass.
+  - Re-checked the 12 already-committed templates against NYC/LA/Madrid via the
+    dashboard (not just curl): NYC has 5-10x the raw volume of any other demonstrator
+    city for hospitals/clinics/doctors/pharmacies/opticians, but **volume alone isn't
+    sufficient** — NYC's wheelchair coverage is consistently weak (2-13%) even where
+    its other tags are strong, so it was added as a demonstrator only for
+    hospitals/clinics/doctors/pharmacies/opticians/medical-laboratories (where at least
+    one kept filterableTag is genuinely strong there), and skipped for
+    dentists/veterinary/physiotherapists/psychotherapists (where NYC's coverage on the
+    *only* kept filterableTag, wheelchair, is worse than the existing demonstrators).
+- **optometrists** (`healthcare=optometrist`) — no filterableTags, age view only.
+  Wiki-documented and real (125 across 8 cities), but `wheelchair` is weak everywhere
+  tested (0-10%) and `brand` in its best city (NYC, 29%) is a single-chain artifact
+  (100% "Cohen's Fashion Optical") rather than a generalizable signal.
+- **podiatrists** — `[wheelchair]`. Same solo-practitioner `operator` trap. Munich (50%)
+  is the only city with usable wheelchair coverage; Paris has 3x the raw count but
+  wheelchair coverage under 10%.
+- **rehabilitation-centres** (`healthcare=rehabilitation`) — `[operator]`, the inverse
+  of the usual pattern: `wheelchair` is weak everywhere (11-13%) but `operator` here is
+  genuinely institutional (Legacy Healing, VillageCare, Jamaica Hospital, Ensign
+  Group), not the solo-practitioner trap — worth checking per template, not assuming.
+- **counselling-services** — `[wheelchair, operator]`. Munich only demonstrator (39%
+  both); `healthcare:counselling` sub-tag exists but too thin (6 features) to use.
+- **speech-therapists** — `[wheelchair]` only, Munich (18%), the weakest coverage kept
+  in the batch — shipped anyway since it's the only accessibility-relevant signal and
+  matches the bar used for dentists/veterinary.
 
 ## Validation the sync enforces
 

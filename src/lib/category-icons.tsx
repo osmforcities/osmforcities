@@ -1,4 +1,5 @@
 import {
+  Accessibility,
   Activity,
   Ambulance,
   Anchor,
@@ -39,6 +40,7 @@ import {
   Droplets,
   Dumbbell,
   Egg,
+  Eye,
   Factory,
   Fence,
   Film,
@@ -53,6 +55,7 @@ import {
   Goal,
   GraduationCap,
   Hammer,
+  HandHelping,
   Heart,
   HeartHandshake,
   Home,
@@ -70,6 +73,8 @@ import {
   MapPin,
   Martini,
   Medal,
+  MessageCircle,
+  MessageCircleHeart,
   Milk,
   MoonStar,
   Mountain,
@@ -141,7 +146,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-28T15:32:14.060Z
+ * Generated: 2026-07-28T15:51:39.888Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -311,6 +316,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Users className="w-5 h-5" />;
     case "convenience":
       return <Store className="w-5 h-5" />;
+    case "counselling-services":
+      return <MessageCircleHeart className="w-5 h-5" />;
     case "courts":
       return <Scale className="w-5 h-5" />;
     case "cowsheds":
@@ -481,10 +488,14 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Trees className="w-5 h-5" />;
     case "nursing-home":
       return <BedDouble className="w-5 h-5" />;
+    case "occupational-therapists":
+      return <HandHelping className="w-5 h-5" />;
     case "optician":
       return <Glasses className="w-5 h-5" />;
     case "opticians":
       return <Glasses className="w-5 h-5" />;
+    case "optometrists":
+      return <Eye className="w-5 h-5" />;
     case "orchards":
       return <Apple className="w-5 h-5" />;
     case "parcel-lockers":
@@ -511,6 +522,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Sprout className="w-5 h-5" />;
     case "playgrounds":
       return <ToyBrick className="w-5 h-5" />;
+    case "podiatrists":
+      return <Footprints className="w-5 h-5" />;
     case "police-stations":
       return <Siren className="w-5 h-5" />;
     case "post-offices":
@@ -533,6 +546,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Train className="w-5 h-5" />;
     case "recycling":
       return <Recycle className="w-5 h-5" />;
+    case "rehabilitation-centres":
+      return <Accessibility className="w-5 h-5" />;
     case "residential":
       return <Building2 className="w-5 h-5" />;
     case "restaurants":
@@ -569,6 +584,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Droplet className="w-5 h-5" />;
     case "social-facility":
       return <HeartHandshake className="w-5 h-5" />;
+    case "speech-therapists":
+      return <MessageCircle className="w-5 h-5" />;
     case "speed-cameras":
       return <Camera className="w-5 h-5" />;
     case "sports-centres":

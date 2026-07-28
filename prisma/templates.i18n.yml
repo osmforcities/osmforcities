@@ -261,6 +261,60 @@ templates:
       en: Physiotherapists
       pt: Fisioterapeutas
       es: Fisioterapeutas
+  optometrists:
+    name:
+      en: Optometrists
+      pt: Optometristas
+      es: Optometristas
+    desc:
+      en: Optometrists
+      pt: Optometristas
+      es: Optometristas
+  podiatrists:
+    name:
+      en: Podiatrists
+      pt: Podólogos
+      es: Podólogos
+    desc:
+      en: Podiatrists
+      pt: Podólogos
+      es: Podólogos
+  rehabilitation-centres:
+    name:
+      en: Rehabilitation Centres
+      pt: Centros de reabilitação
+      es: Centros de rehabilitación
+    desc:
+      en: Rehabilitation Centres
+      pt: Centros de reabilitação
+      es: Centros de rehabilitación
+  counselling-services:
+    name:
+      en: Counselling Services
+      pt: Serviços de aconselhamento
+      es: Servicios de asesoramiento
+    desc:
+      en: Counselling Services
+      pt: Serviços de aconselhamento
+      es: Servicios de asesoramiento
+  speech-therapists:
+    name:
+      en: Speech Therapists
+      pt: Fonoaudiólogos
+      es: Logopedas
+    desc:
+      en: Speech Therapists
+      pt: Fonoaudiólogos
+      es: Logopedas
+  occupational-therapists:
+    name:
+      en: Occupational Therapists
+      pt: Terapeutas ocupacionais
+      es: Terapeutas ocupacionales
+    desc:
+      en: Occupational Therapists
+      pt: Terapeutas ocupacionais
+      es: Terapeutas ocupacionales
   schools:
     name:
       en: Schools

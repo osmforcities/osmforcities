@@ -42,6 +42,12 @@ templates:
   - ["medical-laboratories","healthcare=laboratory","healthcare","FlaskConical"]
   - ["psychotherapists","healthcare=psychotherapist","healthcare","Brain"]
   - ["physiotherapists","healthcare=physiotherapist","healthcare","Activity"]
+  - ["optometrists","healthcare=optometrist","healthcare","Eye"]
+  - ["podiatrists","healthcare=podiatrist","healthcare","Footprints"]
+  - ["rehabilitation-centres","healthcare=rehabilitation","healthcare","Accessibility"]
+  - ["counselling-services","healthcare=counselling","healthcare","MessageCircleHeart"]
+  - ["speech-therapists","healthcare=speech_therapist","healthcare","MessageCircle"]
+  - ["occupational-therapists","healthcare=occupational_therapist","healthcare","HandHelping"]
 # Education
   - ["schools","amenity=school","education","School"]
   - ["universities","amenity=university","education","GraduationCap"]
@@ -302,6 +308,11 @@ filterableTags:
   medical-laboratories: [healthcare:speciality, wheelchair, operator]
   psychotherapists: [wheelchair]
   physiotherapists: [wheelchair]
+  podiatrists: [wheelchair]
+  rehabilitation-centres: [operator]
+  counselling-services: [wheelchair, operator]
+  speech-therapists: [wheelchair]
+  occupational-therapists: [wheelchair]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -335,17 +346,20 @@ demonstrators:
     - { area: 62428,   note: "Munich, DE - good wheelchair coverage, mixed train/subway modes" }
   hospitals:
     - { area: 62428,   note: "Munich, DE - excellent operator/emergency/wheelchair coverage across the German clinic network" }
+    - { area: 175905,  note: "New York City, US - North American representative, best emergency-care coverage in the batch (91%)" }
     - { area: 71525,   note: "Paris, FR - large hospital set, clean operator + operator:type + wheelchair tagging" }
     - { area: 79604,   note: "Cape Town, ZA - African representative, strong operator/operator:type/emergency across public and private networks" }
     - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, solid emergency + operator:type tagging" }
     - { area: 1293250, note: "Taipei, TW - East Asian representative, strong emergency coverage across military/university/private hospitals" }
   clinics:
     - { area: 62428,   note: "Munich, DE - clean operator/operator:type/wheelchair tagging, well-bucketed specialties" }
+    - { area: 175905,  note: "New York City, US - North American representative, largest sample in the batch (677)" }
     - { area: 1293250, note: "Taipei, TW - large sample, rich clean specialty distribution led by traditional_chinese_medicine" }
     - { area: 79604,   note: "Cape Town, ZA - African representative, strong operator/operator:type, distinctive public-health specialty tagging" }
     - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, large municipal clinic network" }
   doctors:
     - { area: 62428,   note: "Munich, DE - largest sample (935), rich clean specialty distribution, strong wheelchair coverage" }
+    - { area: 175905,  note: "New York City, US - North American representative, huge sample (681), strong specialty coverage (61%)" }
     - { area: 1293250, note: "Taipei, TW - excellent wheelchair coverage, clean specialty buckets" }
     - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative" }
     - { area: 347950,  note: "Barcelona, ES - Iberian representative, distinct specialty mix" }
@@ -354,6 +368,7 @@ demonstrators:
     - { area: 1293250, note: "Taipei, TW - large sample, solid wheelchair coverage" }
   pharmacies:
     - { area: 62428,   note: "Munich, DE - 91% wheelchair coverage, near-complete dispensing tagging" }
+    - { area: 175905,  note: "New York City, US - North American representative, largest sample in the batch (1,112)" }
     - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, strong dispensing coverage" }
     - { area: 79604,   note: "Cape Town, ZA - African representative, solid dispensing + wheelchair" }
     - { area: 1293250, note: "Taipei, TW - East Asian representative" }
@@ -366,15 +381,30 @@ demonstrators:
     - { area: 1293250, note: "Taipei, TW - 28% wheelchair coverage, clean 3-way split" }
   opticians:
     - { area: 62428,   note: "Munich, DE - 76% wheelchair coverage, clean chain-brand tagging (Apollo-Optik, Fielmann)" }
+    - { area: 175905,  note: "New York City, US - North American representative, largest sample (383)" }
     - { area: 1293250, note: "Taipei, TW - large sample (217), strong wheelchair + brand coverage" }
     - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, real chain-brand data (Oticas Carol)" }
   medical-laboratories:
     - { area: 71525,   note: "Paris, FR - large sample (171), near-complete specialty tagging (biology vs radiology split)" }
+    - { area: 175905,  note: "New York City, US - North American representative, better-balanced specialty split than Rio (dropped)" }
   psychotherapists:
     - { area: 62428,   note: "Munich, DE - largest sample (128), clean wheelchair split" }
     - { area: 1293250, note: "Taipei, TW - smaller sample, confirms the tag outside Europe" }
   physiotherapists:
     - { area: 62428,   note: "Munich, DE - largest sample found (160); tag is Europe-heavy, Taipei/Rio too thin to include" }
+  optometrists:
+    - { area: 175905,  note: "New York City, US - largest sample by far (83), though dominated by one chain (Cohen's Fashion Optical)" }
+  podiatrists:
+    - { area: 62428,   note: "Munich, DE - 50% wheelchair coverage, clean 3-way split" }
+  rehabilitation-centres:
+    - { area: 207359,  note: "Los Angeles, US - 44% operator coverage, real institutional operators (Legacy Healing, Ensign Group)" }
+    - { area: 175905,  note: "New York City, US - real institutional operators (VillageCare, Jamaica Hospital)" }
+  counselling-services:
+    - { area: 62428,   note: "Munich, DE - only city with usable wheelchair (39%) and operator (39%) coverage" }
+  speech-therapists:
+    - { area: 62428,   note: "Munich, DE - only city with usable wheelchair coverage (18%)" }
+  occupational-therapists:
+    - { area: 62428,   note: "Munich, DE - 50% wheelchair coverage, clean 3-way split" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:
