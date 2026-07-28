@@ -289,7 +289,11 @@ filterableTags:
   ev-charging:     [capacity, operator, access, fee]
   crossings:       [crossing, crossing:markings, tactile_paving]
   railway-stations: [station, wheelchair, operator, network]
-  transit-platforms: [tactile_paving, wheelchair, shelter, bench, lit]
+  transit-platforms: [tactile_paving, wheelchair, shelter, bench, lit, covered]
+  subway-entrances: [wheelchair]
+  taxi-ranks:       [capacity, operator, wheelchair]
+  ferry-terminals:  [operator, network, wheelchair]
+  parking:          [parking, access, fee, capacity, surface]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -325,6 +329,21 @@ demonstrators:
     - { area: 62428,   note: "Munich, DE - dense multimodal platforms, near-complete tactile_paving/bench/shelter/lit, strong wheelchair" }
     - { area: 419203,  note: "Utrecht, NL - well-tagged bus/tram platforms, good tactile_paving + shelter" }
     - { area: 54517,   note: "Rennes, FR - meticulous accessibility (wheelchair/tactile/bench high), Western Europe representative" }
+  subway-entrances:
+    - { area: 62428,   note: "Munich, DE - every U-Bahn entrance tagged wheelchair (no/yes/limited split)" }
+    - { area: 347950,  note: "Barcelona, ES - metro entrances broadly tagged wheelchair" }
+  taxi-ranks:
+    - { area: 62428,   note: "Munich, DE - high capacity coverage, some wheelchair-accessible ranks" }
+    - { area: 62422,   note: "Berlin, DE - strong capacity tagging across ranks" }
+    - { area: 175342,  note: "London, GB - varied operator (private minicab firms), the deviation lens" }
+  ferry-terminals:
+    - { area: 398021,  note: "Stockholm, SE - multiple operators and networks (SL/Waxholmsbolaget/Stromma)" }
+    - { area: 406091,  note: "Oslo, NO - good wheelchair coverage, several fjord operators" }
+    - { area: 271110,  note: "Amsterdam, NL - GVB ferries, high wheelchair; surfaces operator-spelling duplicates" }
+  parking:
+    - { area: 62768,   note: "Freiburg, DE - near-complete parking-type/access tagging, compact dataset" }
+    - { area: 62591,   note: "Munster, DE - strong parking-type/access/capacity across many lots" }
+    - { area: 59874,   note: "Nantes, FR - well-tagged parking-type/access, high fee coverage" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:

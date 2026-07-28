@@ -681,7 +681,9 @@
     "crossing": "Crossing",
     "crossing:markings": "Markings",
     "station": "Station type",
-    "wheelchair": "Wheelchair access"
+    "wheelchair": "Wheelchair access",
+    "parking": "Type",
+    "surface": "Surface"
   },
   "TagValue": {
     "__common__": {

@@ -690,7 +690,9 @@
     "crossing": "Cruce",
     "crossing:markings": "Marcas viales",
     "station": "Tipo de estación",
-    "wheelchair": "Acceso silla de ruedas"
+    "wheelchair": "Acceso silla de ruedas",
+    "parking": "Tipo",
+    "surface": "Superficie"
   },
   "TagValue": {
     "__common__": {

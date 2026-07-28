@@ -50,28 +50,36 @@ Prereqs: local dev server, signed in (osmforcities-dev-auth), Overpass tunnel up
 
 Start from the OSM wiki page for the selector — it names the tags that describe the
 feature's real-world usability (for `amenity=charging_station`: capacity, connector,
-access, operator, fee). Shortlist those, then keep a key only if it is **both** well
-covered on the dashboard (a meaningful share of features carry it) **and** not the same
-value on every feature (or coloring is one flat blob), **and** exists as a single
-colorable key. Drop a key when near-absent (`covered` on bus-stops), truly single-valued
-everywhere (`public_transport=platform`, PTv2-co-tagged on every stop), not
-wiki-relevant, or fragmented across many keys (EV connectors live in count-valued
-`socket:type2`/`socket:type2_combo`/… with no single key to color by).
+access, operator, fee). **Wiki-relevance is the gate, not coverage.** Keep a candidate key
+when the wiki treats it as describing the feature's usability, quality, or accessibility,
+it exists as a single colorable key, and it is not the same value on every feature.
+**Low or regional coverage is never on its own a reason to drop a wiki-endorsed key** — the
+legend renders Missing, and the handful of features that do carry it are exactly the
+deviations and gaps OSM for Cities exists to surface (a taxi rank's `capacity` mapped in
+one city; a platform's `covered` on a few stations). Drop a key only for a *structural*
+reason: not wiki-relevant, a unique code/label (`ref`, `name`), truly single-valued
+everywhere (`public_transport=platform` co-tagged on every stop; `network`/`operator` =
+one authority per city), fragmented across many keys with no single key to color by (EV
+connectors live in count-valued `socket:type2`/`socket:type2_combo`/…), or data that lives
+on a sibling node, not the queried element.
 
-Coverage never qualifies a key on its own — a well-covered `ref` or `name` is still just
-a unique code, not a filter. Confirm every candidate against the OSM wiki first. If this
-measurement is delegated to a subagent, the subagent must do the wiki cross-check too
-(usability-relevance per key), not report Overpass/dashboard coverage alone.
+Coverage cuts neither way by itself: a well-covered `ref` or `name` is still a unique code,
+not a filter, while a sparsely-covered but wiki-relevant key earns its place. The wiki
+cross-check — usability/quality/accessibility relevance per key — is the decision. If this
+is delegated to a subagent, the subagent must do the wiki cross-check too, not report
+Overpass/dashboard coverage alone.
 
 A *skewed* distribution is fine and valuable: `operator` on `bicycle-rental` is mostly
 one value (a city has one bike-share system), but the stray outliers it surfaces — a
 second operator, a mis-tagged dock — are exactly the deviations OSM for Cities exists to
-flag. Don't require an even spread.
+flag. Don't require an even spread, and don't require high coverage either.
 
-Tune both ways, using the dashboard's "Most used tags" as the menu: **reduce**
-near-zero keys; **widen** a high-usage varied key (coverage can be regional — the legend
-handles Missing). For each key added, add a `TagLabel` in en/es/pt-BR; values fall back
-to the raw string, so `TagValue` labels are optional. Re-sync and reload to confirm.
+Tune using the dashboard's "Most used tags" plus the wiki: **add** any wiki-relevant,
+single-key, non-single-valued tag even when sparse; **drop** only unique codes, keys that
+are single-valued everywhere, off-wiki keys, and sibling-node keys. Coverage guides which
+cities make good demonstrators, not which keys make the list. For each key added, add a
+`TagLabel` in en/es/pt-BR; values fall back to the raw string, so `TagValue` labels are
+optional. Re-sync and reload to confirm.
 
 ### Picking demonstrators
 
@@ -98,7 +106,8 @@ active/featured set bounded.
 ## Worked examples
 
 - **bus-stops** — tags sit on the node, so `shelter`/`bench`/`lit`/`tactile_paving` are
-  well-covered binaries. Dropped `covered` (near-absent), added `operator`.
+  well-covered binaries. Dropped `covered` — a platform-roof tag, not a standard
+  `highway=bus_stop` key (it belongs on `transit-platforms`); added `operator`.
 - **bicycle-rental** — `[bicycle_rental, operator, network, capacity]`. Skewed (one
   system per city) but kept: the outliers are worth surfacing.
 - **ev-charging** — `[capacity, operator, access, fee]`: the wiki's usability-critical
@@ -113,14 +122,31 @@ active/featured set bounded.
   accessibility tags sit on the station node itself. Dropped `public_transport` (=station
   everywhere, single-valued) and the `train`/`subway`/`light_rail` boolean siblings (mode
   is already in `station=`); excluded `ref`/`name` (unique codes/labels, not categories).
-- **transit-platforms** — `[tactile_paving, wheelchair, shelter, bench, lit]`, the wiki's
-  platform accessibility/comfort tags. Multimodal (`public_transport=platform` covers bus,
-  tram, train, subway) and multi-geometry (nodes/ways/areas), so it is the network-wide
-  accessibility lens the trackside `tram-stops` node can't be. `tactile_paving` splits
-  ~50/50 in Munich; `wheelchair` is a yes/limited/no ternary. Dropped `covered` (near-absent,
-  same trap as bus-stops) and `operator`/`network` (MVV-only, ~0% outside Munich). Child of
-  `public-transit`; the parent query was widened to include `public_transport=platform` so
-  the umbrella covers every interface and the child stays a strict subset.
+- **transit-platforms** — `[tactile_paving, wheelchair, shelter, bench, lit, covered]`, the
+  wiki's platform accessibility/comfort tags. Multimodal (`public_transport=platform` covers
+  bus, tram, train, subway) and multi-geometry (nodes/ways/areas), so it is the network-wide
+  accessibility lens the trackside `tram-stops` node can't be. `tactile_paving` splits ~50/50
+  in Munich; `wheelchair` is a yes/limited/no ternary; `covered` is sparse (~1-4%) but a real
+  yes/no/roof split and wiki-relevant, so it stays. Dropped `operator`/`network` (MVV = one
+  authority per city, single-valued). Child of `public-transit`; the parent query was widened
+  to include `public_transport=platform` so the umbrella covers every interface and the child
+  stays a strict subset.
+- **subway-entrances** — `[wheelchair]`. A single key, but `railway=subway_entrance` carries
+  wheelchair on ~99% of entrances in Munich / ~83% in Barcelona, well split no/yes/limited —
+  the clearest accessibility lens for a metro network. `ref`/`name` excluded (unique codes).
+- **taxi-ranks** — `[capacity, operator, wheelchair]`. `capacity` is well covered in German
+  cities (Munich 65%, Berlin 41%) and sparse elsewhere — regional, kept. `operator` is a
+  single firm in most cities but genuinely multi-valued in London's minicab market, so it
+  survives (the deviation lens). Dropped `network` (0% in every city checked — no data to color).
+- **ferry-terminals** — `[operator, network, wheelchair]`. Sparse template, but `operator` and
+  `network` are genuinely multi-valued in ferry cities (Stockholm SL/Waxholmsbolaget/Stromma;
+  Oslo several fjord lines) — not the one-authority-per-city case, so both stay. Amsterdam even
+  surfaces a `GVB` vs `Gemeentelijk Vervoerbedrijf` spelling duplicate. `wheelchair` ~48% in Oslo.
+- **parking** — `[parking, access, fee, capacity, surface]`, all wiki-canonical parking-quality
+  keys. `parking` (surface/underground/multi-storey/street_side/…) and `access`
+  (private/customers/permissive/…) are the strongest color-bys (80-94% in Freiburg). Screen on a
+  smaller city — `amenity=parking_space` explodes the feature count in big cities and can trip
+  the size cap.
 - **tram-stops — filterable tags rejected.** `railway=tram_stop` marks the trackside point;
   the passenger amenities live on the separate `public_transport=platform` node (now its own
   `transit-platforms` template), so the queried tram_stop node has nothing to filter — kept as
