@@ -65,7 +65,7 @@ templates:
   - ["social-facility","amenity=social_facility","social","HeartHandshake"]
   - ["community-centre","amenity=community_centre","social","Users"]
   - ["town-halls","amenity=townhall","social","Landmark"]
-  - ["senior-centers","amenity=social_facility&social_facility:for=senior","social","Users","social-facility"]
+  - ["senior-centers","amenity=social_facility&social_facility:for=senior","social","Accessibility","social-facility"]
 # Government
   - ["government-office","office=government","government","Landmark"]
   - ["courts","amenity=court","government","Scale"]

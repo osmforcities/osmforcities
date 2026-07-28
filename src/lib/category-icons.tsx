@@ -1,4 +1,5 @@
 import {
+  Accessibility,
   Ambulance,
   Anchor,
   Antenna,
@@ -138,7 +139,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-15T16:48:47.042Z
+ * Generated: 2026-07-28T17:09:21.930Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -537,7 +538,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "scrub":
       return <Shrub className="w-5 h-5" />;
     case "senior-centers":
-      return <Users className="w-5 h-5" />;
+      return <Accessibility className="w-5 h-5" />;
     case "shingle":
       return <Mountain className="w-5 h-5" />;
     case "shoes":
