@@ -214,7 +214,7 @@ templates:
   - ["archery","sport=archery","sports","Crosshair"]
   - ["climbing","sport=climbing","sports","Mountain"]
   - ["equestrian","sport=equestrian","sports","PawPrint"]
-# Public facilities
+# Misc facilities (fountains, clocks, wayfinding)
   - ["fountains","amenity=fountain","amenities","Droplets"]
   - ["clocks","amenity=clock","services","Clock"]
   # Consolidated: tourism=information covers guideposts/boards/maps/route markers via
@@ -304,7 +304,7 @@ filterableTags:
   recycling:       [recycling_type, operator]
   bottle-return:   [operator]
   public-bookcase: [public_bookcase:type]
-  luggage-lockers:  [fee, operator]
+  luggage-lockers: [fee, operator]
   fountains:       [drinking_water]
   clocks:          [display, support, visibility]
   information-boards: [information]

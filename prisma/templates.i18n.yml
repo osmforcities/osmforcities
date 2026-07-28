@@ -621,15 +621,6 @@ templates:
       en: Telephones
       pt: Telefones públicos
       es: Teléfonos públicos
-  internet-access:
-    name:
-      en: Internet Access
-      pt: Acesso à internet
-      es: Acceso a internet
-    desc:
-      en: Internet Access
-      pt: Acesso à internet
-      es: Acceso a internet
   supermarkets:
     name:
       en: Supermarkets
