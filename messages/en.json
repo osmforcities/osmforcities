@@ -703,6 +703,7 @@
       "religious": "Religious",
       "university": "University",
       "ngo": "NGO",
+      "community": "Community",
       "business": "Business",
       "military": "Military",
       "private_non_profit": "Private non-profit"
@@ -733,15 +734,6 @@
       "handlebar_holder": "Handlebar holder",
       "crossbar": "Crossbar",
       "informal": "Informal"
-    },
-    "operator:type": {
-      "public": "Public",
-      "private": "Private",
-      "government": "Government",
-      "religious": "Religious",
-      "ngo": "NGO",
-      "community": "Community",
-      "university": "University"
     },
     "internet_access": {
       "wlan": "Wi-Fi",

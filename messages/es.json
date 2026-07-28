@@ -712,6 +712,7 @@
       "religious": "Religioso",
       "university": "Universitario",
       "ngo": "ONG",
+      "community": "Comunidad",
       "business": "Empresa",
       "military": "Militar",
       "private_non_profit": "Privado sin fines de lucro"
@@ -742,15 +743,6 @@
       "handlebar_holder": "Soporte de manillar",
       "crossbar": "Barra",
       "informal": "Informal"
-    },
-    "operator:type": {
-      "public": "Público",
-      "private": "Privado",
-      "government": "Gobierno",
-      "religious": "Religioso",
-      "ngo": "ONG",
-      "community": "Comunidad",
-      "university": "Universidad"
     },
     "internet_access": {
       "wlan": "Wi-Fi",
