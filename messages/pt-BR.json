@@ -695,7 +695,10 @@
     "surface": "Superfície",
     "location": "Localização",
     "seasonal": "Sazonal",
-    "fitness_station": "Tipo"
+    "fitness_station": "Tipo",
+    "operator:type": "Tipo de operador",
+    "isced:level": "Nível educacional",
+    "internet_access": "Acesso à internet"
   },
   "TagValue": {
     "__common__": {
@@ -738,6 +741,19 @@
       "handlebar_holder": "Suporte de guidão",
       "crossbar": "Barra",
       "informal": "Informal"
+    },
+    "operator:type": {
+      "public": "Público",
+      "private": "Privado",
+      "government": "Governo",
+      "religious": "Religioso",
+      "ngo": "ONG",
+      "community": "Comunidade",
+      "university": "Universidade"
+    },
+    "internet_access": {
+      "wlan": "Wi-Fi",
+      "terminal": "Terminal"
     }
   }
 }
