@@ -690,7 +690,10 @@
     "crossing": "Travessia",
     "crossing:markings": "Faixa de pedestres",
     "station": "Tipo de estação",
-    "wheelchair": "Acesso para cadeirantes"
+    "wheelchair": "Acesso para cadeirantes",
+    "operator:type": "Tipo de operador",
+    "isced:level": "Nível educacional",
+    "internet_access": "Acesso à internet"
   },
   "TagValue": {
     "__common__": {
@@ -724,6 +727,19 @@
       "handlebar_holder": "Suporte de guidão",
       "crossbar": "Barra",
       "informal": "Informal"
+    },
+    "operator:type": {
+      "public": "Público",
+      "private": "Privado",
+      "government": "Governo",
+      "religious": "Religioso",
+      "ngo": "ONG",
+      "community": "Comunidade",
+      "university": "Universidade"
+    },
+    "internet_access": {
+      "wlan": "Wi-Fi",
+      "terminal": "Terminal"
     }
   }
 }
