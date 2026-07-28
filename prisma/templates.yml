@@ -294,7 +294,7 @@ filterableTags:
   cafes:            [cuisine, outdoor_seating, indoor_seating, wheelchair, takeaway, internet_access]
   fast-food:        [cuisine, takeaway, outdoor_seating, wheelchair, delivery]
   bars:             [wheelchair, outdoor_seating, smoking]
-  pubs:             [wheelchair, outdoor_seating, smoking, internet_access]
+  pubs:             [wheelchair, outdoor_seating, smoking, internet_access, real_ale, food]
   ice-cream:        [wheelchair, outdoor_seating, takeaway]
   food-vending:     [vending, operator, brand]
 
@@ -347,6 +347,7 @@ demonstrators:
   pubs:
     - { area: 71525,   note: "Paris, FR - outdoor_seating/wheelchair/smoking tagging, small but consistent set" }
     - { area: 451516,  note: "Wroclaw, PL - strongest wheelchair/outdoor_seating coverage found" }
+    - { area: 175342,  note: "Greater London, UK - pub-culture heartland, 3.2k pubs; real_ale (15%) and food (19%) only show real signal at this scale" }
   ice-cream:
     - { area: 71525,   note: "Paris, FR - wheelchair/outdoor_seating/takeaway all present despite small dataset" }
     - { area: 451516,  note: "Wroclaw, PL - consistent wheelchair/outdoor_seating/takeaway signal" }

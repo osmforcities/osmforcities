@@ -140,7 +140,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-28T15:50:12.921Z
+ * Generated: 2026-07-28T16:28:06.092Z
  * Regenerate with: pnpm generate-icons
  */
 

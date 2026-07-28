@@ -691,7 +691,9 @@
     "internet_access": "Internet access",
     "smoking": "Smoking",
     "vending": "Type",
-    "brand": "Brand"
+    "brand": "Brand",
+    "real_ale": "Real ale",
+    "food": "Food"
   },
   "TagValue": {
     "__common__": {

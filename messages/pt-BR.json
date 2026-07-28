@@ -700,7 +700,9 @@
     "internet_access": "Acesso à internet",
     "smoking": "Permitido fumar",
     "vending": "Tipo",
-    "brand": "Marca"
+    "brand": "Marca",
+    "real_ale": "Cerveja real (real ale)",
+    "food": "Serve comida"
   },
   "TagValue": {
     "__common__": {

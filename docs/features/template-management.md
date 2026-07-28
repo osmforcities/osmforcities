@@ -132,11 +132,15 @@ active/featured set bounded.
 - **bars** — `[wheelchair, outdoor_seating, smoking]`. Dropped `live_music`/`microbrewery`
   (0-1% in all three test regions despite wiki "useful combination" billing — an event
   attribute and a rare specialty, not stable physical facts to color by).
-- **pubs** — `[wheelchair, outdoor_seating, smoking, internet_access]`. Dropped
-  `food`/`real_ale`/`microbrewery`/`live_music` (0-8% everywhere, including Paris/Wrocław
-  where the template otherwise performs well) and excluded `wheelchair` from the
-  candidate list only by oversight in the pub wiki page itself — the generic
-  `Key:wheelchair` page treats it as universal, and dashboard data confirmed 30-49%.
+- **pubs** — `[wheelchair, outdoor_seating, smoking, internet_access, real_ale, food]`.
+  `food`/`real_ale`/`microbrewery`/`live_music` looked near-zero (0-8%) in Paris/Wrocław,
+  small-city data that doesn't reflect pub culture. Re-tested at scale against Greater
+  London (3.2k pubs, the pub-culture heartland): `real_ale` (15%) and `food` (19%) both
+  clear the bar already accepted for `smoking` (10%) and `internet_access` (9%) — added.
+  `microbrewery` (3%) and `live_music` (<1%) stayed thin even in London — dropped. Also
+  excluded `wheelchair` from the candidate list only by oversight in the pub wiki page
+  itself — the generic `Key:wheelchair` page treats it as universal, and dashboard data
+  confirmed 25-49%.
 - **ice-cream** — `[wheelchair, outdoor_seating, takeaway]`. Small dataset everywhere
   (80-227 features per city) but the three keys are consistently present (4-48%);
   dropped `self_service` (0% in all three cities tested).
