@@ -47,8 +47,9 @@ export interface Demonstrator {
 export interface LogicConfig {
   templates: Record<string, TemplateLogic>;
   categories?: Record<string, string>;
-  // Raw so validateDemonstrators can report shape errors on hand-edited YAML.
-  demonstrators?: Record<string, unknown>;
+  // Raw so validateDemonstrators can report shape errors on hand-edited YAML
+  // (incl. a scalar/array root, not just per-key issues).
+  demonstrators?: unknown;
 }
 
 /**
@@ -274,7 +275,7 @@ export function buildTemplate(config: TemplateConfig): ParsedTemplate {
 export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
   entries: LogicEntry[];
   categories: Record<string, string>;
-  demonstrators: Record<string, unknown>;
+  demonstrators: unknown;
 } {
   const filePath = join(basePath, LOGIC_FILE);
   try {
@@ -283,7 +284,7 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
       templates?: unknown[];
       categories?: Record<string, string>;
       filterableTags?: Record<string, unknown>;
-      demonstrators?: Record<string, unknown>;
+      demonstrators?: unknown;
     };
 
     if (!config?.templates || !Array.isArray(config.templates)) {
@@ -413,11 +414,18 @@ export function loadTemplatesYaml(
  * the workflow at nothing. One error per problem; an empty/absent section is valid.
  */
 export function validateDemonstrators(
-  demonstrators: Record<string, unknown> | undefined,
+  demonstrators: unknown,
   knownIds: Set<string>,
 ): ValidationError[] {
   const errors: ValidationError[] = [];
-  if (!demonstrators) return errors;
+  if (demonstrators === undefined || demonstrators === null) return errors;
+  if (typeof demonstrators !== "object" || Array.isArray(demonstrators)) {
+    errors.push({
+      field: "demonstrators",
+      message: "demonstrators must be a map keyed by template id",
+    });
+    return errors;
+  }
 
   for (const [templateId, list] of Object.entries(demonstrators)) {
     if (!knownIds.has(templateId)) {

@@ -352,7 +352,8 @@ describe("template-parser", () => {
     it("exposes the demonstrators section keyed by template id", () => {
       const config = loadTemplatesYaml("./prisma");
       expect(config.demonstrators).toBeDefined();
-      const busStops = config.demonstrators?.["bus-stops"];
+      const demonstrators = config.demonstrators as Record<string, unknown>;
+      const busStops = demonstrators["bus-stops"];
       expect(Array.isArray(busStops)).toBe(true);
       expect((busStops as unknown[]).length).toBeGreaterThan(0);
     });
@@ -376,7 +377,16 @@ describe("template-parser", () => {
 
     it("accepts an empty or absent section", () => {
       expect(validateDemonstrators(undefined, known)).toHaveLength(0);
+      expect(validateDemonstrators(null, known)).toHaveLength(0);
       expect(validateDemonstrators({}, known)).toHaveLength(0);
+    });
+
+    it("errors on a scalar or array root (hand-edited YAML)", () => {
+      for (const root of [42, true, "bus-stops", [{ area: 54517 }]]) {
+        const errors = validateDemonstrators(root, known);
+        expect(errors).toHaveLength(1);
+        expect(errors[0].message).toContain("map keyed by template id");
+      }
     });
 
     it("errors on an unknown template id", () => {
