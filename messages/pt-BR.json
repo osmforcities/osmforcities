@@ -726,6 +726,32 @@
       "handlebar_holder": "Suporte de guidão",
       "crossbar": "Barra",
       "informal": "Informal"
+    },
+    "parking": {
+      "surface": "Em superfície",
+      "underground": "Subterrâneo",
+      "multi-storey": "Vários pavimentos",
+      "rooftop": "Em cobertura",
+      "street_side": "Junto à via",
+      "lane": "Faixa",
+      "sheds": "Galpões",
+      "carports": "Coberturas",
+      "garage_boxes": "Boxes de garagem"
+    },
+    "surface": {
+      "asphalt": "Asfalto",
+      "concrete": "Concreto",
+      "paving_stones": "Blocos de pavimentação",
+      "sett": "Paralelepípedo",
+      "cobblestone": "Pedra irregular",
+      "paved": "Pavimentado",
+      "unpaved": "Não pavimentado",
+      "compacted": "Compactado",
+      "fine_gravel": "Cascalho fino",
+      "gravel": "Cascalho",
+      "ground": "Terra",
+      "dirt": "Terra batida",
+      "grass": "Grama"
     }
   }
 }
