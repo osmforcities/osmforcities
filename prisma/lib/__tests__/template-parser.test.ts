@@ -116,9 +116,9 @@ describe("template-parser", () => {
   describe("buildOverpassQuery", () => {
     it("builds query for key=value", () => {
       const query = buildOverpassQuery("amenity=restaurant");
-      expect(query).toContain('node["amenity"="restaurant"]');
-      expect(query).toContain('way["amenity"="restaurant"]');
-      expect(query).toContain('relation["amenity"="restaurant"]');
+      expect(query).toContain('node["amenity"~"(^|;)restaurant(;|$)"]');
+      expect(query).toContain('way["amenity"~"(^|;)restaurant(;|$)"]');
+      expect(query).toContain('relation["amenity"~"(^|;)restaurant(;|$)"]');
       expect(query).toContain("area.searchArea");
     });
 
@@ -129,42 +129,58 @@ describe("template-parser", () => {
       expect(query).toContain('relation["sport"]');
     });
 
+    it("matches semicolon-combined tag values (e.g. vending=drinks;food)", () => {
+      const query = buildOverpassQuery("amenity=vending_machine&vending=food");
+      expect(query).toContain('"vending"~"(^|;)food(;|$)"');
+    });
+
+    it("escapes regex metacharacters in values", () => {
+      const query = buildOverpassQuery("brand=Eat+Fresh");
+      expect(query).toContain('"brand"~"(^|;)Eat\\+Fresh(;|$)"');
+    });
+
     it("builds query for composite tags with ; separator", () => {
       const query = buildOverpassQuery("natural=tree;natural=tree_row");
-      expect(query).toContain('node["natural"="tree"]');
-      expect(query).toContain('node["natural"="tree_row"]');
-      expect(query).toContain('way["natural"="tree"]');
-      expect(query).toContain('way["natural"="tree_row"]');
-      expect(query).toContain('relation["natural"="tree"]');
-      expect(query).toContain('relation["natural"="tree_row"]');
+      expect(query).toContain('node["natural"~"(^|;)tree(;|$)"]');
+      expect(query).toContain('node["natural"~"(^|;)tree_row(;|$)"]');
+      expect(query).toContain('way["natural"~"(^|;)tree(;|$)"]');
+      expect(query).toContain('way["natural"~"(^|;)tree_row(;|$)"]');
+      expect(query).toContain('relation["natural"~"(^|;)tree(;|$)"]');
+      expect(query).toContain('relation["natural"~"(^|;)tree_row(;|$)"]');
     });
 
     it("builds query for 3+ composite tags", () => {
       const query = buildOverpassQuery(
         "building=house;building=detached;building=semidetached_house",
       );
-      expect(query).toContain('node["building"="house"]');
-      expect(query).toContain('node["building"="detached"]');
-      expect(query).toContain('node["building"="semidetached_house"]');
+      expect(query).toContain('node["building"~"(^|;)house(;|$)"]');
+      expect(query).toContain('node["building"~"(^|;)detached(;|$)"]');
+      expect(query).toContain(
+        'node["building"~"(^|;)semidetached_house(;|$)"]',
+      );
     });
 
     it("builds query for mixed key-only and key=value composites", () => {
       const query = buildOverpassQuery("sport;sport=football");
       expect(query).toContain('node["sport"]');
-      expect(query).toContain('node["sport"="football"]');
+      expect(query).toContain('node["sport"~"(^|;)football(;|$)"]');
     });
 
     it("builds query for AND conditions with & separator", () => {
       const query = buildOverpassQuery("natural=tree&species=*");
-      expect(query).toContain('node["natural"="tree"]["species"]');
-      expect(query).toContain('way["natural"="tree"]["species"]');
-      expect(query).toContain('relation["natural"="tree"]["species"]');
+      expect(query).toContain(
+        'node["natural"~"(^|;)tree(;|$)"]["species"]',
+      );
+      expect(query).toContain('way["natural"~"(^|;)tree(;|$)"]["species"]');
+      expect(query).toContain(
+        'relation["natural"~"(^|;)tree(;|$)"]["species"]',
+      );
     });
 
     it("builds query for multiple AND conditions", () => {
       const query = buildOverpassQuery("highway=path&surface=paved&lit=yes");
       expect(query).toContain(
-        'node["highway"="path"]["surface"="paved"]["lit"="yes"]',
+        'node["highway"~"(^|;)path(;|$)"]["surface"~"(^|;)paved(;|$)"]["lit"~"(^|;)yes(;|$)"]',
       );
     });
 
@@ -172,8 +188,10 @@ describe("template-parser", () => {
       const query = buildOverpassQuery(
         "highway=footway;highway=path&surface=paved",
       );
-      expect(query).toContain('node["highway"="footway"]');
-      expect(query).toContain('node["highway"="path"]["surface"="paved"]');
+      expect(query).toContain('node["highway"~"(^|;)footway(;|$)"]');
+      expect(query).toContain(
+        'node["highway"~"(^|;)path(;|$)"]["surface"~"(^|;)paved(;|$)"]',
+      );
     });
   });
 
@@ -201,7 +219,9 @@ describe("template-parser", () => {
       expect(template.description).toBe("Test Restaurants in the area");
       expect(template.category).toBe("food");
       expect(template.tags).toEqual(["amenity=restaurant"]);
-      expect(template.overpassQuery).toContain('node["amenity"="restaurant"]');
+      expect(template.overpassQuery).toContain(
+        'node["amenity"~"(^|;)restaurant(;|$)"]',
+      );
     });
 
     it("auto-generates name and description when not provided", () => {
@@ -254,8 +274,12 @@ describe("template-parser", () => {
       };
       const template = buildTemplate(config);
       expect(template.tags).toEqual(["natural=tree", "natural=tree_row"]);
-      expect(template.overpassQuery).toContain('node["natural"="tree"]');
-      expect(template.overpassQuery).toContain('node["natural"="tree_row"]');
+      expect(template.overpassQuery).toContain(
+        'node["natural"~"(^|;)tree(;|$)"]',
+      );
+      expect(template.overpassQuery).toContain(
+        'node["natural"~"(^|;)tree_row(;|$)"]',
+      );
     });
   });
 

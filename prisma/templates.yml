@@ -116,7 +116,7 @@ templates:
   - ["pubs","amenity=pub","food","Beer"]
   - ["ice-cream","amenity=ice_cream","food","IceCreamCone"]
   - ["food-court","amenity=food_court","food","ChefHat"]
-  - ["food-vending","amenity=vending_machine&vending=food;amenity=vending_machine&vending=drinks;amenity=vending_machine&vending=coffee;amenity=vending_machine&vending=water;amenity=vending_machine&vending=milk;amenity=vending_machine&vending=ice_cream;amenity=vending_machine&vending=bread;amenity=vending_machine&vending=sweets;amenity=vending_machine&vending=pizza","food","CupSoda"]
+  - ["food-vending","amenity=vending_machine&vending=food;amenity=vending_machine&vending=drinks;amenity=vending_machine&vending=coffee;amenity=vending_machine&vending=water;amenity=vending_machine&vending=milk;amenity=vending_machine&vending=ice_cream;amenity=vending_machine&vending=bread;amenity=vending_machine&vending=sweets;amenity=vending_machine&vending=pizza;amenity=vending_machine&vending=eggs","food","CupSoda"]
 # Leisure
   - ["parks","leisure=park","leisure","TreePine"]
   - ["playgrounds","leisure=playground","leisure","ToyBrick"]

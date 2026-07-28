@@ -190,6 +190,21 @@ active/featured set bounded.
   `operator`. `operator`/`brand` are regional (9-78% / 5-69% across Tokyo/Paris/Wrocław)
   but real in at least one strong city each. Dropped `wheelchair` (0-2% everywhere; also a
   poor conceptual fit — accessibility isn't a meaningful attribute for a vending machine).
+  Query's `vending=*` value list checked against taginfo usage counts (2026-07-28): added
+  `eggs` (880 uses, same tier as already-included `milk`/`ice_cream`); `snacks`/`honey`/
+  `potatoes`/`meat`/`cheese` (109-265 uses) stay below the threshold used for every other
+  value here. Also found and fixed a real query-builder bug: `buildOverpassQuery` matched
+  tag values with exact equality, so vending machines using OSM's semicolon-combined-value
+  convention (`vending=drinks;food`, `vending=coffee;sweets`, etc — ~4,240 machines
+  globally per taginfo) were silently invisible to this template. Fixed generally (not
+  special-cased) by switching value matches to a semicolon-boundary regex
+  (`"key"~"(^|;)value(;|$)"`); verified against real Overpass for Wrocław that this is a
+  strict superset (21 → 29 features, zero of the original 21 lost). No other template's
+  query is affected in practice — every other value-matched key in `templates.yml`
+  (`amenity`, `natural`, `shop`, `leisure`, `tourism`, `office`, `historic`, `man_made`,
+  `building`, `highway`, `railway`, `waterway`) is a primary classification key that OSM
+  convention treats as single-valued; only descriptive/attribute keys like `vending=*` are
+  routinely semicolon-combined.
 - **canteens — rejected.** `amenity=canteen` returned zero features in 5 of 6 test cities
   (Paris, Wrocław, Barcelona, Mexico City, Tokyo); only Munich had any data (16 features).
   Even there, `access` (the key that would carry a students-vs-employees food-security
@@ -197,6 +212,13 @@ active/featured set bounded.
   case the tag is meant to capture. Empty in most cities fails the propose bar outright;
   not added. Revisit if OSM coverage grows, or if a country-specific school-meal tagging
   convention turns up (e.g. Brazil's merenda escolar, mapped some other way).
+- **Domain completeness (2026-07-28).** Checked the food batch against the OSM wiki's
+  "Sustenance" amenity group (the canonical list of eating/drinking establishment types):
+  bar, biergarten, cafe, fast_food, food_court, ice_cream, pub, restaurant. 7 of 8 are
+  covered; `biergarten` is deliberately deferred (see epic #245). No other essential
+  template is missing from the domain. Cross-checked for miscategorization too — no
+  Sustenance-group amenity is duplicated or filed under a different category, and
+  `amenity=marketplace` (the future Markets-domain candidate) isn't defined anywhere yet.
 
 ## Validation the sync enforces
 
