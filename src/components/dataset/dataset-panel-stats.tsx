@@ -513,22 +513,20 @@ function SectionHeader({
   value?: string;
   icon: LucideIcon;
 }) {
+  // Icon leads as the section marker (left, beside the title); the stat stands
+  // alone at the right as the one bold value. Keeps the icon anchored to the
+  // section identity across all headers, whether or not a value is present.
   return (
-    <div className="flex items-baseline gap-2.5">
+    <div className="flex items-center gap-2">
+      <Icon className="size-[18px] shrink-0 text-olive-500" aria-hidden />
       <h3 className="text-lg font-semibold leading-tight text-gray-900">
         {title}
       </h3>
       {value != null && (
-        <span className="ml-auto text-[15px] font-bold tabular-nums text-gray-600">
+        <span className="ml-auto text-lg font-bold tabular-nums text-gray-900">
           {value}
         </span>
       )}
-      <Icon
-        className={`size-[18px] self-center text-olive-500${
-          value == null ? " ml-auto" : ""
-        }`}
-        aria-hidden
-      />
     </div>
   );
 }
