@@ -8,6 +8,7 @@ import {
   BedDouble,
   Beef,
   Beer,
+  BicepsFlexed,
   Bike,
   Binoculars,
   BrickWall,
@@ -22,6 +23,7 @@ import {
   Carrot,
   Cctv,
   Church,
+  CircleDot,
   Clock,
   Coffee,
   Construction,
@@ -29,10 +31,10 @@ import {
   Cross,
   Crosshair,
   Cylinder,
+  Diamond,
   Dog,
   DollarSign,
   DoorOpen,
-  Dribbble,
   Droplet,
   Droplets,
   Dumbbell,
@@ -60,6 +62,7 @@ import {
   Info,
   LandPlot,
   Landmark,
+  LayoutGrid,
   Leaf,
   LibraryBig,
   Lightbulb,
@@ -80,6 +83,7 @@ import {
   RadioTower,
   Recycle,
   Repeat,
+  Ribbon,
   RockingChair,
   Route,
   Sandwich,
@@ -108,6 +112,7 @@ import {
   Tent,
   Theater,
   ThermometerSun,
+  Ticket,
   Toilet,
   ToyBrick,
   Tractor,
@@ -140,7 +145,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-28T15:52:51.756Z
+ * Generated: 2026-07-28T17:15:19.288Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -249,9 +254,9 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "bars":
       return <Martini className="w-5 h-5" />;
     case "baseball":
-      return <Trophy className="w-5 h-5" />;
+      return <Diamond className="w-5 h-5" />;
     case "basketball":
-      return <Dribbble className="w-5 h-5" />;
+      return <CircleDot className="w-5 h-5" />;
     case "beaches":
       return <TreePalm className="w-5 h-5" />;
     case "benches":
@@ -341,7 +346,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "emergency-phones":
       return <Phone className="w-5 h-5" />;
     case "equestrian":
-      return <PawPrint className="w-5 h-5" />;
+      return <Ribbon className="w-5 h-5" />;
     case "ev-charging":
       return <Zap className="w-5 h-5" />;
     case "farm-auxiliary":
@@ -405,7 +410,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "guideposts":
       return <Signpost className="w-5 h-5" />;
     case "gymnasiums":
-      return <Dumbbell className="w-5 h-5" />;
+      return <BicepsFlexed className="w-5 h-5" />;
     case "hardware":
       return <Hammer className="w-5 h-5" />;
     case "health-post":
@@ -561,13 +566,13 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "speed-cameras":
       return <Camera className="w-5 h-5" />;
     case "sports-centres":
-      return <Dumbbell className="w-5 h-5" />;
+      return <LayoutGrid className="w-5 h-5" />;
     case "springs":
       return <Droplets className="w-5 h-5" />;
     case "stables":
       return <PawPrint className="w-5 h-5" />;
     case "stadiums":
-      return <Trophy className="w-5 h-5" />;
+      return <Ticket className="w-5 h-5" />;
     case "stockyards":
       return <PawPrint className="w-5 h-5" />;
     case "stone":
