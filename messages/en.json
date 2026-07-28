@@ -681,7 +681,15 @@
     "crossing": "Crossing",
     "crossing:markings": "Markings",
     "station": "Station type",
-    "wheelchair": "Wheelchair access"
+    "wheelchair": "Wheelchair access",
+    "cuisine": "Cuisine",
+    "outdoor_seating": "Outdoor seating",
+    "indoor_seating": "Indoor seating",
+    "takeaway": "Takeaway",
+    "delivery": "Delivery",
+    "diet:vegetarian": "Vegetarian options",
+    "internet_access": "Internet access",
+    "smoking": "Smoking"
   },
   "TagValue": {
     "__common__": {

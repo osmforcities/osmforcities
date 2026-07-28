@@ -288,6 +288,12 @@ filterableTags:
   ev-charging:     [capacity, operator, access, fee]
   crossings:       [crossing, crossing:markings, tactile_paving]
   railway-stations: [station, wheelchair, operator, network]
+  restaurants:      [cuisine, wheelchair, outdoor_seating, takeaway, delivery, diet:vegetarian]
+  cafes:            [cuisine, outdoor_seating, indoor_seating, wheelchair, takeaway, internet_access]
+  fast-food:        [cuisine, takeaway, outdoor_seating, wheelchair, delivery]
+  bars:             [wheelchair, outdoor_seating, smoking]
+  pubs:             [wheelchair, outdoor_seating, smoking, internet_access]
+  ice-cream:        [wheelchair, outdoor_seating, takeaway]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -319,6 +325,29 @@ demonstrators:
     - { area: 347950,  note: "Barcelona, ES - near-complete operator/network tagging" }
     - { area: 71525,   note: "Paris, FR - large set, varied networks/operators, strong accessibility" }
     - { area: 62428,   note: "Munich, DE - good wheelchair coverage, mixed train/subway modes" }
+  restaurants:
+    - { area: 71525,   note: "Paris, FR - 9k restaurants, strong cuisine/outdoor_seating/wheelchair tagging" }
+    - { area: 451516,  note: "Wroclaw, PL - near-universal cuisine tagging (97%), strong takeaway/delivery" }
+    - { area: 347950,  note: "Barcelona, ES - large set, wide cuisine variety" }
+    - { area: 1376330, note: "Mexico City, MX - Latin American representative, distinct cuisine mix" }
+  cafes:
+    - { area: 71525,   note: "Paris, FR - clear indoor/outdoor seating split, strong wheelchair coverage" }
+    - { area: 451516,  note: "Wroclaw, PL - solid cuisine/wheelchair/seating tagging" }
+    - { area: 1376330, note: "Mexico City, MX - Latin American representative, internet_access stands out" }
+  fast-food:
+    - { area: 71525,   note: "Paris, FR - strong cuisine/outdoor_seating tagging" }
+    - { area: 451516,  note: "Wroclaw, PL - near-universal cuisine, high takeaway/delivery coverage" }
+    - { area: 1376330, note: "Mexico City, MX - Latin American representative, brand-chain heavy" }
+  bars:
+    - { area: 71525,   note: "Paris, FR - solid outdoor_seating/wheelchair/smoking tagging" }
+    - { area: 451516,  note: "Wroclaw, PL - solid outdoor_seating/wheelchair tagging" }
+  pubs:
+    - { area: 71525,   note: "Paris, FR - outdoor_seating/wheelchair/smoking tagging, small but consistent set" }
+    - { area: 451516,  note: "Wroclaw, PL - strongest wheelchair/outdoor_seating coverage found" }
+  ice-cream:
+    - { area: 71525,   note: "Paris, FR - wheelchair/outdoor_seating/takeaway all present despite small dataset" }
+    - { area: 451516,  note: "Wroclaw, PL - consistent wheelchair/outdoor_seating/takeaway signal" }
+    - { area: 1376330, note: "Mexico City, MX - Latin American representative, outdoor_seating stands out" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:

@@ -690,7 +690,15 @@
     "crossing": "Travessia",
     "crossing:markings": "Faixa de pedestres",
     "station": "Tipo de estação",
-    "wheelchair": "Acesso para cadeirantes"
+    "wheelchair": "Acesso para cadeirantes",
+    "cuisine": "Culinária",
+    "outdoor_seating": "Mesas externas",
+    "indoor_seating": "Mesas internas",
+    "takeaway": "Para viagem",
+    "delivery": "Entrega",
+    "diet:vegetarian": "Opções vegetarianas",
+    "internet_access": "Acesso à internet",
+    "smoking": "Permitido fumar"
   },
   "TagValue": {
     "__common__": {

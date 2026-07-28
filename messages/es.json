@@ -690,7 +690,15 @@
     "crossing": "Cruce",
     "crossing:markings": "Marcas viales",
     "station": "Tipo de estación",
-    "wheelchair": "Acceso silla de ruedas"
+    "wheelchair": "Acceso silla de ruedas",
+    "cuisine": "Cocina",
+    "outdoor_seating": "Terraza",
+    "indoor_seating": "Asientos interiores",
+    "takeaway": "Para llevar",
+    "delivery": "Entrega a domicilio",
+    "diet:vegetarian": "Opciones vegetarianas",
+    "internet_access": "Acceso a internet",
+    "smoking": "Se permite fumar"
   },
   "TagValue": {
     "__common__": {
