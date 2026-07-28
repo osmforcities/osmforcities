@@ -347,7 +347,8 @@ demonstrators:
     - { area: 62428,   note: "Munich, DE - best wheelchair coverage of the sample" }
     - { area: 1293250, note: "Taipei, TW - East Asia representative" }
   libraries:
-    - { area: 62428,   note: "Munich, DE - all four keys well covered (operator, type, wheelchair, internet_access)" }
+    - { area: 175905,  note: "New York, US - exemplary operator/operator:type tagging, North America representative" }
+    - { area: 62422,   note: "Berlin, DE - large sample, strong wheelchair and internet_access coverage" }
     - { area: 451516,  note: "Wroclaw, PL - near-complete operator tagging" }
     - { area: 71525,   note: "Paris, FR - strong internet_access and wheelchair coverage" }
     - { area: 1293250, note: "Taipei, TW - all four keys represented, East Asia diversity" }
