@@ -681,7 +681,12 @@
     "crossing": "Crossing",
     "crossing:markings": "Markings",
     "station": "Station type",
-    "wheelchair": "Wheelchair access"
+    "wheelchair": "Wheelchair access",
+    "social_facility": "Facility type",
+    "social_facility:for": "Serves",
+    "community_centre": "Centre type",
+    "building": "Building type",
+    "townhall:type": "Town hall type"
   },
   "TagValue": {
     "__common__": {

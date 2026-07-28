@@ -65,7 +65,7 @@ templates:
   - ["social-facility","amenity=social_facility","social","HeartHandshake"]
   - ["community-centre","amenity=community_centre","social","Users"]
   - ["town-halls","amenity=townhall","social","Landmark"]
-  - ["senior-centers","amenity=senior centre","social","Users"]
+  - ["senior-centers","amenity=social_facility&social_facility:for=senior","social","Users","social-facility"]
 # Government
   - ["government-office","office=government","government","Landmark"]
   - ["courts","amenity=court","government","Scale"]
@@ -288,6 +288,10 @@ filterableTags:
   ev-charging:     [capacity, operator, access, fee]
   crossings:       [crossing, crossing:markings, tactile_paving]
   railway-stations: [station, wheelchair, operator, network]
+  social-facility: [social_facility, social_facility:for, operator, wheelchair]
+  community-centre: [community_centre, operator]
+  town-halls: [building, wheelchair, townhall:type]
+  senior-centers: [social_facility, operator, wheelchair]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -319,6 +323,26 @@ demonstrators:
     - { area: 347950,  note: "Barcelona, ES - near-complete operator/network tagging" }
     - { area: 71525,   note: "Paris, FR - large set, varied networks/operators, strong accessibility" }
     - { area: 62428,   note: "Munich, DE - good wheelchair coverage, mixed train/subway modes" }
+  social-facility:
+    - { area: 62428,   note: "Munich, DE - largest sample (317), best-balanced across all four keys" }
+    - { area: 347950,  note: "Barcelona, ES - large sample, strong facility-type/serves tagging" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, near-complete facility-type tagging" }
+    - { area: 1293250, note: "Taipei, TW - East Asian representative" }
+  community-centre:
+    - { area: 62428,   note: "Munich, DE - largest sample, best operator/centre-type balance" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, solid operator/centre-type split" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, strong centre-type tagging" }
+    - { area: 71525,   note: "Paris, FR - Western European representative" }
+  town-halls:
+    - { area: 71525,   note: "Paris, FR - near-complete building/wheelchair/townhall:type across all arrondissement mairies" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, largest sample, strong building-type + townhall:type" }
+    - { area: 1293250, note: "Taipei, TW - East Asian representative, strong building-type tagging" }
+    - { area: 62428,   note: "Munich, DE - thin sample but excellent wheelchair/operator tagging" }
+  senior-centers:
+    - { area: 62428,   note: "Munich, DE - largest sample (80), best-balanced across facility-type/operator/wheelchair" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, large sample, strong facility-type + operator" }
+    - { area: 347950,  note: "Barcelona, ES - Iberian representative, large sample" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:

@@ -690,7 +690,12 @@
     "crossing": "Cruce",
     "crossing:markings": "Marcas viales",
     "station": "Tipo de estación",
-    "wheelchair": "Acceso silla de ruedas"
+    "wheelchair": "Acceso silla de ruedas",
+    "social_facility": "Tipo de centro",
+    "social_facility:for": "Atiende a",
+    "community_centre": "Tipo de centro",
+    "building": "Tipo de edificio",
+    "townhall:type": "Tipo de ayuntamiento"
   },
   "TagValue": {
     "__common__": {

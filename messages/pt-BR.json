@@ -690,7 +690,12 @@
     "crossing": "Travessia",
     "crossing:markings": "Faixa de pedestres",
     "station": "Tipo de estação",
-    "wheelchair": "Acesso para cadeirantes"
+    "wheelchair": "Acesso para cadeirantes",
+    "social_facility": "Tipo de instalação",
+    "social_facility:for": "Atende",
+    "community_centre": "Tipo de centro",
+    "building": "Tipo de edificação",
+    "townhall:type": "Tipo de prefeitura"
   },
   "TagValue": {
     "__common__": {
