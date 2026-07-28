@@ -690,7 +690,15 @@
     "crossing": "Travessia",
     "crossing:markings": "Faixa de pedestres",
     "station": "Tipo de estação",
-    "wheelchair": "Acesso para cadeirantes"
+    "wheelchair": "Acesso para cadeirantes",
+    "changing_table": "Trocador",
+    "toilets:disposal": "Tipo de saneamento",
+    "backrest": "Encosto",
+    "material": "Material",
+    "man_made": "Tipo de estrutura",
+    "bottle": "Reabastecer garrafa",
+    "brand": "Marca",
+    "recycling_type": "Tipo de reciclagem"
   },
   "TagValue": {
     "__common__": {
@@ -704,6 +712,22 @@
       "permissive": "Permissivo",
       "designated": "Designado",
       "permit": "Com permissão"
+    },
+    "toilets:disposal": {
+      "flush": "Descarga",
+      "pitlatrine": "Fossa",
+      "chemical": "Químico",
+      "bucket": "Balde"
+    },
+    "man_made": {
+      "water_tap": "Torneira",
+      "fountain": "Fonte",
+      "drinking_fountain": "Bebedouro",
+      "water_well": "Poço"
+    },
+    "recycling_type": {
+      "container": "Contêiner",
+      "centre": "Ponto de coleta"
     },
     "bicycle_parking": {
       "stands": "Suportes",

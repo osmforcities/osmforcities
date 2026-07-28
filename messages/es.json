@@ -690,7 +690,15 @@
     "crossing": "Cruce",
     "crossing:markings": "Marcas viales",
     "station": "Tipo de estación",
-    "wheelchair": "Acceso silla de ruedas"
+    "wheelchair": "Acceso silla de ruedas",
+    "changing_table": "Cambiador",
+    "toilets:disposal": "Tipo de saneamiento",
+    "backrest": "Respaldo",
+    "material": "Material",
+    "man_made": "Tipo de instalación",
+    "bottle": "Rellenar botella",
+    "brand": "Marca",
+    "recycling_type": "Tipo de reciclaje"
   },
   "TagValue": {
     "__common__": {
@@ -704,6 +712,22 @@
       "permissive": "Permisivo",
       "designated": "Designado",
       "permit": "Con permiso"
+    },
+    "toilets:disposal": {
+      "flush": "Cisterna",
+      "pitlatrine": "Letrina",
+      "chemical": "Químico",
+      "bucket": "Cubo"
+    },
+    "man_made": {
+      "water_tap": "Grifo",
+      "fountain": "Fuente",
+      "drinking_fountain": "Fuente de agua potable",
+      "water_well": "Pozo"
+    },
+    "recycling_type": {
+      "container": "Contenedor",
+      "centre": "Punto limpio"
     },
     "bicycle_parking": {
       "stands": "Soportes",

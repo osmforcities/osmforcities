@@ -681,7 +681,15 @@
     "crossing": "Crossing",
     "crossing:markings": "Markings",
     "station": "Station type",
-    "wheelchair": "Wheelchair access"
+    "wheelchair": "Wheelchair access",
+    "changing_table": "Changing table",
+    "toilets:disposal": "Sanitation type",
+    "backrest": "Backrest",
+    "material": "Material",
+    "man_made": "Fixture type",
+    "bottle": "Bottle refill",
+    "brand": "Brand",
+    "recycling_type": "Recycling type"
   },
   "TagValue": {
     "__common__": {
@@ -695,6 +703,22 @@
       "permissive": "Permissive",
       "designated": "Designated",
       "permit": "By permit"
+    },
+    "toilets:disposal": {
+      "flush": "Flush",
+      "pitlatrine": "Pit latrine",
+      "chemical": "Chemical",
+      "bucket": "Bucket"
+    },
+    "man_made": {
+      "water_tap": "Water tap",
+      "fountain": "Fountain",
+      "drinking_fountain": "Drinking fountain",
+      "water_well": "Water well"
+    },
+    "recycling_type": {
+      "container": "Container",
+      "centre": "Recycling centre"
     },
     "bicycle_parking": {
       "stands": "Stands",

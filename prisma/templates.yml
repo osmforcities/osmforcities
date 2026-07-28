@@ -288,6 +288,12 @@ filterableTags:
   ev-charging:     [capacity, operator, access, fee]
   crossings:       [crossing, crossing:markings, tactile_paving]
   railway-stations: [station, wheelchair, operator, network]
+  public-toilets:  [access, fee, wheelchair, changing_table, toilets:disposal]
+  benches:         [backrest, material]
+  drinking-water:  [man_made, operator, bottle]
+  post-offices:    [operator, brand, wheelchair]
+  parcel-lockers:  [brand, operator]
+  recycling:       [recycling_type, operator]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -319,6 +325,30 @@ demonstrators:
     - { area: 347950,  note: "Barcelona, ES - near-complete operator/network tagging" }
     - { area: 71525,   note: "Paris, FR - large set, varied networks/operators, strong accessibility" }
     - { area: 62428,   note: "Munich, DE - good wheelchair coverage, mixed train/subway modes" }
+  public-toilets:
+    - { area: 71525,   note: "Paris, FR - 928 features, near-complete fee/wheelchair, toilets:disposal well used" }
+    - { area: 62428,   note: "Munich, DE - strong fee/wheelchair/access tagging" }
+    - { area: 54517,   note: "Rennes, FR - solid wheelchair/access, smaller but clean" }
+  benches:
+    - { area: 71525,   note: "Paris, FR - 14.9k features, near-complete backrest, strong material" }
+    - { area: 62428,   note: "Munich, DE - 16.4k features, best backrest+material coverage" }
+    - { area: 54517,   note: "Rennes, FR - smaller set, consistent backrest tagging" }
+  drinking-water:
+    - { area: 1293250, note: "Taipei, TW - 1.2k features, strong operator tagging" }
+    - { area: 419203,  note: "Utrecht, NL - near-complete operator/bottle, clean small set" }
+    - { area: 62428,   note: "Munich, DE - best man_made/fountain subtype tagging" }
+  post-offices:
+    - { area: 71525,   note: "Paris, FR - 213 features, 93% wheelchair, 95% operator" }
+    - { area: 62428,   note: "Munich, DE - solid operator/wheelchair mix" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - brand diversity (franchise counters vs Correios)" }
+  parcel-lockers:
+    - { area: 451516,  note: "Wroclaw, PL - 898 features, InPost heartland, near-complete brand/operator" }
+    - { area: 62428,   note: "Munich, DE - 233 features, DHL Packstation, 99% brand" }
+    - { area: 71525,   note: "Paris, FR - mixed brands, moderate coverage" }
+  recycling:
+    - { area: 62428,   note: "Munich, DE - 1.2k features, recycling_type near-universal" }
+    - { area: 54517,   note: "Rennes, FR - operator coverage clearest here" }
+    - { area: 347950,  note: "Barcelona, ES - 4.3k features, largest volume" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:
