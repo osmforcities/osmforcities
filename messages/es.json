@@ -690,12 +690,15 @@
     "crossing": "Cruce",
     "crossing:markings": "Marcas viales",
     "station": "Tipo de estación",
-    "wheelchair": "Acceso silla de ruedas",
+    "wheelchair": "Acceso para silla de ruedas",
     "social_facility": "Tipo de centro",
     "social_facility:for": "Atiende a",
     "community_centre": "Tipo de centro",
     "building": "Tipo de edificio",
-    "townhall:type": "Tipo de ayuntamiento"
+    "townhall:type": "Tipo de ayuntamiento",
+    "operator:type": "Tipo de operador",
+    "isced:level": "Nivel educativo",
+    "internet_access": "Acceso a internet"
   },
   "TagValue": {
     "__common__": {
@@ -729,6 +732,19 @@
       "handlebar_holder": "Soporte de manillar",
       "crossbar": "Barra",
       "informal": "Informal"
+    },
+    "operator:type": {
+      "public": "Público",
+      "private": "Privado",
+      "government": "Gobierno",
+      "religious": "Religioso",
+      "ngo": "ONG",
+      "community": "Comunidad",
+      "university": "Universidad"
+    },
+    "internet_access": {
+      "wlan": "Wi-Fi",
+      "terminal": "Terminal"
     }
   }
 }

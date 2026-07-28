@@ -686,7 +686,10 @@
     "social_facility:for": "Serves",
     "community_centre": "Centre type",
     "building": "Building type",
-    "townhall:type": "Town hall type"
+    "townhall:type": "Town hall type",
+    "operator:type": "Operator type",
+    "isced:level": "Education level",
+    "internet_access": "Internet access"
   },
   "TagValue": {
     "__common__": {
@@ -720,6 +723,19 @@
       "handlebar_holder": "Handlebar holder",
       "crossbar": "Crossbar",
       "informal": "Informal"
+    },
+    "operator:type": {
+      "public": "Public",
+      "private": "Private",
+      "government": "Government",
+      "religious": "Religious",
+      "ngo": "NGO",
+      "community": "Community",
+      "university": "University"
+    },
+    "internet_access": {
+      "wlan": "Wi-Fi",
+      "terminal": "Terminal"
     }
   }
 }
