@@ -6,11 +6,8 @@
 
 templates:
 # Transportation
-  # Parent template for bicycle infrastructure
-  - ["bicycle-infrastructure","amenity=bicycle_parking;amenity=bicycle_rental;shop=bicycle","transportation","Bike"]
-  - ["bicycle-parking","amenity=bicycle_parking","transportation","Bike","bicycle-infrastructure"]
-  - ["bicycle-rental","amenity=bicycle_rental","transportation","Bike","bicycle-infrastructure"]
-  - ["bicycle-shop","shop=bicycle","transportation","Store","bicycle-infrastructure"]
+  - ["bicycle-parking","amenity=bicycle_parking","transportation","Bike"]
+  - ["bicycle-rental","amenity=bicycle_rental","transportation","Bike"]
   # Parent template for public transit
   - ["public-transit","highway=bus_stop;railway=station;railway=tram_stop;railway=subway_entrance;public_transport=platform","transportation","Train"]
   - ["bus-stops","highway=bus_stop","transportation","Bus","public-transit"]
@@ -104,6 +101,7 @@ templates:
   - ["optician","shop=optician","shops","Glasses"]
   - ["shoes","shop=shoes","shops","Footprints"]
   - ["jewelry","shop=jewelry","shops","Gem"]
+  - ["bicycle-shop","shop=bicycle","shops","Store"]
 # Food
   - ["restaurants","amenity=restaurant","food","UtensilsCrossed"]
   - ["cafes","amenity=cafe","food","Coffee"]

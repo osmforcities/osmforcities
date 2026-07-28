@@ -292,7 +292,6 @@ describe("template-parser", () => {
         query: "amenity=bicycle_parking",
         category: "transportation",
         icon: "Bike",
-        parent: "bicycle-infrastructure",
         filterableTags: [
           "bicycle_parking",
           "covered",
@@ -301,6 +300,8 @@ describe("template-parser", () => {
           "fee",
         ],
       });
+      // parent parsing (5th element) is still exercised by public-transit children
+      expect(byId.get("bus-stops")?.parent).toBe("public-transit");
       expect(categories.transportation).toBe("Car");
       expect(categories.agriculture).toBe("Wheat");
     });
