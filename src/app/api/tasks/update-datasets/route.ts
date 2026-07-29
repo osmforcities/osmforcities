@@ -70,9 +70,24 @@ export async function POST(req: NextRequest) {
     // next dataset. trackEvent is bounded (5s) and never rejects.
     const analyticsEvents: Promise<void>[] = [];
 
-    // Record a failed attempt: bump the consecutive-failure counter and store the message so
-    // persistently-failing datasets can be surfaced for admin review (#431). lastAttempted was
-    // already advanced upfront, so a failure never re-jams the queue regardless of this write.
+    // Advance lastAttempted before any work so the dataset yields its queue slot no matter what
+    // happens next — this is what stops one bad dataset from jamming the queue (#431). Returns
+    // false (skip this dataset only, never abort the batch) if the claim write itself fails.
+    const claimAttempt = async (id: string): Promise<boolean> => {
+      try {
+        await prisma.dataset.update({
+          where: { id },
+          data: { lastAttempted: new Date() },
+        });
+        return true;
+      } catch (claimError) {
+        console.error(`Failed to claim dataset ${id} (skipping this run):`, claimError);
+        return false;
+      }
+    };
+
+    // Surface persistently-failing datasets for admin review. lastAttempted was already advanced
+    // by claimAttempt, so recording a failure here can never re-jam the queue (#431).
     const recordFailure = async (
       id: string,
       message: string,
@@ -89,23 +104,7 @@ export async function POST(req: NextRequest) {
     };
 
     for (const dataset of datasetsToUpdate) {
-      // Claim the slot upfront: advancing lastAttempted before any work guarantees this
-      // dataset moves to the back of the queue no matter what happens next (even an
-      // unexpected throw or a mid-run process kill), so one dataset can never jam the queue.
-      // A failure of this write itself must only skip this dataset, never abort the batch —
-      // that would reintroduce the "one dataset takes down the run" problem this fix removes.
-      try {
-        await prisma.dataset.update({
-          where: { id: dataset.id },
-          data: { lastAttempted: new Date() },
-        });
-      } catch (claimError) {
-        console.error(
-          `Failed to claim dataset ${dataset.id} (skipping this run):`,
-          claimError
-        );
-        continue;
-      }
+      if (!(await claimAttempt(dataset.id))) continue;
 
       try {
 
