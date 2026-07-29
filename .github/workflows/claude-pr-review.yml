@@ -107,19 +107,15 @@ jobs:
               citing `path:line` and, where a concrete fix exists, a fenced
               code block with the fix.
             - If nothing is blocking, say so briefly; do not pad.
-          # allowedTools only auto-approves; it does NOT restrict what the
-          # agent can reach. Explicitly deny the file-mutation tools so the
-          # review stays read-only. We do NOT blanket-deny Bash: deny rules
-          # take precedence, so it would also kill the allowed gh read
-          # commands below (arbitrary Bash is already blocked in CI, since
-          # non-allowlisted tools can't be interactively approved).
-          # Model intentionally unset — uses the Claude Code default. We are
-          # measuring whether the default stubs out (posts no review) less
-          # often than a pinned claude-opus-4-8. The guard step below catches
-          # any stub regardless.
+          # Reverted to the developmentseed baseline args to isolate the stub
+          # cause: no --model pin (uses the Claude Code default) and no
+          # --disallowedTools. Both were additions the original workflow lacked.
+          # Dropping the tool blocks is safe: the file-mutation tools aren't in
+          # the action's allowlist, so CI already blocks them without an
+          # explicit deny (non-allowlisted tools can't be interactively
+          # approved). The guard step below catches any stub regardless.
           claude_args: |
             --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*)"
-            --disallowedTools "Edit,Write,MultiEdit,NotebookEdit"
 
       # The action has no built-in cost display, but its execution log's
       # final result record carries the run metrics — append them to the
