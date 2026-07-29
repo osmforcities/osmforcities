@@ -113,10 +113,13 @@ jobs:
           # take precedence, so it would also kill the allowed gh read
           # commands below (arbitrary Bash is already blocked in CI, since
           # non-allowlisted tools can't be interactively approved).
+          # Model intentionally unset — uses the Claude Code default. We are
+          # measuring whether the default stubs out (posts no review) less
+          # often than a pinned claude-opus-4-8. The guard step below catches
+          # any stub regardless.
           claude_args: |
             --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*)"
             --disallowedTools "Edit,Write,MultiEdit,NotebookEdit"
-            --model claude-opus-4-8
 
       # The action has no built-in cost display, but its execution log's
       # final result record carries the run metrics — append them to the
