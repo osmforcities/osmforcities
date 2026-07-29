@@ -56,48 +56,39 @@ Prereqs: local dev server, signed in (osmforcities-dev-auth), Overpass tunnel up
 
 ### Tuning `filterableTags` from the dashboard
 
-Shortlist from the OSM wiki page for the selector — it names the tags that describe the
-feature's real-world usability (for `amenity=charging_station`: capacity, connector,
-access, operator, fee). Then decide per key:
+**Candidates come from the selector's OSM wiki page only.** It names the usability tags
+(for `amenity=charging_station`: capacity, connector, access, operator, fee). Never invent
+a key, and never add a regional-convention key — the AWWA hydrant `colour` scheme, US
+`drive_through` — even where locally common. Within the wiki set, decide per key:
 
-**Keep** a key only when all three hold:
+**Keep** when all three hold:
 
-- **Wiki-relevant** — describes usability/equity, not identity. Coverage never qualifies
-  a key on its own: a well-covered `ref` or `name` is a unique code, not a filter.
-- **Colorable** — exists as one single key. Not fragmented across siblings (EV connectors
-  live in count-valued `socket:type2`/`socket:type2_combo`/… — no single key to color by).
-- **Well-covered with variance** — a meaningful share of features carry it, and not the
-  same value on every one (or coloring is one flat blob).
+- **Wiki-relevant** — describes usability/equity, not identity. `ref`/`name` are codes,
+  never filters, no matter how well covered.
+- **Colorable** — one single key, not fragmented across siblings (EV connectors live in
+  count-valued `socket:type2`/`socket:type2_combo`/… — no single key to color by).
+- **Well-covered with variance** — a meaningful share carry it, with more than one value.
 
-**Drop** a key when:
+**Drop** when: near-absent (`covered` on bus-stops); single-valued everywhere
+(`public_transport=platform`); identity (`ref`, `name`); fragmented across keys; or a
+**sibling-node** tag — the data sits on a different element than the queried one (`kerb` on
+the sidewalk node, not the crossing).
 
-- **Near-absent** — `covered` on bus-stops.
-- **Single-valued everywhere** — `public_transport=platform`, PTv2-co-tagged on every stop.
-- **Not wiki-relevant** — `ref`, `name`.
-- **Fragmented** across many keys (see EV connectors above).
-- **Sibling-node** — the data lives on a different element than the queried one (`kerb`
-  on the sidewalk node, not the crossing).
+**Exceptions:**
 
-**Exceptions to the rules:**
+- **Equity/usability keys** (`capacity`, `wheelchair`) stay even when near-absent — the
+  Missing share *is* the signal. Wiki-importance and common sense over the coverage number.
+- **Skewed is fine** — `operator` on `bicycle-rental` is one value per city, but the stray
+  outlier (a second operator, a mis-tagged dock) is exactly what we exist to flag.
 
-- **Wiki-essential equity/usability keys** (`capacity`, `wheelchair`) stay even when
-  near-absent — a large Missing share is the signal, not a reason to hide the filter.
-  Use wiki-importance and common sense, not the coverage number alone.
-- **Skewed is fine.** `operator` on `bicycle-rental` is mostly one value (one bike-share
-  system per city), but the stray outliers — a second operator, a mis-tagged dock — are
-  exactly the deviations OSM for Cities exists to flag. Don't require an even spread.
+Tune both ways off the dashboard's "Most used tags": drop near-zero keys, widen a
+high-usage varied one (coverage may be regional — the legend handles Missing). Per key
+added: `TagLabel` in en/es/pt-BR, re-sync, reload to confirm. A subagent that measures
+must do the wiki cross-check too, not report coverage alone.
 
-Tune both ways off the dashboard's "Most used tags" menu: **reduce** near-zero keys,
-**widen** a high-usage varied key (coverage can be regional — the legend handles Missing).
-For each key added: add a `TagLabel` in en/es/pt-BR (values fall back to the raw string,
-so `TagValue` labels are optional), re-sync, reload to confirm. If measurement is
-delegated to a subagent, it must do the wiki cross-check too — not report coverage alone.
-
-Don't translate values that are standardized indexes or codes (`isced:level` = ISCED
-levels 0-8, `capacity` counts): leave them raw, no `TagValue` map. The code is the
-canonical form and its ordering is meaningful; a localized word list would only obscure
-it. Only add `TagValue` labels for keys whose values are opaque enum strings (`wlan`,
-`government`, `parking`, `surface`).
+Leave standardized codes/indexes raw — no `TagValue` map (`isced:level` 0-8, `admin_level`,
+`capacity` counts): the code's ordering is canonical, a word list obscures it. Add
+`TagValue` labels only for opaque enum strings (`wlan`, `government`, `parking`, `surface`).
 
 ### Accessibility as a transversal signal
 
@@ -252,57 +243,51 @@ public-amenity batches: financial, culture, government, emergency, retail shops,
 green leisure, barriers, religion — plus the age-view screen-and-skip blocks (nature,
 agriculture, infrastructure, housing, environment).
 
-- **places-of-worship — religion consolidation.** Replaced the five value-templates
-  `church`/`mosque`/`synagogue`/`temple`/`shrine` (each a loose `religion=christian`/`=islam`/…
-  selector that also matches cemeteries, schools and other `religion`-tagged features) with the
-  single `amenity=place_of_worship` template colored by `religion`. `[religion, denomination,
-  wheelchair]` — `religion` is the textbook single-key color-by (christian/muslim/jewish/buddhist/…),
-  near-universal on worship sites. The old templates soft-deprecate on merge.
-- **atms** — `[operator, brand, cash_in, wheelchair]`. `cash_in` (yes/no deposit-capability) is
-  the real usability split; `network`/`fee` dropped as near-absent. **`wheelchair` kept** despite
-  the "skip wheelchair for unstaffed infra" rule: the wiki doesn't formally document `wheelchair`
-  for ATMs (its ATM a11y key is `speech_output:*` for blind/VI users), but `speech_output` is
-  globally unpopulated, while `wheelchair` is the only a11y signal with real coverage —
-  well-split (yes/no/limited) in Germany, sparse elsewhere, so the Missing share is the a11y-gap
-  signal. An ATM's machine interface (screen/slot height, step-free approach) is closer to a
-  service point than street furniture, which is why it earns the exception that
-  bicycle-parking/taxi-ranks do not.
-- **banks** — `[brand, operator, atm, wheelchair]`. Staffed/enterable, so `wheelchair` stays;
-  `atm=yes/no` (does the branch have an ATM) is a useful binary.
-- **museums** — `[museum, operator, fee, wheelchair]`. `museum=*` (art/history/local/…) is the
-  defining categorical attribute — kept even at moderate coverage, its Missing share is
-  informative. `memorials` keeps only `[memorial]` (plaque/statue/war_memorial — the type is the
-  color-by; outdoor, so no `wheelchair`); `monuments` stays age-view.
-- **fire-hydrants** (new, `emergency=fire_hydrant`) — `[fire_hydrant:type, fire_hydrant:position,
-  fire_hydrant:diameter]`. `fire_hydrant:type`/`:position` are near-universal. **`fire_hydrant:diameter`**
-  (nominal pipe diameter, mm) is the capacity descriptor — numeric but a small standardized value set;
-  the legend's `TOP_VALUES_COUNT` cap folds the long tail into Other, same as `maxspeed`. Coverage is
-  regional (strong in DE/UK, sparse elsewhere) — the Missing share is the signal, demonstrate in DE.
-  Dropped `colour` (the AWWA bonnet-colour scheme is a US-regional practice barely tagged elsewhere).
-  Surveyed `couplings:type` (Storz/UNI/Barcelona/Guillemin) and `water_source` across several
-  countries and dropped both: `couplings:type` is **globally unpopulated** — mappers don't use it even
-  where the coupling genuinely varies — and `water_source` is single-valued `main` wherever present.
-  **Lesson reinforced:** a regionally-standardized key can look empty in one country (Germany Storz is
-  universal → untagged) — check across countries before dropping, but here the survey confirmed it's
-  dead everywhere, not a German artifact.
-- **defibrillators** (new, `emergency=defibrillator`) — `[access, indoor]`. `indoor` (mounted inside
-  vs outside) is the main split; `access` adds the public-vs-restricted dimension. Dropped `locked`
-  (near-absent). A life-safety dataset worth surfacing even where thin.
-- **markets** (new, `amenity=marketplace`) — **age-view only.** A valuable civic dataset (municipal
-  markets, street feiras), but its wiki keys (`operator`, `organic`) are near-absent in well-mapped
-  cities — no viable color-by, so age-view is the correct outcome. Distinct multi-vendor tag
-  vocabulary keeps it out of the single-vendor `shops` tuning even though it shares the `shops`
-  category.
-- **shops** — `wheelchair` (transversal equity-keep) on every enterable storefront, plus `brand`
-  for chain-vs-independent. `supermarkets` adds `[operator, organic]`, `greengrocers` adds
-  `[organic]`, `clothes` adds `[clothes]` (men/women/children subtype), `fuel` is `[brand,
-  operator]` (unstaffed forecourt — no wheelchair; fuel-type keys are fragmented `fuel:*` booleans).
-- **government / emergency stations** — `government-office` `[government, operator, wheelchair]`,
-  `courts`/`police-stations` `[operator, wheelchair]`, `fire-stations` `[operator, wheelchair]`,
-  `ambulance-stations` `[operator]`. `prisons` and `emergency-phones` stay age-view.
-- **green leisure** (not covered by the sport batch) — `parks` `[access]`, `gardens` `[garden:type,
-  access]`, `marinas` `[access, fee, operator]`, `golf-courses` `[access]`, `fitness-centers`
-  `[wheelchair]`. `gates` (barriers) `[access]` — locked/public is the useful split.
+- **places-of-worship — religion consolidation.** `[religion, denomination, wheelchair]`. Replaced
+  the five value-templates `church`/`mosque`/`synagogue`/`temple`/`shrine` (each a loose
+  `religion=*` selector that also caught cemeteries/schools) with one `amenity=place_of_worship`
+  colored by `religion` (the textbook single-key color-by, near-universal). Old ones soft-deprecate.
+- **atms** — `[operator, brand, cash_in, wheelchair]`. `cash_in` (deposit y/n) is the usability
+  split; `network`/`fee` dropped as near-absent. `wheelchair` kept via the equity exception even
+  though the ATM wiki's a11y key is the (globally-empty) `speech_output:*` — an ATM's interface is a
+  service point, not street furniture, unlike bicycle-parking/taxi-ranks.
+- **banks** — `[brand, operator, atm, wheelchair]`. Enterable → `wheelchair`; `atm=y/n` is a useful
+  binary.
+- **museums** — `[museum, operator, fee, wheelchair]`. `museum=*` (art/history/local) is the
+  defining categorical, kept at moderate coverage. `memorials` `[memorial]` (type is the color-by;
+  outdoor → no `wheelchair`); `monuments` age-view.
+- **fire-hydrants** (new) — `[fire_hydrant:type, fire_hydrant:position, fire_hydrant:diameter,
+  fire_hydrant:pressure]`. type/position near-universal; `diameter` (mm, small value set) and
+  `pressure` (bar) are wiki-foundational capacity descriptors — regional coverage, Missing is the
+  signal, demonstrate in DE. Dropped `colour` (US AWWA regional), `couplings:type` (globally empty),
+  `water_source` (single-valued `main`). **Lesson:** check a regionally-standardized key across
+  countries before dropping — but these were dead everywhere, not a German artifact.
+- **defibrillators** (new) — `[access, indoor]`. `indoor` is the main split, `access` the
+  public-vs-restricted one. Dropped `locked` (0%). Life-safety data worth surfacing even thin.
+- **markets** (new) — **age-view only.** Wiki keys (`operator`, `organic`) near-absent in
+  well-mapped cities → no viable color-by. Multi-vendor vocabulary keeps it out of `shops` tuning.
+- **shops** — `wheelchair` (equity-keep) on every storefront + `brand` (chain-vs-independent).
+  `supermarkets` +`[operator, organic]`, `greengrocers` +`[organic]`, `clothes` +`[clothes]`
+  (men/women/children), `fuel` `[brand, operator]` (unstaffed forecourt → no wheelchair; fuel-type
+  keys are fragmented `fuel:*` booleans).
+- **government / emergency stations** — `government-office` `[government, operator, admin_level,
+  wheelchair]` (`admin_level` = national/state/municipal, wiki-recommended but thin ~5%; `operator`
+  kept — live coverage shows it's the richer dimension), `courts`/`police-stations`/`fire-stations`
+  `[operator, wheelchair]`, `ambulance-stations` `[operator]`. `prisons`/`emergency-phones` age-view.
+  **Selector fixes (live-validation catch, same lesson as speed-cameras):** `courts` queried the
+  non-existent `amenity=court` → fixed to `amenity=courthouse`; `ambulance-stations` queried
+  `amenity=ambulance_station` (24 objects worldwide) → `emergency=ambulance_station` (16k);
+  `fitness-centers` queried US-spelled `leisure=fitness_center` (0 worldwide) → `leisure=fitness_centre`.
+  All three returned empty everywhere until fixed — confirm a selector matches real features before tuning.
+- **green leisure** — `parks` `[access]`, `gardens` `[garden:type, access]`, `marinas` `[fee,
+  operator]` (dropped `access` — near-zero + not on the marina wiki page), `golf-courses` age-view
+  (dropped `access` — 0-8% and not wiki-listed; operator/fee equally thin, so no filter),
+  `fitness-centers` `[sport, wheelchair]` (`sport` is the best-covered, best-varied key here —
+  yoga/fitness/pilates/cycling, ~51% Berlin — and the de-facto type dimension mappers use; added
+  despite not being on the wiki's recommended-combination list, a data-over-wiki exception), `gates`
+  `[access]` (locked/public split). `shopping-malls`
+  `[operator]` (wiki tags the mall building not inner shops, so `wheelchair` reads low; operator is
+  the wiki-endorsed key though also thin).
 - **Screen-and-skip (age-view only):** nature (trees, water, forests, natural surfaces),
   agriculture (already observable-infrastructure only), man_made infrastructure (towers, tanks,
   lamps), housing (apartments/houses/residential — `building:levels` is numeric), environment

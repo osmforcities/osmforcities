@@ -711,6 +711,7 @@
     "museum": "Tipo de museo",
     "memorial": "Tipo de monumento",
     "government": "Tipo de oficina",
+    "admin_level": "Nivel de gobierno",
     "religion": "Religión",
     "denomination": "Confesión",
     "organic": "Orgánico",
@@ -719,8 +720,10 @@
     "fire_hydrant:type": "Tipo de hidrante",
     "fire_hydrant:position": "Posición",
     "fire_hydrant:diameter": "Diámetro de tubería",
+    "fire_hydrant:pressure": "Presión",
     "cash_in": "Depósito de efectivo",
-    "indoor": "Interior"
+    "indoor": "Interior",
+    "sport": "Actividad"
   },
   "TagValue": {
     "__common__": {

@@ -702,6 +702,7 @@
     "museum": "Museum type",
     "memorial": "Memorial type",
     "government": "Office type",
+    "admin_level": "Government level",
     "religion": "Religion",
     "denomination": "Denomination",
     "organic": "Organic",
@@ -710,8 +711,10 @@
     "fire_hydrant:type": "Hydrant type",
     "fire_hydrant:position": "Position",
     "fire_hydrant:diameter": "Pipe diameter",
+    "fire_hydrant:pressure": "Pressure",
     "cash_in": "Cash deposit",
-    "indoor": "Indoor"
+    "indoor": "Indoor",
+    "sport": "Activity"
   },
   "TagValue": {
     "__common__": {
