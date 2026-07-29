@@ -81,13 +81,15 @@ templates:
   - ["senior-centers","amenity=senior centre","social","Users"]
 # Government
   - ["government-office","office=government","government","Landmark"]
-  - ["courts","amenity=court","government","Scale"]
+  - ["courts","amenity=courthouse","government","Scale"]
   - ["police-stations","amenity=police","government","Siren"]
   - ["prisons","amenity=prison","government","Fence"]
 # Emergency
   - ["fire-stations","amenity=fire_station","emergency","FireExtinguisher"]
-  - ["ambulance-stations","amenity=ambulance_station","emergency","Ambulance"]
+  - ["ambulance-stations","emergency=ambulance_station","emergency","Ambulance"]
   - ["emergency-phones","emergency=phone","emergency","Phone"]
+  - ["fire-hydrants","emergency=fire_hydrant","emergency","Flame"]
+  - ["defibrillators","emergency=defibrillator","emergency","HeartPulse"]
 # Environment
   - ["waterfall","waterway=waterfall","environment","Waves"]
   - ["dam","waterway=dam","environment","Construction"]
@@ -118,6 +120,9 @@ templates:
   - ["shoes","shop=shoes","shops","Footprints"]
   - ["jewelry","shop=jewelry","shops","Gem"]
   - ["bicycle-shop","shop=bicycle","shops","Store"]
+# Markets
+  # Multi-vendor public markets (distinct from single-vendor shops)
+  - ["markets","amenity=marketplace","shops","ShoppingBasket"]
 # Food
   - ["restaurants","amenity=restaurant","food","UtensilsCrossed"]
   - ["cafes","amenity=cafe","food","Coffee"]
@@ -129,7 +134,7 @@ templates:
   - ["parks","leisure=park","leisure","TreePine"]
   - ["playgrounds","leisure=playground","leisure","ToyBrick"]
   - ["gardens","leisure=garden","leisure","Flower2"]
-  - ["fitness-centers","leisure=fitness_center","leisure","Dumbbell"]
+  - ["fitness-centers","leisure=fitness_centre","leisure","Dumbbell"]
   - ["swimming-pools","leisure=swimming_pool","leisure","Waves"]
   - ["sports-centres","leisure=sports_centre","leisure","Dumbbell"]
   - ["stadiums","leisure=stadium","leisure","Trophy"]
@@ -232,12 +237,10 @@ templates:
   # cities - real guidepost data lives under tourism=information&information=guidepost).
   - ["information-boards","tourism=information","services","Info"]
 # Religion
+  # Single worship template; the former church/mosque/synagogue/temple/shrine
+  # value-templates queried loose religion=* selectors (matching cemeteries,
+  # schools, etc.) and are replaced by the `religion` color-by filter below.
   - ["places-of-worship","amenity=place_of_worship","religion","Landmark"]
-  - ["church","religion=christian","religion","Church"]
-  - ["mosque","religion=islam","religion","MoonStar"]
-  - ["synagogue","religion=jewish","religion","Star"]
-  - ["temple","religion=buddhist;religion=hindu;religion=sikh;religion=taoist","religion","Landmark"]
-  - ["shrine","religion=shinto","religion","Landmark"]
 # Barriers
   - ["walls","barrier=wall","barriers","BrickWall"]
   - ["fences","barrier=fence","barriers","Fence"]
@@ -341,6 +344,54 @@ filterableTags:
   music-school:       [operator, operator:type, wheelchair]
   language-school:    [operator, operator:type, wheelchair]
   research-institute: [operator, operator:type, wheelchair]
+  # Financial
+  atms:             [operator, brand, cash_in, wheelchair]
+  banks:            [brand, operator, atm, wheelchair]
+  # Culture (wheelchair = transversal equity signal on enterable venues)
+  museums:          [museum, operator, fee, wheelchair]
+  theatres:         [operator, wheelchair]
+  cinemas:          [brand, operator, wheelchair]
+  arts-centre:      [operator, wheelchair]
+  gallery:          [operator, fee, wheelchair]
+  memorials:        [memorial]
+  # Government
+  government-office: [government, operator, admin_level, wheelchair]
+  courts:           [operator, wheelchair]
+  police-stations:  [operator, wheelchair]
+  # Emergency
+  fire-stations:    [operator, wheelchair]
+  ambulance-stations: [operator]
+  fire-hydrants:    [fire_hydrant:type, fire_hydrant:position, fire_hydrant:diameter, fire_hydrant:pressure]
+  defibrillators:   [access, indoor]
+  # Religion (replaces the deprecated per-religion value templates)
+  places-of-worship: [religion, denomination, wheelchair]
+  # Markets: age-view only — operator/organic near-absent (Barcelona 6%/2%, Sao Paulo 13%/1%)
+  # Shops (wheelchair = transversal equity signal; brand/operator = chain vs independent)
+  supermarkets:     [brand, operator, organic, wheelchair]
+  bakeries:         [brand, wheelchair]
+  convenience:      [brand, wheelchair]
+  butchers:         [wheelchair]
+  greengrocers:     [organic, wheelchair]
+  department-stores: [brand, wheelchair]
+  shopping-malls:   [operator]
+  clothes:          [clothes, brand, wheelchair]
+  chemist:          [brand, wheelchair]
+  fuel:             [brand, operator]
+  hardware:         [brand, wheelchair]
+  diy:              [brand, wheelchair]
+  furniture:        [brand, wheelchair]
+  electronics:      [brand, wheelchair]
+  mobile-phone:     [brand, wheelchair]
+  optician:         [brand, wheelchair]
+  shoes:            [brand, wheelchair]
+  jewelry:          [wheelchair]
+  # Leisure (green spaces not covered by the recreation/sport batch)
+  parks:            [access]
+  gardens:          [garden:type, access]
+  marinas:          [fee, operator]
+  fitness-centers:  [sport, wheelchair]
+  # Barriers
+  gates:            [access]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -519,6 +570,163 @@ demonstrators:
     - { area: 62428,   note: "Munich, DE - best operator/operator:type coverage (small sample)" }
     - { area: 451516,  note: "Wroclaw, PL - consistent operator/operator:type pairing (small sample)" }
     - { area: 71525,   note: "Paris, FR - largest sample among candidates" }
+  places-of-worship:
+    - { area: 298285,  note: "Sao Paulo, BR - best religion coverage, strong Catholic/Evangelical/Pentecostal denomination spread" }
+    - { area: 1293250, note: "Taipei, TW - best religion variance (Taoist/Buddhist/Chinese-folk/Christian mix), non-Western" }
+    - { area: 79604,   note: "Cape Town, ZA - highest religion coverage, African multi-faith spread" }
+  atms:
+    - { area: 62422,   note: "Berlin, DE - strongest across all four keys, large sample, well-split cash_in/wheelchair" }
+    - { area: 1293250, note: "Taipei, TW - Asian spread, strong operator/brand" }
+    - { area: 1376330, note: "Mexico City, MX - Latin American spread, good operator/brand" }
+  banks:
+    - { area: 62428,   note: "Munich, DE - operator/atm/wheelchair leader, only region where operator beats brand" }
+    - { area: 175342,  note: "London, GB - brand leader, large sample, good per-bank spread" }
+    - { area: 298285,  note: "Sao Paulo, BR - Latin American spread, brand-heavy on largest sample" }
+  museums:
+    - { area: 71525,   note: "Paris, FR - fee/wheelchair leader, well-rounded sample" }
+    - { area: 175905,  note: "New York, US - museum-type leader, rich category spread" }
+    - { area: 1376330, note: "Mexico City, MX - operator leader, Latin American spread" }
+  theatres:
+    - { area: 62422,   note: "Berlin, DE - best on operator and wheelchair, largest reliable sample" }
+    - { area: 71525,   note: "Paris, FR - largest raw sample, usable wheelchair spread" }
+  cinemas:
+    - { area: 175342,  note: "London, GB - brand leader, largest sample" }
+    - { area: 71525,   note: "Paris, FR - best balance of brand/operator/wheelchair" }
+    - { area: 175905,  note: "New York, US - third reliable sample, moderate coverage across keys" }
+  arts-centre:
+    - { area: 62422,   note: "Berlin, DE - best volume and coverage, well-varied operator names" }
+    - { area: 62428,   note: "Munich, DE - mid-size alternative, strong wheelchair" }
+    - { area: 71525,   note: "Paris, FR - largest raw volume, geographic spread" }
+  gallery:
+    - { area: 62422,   note: "Berlin, DE - best coverage across operator/fee/wheelchair, large volume" }
+    - { area: 71525,   note: "Paris, FR - largest raw volume, FR spread" }
+    - { area: 175342,  note: "London, GB - solid volume, anglophone spread" }
+  memorials:
+    - { area: 62422,   note: "Berlin, DE - huge volume, near-universal memorial= (Stolperstein-dense, a real local pattern)" }
+    - { area: 175342,  note: "London, GB - best-balanced memorial= variance (plaque/blue_plaque/war_memorial/statue)" }
+    - { area: 451516,  note: "Wroclaw, PL - cleanest proportional spread, Central/Eastern Europe diversity" }
+  government-office:
+    - { area: 62422,   note: "Berlin, DE - best across government/operator/admin_level/wheelchair, well-spread government= values" }
+    - { area: 71525,   note: "Paris, FR - second-largest volume, best admin_level coverage, FR spread" }
+    - { area: 419203,  note: "Utrecht, NL - smaller but strong wheelchair, Benelux spread" }
+  courts:
+    - { area: 62422,   note: "Berlin, DE - best wheelchair signal with real yes/no/limited spread" }
+    - { area: 175905,  note: "New York, US - best operator signal, several distinct court-system agencies (EU cities collapse to one state entity)" }
+    - { area: 71525,   note: "Paris, FR - geographic diversity, modest wheelchair spread" }
+  police-stations:
+    - { area: 62422,   note: "Berlin, DE - best operator/wheelchair coverage and variance (federal/state/local forces)" }
+    - { area: 71525,   note: "Paris, FR - high operator coverage, distinct national/municipal values" }
+    - { area: 62428,   note: "Munich, DE - secondary EU anchor, some operator variance" }
+  fire-stations:
+    - { area: 62428,   note: "Munich, DE - best operator variance (professional + several volunteer brigades)" }
+    - { area: 62422,   note: "Berlin, DE - highest volume, operator near single-valued" }
+    - { area: 419203,  note: "Utrecht, NL - small NL sample for regional spread" }
+  ambulance-stations:
+    - { area: 62428,   note: "Munich, DE - best signal, spread across many public+private ambulance operators" }
+    - { area: 175342,  note: "London, GB - largest sample, operator present if org-skewed" }
+    - { area: 298285,  note: "Sao Paulo, BR - geographic diversity, public SAMU-dominated (itself a BR signal)" }
+  fire-hydrants:
+    - { area: 62422,   note: "Berlin, DE - best all-around type/position/diameter coverage and variance" }
+    - { area: 62428,   note: "Munich, DE - near-identical strength, best diameter coverage" }
+    - { area: 54517,   note: "Rennes, FR - geographic spread, good type coverage (pillar-dominated), weak diameter/pressure" }
+  defibrillators:
+    - { area: 71525,   note: "Paris, FR - highest volume, strong access variance" }
+    - { area: 62422,   note: "Berlin, DE - best access coverage, high indoor coverage" }
+    - { area: 62428,   note: "Munich, DE - solid secondary EU sample, good access/indoor spread" }
+  supermarkets:
+    - { area: 62422,   note: "Berlin, DE - best across all four keys, many chains, real wheelchair spread" }
+    - { area: 347950,  note: "Barcelona, ES - Iberian brand mix, Southern-Europe spread" }
+    - { area: 62428,   note: "Munich, DE - alternate DE demonstrator, strong wheelchair/brand" }
+  bakeries:
+    - { area: 62428,   note: "Munich, DE - best overall: brand across several regional chains + strong wheelchair spread" }
+    - { area: 451516,  note: "Wroclaw, PL - highest brand coverage, distinct Polish chains" }
+    - { area: 71525,   note: "Paris, FR - largest raw sample, France spread" }
+  convenience:
+    - { area: 1293250, note: "Taipei, TW - dominant demonstrator: brand across 7-Eleven/FamilyMart/Hi-Life/OK Mart" }
+    - { area: 175342,  note: "London, GB - largest sample, western-chain brand spread" }
+    - { area: 298285,  note: "Sao Paulo, BR - regional spread, moderate brand coverage" }
+  butchers:
+    - { area: 62428,   note: "Munich, DE - best wheelchair coverage and spread" }
+    - { area: 62422,   note: "Berlin, DE - solid coverage, larger urban market" }
+  greengrocers:
+    - { area: 71525,   note: "Paris, FR - best organic variance on largest reliable sample, decent wheelchair" }
+    - { area: 347950,  note: "Barcelona, ES - largest raw count, Iberian spread" }
+    - { area: 62422,   note: "Berlin, DE - best wheelchair, small sample; backup DE demonstrator" }
+  department-stores:
+    - { area: 62422,   note: "Berlin, DE - best balanced brand/wheelchair, real chain spread" }
+    - { area: 175342,  note: "London, GB - best brand coverage, largest strong sample" }
+    - { area: 175905,  note: "New York, US - largest volume, strong brand, market spread (weak wheelchair)" }
+  shopping-malls:
+    - { area: 1293250, note: "Taipei, TW - best operator coverage among candidates, Asian spread" }
+    - { area: 175342,  note: "London, GB - decent operator coverage on a good sample" }
+    - { area: 298285,  note: "Sao Paulo, BR - largest raw mall count, Latin American spread (operator thin but present)" }
+  clothes:
+    - { area: 62428,   note: "Munich, DE - best all-around: clothes-type spread + best wheelchair" }
+    - { area: 71525,   note: "Paris, FR - largest volume, deep brand variety" }
+    - { area: 298285,  note: "Sao Paulo, BR - Latin America spread (wheelchair near-absent regionally)" }
+  chemist:
+    - { area: 62422,   note: "Berlin, DE - largest DE volume, excellent brand and wheelchair" }
+    - { area: 62428,   note: "Munich, DE - best brand coverage, clean drugstore-chain spread" }
+    - { area: 175342,  note: "London, GB - largest raw volume, confirms genuine UK-native usage" }
+  fuel:
+    - { area: 298285,  note: "Sao Paulo, BR - huge volume, best brand variance (Ipiranga/Shell/BR)" }
+    - { area: 419203,  note: "Utrecht, NL - best operator coverage/variance, clean dataset" }
+    - { area: 62428,   note: "Munich, DE - balanced brand and operator, European chain diversity" }
+  hardware:
+    - { area: 62422,   note: "Berlin, DE - best wheelchair coverage and largest sample, some brand signal" }
+    - { area: 62428,   note: "Munich, DE - second-best brand/wheelchair, independent+chain mix" }
+  diy:
+    - { area: 62422,   note: "Berlin, DE - largest sample, excellent brand variance (7 chains) and wheelchair" }
+    - { area: 62428,   note: "Munich, DE - best wheelchair and brand coverage rates" }
+    - { area: 419203,  note: "Utrecht, NL - non-DE demonstrator, high brand coverage" }
+  furniture:
+    - { area: 71525,   note: "Paris, FR - largest sample, best brand variance (designer/chain brands)" }
+    - { area: 62428,   note: "Munich, DE - best wheelchair coverage, reasonable brand presence" }
+  electronics:
+    - { area: 1293250, note: "Taipei, TW - largest sample, best brand variance, non-Western regional chains" }
+    - { area: 71525,   note: "Paris, FR - balanced brand and wheelchair, recognizable Euro chains" }
+    - { area: 62428,   note: "Munich, DE - best wheelchair coverage" }
+  mobile-phone:
+    - { area: 62422,   note: "Berlin, DE - best overall brand/wheelchair, wide carrier-brand spread" }
+    - { area: 298285,  note: "Sao Paulo, BR - regional diversity, distinct Brazilian carriers" }
+    - { area: 71525,   note: "Paris, FR - large sample, good brand variance" }
+  optician:
+    - { area: 62422,   note: "Berlin, DE - best wheelchair + strong brand variety across chains" }
+    - { area: 175342,  note: "London, GB - best brand coverage, large sample, international chains" }
+    - { area: 71525,   note: "Paris, FR - largest sample, balanced brand/wheelchair" }
+  shoes:
+    - { area: 62422,   note: "Berlin, DE - best overall brand/wheelchair, strong chain variance" }
+    - { area: 71525,   note: "Paris, FR - large sample, good brand variance" }
+    - { area: 347950,  note: "Barcelona, ES - Iberian regional spread" }
+  jewelry:
+    - { area: 62422,   note: "Berlin, DE - best wheelchair coverage and spread" }
+    - { area: 71525,   note: "Paris, FR - large sample, moderate coverage" }
+    - { area: 347950,  note: "Barcelona, ES - regional spread" }
+  parks:
+    - { area: 62428,   note: "Munich, DE - largest well-tagged sample, clean access variance" }
+    - { area: 406091,  note: "Oslo, NO - best access coverage, Nordic spread" }
+    - { area: 298285,  note: "Sao Paulo, BR - Latin American spread, largest raw count (access thin, as expected)" }
+  gardens:
+    - { area: 62428,   note: "Munich, DE - best on garden:type and access, rich variance on both" }
+    - { area: 71525,   note: "Paris, FR - large sample, strong access coverage" }
+    - { area: 298285,  note: "Sao Paulo, BR - Latin American spread, largest raw counts" }
+  marinas:
+    - { area: 175905,  note: "New York, US - largest sample, only city with usable operator signal" }
+    - { area: 406091,  note: "Oslo, NO - best fee coverage, Nordic spread" }
+  golf-courses:
+    - { area: 79604,   note: "Cape Town, ZA - largest raw count of courses" }
+    - { area: 175905,  note: "New York, US - second-largest, only city with any access signal" }
+  fitness-centers:
+    - { area: 62422,   note: "Berlin, DE - best sport-type coverage and variety (yoga/fitness/pilates/cycling), large sample" }
+    - { area: 71525,   note: "Paris, FR - large sample, good sport-type and wheelchair spread" }
+    - { area: 1634158, note: "Montreal, CA - non-European diversity, real sport/wheelchair spread" }
+  gates:
+    - { area: 54517,   note: "Rennes, FR - best access coverage, clean variance" }
+    - { area: 451516,  note: "Wroclaw, PL - largest sample, excellent access variance" }
+    - { area: 419203,  note: "Utrecht, NL - strong access coverage, regional spread" }
+  markets:
+    - { area: 347950,  note: "Barcelona, ES - municipal markets, mostly building-mapped (age-view dataset)" }
+    - { area: 298285,  note: "Sao Paulo, BR - marketplaces incl. street feiras" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:

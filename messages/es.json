@@ -39,6 +39,8 @@
     "users": "Usuarios",
     "usersAriaLabel": "Usuarios - Navegar a la página de gestión de usuarios",
     "templatesAriaLabel": "Plantillas - Navegar a la página de gestión de plantillas",
+    "datasetsTab": "Conjuntos de datos",
+    "datasetsTabAriaLabel": "Conjuntos de datos - Ir a la página de estado de actualización de conjuntos de datos",
     "myDatasetsEmptyMessage": "Aún no has creado ningún conjunto de datos.",
     "myDatasetsEmptyAction": "Crear Conjunto de Datos",
     "openParen": "(",
@@ -356,6 +358,25 @@
     "noUsersFound": "No se encontraron usuarios.",
     "datasets": "Conjuntos de Datos:",
     "joined": "Se unió: {date}"
+  },
+  "DatasetUpdatesPage": {
+    "title": "Actualizaciones de conjuntos de datos",
+    "healthOk": "Saludable",
+    "healthDegraded": "Degradado",
+    "statActive": "Conjuntos activos",
+    "statRefreshed": "Actualizados (24 h)",
+    "statStale": "Obsoletos / nunca revisados",
+    "statFlagged": "Marcados para revisión",
+    "newestCheck": "Actualización más reciente: {value}",
+    "oldestCheck": "Actualización más antigua: {value}",
+    "never": "Nunca",
+    "flaggedHeading": "Conjuntos marcados",
+    "flaggedCount": "({count, number})",
+    "flaggedEmpty": "Ningún conjunto de datos está fallando actualmente.",
+    "failureCount": "{count, plural, =1 {# fallo consecutivo} other {# fallos consecutivos}}",
+    "lastError": "Último error: {message}",
+    "lastAttempted": "Último intento: {value}",
+    "lastChecked": "Última revisión: {value}"
   },
   "DatasetMap": {
     "back": "Volver",
@@ -720,7 +741,25 @@
     "traffic_calming": "Tipo",
     "operator:type": "Tipo de operador",
     "isced:level": "Nivel educativo",
-    "internet_access": "Acceso a internet"
+    "internet_access": "Acceso a internet",
+    "brand": "Marca",
+    "atm": "Cajero automático",
+    "museum": "Tipo de museo",
+    "memorial": "Tipo de monumento",
+    "government": "Tipo de oficina",
+    "admin_level": "Nivel de gobierno",
+    "religion": "Religión",
+    "denomination": "Confesión",
+    "organic": "Orgánico",
+    "clothes": "Tipo de ropa",
+    "garden:type": "Tipo de jardín",
+    "fire_hydrant:type": "Tipo de hidrante",
+    "fire_hydrant:position": "Posición",
+    "fire_hydrant:diameter": "Diámetro de tubería",
+    "fire_hydrant:pressure": "Presión",
+    "cash_in": "Depósito de efectivo",
+    "indoor": "Interior",
+    "sport": "Actividad"
   },
   "TagValue": {
     "__common__": {
@@ -728,6 +767,33 @@
       "no": "No",
       "limited": "Limitado",
       "unknown": "Desconocido"
+    },
+    "religion": {
+      "christian": "Cristiana",
+      "muslim": "Musulmana",
+      "jewish": "Judía",
+      "buddhist": "Budista",
+      "hindu": "Hinduista",
+      "sikh": "Sij",
+      "taoist": "Taoísta",
+      "shinto": "Sintoísta",
+      "bahai": "Bahá'í",
+      "jain": "Jainista"
+    },
+    "fire_hydrant:type": {
+      "pillar": "De columna",
+      "underground": "Subterráneo",
+      "wall": "De pared",
+      "pipe": "De tubo"
+    },
+    "memorial": {
+      "plaque": "Placa",
+      "statue": "Estatua",
+      "war_memorial": "Monumento de guerra",
+      "bust": "Busto",
+      "stone": "Piedra",
+      "sculpture": "Escultura",
+      "stele": "Estela"
     },
     "access": {
       "private": "Privado",

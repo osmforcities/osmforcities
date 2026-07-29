@@ -135,6 +135,13 @@ export async function countOverpassElements(query: string): Promise<number> {
   const data = await response.json();
   const total = data?.elements?.[0]?.tags?.total;
   if (total === undefined) {
+    // Overpass answers oversized/expensive count queries with HTTP 200 + a `remark`
+    // (query timed out / ran out of memory) instead of a count. Treat that as a timeout
+    // verdict so it flows through the size-check path (recorded + skipped) rather than a
+    // generic error that leaves the dataset re-failing forever (#431).
+    if (data?.remark) {
+      throw new OverpassTimeoutError();
+    }
     throw new Error("Unexpected response format from Overpass count query");
   }
   const elementCount = parseInt(total, 10);

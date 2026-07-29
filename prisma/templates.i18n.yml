@@ -27,6 +27,15 @@ templates:
       en: Bicycle Shop
       pt: Loja de bicicletas
       es: Tienda de bicicletas
+  markets:
+    name:
+      en: Markets
+      pt: Mercados e feiras
+      es: Mercados
+    desc:
+      en: Public marketplaces
+      pt: Mercados e feiras públicas
+      es: Mercados públicos
   bus-stops:
     name:
       en: Bus Stops
@@ -630,6 +639,24 @@ templates:
       en: Emergency Phones
       pt: Telefones de emergência
       es: Teléfonos de emergencia
+  fire-hydrants:
+    name:
+      en: Fire Hydrants
+      pt: Hidrantes
+      es: Hidrantes
+    desc:
+      en: Fire Hydrants
+      pt: Hidrantes
+      es: Hidrantes
+  defibrillators:
+    name:
+      en: Defibrillators
+      pt: Desfibriladores
+      es: Desfibriladores
+    desc:
+      en: Public access defibrillators (AEDs)
+      pt: Desfibriladores de acesso público (DEAs)
+      es: Desfibriladores de acceso público (DEA)
   waterfall:
     name:
       en: Waterfall
@@ -1728,51 +1755,6 @@ templates:
       en: Places Of Worship
       pt: Locais de culto
       es: Lugares de culto
-  church:
-    name:
-      en: Church
-      pt: Igrejas
-      es: Iglesias
-    desc:
-      en: Church
-      pt: Igrejas
-      es: Iglesias
-  mosque:
-    name:
-      en: Mosque
-      pt: Mesquitas
-      es: Mezquitas
-    desc:
-      en: Mosque
-      pt: Mesquitas
-      es: Mezquitas
-  synagogue:
-    name:
-      en: Synagogue
-      pt: Sinagogas
-      es: Sinagogas
-    desc:
-      en: Synagogue
-      pt: Sinagogas
-      es: Sinagogas
-  temple:
-    name:
-      en: Temple
-      pt: Templos
-      es: Templos
-    desc:
-      en: Temple
-      pt: Templos
-      es: Templos
-  shrine:
-    name:
-      en: Shrine
-      pt: Santuários
-      es: Santuarios
-    desc:
-      en: Shrine
-      pt: Santuários
-      es: Santuarios
   walls:
     name:
       en: Walls

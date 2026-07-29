@@ -39,6 +39,8 @@
     "users": "Users",
     "usersAriaLabel": "Users - Navigate to users management page",
     "templatesAriaLabel": "Templates - Navigate to templates management page",
+    "datasetsTab": "Datasets",
+    "datasetsTabAriaLabel": "Datasets - Navigate to dataset update status page",
     "myDatasetsEmptyMessage": "You haven't created any datasets yet.",
     "myDatasetsEmptyAction": "Create Dataset",
     "openParen": "(",
@@ -356,6 +358,25 @@
     "noUsersFound": "No users found.",
     "datasets": "Datasets:",
     "joined": "Joined: {date}"
+  },
+  "DatasetUpdatesPage": {
+    "title": "Dataset updates",
+    "healthOk": "Healthy",
+    "healthDegraded": "Degraded",
+    "statActive": "Active datasets",
+    "statRefreshed": "Refreshed (24h)",
+    "statStale": "Stale / never checked",
+    "statFlagged": "Flagged for review",
+    "newestCheck": "Newest refresh: {value}",
+    "oldestCheck": "Oldest refresh: {value}",
+    "never": "Never",
+    "flaggedHeading": "Flagged datasets",
+    "flaggedCount": "({count, number})",
+    "flaggedEmpty": "No datasets are currently failing.",
+    "failureCount": "{count, plural, =1 {# consecutive failure} other {# consecutive failures}}",
+    "lastError": "Last error: {message}",
+    "lastAttempted": "Last attempted: {value}",
+    "lastChecked": "Last checked: {value}"
   },
   "DatasetMap": {
     "back": "Back",
@@ -711,7 +732,25 @@
     "traffic_calming": "Type",
     "operator:type": "Operator type",
     "isced:level": "Education level",
-    "internet_access": "Internet access"
+    "internet_access": "Internet access",
+    "brand": "Brand",
+    "atm": "ATM",
+    "museum": "Museum type",
+    "memorial": "Memorial type",
+    "government": "Office type",
+    "admin_level": "Government level",
+    "religion": "Religion",
+    "denomination": "Denomination",
+    "organic": "Organic",
+    "clothes": "Clothing type",
+    "garden:type": "Garden type",
+    "fire_hydrant:type": "Hydrant type",
+    "fire_hydrant:position": "Position",
+    "fire_hydrant:diameter": "Pipe diameter",
+    "fire_hydrant:pressure": "Pressure",
+    "cash_in": "Cash deposit",
+    "indoor": "Indoor",
+    "sport": "Activity"
   },
   "TagValue": {
     "__common__": {
@@ -719,6 +758,33 @@
       "no": "No",
       "limited": "Limited",
       "unknown": "Unknown"
+    },
+    "religion": {
+      "christian": "Christian",
+      "muslim": "Muslim",
+      "jewish": "Jewish",
+      "buddhist": "Buddhist",
+      "hindu": "Hindu",
+      "sikh": "Sikh",
+      "taoist": "Taoist",
+      "shinto": "Shinto",
+      "bahai": "Bahá'í",
+      "jain": "Jain"
+    },
+    "fire_hydrant:type": {
+      "pillar": "Pillar",
+      "underground": "Underground",
+      "wall": "Wall",
+      "pipe": "Pipe"
+    },
+    "memorial": {
+      "plaque": "Plaque",
+      "statue": "Statue",
+      "war_memorial": "War memorial",
+      "bust": "Bust",
+      "stone": "Stone",
+      "sculpture": "Sculpture",
+      "stele": "Stele"
     },
     "access": {
       "private": "Private",
