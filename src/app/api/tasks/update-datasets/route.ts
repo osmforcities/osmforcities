@@ -104,7 +104,12 @@ export async function POST(req: NextRequest) {
     };
 
     for (const dataset of datasetsToUpdate) {
-      if (!(await claimAttempt(dataset.id))) continue;
+      // Count a failed claim so results always reconcile (successful + failed === totalFound).
+      if (!(await claimAttempt(dataset.id))) {
+        results.failed++;
+        results.errors.push(`Dataset ${dataset.id}: failed to claim, skipped this run`);
+        continue;
+      }
 
       try {
 

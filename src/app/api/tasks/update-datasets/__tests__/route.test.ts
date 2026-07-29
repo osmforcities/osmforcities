@@ -142,6 +142,9 @@ describe("POST /api/tasks/update-datasets", () => {
     // The run still completes (no 500) and the second dataset is processed.
     expect(res.status).toBe(200);
     expect(body.data.successful).toBe(1);
+    // The skipped dataset is counted, so the totals reconcile.
+    expect(body.data.failed).toBe(1);
+    expect(body.data.successful + body.data.failed).toBe(body.data.totalFound);
   });
 
   it("returns 401 without the cron secret", async () => {
