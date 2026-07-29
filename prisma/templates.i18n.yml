@@ -315,6 +315,51 @@ templates:
       en: College
       pt: Faculdades
       es: Facultades
+  childcare:
+    name:
+      en: Childcare
+      pt: Creches
+      es: Guarderías
+    desc:
+      en: Childcare
+      pt: Creches
+      es: Guarderías
+  driving-school:
+    name:
+      en: Driving Schools
+      pt: Autoescolas
+      es: Autoescuelas
+    desc:
+      en: Driving Schools
+      pt: Autoescolas
+      es: Autoescuelas
+  music-school:
+    name:
+      en: Music Schools
+      pt: Escolas de música
+      es: Escuelas de música
+    desc:
+      en: Music Schools
+      pt: Escolas de música
+      es: Escuelas de música
+  language-school:
+    name:
+      en: Language Schools
+      pt: Escolas de idiomas
+      es: Escuelas de idiomas
+    desc:
+      en: Language Schools
+      pt: Escolas de idiomas
+      es: Escuelas de idiomas
+  research-institute:
+    name:
+      en: Research Institutes
+      pt: Institutos de pesquisa
+      es: Institutos de investigación
+    desc:
+      en: Research Institutes
+      pt: Institutos de pesquisa
+      es: Institutos de investigación
   hotels:
     name:
       en: Hotels
