@@ -726,13 +726,58 @@
     "traffic_calming": "Tipo",
     "operator:type": "Tipo de operador",
     "isced:level": "Nivel educativo",
-    "internet_access": "Acceso a internet"
+    "internet_access": "Acceso a internet",
+    "brand": "Marca",
+    "atm": "Cajero automático",
+    "museum": "Tipo de museo",
+    "memorial": "Tipo de monumento",
+    "government": "Tipo de oficina",
+    "admin_level": "Nivel de gobierno",
+    "religion": "Religión",
+    "denomination": "Confesión",
+    "organic": "Orgánico",
+    "clothes": "Tipo de ropa",
+    "garden:type": "Tipo de jardín",
+    "fire_hydrant:type": "Tipo de hidrante",
+    "fire_hydrant:position": "Posición",
+    "fire_hydrant:diameter": "Diámetro de tubería",
+    "fire_hydrant:pressure": "Presión",
+    "cash_in": "Depósito de efectivo",
+    "indoor": "Interior",
+    "sport": "Actividad"
   },
   "TagValue": {
     "__common__": {
       "yes": "Sí",
       "no": "No",
       "limited": "Limitado"
+    },
+    "religion": {
+      "christian": "Cristiana",
+      "muslim": "Musulmana",
+      "jewish": "Judía",
+      "buddhist": "Budista",
+      "hindu": "Hinduista",
+      "sikh": "Sij",
+      "taoist": "Taoísta",
+      "shinto": "Sintoísta",
+      "bahai": "Bahá'í",
+      "jain": "Jainista"
+    },
+    "fire_hydrant:type": {
+      "pillar": "De columna",
+      "underground": "Subterráneo",
+      "wall": "De pared",
+      "pipe": "De tubo"
+    },
+    "memorial": {
+      "plaque": "Placa",
+      "statue": "Estatua",
+      "war_memorial": "Monumento de guerra",
+      "bust": "Busto",
+      "stone": "Piedra",
+      "sculpture": "Escultura",
+      "stele": "Estela"
     },
     "access": {
       "private": "Privado",
