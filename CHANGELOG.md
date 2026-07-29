@@ -1,5 +1,40 @@
 # osmforcities
 
+## 1.15.0
+
+### Added
+
+- Redesigned dataset detail side-panel: compact tiered layout with stored stats and geometry-mix, edit/mapper recency, and tag-coverage charts, plus accessible freshness pills [#390]
+- Per-template filterable-tag allow-list with a curated, localized map legend [#380]
+- Template-management workflow and demonstrator-city registry, with filterableTags tuned against real data across core templates [#406]
+- Education-domain templates and filterable tags (5 new templates) [#408]
+- Mobility template tuning and a transit-platforms template [#415]
+
+### Changed
+
+- Render area names in the active locale across area and dataset pages [#381]
+- Geometry-mix legend shows full grouped numbers (e.g. `22,986 m²`) with an icon-led section header [#404]
+
+### Fixed
+
+- Localize the dataset breadcrumb back-link area name from the server-resolved name [#416]
+- Prevent hero map clipping on short windows [#382]
+
+### Security
+
+- Dependency security sweep [#400]
+
+[#380]: https://github.com/osmforcities/osmforcities/pull/380
+[#381]: https://github.com/osmforcities/osmforcities/pull/381
+[#382]: https://github.com/osmforcities/osmforcities/pull/382
+[#390]: https://github.com/osmforcities/osmforcities/pull/390
+[#400]: https://github.com/osmforcities/osmforcities/pull/400
+[#404]: https://github.com/osmforcities/osmforcities/pull/404
+[#406]: https://github.com/osmforcities/osmforcities/pull/406
+[#408]: https://github.com/osmforcities/osmforcities/pull/408
+[#415]: https://github.com/osmforcities/osmforcities/pull/415
+[#416]: https://github.com/osmforcities/osmforcities/pull/416
+
 ## 1.14.0
 
 ### Added
