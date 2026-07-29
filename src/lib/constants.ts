@@ -20,6 +20,9 @@ export const OVERPASS_BYTES_PER_ELEMENT_ESTIMATE = 500;
 /** Hours an AreaSizeCheck verdict stays fresh before re-checking against Overpass */
 export const SIZE_CHECK_TTL_HOURS = 24;
 
+/** Consecutive failed refresh attempts before a dataset is flagged for admin review */
+export const DATASET_FAILURE_FLAG_THRESHOLD = 3;
+
 /** Initial zoom for the dataset map when centering on the area's admin centre */
 export const DATASET_MAP_DEFAULT_ZOOM = 12;
 

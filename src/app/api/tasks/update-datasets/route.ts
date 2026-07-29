@@ -36,13 +36,16 @@ export async function POST(req: NextRequest) {
   try {
     const limit = parseInt(process.env.DATASET_UPDATE_LIMIT ?? "1");
 
-    // Find datasets that need updating (last checked more than 1 day ago or never checked)
+    // Find datasets that need updating (last attempted more than 1 day ago or never attempted).
+    // Scheduling is driven by lastAttempted (advanced on every attempt), not lastChecked
+    // (advanced only on success) — otherwise a dataset that keeps failing keeps its old
+    // lastChecked, stays most-stale, and is re-selected every run, starving all others (#431).
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
     const datasetsToUpdate = await prisma.dataset.findMany({
       where: {
         isActive: true,
-        OR: [{ lastChecked: null }, { lastChecked: { lt: oneDayAgo } }],
+        OR: [{ lastAttempted: null }, { lastAttempted: { lt: oneDayAgo } }],
       },
       include: {
         template: true,
@@ -50,7 +53,7 @@ export async function POST(req: NextRequest) {
       },
       take: limit,
       orderBy: [
-        { lastChecked: "asc" }, // Prioritize datasets never checked
+        { lastAttempted: "asc" }, // Prioritize datasets never attempted
         { updatedAt: "asc" }, // Then oldest updated
       ],
     });
@@ -67,7 +70,33 @@ export async function POST(req: NextRequest) {
     // next dataset. trackEvent is bounded (5s) and never rejects.
     const analyticsEvents: Promise<void>[] = [];
 
+    // Record a failed attempt: bump the consecutive-failure counter and store the message so
+    // persistently-failing datasets can be surfaced for admin review (#431). lastAttempted was
+    // already advanced upfront, so a failure never re-jams the queue regardless of this write.
+    const recordFailure = async (
+      id: string,
+      message: string,
+      extra: Record<string, unknown> = {}
+    ) => {
+      try {
+        await prisma.dataset.update({
+          where: { id },
+          data: { consecutiveFailures: { increment: 1 }, lastError: message, ...extra },
+        });
+      } catch (recordError) {
+        console.error(`Failed to record failure for dataset ${id}:`, recordError);
+      }
+    };
+
     for (const dataset of datasetsToUpdate) {
+      // Claim the slot upfront: advancing lastAttempted before any work guarantees this
+      // dataset moves to the back of the queue no matter what happens next (even an
+      // unexpected throw or a mid-run process kill), so one dataset can never jam the queue.
+      await prisma.dataset.update({
+        where: { id: dataset.id },
+        data: { lastAttempted: new Date() },
+      });
+
       try {
 
         const snapshot = await fetchDatasetSnapshot(
@@ -88,6 +117,8 @@ export async function POST(req: NextRequest) {
             lastEditedAt: snapshot.stats.mostRecentElement ?? null,
             contributorsCount: snapshot.stats.editorsCount,
             recentlyEditedCount: snapshot.stats.recentActivity.elementsEdited,
+            consecutiveFailures: 0,
+            lastError: null,
           },
         });
 
@@ -104,17 +135,7 @@ export async function POST(req: NextRequest) {
           console.warn(
             `Dataset ${dataset.id} deactivated (grew past size cap): ${error.message}`
           );
-          try {
-            await prisma.dataset.update({
-              where: { id: dataset.id },
-              data: { isActive: false },
-            });
-          } catch (deactivationError) {
-            console.error(
-              `Failed to deactivate dataset ${dataset.id}:`,
-              deactivationError
-            );
-          }
+          await recordFailure(dataset.id, error.message, { isActive: false });
           results.failed++;
           results.errors.push(`Dataset ${dataset.id}: ${error.message}`);
           continue;
@@ -123,6 +144,7 @@ export async function POST(req: NextRequest) {
           console.warn(
             `Dataset ${dataset.id} skipped (size check timed out), will retry next run`
           );
+          await recordFailure(dataset.id, error.message);
           results.failed++;
           results.errors.push(`Dataset ${dataset.id}: ${error.message}`);
           continue;
@@ -133,6 +155,7 @@ export async function POST(req: NextRequest) {
           `❌ Failed to update dataset ${dataset.id}:`,
           errorMessage
         );
+        await recordFailure(dataset.id, errorMessage);
         results.failed++;
         results.errors.push(`Dataset ${dataset.id}: ${errorMessage}`);
       }

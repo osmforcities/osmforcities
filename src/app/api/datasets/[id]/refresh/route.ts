@@ -76,6 +76,9 @@ export async function POST(
         lastEditedAt: snapshot.stats.mostRecentElement ?? null,
         contributorsCount: snapshot.stats.editorsCount,
         recentlyEditedCount: snapshot.stats.recentActivity.elementsEdited,
+        lastAttempted: new Date(),
+        consecutiveFailures: 0,
+        lastError: null,
       },
       include: {
         template: {
