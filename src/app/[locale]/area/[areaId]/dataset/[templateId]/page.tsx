@@ -202,7 +202,7 @@ async function AreaTemplateDatasetView({
     return (
       <div className="bg-gray-50 lg:h-[calc(100dvh_-_var(--nav-height))] lg:flex lg:overflow-hidden">
         {trackDetailView}
-        <DatasetInteractiveSection dataset={dataset} boundary={boundary} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
+        <DatasetInteractiveSection dataset={dataset} boundary={boundary} areaName={areaName} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
       </div>
     );
   } catch (error) {
