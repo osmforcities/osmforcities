@@ -41,9 +41,12 @@ jobs:
       group: claude-review-${{ github.event.pull_request.number }}
       cancel-in-progress: true
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 1
+          # Don't leave the job's GITHUB_TOKEN in .git/config: the review only
+          # reads the diff, and an LLM agent shares this workspace.
+          persist-credentials: false
 
       # Fetch the ponytail plugin pinned to an exact commit (v4.8.4) so the
       # review can't silently pick up new third-party code. The action's
@@ -59,7 +62,7 @@ jobs:
             bc9ee949d5f439e8b9f3bb92c6d6d3d1e6ebd324
           git -C "$RUNNER_TEMP/ponytail" checkout -q FETCH_HEAD
 
-      - uses: anthropics/claude-code-action@v1
+      - uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b # v1.0.183
         id: claude
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -104,8 +107,15 @@ jobs:
               citing `path:line` and, where a concrete fix exists, a fenced
               code block with the fix.
             - If nothing is blocking, say so briefly; do not pad.
+          # allowedTools only auto-approves; it does NOT restrict what the
+          # agent can reach. Explicitly deny the file-mutation tools so the
+          # review stays read-only. We do NOT blanket-deny Bash: deny rules
+          # take precedence, so it would also kill the allowed gh read
+          # commands below (arbitrary Bash is already blocked in CI, since
+          # non-allowlisted tools can't be interactively approved).
           claude_args: |
             --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*)"
+            --disallowedTools "Edit,Write,MultiEdit,NotebookEdit"
             --model claude-opus-4-8
 
       # The action has no built-in cost display, but its execution log's
