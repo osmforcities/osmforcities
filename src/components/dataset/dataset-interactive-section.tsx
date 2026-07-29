@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { ArrowLeft } from "lucide-react";
 import type { Feature, FeatureCollection } from "geojson";
 import type { Dataset } from "@/schemas/dataset";
 import { Link } from "@/i18n/navigation";
-import { resolveAreaName } from "@/lib/area-name";
 import { DatasetMapWrapper, type DatasetFullMapHandle } from "@/components/dataset/map-wrapper";
 import { CategoryFacet } from "@/components/dataset/category-facet";
 import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
@@ -18,6 +17,10 @@ import { FeatureDetailPanel } from "@/components/dataset/feature-detail-panel";
 type DatasetInteractiveSectionProps = {
   dataset: Dataset;
   boundary: FeatureCollection | null;
+  // Resolved server-side (prefers fresh Nominatim areaInfo) so the back link
+  // stays consistent with the rest of the page even when the stored
+  // dataset.area.names map lacks the current locale.
+  areaName: string;
   savedCount?: number;
   saveLimit?: number;
 };
@@ -25,6 +28,7 @@ type DatasetInteractiveSectionProps = {
 export function DatasetInteractiveSection({
   dataset,
   boundary,
+  areaName,
   savedCount = 0,
   saveLimit,
 }: DatasetInteractiveSectionProps) {
@@ -32,8 +36,6 @@ export function DatasetInteractiveSection({
   const [lastChecked, setLastChecked] = useState(dataset.lastChecked);
   const mapRef = useRef<DatasetFullMapHandle>(null);
   const t = useTranslations("DatasetPage");
-  const locale = useLocale();
-  const areaName = resolveAreaName(dataset.area, locale);
 
   useEffect(() => {
     // Expose test hook in test mode or development
