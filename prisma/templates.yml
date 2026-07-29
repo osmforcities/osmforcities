@@ -293,10 +293,10 @@ filterableTags:
   ev-charging:     [capacity, operator, access, fee]
   crossings:       [crossing, crossing:markings, tactile_paving]
   railway-stations: [station, wheelchair, operator, network]
-  social-facility: [social_facility, social_facility:for, operator, wheelchair]
+  social-facility:  [social_facility, social_facility:for, operator, wheelchair]
   community-centre: [community_centre, operator]
-  town-halls: [building, wheelchair, townhall:type]
-  senior-centers: [social_facility, operator, wheelchair]
+  town-halls:       [building, wheelchair, townhall:type]
+  senior-centers:   [social_facility, operator, wheelchair]
   schools:          [operator, operator:type, wheelchair, isced:level]
   universities:     [operator, operator:type, wheelchair]
   libraries:        [operator, operator:type, wheelchair, internet_access]
@@ -339,26 +339,26 @@ demonstrators:
     - { area: 71525,   note: "Paris, FR - large set, varied networks/operators, strong accessibility" }
     - { area: 62428,   note: "Munich, DE - good wheelchair coverage, mixed train/subway modes" }
   social-facility:
-    - { area: 1543125, note: "Tokyo, JP - largest sample by far (3.1k), municipal open-data import, strong facility-type/operator" }
-    - { area: 175342,  note: "Greater London, UK - very large sample (707), near-complete facility-type + serves" }
-    - { area: 175905,  note: "New York City, US - large sample (392), North American representative" }
+    - { area: 1543125, note: "Tokyo, JP - largest sample by far, municipal open-data import, strong facility-type/operator" }
+    - { area: 175342,  note: "Greater London, UK - very large sample, near-complete facility-type + serves" }
+    - { area: 175905,  note: "New York City, US - large sample, North American representative" }
     - { area: 79604,   note: "Cape Town, ZA - African representative, near-complete facility-type tagging" }
     - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative" }
   community-centre:
     - { area: 62428,   note: "Munich, DE - best operator/centre-type balance" }
-    - { area: 1543125, note: "Tokyo, JP - very large sample (1.6k), municipal open-data import" }
+    - { area: 1543125, note: "Tokyo, JP - very large sample, municipal open-data import" }
     - { area: 79604,   note: "Cape Town, ZA - African representative, solid operator/centre-type split" }
     - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, strong centre-type tagging" }
     - { area: 175905,  note: "New York City, US - North American representative" }
   town-halls:
     - { area: 71525,   note: "Paris, FR - near-complete building/wheelchair/townhall:type across all arrondissement mairies" }
-    - { area: 1543125, note: "Tokyo, JP - largest sample by far (248), all three keys present at real volume" }
+    - { area: 1543125, note: "Tokyo, JP - largest sample by far, all three keys present at real volume" }
     - { area: 298285,  note: "Sao Paulo, BR - Latin American representative, strong townhall:type coverage" }
     - { area: 79604,   note: "Cape Town, ZA - African representative, strong building-type + townhall:type" }
     - { area: 62428,   note: "Munich, DE - thin sample but excellent wheelchair coverage" }
   senior-centers:
     - { area: 62428,   note: "Munich, DE - best-balanced across facility-type/operator/wheelchair" }
-    - { area: 1543125, note: "Tokyo, JP - largest sample by far (708), municipal open-data import" }
+    - { area: 1543125, note: "Tokyo, JP - largest sample by far, municipal open-data import" }
     - { area: 79604,   note: "Cape Town, ZA - African representative, large sample, strong facility-type + operator" }
     - { area: 175905,  note: "New York City, US - North American representative, strong wheelchair coverage" }
     - { area: 298285,  note: "Sao Paulo, BR - Latin American representative" }

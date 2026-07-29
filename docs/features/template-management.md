@@ -167,17 +167,17 @@ active/featured set bounded.
   template was made a sub-template of `social-facility` (its query is a strict subset).
   Audit every existing selector against taginfo/wiki before tuning its filterableTags —
   a template can look fine in the YAML and still query nothing in the real world.
-- **social-facility** — `[social_facility, social_facility:for, operator, wheelchair]`.
-  `social_facility` (the type: nursing_home/day_care/shelter/food_bank/...) and
-  `social_facility:for` (who it serves) are the two wiki-documented keys and dominate
-  coverage (69-99.7% and 30-72% across 4 cities). Dropped `operator:type` (3-11%
-  everywhere — near-absent, not just regionally skewed).
-- **senior-centers** — `[social_facility, operator, wheelchair]`. Same `social_facility`
-  key still varies meaningfully within the senior-only subset (nursing_home vs day_care vs
-  assisted_living). `social_facility:for` is excluded even though wiki-relevant: as the
-  sub-template's own query condition it is constant (`senior`) for every feature, so it
-  would render as a single-color flat legend. Dropped `operator:type` (0-28%, weakest of
-  the four candidates in every sampled city).
+- **social-facility** `[social_facility, social_facility:for, operator, wheelchair]` vs.
+  its child **senior-centers** `[social_facility, operator, wheelchair]` — same two
+  wiki-documented keys (`social_facility` = type: nursing_home/day_care/shelter/
+  food_bank/...; `social_facility:for` = who it serves) dominate coverage in the parent
+  (69-99.7% and 30-72% across 4 cities), and `social_facility` still varies meaningfully
+  within the senior-only child (nursing_home vs day_care vs assisted_living). The one
+  difference: `social_facility:for` drops out of the child even though it's wiki-relevant,
+  because as the sub-template's own query condition it's constant (`senior`) for every
+  feature there — coloring by it would be a single-color flat legend. Both dropped
+  `operator:type` (3-11% parent, 0-28% child — the weakest candidate in every sampled
+  city, not just regionally skewed).
 - **community-centre** — `[community_centre, operator]`. Thin list: `community_centre:for`
   (2-19%), `wheelchair` (2-32%, near-zero in 3 of 4 cities) and `fee` (0% everywhere) were
   all dropped as near-absent. Only the centre's own type and its operator cleared the bar.
