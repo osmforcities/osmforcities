@@ -357,7 +357,7 @@ demonstrators:
     - { area: 104836,  note: "Chamonix-Mont-Blanc, FR - CAF-operated huts, strong operator tagging" }
     - { area: 1685406, note: "Zermatt, CH - near-complete capacity tagging, SAC-operated huts" }
   chalets:
-    - { area: 1629145, note: "Madeira, PT - small but individually curated, varied internet_access; most other regions (Algarve bulk import, Sintra, Douro, Porto) show near-zero tag coverage despite real feature counts" }
+    - { area: 1629145, note: "Madeira, PT - small but individually curated, varied internet_access; operator names are distinct real businesses (e.g. Ana Lodges, Paulo Moniz) despite low 20% coverage; most other regions (Algarve bulk import, Sintra, Douro, Porto) show near-zero tag coverage despite real feature counts" }
   schools:
     - { area: 451516,  note: "Wroclaw, PL - near-complete operator/operator:type/isced:level tagging" }
     - { area: 419203,  note: "Utrecht, NL - strong isced:level, operator, wheelchair coverage" }
