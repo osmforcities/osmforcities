@@ -686,6 +686,18 @@
     "internet_access": "Internet access",
     "shower": "Shower",
     "power_supply": "Power supply",
+    "parking": "Type",
+    "surface": "Surface",
+    "traffic_signals:sound": "Acoustic signal",
+    "smoothness": "Smoothness",
+    "oneway": "One-way",
+    "maxspeed": "Speed limit",
+    "sidewalk": "Sidewalk",
+    "railway": "Rail type",
+    "electrified": "Electrification",
+    "usage": "Usage",
+    "service": "Service track",
+    "traffic_calming": "Type",
     "operator:type": "Operator type",
     "isced:level": "Education level"
   },
@@ -721,6 +733,90 @@
       "handlebar_holder": "Handlebar holder",
       "crossbar": "Crossbar",
       "informal": "Informal"
+    },
+    "parking": {
+      "surface": "Surface",
+      "underground": "Underground",
+      "multi-storey": "Multi-storey",
+      "rooftop": "Rooftop",
+      "street_side": "Street side",
+      "lane": "Lane",
+      "sheds": "Sheds",
+      "carports": "Carports",
+      "garage_boxes": "Garage boxes"
+    },
+    "surface": {
+      "asphalt": "Asphalt",
+      "concrete": "Concrete",
+      "paving_stones": "Paving stones",
+      "sett": "Sett",
+      "cobblestone": "Cobblestone",
+      "paved": "Paved",
+      "unpaved": "Unpaved",
+      "compacted": "Compacted",
+      "fine_gravel": "Fine gravel",
+      "gravel": "Gravel",
+      "ground": "Ground",
+      "dirt": "Dirt",
+      "grass": "Grass"
+    },
+    "traffic_signals:sound": {
+      "locate": "Locate only",
+      "walk": "Walk only"
+    },
+    "smoothness": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "intermediate": "Intermediate",
+      "bad": "Bad",
+      "very_bad": "Very bad",
+      "horrible": "Horrible",
+      "very_horrible": "Very horrible",
+      "impassable": "Impassable"
+    },
+    "oneway": {
+      "-1": "Reverse direction"
+    },
+    "sidewalk": {
+      "both": "Both sides",
+      "left": "Left side",
+      "right": "Right side",
+      "separate": "Separately mapped",
+      "none": "None"
+    },
+    "railway": {
+      "tram": "Tram",
+      "subway": "Subway",
+      "light_rail": "Light rail",
+      "rail": "Mainline rail"
+    },
+    "electrified": {
+      "contact_line": "Overhead line",
+      "rail": "Third rail"
+    },
+    "usage": {
+      "main": "Main line",
+      "branch": "Branch line",
+      "industrial": "Industrial",
+      "tourism": "Tourism",
+      "military": "Military"
+    },
+    "service": {
+      "yard": "Yard",
+      "siding": "Siding",
+      "spur": "Spur",
+      "crossover": "Crossover"
+    },
+    "traffic_calming": {
+      "hump": "Hump",
+      "bump": "Bump",
+      "table": "Table",
+      "island": "Island",
+      "dip": "Dip",
+      "cushion": "Cushion",
+      "chicane": "Chicane",
+      "choker": "Choker",
+      "rumble_strip": "Rumble strip"
     },
     "operator:type": {
       "public": "Public",

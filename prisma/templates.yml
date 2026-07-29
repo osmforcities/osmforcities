@@ -6,21 +6,24 @@
 
 templates:
 # Transportation
-  # Parent template for bicycle infrastructure
-  - ["bicycle-infrastructure","amenity=bicycle_parking;amenity=bicycle_rental;shop=bicycle","transportation","Bike"]
-  - ["bicycle-parking","amenity=bicycle_parking","transportation","Bike","bicycle-infrastructure"]
-  - ["bicycle-rental","amenity=bicycle_rental","transportation","Bike","bicycle-infrastructure"]
-  - ["bicycle-shop","shop=bicycle","transportation","Bike","bicycle-infrastructure"]
+  - ["bicycle-parking","amenity=bicycle_parking","transport","Bike"]
+  - ["bicycle-rental","amenity=bicycle_rental","transport","Bike"]
   # Parent template for public transit
-  - ["public-transit","highway=bus_stop;railway=station;railway=tram_stop;railway=subway_entrance","transportation","Train"]
-  - ["bus-stops","highway=bus_stop","transportation","Bus","public-transit"]
-  - ["ev-charging","amenity=charging_station","transportation","Zap"]
-  - ["railway-stations","railway=station","transportation","Train","public-transit"]
-  - ["tram-stops","railway=tram_stop","transportation","TramFront","public-transit"]
-  - ["subway-entrances","railway=subway_entrance","transportation","TrainFront","public-transit"]
-  - ["ferry-terminals","amenity=ferry_terminal","transportation","Ship"]
-  - ["taxi-ranks","amenity=taxi","transportation","CarTaxiFront"]
-  - ["parking","amenity=parking;amenity=parking_space","transportation","SquareParking"]
+  - ["public-transit","highway=bus_stop;railway=station;railway=tram_stop;railway=subway_entrance;public_transport=platform","transport","Train"]
+  - ["bus-stops","highway=bus_stop","transport","Bus","public-transit"]
+  - ["ev-charging","amenity=charging_station","transport","Zap"]
+  - ["railway-stations","railway=station","transport","Train","public-transit"]
+  - ["tram-stops","railway=tram_stop","transport","TramFront","public-transit"]
+  - ["subway-entrances","railway=subway_entrance","transport","TrainFrontTunnel","public-transit"]
+  - ["transit-platforms","public_transport=platform","transport","RailSymbol","public-transit"]
+  - ["ferry-terminals","amenity=ferry_terminal","transport","Ship"]
+  - ["taxi-ranks","amenity=taxi","transport","CarTaxiFront"]
+  - ["parking","amenity=parking;amenity=parking_space","transport","SquareParking"]
+  # Rail network (tracks/lines) - complements public-transit stops
+  - ["rail-tracks","railway=tram;railway=subway;railway=light_rail;railway=rail","transport","TrainTrack"]
+  # Bus rapid transit: segregated corridors (highway=busway) and on-street lanes
+  - ["busways","highway=busway","transport","BusFront"]
+  - ["bus-lanes","busway=lane;busway:left=lane;busway:right=lane;busway:both=lane","transport","Milestone"]
 # Financial
   - ["atms","amenity=atm","financial","Banknote"]
   - ["banks","amenity=bank","financial","Landmark"]
@@ -108,6 +111,7 @@ templates:
   - ["optician","shop=optician","shops","Glasses"]
   - ["shoes","shop=shoes","shops","Footprints"]
   - ["jewelry","shop=jewelry","shops","Gem"]
+  - ["bicycle-shop","shop=bicycle","shops","Store"]
 # Food
   - ["restaurants","amenity=restaurant","food","UtensilsCrossed"]
   - ["cafes","amenity=cafe","food","Coffee"]
@@ -179,17 +183,17 @@ templates:
   - ["pumping-station","man_made=pumping_station","infrastructure","Gauge"]
   - ["utility-pole","man_made=utility_pole","infrastructure","Cable"]
 # Transport infrastructure
-  - ["roads","highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=unclassified","transport_infrastructure","Route"]
-  - ["footways","highway=footway;highway=path","transport_infrastructure","Footprints"]
-  - ["cycleways","highway=cycleway","transport_infrastructure","Bike"]
-  - ["bridges","man_made=bridge","transport_infrastructure","Waypoints"]
-  - ["tunnels","tunnel=yes;tunnel=building_passage","transport_infrastructure","Route"]
-  - ["crossings","highway=crossing","transport_infrastructure","Footprints"]
+  - ["roads","highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=unclassified","transport","Route"]
+  - ["footways","highway=footway;highway=path","transport","Footprints"]
+  - ["cycleways","highway=cycleway","transport","Bike"]
+  - ["bridges","man_made=bridge","transport","Waypoints"]
+  - ["tunnels","tunnel=yes;tunnel=building_passage","transport","Route"]
+  - ["crossings","highway=crossing","transport","Footprints"]
 # Traffic
-  - ["traffic-signs","traffic_sign=*","traffic","Signpost"]
-  - ["traffic-lights","highway=traffic_signals","traffic","Lightbulb"]
-  - ["speed-cameras","man_made=speed_camera","traffic","Camera"]
-  - ["traffic-calming","traffic_calming=*","traffic","TrafficCone"]
+  - ["traffic-signs","traffic_sign=*","transport","Signpost"]
+  - ["traffic-lights","highway=traffic_signals","transport","Lightbulb"]
+  - ["speed-cameras","highway=speed_camera;man_made=speed_camera","transport","Camera"]
+  - ["traffic-calming","traffic_calming=*","transport","TrafficCone"]
 # Housing
   - ["apartments","building=apartments","housing","Building2"]
   - ["houses","building=house;building=detached;building=semidetached_house;building=terrace","housing","Home"]
@@ -287,11 +291,11 @@ templates:
 # Add tag-key labels to messages/*.json (TagLabel) and controlled values (TagValue).
 # Tuning process (widen/reduce from the dashboard): docs/features/template-management.md.
 filterableTags:
-  bus-stops:       [shelter, bench, lit, tactile_paving, operator]
+  bus-stops:       [shelter, bench, lit, tactile_paving, wheelchair, operator]
   bicycle-parking: [bicycle_parking, covered, capacity, access, fee]
   bicycle-rental:  [bicycle_rental, operator, network, capacity]
   ev-charging:     [capacity, operator, access, fee]
-  crossings:       [crossing, crossing:markings, tactile_paving]
+  crossings:       [crossing, crossing:markings, tactile_paving, traffic_signals:sound]
   railway-stations: [station, wheelchair, operator, network]
   hotels:           [stars, wheelchair, internet_access]
   attractions:      [wheelchair]
@@ -299,6 +303,18 @@ filterableTags:
   hotel-guesthouse: [wheelchair, internet_access]
   alpine-huts:      [operator, capacity]
   chalets:          [operator, internet_access]
+  transit-platforms: [tactile_paving, wheelchair, shelter, bench, lit]
+  subway-entrances: [wheelchair]
+  taxi-ranks:       [capacity, operator]
+  ferry-terminals:  [operator, network, wheelchair]
+  parking:          [parking, access, fee, capacity, surface]
+  rail-tracks:      [railway, electrified, usage, service]
+  busways:          [surface]
+  roads:            [surface, maxspeed, lit, sidewalk]
+  footways:         [surface, lit, smoothness]
+  cycleways:        [surface, lit, oneway, smoothness]
+  traffic-calming:  [traffic_calming]
+  speed-cameras:    [maxspeed]
   schools:          [operator, operator:type, wheelchair, isced:level]
   universities:     [operator, operator:type, wheelchair]
   libraries:        [operator, operator:type, wheelchair, internet_access]
@@ -358,6 +374,54 @@ demonstrators:
     - { area: 1685406, note: "Zermatt, CH - near-complete capacity tagging, SAC-operated huts" }
   chalets:
     - { area: 1629145, note: "Madeira, PT - small but individually curated, varied internet_access; operator names are distinct real businesses (e.g. Ana Lodges, Paulo Moniz) despite low 20% coverage; most other regions (Algarve bulk import, Sintra, Douro, Porto) show near-zero tag coverage despite real feature counts" }
+  transit-platforms:
+    - { area: 62428,   note: "Munich, DE - dense multimodal platforms, near-complete tactile_paving/bench/shelter/lit, strong wheelchair" }
+    - { area: 419203,  note: "Utrecht, NL - well-tagged bus/tram platforms, good tactile_paving + shelter" }
+    - { area: 54517,   note: "Rennes, FR - meticulous accessibility (wheelchair/tactile/bench high), Western Europe representative" }
+  subway-entrances:
+    - { area: 62428,   note: "Munich, DE - every U-Bahn entrance tagged wheelchair (no/yes/limited split)" }
+    - { area: 347950,  note: "Barcelona, ES - metro entrances broadly tagged wheelchair" }
+  taxi-ranks:
+    - { area: 62428,   note: "Munich, DE - high capacity coverage across ranks" }
+    - { area: 62422,   note: "Berlin, DE - strong capacity tagging across ranks" }
+    - { area: 175342,  note: "London, GB - varied operator (private minicab firms), the deviation lens" }
+  ferry-terminals:
+    - { area: 398021,  note: "Stockholm, SE - multiple operators and networks (SL/Waxholmsbolaget/Stromma)" }
+    - { area: 406091,  note: "Oslo, NO - good wheelchair coverage, several fjord operators" }
+    - { area: 271110,  note: "Amsterdam, NL - GVB ferries, high wheelchair; surfaces operator-spelling duplicates" }
+  parking:
+    - { area: 62768,   note: "Freiburg, DE - near-complete parking-type/access tagging, compact dataset" }
+    - { area: 62591,   note: "Munster, DE - strong parking-type/access/capacity across many lots" }
+    - { area: 59874,   note: "Nantes, FR - well-tagged parking-type/access, high fee coverage" }
+  rail-tracks:
+    - { area: 62428,   note: "Munich, DE - full mix: tram, U-Bahn subway, S-Bahn/mainline rail; electrified/service dense" }
+    - { area: 62422,   note: "Berlin, DE - extensive U-Bahn/S-Bahn/tram/rail network, strong railway-type variance" }
+    - { area: 271110,  note: "Amsterdam, NL - tram + metro + rail, good electrified/usage tagging" }
+  busways:
+    - { area: 2697338, note: "Rio de Janeiro, BR - BRT corridors (TransOeste/TransCarioca) mapped as highway=busway" }
+    - { area: 298285,  note: "Sao Paulo, BR - corredores de onibus as dedicated busways, surface tagged" }
+  bus-lanes:
+    - { area: 7426387, note: "Bogota, CO - Transmilenio trunk mapped as busway:left/right=lane on avenues" }
+    - { area: 298285,  note: "Sao Paulo, BR - faixas exclusivas de onibus as busway=lane on roads" }
+  roads:
+    - { area: 62428,   note: "Munich, DE - near-complete surface/maxspeed/lit; speed-zone variance" }
+    - { area: 419203,  note: "Utrecht, NL - meticulous road attributes, high sidewalk coverage" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - surface variance (paved/unpaved) for the color-by" }
+  footways:
+    - { area: 62428,   note: "Munich, DE - surface 72%, lit 46%, smoothness 25% across a dense path network" }
+    - { area: 419203,  note: "Utrecht, NL - thorough footway surface/lit tagging" }
+    - { area: 54517,   note: "Rennes, FR - well-maintained pedestrian-path attributes" }
+  cycleways:
+    - { area: 419203,  note: "Utrecht, NL - cycling capital, near-complete surface/lit/oneway/smoothness" }
+    - { area: 62428,   note: "Munich, DE - surface 89%, oneway/lit/smoothness all strong" }
+    - { area: 271110,  note: "Amsterdam, NL - dense cycleway network, rich attributes" }
+  traffic-calming:
+    - { area: 298285,  note: "Sao Paulo, BR - 7k+ features, varied values (hump/bump/table/island/dip)" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - heavy lombada tagging, good value spread" }
+    - { area: 1376330, note: "Mexico City, MX - dense traffic-calming across the metro area" }
+  speed-cameras:
+    - { area: 298285,  note: "Sao Paulo, BR - 878 highway=speed_camera, maxspeed 97% (enforced-limit color-by)" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - dense radar mapping with maxspeed" }
   schools:
     - { area: 451516,  note: "Wroclaw, PL - near-complete operator/operator:type/isced:level tagging" }
     - { area: 419203,  note: "Utrecht, NL - strong isced:level, operator, wheelchair coverage" }
@@ -410,9 +474,7 @@ demonstrators:
 
 # Category to icon mapping (fallback for templates without icon)
 categories:
-  transportation: Car
   transport: Car
-  transport_infrastructure: Route
   financial: DollarSign
   amenities: Heart
   healthcare: Hospital
@@ -429,7 +491,6 @@ categories:
   services: Wrench
   nature: Leaf
   infrastructure: Gauge
-  traffic: TrafficCone
   housing: Building2
   sports: Trophy
   public: Info
