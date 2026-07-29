@@ -1,0 +1,191 @@
+# Automated PR review via Claude Code (trial, runs in parallel with CodeRabbit).
+#
+# Vendored/adapted from developmentseed/.github's reusable claude-pr-review
+# workflow so osmforcities stays self-contained. Posts ONE sticky comment per
+# PR (updated in place on each push) with correctness/security findings plus a
+# ponytail over-engineering pass.
+#
+# Requires the CLAUDE_CODE_OAUTH_TOKEN repo secret (create with
+# `claude setup-token`; billed to the Claude subscription, not the API).
+#
+# Note: on this public repo, GitHub withholds the secret from forked-PR runs,
+# so external-contributor PRs are not reviewed here (CodeRabbit still covers
+# them). Own-branch PRs get both reviewers.
+
+name: Claude PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    # Skip when a PR touches workflow files: the action can't validate/run
+    # against modified workflows and fails with "401 Unauthorized - Workflow
+    # validation failed".
+    paths-ignore:
+      - '.github/workflows/**'
+
+jobs:
+  review:
+    # Skip PRs authored by bots (dependabot etc.). allowed_bots below is
+    # different: it lets the github-actions bot *trigger* reviews of PRs
+    # authored by humans or Claude.
+    if: github.event.pull_request.user.type != 'Bot'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    # Cancel an in-flight review when a new commit is pushed: the latest
+    # commit is the only one worth reviewing, and all runs share one sticky
+    # comment anyway.
+    concurrency:
+      group: claude-review-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          # Don't leave the job's GITHUB_TOKEN in .git/config: the review only
+          # reads the diff, and an LLM agent shares this workspace.
+          persist-credentials: false
+
+      # Fetch the ponytail plugin pinned to an exact commit (v4.8.4) so the
+      # review can't silently pick up new third-party code. The action's
+      # plugin_marketplaces input takes raw git URLs with no ref support, but
+      # it accepts local paths — so pin here and hand it the clone. To
+      # upgrade: pick a release from https://github.com/DietrichGebert/ponytail/tags
+      # and update the SHA + version comment together.
+      - name: Fetch ponytail plugin (v4.8.4, pinned)
+        run: |
+          git init -q "$RUNNER_TEMP/ponytail"
+          git -C "$RUNNER_TEMP/ponytail" fetch -q --depth 1 \
+            https://github.com/DietrichGebert/ponytail.git \
+            bc9ee949d5f439e8b9f3bb92c6d6d3d1e6ebd324
+          git -C "$RUNNER_TEMP/ponytail" checkout -q FETCH_HEAD
+
+      - uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b # v1.0.183
+        id: claude
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Allow the github-actions bot to trigger the review so that
+          # Claude-authored PRs get reviewed. Without this, the action
+          # aborts on bot actors ("Workflow initiated by non-human actor").
+          allowed_bots: "github-actions"
+          # Deliver the review as ONE sticky PR comment that updates in place
+          # each run. track_progress forces tag mode (a single tracking
+          # comment the action owns and updates with the final result on
+          # these pull_request events); use_sticky_comment makes it the SAME
+          # comment across pushes.
+          track_progress: true
+          use_sticky_comment: true
+          plugin_marketplaces: |
+            ${{ runner.temp }}/ponytail
+          plugins: |
+            ponytail@ponytail
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR: ${{ github.event.pull_request.number }}
+
+            Review this pull request's diff for correctness bugs, security
+            issues, and clear best-practice problems. Skip nits and anything
+            a linter or formatter already enforces.
+            Also apply the ponytail-review skill (from the ponytail plugin) to
+            the same diff, hunting over-engineering: reinvented standard
+            library, unneeded dependencies, speculative abstractions, dead
+            flexibility. One line per finding: location, what to cut, what
+            replaces it. These findings are advisory and never block; list
+            them in a final **Simplify (ponytail)** section, omitted when
+            empty.
+
+            Your final message is delivered as the PR review comment
+            automatically — do NOT post any comment or review yourself. Just
+            produce the review:
+            - Start with a single bold verdict line: `**✅ No blocking issues
+              — safe to merge.**` when nothing is blocking, or `**❌ Changes
+              requested — see findings below.**` when there are blocking
+              issues.
+            - Follow with a short bullet list of blocking findings, each
+              citing `path:line` and, where a concrete fix exists, a fenced
+              code block with the fix.
+            - If nothing is blocking, say so briefly; do not pad.
+          # Reverted to the developmentseed baseline args to isolate the stub
+          # cause: no --model pin (uses the Claude Code default) and no
+          # --disallowedTools. Both were additions the original workflow lacked.
+          # Dropping the tool blocks is safe: the file-mutation tools aren't in
+          # the action's allowlist, so CI already blocks them without an
+          # explicit deny (non-allowlisted tools can't be interactively
+          # approved). The guard step below catches any stub regardless.
+          claude_args: |
+            --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*)"
+
+      # The action has no built-in cost display, but its execution log's
+      # final result record carries the run metrics — append them to the
+      # review comment. The sticky comment has no marker; find it the way
+      # the action itself does (latest comment by a claude bot). Use the
+      # job's own token: the action's github_token output is a Claude App
+      # token that the action revokes in its own final step, so it is
+      # always dead (401) by the time this step runs. Failures here warn
+      # instead of failing the job — a missing footer is not worth a red X
+      # on the PR. With subscription (OAuth) auth the cost is the
+      # API-equivalent estimate, not an actual charge.
+      - name: Append cost to review comment
+        if: steps.claude.outputs.execution_file != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          read -r cost ms turns < <(jq -r '[.[] | select(.type=="result")] | last |
+            if . == null then "" else "\(.total_cost_usd) \(.duration_ms | floor) \(.num_turns)" end' \
+            "$EXECUTION_FILE") || true
+          if [ -z "${cost:-}" ] || [ "$cost" = "null" ]; then exit 0; fi
+          footer=$(printf '\n\n---\n*💰 Estimated review cost: $%.2f · %dm%02ds · %s turns*' \
+            "$cost" $((ms / 60000)) $((ms / 1000 % 60)) "$turns")
+          id=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" --paginate \
+            --jq '.[] | select(.user.type == "Bot" and (.user.login | ascii_downcase | contains("claude"))) | .id' \
+            | tail -1) || true
+          # gh prints the error body to stdout on API failures, so require a
+          # numeric id rather than merely a non-empty one.
+          if ! [[ "$id" =~ ^[0-9]+$ ]]; then
+            echo "::warning::cost footer skipped: no review comment found"
+            exit 0
+          fi
+          if ! gh api "repos/$GITHUB_REPOSITORY/issues/comments/$id" --jq .body > "$RUNNER_TEMP/body.md"; then
+            echo "::warning::cost footer skipped: could not read comment $id"
+            exit 0
+          fi
+          printf '%s' "$footer" >> "$RUNNER_TEMP/body.md"
+          if ! gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$id" \
+              -F body=@"$RUNNER_TEMP/body.md" > /dev/null; then
+            echo "::warning::cost footer skipped: could not update comment $id"
+          fi
+
+      # Guard against the action's known sticky-comment flakiness: the model
+      # occasionally replies with a plain message and exits (2 turns, no error)
+      # WITHOUT calling update_claude_comment, so the initial "I'll analyze
+      # this..." placeholder is left standing as the "review". The action
+      # exits success either way, so without this the stub passes silently.
+      # Detect a missing verdict marker and fail the check instead, making the
+      # stub visible so the job can be re-run. Find the comment the same way
+      # the cost step does (latest comment by a claude bot).
+      - name: Verify review was posted
+        if: always() && steps.claude.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          id=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" --paginate \
+            --jq '.[] | select(.user.type == "Bot" and (.user.login | ascii_downcase | contains("claude"))) | .id' \
+            | tail -1) || true
+          if ! [[ "$id" =~ ^[0-9]+$ ]]; then
+            echo "::error::no Claude review comment found on PR #$PR_NUMBER"
+            exit 1
+          fi
+          body=$(gh api "repos/$GITHUB_REPOSITORY/issues/comments/$id" --jq .body) || true
+          # The prompt requires the review to open with one of these verdict
+          # lines; their absence means the model never posted a real review.
+          if printf '%s' "$body" | grep -qF -e '✅ No blocking issues' -e '❌ Changes requested'; then
+            echo "Review posted (verdict marker present)."
+            exit 0
+          fi
+          echo "::error::Claude posted no review — the sticky comment still shows the placeholder (known action flakiness). Re-run this job."
+          exit 1
