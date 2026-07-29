@@ -323,7 +323,7 @@ filterableTags:
   language-school:    [operator, operator:type, wheelchair]
   research-institute: [operator, operator:type, wheelchair]
   # Financial
-  atms:             [operator, brand, cash_in]
+  atms:             [operator, brand, cash_in, wheelchair]
   banks:            [brand, operator, atm, wheelchair]
   # Culture (wheelchair = transversal equity signal on enterable venues)
   museums:          [museum, operator, fee, wheelchair]
@@ -500,32 +500,32 @@ demonstrators:
     - { area: 451516,  note: "Wroclaw, PL - consistent operator/operator:type pairing (small sample)" }
     - { area: 71525,   note: "Paris, FR - largest sample among candidates" }
   places-of-worship:
-    - { area: 62422,   note: "Berlin, DE - religion 99%, denomination 80%, wheelchair 51% across 751 sites" }
+    - { area: 62422,   note: "Berlin, DE - near-universal religion/denomination, wheelchair well covered" }
     - { area: 71525,   note: "Paris, FR - broad religion mix, strong denomination tagging" }
     - { area: 298285,  note: "Sao Paulo, BR - Latin American representative, dense christian denomination variety" }
   atms:
-    - { area: 62428,   note: "Munich, DE - operator 86%, brand 41%, cash_in 80% (deposit-capability split)" }
+    - { area: 62428,   note: "Munich, DE - strong operator/brand, well-split cash_in, Germany-strong wheelchair" }
     - { area: 71525,   note: "Paris, FR - strong operator/brand tagging" }
   banks:
     - { area: 62428,   note: "Munich, DE - strong brand/operator, wheelchair well covered" }
     - { area: 71525,   note: "Paris, FR - good brand and atm=yes/no tagging" }
   museums:
-    - { area: 71525,   note: "Paris, FR - fee 62%, wheelchair 46%, museum-type variety across 165 museums" }
+    - { area: 71525,   note: "Paris, FR - varied museum=* typing, good fee/wheelchair coverage" }
     - { area: 62422,   note: "Berlin, DE - large museum set, strong fee/wheelchair tagging" }
     - { area: 175905,  note: "New York, US - North American representative, rich museum=* typing" }
   fire-hydrants:
-    - { area: 62428,   note: "Munich, DE - 12k hydrants, fire_hydrant:type 99%, position 97%" }
+    - { area: 62428,   note: "Munich, DE - dense hydrant network, near-complete type/position, diameter well covered" }
     - { area: 62422,   note: "Berlin, DE - extensive hydrant network, near-complete type tagging" }
   defibrillators:
-    - { area: 62428,   note: "Munich, DE - indoor 89%, access 27% across 292 AEDs" }
+    - { area: 62428,   note: "Munich, DE - clear indoor/access split across a solid AED set" }
     - { area: 175342,  note: "London, GB - large public-access AED set, strong access tagging" }
   supermarkets:
-    - { area: 62428,   note: "Munich, DE - wheelchair 86%, brand 77%, operator 25%, organic 20%" }
+    - { area: 62428,   note: "Munich, DE - strong brand/operator, wheelchair + organic well covered" }
     - { area: 71525,   note: "Paris, FR - strong brand/wheelchair tagging" }
     - { area: 298285,  note: "Sao Paulo, BR - Latin American representative, brand-chain heavy" }
   markets:
-    - { area: 347950,  note: "Barcelona, ES - 49 municipal markets, mostly building-mapped (age-view dataset)" }
-    - { area: 298285,  note: "Sao Paulo, BR - 88 marketplaces incl. street feiras" }
+    - { area: 347950,  note: "Barcelona, ES - municipal markets, mostly building-mapped (age-view dataset)" }
+    - { area: 298285,  note: "Sao Paulo, BR - marketplaces incl. street feiras" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:
