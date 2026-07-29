@@ -912,12 +912,12 @@ templates:
   tracks:
     name:
       en: Tracks
-      pt: Pistas
-      es: Pistas
+      pt: Pistas de atletismo
+      es: Pistas de atletismo
     desc:
       en: Tracks
-      pt: Pistas
-      es: Pistas
+      pt: Pistas de atletismo
+      es: Pistas de atletismo
   fitness-stations:
     name:
       en: Fitness Stations
