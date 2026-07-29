@@ -72,6 +72,15 @@ templates:
       en: Subway Entrances
       pt: Acessos ao metrô
       es: Accesos de metro
+  transit-platforms:
+    name:
+      en: Transit Platforms
+      pt: Plataformas de transporte público
+      es: Andenes de transporte público
+    desc:
+      en: Transit Platforms
+      pt: Plataformas de transporte público
+      es: Andenes de transporte público
   ferry-terminals:
     name:
       en: Ferry Terminals
@@ -99,6 +108,33 @@ templates:
       en: Parking
       pt: Estacionamentos
       es: Estacionamientos
+  rail-tracks:
+    name:
+      en: Rail Tracks
+      pt: Trilhos ferroviários
+      es: Vías férreas
+    desc:
+      en: Tram, subway, light rail and mainline railway tracks
+      pt: Trilhos de bonde, metrô, VLT e ferrovias
+      es: Vías de tranvía, metro, tren ligero y ferrocarril
+  busways:
+    name:
+      en: Busways
+      pt: Corredores de ônibus
+      es: Corredores de autobús
+    desc:
+      en: Dedicated bus rapid transit corridors
+      pt: Corredores exclusivos de ônibus (BRT)
+      es: Corredores exclusivos de autobús (BRT)
+  bus-lanes:
+    name:
+      en: Bus Lanes
+      pt: Faixas de ônibus
+      es: Carriles de autobús
+    desc:
+      en: On-street exclusive bus lanes
+      pt: Faixas exclusivas de ônibus na via
+      es: Carriles exclusivos de autobús en la vía
   atms:
     name:
       en: Atms
@@ -270,6 +306,51 @@ templates:
       en: College
       pt: Faculdades
       es: Facultades
+  childcare:
+    name:
+      en: Childcare
+      pt: Creches
+      es: Guarderías
+    desc:
+      en: Childcare
+      pt: Creches
+      es: Guarderías
+  driving-school:
+    name:
+      en: Driving Schools
+      pt: Autoescolas
+      es: Autoescuelas
+    desc:
+      en: Driving Schools
+      pt: Autoescolas
+      es: Autoescuelas
+  music-school:
+    name:
+      en: Music Schools
+      pt: Escolas de música
+      es: Escuelas de música
+    desc:
+      en: Music Schools
+      pt: Escolas de música
+      es: Escuelas de música
+  language-school:
+    name:
+      en: Language Schools
+      pt: Escolas de idiomas
+      es: Escuelas de idiomas
+    desc:
+      en: Language Schools
+      pt: Escolas de idiomas
+      es: Escuelas de idiomas
+  research-institute:
+    name:
+      en: Research Institutes
+      pt: Institutos de pesquisa
+      es: Institutos de investigación
+    desc:
+      en: Research Institutes
+      pt: Institutos de pesquisa
+      es: Institutos de investigación
   hotels:
     name:
       en: Hotels

@@ -21,6 +21,7 @@ import {
   loadTemplatesYaml,
   loadTemplatesLogic,
   loadTemplatesI18n,
+  validateDemonstrators,
 } from "../template-parser";
 
 describe("template-parser", () => {
@@ -289,9 +290,8 @@ describe("template-parser", () => {
       expect(byId.get("bicycle-parking")).toEqual({
         id: "bicycle-parking",
         query: "amenity=bicycle_parking",
-        category: "transportation",
+        category: "transport",
         icon: "Bike",
-        parent: "bicycle-infrastructure",
         filterableTags: [
           "bicycle_parking",
           "covered",
@@ -300,7 +300,9 @@ describe("template-parser", () => {
           "fee",
         ],
       });
-      expect(categories.transportation).toBe("Car");
+      // parent parsing (5th element) is still exercised by public-transit children
+      expect(byId.get("bus-stops")?.parent).toBe("public-transit");
+      expect(categories.transport).toBe("Car");
       expect(categories.agriculture).toBe("Wheat");
     });
 
@@ -311,9 +313,10 @@ describe("template-parser", () => {
       expect(byId.get("bus-stops")?.filterableTags).toEqual([
         "shelter",
         "bench",
-        "covered",
         "lit",
         "tactile_paving",
+        "wheelchair",
+        "operator",
       ]);
       // Uncurated templates have no list (age-only in the legend)
       expect(byId.get("hospitals")?.filterableTags).toBeUndefined();
@@ -346,6 +349,99 @@ describe("template-parser", () => {
       expect(first.name).toBeDefined();
       expect(first.description).toBeDefined();
       expect(first.overpassQuery).toContain("area.searchArea");
+    });
+
+    it("exposes the demonstrators section keyed by template id", () => {
+      const config = loadTemplatesYaml("./prisma");
+      expect(config.demonstrators).toBeDefined();
+      const demonstrators = config.demonstrators as Record<string, unknown>;
+      const busStops = demonstrators["bus-stops"];
+      expect(Array.isArray(busStops)).toBe(true);
+      expect((busStops as unknown[]).length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("validateDemonstrators", () => {
+    const known = new Set(["bus-stops", "cycleways"]);
+
+    it("returns no errors for a valid section", () => {
+      const errors = validateDemonstrators(
+        {
+          "bus-stops": [
+            { area: 54517, note: "Rennes" },
+            { area: 451516 },
+          ],
+        },
+        known,
+      );
+      expect(errors).toHaveLength(0);
+    });
+
+    it("accepts an empty or absent section", () => {
+      expect(validateDemonstrators(undefined, known)).toHaveLength(0);
+      expect(validateDemonstrators(null, known)).toHaveLength(0);
+      expect(validateDemonstrators({}, known)).toHaveLength(0);
+    });
+
+    it("errors on a scalar or array root (hand-edited YAML)", () => {
+      for (const root of [42, true, "bus-stops", [{ area: 54517 }]]) {
+        const errors = validateDemonstrators(root, known);
+        expect(errors).toHaveLength(1);
+        expect(errors[0].message).toContain("map keyed by template id");
+      }
+    });
+
+    it("errors on an unknown template id", () => {
+      const errors = validateDemonstrators(
+        { "bus-stopz": [{ area: 54517 }] },
+        known,
+      );
+      expect(errors).toHaveLength(1);
+      expect(errors[0].message).toContain("unknown template id");
+    });
+
+    it("errors when the value is not a list", () => {
+      const errors = validateDemonstrators(
+        { "bus-stops": { area: 54517 } as unknown as unknown[] },
+        known,
+      );
+      expect(errors).toHaveLength(1);
+      expect(errors[0].message).toContain("must be a list");
+    });
+
+    it("errors on a non-integer or non-positive area", () => {
+      const errors = validateDemonstrators(
+        {
+          "bus-stops": [
+            { area: 1.5 },
+            { area: -3 },
+            { area: "54517" as unknown as number },
+          ],
+        },
+        known,
+      );
+      expect(errors).toHaveLength(3);
+      for (const e of errors) {
+        expect(e.message).toContain("positive integer");
+      }
+    });
+
+    it("errors when an entry is not an object", () => {
+      const errors = validateDemonstrators(
+        { "bus-stops": [54517 as unknown as object] },
+        known,
+      );
+      expect(errors).toHaveLength(1);
+      expect(errors[0].message).toContain('must be an object');
+    });
+
+    it("errors when note is not a string", () => {
+      const errors = validateDemonstrators(
+        { "bus-stops": [{ area: 54517, note: 42 as unknown as string }] },
+        known,
+      );
+      expect(errors).toHaveLength(1);
+      expect(errors[0].message).toContain("note must be a string");
     });
   });
 });

@@ -18,7 +18,7 @@ export const Default: Story = {
     name: "Bicycle Parking",
     city: "Paris",
     country: "france",
-    category: "transportation",
+    category: "transport",
     href: "/area/paris/dataset/bicycle-paris",
     stats: [{ type: "features", label: "Features", value: 1204 }],
   },
@@ -55,7 +55,7 @@ export const DarkMode: Story = {
     name: "Bicycle Parking",
     city: "Paris",
     country: "france",
-    category: "transportation",
+    category: "transport",
     href: "/area/paris/dataset/bicycle-paris",
     stats: [{ type: "features", label: "Features", value: 1204 }],
   },
@@ -79,7 +79,7 @@ export const GridShowcase: Story = {
             name="Bicycle Parking"
             city="Paris"
             country="france"
-            category="transportation"
+            category="transport"
             href="/area/paris/dataset/bicycle-paris"
             stats={[{ type: "features", label: "Features", value: 1204 }]}
           />
@@ -123,7 +123,7 @@ export const GridShowcase: Story = {
             name="Bicycle Parking"
             city="Paris"
             country="france"
-            category="transportation"
+            category="transport"
             href="/area/paris/dataset/bicycle-paris"
             stats={[
               { type: "features", label: "Features", value: 1204 },
@@ -168,7 +168,7 @@ export const GridShowcase: Story = {
             name="Public Transport"
             city="New York City"
             country="united states"
-            category="transportation"
+            category="transport"
             href="/area/new-york-city/dataset/transport-new-york"
             stats={[
               { type: "features", label: "Features", value: 1247 },

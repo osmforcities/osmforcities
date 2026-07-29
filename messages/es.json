@@ -680,10 +680,32 @@
     "covered": "Cubierto",
     "lit": "Iluminado",
     "tactile_paving": "Pavimento táctil",
+    "operator": "Operador",
+    "network": "Red",
+    "bicycle_rental": "Tipo",
     "bicycle_parking": "Tipo",
     "capacity": "Capacidad",
     "access": "Acceso",
-    "fee": "Tarifa"
+    "fee": "Tarifa",
+    "crossing": "Cruce",
+    "crossing:markings": "Marcas viales",
+    "station": "Tipo de estación",
+    "wheelchair": "Acceso para silla de ruedas",
+    "parking": "Tipo",
+    "surface": "Superficie",
+    "traffic_signals:sound": "Señal acústica",
+    "smoothness": "Regularidad",
+    "oneway": "Sentido único",
+    "maxspeed": "Límite de velocidad",
+    "sidewalk": "Acera",
+    "railway": "Tipo de vía",
+    "electrified": "Electrificación",
+    "usage": "Uso",
+    "service": "Vía de servicio",
+    "traffic_calming": "Tipo",
+    "operator:type": "Tipo de operador",
+    "isced:level": "Nivel educativo",
+    "internet_access": "Acceso a internet"
   },
   "TagValue": {
     "__common__": {
@@ -717,6 +739,103 @@
       "handlebar_holder": "Soporte de manillar",
       "crossbar": "Barra",
       "informal": "Informal"
+    },
+    "parking": {
+      "surface": "En superficie",
+      "underground": "Subterráneo",
+      "multi-storey": "Varias plantas",
+      "rooftop": "En azotea",
+      "street_side": "Junto a la vía",
+      "lane": "Carril",
+      "sheds": "Cobertizos",
+      "carports": "Cocheras",
+      "garage_boxes": "Boxes de garaje"
+    },
+    "surface": {
+      "asphalt": "Asfalto",
+      "concrete": "Hormigón",
+      "paving_stones": "Adoquines",
+      "sett": "Adoquín",
+      "cobblestone": "Empedrado",
+      "paved": "Pavimentado",
+      "unpaved": "Sin pavimentar",
+      "compacted": "Compactado",
+      "fine_gravel": "Grava fina",
+      "gravel": "Grava",
+      "ground": "Tierra",
+      "dirt": "Tierra suelta",
+      "grass": "Césped"
+    },
+    "traffic_signals:sound": {
+      "locate": "Solo localización",
+      "walk": "Solo cruce"
+    },
+    "smoothness": {
+      "excellent": "Excelente",
+      "good": "Bueno",
+      "intermediate": "Intermedio",
+      "bad": "Malo",
+      "very_bad": "Muy malo",
+      "horrible": "Horrible",
+      "very_horrible": "Pésimo",
+      "impassable": "Intransitable"
+    },
+    "oneway": {
+      "-1": "Sentido inverso"
+    },
+    "sidewalk": {
+      "both": "Ambos lados",
+      "left": "Lado izquierdo",
+      "right": "Lado derecho",
+      "separate": "Mapeada por separado",
+      "none": "Ninguna"
+    },
+    "railway": {
+      "tram": "Tranvía",
+      "subway": "Metro",
+      "light_rail": "Tren ligero",
+      "rail": "Ferrocarril"
+    },
+    "electrified": {
+      "contact_line": "Catenaria",
+      "rail": "Tercer riel"
+    },
+    "usage": {
+      "main": "Línea principal",
+      "branch": "Ramal",
+      "industrial": "Industrial",
+      "tourism": "Turístico",
+      "military": "Militar"
+    },
+    "service": {
+      "yard": "Patio de maniobras",
+      "siding": "Apartadero",
+      "spur": "Ramal de servicio",
+      "crossover": "Cruce"
+    },
+    "traffic_calming": {
+      "hump": "Reductor",
+      "bump": "Badén",
+      "table": "Paso elevado",
+      "island": "Isleta",
+      "dip": "Depresión",
+      "cushion": "Cojín reductor",
+      "chicane": "Chicana",
+      "choker": "Estrechamiento",
+      "rumble_strip": "Banda sonora"
+    },
+    "operator:type": {
+      "public": "Público",
+      "private": "Privado",
+      "government": "Gobierno",
+      "religious": "Religioso",
+      "ngo": "ONG",
+      "community": "Comunidad",
+      "university": "Universidad"
+    },
+    "internet_access": {
+      "wlan": "Wi-Fi",
+      "terminal": "Terminal"
     }
   }
 }
