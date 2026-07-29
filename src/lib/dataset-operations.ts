@@ -4,6 +4,7 @@ import { resolveTemplate } from "@/lib/template-resolver";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { fetchOsmRelationData } from "@/lib/area-boundary";
 import { refreshAreaInfoIfStale, resolveAreaCenter } from "@/lib/area-refresh";
+import { mergeAreaNames, toStoredNames } from "@/lib/area-name";
 import {
   fetchDatasetSnapshot,
   DatasetTooLargeError,
@@ -92,6 +93,7 @@ async function getDatasetWithDetails(areaId: number, templateId: string, locale:
             },
           },
           tags: true,
+          filterableTags: true,
           translations: {
             select: {
               locale: true,
@@ -105,6 +107,7 @@ async function getDatasetWithDetails(areaId: number, templateId: string, locale:
         select: {
           id: true,
           name: true,
+          names: true,
           countryCode: true,
           bounds: true,
           centerLat: true,
@@ -170,11 +173,13 @@ async function createDatasetOnDemand(
       // City OSM relations don't carry ISO3166 tags — Nominatim is the
       // only reliable source for country code.
       const center = resolveAreaCenter(osmData, areaDetails);
+      const mergedNames = mergeAreaNames(areaDetails?.names, osmData?.names);
       const shared = {
         countryCode: areaDetails?.countryCode ?? null,
         centerLat: center?.centerLat ?? null,
         centerLon: center?.centerLon ?? null,
         refreshedAt: new Date(),
+        names: toStoredNames(mergedNames),
       };
 
       const data = osmData
@@ -252,6 +257,7 @@ async function createDatasetOnDemand(
               },
             },
             tags: true,
+            filterableTags: true,
             translations: {
               select: {
                 locale: true,
@@ -265,6 +271,7 @@ async function createDatasetOnDemand(
           select: {
             id: true,
             name: true,
+            names: true,
             countryCode: true,
             bounds: true,
             centerLat: true,
@@ -380,6 +387,7 @@ export async function getDatasetMetadata(
           description: true,
           category: true,
           tags: true,
+          filterableTags: true,
           translations: true,
         },
       },

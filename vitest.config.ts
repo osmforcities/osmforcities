@@ -49,7 +49,10 @@ export default defineConfig({
         test: {
           name: 'unit',
           environment: 'node',
-          include: ['src/**/__tests__/**/*.test.ts'],
+          include: [
+            'src/**/__tests__/**/*.test.ts',
+            'prisma/**/__tests__/**/*.test.ts',
+          ],
           exclude: ['**/node_modules/**', '**/tests/**'],
         },
       }),

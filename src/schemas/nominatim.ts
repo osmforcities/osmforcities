@@ -7,6 +7,8 @@ export const NominatimResultSchema = z.object({
   osm_id: z.number(),
   display_name: z.string(),
   name: z.string(),
+  // name / name:<lang> tags; only present when the request includes namedetails=1.
+  namedetails: z.record(z.string(), z.string()).nullish(),
   class: z.string(), // Primary category (e.g., "place", "amenity")
   type: z.string(), // Subcategory within class (e.g., "city", "village", "town")
   addresstype: z.string().optional(), // Address type (e.g., "municipality", "city", "village")

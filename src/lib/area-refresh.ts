@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import { fetchOsmRelationData } from "@/lib/area-boundary";
 import { getAreaDetailsById } from "@/lib/nominatim";
+import { mergeAreaNames, toStoredNames } from "@/lib/area-name";
 import { AREA_INFO_TTL_DAYS } from "@/lib/constants";
 import { createLogger } from "@/lib/logger";
 
@@ -51,10 +52,14 @@ export async function refreshAreaInfo(
     currentBounds != null &&
     osmData.bounds !== currentBounds;
 
+  // Overpass carries the full name:* set, so it wins over Nominatim on conflicts.
+  const mergedNames = mergeAreaNames(areaDetails?.names, osmData?.names);
+
   return prisma.area.update({
     where: { id: areaId },
     data: {
       name: osmData?.name ?? areaDetails?.name ?? undefined,
+      names: toStoredNames(mergedNames),
       bounds: osmData?.bounds ?? undefined,
       countryCode: areaDetails?.countryCode ?? undefined,
       centerLat: center?.centerLat,

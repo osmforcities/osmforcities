@@ -4,6 +4,7 @@ import {
   Antenna,
   Apple,
   Baby,
+  Backpack,
   Banknote,
   BedDouble,
   Beef,
@@ -14,6 +15,7 @@ import {
   Building,
   Building2,
   Bus,
+  BusFront,
   Cable,
   Camera,
   Car,
@@ -60,6 +62,7 @@ import {
   Info,
   LandPlot,
   Landmark,
+  Languages,
   Leaf,
   LibraryBig,
   Lightbulb,
@@ -67,16 +70,20 @@ import {
   MapPin,
   Martini,
   Medal,
+  Microscope,
+  Milestone,
   Milk,
   MoonStar,
   Mountain,
   MountainSnow,
+  Music,
   Package,
   Palette,
   PawPrint,
   Phone,
   Pill,
   RadioTower,
+  RailSymbol,
   Recycle,
   RockingChair,
   Route,
@@ -111,7 +118,8 @@ import {
   Tractor,
   TrafficCone,
   Train,
-  TrainFront,
+  TrainFrontTunnel,
+  TrainTrack,
   TramFront,
   Trash2,
   TreeDeciduous,
@@ -138,7 +146,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-15T16:48:47.042Z
+ * Generated: 2026-07-28T22:40:43.772Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -194,13 +202,7 @@ export function getCategoryIcon(category: string) {
       return <Trophy className="w-5 h-5" />;
     case "tourism":
       return <Camera className="w-5 h-5" />;
-    case "traffic":
-      return <TrafficCone className="w-5 h-5" />;
     case "transport":
-      return <Car className="w-5 h-5" />;
-    case "transport_infrastructure":
-      return <Route className="w-5 h-5" />;
-    case "transportation":
       return <Car className="w-5 h-5" />;
     default:
       return <MapPin className="w-5 h-5" />;
@@ -254,20 +256,22 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <TreePalm className="w-5 h-5" />;
     case "benches":
       return <RockingChair className="w-5 h-5" />;
-    case "bicycle-infrastructure":
-      return <Bike className="w-5 h-5" />;
     case "bicycle-parking":
       return <Bike className="w-5 h-5" />;
     case "bicycle-rental":
       return <Bike className="w-5 h-5" />;
     case "bicycle-shop":
-      return <Bike className="w-5 h-5" />;
+      return <Store className="w-5 h-5" />;
     case "bridges":
       return <Waypoints className="w-5 h-5" />;
     case "bunker-silos":
       return <Warehouse className="w-5 h-5" />;
+    case "bus-lanes":
+      return <Milestone className="w-5 h-5" />;
     case "bus-stops":
       return <Bus className="w-5 h-5" />;
+    case "busways":
+      return <BusFront className="w-5 h-5" />;
     case "butchers":
       return <Beef className="w-5 h-5" />;
     case "cafes":
@@ -282,6 +286,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Home className="w-5 h-5" />;
     case "chemist":
       return <Pill className="w-5 h-5" />;
+    case "childcare":
+      return <Backpack className="w-5 h-5" />;
     case "chimney":
       return <Factory className="w-5 h-5" />;
     case "church":
@@ -334,6 +340,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Building className="w-5 h-5" />;
     case "drinking-water":
       return <Droplet className="w-5 h-5" />;
+    case "driving-school":
+      return <Car className="w-5 h-5" />;
     case "electronics":
       return <Tv className="w-5 h-5" />;
     case "emergency-phones":
@@ -436,6 +444,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Gem className="w-5 h-5" />;
     case "kindergarten":
       return <Baby className="w-5 h-5" />;
+    case "language-school":
+      return <Languages className="w-5 h-5" />;
     case "libraries":
       return <LibraryBig className="w-5 h-5" />;
     case "livestock-buildings":
@@ -468,6 +478,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Trophy className="w-5 h-5" />;
     case "museums":
       return <Landmark className="w-5 h-5" />;
+    case "music-school":
+      return <Music className="w-5 h-5" />;
     case "natural-surfaces":
       return <Mountain className="w-5 h-5" />;
     case "natural-vegetation":
@@ -518,10 +530,14 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Beer className="w-5 h-5" />;
     case "pumping-station":
       return <Gauge className="w-5 h-5" />;
+    case "rail-tracks":
+      return <TrainTrack className="w-5 h-5" />;
     case "railway-stations":
       return <Train className="w-5 h-5" />;
     case "recycling":
       return <Recycle className="w-5 h-5" />;
+    case "research-institute":
+      return <Microscope className="w-5 h-5" />;
     case "residential":
       return <Building2 className="w-5 h-5" />;
     case "restaurants":
@@ -579,7 +595,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "street-trees":
       return <TreeDeciduous className="w-5 h-5" />;
     case "subway-entrances":
-      return <TrainFront className="w-5 h-5" />;
+      return <TrainFrontTunnel className="w-5 h-5" />;
     case "supermarkets":
       return <ShoppingCart className="w-5 h-5" />;
     case "surveillance":
@@ -614,6 +630,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Signpost className="w-5 h-5" />;
     case "tram-stops":
       return <TramFront className="w-5 h-5" />;
+    case "transit-platforms":
+      return <RailSymbol className="w-5 h-5" />;
     case "trees-with-species":
       return <Leaf className="w-5 h-5" />;
     case "tunnels":

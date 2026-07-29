@@ -5,6 +5,7 @@ import { DatasetCard } from "@/components/ui/dataset-card";
 import type { StatType } from "@/components/ui/dataset-stats-row";
 import { processDatasetStats, formatRelativeTime } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
+import { resolveDatasetAreaName } from "@/lib/area-name";
 import { getDatasetPath } from "@/lib/urls";
 
 type SectionTemplate = {
@@ -22,7 +23,11 @@ export type SectionDataset = {
   stats: Prisma.JsonValue;
   areaId: number;
   templateId: string;
-  area: { countryCode: string | null };
+  area: {
+    countryCode: string | null;
+    name: string;
+    names?: unknown;
+  };
   template: SectionTemplate;
   _count: { savedBy: number };
   lastEditedAt?: Date | null;
@@ -63,7 +68,7 @@ export async function DatasetSections({
       <DatasetCard
         key={dataset.id}
         name={resolved.name}
-        city={dataset.cityName}
+        city={resolveDatasetAreaName(dataset, locale)}
         country={dataset.area.countryCode ?? ""}
         category={resolved.category?.slug ?? "other"}
         templateId={dataset.templateId}

@@ -8,6 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import { DatasetTooLargeError } from "@/lib/dataset-snapshot";
 import { getAreaDetailsById } from "@/lib/nominatim";
+import { resolveAreaName } from "@/lib/area-name";
 import {
   isValidTemplateIdentifier,
   resolveTemplate,
@@ -48,11 +49,12 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
     return <TemplateNotFoundError templateId={templateId} />;
   }
 
+  const locale = await getLocale();
   const session = await auth();
   if (!session?.user) {
     const [template, areaInfo] = await Promise.all([
       resolveTemplate(templateId),
-      getAreaDetailsById(osmRelationId),
+      getAreaDetailsById(osmRelationId, locale),
     ]);
 
     if (!template) {
@@ -94,7 +96,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
         />
         <DatasetUpsellPage
           datasetName={template.name}
-          areaName={areaInfo.name}
+          areaName={resolveAreaName(areaInfo, locale)}
           areaId={areaId}
         />
       </>
@@ -128,7 +130,7 @@ async function AreaTemplateDatasetView({
       getOrCreateDataset(areaId, templateId, locale, {
         allowCreate: !!session?.user,
       }),
-      getAreaDetailsById(areaId),
+      getAreaDetailsById(areaId, locale),
     ]);
 
     // Check if current user has saved this dataset, and total save count for quota UI
@@ -159,7 +161,9 @@ async function AreaTemplateDatasetView({
       />
     );
 
-    const areaName = areaInfo?.name || dataset.area.name;
+    const areaName = areaInfo
+      ? resolveAreaName(areaInfo, locale)
+      : resolveAreaName(dataset.area, locale);
 
     // Empty state: dataset has no features in this area.
     if (result.dataset.dataCount === 0) {
@@ -198,19 +202,19 @@ async function AreaTemplateDatasetView({
     return (
       <div className="bg-gray-50 lg:h-[calc(100dvh_-_var(--nav-height))] lg:flex lg:overflow-hidden">
         {trackDetailView}
-        <DatasetInteractiveSection dataset={dataset} boundary={boundary} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
+        <DatasetInteractiveSection dataset={dataset} boundary={boundary} areaName={areaName} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
       </div>
     );
   } catch (error) {
     if (error instanceof DatasetTooLargeError) {
       const [template, areaInfo] = await Promise.all([
         resolveTemplate(templateId),
-        getAreaDetailsById(areaId),
+        getAreaDetailsById(areaId, locale),
       ]);
       return (
         <DatasetTooLargeState
           templateName={template?.name ?? templateId}
-          areaName={areaInfo?.name ?? String(areaId)}
+          areaName={areaInfo ? resolveAreaName(areaInfo, locale) : String(areaId)}
           areaId={areaId}
           overpassQuery={
             template?.overpassQuery.replace(
