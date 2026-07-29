@@ -115,4 +115,38 @@ describe("countOverpassElements", () => {
       OverpassTimeoutError
     );
   });
+
+  it("treats a 200 + remark (timed out / out of memory) as a timeout", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: () =>
+          Promise.resolve({
+            elements: [],
+            remark: "runtime error: Query ran out of memory",
+          }),
+      } as unknown as Response)
+    );
+
+    await expect(countOverpassElements("query")).rejects.toThrow(
+      OverpassTimeoutError
+    );
+  });
+
+  it("throws a generic error when the response has no total and no remark", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ elements: [] }),
+      } as unknown as Response)
+    );
+
+    await expect(countOverpassElements("query")).rejects.toThrow(
+      "Unexpected response format from Overpass count query"
+    );
+  });
 });
