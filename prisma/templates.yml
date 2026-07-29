@@ -339,7 +339,7 @@ filterableTags:
   # Emergency
   fire-stations:    [operator, wheelchair]
   ambulance-stations: [operator]
-  fire-hydrants:    [fire_hydrant:type, fire_hydrant:position]
+  fire-hydrants:    [fire_hydrant:type, fire_hydrant:position, fire_hydrant:diameter]
   defibrillators:   [access, indoor]
   # Religion (replaces the deprecated per-religion value templates)
   places-of-worship: [religion, denomination, wheelchair]

@@ -709,6 +709,7 @@
     "garden:type": "Garden type",
     "fire_hydrant:type": "Hydrant type",
     "fire_hydrant:position": "Position",
+    "fire_hydrant:diameter": "Pipe diameter",
     "cash_in": "Cash deposit",
     "indoor": "Indoor"
   },

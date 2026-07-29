@@ -718,6 +718,7 @@
     "garden:type": "Tipo de jardim",
     "fire_hydrant:type": "Tipo de hidrante",
     "fire_hydrant:position": "Posição",
+    "fire_hydrant:diameter": "Diâmetro da tubulação",
     "cash_in": "Depósito em dinheiro",
     "indoor": "Interno"
   },

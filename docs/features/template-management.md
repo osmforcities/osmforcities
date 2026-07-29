@@ -269,9 +269,19 @@ agriculture, infrastructure, housing, environment).
   attribute — kept despite moderate coverage, its Missing share is informative. `memorials` keeps
   only `[memorial]` (plaque/statue/war_memorial — the type is the color-by; outdoor, so no
   `wheelchair`); `monuments` stays age-view.
-- **fire-hydrants** (new, `emergency=fire_hydrant`) — `[fire_hydrant:type, fire_hydrant:position]`.
-  Munich 12k hydrants: type 99%, position 97%. Dropped `colour` (<1% — the AWWA colour scheme is a
-  US-regional practice barely tagged elsewhere) and `fire_hydrant:diameter` (numeric, poor color-by).
+- **fire-hydrants** (new, `emergency=fire_hydrant`) — `[fire_hydrant:type, fire_hydrant:position,
+  fire_hydrant:diameter]`. Munich 12k hydrants: type 99%, position 97%. **`fire_hydrant:diameter`**
+  (nominal pipe diameter, mm) is the capacity descriptor — numeric but a small standardized value set
+  (100/150/200/300/400/80… the legend's `TOP_VALUES_COUNT` cap folds the long tail into Other, same as
+  `maxspeed`). Regional: 90% Munich / 73% Berlin / 38% London with real variance; sparse elsewhere
+  (Paris 8%, São Paulo 1%) — the Missing share is the coverage signal, demonstrate in DE/UK. Dropped
+  `colour` (<1% globally — the AWWA bonnet-colour scheme is a US-regional practice barely tagged
+  elsewhere). Surveyed `couplings:type` (Storz/UNI/Barcelona/Guillemin) and `water_source` across 8
+  countries and dropped both: `couplings:type` is **globally unpopulated** (Paris 0/9,440, Barcelona
+  1/1,004 — mappers don't use it even where the coupling genuinely varies), and `water_source` is
+  single-valued `main` wherever present. **Lesson reinforced:** a regionally-standardized key can look
+  empty in one country (Germany Storz is universal → untagged) — check across countries before dropping,
+  but here the cross-country survey confirmed it's dead everywhere, not a German artifact.
 - **defibrillators** (new, `emergency=defibrillator`) — `[access, indoor]`. Munich 292 AEDs:
   indoor 89%, access 27%. Dropped `locked` (0% — the legend auto-omits an empty color-by anyway).
   A life-safety dataset worth surfacing even where thin.
