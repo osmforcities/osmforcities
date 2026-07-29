@@ -23,7 +23,6 @@ import {
   Caravan,
   Carrot,
   Cctv,
-  Church,
   Clock,
   Coffee,
   Construction,
@@ -43,6 +42,7 @@ import {
   Fence,
   Film,
   FireExtinguisher,
+  Flame,
   Flower2,
   Footprints,
   Fuel,
@@ -54,6 +54,7 @@ import {
   Hammer,
   Heart,
   HeartHandshake,
+  HeartPulse,
   Home,
   Hospital,
   Hotel,
@@ -73,7 +74,6 @@ import {
   Microscope,
   Milestone,
   Milk,
-  MoonStar,
   Mountain,
   MountainSnow,
   Music,
@@ -95,6 +95,7 @@ import {
   Ship,
   Shirt,
   ShoppingBag,
+  ShoppingBasket,
   ShoppingCart,
   Shrub,
   Signpost,
@@ -146,7 +147,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-28T22:40:43.772Z
+ * Generated: 2026-07-29T06:59:02.806Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -290,8 +291,6 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Backpack className="w-5 h-5" />;
     case "chimney":
       return <Factory className="w-5 h-5" />;
-    case "church":
-      return <Church className="w-5 h-5" />;
     case "cinemas":
       return <Film className="w-5 h-5" />;
     case "cliffs":
@@ -326,6 +325,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Milk className="w-5 h-5" />;
     case "dam":
       return <Construction className="w-5 h-5" />;
+    case "defibrillators":
+      return <HeartPulse className="w-5 h-5" />;
     case "dentists":
       return <Smile className="w-5 h-5" />;
     case "department-stores":
@@ -366,6 +367,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Fence className="w-5 h-5" />;
     case "ferry-terminals":
       return <Ship className="w-5 h-5" />;
+    case "fire-hydrants":
+      return <Flame className="w-5 h-5" />;
     case "fire-stations":
       return <FireExtinguisher className="w-5 h-5" />;
     case "fitness-centers":
@@ -458,6 +461,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Anchor className="w-5 h-5" />;
     case "markers":
       return <MapPin className="w-5 h-5" />;
+    case "markets":
+      return <ShoppingBasket className="w-5 h-5" />;
     case "mast":
       return <RadioTower className="w-5 h-5" />;
     case "meadows":
@@ -470,8 +475,6 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Landmark className="w-5 h-5" />;
     case "moor":
       return <Leaf className="w-5 h-5" />;
-    case "mosque":
-      return <MoonStar className="w-5 h-5" />;
     case "mud":
       return <Droplets className="w-5 h-5" />;
     case "multi-sport":
@@ -562,8 +565,6 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Target className="w-5 h-5" />;
     case "shopping-malls":
       return <ShoppingBag className="w-5 h-5" />;
-    case "shrine":
-      return <Landmark className="w-5 h-5" />;
     case "silos":
       return <Warehouse className="w-5 h-5" />;
     case "skiing":
@@ -604,16 +605,12 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Waves className="w-5 h-5" />;
     case "swimming-pools":
       return <Waves className="w-5 h-5" />;
-    case "synagogue":
-      return <Star className="w-5 h-5" />;
     case "tailings-pond":
       return <Factory className="w-5 h-5" />;
     case "taxi-ranks":
       return <CarTaxiFront className="w-5 h-5" />;
     case "telephones":
       return <Phone className="w-5 h-5" />;
-    case "temple":
-      return <Landmark className="w-5 h-5" />;
     case "tennis":
       return <Trophy className="w-5 h-5" />;
     case "theatres":

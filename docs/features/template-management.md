@@ -245,6 +245,58 @@ sit on the sibling road or crossing node, not the queried element.
 > `categories:` map). Merging categories is YAML-only; emptied categories drop out of the browse
 > UI, which lists only categories that have templates.
 
+### Civic, retail & remaining domains (batch)
+
+Covers the domains left after the mobility/education/food/sport/tourism/social/healthcare/
+public-amenity batches: financial, culture, government, emergency, retail shops, markets,
+green leisure, barriers, religion — plus the age-view screen-and-skip blocks (nature,
+agriculture, infrastructure, housing, environment).
+
+- **places-of-worship — religion consolidation.** Replaced the five value-templates
+  `church`/`mosque`/`synagogue`/`temple`/`shrine` (each a loose `religion=christian`/`=islam`/…
+  selector that also matches cemeteries, schools and other `religion`-tagged features) with the
+  single `amenity=place_of_worship` template colored by `religion`. `[religion, denomination,
+  wheelchair]` — Berlin 751 sites, religion 99%, denomination 80%, wheelchair 51%; `religion` is
+  the textbook single-key color-by (christian/muslim/jewish/buddhist/…). The old templates
+  soft-deprecate on merge.
+- **atms** — `[operator, brand, cash_in]`. Munich: operator 86%, brand 41%. Dropped `network`
+  (8%) and `fee` (2%) as near-absent; added **`cash_in`** (80%, well-varied yes/no) — the
+  deposit-capability split is the real usability distinction. Unstaffed machine → no `wheelchair`.
+- **banks** — `[brand, operator, atm, wheelchair]`. Staffed/enterable, so `wheelchair` stays;
+  `atm=yes/no` (does the branch have an ATM) is a useful binary.
+- **museums** — `[museum, operator, fee, wheelchair]`. Paris 165 museums: fee 62%, wheelchair 46%,
+  museum-type 21%, operator 18%. `museum=*` (art/history/local/…) is the defining categorical
+  attribute — kept despite moderate coverage, its Missing share is informative. `memorials` keeps
+  only `[memorial]` (plaque/statue/war_memorial — the type is the color-by; outdoor, so no
+  `wheelchair`); `monuments` stays age-view.
+- **fire-hydrants** (new, `emergency=fire_hydrant`) — `[fire_hydrant:type, fire_hydrant:position]`.
+  Munich 12k hydrants: type 99%, position 97%. Dropped `colour` (<1% — the AWWA colour scheme is a
+  US-regional practice barely tagged elsewhere) and `fire_hydrant:diameter` (numeric, poor color-by).
+- **defibrillators** (new, `emergency=defibrillator`) — `[access, indoor]`. Munich 292 AEDs:
+  indoor 89%, access 27%. Dropped `locked` (0% — the legend auto-omits an empty color-by anyway).
+  A life-safety dataset worth surfacing even where thin.
+- **markets** (new, `amenity=marketplace`) — **age-view only.** The template is a valuable civic
+  dataset (Barcelona 49 municipal markets, São Paulo 88 incl. street feiras), but its wiki keys are
+  near-absent in both well-mapped cities (operator 6%/13%, organic 2%/1%) — no viable color-by, so
+  age-view is the correct outcome. Distinct multi-vendor tag vocabulary keeps it out of the
+  single-vendor `shops` tuning even though it shares the `shops` category.
+- **shops** — `wheelchair` (transversal equity-keep) on every enterable storefront, plus `brand`
+  for chain-vs-independent. Spot-checked on supermarkets (Munich: wheelchair 86%, brand 77%,
+  operator 25%, organic 20%); `supermarkets` adds `[operator, organic]`, `greengrocers` adds
+  `[organic]`, `clothes` adds `[clothes]` (men/women/children subtype), `fuel` is `[brand,
+  operator]` (unstaffed forecourt — no wheelchair; fuel-type keys are fragmented `fuel:*` booleans).
+- **government / emergency stations** — `government-office` `[government, operator, wheelchair]`,
+  `courts`/`police-stations` `[operator, wheelchair]`, `fire-stations` `[operator, wheelchair]`,
+  `ambulance-stations` `[operator]`. `prisons` and `emergency-phones` stay age-view.
+- **green leisure** (not covered by the sport batch) — `parks` `[access]`, `gardens` `[garden:type,
+  access]`, `marinas` `[access, fee, operator]`, `golf-courses` `[access]`, `fitness-centers`
+  `[wheelchair]`. `gates` (barriers) `[access]` — locked/public is the useful split.
+- **Screen-and-skip (age-view only):** nature (trees, water, forests, natural surfaces),
+  agriculture (already observable-infrastructure only), man_made infrastructure (towers, tanks,
+  lamps), housing (apartments/houses/residential — `building:levels` is numeric), environment
+  (waterfall/dam), and the remaining outdoor barriers (walls/fences/hedges). Natural and
+  structural features carry no single well-covered usability key to color by.
+
 ## Validation the sync enforces
 
 `prisma/lib/template-parser.ts` (tests: `prisma/lib/__tests__/template-parser.test.ts`).

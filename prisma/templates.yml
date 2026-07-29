@@ -83,6 +83,8 @@ templates:
   - ["fire-stations","amenity=fire_station","emergency","FireExtinguisher"]
   - ["ambulance-stations","amenity=ambulance_station","emergency","Ambulance"]
   - ["emergency-phones","emergency=phone","emergency","Phone"]
+  - ["fire-hydrants","emergency=fire_hydrant","emergency","Flame"]
+  - ["defibrillators","emergency=defibrillator","emergency","HeartPulse"]
 # Environment
   - ["waterfall","waterway=waterfall","environment","Waves"]
   - ["dam","waterway=dam","environment","Construction"]
@@ -112,6 +114,9 @@ templates:
   - ["shoes","shop=shoes","shops","Footprints"]
   - ["jewelry","shop=jewelry","shops","Gem"]
   - ["bicycle-shop","shop=bicycle","shops","Store"]
+# Markets
+  # Multi-vendor public markets (distinct from single-vendor shops)
+  - ["markets","amenity=marketplace","shops","ShoppingBasket"]
 # Food
   - ["restaurants","amenity=restaurant","food","UtensilsCrossed"]
   - ["cafes","amenity=cafe","food","Coffee"]
@@ -224,12 +229,10 @@ templates:
   - ["information-boards","tourism=information","public","Info"]
   - ["markers","tourism=information;tourism=guidepost","public","MapPin"]
 # Religion
+  # Single worship template; the former church/mosque/synagogue/temple/shrine
+  # value-templates queried loose religion=* selectors (matching cemeteries,
+  # schools, etc.) and are replaced by the `religion` color-by filter below.
   - ["places-of-worship","amenity=place_of_worship","religion","Landmark"]
-  - ["church","religion=christian","religion","Church"]
-  - ["mosque","religion=islam","religion","MoonStar"]
-  - ["synagogue","religion=jewish","religion","Star"]
-  - ["temple","religion=buddhist;religion=hindu;religion=sikh;religion=taoist","religion","Landmark"]
-  - ["shrine","religion=shinto","religion","Landmark"]
 # Barriers
   - ["walls","barrier=wall","barriers","BrickWall"]
   - ["fences","barrier=fence","barriers","Fence"]
@@ -319,6 +322,55 @@ filterableTags:
   music-school:       [operator, operator:type, wheelchair]
   language-school:    [operator, operator:type, wheelchair]
   research-institute: [operator, operator:type, wheelchair]
+  # Financial
+  atms:             [operator, brand, cash_in]
+  banks:            [brand, operator, atm, wheelchair]
+  # Culture (wheelchair = transversal equity signal on enterable venues)
+  museums:          [museum, operator, fee, wheelchair]
+  theatres:         [operator, wheelchair]
+  cinemas:          [brand, operator, wheelchair]
+  arts-centre:      [operator, wheelchair]
+  gallery:          [operator, fee, wheelchair]
+  memorials:        [memorial]
+  # Government
+  government-office: [government, operator, wheelchair]
+  courts:           [operator, wheelchair]
+  police-stations:  [operator, wheelchair]
+  # Emergency
+  fire-stations:    [operator, wheelchair]
+  ambulance-stations: [operator]
+  fire-hydrants:    [fire_hydrant:type, fire_hydrant:position]
+  defibrillators:   [access, indoor]
+  # Religion (replaces the deprecated per-religion value templates)
+  places-of-worship: [religion, denomination, wheelchair]
+  # Markets: age-view only — operator/organic near-absent (Barcelona 6%/2%, Sao Paulo 13%/1%)
+  # Shops (wheelchair = transversal equity signal; brand/operator = chain vs independent)
+  supermarkets:     [brand, operator, organic, wheelchair]
+  bakeries:         [brand, wheelchair]
+  convenience:      [brand, wheelchair]
+  butchers:         [wheelchair]
+  greengrocers:     [organic, wheelchair]
+  department-stores: [brand, wheelchair]
+  shopping-malls:   [wheelchair]
+  clothes:          [clothes, brand, wheelchair]
+  chemist:          [brand, wheelchair]
+  fuel:             [brand, operator]
+  hardware:         [brand, wheelchair]
+  diy:              [brand, wheelchair]
+  furniture:        [brand, wheelchair]
+  electronics:      [brand, wheelchair]
+  mobile-phone:     [brand, wheelchair]
+  optician:         [brand, wheelchair]
+  shoes:            [brand, wheelchair]
+  jewelry:          [wheelchair]
+  # Leisure (green spaces not covered by the recreation/sport batch)
+  parks:            [access]
+  gardens:          [garden:type, access]
+  marinas:          [access, fee, operator]
+  golf-courses:     [access]
+  fitness-centers:  [wheelchair]
+  # Barriers
+  gates:            [access]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -447,6 +499,33 @@ demonstrators:
     - { area: 62428,   note: "Munich, DE - best operator/operator:type coverage (small sample)" }
     - { area: 451516,  note: "Wroclaw, PL - consistent operator/operator:type pairing (small sample)" }
     - { area: 71525,   note: "Paris, FR - largest sample among candidates" }
+  places-of-worship:
+    - { area: 62422,   note: "Berlin, DE - religion 99%, denomination 80%, wheelchair 51% across 751 sites" }
+    - { area: 71525,   note: "Paris, FR - broad religion mix, strong denomination tagging" }
+    - { area: 298285,  note: "Sao Paulo, BR - Latin American representative, dense christian denomination variety" }
+  atms:
+    - { area: 62428,   note: "Munich, DE - operator 86%, brand 41%, cash_in 80% (deposit-capability split)" }
+    - { area: 71525,   note: "Paris, FR - strong operator/brand tagging" }
+  banks:
+    - { area: 62428,   note: "Munich, DE - strong brand/operator, wheelchair well covered" }
+    - { area: 71525,   note: "Paris, FR - good brand and atm=yes/no tagging" }
+  museums:
+    - { area: 71525,   note: "Paris, FR - fee 62%, wheelchair 46%, museum-type variety across 165 museums" }
+    - { area: 62422,   note: "Berlin, DE - large museum set, strong fee/wheelchair tagging" }
+    - { area: 175905,  note: "New York, US - North American representative, rich museum=* typing" }
+  fire-hydrants:
+    - { area: 62428,   note: "Munich, DE - 12k hydrants, fire_hydrant:type 99%, position 97%" }
+    - { area: 62422,   note: "Berlin, DE - extensive hydrant network, near-complete type tagging" }
+  defibrillators:
+    - { area: 62428,   note: "Munich, DE - indoor 89%, access 27% across 292 AEDs" }
+    - { area: 175342,  note: "London, GB - large public-access AED set, strong access tagging" }
+  supermarkets:
+    - { area: 62428,   note: "Munich, DE - wheelchair 86%, brand 77%, operator 25%, organic 20%" }
+    - { area: 71525,   note: "Paris, FR - strong brand/wheelchair tagging" }
+    - { area: 298285,  note: "Sao Paulo, BR - Latin American representative, brand-chain heavy" }
+  markets:
+    - { area: 347950,  note: "Barcelona, ES - 49 municipal markets, mostly building-mapped (age-view dataset)" }
+    - { area: 298285,  note: "Sao Paulo, BR - 88 marketplaces incl. street feiras" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:
