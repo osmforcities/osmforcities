@@ -92,10 +92,20 @@ export async function POST(req: NextRequest) {
       // Claim the slot upfront: advancing lastAttempted before any work guarantees this
       // dataset moves to the back of the queue no matter what happens next (even an
       // unexpected throw or a mid-run process kill), so one dataset can never jam the queue.
-      await prisma.dataset.update({
-        where: { id: dataset.id },
-        data: { lastAttempted: new Date() },
-      });
+      // A failure of this write itself must only skip this dataset, never abort the batch —
+      // that would reintroduce the "one dataset takes down the run" problem this fix removes.
+      try {
+        await prisma.dataset.update({
+          where: { id: dataset.id },
+          data: { lastAttempted: new Date() },
+        });
+      } catch (claimError) {
+        console.error(
+          `Failed to claim dataset ${dataset.id} (skipping this run):`,
+          claimError
+        );
+        continue;
+      }
 
       try {
 

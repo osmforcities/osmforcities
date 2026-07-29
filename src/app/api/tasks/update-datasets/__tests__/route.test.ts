@@ -127,6 +127,23 @@ describe("POST /api/tasks/update-datasets", () => {
     ).toHaveLength(1);
   });
 
+  it("skips only the affected dataset (not the whole batch) when the upfront claim write fails", async () => {
+    const other = { ...dataset, id: "ds-2" };
+    vi.mocked(prisma.dataset.findMany).mockResolvedValue([dataset, other] as never);
+    // First claim (ds-1) throws; every later update (ds-2 claim + success) resolves.
+    vi.mocked(prisma.dataset.update)
+      .mockRejectedValueOnce(new Error("db blip"))
+      .mockResolvedValue({} as never);
+    vi.mocked(fetchDatasetSnapshot).mockResolvedValue(snapshot as never);
+
+    const res = await call();
+    const body = await res.json();
+
+    // The run still completes (no 500) and the second dataset is processed.
+    expect(res.status).toBe(200);
+    expect(body.data.successful).toBe(1);
+  });
+
   it("returns 401 without the cron secret", async () => {
     const res = await POST(
       new NextRequest("http://localhost/api/tasks/update-datasets", {
