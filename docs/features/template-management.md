@@ -256,43 +256,45 @@ agriculture, infrastructure, housing, environment).
   `church`/`mosque`/`synagogue`/`temple`/`shrine` (each a loose `religion=christian`/`=islam`/…
   selector that also matches cemeteries, schools and other `religion`-tagged features) with the
   single `amenity=place_of_worship` template colored by `religion`. `[religion, denomination,
-  wheelchair]` — Berlin 751 sites, religion 99%, denomination 80%, wheelchair 51%; `religion` is
-  the textbook single-key color-by (christian/muslim/jewish/buddhist/…). The old templates
-  soft-deprecate on merge.
-- **atms** — `[operator, brand, cash_in]`. Munich: operator 86%, brand 41%. Dropped `network`
-  (8%) and `fee` (2%) as near-absent; added **`cash_in`** (80%, well-varied yes/no) — the
-  deposit-capability split is the real usability distinction. Unstaffed machine → no `wheelchair`.
+  wheelchair]` — `religion` is the textbook single-key color-by (christian/muslim/jewish/buddhist/…),
+  near-universal on worship sites. The old templates soft-deprecate on merge.
+- **atms** — `[operator, brand, cash_in, wheelchair]`. `cash_in` (yes/no deposit-capability) is
+  the real usability split; `network`/`fee` dropped as near-absent. **`wheelchair` kept** despite
+  the "skip wheelchair for unstaffed infra" rule: the wiki doesn't formally document `wheelchair`
+  for ATMs (its ATM a11y key is `speech_output:*` for blind/VI users), but `speech_output` is
+  globally unpopulated, while `wheelchair` is the only a11y signal with real coverage —
+  well-split (yes/no/limited) in Germany, sparse elsewhere, so the Missing share is the a11y-gap
+  signal. An ATM's machine interface (screen/slot height, step-free approach) is closer to a
+  service point than street furniture, which is why it earns the exception that
+  bicycle-parking/taxi-ranks do not.
 - **banks** — `[brand, operator, atm, wheelchair]`. Staffed/enterable, so `wheelchair` stays;
   `atm=yes/no` (does the branch have an ATM) is a useful binary.
-- **museums** — `[museum, operator, fee, wheelchair]`. Paris 165 museums: fee 62%, wheelchair 46%,
-  museum-type 21%, operator 18%. `museum=*` (art/history/local/…) is the defining categorical
-  attribute — kept despite moderate coverage, its Missing share is informative. `memorials` keeps
-  only `[memorial]` (plaque/statue/war_memorial — the type is the color-by; outdoor, so no
-  `wheelchair`); `monuments` stays age-view.
+- **museums** — `[museum, operator, fee, wheelchair]`. `museum=*` (art/history/local/…) is the
+  defining categorical attribute — kept even at moderate coverage, its Missing share is
+  informative. `memorials` keeps only `[memorial]` (plaque/statue/war_memorial — the type is the
+  color-by; outdoor, so no `wheelchair`); `monuments` stays age-view.
 - **fire-hydrants** (new, `emergency=fire_hydrant`) — `[fire_hydrant:type, fire_hydrant:position,
-  fire_hydrant:diameter]`. Munich 12k hydrants: type 99%, position 97%. **`fire_hydrant:diameter`**
-  (nominal pipe diameter, mm) is the capacity descriptor — numeric but a small standardized value set
-  (100/150/200/300/400/80… the legend's `TOP_VALUES_COUNT` cap folds the long tail into Other, same as
-  `maxspeed`). Regional: 90% Munich / 73% Berlin / 38% London with real variance; sparse elsewhere
-  (Paris 8%, São Paulo 1%) — the Missing share is the coverage signal, demonstrate in DE/UK. Dropped
-  `colour` (<1% globally — the AWWA bonnet-colour scheme is a US-regional practice barely tagged
-  elsewhere). Surveyed `couplings:type` (Storz/UNI/Barcelona/Guillemin) and `water_source` across 8
-  countries and dropped both: `couplings:type` is **globally unpopulated** (Paris 0/9,440, Barcelona
-  1/1,004 — mappers don't use it even where the coupling genuinely varies), and `water_source` is
-  single-valued `main` wherever present. **Lesson reinforced:** a regionally-standardized key can look
-  empty in one country (Germany Storz is universal → untagged) — check across countries before dropping,
-  but here the cross-country survey confirmed it's dead everywhere, not a German artifact.
-- **defibrillators** (new, `emergency=defibrillator`) — `[access, indoor]`. Munich 292 AEDs:
-  indoor 89%, access 27%. Dropped `locked` (0% — the legend auto-omits an empty color-by anyway).
-  A life-safety dataset worth surfacing even where thin.
-- **markets** (new, `amenity=marketplace`) — **age-view only.** The template is a valuable civic
-  dataset (Barcelona 49 municipal markets, São Paulo 88 incl. street feiras), but its wiki keys are
-  near-absent in both well-mapped cities (operator 6%/13%, organic 2%/1%) — no viable color-by, so
-  age-view is the correct outcome. Distinct multi-vendor tag vocabulary keeps it out of the
-  single-vendor `shops` tuning even though it shares the `shops` category.
+  fire_hydrant:diameter]`. `fire_hydrant:type`/`:position` are near-universal. **`fire_hydrant:diameter`**
+  (nominal pipe diameter, mm) is the capacity descriptor — numeric but a small standardized value set;
+  the legend's `TOP_VALUES_COUNT` cap folds the long tail into Other, same as `maxspeed`. Coverage is
+  regional (strong in DE/UK, sparse elsewhere) — the Missing share is the signal, demonstrate in DE.
+  Dropped `colour` (the AWWA bonnet-colour scheme is a US-regional practice barely tagged elsewhere).
+  Surveyed `couplings:type` (Storz/UNI/Barcelona/Guillemin) and `water_source` across several
+  countries and dropped both: `couplings:type` is **globally unpopulated** — mappers don't use it even
+  where the coupling genuinely varies — and `water_source` is single-valued `main` wherever present.
+  **Lesson reinforced:** a regionally-standardized key can look empty in one country (Germany Storz is
+  universal → untagged) — check across countries before dropping, but here the survey confirmed it's
+  dead everywhere, not a German artifact.
+- **defibrillators** (new, `emergency=defibrillator`) — `[access, indoor]`. `indoor` (mounted inside
+  vs outside) is the main split; `access` adds the public-vs-restricted dimension. Dropped `locked`
+  (near-absent). A life-safety dataset worth surfacing even where thin.
+- **markets** (new, `amenity=marketplace`) — **age-view only.** A valuable civic dataset (municipal
+  markets, street feiras), but its wiki keys (`operator`, `organic`) are near-absent in well-mapped
+  cities — no viable color-by, so age-view is the correct outcome. Distinct multi-vendor tag
+  vocabulary keeps it out of the single-vendor `shops` tuning even though it shares the `shops`
+  category.
 - **shops** — `wheelchair` (transversal equity-keep) on every enterable storefront, plus `brand`
-  for chain-vs-independent. Spot-checked on supermarkets (Munich: wheelchair 86%, brand 77%,
-  operator 25%, organic 20%); `supermarkets` adds `[operator, organic]`, `greengrocers` adds
+  for chain-vs-independent. `supermarkets` adds `[operator, organic]`, `greengrocers` adds
   `[organic]`, `clothes` adds `[clothes]` (men/women/children subtype), `fuel` is `[brand,
   operator]` (unstaffed forecourt — no wheelchair; fuel-type keys are fragmented `fuel:*` booleans).
 - **government / emergency stations** — `government-office` `[government, operator, wheelchair]`,
