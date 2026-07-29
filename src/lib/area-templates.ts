@@ -124,7 +124,10 @@ export async function getAreaDataTypes(
 async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
   const dbLocale = mapAppLocaleToDb(locale);
   const rows = await prisma.template.findMany({
-    where: { isActive: true },
+    // Hide soft-deprecated templates: isActive stays true during the 30-day
+    // window so existing dataset pages keep rendering, but a template that can
+    // no longer be opened should not appear as available to browse/create.
+    where: { isActive: true, deprecatesAt: null },
     select: {
       id: true,
       name: true,
