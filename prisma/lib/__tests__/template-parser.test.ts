@@ -290,9 +290,8 @@ describe("template-parser", () => {
       expect(byId.get("bicycle-parking")).toEqual({
         id: "bicycle-parking",
         query: "amenity=bicycle_parking",
-        category: "transportation",
+        category: "transport",
         icon: "Bike",
-        parent: "bicycle-infrastructure",
         filterableTags: [
           "bicycle_parking",
           "covered",
@@ -301,7 +300,9 @@ describe("template-parser", () => {
           "fee",
         ],
       });
-      expect(categories.transportation).toBe("Car");
+      // parent parsing (5th element) is still exercised by public-transit children
+      expect(byId.get("bus-stops")?.parent).toBe("public-transit");
+      expect(categories.transport).toBe("Car");
       expect(categories.agriculture).toBe("Wheat");
     });
 
@@ -314,6 +315,7 @@ describe("template-parser", () => {
         "bench",
         "lit",
         "tactile_paving",
+        "wheelchair",
         "operator",
       ]);
       // Uncurated templates have no list (age-only in the legend)

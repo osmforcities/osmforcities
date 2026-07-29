@@ -691,6 +691,18 @@
     "crossing:markings": "Faixa de pedestres",
     "station": "Tipo de estação",
     "wheelchair": "Acesso para cadeirantes",
+    "parking": "Tipo",
+    "surface": "Superfície",
+    "traffic_signals:sound": "Sinal sonoro",
+    "smoothness": "Regularidade",
+    "oneway": "Sentido único",
+    "maxspeed": "Limite de velocidade",
+    "sidewalk": "Calçada",
+    "railway": "Tipo de trilho",
+    "electrified": "Eletrificação",
+    "usage": "Uso",
+    "service": "Via de serviço",
+    "traffic_calming": "Tipo",
     "operator:type": "Tipo de operador",
     "emergency": "Atendimento de emergência",
     "healthcare:speciality": "Especialidade",
@@ -743,6 +755,90 @@
       "handlebar_holder": "Suporte de guidão",
       "crossbar": "Barra",
       "informal": "Informal"
+    },
+    "parking": {
+      "surface": "Em superfície",
+      "underground": "Subterrâneo",
+      "multi-storey": "Vários pavimentos",
+      "rooftop": "Em cobertura",
+      "street_side": "Junto à via",
+      "lane": "Faixa",
+      "sheds": "Galpões",
+      "carports": "Coberturas",
+      "garage_boxes": "Boxes de garagem"
+    },
+    "surface": {
+      "asphalt": "Asfalto",
+      "concrete": "Concreto",
+      "paving_stones": "Blocos de pavimentação",
+      "sett": "Paralelepípedo",
+      "cobblestone": "Pedra irregular",
+      "paved": "Pavimentado",
+      "unpaved": "Não pavimentado",
+      "compacted": "Compactado",
+      "fine_gravel": "Cascalho fino",
+      "gravel": "Cascalho",
+      "ground": "Terra",
+      "dirt": "Terra batida",
+      "grass": "Grama"
+    },
+    "traffic_signals:sound": {
+      "locate": "Apenas localização",
+      "walk": "Apenas travessia"
+    },
+    "smoothness": {
+      "excellent": "Excelente",
+      "good": "Bom",
+      "intermediate": "Intermediário",
+      "bad": "Ruim",
+      "very_bad": "Muito ruim",
+      "horrible": "Horrível",
+      "very_horrible": "Péssimo",
+      "impassable": "Intransitável"
+    },
+    "oneway": {
+      "-1": "Sentido inverso"
+    },
+    "sidewalk": {
+      "both": "Ambos os lados",
+      "left": "Lado esquerdo",
+      "right": "Lado direito",
+      "separate": "Mapeada separadamente",
+      "none": "Nenhuma"
+    },
+    "railway": {
+      "tram": "Bonde",
+      "subway": "Metrô",
+      "light_rail": "VLT",
+      "rail": "Ferrovia"
+    },
+    "electrified": {
+      "contact_line": "Catenária",
+      "rail": "Terceiro trilho"
+    },
+    "usage": {
+      "main": "Linha principal",
+      "branch": "Ramal",
+      "industrial": "Industrial",
+      "tourism": "Turístico",
+      "military": "Militar"
+    },
+    "service": {
+      "yard": "Pátio",
+      "siding": "Desvio",
+      "spur": "Ramal de serviço",
+      "crossover": "Cruzamento"
+    },
+    "traffic_calming": {
+      "hump": "Lombada",
+      "bump": "Ondulação",
+      "table": "Travessia elevada",
+      "island": "Ilha/refúgio",
+      "dip": "Depressão",
+      "cushion": "Almofada",
+      "chicane": "Chicane",
+      "choker": "Estreitamento",
+      "rumble_strip": "Sonorizador"
     },
     "internet_access": {
       "wlan": "Wi-Fi",
