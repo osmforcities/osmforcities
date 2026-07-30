@@ -154,7 +154,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-30T09:09:07.786Z
+ * Generated: 2026-07-30T09:26:34.232Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -272,6 +272,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Bike className="w-5 h-5" />;
     case "bicycle-shop":
       return <Store className="w-5 h-5" />;
+    case "blood-donation":
+      return <Droplet className="w-5 h-5" />;
     case "bridges":
       return <Waypoints className="w-5 h-5" />;
     case "bunker-silos":
@@ -342,6 +344,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Smile className="w-5 h-5" />;
     case "department-stores":
       return <Store className="w-5 h-5" />;
+    case "dialysis-centres":
+      return <Droplets className="w-5 h-5" />;
     case "diy":
       return <Wrench className="w-5 h-5" />;
     case "doctors":
@@ -482,6 +486,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <FlaskConical className="w-5 h-5" />;
     case "memorials":
       return <Landmark className="w-5 h-5" />;
+    case "midwives":
+      return <Baby className="w-5 h-5" />;
     case "mobile-phone":
       return <Smartphone className="w-5 h-5" />;
     case "monuments":

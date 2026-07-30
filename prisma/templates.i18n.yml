@@ -369,6 +369,33 @@ templates:
       en: Alternative Medicine
       pt: Medicina alternativa
       es: Medicina alternativa
+  blood-donation:
+    name:
+      en: Blood Donation
+      pt: Doação de sangue
+      es: Donación de sangre
+    desc:
+      en: Blood Donation
+      pt: Doação de sangue
+      es: Donación de sangre
+  dialysis-centres:
+    name:
+      en: Dialysis Centres
+      pt: Centros de diálise
+      es: Centros de diálisis
+    desc:
+      en: Dialysis Centres
+      pt: Centros de diálise
+      es: Centros de diálisis
+  midwives:
+    name:
+      en: Midwives
+      pt: Parteiras
+      es: Parteras
+    desc:
+      en: Midwives
+      pt: Parteiras
+      es: Parteras
   schools:
     name:
       en: Schools

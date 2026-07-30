@@ -52,6 +52,9 @@ templates:
   - ["speech-therapists","healthcare=speech_therapist","healthcare","MessageCircle"]
   - ["occupational-therapists","healthcare=occupational_therapist","healthcare","Puzzle"]
   - ["alternative-medicine","healthcare=alternative","healthcare","Leaf"]
+  - ["blood-donation","healthcare=blood_donation","healthcare","Droplet"]
+  - ["dialysis-centres","healthcare=dialysis","healthcare","Droplets"]
+  - ["midwives","healthcare=midwife","healthcare","Baby"]
 # Education
   - ["schools","amenity=school","education","School"]
   - ["universities","amenity=university","education","GraduationCap"]
@@ -329,6 +332,9 @@ filterableTags:
   optometrists: [wheelchair]
   health-post: [wheelchair]
   nursing-home: [wheelchair]
+  blood-donation: [operator, wheelchair]
+  dialysis-centres: [operator, wheelchair]
+  midwives: [wheelchair]
   transit-platforms: [tactile_paving, wheelchair, shelter, bench, lit]
   subway-entrances: [wheelchair]
   taxi-ranks:       [capacity, operator]
@@ -495,6 +501,16 @@ demonstrators:
     - { area: 207359,  note: "Los Angeles, US - chiropractic-led (84% speciality coverage)" }
     - { area: 1293250, note: "Taipei, TW - best wheelchair coverage (40%), traditional_chinese_medicine-led" }
     - { area: 5326784, note: "Madrid, ES - European representative, chiropractic/acupuncture/osteopathy/naturopathy mix" }
+  blood-donation:
+    - { area: 62422,   note: "Berlin, DE - DRK/blood-service operators, clean operator split, European representative" }
+    - { area: 175905,  note: "New York City, US - North American representative, Red Cross + hospital blood centres" }
+    - { area: 175342,  note: "London, GB - NHS Blood and Transplant donor centres, consistent operator tagging" }
+  dialysis-centres:
+    - { area: 175905,  note: "New York City, US - largest sample by far (29), strong chain operators (Fresenius, DaVita)" }
+    - { area: 62422,   note: "Berlin, DE - European representative, institutional dialysis operators" }
+  midwives:
+    - { area: 62422,   note: "Berlin, DE - largest sample (21); midwife tagging is Europe-heavy" }
+    - { area: 175342,  note: "London, GB - second representative, NHS/independent midwifery practices" }
   transit-platforms:
     - { area: 62428,   note: "Munich, DE - dense multimodal platforms, near-complete tactile_paving/bench/shelter/lit, strong wheelchair" }
     - { area: 419203,  note: "Utrecht, NL - well-tagged bus/tram platforms, good tactile_paving + shelter" }
