@@ -607,6 +607,45 @@ during that pass, beyond the per-domain notes above:
   (`src/lib/filter-dimensions.ts`), merged with healthcare's `keepEmpty` all-Missing legend
   in the same file.
 
+### Full untouched-template review (epic #245 closure)
+
+To close the epic, every remaining template that had never been reviewed (agriculture,
+nature/landcover, infrastructure, housing, barriers, per-sport, and stragglers) was run
+through the same validation: identify the wiki-documented colorable key, measure live
+coverage (our Overpass), and decide add / remove / keep-age-only.
+
+**Added** (measured colorable key with real coverage):
+
+- **orchards** `[trees]` — the wiki's first-choice orchard sub-tag (species grown), 33%
+  Barcelona / 29% Cape Town. Dropped `crop`/`produce` (0%).
+- **beaches** `[surface]` — sand/pebbles/gravel, 91% Barcelona / 26% Cape Town.
+- **dog-parks** `[access]` — 37% NYC / 21% Berlin, clearly varied.
+- **tower** `[tower:type]`, **surveillance** `[surveillance:type, surveillance]`,
+  **pipeline** `[substance]`, **storage-tanks** `[content]` — infrastructure "type"
+  classifiers, all 61-89% across Berlin/Munich/London.
+- **fences** `[fence_type]` — 23% Berlin over a huge base (6.7k tagged features), varied;
+  same coverage tier accepted for `fountains`' `drinking_water` (23%).
+- **football / basketball / tennis** `[surface, lit]` — court subsets of `pitches`; both
+  keys 42-76% in Munich/Paris (same keys `pitches` uses).
+
+**Removed:** **moor** (`natural=moor`) — ~330 uses globally, effectively deprecated in
+favor of `natural=heath`/moorland and already inside the `natural-surfaces` union.
+
+**Kept age-view-only** (real global usage but no single colorable *usability* key — the
+feature's own tag already *is* its type, or the only sub-keys are numeric/identity):
+housing (apartments/houses/residential/dormitories); most nature/landcover (peaks, cliffs,
+caves, coastlines, springs, glaciers, grasslands, scrub, heath, sand, rock, the
+`natural-surfaces` umbrella, urban-trees/street-trees, etc.); most agriculture (farmland —
+`crop` only ~3-10%; the building/`man_made` structures — barns, silos, greenhouses,
+slurry/manure stores, etc.); most infrastructure (street-lamps, chimney, mast, water-tower,
+water-works, pumping-station, utility-pole, tailings-pond); walls/hedges (`wall` 4-9%);
+monuments, waterfall, dam, emergency-phones, nature-reserves, golf-courses; and the thin
+per-sport templates (baseball — real but US-only, N=4 in the European samples;
+gymnasiums/climbing/shooting/archery/equestrian — thin or no colorable facet; **skiing** —
+sparse as `sport=skiing`, ski slopes are mapped with `piste:*`, flagged as a future
+candidate but kept). The niche farmyard sub-values (feedlot/stockyard/poultry/dairy,
+~0.4-1.7k global each) are low but valid — kept, flagged as niche.
+
 ### Linear-network templates (ways)
 
 - **roads** — `[surface, maxspeed, lit, sidewalk]`. All near-universal in well-mapped cities
