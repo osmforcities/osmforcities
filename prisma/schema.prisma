@@ -121,6 +121,9 @@ model Dataset {
   isActive            Boolean       @default(true)
   isFeatured          Boolean       @default(false)
   lastChecked         DateTime?
+  lastAttempted       DateTime?
+  consecutiveFailures Int           @default(0)
+  lastError           String?
   dataCount           Int           @default(0)
   geojson             Json?
   createdAt           DateTime      @default(now())
@@ -137,6 +140,7 @@ model Dataset {
   user                User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([templateId, areaId])
+  @@index([isActive, lastAttempted])
   @@index([isFeatured, createdAt])
   @@index([lastEditedAt])
   @@index([contributorsCount])

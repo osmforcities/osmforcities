@@ -319,7 +319,7 @@ describe("template-parser", () => {
         "operator",
       ]);
       // Uncurated templates have no list (age-only in the legend)
-      expect(byId.get("atms")?.filterableTags).toBeUndefined();
+      expect(byId.get("golf-courses")?.filterableTags).toBeUndefined();
     });
   });
 
