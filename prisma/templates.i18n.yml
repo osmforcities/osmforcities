@@ -1107,6 +1107,33 @@ templates:
       en: Golf Courses
       pt: Campos de golfe
       es: Campos de golf
+  tracks:
+    name:
+      en: Tracks
+      pt: Pistas de atletismo
+      es: Pistas de atletismo
+    desc:
+      en: Tracks
+      pt: Pistas de atletismo
+      es: Pistas de atletismo
+  fitness-stations:
+    name:
+      en: Fitness Stations
+      pt: Estações de ginástica
+      es: Estaciones de ejercicio
+    desc:
+      en: Fitness Stations
+      pt: Estações de ginástica
+      es: Estaciones de ejercicio
+  ice-rinks:
+    name:
+      en: Ice Rinks
+      pt: Pistas de gelo
+      es: Pistas de hielo
+    desc:
+      en: Ice Rinks
+      pt: Pistas de gelo
+      es: Pistas de hielo
   nature-reserves:
     name:
       en: Nature Reserves
@@ -1710,24 +1737,6 @@ templates:
       en: Skiing
       pt: Esqui
       es: Esquí
-  ice-skating:
-    name:
-      en: Ice Skating
-      pt: Patinação no gelo
-      es: Patinaje sobre hielo
-    desc:
-      en: Ice Skating
-      pt: Patinação no gelo
-      es: Patinaje sobre hielo
-  ice-hockey:
-    name:
-      en: Ice Hockey
-      pt: Hóquei no gelo
-      es: Hockey sobre hielo
-    desc:
-      en: Ice Hockey
-      pt: Hóquei no gelo
-      es: Hockey sobre hielo
   baseball:
     name:
       en: Baseball
@@ -1755,15 +1764,6 @@ templates:
       en: Gymnasiums
       pt: Ginásios
       es: Gimnasios
-  multi-sport:
-    name:
-      en: Multi Sport
-      pt: Poliesportivo
-      es: Polideportivo
-    desc:
-      en: Multi Sport
-      pt: Poliesportivo
-      es: Polideportivo
   shooting:
     name:
       en: Shooting

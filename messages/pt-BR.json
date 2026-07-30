@@ -724,6 +724,9 @@
     "food": "Serve comida",
     "parking": "Tipo",
     "surface": "Superfície",
+    "location": "Localização",
+    "seasonal": "Sazonal",
+    "fitness_station": "Tipo",
     "traffic_signals:sound": "Sinal sonoro",
     "smoothness": "Regularidade",
     "oneway": "Sentido único",
@@ -757,7 +760,7 @@
     "fire_hydrant:pressure": "Pressão",
     "cash_in": "Depósito em dinheiro",
     "indoor": "Interno",
-    "sport": "Atividade"
+    "sport": "Esporte"
   },
   "TagValue": {
     "__common__": {
@@ -845,6 +848,27 @@
       "stone": "Pedra",
       "sculpture": "Escultura",
       "stele": "Estela"
+    },
+    "fitness_station": {
+      "horizontal_bar": "Barra horizontal",
+      "parallel_bars": "Barras paralelas",
+      "horizontal_ladder": "Escada horizontal",
+      "sit-up": "Banco abdominal",
+      "sign": "Placa de instruções",
+      "elliptical_trainer": "Elíptico",
+      "exercise_bike": "Bicicleta ergométrica"
+    },
+    "location": {
+      "outdoor": "Ao ar livre",
+      "indoor": "Coberta",
+      "roof": "Na cobertura",
+      "underground": "Subterrânea"
+    },
+    "seasonal": {
+      "winter": "Inverno",
+      "spring": "Primavera",
+      "summer": "Verão",
+      "autumn": "Outono"
     },
     "access": {
       "private": "Privado",
