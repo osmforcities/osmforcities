@@ -105,7 +105,7 @@ export const DatasetFullMap = forwardRef<
   const filterDimensions = useMemo(
     () =>
       features?.length
-        ? computeFilterDimensions(features, filterableTags)
+        ? computeFilterDimensions(features, filterableTags, { keepEmpty: true })
         : [],
     [features, filterableTags]
   );

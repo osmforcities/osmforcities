@@ -36,11 +36,25 @@ templates:
   - ["hospitals","amenity=hospital","healthcare","Hospital"]
   - ["clinics","amenity=clinic","healthcare","Stethoscope"]
   - ["doctors","amenity=doctors","healthcare","Stethoscope"]
-  - ["dentists","amenity=dentist","healthcare","Smile"]
+  - ["dentists","amenity=dentist","healthcare","SmilePlus"]
   - ["pharmacies","amenity=pharmacy","healthcare","Pill"]
   - ["health-post","amenity=health_post","healthcare","Cross"]
   - ["nursing-home","amenity=nursing_home","healthcare","BedDouble"]
   - ["veterinary","amenity=veterinary","healthcare","PawPrint"]
+  - ["opticians","shop=optician","healthcare","Glasses"]
+  - ["medical-laboratories","healthcare=laboratory","healthcare","FlaskConical"]
+  - ["psychotherapists","healthcare=psychotherapist","healthcare","Armchair"]
+  - ["physiotherapists","healthcare=physiotherapist","healthcare","Dumbbell"]
+  - ["optometrists","healthcare=optometrist","healthcare","Eye"]
+  - ["podiatrists","healthcare=podiatrist","healthcare","Footprints"]
+  - ["rehabilitation-centres","healthcare=rehabilitation","healthcare","PersonStanding"]
+  - ["counselling-services","healthcare=counselling","healthcare","MessagesSquare"]
+  - ["speech-therapists","healthcare=speech_therapist","healthcare","MessageCircle"]
+  - ["occupational-therapists","healthcare=occupational_therapist","healthcare","Puzzle"]
+  - ["alternative-medicine","healthcare=alternative","healthcare","Leaf"]
+  - ["blood-donation","healthcare=blood_donation","healthcare","Droplet"]
+  - ["dialysis-centres","healthcare=dialysis","healthcare","Droplets"]
+  - ["midwives","healthcare=midwife","healthcare","Baby"]
 # Education
   - ["schools","amenity=school","education","School"]
   - ["universities","amenity=university","education","GraduationCap"]
@@ -110,7 +124,6 @@ templates:
   - ["furniture","shop=furniture","shops","Sofa"]
   - ["electronics","shop=electronics","shops","Tv"]
   - ["mobile-phone","shop=mobile_phone","shops","Smartphone"]
-  - ["optician","shop=optician","shops","Glasses"]
   - ["shoes","shop=shoes","shops","Footprints"]
   - ["jewelry","shop=jewelry","shops","Gem"]
   - ["bicycle-shop","shop=bicycle","shops","Store"]
@@ -300,6 +313,28 @@ filterableTags:
   ev-charging:     [capacity, operator, access, fee]
   crossings:       [crossing, crossing:markings, tactile_paving, traffic_signals:sound]
   railway-stations: [station, wheelchair, operator, network]
+  hospitals:   [operator:type, emergency, wheelchair, operator]
+  clinics:     [healthcare:speciality, operator:type, wheelchair, operator]
+  doctors:     [healthcare:speciality, wheelchair]
+  dentists:    [wheelchair]
+  pharmacies:  [dispensing, wheelchair, brand]
+  veterinary:  [wheelchair]
+  opticians:   [wheelchair, brand]
+  medical-laboratories: [healthcare:speciality, wheelchair, operator, brand]
+  psychotherapists: [wheelchair]
+  physiotherapists: [wheelchair]
+  podiatrists: [wheelchair]
+  rehabilitation-centres: [operator, wheelchair]
+  counselling-services: [wheelchair, operator]
+  speech-therapists: [wheelchair]
+  occupational-therapists: [wheelchair]
+  alternative-medicine: [healthcare:speciality, wheelchair]
+  optometrists: [wheelchair]
+  health-post: [wheelchair]
+  nursing-home: [wheelchair]
+  blood-donation: [operator, wheelchair]
+  dialysis-centres: [operator, wheelchair]
+  midwives: [wheelchair]
   transit-platforms: [tactile_paving, wheelchair, shelter, bench, lit]
   subway-entrances: [wheelchair]
   taxi-ranks:       [capacity, operator]
@@ -360,7 +395,6 @@ filterableTags:
   furniture:        [brand, wheelchair]
   electronics:      [brand, wheelchair]
   mobile-phone:     [brand, wheelchair]
-  optician:         [brand, wheelchair]
   shoes:            [brand, wheelchair]
   jewelry:          [wheelchair]
   # Leisure (green spaces not covered by the recreation/sport batch)
@@ -401,6 +435,82 @@ demonstrators:
     - { area: 347950,  note: "Barcelona, ES - near-complete operator/network tagging" }
     - { area: 71525,   note: "Paris, FR - large set, varied networks/operators, strong accessibility" }
     - { area: 62428,   note: "Munich, DE - good wheelchair coverage, mixed train/subway modes" }
+  hospitals:
+    - { area: 62428,   note: "Munich, DE - excellent operator/emergency/wheelchair coverage across the German clinic network" }
+    - { area: 175905,  note: "New York City, US - North American representative, best emergency-care coverage in the batch (91%)" }
+    - { area: 71525,   note: "Paris, FR - large hospital set, clean operator + operator:type + wheelchair tagging" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, strong operator/operator:type/emergency across public and private networks" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, solid emergency + operator:type tagging" }
+    - { area: 1293250, note: "Taipei, TW - East Asian representative, strong emergency coverage across military/university/private hospitals" }
+  clinics:
+    - { area: 62428,   note: "Munich, DE - clean operator/operator:type/wheelchair tagging, well-bucketed specialties" }
+    - { area: 175905,  note: "New York City, US - North American representative, largest sample in the batch (677)" }
+    - { area: 1293250, note: "Taipei, TW - large sample, rich clean specialty distribution led by traditional_chinese_medicine" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, strong operator/operator:type, distinctive public-health specialty tagging" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, large municipal clinic network" }
+  doctors:
+    - { area: 62428,   note: "Munich, DE - largest sample (935), rich clean specialty distribution, strong wheelchair coverage" }
+    - { area: 175905,  note: "New York City, US - North American representative, huge sample (681), strong specialty coverage (61%)" }
+    - { area: 1293250, note: "Taipei, TW - excellent wheelchair coverage, clean specialty buckets" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative" }
+    - { area: 347950,  note: "Barcelona, ES - Iberian representative, distinct specialty mix" }
+  dentists:
+    - { area: 62428,   note: "Munich, DE - largest sample, strong 3-way wheelchair split" }
+    - { area: 1293250, note: "Taipei, TW - large sample, solid wheelchair coverage" }
+  pharmacies:
+    - { area: 62428,   note: "Munich, DE - 91% wheelchair coverage, near-complete dispensing tagging" }
+    - { area: 175905,  note: "New York City, US - North American representative, largest sample in the batch (1,112)" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, strong dispensing coverage" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, solid dispensing + wheelchair" }
+    - { area: 1293250, note: "Taipei, TW - East Asian representative" }
+  health-post:
+    - { area: 103703,  note: "Manila, PH - only tested city with meaningful health_post data; thin sample but real healthcare provider-type variety" }
+  nursing-home:
+    - { area: 62428,   note: "Munich, DE - largest sample found despite the tag's near-total deprecation elsewhere; thin data, honest outlier pick" }
+  veterinary:
+    - { area: 62428,   note: "Munich, DE - 44% wheelchair coverage, clean 3-way split" }
+    - { area: 1293250, note: "Taipei, TW - 28% wheelchair coverage, clean 3-way split" }
+  opticians:
+    - { area: 62428,   note: "Munich, DE - 76% wheelchair coverage, clean chain-brand tagging (Apollo-Optik, Fielmann)" }
+    - { area: 175905,  note: "New York City, US - North American representative, largest sample (383)" }
+    - { area: 1293250, note: "Taipei, TW - large sample (217), strong wheelchair + brand coverage" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, real chain-brand data (Oticas Carol)" }
+  medical-laboratories:
+    - { area: 71525,   note: "Paris, FR - large sample (171), near-complete specialty tagging (biology vs radiology split)" }
+    - { area: 175905,  note: "New York City, US - North American representative, better-balanced specialty split than Rio (dropped)" }
+  psychotherapists:
+    - { area: 62428,   note: "Munich, DE - largest sample (128), clean wheelchair split" }
+    - { area: 1293250, note: "Taipei, TW - smaller sample, confirms the tag outside Europe" }
+  physiotherapists:
+    - { area: 62428,   note: "Munich, DE - largest sample found (160); tag is Europe-heavy, Taipei/Rio too thin to include" }
+  optometrists:
+    - { area: 175905,  note: "New York City, US - largest sample by far (83), though dominated by one chain (Cohen's Fashion Optical)" }
+  podiatrists:
+    - { area: 62428,   note: "Munich, DE - 50% wheelchair coverage, clean 3-way split" }
+  rehabilitation-centres:
+    - { area: 207359,  note: "Los Angeles, US - 44% operator coverage, real institutional operators (Legacy Healing, Ensign Group)" }
+    - { area: 175905,  note: "New York City, US - real institutional operators (VillageCare, Jamaica Hospital)" }
+  counselling-services:
+    - { area: 62428,   note: "Munich, DE - only city with usable wheelchair (39%) and operator (39%) coverage" }
+  speech-therapists:
+    - { area: 62428,   note: "Munich, DE - only city with usable wheelchair coverage (18%)" }
+  occupational-therapists:
+    - { area: 62428,   note: "Munich, DE - 50% wheelchair coverage, clean 3-way split" }
+  alternative-medicine:
+    - { area: 175905,  note: "New York City, US - largest sample (170), acupuncture/chiropractic/massage/herbalism well split" }
+    - { area: 207359,  note: "Los Angeles, US - chiropractic-led (84% speciality coverage)" }
+    - { area: 1293250, note: "Taipei, TW - best wheelchair coverage (40%), traditional_chinese_medicine-led" }
+    - { area: 5326784, note: "Madrid, ES - European representative, chiropractic/acupuncture/osteopathy/naturopathy mix" }
+  blood-donation:
+    - { area: 62422,   note: "Berlin, DE - DRK/blood-service operators, clean operator split, European representative" }
+    - { area: 175905,  note: "New York City, US - North American representative, Red Cross + hospital blood centres" }
+    - { area: 175342,  note: "London, GB - NHS Blood and Transplant donor centres, consistent operator tagging" }
+  dialysis-centres:
+    - { area: 175905,  note: "New York City, US - largest sample by far (29), strong chain operators (Fresenius, DaVita)" }
+    - { area: 62422,   note: "Berlin, DE - European representative, institutional dialysis operators" }
+  midwives:
+    - { area: 62422,   note: "Berlin, DE - largest sample (21); midwife tagging is Europe-heavy" }
+    - { area: 175342,  note: "London, GB - second representative, NHS/independent midwifery practices" }
   transit-platforms:
     - { area: 62428,   note: "Munich, DE - dense multimodal platforms, near-complete tactile_paving/bench/shelter/lit, strong wheelchair" }
     - { area: 419203,  note: "Utrecht, NL - well-tagged bus/tram platforms, good tactile_paving + shelter" }
@@ -618,10 +728,6 @@ demonstrators:
     - { area: 62422,   note: "Berlin, DE - best overall brand/wheelchair, wide carrier-brand spread" }
     - { area: 298285,  note: "Sao Paulo, BR - regional diversity, distinct Brazilian carriers" }
     - { area: 71525,   note: "Paris, FR - large sample, good brand variance" }
-  optician:
-    - { area: 62422,   note: "Berlin, DE - best wheelchair + strong brand variety across chains" }
-    - { area: 175342,  note: "London, GB - best brand coverage, large sample, international chains" }
-    - { area: 71525,   note: "Paris, FR - largest sample, balanced brand/wheelchair" }
   shoes:
     - { area: 62422,   note: "Berlin, DE - best overall brand/wheelchair, strong chain variance" }
     - { area: 71525,   note: "Paris, FR - large sample, good brand variance" }

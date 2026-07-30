@@ -95,7 +95,10 @@ Leave standardized codes/indexes raw — no `TagValue` map (`isced:level` 0-8, `
 - **`wheelchair`** — always shortlist **and keep** for any enterable-building /
   staffed-amenity template (shops, healthcare, education, government, culture, tourism,
   food, transit). Low coverage is not a reason to drop it (equity-essential exception
-  above).
+  above). A curated tag carried by **no** feature (e.g. `wheelchair` at 0% on
+  health-post) still renders as a Color-by view — a single all-Missing legend row that
+  paints every feature the missing color — so the accessibility gap shows on the map,
+  not only in the stats panel.
 - **Skip `wheelchair`** only when there's nothing to enter: outdoor/natural features,
   street furniture, `parking` (use `capacity:disabled` instead), unstaffed infra
   (`bicycle-parking`, `bicycle-rental`, `taxi-ranks`).
@@ -150,6 +153,122 @@ active/featured set bounded.
   accessibility tags sit on the station node itself. Dropped `public_transport` (=station
   everywhere, single-valued) and the `train`/`subway`/`light_rail` boolean siblings (mode
   is already in `station=`); excluded `ref`/`name` (unique codes/labels, not categories).
+- **hospitals** — `[operator:type, emergency, wheelchair, operator]`. New trap:
+  `healthcare=hospital` duplicates `amenity=hospital` everywhere (single-valued, not a
+  filter) — same shape as `railway-stations`' `public_transport` drop. Dropped
+  `healthcare:speciality` too: multi-value semicolon strings fragment into a long tail of
+  near-unique combinations here (unlike doctors/clinics, see below). Dropped
+  `ref:FR:FINESS`/`type:FR:FINESS` — well covered but France-only opaque registry codes.
+- **clinics** — `[healthcare:speciality, operator:type, wheelchair, operator]`. Kept
+  `healthcare:speciality` here (and for doctors): despite the same multi-value shape as
+  hospitals, the single-value buckets (`psychiatry`, `paediatrics`,
+  `traditional_chinese_medicine`...) are clean and well-populated — it's the primary
+  civic-classification signal the wiki documents this key for. Judgment call, not a
+  mechanical rule: check the actual value distribution, don't just pattern-match on key
+  name.
+- **doctors** — `[healthcare:speciality, wheelchair]`. New trap: `operator` here is a
+  solo practitioner's name (e.g. "Dr. med. Frederic Hollay"), functionally identical to
+  `name` — not a network/operator classification. Same trap hit dentists and veterinary.
+  Dropped `operator`/`operator:type` for all three.
+- **dentists** — `[wheelchair]` only. `healthcare:speciality` coverage was too thin
+  (~16%) and its top value ("dentist") just repeats the amenity itself.
+- **pharmacies** — `[dispensing, wheelchair, brand]`. `brand` (chain name) is wiki-
+  documented and a clean multi-value categorical in chain markets (NYC: CVS 102 /
+  Duane Reade 89 / Walgreens 58 / Rite Aid 32; similar in Brazil/South Africa). It is
+  ~0% in Germany's independent-pharmacy market, but that all-Missing legend is itself
+  the finding (independent vs chain pharmacy structure), not a reason to drop a wiki
+  key — the wiki-over-coverage rule outranks single-market skew here. (Reinstated in
+  the #414 re-audit; had been dropped by analogy to ev-charging's `network`.)
+- **health-post — near-empty, `[wheelchair]` only.** `amenity=health_post` is globally
+  rare: 0 results in 4 of 6 tested cities across 4 continents. Where present (Manila,
+  thin sample), `healthcare=*` genuinely varies (`community_health_worker`/
+  `health_aide`/`centre`) — confirming it is *not* always a duplicate of `amenity`
+  (contrast with hospitals above) — but not well-populated enough to justify its own
+  filter. `wheelchair` carried anyway per the exemption above, despite ~0% coverage.
+- **nursing-home — near-empty, `[wheelchair]` only.** `amenity=nursing_home` is
+  wiki-flagged deprecated in favor of `amenity=social_facility` +
+  `social_facility=nursing_home`; live data confirms near-total migration away from it
+  (single digits per city, 0 in Paris). Updating the base query to the newer tag is a
+  separate follow-up, out of scope for a filterableTags-only pass. `wheelchair` carried
+  anyway per the exemption above.
+- **veterinary** — `[wheelchair]` only. `emergency` was a plausible wiki-adjacent
+  hypothesis but tested at 0% everywhere — a reminder that "wiki-documented" is necessary
+  but not sufficient; always confirm against real coverage before keeping a key.
+- **New templates added mid-batch: opticians, medical-laboratories, psychotherapists,
+  physiotherapists.** All 8 original healthcare templates query `amenity=*`, but the
+  wiki documents 23 `healthcare=*` values meant to be used *standalone* with no
+  `amenity` tag at all (physiotherapist, psychotherapist, laboratory, rehabilitation,
+  blood_donation, dialysis, hospice, optometrist...) — an entire class of allied-health
+  facilities invisible to an amenity-only template set. Added the four with clear
+  civic value and real coverage; left the rest (mostly niche or unverified) for a
+  future pass. `shop=optician` doesn't use `healthcare=*` at all — different key,
+  same "wiki-documented but missing" gap.
+  - **opticians** (`shop=optician`) — `[wheelchair, brand]`. Same trap as pharmacies:
+    `operator` is an individual owner's name where opticians are independent
+    (Germany), so dropped; `brand` is the real chain signal (Apollo-Optik, Fielmann,
+    Oticas Carol, 寶島眼鏡) with decent coverage in every city tested, not just
+    chain-heavy markets.
+  - **medical-laboratories** (`healthcare=laboratory`) — `[healthcare:speciality,
+    wheelchair, operator, brand]`. Kept `healthcare:speciality` despite 80%+ of Paris
+    labs being the single value `biology` — the minority `radiology`/other buckets are a
+    real, civically useful distinction (where to get an X-ray vs a blood test), same
+    judgment call as `dispensing` on pharmacies. Data is heavily France-skewed (171 in
+    Paris vs 6 in Munich, 33 in Rio) — real global unevenness, not a France-only tag,
+    but only Paris cleared the coverage bar for a demonstrator. Added `brand` in the
+    #414 re-audit: lab groups are franchised, so `brand` is a clean chain categorical
+    (Paris: Biogroup 17 / Bioclinic 12 / Cerballiance 10 / Synlab 5).
+  - **psychotherapists** / **physiotherapists** (`healthcare=psychotherapist` /
+    `healthcare=physiotherapist`) — `[wheelchair]` only for both. Same solo-
+    practitioner `operator` trap as doctors/dentists/veterinary. Dropped
+    `healthcare:speciality` too: low coverage (14-29%) and top value is redundant
+    with the template's own tag (e.g. `psychotherapist` on a psychotherapist). Both
+    tags are Europe-heavy in practice — Taipei and Rio came back with 3-6 features for
+    physiotherapists (other cities likely fold this into `amenity=clinic` +
+    `healthcare:speciality=physiotherapy` instead, per the clinics entry above), so
+    physiotherapists shipped with a single demonstrator city.
+- **Demonstrator pool had a blind spot: no North American city.** A full coverage sweep
+  of the remaining ~20 standalone `healthcare=*` values across Munich/Paris/Rio/
+  Taipei/Cape Town looked thin for several (optometrist 12 total, rehabilitation 14,
+  dialysis 5). Adding New York City, Los Angeles, and Madrid to the same sweep changed
+  the totals substantially (optometrist 125, rehabilitation 65, dialysis 42) — NYC
+  alone carries most of that swing. **A 5-city demonstrator pool without North America
+  will systematically undercount US-tagging-convention-heavy values.** Lesson for
+  future domain batches: include at least one large US city in the first coverage
+  pass, not as an afterthought.
+  - Added **podiatrist (79→124), counselling (39→65), speech_therapist (32→52),
+    occupational_therapist (21→30)** as new templates on the strength of the corrected
+    numbers — all comfortably real, multi-city.
+  - Deliberately did **not** add `dialysis` despite a much bigger corrected total (42):
+    37 of 42 come from NYC+LA alone, near-zero elsewhere — a single-market skew, same
+    disqualifying pattern as ev-charging's `network` in #406. `blood_donation` (29) is
+    thinner in total but present in all 8 cities tested, the more honest "real but
+    modest" signal — deferred, not added, pending its own coverage pass.
+  - Re-checked the 12 already-committed templates against NYC/LA/Madrid via the
+    dashboard (not just curl): NYC has 5-10x the raw volume of any other demonstrator
+    city for hospitals/clinics/doctors/pharmacies/opticians, but **volume alone isn't
+    sufficient** — NYC's wheelchair coverage is consistently weak (2-13%) even where
+    its other tags are strong, so it was added as a demonstrator only for
+    hospitals/clinics/doctors/pharmacies/opticians/medical-laboratories (where at least
+    one kept filterableTag is genuinely strong there), and skipped for
+    dentists/veterinary/physiotherapists/psychotherapists (where NYC's coverage on the
+    *only* kept filterableTag, wheelchair, is worse than the existing demonstrators).
+- **optometrists** (`healthcare=optometrist`) — `[wheelchair]` only, kept solely under
+  the exemption above (0-10% coverage everywhere tested). `brand` in its best city (NYC,
+  29%) is a single-chain artifact (100% "Cohen's Fashion Optical"), not a generalizable
+  signal — dropped.
+- **podiatrists** — `[wheelchair]`. Same solo-practitioner `operator` trap. Munich (50%)
+  is the only city with usable wheelchair coverage; Paris has 3x the raw count but
+  wheelchair coverage under 10%.
+- **rehabilitation-centres** (`healthcare=rehabilitation`) — `[operator, wheelchair]`.
+  `operator` here is genuinely institutional (Legacy Healing, VillageCare, Jamaica
+  Hospital, Ensign Group), not the solo-practitioner trap — worth checking per
+  template, not assuming. `wheelchair` is weak everywhere (11-13%) but carried per the
+  exemption above.
+- **counselling-services** — `[wheelchair, operator]`. Munich only demonstrator (39%
+  both); `healthcare:counselling` sub-tag exists but too thin (6 features) to use.
+- **speech-therapists** — `[wheelchair]` only, Munich (18%), the weakest coverage kept
+  in the batch — shipped anyway since it's the only accessibility-relevant signal and
+  matches the bar used for dentists/veterinary.
 - **transit-platforms** — `[tactile_paving, wheelchair, shelter, bench, lit]`, the wiki's
   platform accessibility/comfort tags. Multimodal (`public_transport=platform` covers bus,
   tram, train, subway) and multi-geometry (nodes/ways/areas), so it is the network-wide
@@ -188,6 +307,33 @@ active/featured set bounded.
   `wheelchair` added to all five despite low coverage (0-31% across demonstrator
   cities, several samples under 20 features): it's an equity-essential key per the
   wiki, so the near-absent rule doesn't apply — the Missing share is itself useful.
+- **Post-merge gap check: `healthcare=hospice` vs `healthcare=alternative`.** Neither
+  had been screened in the original batch. `hospice` is a genuine dead end — 1 result
+  across all 8 demonstrator cities, rarer than `health-post`; not added. `alternative`
+  (complementary/alternative medicine) was a real miss: 282 features across 5 of 8
+  cities (NYC 170, LA 51, Taipei 35, Madrid 19, Rio 7), with a clean
+  `healthcare:speciality` split (acupuncture, chiropractic, massage, herbalism,
+  traditional_chinese_medicine, osteopathy) — stronger coverage than podiatrists or
+  speech-therapists, which already shipped. `[healthcare:speciality, wheelchair]`;
+  dropped `operator` for the same solo-practitioner trap as doctors/dentists (mostly
+  individual names, e.g. "Dr. Gerald Sciascia").
+- **Wiki gap re-audit (large cities: NYC / Berlin / Tokyo / London).** A pass over the
+  full `Key:healthcare` value list against live coverage in four large, tagging-rich
+  cities surfaced three documented `healthcare=*` facility types missing from the set:
+  - **blood-donation** (`healthcare=blood_donation`) — `[operator, wheelchair]`, icon
+    Droplet. Present in all four cities (Berlin 9, NYC 8, London 6, Tokyo 3); `operator`
+    is the blood-service org (DRK, CSL Plasma, Haema, NHS Blood, Red Cross) — a clean
+    institutional categorical, not the solo-practitioner name trap.
+  - **dialysis-centres** (`healthcare=dialysis`) — `[operator, wheelchair]`, icon
+    Droplets. Strong in NYC (29) and Berlin (8), thin/absent in London (2) and Tokyo
+    (0 — folded into `amenity=clinic`); the all-Missing legend there is itself the
+    finding. `operator` = dialysis chains (DaVita, Fresenius). Critical chronic-care
+    infrastructure.
+  - **midwives** (`healthcare=midwife`) — `[wheelchair]`, icon Baby. Europe-leaning
+    (Berlin 21, NYC 5, London 3, Tokyo 0); `operator` dropped (solo-practitioner name).
+  Screened out as too thin or wiki-discouraged: `hospice`, `sample_collection`,
+  `audiologist`, `birthing_centre`, `vaccination_centre` (decommissioned), `blood_bank`,
+  `nurse`, `medical_imaging`, and the `centre`/`yes` catch-alls.
 
 ### Linear-network templates (ways)
 

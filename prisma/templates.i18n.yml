@@ -270,6 +270,132 @@ templates:
       en: Veterinary
       pt: Veterinários
       es: Veterinaria
+  opticians:
+    name:
+      en: Opticians
+      pt: Óticas
+      es: Ópticas
+    desc:
+      en: Opticians
+      pt: Óticas
+      es: Ópticas
+  medical-laboratories:
+    name:
+      en: Medical Laboratories
+      pt: Laboratórios médicos
+      es: Laboratorios médicos
+    desc:
+      en: Medical Laboratories
+      pt: Laboratórios médicos
+      es: Laboratorios médicos
+  psychotherapists:
+    name:
+      en: Psychotherapists
+      pt: Psicoterapeutas
+      es: Psicoterapeutas
+    desc:
+      en: Psychotherapists
+      pt: Psicoterapeutas
+      es: Psicoterapeutas
+  physiotherapists:
+    name:
+      en: Physiotherapists
+      pt: Fisioterapeutas
+      es: Fisioterapeutas
+    desc:
+      en: Physiotherapists
+      pt: Fisioterapeutas
+      es: Fisioterapeutas
+  optometrists:
+    name:
+      en: Optometrists
+      pt: Optometristas
+      es: Optometristas
+    desc:
+      en: Optometrists
+      pt: Optometristas
+      es: Optometristas
+  podiatrists:
+    name:
+      en: Podiatrists
+      pt: Podólogos
+      es: Podólogos
+    desc:
+      en: Podiatrists
+      pt: Podólogos
+      es: Podólogos
+  rehabilitation-centres:
+    name:
+      en: Rehabilitation Centres
+      pt: Centros de reabilitação
+      es: Centros de rehabilitación
+    desc:
+      en: Rehabilitation Centres
+      pt: Centros de reabilitação
+      es: Centros de rehabilitación
+  counselling-services:
+    name:
+      en: Counselling Services
+      pt: Serviços de aconselhamento
+      es: Servicios de asesoramiento
+    desc:
+      en: Counselling Services
+      pt: Serviços de aconselhamento
+      es: Servicios de asesoramiento
+  speech-therapists:
+    name:
+      en: Speech Therapists
+      pt: Fonoaudiólogos
+      es: Logopedas
+    desc:
+      en: Speech Therapists
+      pt: Fonoaudiólogos
+      es: Logopedas
+  occupational-therapists:
+    name:
+      en: Occupational Therapists
+      pt: Terapeutas ocupacionais
+      es: Terapeutas ocupacionales
+    desc:
+      en: Occupational Therapists
+      pt: Terapeutas ocupacionais
+      es: Terapeutas ocupacionales
+  alternative-medicine:
+    name:
+      en: Alternative Medicine
+      pt: Medicina alternativa
+      es: Medicina alternativa
+    desc:
+      en: Alternative Medicine
+      pt: Medicina alternativa
+      es: Medicina alternativa
+  blood-donation:
+    name:
+      en: Blood Donation
+      pt: Doação de sangue
+      es: Donación de sangre
+    desc:
+      en: Blood Donation
+      pt: Doação de sangue
+      es: Donación de sangre
+  dialysis-centres:
+    name:
+      en: Dialysis Centres
+      pt: Centros de diálise
+      es: Centros de diálisis
+    desc:
+      en: Dialysis Centres
+      pt: Centros de diálise
+      es: Centros de diálisis
+  midwives:
+    name:
+      en: Midwives
+      pt: Parteiras
+      es: Parteras
+    desc:
+      en: Midwives
+      pt: Parteiras
+      es: Parteras
   schools:
     name:
       en: Schools
@@ -810,15 +936,6 @@ templates:
       en: Mobile Phone
       pt: Celulares
       es: Teléfonos móviles
-  optician:
-    name:
-      en: Optician
-      pt: Óticas
-      es: Ópticas
-    desc:
-      en: Optician
-      pt: Óticas
-      es: Ópticas
   shoes:
     name:
       en: Shoes
