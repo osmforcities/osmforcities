@@ -4,6 +4,7 @@ import {
   Anchor,
   Antenna,
   Apple,
+  Armchair,
   Baby,
   Backpack,
   Banknote,
@@ -12,7 +13,6 @@ import {
   Beer,
   Bike,
   Binoculars,
-  Brain,
   BrickWall,
   Building,
   Building2,
@@ -154,7 +154,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-30T09:00:45.578Z
+ * Generated: 2026-07-30T09:06:04.334Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -547,7 +547,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "prisons":
       return <Fence className="w-5 h-5" />;
     case "psychotherapists":
-      return <Brain className="w-5 h-5" />;
+      return <Armchair className="w-5 h-5" />;
     case "public-toilets":
       return <Toilet className="w-5 h-5" />;
     case "public-transit":

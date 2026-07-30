@@ -43,7 +43,7 @@ templates:
   - ["veterinary","amenity=veterinary","healthcare","PawPrint"]
   - ["opticians","shop=optician","healthcare","Glasses"]
   - ["medical-laboratories","healthcare=laboratory","healthcare","FlaskConical"]
-  - ["psychotherapists","healthcare=psychotherapist","healthcare","Brain"]
+  - ["psychotherapists","healthcare=psychotherapist","healthcare","Armchair"]
   - ["physiotherapists","healthcare=physiotherapist","healthcare","Dumbbell"]
   - ["optometrists","healthcare=optometrist","healthcare","Eye"]
   - ["podiatrists","healthcare=podiatrist","healthcare","Footprints"]
