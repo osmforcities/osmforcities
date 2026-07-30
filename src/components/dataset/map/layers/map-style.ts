@@ -81,8 +81,10 @@ export const DEFAULT_STYLE_KNOBS: MapStyleKnobs = {
   recent: {
     haloWidth: 1.5,
   },
-  line: { widthZ8: 3.5, widthZ13: 2, widthZ18: 6 },
-  polygonStroke: { widthZ8: 2.5, widthZ13: 1.5, widthZ18: 3 },
+  // Thinner to match the point marker's restraint; areas take a thin white
+  // outline (buildPolygonStyle) like the point's stroke ring
+  line: { widthZ8: 2, widthZ13: 1.5, widthZ18: 3 },
+  polygonStroke: { widthZ8: 1, widthZ13: 1, widthZ18: 1.5 },
   // Administrative boundary: brand olive (design token olive-500) so it
   // reads as chrome, not data; the old #0b4ad8 blue collided with the
   // teal/blue-green data ramps
@@ -90,14 +92,6 @@ export const DEFAULT_STYLE_KNOBS: MapStyleKnobs = {
 };
 
 export const AGE_COLORS = DEFAULT_STYLE_KNOBS.colors;
-
-// Darker steps of the viridis ramp for polygon outlines
-export const AGE_STROKE_COLORS: AgeCategoryColors = {
-  recent: "#2e3060",
-  medium: "#1d5464",
-  older: "#17755c",
-  "very-old": "#559239",
-};
 
 // The one mapping from per-age values to a MapLibre case expression.
 // Collapses to the bare value when everything matches and skips branches
@@ -166,6 +160,7 @@ export function buildLineWidth(knobs: MapStyleKnobs) {
   ];
 }
 
+
 // City-zoom radius scales with density: sparse points keep a touch more bulk
 // on city-wide views, dense ones stay tiny so they don't blend into a blob.
 // At high zoom individual features become the subject, so radius grows again.
@@ -228,7 +223,9 @@ export function buildPolygonStyle(knobs: MapStyleKnobs) {
       "fill-opacity": 0.7,
     },
     stroke: {
-      "line-color": ageCase(AGE_STROKE_COLORS),
+      // White outline, like the point's stroke ring — replaces the old
+      // darker-viridis outline so the area reads as one color, not two
+      "line-color": knobs.point.strokeColor,
       "line-width": buildPolygonStrokeWidth(knobs),
       "line-opacity": 0.9,
     },
