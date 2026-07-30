@@ -36,7 +36,7 @@ templates:
   - ["hospitals","amenity=hospital","healthcare","Hospital"]
   - ["clinics","amenity=clinic","healthcare","Stethoscope"]
   - ["doctors","amenity=doctors","healthcare","Stethoscope"]
-  - ["dentists","amenity=dentist","healthcare","Smile"]
+  - ["dentists","amenity=dentist","healthcare","SmilePlus"]
   - ["pharmacies","amenity=pharmacy","healthcare","Pill"]
   - ["health-post","amenity=health_post","healthcare","Cross"]
   - ["nursing-home","amenity=nursing_home","healthcare","BedDouble"]

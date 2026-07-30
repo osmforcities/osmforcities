@@ -108,7 +108,7 @@ import {
   Signpost,
   Siren,
   Smartphone,
-  Smile,
+  SmilePlus,
   Snowflake,
   Sofa,
   Sprout,
@@ -154,7 +154,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-30T09:26:34.232Z
+ * Generated: 2026-07-30T09:32:51.544Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -341,7 +341,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "defibrillators":
       return <HeartPulse className="w-5 h-5" />;
     case "dentists":
-      return <Smile className="w-5 h-5" />;
+      return <SmilePlus className="w-5 h-5" />;
     case "department-stores":
       return <Store className="w-5 h-5" />;
     case "dialysis-centres":
