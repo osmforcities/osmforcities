@@ -120,6 +120,15 @@ Best-tagged cities sometimes cluster in one region — balance best-data against
 geographic diversity. Record each in `demonstrators:` with a short qualitative `note`
 (no percentages — they drift).
 
+Also check a few megacities (NYC, London, Tokyo, São Paulo) even without a strong
+community-strength signal — municipal open-data imports (giveaway tags: `source`,
+`source_ref`, `note:<lang>`) can make them the largest sample by an order of magnitude,
+which is worth more than a mid-size city with cleaner-looking percentages. But check
+the other direction too: a huge population is no guarantee of coverage — cities with
+weak local OSM communities (checked Lagos, Addis Ababa for this domain) can come back
+essentially empty (1-27 features, 0% on every filterableTag) despite being major world
+cities. That's a coverage gap to note, not a reason to doubt the template.
+
 ### Seed / feature (Overpass budget)
 
 Every persisted dataset is a standing daily-refresh cost: the cron
@@ -530,6 +539,35 @@ active/featured set bounded.
   angle to justify seeding it purely for coverage stats. Not added.
 - **Confirmed not a candidate: `letter_box`.** Private residential mailboxes
   (incoming mail to an address), not a public amenity — see post-boxes above.
+- **senior-centers — selector was broken, fixed.** The original query,
+  `amenity=senior centre`, had zero uses on taginfo (not a real OSM tag; the space in the
+  value is a giveaway of hand-typed guesswork, not a wiki-documented key). The real
+  tagging is `social_facility:for=senior` (71K+ global uses) on an `amenity=social_facility`
+  node, so the selector became `amenity=social_facility&social_facility:for=senior` and the
+  template was made a sub-template of `social-facility` (its query is a strict subset).
+  Audit every existing selector against taginfo/wiki before tuning its filterableTags —
+  a template can look fine in the YAML and still query nothing in the real world.
+- **social-facility** `[social_facility, social_facility:for, operator, wheelchair]` vs.
+  its child **senior-centers** `[social_facility, operator, wheelchair]` — same two
+  wiki-documented keys (`social_facility` = type: nursing_home/day_care/shelter/
+  food_bank/...; `social_facility:for` = who it serves) dominate coverage in the parent
+  (69-99.7% and 30-72% across 4 cities), and `social_facility` still varies meaningfully
+  within the senior-only child (nursing_home vs day_care vs assisted_living). The one
+  difference: `social_facility:for` drops out of the child even though it's wiki-relevant,
+  because as the sub-template's own query condition it's constant (`senior`) for every
+  feature there — coloring by it would be a single-color flat legend. Both dropped
+  `operator:type` (3-11% parent, 0-28% child — the weakest candidate in every sampled
+  city, not just regionally skewed).
+- **community-centre** — `[community_centre, operator]`. Thin list: `community_centre:for`
+  (2-19%), `wheelchair` (2-32%, near-zero in 3 of 4 cities) and `fee` (0% everywhere) were
+  all dropped as near-absent. Only the centre's own type and its operator cleared the bar.
+- **town-halls** — `[building, wheelchair, townhall:type]`. `building` (townhall vs civic
+  vs yes) is well-covered everywhere (38-100%). `wheelchair` is genuinely regional — strong
+  in Europe (84-100%), absent in the Rio/Cape Town sample (0%) — kept per the
+  crossings precedent. `townhall:type` (UK-documented but picked up elsewhere: 36% Cape
+  Town, 95% Paris) encodes administrative level and was added after showing up unprompted
+  in "Most used tags". Dropped `operator` — for a town hall it is near-tautological (the
+  municipality itself) and inconsistent (0-63%).
 
 ### Linear-network templates (ways)
 

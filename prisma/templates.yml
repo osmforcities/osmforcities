@@ -92,7 +92,7 @@ templates:
   - ["social-facility","amenity=social_facility","social","HeartHandshake"]
   - ["community-centre","amenity=community_centre","social","Users"]
   - ["town-halls","amenity=townhall","social","Landmark"]
-  - ["senior-centers","amenity=senior centre","social","Users"]
+  - ["senior-centers","amenity=social_facility&social_facility:for=senior","social","Accessibility","social-facility"]
 # Government
   - ["government-office","office=government","government","Landmark"]
   - ["courts","amenity=courthouse","government","Scale"]
@@ -380,6 +380,10 @@ filterableTags:
   hotel-guesthouse: [wheelchair, internet_access]
   alpine-huts:      [operator, capacity]
   chalets:          [operator, internet_access]
+  social-facility:  [social_facility, social_facility:for, operator, wheelchair]
+  community-centre: [community_centre, operator]
+  town-halls:       [building, wheelchair, townhall:type]
+  senior-centers:   [social_facility, operator, wheelchair]
   transit-platforms: [tactile_paving, wheelchair, shelter, bench, lit]
   subway-entrances: [wheelchair]
   taxi-ranks:       [capacity, operator]
@@ -691,6 +695,30 @@ demonstrators:
     - { area: 1685406, note: "Zermatt, CH - near-complete capacity tagging, SAC-operated huts" }
   chalets:
     - { area: 1629145, note: "Madeira, PT - small but individually curated, varied internet_access; operator names are distinct real businesses (e.g. Ana Lodges, Paulo Moniz) despite low 20% coverage; most other regions (Algarve bulk import, Sintra, Douro, Porto) show near-zero tag coverage despite real feature counts" }
+  social-facility:
+    - { area: 1543125, note: "Tokyo, JP - largest sample by far, municipal open-data import, strong facility-type/operator" }
+    - { area: 175342,  note: "Greater London, UK - very large sample, near-complete facility-type + serves" }
+    - { area: 175905,  note: "New York City, US - large sample, North American representative" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, near-complete facility-type tagging" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative" }
+  community-centre:
+    - { area: 62428,   note: "Munich, DE - best operator/centre-type balance" }
+    - { area: 1543125, note: "Tokyo, JP - very large sample, municipal open-data import" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, solid operator/centre-type split" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, strong centre-type tagging" }
+    - { area: 175905,  note: "New York City, US - North American representative" }
+  town-halls:
+    - { area: 71525,   note: "Paris, FR - near-complete building/wheelchair/townhall:type across all arrondissement mairies" }
+    - { area: 1543125, note: "Tokyo, JP - largest sample by far, all three keys present at real volume" }
+    - { area: 298285,  note: "Sao Paulo, BR - Latin American representative, strong townhall:type coverage" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, strong building-type + townhall:type" }
+    - { area: 62428,   note: "Munich, DE - thin sample but excellent wheelchair coverage" }
+  senior-centers:
+    - { area: 62428,   note: "Munich, DE - best-balanced across facility-type/operator/wheelchair" }
+    - { area: 1543125, note: "Tokyo, JP - largest sample by far, municipal open-data import" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, large sample, strong facility-type + operator" }
+    - { area: 175905,  note: "New York City, US - North American representative, strong wheelchair coverage" }
+    - { area: 298285,  note: "Sao Paulo, BR - Latin American representative" }
   transit-platforms:
     - { area: 62428,   note: "Munich, DE - dense multimodal platforms, near-complete tactile_paving/bench/shelter/lit, strong wheelchair" }
     - { area: 419203,  note: "Utrecht, NL - well-tagged bus/tram platforms, good tactile_paving + shelter" }
