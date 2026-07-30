@@ -1424,15 +1424,6 @@ templates:
       en: Heath
       pt: Charneca
       es: Brezal
-  moor:
-    name:
-      en: Moor
-      pt: Pântano
-      es: Páramo
-    desc:
-      en: Moor
-      pt: Pântano
-      es: Páramo
   fell:
     name:
       en: Fell
