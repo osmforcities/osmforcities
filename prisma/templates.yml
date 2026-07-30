@@ -44,7 +44,7 @@ templates:
   - ["opticians","shop=optician","healthcare","Glasses"]
   - ["medical-laboratories","healthcare=laboratory","healthcare","FlaskConical"]
   - ["psychotherapists","healthcare=psychotherapist","healthcare","Brain"]
-  - ["physiotherapists","healthcare=physiotherapist","healthcare","Activity"]
+  - ["physiotherapists","healthcare=physiotherapist","healthcare","Dumbbell"]
   - ["optometrists","healthcare=optometrist","healthcare","Eye"]
   - ["podiatrists","healthcare=podiatrist","healthcare","Footprints"]
   - ["rehabilitation-centres","healthcare=rehabilitation","healthcare","Accessibility"]

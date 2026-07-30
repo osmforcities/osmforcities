@@ -1,6 +1,5 @@
 import {
   Accessibility,
-  Activity,
   Ambulance,
   Anchor,
   Antenna,
@@ -155,7 +154,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-30T08:21:46.950Z
+ * Generated: 2026-07-30T09:00:45.578Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -524,7 +523,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "pharmacies":
       return <Pill className="w-5 h-5" />;
     case "physiotherapists":
-      return <Activity className="w-5 h-5" />;
+      return <Dumbbell className="w-5 h-5" />;
     case "pig-sties":
       return <PawPrint className="w-5 h-5" />;
     case "pipeline":
