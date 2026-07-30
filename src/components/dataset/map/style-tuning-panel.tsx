@@ -303,6 +303,11 @@ function StyleTuningPanelInner({ features }: StyleTuningPanelProps) {
     setPaint("detailed-polygons", "fill-color", ageColor);
     setPaint(
       "detailed-polygons-stroke",
+      "line-color",
+      knobs.point.strokeColor
+    );
+    setPaint(
+      "detailed-polygons-stroke",
       "line-width",
       buildPolygonStrokeWidth(knobs)
     );
