@@ -545,10 +545,12 @@ templates:
       en: Motels
       pt: Motéis
       es: Moteles
+    # tourism=motel spans two regional meanings (roadside motor lodge vs the Brazilian/
+    # Latin American short-stay motel); keep the description neutral across locales.
     desc:
-      en: Roadside short-term lodging for travelers by car
-      pt: Hospedagem de curta duração à beira da estrada para quem viaja de carro
-      es: Alojamiento de corta estancia junto a la carretera para viajeros en coche
+      en: Short-stay lodging
+      pt: Hospedagem de curta permanência
+      es: Alojamiento de estancia corta
   attractions:
     name:
       en: Attractions
