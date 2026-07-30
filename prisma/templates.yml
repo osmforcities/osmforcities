@@ -47,10 +47,10 @@ templates:
   - ["physiotherapists","healthcare=physiotherapist","healthcare","Dumbbell"]
   - ["optometrists","healthcare=optometrist","healthcare","Eye"]
   - ["podiatrists","healthcare=podiatrist","healthcare","Footprints"]
-  - ["rehabilitation-centres","healthcare=rehabilitation","healthcare","Accessibility"]
-  - ["counselling-services","healthcare=counselling","healthcare","Ear"]
+  - ["rehabilitation-centres","healthcare=rehabilitation","healthcare","PersonStanding"]
+  - ["counselling-services","healthcare=counselling","healthcare","MessagesSquare"]
   - ["speech-therapists","healthcare=speech_therapist","healthcare","MessageCircle"]
-  - ["occupational-therapists","healthcare=occupational_therapist","healthcare","HandHelping"]
+  - ["occupational-therapists","healthcare=occupational_therapist","healthcare","Puzzle"]
   - ["alternative-medicine","healthcare=alternative","healthcare","Leaf"]
 # Education
   - ["schools","amenity=school","education","School"]

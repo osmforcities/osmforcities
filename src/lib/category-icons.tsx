@@ -1,5 +1,4 @@
 import {
-  Accessibility,
   Ambulance,
   Anchor,
   Antenna,
@@ -39,7 +38,6 @@ import {
   Droplet,
   Droplets,
   Dumbbell,
-  Ear,
   Egg,
   Eye,
   Factory,
@@ -57,7 +55,6 @@ import {
   Goal,
   GraduationCap,
   Hammer,
-  HandHelping,
   Heart,
   HeartHandshake,
   HeartPulse,
@@ -78,6 +75,7 @@ import {
   Martini,
   Medal,
   MessageCircle,
+  MessagesSquare,
   Microscope,
   Milestone,
   Milk,
@@ -87,8 +85,10 @@ import {
   Package,
   Palette,
   PawPrint,
+  PersonStanding,
   Phone,
   Pill,
+  Puzzle,
   RadioTower,
   RailSymbol,
   Recycle,
@@ -154,7 +154,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-30T09:06:04.334Z
+ * Generated: 2026-07-30T09:09:07.786Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -323,7 +323,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "convenience":
       return <Store className="w-5 h-5" />;
     case "counselling-services":
-      return <Ear className="w-5 h-5" />;
+      return <MessagesSquare className="w-5 h-5" />;
     case "courts":
       return <Scale className="w-5 h-5" />;
     case "cowsheds":
@@ -505,7 +505,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "nursing-home":
       return <BedDouble className="w-5 h-5" />;
     case "occupational-therapists":
-      return <HandHelping className="w-5 h-5" />;
+      return <Puzzle className="w-5 h-5" />;
     case "opticians":
       return <Glasses className="w-5 h-5" />;
     case "optometrists":
@@ -563,7 +563,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "recycling":
       return <Recycle className="w-5 h-5" />;
     case "rehabilitation-centres":
-      return <Accessibility className="w-5 h-5" />;
+      return <PersonStanding className="w-5 h-5" />;
     case "research-institute":
       return <Microscope className="w-5 h-5" />;
     case "residential":
