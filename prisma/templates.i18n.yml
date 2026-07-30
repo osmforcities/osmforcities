@@ -198,6 +198,51 @@ templates:
       en: Parcel Lockers
       pt: Lockers de encomendas
       es: Consignas de paquetes
+  shower:
+    name:
+      en: Showers
+      pt: Chuveiros públicos
+      es: Duchas públicas
+    desc:
+      en: Showers
+      pt: Chuveiros públicos
+      es: Duchas públicas
+  public-bookcase:
+    name:
+      en: Public Bookcases
+      pt: Estantes públicas de livros
+      es: Estanterías públicas de libros
+    desc:
+      en: Public Bookcases
+      pt: Estantes públicas de livros
+      es: Estanterías públicas de libros
+  luggage-lockers:
+    name:
+      en: Luggage Lockers
+      pt: Guarda-volumes
+      es: Consignas de equipaje
+    desc:
+      en: Luggage Lockers
+      pt: Guarda-volumes
+      es: Consignas de equipaje
+  post-boxes:
+    name:
+      en: Post Boxes
+      pt: Caixas de coleta postal
+      es: Buzones de correos
+    desc:
+      en: Post Boxes
+      pt: Caixas de coleta postal
+      es: Buzones de correos
+  give-box:
+    name:
+      en: Give Boxes
+      pt: Armários de doação
+      es: Armarios de intercambio
+    desc:
+      en: Give Boxes
+      pt: Armários de doação
+      es: Armarios de intercambio
   hospitals:
     name:
       en: Hospitals
@@ -774,6 +819,24 @@ templates:
       en: Waste Disposal
       pt: Descarte de resíduos
       es: Eliminación de residuos
+  waste-basket:
+    name:
+      en: Waste Baskets
+      pt: Lixeiras
+      es: Papeleras
+    desc:
+      en: Waste Baskets
+      pt: Lixeiras
+      es: Papeleras
+  bottle-return:
+    name:
+      en: Bottle Return Machines
+      pt: Máquinas de retorno de garrafas
+      es: Máquinas de retorno de botellas
+    desc:
+      en: Bottle Return Machines
+      pt: Máquinas de retorno de garrafas
+      es: Máquinas de retorno de botellas
   benches:
     name:
       en: Benches
@@ -792,15 +855,6 @@ templates:
       en: Telephones
       pt: Telefones públicos
       es: Teléfonos públicos
-  internet-access:
-    name:
-      en: Internet Access
-      pt: Acesso à internet
-      es: Acceso a internet
-    desc:
-      en: Internet Access
-      pt: Acesso à internet
-      es: Acceso a internet
   supermarkets:
     name:
       en: Supermarkets
@@ -1818,33 +1872,15 @@ templates:
       en: Clocks
       pt: Relógios públicos
       es: Relojes públicos
-  guideposts:
-    name:
-      en: Guideposts
-      pt: Marcos de trilha
-      es: Hitos de senderismo
-    desc:
-      en: Guideposts
-      pt: Marcos de trilha
-      es: Hitos de senderismo
   information-boards:
     name:
-      en: Information Boards
-      pt: Painéis informativos
-      es: Paneles informativos
+      en: Wayfinding & Information
+      pt: Sinalização e informação
+      es: Señalización e información
     desc:
-      en: Information Boards
-      pt: Painéis informativos
-      es: Paneles informativos
-  markers:
-    name:
-      en: Markers
-      pt: Marcadores e painéis
-      es: Marcadores y paneles
-    desc:
-      en: Markers
-      pt: Marcadores e painéis
-      es: Marcadores y paneles
+      en: Wayfinding & Information
+      pt: Sinalização e informação
+      es: Señalización e información
   places-of-worship:
     name:
       en: Places Of Worship

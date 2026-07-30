@@ -403,6 +403,133 @@ active/featured set bounded.
   template is missing from the domain. Cross-checked for miscategorization too — no
   Sustenance-group amenity is duplicated or filed under a different category, and
   `amenity=marketplace` (the future Markets-domain candidate) isn't defined anywhere yet.
+- **public-toilets** — `[access, fee, wheelchair, changing_table, toilets:disposal]`.
+  All wiki-documented usability keys with real coverage (30-90% across Paris/Munich/
+  Rennes) and value spread. `toilets:disposal` (flush/pitlatrine/chemical) is a single
+  colorable sanitation-type key, unlike EV connectors. Dropped `toilets:wheelchair`
+  (redundant with `wheelchair`) and `level` (floor number, not a usability category).
+- **benches** — `[backrest, material]`. `backrest` is near-universal (66-94%) across
+  Paris/Munich/Rennes/Montreal/Taipei; `material` a consistent second tier (14-51%).
+  Wiki calls `armrest` and `wheelchair` core too, but both stayed under 22% everywhere
+  checked — dropped on coverage, not relevance.
+- **drinking-water** — `[man_made, operator, bottle]`. `man_made` (water_tap/fountain/
+  water_well subtype) is the most consistent key (46-51% across 3 cities); `operator`
+  and `bottle` are regionally strong (Taipei 66%/Utrecht 86%, similar to the crossings
+  regional-key pattern) but weak in Munich. Dropped `fee` (near-universal "no", flat)
+  and `access`/`indoor`/`wheelchair` (never surfaced above the metadata noise floor —
+  `description`/`opening_hours`/`source`/`ref` dominate the raw "most used tags" list
+  and must be screened out as non-categorical before trusting the menu).
+- **post-offices** — `[operator, brand, wheelchair]`. `operator` (43-95%) and `brand`
+  (Rio 60%, franchise vs. state-carrier diversity) both wiki-relevant. `wheelchair`
+  reached 93% in Paris and 54% in Munich — high enough to keep despite general
+  amenity-accessibility tags being easy to dismiss as boilerplate. Dropped `atm`
+  (near-flat "yes") and `opening_hours`/`ref:FR:*` (schedule/code, not categories).
+- **parcel-lockers** — `[brand, operator]`. Both 76-99% across Wroclaw/Munich/Paris
+  with genuine brand diversity (InPost/DHL/DPD). Dropped `wheelchair` (9-28%, too low
+  and inconsistent) and `parcel_mail_in`/`parcel_pickup`/`opening_hours` (near-flat
+  "yes"/"24/7").
+- **recycling** — `[recycling_type, operator]`. `recycling_type` is near-universal
+  (97-100%) with real container/centre variety. `operator` sits at 18-30% but is the
+  only other wiki-relevant, non-fragmented key. Dropped every `recycling:*` material
+  boolean (glass_bottles, paper, plastic, …) — fragmented across dozens of sibling
+  keys, the same trap as EV `socket:*`. Dropped `location` (underground/overground):
+  looked promising in the frontload pass but direct dashboard checks across 3 cities
+  never exceeded 14% — a reminder that Overpass-only frontloading needs a dashboard
+  spot-check before it's trusted, not just a wiki cross-reference. Dropped `capacity`
+  (numeric, Barcelona-only outlier).
+- **waste-disposal, telephones — screen-and-skip.** Both have real feature counts
+  (waste-disposal 190-479, telephones 34-335) but every wiki-relevant key is either
+  near-flat (telephones' `operator` is 197/198 one value in Rio; waste-disposal's
+  `access` is 97% "private" in Munich) or below a "meaningful share" floor
+  (waste-disposal's `waste` key tops out at 26%). Age-view only; a valid, confirmed
+  outcome per the epic's screen-and-skip rule, not a gap to fill later.
+- **internet-access — rejected, removed from `templates.yml`.** 0-4 features
+  everywhere checked (Paris: 1 feature, 3 years stale). The tag's own OSM wiki page
+  flags `amenity=internet` as a documented tagging mistake — real internet access is
+  tagged as an attribute (`internet_access=wlan`) on cafes/libraries, not a standalone
+  node. Unlike screen-and-skip (real dataset, no color-by), this selector itself
+  doesn't map anything real; removed rather than kept as an empty age-view template.
+- **waste-basket — added, screen-and-skip.** `amenity=waste_basket` is 1.2M+ features
+  globally (taginfo) and was completely absent from `templates.yml` despite being
+  near-universal street furniture — the clearest "add" gap found in this domain.
+  But real coverage is thin everywhere checked (Munich 7.3k features, `waste` key at
+  33%; Paris 5.9k features, `waste` at 18%; Rennes `waste` at 15%): high volume,
+  low tag richness. No filterableTags; seeded for volume/coverage stats, not a
+  color-by legend. A useful contrast to internet-access: huge dataset, thin tags,
+  still worth adding — the Propose bar is about the *feature* mattering, not every
+  candidate key panning out.
+- **bottle-return — added, single-demonstrator.** `amenity=vending_machine` +
+  `vending=bottle_return` (reverse vending / deposit-return machines). Checked 15
+  cities including NYC (16 features, all bare — no operator, nothing to filter) and
+  10 more European/American cities (0-6 features each, mostly bare or empty:
+  Paris/Rio/Montreal/LA/Taipei/Oslo/Copenhagen all 0). Only **Berlin** (15 features)
+  showed real tag richness: `operator` names five different supermarket chains
+  (Netto, Kaufland, Rewe, Lidl, Studierendenwerk). `filterableTags: [operator]`,
+  demonstrators limited to Berlin alone — this is thinner than every other kept
+  template in this batch, closer to `ferry-terminals` (sparse, operator-only) than
+  to a normal 3-5-demonstrator pick. Worth revisiting if OSM coverage of deposit
+  machines improves; don't widen the demonstrator list without re-checking coverage.
+- **shower — added, screen-and-skip.** `amenity=shower` is 36k features globally. Real
+  and legitimate (Paris's historic "bains-douches" municipal bathhouses, Barcelona's
+  beach showers — 56 features) but every wiki key is flat where it has volume:
+  Barcelona `access` is 90% "yes", `fee` is 100% "no". Small-N cities (Paris 17,
+  Munich 12) don't have enough features to trust a percentage either way. Added for
+  coverage/volume, no color-by.
+- **public-bookcase — added.** `[public_bookcase:type]`. Coverage is regional
+  (Munich 60%, Paris 19%, Berlin 60%) but the value itself is genuinely categorical
+  and distinct per city: Munich favors `metal_cabinet`, Berlin favors `phone_box`
+  (repurposed telephone booths). Dropped `operator` — in practice these are
+  near-unique community-group names (one operator per bookcase), the same
+  "unique code, not a category" trap as `ref`/`name`.
+- **luggage-lockers — added.** `[fee, operator]`. Thin globally (1.6k features on
+  taginfo) but concentrated at major train hubs: Paris 26, Berlin 22, Munich 15
+  (Hauptbahnhof cluster), each with real `fee` (58-87%, skewed but real — a locker
+  that's suddenly free is worth surfacing) and `operator` (13-42%, named companies:
+  ZeitLager, etc.) coverage. Dropped `indoor` — present but every value is a
+  variant of "yes" (`yes`/`room`), not a real binary split.
+- **Public-category consolidation.** `fountains` → `amenities` with
+  `[drinking_water]` (15-23% coverage, real no/yes/unknown split — tells you if
+  the fountain is potable, not just decorative). `clocks` → `services` with
+  `[display, support, visibility]` (all 27-48% coverage across Munich/Paris, real
+  diversity: analog/digital/sundial; wall/pole/roof/street_lamp/…; area/street/house).
+  `guideposts` (`tourism=guidepost`) and `markers`
+  (`tourism=information;tourism=guidepost`) **removed** — `guideposts` returned 0
+  features in every city checked; real-world guideposts are tagged
+  `tourism=information` + `information=guidepost`, which `markers` was already
+  redundantly re-querying. `information-boards` (`tourism=information`) → `services`,
+  kept as the single template, with the `information` sub-tag promoted to
+  `filterableTags` (`board`/`terminal`/`map`/`guidepost`/`office`/`route_marker`) —
+  97% coverage in Paris (2.1k features), 100% in Munich (1.6k features). The `public`
+  category is now empty and removed from the icon-fallback map. Lesson: a template
+  whose primary selector returns 0 features everywhere isn't a tuning problem, it's
+  evidence the community moved to a different tagging scheme for the same concept —
+  check sibling `tourism=information`/`information=*` style sub-tagging before
+  concluding a feature isn't mapped.
+- **post-boxes — added.** `[post_box:type]`. `amenity=post_box` is 409k features
+  globally — the single biggest gap found in this domain. `operator`/`brand` are
+  near-universal (97-100%) but useless: one national postal monopoly per country
+  (Deutsche Post 99.9% in Munich/Berlin, La Poste 100% in Paris) — classic flat
+  pattern, same as `waste-disposal`'s `access`. `post_box:type` (pillar/lamp/wall
+  mounting style) is thinner (4.7-19%) but the only key with real variety. Do not
+  confuse with `amenity=letter_box` (private residential mailboxes, opposite
+  direction — incoming mail, not a public amenity) — checked the wiki specifically
+  to avoid picking the wrong tag here.
+- **give-box — added, thin/regional.** `[wheelchair, covered]`. `amenity=give_box`
+  (community free-sharing boxes / "Little Free Pantries") is only 1.4k features
+  globally, and heavily concentrated in one city's specific movement (Munich's
+  "Kreislaufschränke", 22 features vs. Berlin's 11, Paris's 1). Where present,
+  `wheelchair` (56% Munich) and `covered` (40% Munich) are real and skewed-but-
+  varied. Two demonstrators only, both German — same shape as `bottle-return`,
+  added because the signal is real where it exists, not because it's broadly
+  viable yet.
+- **Considered and rejected: `grit_bin`.** `amenity=grit_bin` (roadside salt/sand
+  bins) has real volume in its home region (443 in London, 399 in Munich) but
+  every tag is under 5% coverage everywhere — essentially bare nodes. Unlike
+  `waste-basket`/`shower` (added anyway for volume), `grit_bin` is also narrowly
+  regional (UK/Nordic winter-road safety) with no accessibility or usability
+  angle to justify seeding it purely for coverage stats. Not added.
+- **Confirmed not a candidate: `letter_box`.** Private residential mailboxes
+  (incoming mail to an address), not a public amenity — see post-boxes above.
 
 ### Linear-network templates (ways)
 

@@ -32,6 +32,11 @@ templates:
   - ["drinking-water","amenity=drinking_water","amenities","Droplet"]
   - ["post-offices","amenity=post_office","amenities","Mail"]
   - ["parcel-lockers","amenity=parcel_locker","amenities","Package"]
+  - ["shower","amenity=shower","amenities","ShowerHead"]
+  - ["public-bookcase","amenity=public_bookcase","amenities","BookOpen"]
+  - ["luggage-lockers","amenity=luggage_locker","amenities","Luggage"]
+  - ["post-boxes","amenity=post_box","amenities","Mailbox"]
+  - ["give-box","amenity=give_box","amenities","Gift"]
 # Healthcare
   - ["hospitals","amenity=hospital","healthcare","Hospital"]
   - ["clinics","amenity=clinic","healthcare","Stethoscope"]
@@ -107,7 +112,8 @@ templates:
   - ["waste-disposal","amenity=waste_disposal","services","Trash2"]
   - ["benches","amenity=bench","services","RockingChair"]
   - ["telephones","amenity=telephone","services","Phone"]
-  - ["internet-access","amenity=internet_access","services","Wifi"]
+  - ["waste-basket","amenity=waste_basket","services","Trash"]
+  - ["bottle-return","amenity=vending_machine&vending=bottle_return","services","Undo2"]
 # Shops
   - ["supermarkets","shop=supermarket","shops","ShoppingCart"]
   - ["bakeries","shop=bakery","shops","Croissant"]
@@ -237,12 +243,14 @@ templates:
   - ["archery","sport=archery","sports","Crosshair"]
   - ["climbing","sport=climbing","sports","Mountain"]
   - ["equestrian","sport=equestrian","sports","Ribbon"]
-# Public facilities
-  - ["fountains","amenity=fountain","public","Droplets"]
-  - ["clocks","amenity=clock","public","Clock"]
-  - ["guideposts","tourism=guidepost","public","Signpost"]
-  - ["information-boards","tourism=information","public","Info"]
-  - ["markers","tourism=information;tourism=guidepost","public","MapPin"]
+# Misc facilities (fountains, clocks, wayfinding)
+  - ["fountains","amenity=fountain","amenities","Droplets"]
+  - ["clocks","amenity=clock","services","Clock"]
+  # Consolidated: tourism=information covers guideposts/boards/maps/route markers via
+  # the information= sub-tag (color-by). Replaces the former guideposts + markers
+  # templates, which were dead/redundant (guideposts alone returns 0 features in most
+  # cities - real guidepost data lives under tourism=information&information=guidepost).
+  - ["information-boards","tourism=information","services","Info"]
 # Religion
   # Single worship template; the former church/mosque/synagogue/temple/shrine
   # value-templates queried loose religion=* selectors (matching cemeteries,
@@ -352,6 +360,20 @@ filterableTags:
   tracks:          [sport, surface, lit]
   fitness-stations: [fitness_station]
   ice-rinks:       [sport, seasonal]
+  public-toilets:  [access, fee, wheelchair, changing_table, toilets:disposal]
+  benches:         [backrest, material]
+  drinking-water:  [man_made, operator, bottle]
+  post-offices:    [operator, brand, wheelchair]
+  parcel-lockers:  [brand, operator]
+  recycling:       [recycling_type, operator]
+  bottle-return:   [operator]
+  public-bookcase: [public_bookcase:type]
+  luggage-lockers: [fee, operator]
+  fountains:       [drinking_water]
+  clocks:          [display, support, visibility]
+  information-boards: [information]
+  post-boxes:      [post_box:type]
+  give-box:        [wheelchair, covered]
   transit-platforms: [tactile_paving, wheelchair, shelter, bench, lit]
   subway-entrances: [wheelchair]
   taxi-ranks:       [capacity, operator]
@@ -595,6 +617,56 @@ demonstrators:
   ice-rinks:
     - { area: 1634158, note: "Montreal, CA - by far the strongest sample (64 rinks), clear seasonal/sport split" }
     - { area: 406091,  note: "Oslo, NO - cold-climate representative, though thin (8 rinks)" }
+  public-toilets:
+    - { area: 71525,   note: "Paris, FR - 928 features, near-complete fee/wheelchair, toilets:disposal well used" }
+    - { area: 62428,   note: "Munich, DE - strong fee/wheelchair/access tagging" }
+    - { area: 54517,   note: "Rennes, FR - solid wheelchair/access, smaller but clean" }
+  benches:
+    - { area: 71525,   note: "Paris, FR - 14.9k features, near-complete backrest, strong material" }
+    - { area: 62428,   note: "Munich, DE - 16.4k features, best backrest+material coverage" }
+    - { area: 54517,   note: "Rennes, FR - smaller set, consistent backrest tagging" }
+  drinking-water:
+    - { area: 1293250, note: "Taipei, TW - 1.2k features, strong operator tagging" }
+    - { area: 419203,  note: "Utrecht, NL - near-complete operator/bottle, clean small set" }
+    - { area: 62428,   note: "Munich, DE - best man_made/fountain subtype tagging" }
+  post-offices:
+    - { area: 71525,   note: "Paris, FR - 213 features, 93% wheelchair, 95% operator" }
+    - { area: 62428,   note: "Munich, DE - solid operator/wheelchair mix" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - brand diversity (franchise counters vs Correios)" }
+  parcel-lockers:
+    - { area: 451516,  note: "Wroclaw, PL - 898 features, InPost heartland, near-complete brand/operator" }
+    - { area: 62428,   note: "Munich, DE - 233 features, DHL Packstation, 99% brand" }
+    - { area: 71525,   note: "Paris, FR - mixed brands, moderate coverage" }
+  recycling:
+    - { area: 62428,   note: "Munich, DE - 1.2k features, recycling_type near-universal" }
+    - { area: 54517,   note: "Rennes, FR - operator coverage clearest here" }
+    - { area: 347950,  note: "Barcelona, ES - 4.3k features, largest volume" }
+  bottle-return:
+    - { area: 62422,   note: "Berlin, DE - only city checked (of 15) with real operator diversity: Netto, Kaufland, Rewe, Lidl" }
+  public-bookcase:
+    - { area: 62428,   note: "Munich, DE - 81 features, 60% type coverage, metal_cabinet dominant" }
+    - { area: 71525,   note: "Paris, FR - 174 features, largest volume" }
+    - { area: 62422,   note: "Berlin, DE - 123 features, 60% type coverage, phone_box dominant (repurposed booths)" }
+  luggage-lockers:
+    - { area: 71525,   note: "Paris, FR - 26 features, best fee/operator coverage" }
+    - { area: 62422,   note: "Berlin, DE - 22 features, strong indoor/fee tagging" }
+    - { area: 62428,   note: "Munich, DE - 15 features, Hauptbahnhof cluster" }
+  fountains:
+    - { area: 62428,   note: "Munich, DE - 571 features, largest volume, clean drinking_water split" }
+    - { area: 71525,   note: "Paris, FR - 305 features, real no/yes drinking_water split" }
+  clocks:
+    - { area: 62428,   note: "Munich, DE - 100 features, display/support/visibility all present" }
+    - { area: 71525,   note: "Paris, FR - 392 features, largest volume, rich support diversity" }
+  information-boards:
+    - { area: 71525,   note: "Paris, FR - 2.1k features, near-universal information sub-tag (board/terminal/map/guidepost)" }
+    - { area: 62428,   note: "Munich, DE - 1.6k features, strong guidepost/board/map split" }
+  post-boxes:
+    - { area: 62422,   note: "Berlin, DE - 2.4k features, largest volume, clean lamp/pillar/wall split" }
+    - { area: 62428,   note: "Munich, DE - 747 features, strong post_box:type coverage" }
+    - { area: 71525,   note: "Paris, FR - 1.2k features, thinner type coverage but huge volume" }
+  give-box:
+    - { area: 62428,   note: "Munich, DE - 22 features, Kreislaufschraenke movement, best wheelchair/covered coverage" }
+    - { area: 62422,   note: "Berlin, DE - 11 features, weaker but present; template is Germany-concentrated overall" }
   transit-platforms:
     - { area: 62428,   note: "Munich, DE - dense multimodal platforms, near-complete tactile_paving/bench/shelter/lit, strong wheelchair" }
     - { area: 419203,  note: "Utrecht, NL - well-tagged bus/tram platforms, good tactile_paving + shelter" }
@@ -867,7 +939,6 @@ categories:
   infrastructure: Gauge
   housing: Building2
   sports: Trophy
-  public: Info
   religion: Landmark
   barriers: Square
   agriculture: Wheat

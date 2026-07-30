@@ -713,6 +713,20 @@
     "vending": "Type",
     "real_ale": "Real ale",
     "food": "Food",
+    "changing_table": "Changing table",
+    "toilets:disposal": "Sanitation type",
+    "backrest": "Backrest",
+    "material": "Material",
+    "man_made": "Fixture type",
+    "bottle": "Bottle refill",
+    "recycling_type": "Recycling type",
+    "public_bookcase:type": "Container type",
+    "information": "Type",
+    "drinking_water": "Drinkable",
+    "display": "Display",
+    "support": "Mounting",
+    "visibility": "Visibility",
+    "post_box:type": "Box type",
     "parking": "Type",
     "surface": "Surface",
     "location": "Location",
@@ -757,7 +771,8 @@
     "__common__": {
       "yes": "Yes",
       "no": "No",
-      "limited": "Limited"
+      "limited": "Limited",
+      "unknown": "Unknown"
     },
     "healthcare:speciality": {
       "general": "General practice",
@@ -867,6 +882,63 @@
       "permissive": "Permissive",
       "designated": "Designated",
       "permit": "By permit"
+    },
+    "public_bookcase:type": {
+      "metal_cabinet": "Metal cabinet",
+      "glass_cabinet": "Glass cabinet",
+      "wooden_cabinet": "Wooden cabinet",
+      "phone_box": "Repurposed phone box",
+      "shelf": "Shelf",
+      "reading_box": "Reading box"
+    },
+    "information": {
+      "board": "Info board",
+      "terminal": "Terminal",
+      "map": "Map",
+      "guidepost": "Guidepost",
+      "office": "Tourist office",
+      "route_marker": "Route marker"
+    },
+    "display": {
+      "analog": "Analog",
+      "digital": "Digital",
+      "sundial": "Sundial"
+    },
+    "support": {
+      "wall": "Wall",
+      "wall_mounted": "Wall-mounted",
+      "pole": "Pole",
+      "roof": "Roof",
+      "ground": "Ground",
+      "pillar": "Pillar",
+      "billboard": "Billboard",
+      "street_lamp": "Street lamp"
+    },
+    "visibility": {
+      "area": "Area",
+      "street": "Street",
+      "house": "House"
+    },
+    "post_box:type": {
+      "pillar": "Pillar box",
+      "lamp": "Lamp box",
+      "wall": "Wall box"
+    },
+    "toilets:disposal": {
+      "flush": "Flush",
+      "pitlatrine": "Pit latrine",
+      "chemical": "Chemical",
+      "bucket": "Bucket"
+    },
+    "man_made": {
+      "water_tap": "Water tap",
+      "fountain": "Fountain",
+      "drinking_fountain": "Drinking fountain",
+      "water_well": "Water well"
+    },
+    "recycling_type": {
+      "container": "Container",
+      "centre": "Recycling centre"
     },
     "bicycle_parking": {
       "stands": "Stands",
