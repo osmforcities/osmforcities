@@ -120,6 +120,27 @@ describe("computeFilterDimensions — tag dimensions", () => {
     expect(byKey(dims, "colour")).toBeDefined();
     expect(byKey(dims, "surface")).toBeUndefined();
   });
+
+  it("drops an all-missing curated tag by default", () => {
+    const features = [feature({ amenity: "hospital" })];
+
+    const dims = computeFilterDimensions(features, ["wheelchair"]);
+
+    expect(byKey(dims, "wheelchair")).toBeUndefined();
+  });
+
+  it("keeps an all-missing curated tag when keepEmpty is set (Missing is the finding)", () => {
+    const features = [feature({ amenity: "hospital" }), feature({ amenity: "clinic" })];
+
+    const dim = byKey(
+      computeFilterDimensions(features, ["wheelchair"], { keepEmpty: true }),
+      "wheelchair"
+    );
+
+    expect(dim).toBeDefined();
+    expect(dim!.values).toEqual([]);
+    expect(dim!.missing).toBe(2);
+  });
 });
 
 describe("computeFilterDimensions — age dimension", () => {

@@ -127,18 +127,25 @@ function computeAgeDimension(features: Feature[]): FilterDimension {
 /**
  * Turn a dataset's geojson features into filter dimensions for the FilterPanel.
  *
- * Emits one dimension per allow-listed tag that is present in at least one feature
- * (sorted desc by count, with a `missing` count), plus an always-present `age`
- * dimension. Pure — pass a custom `filterableTags` to override the default seed list.
+ * Emits one dimension per allow-listed tag (sorted desc by count, with a `missing`
+ * count), plus an always-present `age` dimension. Pure — pass a custom
+ * `filterableTags` to override the default seed list.
+ *
+ * `keepEmpty` controls all-missing tags (present in the list but carried by no
+ * feature). Default `false` drops them — right for the heuristic default seed,
+ * where an absent tag is just noise. Curated per-template lists pass `true`: every
+ * key was deliberately chosen, so a 100%-Missing dimension is the finding (an
+ * accessibility/data gap) and must stay colorable — its legend is a single "Missing"
+ * row and the map paints every feature the missing color.
  */
 export function computeFilterDimensions(
   features: Feature[],
-  filterableTags: readonly string[] = FILTERABLE_TAGS
+  filterableTags: readonly string[] = FILTERABLE_TAGS,
+  { keepEmpty = false }: { keepEmpty?: boolean } = {}
 ): FilterDimension[] {
   const tagDimensions = filterableTags
     .map((key) => computeTagDimension(features, key))
-    // Only surface tags actually present in the data.
-    .filter((dim) => dim.values.length > 0);
+    .filter((dim) => keepEmpty || dim.values.length > 0);
 
   return [...tagDimensions, computeAgeDimension(features)];
 }
