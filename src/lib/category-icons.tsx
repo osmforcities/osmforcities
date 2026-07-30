@@ -170,7 +170,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-30T11:05:42.086Z
+ * Generated: 2026-07-30T11:54:18.832Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -510,8 +510,6 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Smartphone className="w-5 h-5" />;
     case "monuments":
       return <Landmark className="w-5 h-5" />;
-    case "moor":
-      return <Leaf className="w-5 h-5" />;
     case "motels":
       return <BedSingle className="w-5 h-5" />;
     case "mud":

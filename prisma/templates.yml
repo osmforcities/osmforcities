@@ -190,7 +190,6 @@ templates:
   - ["natural-surfaces","natural=scrub;natural=heath;natural=moor;natural=fell;natural=rock;natural=stone;natural=sand;natural=shingle;natural=mud","nature","Mountain"]
   - ["scrub","natural=scrub","nature","Shrub"]
   - ["heath","natural=heath","nature","Leaf"]
-  - ["moor","natural=moor","nature","Leaf"]
   - ["fell","natural=fell","nature","Mountain"]
   - ["rock","natural=rock","nature","Mountain"]
   - ["stone","natural=stone","nature","Mountain"]
@@ -465,6 +464,21 @@ filterableTags:
   # Consistency with sibling templates in the same category
   bicycle-shop:     [brand, wheelchair]
   prisons:          [operator, wheelchair]
+  # Full untouched-template review (epic #245 closure): measured colorable keys with
+  # real coverage. Nature/agriculture: orchards trees 29-33%, beaches surface 26-91%.
+  orchards:         [trees]
+  beaches:          [surface]
+  dog-parks:        [access]
+  # Infrastructure "type" keys, strong coverage (Berlin/Munich/London 61-89%)
+  tower:            [tower:type]
+  surveillance:     [surveillance:type, surveillance]
+  pipeline:         [substance]
+  storage-tanks:    [content]
+  fences:           [fence_type]
+  # Per-sport courts (subsets of pitches): surface/lit like the pitches template
+  football:         [surface, lit]
+  basketball:       [surface, lit]
+  tennis:           [surface, lit]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -984,6 +998,40 @@ demonstrators:
   markets:
     - { area: 347950,  note: "Barcelona, ES - municipal markets, mostly building-mapped (age-view dataset)" }
     - { area: 298285,  note: "Sao Paulo, BR - marketplaces incl. street feiras" }
+  # Untouched-template review (epic #245 closure)
+  orchards:
+    - { area: 347950,  note: "Barcelona, ES - trees (species) well tagged (~33%)" }
+    - { area: 79604,   note: "Cape Town, ZA - largest sample, strong trees coverage (~29%)" }
+  beaches:
+    - { area: 347950,  note: "Barcelona, ES - near-complete surface (sand/pebbles) tagging" }
+    - { area: 79604,   note: "Cape Town, ZA - larger sample, real surface variance" }
+  dog-parks:
+    - { area: 175905,  note: "New York City, US - strongest access coverage (~37%)" }
+    - { area: 62422,   note: "Berlin, DE - solid access coverage, European representative" }
+  tower:
+    - { area: 175342,  note: "London, GB - largest sample, ~80% tower:type (communication/observation/...)" }
+    - { area: 62422,   note: "Berlin, DE - strong tower:type coverage" }
+    - { area: 62428,   note: "Munich, DE - strong tower:type coverage" }
+  surveillance:
+    - { area: 62422,   note: "Berlin, DE - large sample, near-complete surveillance:type + surveillance" }
+    - { area: 175342,  note: "London, GB - CCTV-dense, strong surveillance:type" }
+  pipeline:
+    - { area: 62428,   note: "Munich, DE - substance (water/gas/...) ~87%" }
+    - { area: 62422,   note: "Berlin, DE - strong substance coverage" }
+  storage-tanks:
+    - { area: 62422,   note: "Berlin, DE - content (water/gas/silage/...) ~76%" }
+    - { area: 62428,   note: "Munich, DE - solid content coverage" }
+  fences:
+    - { area: 62422,   note: "Berlin, DE - huge sample; fence_type varied over thousands of features (~23%)" }
+  football:
+    - { area: 62428,   note: "Munich, DE - surface 76%, lit 64%" }
+    - { area: 71525,   note: "Paris, FR - surface 61%, lit 44%" }
+  basketball:
+    - { area: 62428,   note: "Munich, DE - surface 66%, lit 56%" }
+    - { area: 71525,   note: "Paris, FR - surface 54%, lit 45%" }
+  tennis:
+    - { area: 62428,   note: "Munich, DE - surface 71%, lit 55%" }
+    - { area: 71525,   note: "Paris, FR - surface 42%, lit 25%" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:
