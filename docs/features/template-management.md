@@ -334,6 +334,75 @@ active/featured set bounded.
   Screened out as too thin or wiki-discouraged: `hospice`, `sample_collection`,
   `audiologist`, `birthing_centre`, `vaccination_centre` (decommissioned), `blood_bank`,
   `nurse`, `medical_imaging`, and the `centre`/`yes` catch-alls.
+- **restaurants** — `[cuisine, wheelchair, outdoor_seating, takeaway, delivery,
+  diet:vegetarian]`. `takeaway`/`delivery` swing hard by region (2-9% in Paris vs
+  26-29% in Wrocław) but are kept — both real, both wiki-core, coverage is regional.
+  Dropped `smoking`/`internet_access`/`reservation`/`capacity` (all under 15% and
+  inconsistent across three regions).
+- **cafes** — `[cuisine, outdoor_seating, indoor_seating, wheelchair, takeaway,
+  internet_access]`. `indoor_seating` wasn't an initial wiki-fetch candidate — it
+  surfaced unprompted in "Most used tags" at 37-42% in Paris; the wiki does document it
+  as the seating-type counterpart to `outdoor_seating`, so it was added and kept (14-37%
+  in Europe, near-zero in Mexico City — regional, same as `crossing:markings`).
+- **fast-food** — `[cuisine, takeaway, outdoor_seating, wheelchair, delivery]`. Dropped
+  `drive_through` despite wiki emphasis: 2-5% across Paris/Wrocław/Mexico City (car-heavy
+  Mexico City included) — structurally rare at dense urban scale, not a regional pocket.
+- **bars** — `[wheelchair, outdoor_seating, smoking]`. Dropped `live_music`/`microbrewery`
+  (0-1% in all three test regions despite wiki "useful combination" billing — an event
+  attribute and a rare specialty, not stable physical facts to color by).
+- **pubs** — `[wheelchair, outdoor_seating, smoking, internet_access, real_ale, food]`.
+  `food`/`real_ale`/`microbrewery`/`live_music` looked near-zero (0-8%) in Paris/Wrocław,
+  small-city data that doesn't reflect pub culture. Re-tested at scale against Greater
+  London (3.2k pubs, the pub-culture heartland): `real_ale` (15%) and `food` (19%) both
+  clear the bar already accepted for `smoking` (10%) and `internet_access` (9%) — added.
+  `microbrewery` (3%) and `live_music` (<1%) stayed thin even in London — dropped. Also
+  excluded `wheelchair` from the candidate list only by oversight in the pub wiki page
+  itself — the generic `Key:wheelchair` page treats it as universal, and dashboard data
+  confirmed 25-49%.
+- **ice-cream** — `[wheelchair, outdoor_seating, takeaway]`. Small dataset everywhere
+  (80-227 features per city) but the three keys are consistently present (4-48%);
+  dropped `self_service` (0% in all three cities tested).
+- **food-court — screen-and-skip.** `amenity=food_court` is genuinely thin: 6-27 features
+  across Paris/Wrocław/Barcelona/Mexico City. `wheelchair` showed 40-57% in three of four
+  cities but on raw samples of 3-7 features — too small to trust as a legend. No
+  filterableTags added (age view only); no demonstrators picked, since no city shows the
+  template distinctly well. Revisit if OSM coverage of food courts grows.
+- **food-vending** — `[vending, operator, brand]`. `vending` is baked into the query
+  itself (100% coverage everywhere) and is the payoff key: in Tokyo it splits 6.4k
+  machines into drinks (6,244) vs coffee/food/ice_cream/milk/sweets/water (3-63 each) —
+  a heavily skewed but genuinely useful "Type" view, same pattern as `bicycle-rental`'s
+  `operator`. `operator`/`brand` are regional (9-78% / 5-69% across Tokyo/Paris/Wrocław)
+  but real in at least one strong city each. Dropped `wheelchair` (0-2% everywhere; also a
+  poor conceptual fit — accessibility isn't a meaningful attribute for a vending machine).
+  Query's `vending=*` value list checked against taginfo usage counts (2026-07-28): added
+  `eggs` (880 uses, same tier as already-included `milk`/`ice_cream`); `snacks`/`honey`/
+  `potatoes`/`meat`/`cheese` (109-265 uses) stay below the threshold used for every other
+  value here. Also found and fixed a real query-builder bug: `buildOverpassQuery` matched
+  tag values with exact equality, so vending machines using OSM's semicolon-combined-value
+  convention (`vending=drinks;food`, `vending=coffee;sweets`, etc — ~4,240 machines
+  globally per taginfo) were silently invisible to this template. Fixed generally (not
+  special-cased) by switching value matches to a semicolon-boundary regex
+  (`"key"~"(^|;)value(;|$)"`); verified against real Overpass for Wrocław that this is a
+  strict superset (21 → 29 features, zero of the original 21 lost). No other template's
+  query is affected in practice — every other value-matched key in `templates.yml`
+  (`amenity`, `natural`, `shop`, `leisure`, `tourism`, `office`, `historic`, `man_made`,
+  `building`, `highway`, `railway`, `waterway`) is a primary classification key that OSM
+  convention treats as single-valued; only descriptive/attribute keys like `vending=*` are
+  routinely semicolon-combined.
+- **canteens — rejected.** `amenity=canteen` returned zero features in 5 of 6 test cities
+  (Paris, Wrocław, Barcelona, Mexico City, Tokyo); only Munich had any data (16 features).
+  Even there, `access` (the key that would carry a students-vs-employees food-security
+  signal) only showed `private`/Missing — no city demonstrated the school-canteen use
+  case the tag is meant to capture. Empty in most cities fails the propose bar outright;
+  not added. Revisit if OSM coverage grows, or if a country-specific school-meal tagging
+  convention turns up (e.g. Brazil's merenda escolar, mapped some other way).
+- **Domain completeness (2026-07-28).** Checked the food batch against the OSM wiki's
+  "Sustenance" amenity group (the canonical list of eating/drinking establishment types):
+  bar, biergarten, cafe, fast_food, food_court, ice_cream, pub, restaurant. 7 of 8 are
+  covered; `biergarten` is deliberately deferred (see epic #245). No other essential
+  template is missing from the domain. Cross-checked for miscategorization too — no
+  Sustenance-group amenity is duplicated or filed under a different category, and
+  `amenity=marketplace` (the future Markets-domain candidate) isn't defined anywhere yet.
 
 ### Linear-network templates (ways)
 

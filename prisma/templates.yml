@@ -137,6 +137,8 @@ templates:
   - ["bars","amenity=bar","food","Martini"]
   - ["pubs","amenity=pub","food","Beer"]
   - ["ice-cream","amenity=ice_cream","food","IceCreamCone"]
+  - ["food-court","amenity=food_court","food","ChefHat"]
+  - ["food-vending","amenity=vending_machine&vending=food;amenity=vending_machine&vending=drinks;amenity=vending_machine&vending=coffee;amenity=vending_machine&vending=water;amenity=vending_machine&vending=milk;amenity=vending_machine&vending=ice_cream;amenity=vending_machine&vending=bread;amenity=vending_machine&vending=sweets;amenity=vending_machine&vending=pizza;amenity=vending_machine&vending=eggs","food","CupSoda"]
 # Leisure
   - ["parks","leisure=park","leisure","TreePine"]
   - ["playgrounds","leisure=playground","leisure","ToyBrick"]
@@ -335,6 +337,13 @@ filterableTags:
   blood-donation: [operator, wheelchair]
   dialysis-centres: [operator, wheelchair]
   midwives: [wheelchair]
+  restaurants:      [cuisine, wheelchair, outdoor_seating, takeaway, delivery, diet:vegetarian]
+  cafes:            [cuisine, outdoor_seating, indoor_seating, wheelchair, takeaway, internet_access]
+  fast-food:        [cuisine, takeaway, outdoor_seating, wheelchair, delivery]
+  bars:             [wheelchair, outdoor_seating, smoking]
+  pubs:             [wheelchair, outdoor_seating, smoking, internet_access, real_ale, food]
+  ice-cream:        [wheelchair, outdoor_seating, takeaway]
+  food-vending:     [vending, operator, brand]
   transit-platforms: [tactile_paving, wheelchair, shelter, bench, lit]
   subway-entrances: [wheelchair]
   taxi-ranks:       [capacity, operator]
@@ -511,6 +520,33 @@ demonstrators:
   midwives:
     - { area: 62422,   note: "Berlin, DE - largest sample (21); midwife tagging is Europe-heavy" }
     - { area: 175342,  note: "London, GB - second representative, NHS/independent midwifery practices" }
+  restaurants:
+    - { area: 71525,   note: "Paris, FR - 9k restaurants, strong cuisine/outdoor_seating/wheelchair tagging" }
+    - { area: 451516,  note: "Wroclaw, PL - near-universal cuisine tagging (97%), strong takeaway/delivery" }
+    - { area: 347950,  note: "Barcelona, ES - large set, wide cuisine variety" }
+    - { area: 1376330, note: "Mexico City, MX - Latin American representative, distinct cuisine mix" }
+  cafes:
+    - { area: 71525,   note: "Paris, FR - clear indoor/outdoor seating split, strong wheelchair coverage" }
+    - { area: 451516,  note: "Wroclaw, PL - solid cuisine/wheelchair/seating tagging" }
+    - { area: 1376330, note: "Mexico City, MX - Latin American representative, internet_access stands out" }
+  fast-food:
+    - { area: 71525,   note: "Paris, FR - strong cuisine/outdoor_seating tagging" }
+    - { area: 451516,  note: "Wroclaw, PL - near-universal cuisine, high takeaway/delivery coverage" }
+    - { area: 1376330, note: "Mexico City, MX - Latin American representative, brand-chain heavy" }
+  bars:
+    - { area: 71525,   note: "Paris, FR - solid outdoor_seating/wheelchair/smoking tagging" }
+    - { area: 451516,  note: "Wroclaw, PL - solid outdoor_seating/wheelchair tagging" }
+  pubs:
+    - { area: 71525,   note: "Paris, FR - outdoor_seating/wheelchair/smoking tagging, small but consistent set" }
+    - { area: 451516,  note: "Wroclaw, PL - strongest wheelchair/outdoor_seating coverage found" }
+    - { area: 175342,  note: "Greater London, UK - pub-culture heartland, 3.2k pubs; real_ale (15%) and food (19%) only show real signal at this scale" }
+  ice-cream:
+    - { area: 71525,   note: "Paris, FR - wheelchair/outdoor_seating/takeaway all present despite small dataset" }
+    - { area: 451516,  note: "Wroclaw, PL - consistent wheelchair/outdoor_seating/takeaway signal" }
+    - { area: 1376330, note: "Mexico City, MX - Latin American representative, outdoor_seating stands out" }
+  food-vending:
+    - { area: 19631009, note: "Tokyo 23 Wards, JP - 6.4k machines, full vending-type diversity (drinks/coffee/food/ice_cream/milk/sweets/water)" }
+    - { area: 71525,     note: "Paris, FR - smaller set but richest operator (78%) and brand (69%) tagging" }
   transit-platforms:
     - { area: 62428,   note: "Munich, DE - dense multimodal platforms, near-complete tactile_paving/bench/shelter/lit, strong wheelchair" }
     - { area: 419203,  note: "Utrecht, NL - well-tagged bus/tram platforms, good tactile_paving + shelter" }
