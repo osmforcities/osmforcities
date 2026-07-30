@@ -95,7 +95,10 @@ Leave standardized codes/indexes raw — no `TagValue` map (`isced:level` 0-8, `
 - **`wheelchair`** — always shortlist **and keep** for any enterable-building /
   staffed-amenity template (shops, healthcare, education, government, culture, tourism,
   food, transit). Low coverage is not a reason to drop it (equity-essential exception
-  above).
+  above). A curated tag carried by **no** feature (e.g. `wheelchair` at 0% on
+  health-post) still renders as a Color-by view — a single all-Missing legend row that
+  paints every feature the missing color — so the accessibility gap shows on the map,
+  not only in the stats panel.
 - **Skip `wheelchair`** only when there's nothing to enter: outdoor/natural features,
   street furniture, `parking` (use `capacity:disabled` instead), unstaffed infra
   (`bicycle-parking`, `bicycle-rental`, `taxi-ranks`).
@@ -314,6 +317,23 @@ active/featured set bounded.
   speech-therapists, which already shipped. `[healthcare:speciality, wheelchair]`;
   dropped `operator` for the same solo-practitioner trap as doctors/dentists (mostly
   individual names, e.g. "Dr. Gerald Sciascia").
+- **Wiki gap re-audit (large cities: NYC / Berlin / Tokyo / London).** A pass over the
+  full `Key:healthcare` value list against live coverage in four large, tagging-rich
+  cities surfaced three documented `healthcare=*` facility types missing from the set:
+  - **blood-donation** (`healthcare=blood_donation`) — `[operator, wheelchair]`, icon
+    Droplet. Present in all four cities (Berlin 9, NYC 8, London 6, Tokyo 3); `operator`
+    is the blood-service org (DRK, CSL Plasma, Haema, NHS Blood, Red Cross) — a clean
+    institutional categorical, not the solo-practitioner name trap.
+  - **dialysis-centres** (`healthcare=dialysis`) — `[operator, wheelchair]`, icon
+    Droplets. Strong in NYC (29) and Berlin (8), thin/absent in London (2) and Tokyo
+    (0 — folded into `amenity=clinic`); the all-Missing legend there is itself the
+    finding. `operator` = dialysis chains (DaVita, Fresenius). Critical chronic-care
+    infrastructure.
+  - **midwives** (`healthcare=midwife`) — `[wheelchair]`, icon Baby. Europe-leaning
+    (Berlin 21, NYC 5, London 3, Tokyo 0); `operator` dropped (solo-practitioner name).
+  Screened out as too thin or wiki-discouraged: `hospice`, `sample_collection`,
+  `audiologist`, `birthing_centre`, `vaccination_centre` (decommissioned), `blood_bank`,
+  `nurse`, `medical_imaging`, and the `centre`/`yes` catch-alls.
 
 ### Linear-network templates (ways)
 
