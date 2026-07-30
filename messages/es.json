@@ -712,8 +712,43 @@
     "crossing:markings": "Marcas viales",
     "station": "Tipo de estación",
     "wheelchair": "Acceso para silla de ruedas",
+    "cuisine": "Cocina",
+    "outdoor_seating": "Terraza",
+    "indoor_seating": "Asientos interiores",
+    "takeaway": "Para llevar",
+    "delivery": "Entrega a domicilio",
+    "diet:vegetarian": "Opciones vegetarianas",
+    "smoking": "Se permite fumar",
+    "vending": "Tipo",
+    "real_ale": "Cerveza real (real ale)",
+    "food": "Sirve comida",
+    "changing_table": "Cambiador",
+    "toilets:disposal": "Tipo de saneamiento",
+    "backrest": "Respaldo",
+    "material": "Material",
+    "man_made": "Tipo de instalación",
+    "bottle": "Rellenar botella",
+    "recycling_type": "Tipo de reciclaje",
+    "public_bookcase:type": "Tipo de mueble",
+    "information": "Tipo",
+    "drinking_water": "Potable",
+    "display": "Esfera",
+    "support": "Montaje",
+    "visibility": "Visibilidad",
+    "post_box:type": "Tipo de buzón",
+    "stars": "Estrellas",
+    "shower": "Ducha",
+    "power_supply": "Suministro eléctrico",
+    "social_facility": "Tipo de centro",
+    "social_facility:for": "Atiende a",
+    "community_centre": "Tipo de centro",
+    "building": "Tipo de edificio",
+    "townhall:type": "Tipo de ayuntamiento",
     "parking": "Tipo",
     "surface": "Superficie",
+    "location": "Ubicación",
+    "seasonal": "Estacional",
+    "fitness_station": "Tipo",
     "traffic_signals:sound": "Señal acústica",
     "smoothness": "Regularidad",
     "oneway": "Sentido único",
@@ -741,19 +776,29 @@
     "organic": "Orgánico",
     "clothes": "Tipo de ropa",
     "garden:type": "Tipo de jardín",
+    "leaf_type": "Tipo de hoja",
+    "water": "Tipo de masa de agua",
+    "wetland": "Tipo de humedal",
+    "trees": "Árboles cultivados",
+    "tower:type": "Tipo de torre",
+    "surveillance:type": "Tipo de vigilancia",
+    "surveillance": "Zona de vigilancia",
+    "substance": "Sustancia",
+    "content": "Contenido",
     "fire_hydrant:type": "Tipo de hidrante",
     "fire_hydrant:position": "Posición",
     "fire_hydrant:diameter": "Diámetro de tubería",
     "fire_hydrant:pressure": "Presión",
     "cash_in": "Depósito de efectivo",
     "indoor": "Interior",
-    "sport": "Actividad"
+    "sport": "Deporte"
   },
   "TagValue": {
     "__common__": {
       "yes": "Sí",
       "no": "No",
-      "limited": "Limitado"
+      "limited": "Limitado",
+      "unknown": "Desconocido"
     },
     "healthcare:speciality": {
       "general": "Medicina general",
@@ -836,12 +881,96 @@
       "sculpture": "Escultura",
       "stele": "Estela"
     },
+    "leaf_type": {
+      "broadleaved": "Latifoliadas",
+      "needleleaved": "Aciculifoliadas",
+      "mixed": "Mixto",
+      "leafless": "Sin hojas"
+    },
+    "fitness_station": {
+      "horizontal_bar": "Barra horizontal",
+      "parallel_bars": "Barras paralelas",
+      "horizontal_ladder": "Escalera horizontal",
+      "sit-up": "Banco abdominal",
+      "sign": "Cartel de instrucciones",
+      "elliptical_trainer": "Elíptica",
+      "exercise_bike": "Bicicleta estática"
+    },
+    "location": {
+      "outdoor": "Al aire libre",
+      "indoor": "Cubierta",
+      "roof": "En azotea",
+      "underground": "Subterránea"
+    },
+    "seasonal": {
+      "winter": "Invierno",
+      "spring": "Primavera",
+      "summer": "Verano",
+      "autumn": "Otoño"
+    },
     "access": {
       "private": "Privado",
       "customers": "Clientes",
       "permissive": "Permisivo",
       "designated": "Designado",
       "permit": "Con permiso"
+    },
+    "public_bookcase:type": {
+      "metal_cabinet": "Armario metálico",
+      "glass_cabinet": "Armario de vidrio",
+      "wooden_cabinet": "Armario de madera",
+      "phone_box": "Cabina telefónica reutilizada",
+      "shelf": "Estante",
+      "reading_box": "Caja de lectura"
+    },
+    "information": {
+      "board": "Panel informativo",
+      "terminal": "Terminal",
+      "map": "Mapa",
+      "guidepost": "Hito de senderismo",
+      "office": "Oficina de turismo",
+      "route_marker": "Marcador de ruta"
+    },
+    "display": {
+      "analog": "Analógico",
+      "digital": "Digital",
+      "sundial": "Reloj de sol"
+    },
+    "support": {
+      "wall": "Pared",
+      "wall_mounted": "Montado en pared",
+      "pole": "Poste",
+      "roof": "Tejado",
+      "ground": "Suelo",
+      "pillar": "Pilar",
+      "billboard": "Cartelera",
+      "street_lamp": "Farola"
+    },
+    "visibility": {
+      "area": "Área",
+      "street": "Calle",
+      "house": "Casa"
+    },
+    "post_box:type": {
+      "pillar": "Buzón de columna",
+      "lamp": "Buzón de farola",
+      "wall": "Buzón de pared"
+    },
+    "toilets:disposal": {
+      "flush": "Cisterna",
+      "pitlatrine": "Letrina",
+      "chemical": "Químico",
+      "bucket": "Cubo"
+    },
+    "man_made": {
+      "water_tap": "Grifo",
+      "fountain": "Fuente",
+      "drinking_fountain": "Fuente de agua potable",
+      "water_well": "Pozo"
+    },
+    "recycling_type": {
+      "container": "Contenedor",
+      "centre": "Punto limpio"
     },
     "bicycle_parking": {
       "stands": "Soportes",

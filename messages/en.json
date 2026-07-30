@@ -703,8 +703,43 @@
     "crossing:markings": "Markings",
     "station": "Station type",
     "wheelchair": "Wheelchair access",
+    "cuisine": "Cuisine",
+    "outdoor_seating": "Outdoor seating",
+    "indoor_seating": "Indoor seating",
+    "takeaway": "Takeaway",
+    "delivery": "Delivery",
+    "diet:vegetarian": "Vegetarian options",
+    "smoking": "Smoking",
+    "vending": "Type",
+    "real_ale": "Real ale",
+    "food": "Food",
+    "changing_table": "Changing table",
+    "toilets:disposal": "Sanitation type",
+    "backrest": "Backrest",
+    "material": "Material",
+    "man_made": "Fixture type",
+    "bottle": "Bottle refill",
+    "recycling_type": "Recycling type",
+    "public_bookcase:type": "Container type",
+    "information": "Type",
+    "drinking_water": "Drinkable",
+    "display": "Display",
+    "support": "Mounting",
+    "visibility": "Visibility",
+    "post_box:type": "Box type",
+    "stars": "Stars",
+    "shower": "Shower",
+    "power_supply": "Power supply",
+    "social_facility": "Facility type",
+    "social_facility:for": "Serves",
+    "community_centre": "Centre type",
+    "building": "Building type",
+    "townhall:type": "Town hall type",
     "parking": "Type",
     "surface": "Surface",
+    "location": "Location",
+    "seasonal": "Seasonal",
+    "fitness_station": "Type",
     "traffic_signals:sound": "Acoustic signal",
     "smoothness": "Smoothness",
     "oneway": "One-way",
@@ -732,19 +767,29 @@
     "organic": "Organic",
     "clothes": "Clothing type",
     "garden:type": "Garden type",
+    "leaf_type": "Leaf type",
+    "water": "Water body type",
+    "wetland": "Wetland type",
+    "trees": "Trees grown",
+    "tower:type": "Tower type",
+    "surveillance:type": "Surveillance type",
+    "surveillance": "Surveillance zone",
+    "substance": "Substance",
+    "content": "Content",
     "fire_hydrant:type": "Hydrant type",
     "fire_hydrant:position": "Position",
     "fire_hydrant:diameter": "Pipe diameter",
     "fire_hydrant:pressure": "Pressure",
     "cash_in": "Cash deposit",
     "indoor": "Indoor",
-    "sport": "Activity"
+    "sport": "Sport"
   },
   "TagValue": {
     "__common__": {
       "yes": "Yes",
       "no": "No",
-      "limited": "Limited"
+      "limited": "Limited",
+      "unknown": "Unknown"
     },
     "healthcare:speciality": {
       "general": "General practice",
@@ -827,12 +872,96 @@
       "sculpture": "Sculpture",
       "stele": "Stele"
     },
+    "leaf_type": {
+      "broadleaved": "Broadleaved",
+      "needleleaved": "Needleleaved",
+      "mixed": "Mixed",
+      "leafless": "Leafless"
+    },
+    "fitness_station": {
+      "horizontal_bar": "Horizontal bar",
+      "parallel_bars": "Parallel bars",
+      "horizontal_ladder": "Horizontal ladder",
+      "sit-up": "Sit-up bench",
+      "sign": "Instruction sign",
+      "elliptical_trainer": "Elliptical trainer",
+      "exercise_bike": "Exercise bike"
+    },
+    "location": {
+      "outdoor": "Outdoor",
+      "indoor": "Indoor",
+      "roof": "Rooftop",
+      "underground": "Underground"
+    },
+    "seasonal": {
+      "winter": "Winter",
+      "spring": "Spring",
+      "summer": "Summer",
+      "autumn": "Autumn"
+    },
     "access": {
       "private": "Private",
       "customers": "Customers",
       "permissive": "Permissive",
       "designated": "Designated",
       "permit": "By permit"
+    },
+    "public_bookcase:type": {
+      "metal_cabinet": "Metal cabinet",
+      "glass_cabinet": "Glass cabinet",
+      "wooden_cabinet": "Wooden cabinet",
+      "phone_box": "Repurposed phone box",
+      "shelf": "Shelf",
+      "reading_box": "Reading box"
+    },
+    "information": {
+      "board": "Info board",
+      "terminal": "Terminal",
+      "map": "Map",
+      "guidepost": "Guidepost",
+      "office": "Tourist office",
+      "route_marker": "Route marker"
+    },
+    "display": {
+      "analog": "Analog",
+      "digital": "Digital",
+      "sundial": "Sundial"
+    },
+    "support": {
+      "wall": "Wall",
+      "wall_mounted": "Wall-mounted",
+      "pole": "Pole",
+      "roof": "Roof",
+      "ground": "Ground",
+      "pillar": "Pillar",
+      "billboard": "Billboard",
+      "street_lamp": "Street lamp"
+    },
+    "visibility": {
+      "area": "Area",
+      "street": "Street",
+      "house": "House"
+    },
+    "post_box:type": {
+      "pillar": "Pillar box",
+      "lamp": "Lamp box",
+      "wall": "Wall box"
+    },
+    "toilets:disposal": {
+      "flush": "Flush",
+      "pitlatrine": "Pit latrine",
+      "chemical": "Chemical",
+      "bucket": "Bucket"
+    },
+    "man_made": {
+      "water_tap": "Water tap",
+      "fountain": "Fountain",
+      "drinking_fountain": "Drinking fountain",
+      "water_well": "Water well"
+    },
+    "recycling_type": {
+      "container": "Container",
+      "centre": "Recycling centre"
     },
     "bicycle_parking": {
       "stands": "Stands",

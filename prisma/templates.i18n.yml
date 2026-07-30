@@ -198,6 +198,51 @@ templates:
       en: Parcel Lockers
       pt: Lockers de encomendas
       es: Consignas de paquetes
+  shower:
+    name:
+      en: Showers
+      pt: Chuveiros públicos
+      es: Duchas públicas
+    desc:
+      en: Showers
+      pt: Chuveiros públicos
+      es: Duchas públicas
+  public-bookcase:
+    name:
+      en: Public Bookcases
+      pt: Estantes públicas de livros
+      es: Estanterías públicas de libros
+    desc:
+      en: Public Bookcases
+      pt: Estantes públicas de livros
+      es: Estanterías públicas de libros
+  luggage-lockers:
+    name:
+      en: Luggage Lockers
+      pt: Guarda-volumes
+      es: Consignas de equipaje
+    desc:
+      en: Luggage Lockers
+      pt: Guarda-volumes
+      es: Consignas de equipaje
+  post-boxes:
+    name:
+      en: Post Boxes
+      pt: Caixas de coleta postal
+      es: Buzones de correos
+    desc:
+      en: Post Boxes
+      pt: Caixas de coleta postal
+      es: Buzones de correos
+  give-box:
+    name:
+      en: Give Boxes
+      pt: Armários de doação
+      es: Armarios de intercambio
+    desc:
+      en: Give Boxes
+      pt: Armários de doação
+      es: Armarios de intercambio
   hospitals:
     name:
       en: Hospitals
@@ -495,6 +540,17 @@ templates:
       en: Hotels
       pt: Hotéis
       es: Hoteles
+  motels:
+    name:
+      en: Motels
+      pt: Motéis
+      es: Moteles
+    # tourism=motel spans two regional meanings (roadside motor lodge vs the Brazilian/
+    # Latin American short-stay motel); keep the description neutral across locales.
+    desc:
+      en: Short-stay lodging
+      pt: Hospedagem de curta permanência
+      es: Alojamiento de estancia corta
   attractions:
     name:
       en: Attractions
@@ -540,15 +596,6 @@ templates:
       en: Caravan Sites
       pt: Áreas para trailers
       es: Áreas para caravanas
-  chalets:
-    name:
-      en: Chalets
-      pt: Chalés
-      es: Chalés
-    desc:
-      en: Chalets
-      pt: Chalés
-      es: Chalés
   wilderness-huts:
     name:
       en: Wilderness Huts
@@ -558,6 +605,15 @@ templates:
       en: Wilderness Huts
       pt: Abrigos em áreas naturais
       es: Refugios en zonas naturales
+  chalets:
+    name:
+      en: Chalets
+      pt: Chalés
+      es: Chalés
+    desc:
+      en: Chalets
+      pt: Chalés
+      es: Chalés
   cinemas:
     name:
       en: Cinemas
@@ -774,6 +830,24 @@ templates:
       en: Waste Disposal
       pt: Descarte de resíduos
       es: Eliminación de residuos
+  waste-basket:
+    name:
+      en: Waste Baskets
+      pt: Lixeiras
+      es: Papeleras
+    desc:
+      en: Waste Baskets
+      pt: Lixeiras
+      es: Papeleras
+  bottle-return:
+    name:
+      en: Bottle Return Machines
+      pt: Máquinas de retorno de garrafas
+      es: Máquinas de retorno de botellas
+    desc:
+      en: Bottle Return Machines
+      pt: Máquinas de retorno de garrafas
+      es: Máquinas de retorno de botellas
   benches:
     name:
       en: Benches
@@ -792,15 +866,6 @@ templates:
       en: Telephones
       pt: Telefones públicos
       es: Teléfonos públicos
-  internet-access:
-    name:
-      en: Internet Access
-      pt: Acesso à internet
-      es: Acceso a internet
-    desc:
-      en: Internet Access
-      pt: Acesso à internet
-      es: Acceso a internet
   supermarkets:
     name:
       en: Supermarkets
@@ -1008,6 +1073,24 @@ templates:
       en: Ice Cream
       pt: Sorveterias
       es: Heladerías
+  food-court:
+    name:
+      en: Food Courts
+      pt: Praças de alimentação
+      es: Patios de comidas
+    desc:
+      en: Food Courts
+      pt: Praças de alimentação
+      es: Patios de comidas
+  food-vending:
+    name:
+      en: Food & Drink Vending
+      pt: Vending machines de alimentos
+      es: Máquinas expendedoras de alimentos
+    desc:
+      en: Food & Drink Vending
+      pt: Vending machines de alimentos
+      es: Máquinas expendedoras de alimentos
   parks:
     name:
       en: Parks
@@ -1089,6 +1172,33 @@ templates:
       en: Golf Courses
       pt: Campos de golfe
       es: Campos de golf
+  tracks:
+    name:
+      en: Tracks
+      pt: Pistas de atletismo
+      es: Pistas de atletismo
+    desc:
+      en: Tracks
+      pt: Pistas de atletismo
+      es: Pistas de atletismo
+  fitness-stations:
+    name:
+      en: Fitness Stations
+      pt: Estações de ginástica
+      es: Estaciones de ejercicio
+    desc:
+      en: Fitness Stations
+      pt: Estações de ginástica
+      es: Estaciones de ejercicio
+  ice-rinks:
+    name:
+      en: Ice Rinks
+      pt: Pistas de gelo
+      es: Pistas de hielo
+    desc:
+      en: Ice Rinks
+      pt: Pistas de gelo
+      es: Pistas de hielo
   nature-reserves:
     name:
       en: Nature Reserves
@@ -1314,15 +1424,6 @@ templates:
       en: Heath
       pt: Charneca
       es: Brezal
-  moor:
-    name:
-      en: Moor
-      pt: Pântano
-      es: Páramo
-    desc:
-      en: Moor
-      pt: Pântano
-      es: Páramo
   fell:
     name:
       en: Fell
@@ -1692,24 +1793,6 @@ templates:
       en: Skiing
       pt: Esqui
       es: Esquí
-  ice-skating:
-    name:
-      en: Ice Skating
-      pt: Patinação no gelo
-      es: Patinaje sobre hielo
-    desc:
-      en: Ice Skating
-      pt: Patinação no gelo
-      es: Patinaje sobre hielo
-  ice-hockey:
-    name:
-      en: Ice Hockey
-      pt: Hóquei no gelo
-      es: Hockey sobre hielo
-    desc:
-      en: Ice Hockey
-      pt: Hóquei no gelo
-      es: Hockey sobre hielo
   baseball:
     name:
       en: Baseball
@@ -1737,15 +1820,6 @@ templates:
       en: Gymnasiums
       pt: Ginásios
       es: Gimnasios
-  multi-sport:
-    name:
-      en: Multi Sport
-      pt: Poliesportivo
-      es: Polideportivo
-    desc:
-      en: Multi Sport
-      pt: Poliesportivo
-      es: Polideportivo
   shooting:
     name:
       en: Shooting
@@ -1800,33 +1874,15 @@ templates:
       en: Clocks
       pt: Relógios públicos
       es: Relojes públicos
-  guideposts:
-    name:
-      en: Guideposts
-      pt: Marcos de trilha
-      es: Hitos de senderismo
-    desc:
-      en: Guideposts
-      pt: Marcos de trilha
-      es: Hitos de senderismo
   information-boards:
     name:
-      en: Information Boards
-      pt: Painéis informativos
-      es: Paneles informativos
+      en: Wayfinding & Information
+      pt: Sinalização e informação
+      es: Señalización e información
     desc:
-      en: Information Boards
-      pt: Painéis informativos
-      es: Paneles informativos
-  markers:
-    name:
-      en: Markers
-      pt: Marcadores e painéis
-      es: Marcadores y paneles
-    desc:
-      en: Markers
-      pt: Marcadores e painéis
-      es: Marcadores y paneles
+      en: Wayfinding & Information
+      pt: Sinalização e informação
+      es: Señalización e información
   places-of-worship:
     name:
       en: Places Of Worship

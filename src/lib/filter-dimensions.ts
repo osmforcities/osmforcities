@@ -57,6 +57,15 @@ const isAgeCategory = (v: unknown): v is AgeCategory =>
  * original casing for display. Returns values sorted desc by count plus a `missing`
  * count. Salvaged from the removed map-themes auto-detection minus the
  * color/scoring/category-count gating — here we surface every value.
+ *
+ * OSM tags routinely combine multiple values on one key with `;` (e.g.
+ * `vending=drinks;food`, matching the Overpass query builder's own semicolon-list
+ * convention — see buildOverpassQuery in prisma/lib/template-parser.ts). Each
+ * semicolon-separated token is counted toward its own value bucket, so a
+ * combined-value feature contributes to every value it actually carries rather
+ * than rendering as one literal, untranslated "a;b" row. This means a single
+ * feature can count toward more than one bucket for the same key — expected for
+ * a multi-valued field, not a double-count bug.
  */
 function computeTagDimension(features: Feature[], key: string): FilterDimension {
   const countByLower = new Map<string, number>();
@@ -71,13 +80,19 @@ function computeTagDimension(features: Feature[], key: string): FilterDimension 
       continue;
     }
 
-    const value = String(raw);
-    const lower = value.toLowerCase();
-    countByLower.set(lower, (countByLower.get(lower) ?? 0) + 1);
+    const tokens = String(raw)
+      .split(";")
+      .map((t) => t.trim())
+      .filter(Boolean);
 
-    if (!casingByLower.has(lower)) casingByLower.set(lower, new Map());
-    const casing = casingByLower.get(lower)!;
-    casing.set(value, (casing.get(value) ?? 0) + 1);
+    for (const value of tokens.length > 0 ? tokens : [String(raw)]) {
+      const lower = value.toLowerCase();
+      countByLower.set(lower, (countByLower.get(lower) ?? 0) + 1);
+
+      if (!casingByLower.has(lower)) casingByLower.set(lower, new Map());
+      const casing = casingByLower.get(lower)!;
+      casing.set(value, (casing.get(value) ?? 0) + 1);
+    }
   }
 
   const values: FilterDimensionValue[] = Array.from(countByLower.entries())
