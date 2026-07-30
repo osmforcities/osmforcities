@@ -169,10 +169,13 @@ active/featured set bounded.
   Dropped `operator`/`operator:type` for all three.
 - **dentists** — `[wheelchair]` only. `healthcare:speciality` coverage was too thin
   (~16%) and its top value ("dentist") just repeats the amenity itself.
-- **pharmacies** — `[dispensing, wheelchair]`. New trap: `brand` (chain name) is clean
-  and wiki-relevant where present (Pacheco/Droga Raia in Brazil, similar in South Africa)
-  but ~0% in Germany's independent-pharmacy market — same single-market-skew that
-  dropped ev-charging's `network`. Dropped despite being wiki-documented.
+- **pharmacies** — `[dispensing, wheelchair, brand]`. `brand` (chain name) is wiki-
+  documented and a clean multi-value categorical in chain markets (NYC: CVS 102 /
+  Duane Reade 89 / Walgreens 58 / Rite Aid 32; similar in Brazil/South Africa). It is
+  ~0% in Germany's independent-pharmacy market, but that all-Missing legend is itself
+  the finding (independent vs chain pharmacy structure), not a reason to drop a wiki
+  key — the wiki-over-coverage rule outranks single-market skew here. (Reinstated in
+  the #414 re-audit; had been dropped by analogy to ev-charging's `network`.)
 - **health-post — near-empty, `[wheelchair]` only.** `amenity=health_post` is globally
   rare: 0 results in 4 of 6 tested cities across 4 continents. Where present (Manila,
   thin sample), `healthcare=*` genuinely varies (`community_health_worker`/
@@ -200,15 +203,17 @@ active/featured set bounded.
   - **opticians** (`shop=optician`) — `[wheelchair, brand]`. Same trap as pharmacies:
     `operator` is an individual owner's name where opticians are independent
     (Germany), so dropped; `brand` is the real chain signal (Apollo-Optik, Fielmann,
-    Oticas Carol, 寶島眼鏡) and, unlike pharmacies' `brand`, has decent coverage in
-    every city tested, not just chain-heavy markets.
+    Oticas Carol, 寶島眼鏡) with decent coverage in every city tested, not just
+    chain-heavy markets.
   - **medical-laboratories** (`healthcare=laboratory`) — `[healthcare:speciality,
-    wheelchair, operator]`. Kept `healthcare:speciality` despite 80%+ of Paris labs
-    being the single value `biology` — the minority `radiology`/other buckets are a
+    wheelchair, operator, brand]`. Kept `healthcare:speciality` despite 80%+ of Paris
+    labs being the single value `biology` — the minority `radiology`/other buckets are a
     real, civically useful distinction (where to get an X-ray vs a blood test), same
     judgment call as `dispensing` on pharmacies. Data is heavily France-skewed (171 in
     Paris vs 6 in Munich, 33 in Rio) — real global unevenness, not a France-only tag,
-    but only Paris cleared the coverage bar for a demonstrator.
+    but only Paris cleared the coverage bar for a demonstrator. Added `brand` in the
+    #414 re-audit: lab groups are franchised, so `brand` is a clean chain categorical
+    (Paris: Biogroup 17 / Bioclinic 12 / Cerballiance 10 / Synlab 5).
   - **psychotherapists** / **physiotherapists** (`healthcare=psychotherapist` /
     `healthcare=physiotherapist`) — `[wheelchair]` only for both. Same solo-
     practitioner `operator` trap as doctors/dentists/veterinary. Dropped
