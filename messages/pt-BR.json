@@ -776,6 +776,9 @@
     "organic": "Orgânico",
     "clothes": "Tipo de roupa",
     "garden:type": "Tipo de jardim",
+    "leaf_type": "Tipo de folha",
+    "water": "Tipo de corpo d'água",
+    "wetland": "Tipo de área úmida",
     "fire_hydrant:type": "Tipo de hidrante",
     "fire_hydrant:position": "Posição",
     "fire_hydrant:diameter": "Diâmetro da tubulação",
@@ -871,6 +874,12 @@
       "stone": "Pedra",
       "sculpture": "Escultura",
       "stele": "Estela"
+    },
+    "leaf_type": {
+      "broadleaved": "Folhas largas",
+      "needleleaved": "Aciculifoliadas",
+      "mixed": "Misto",
+      "leafless": "Sem folhas"
     },
     "fitness_station": {
       "horizontal_bar": "Barra horizontal",

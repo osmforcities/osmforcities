@@ -455,6 +455,16 @@ filterableTags:
   fitness-centers:  [sport, wheelchair]
   # Barriers
   gates:            [access]
+  # Quick triage (epic #245 consolidation): clear wiki-documented additions to
+  # previously-untouched templates. Nature "type" keys are single colorable subtype
+  # keys with strong coverage (Berlin: water= 68%, leaf_type 74%, wetland= 83%).
+  forests:          [leaf_type]
+  woods:            [leaf_type]
+  water:            [water]
+  wetlands:         [wetland]
+  # Consistency with sibling templates in the same category
+  bicycle-shop:     [brand, wheelchair]
+  prisons:          [operator, wheelchair]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:

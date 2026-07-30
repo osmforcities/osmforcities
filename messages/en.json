@@ -767,6 +767,9 @@
     "organic": "Organic",
     "clothes": "Clothing type",
     "garden:type": "Garden type",
+    "leaf_type": "Leaf type",
+    "water": "Water body type",
+    "wetland": "Wetland type",
     "fire_hydrant:type": "Hydrant type",
     "fire_hydrant:position": "Position",
     "fire_hydrant:diameter": "Pipe diameter",
@@ -862,6 +865,12 @@
       "stone": "Stone",
       "sculpture": "Sculpture",
       "stele": "Stele"
+    },
+    "leaf_type": {
+      "broadleaved": "Broadleaved",
+      "needleleaved": "Needleleaved",
+      "mixed": "Mixed",
+      "leafless": "Leafless"
     },
     "fitness_station": {
       "horizontal_bar": "Horizontal bar",
