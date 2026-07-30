@@ -585,15 +585,6 @@ templates:
       en: Caravan Sites
       pt: Áreas para trailers
       es: Áreas para caravanas
-  chalets:
-    name:
-      en: Chalets
-      pt: Chalés
-      es: Chalés
-    desc:
-      en: Chalets
-      pt: Chalés
-      es: Chalés
   wilderness-huts:
     name:
       en: Wilderness Huts
@@ -603,6 +594,15 @@ templates:
       en: Wilderness Huts
       pt: Abrigos em áreas naturais
       es: Refugios en zonas naturales
+  chalets:
+    name:
+      en: Chalets
+      pt: Chalés
+      es: Chalés
+    desc:
+      en: Chalets
+      pt: Chalés
+      es: Chalés
   cinemas:
     name:
       en: Cinemas
