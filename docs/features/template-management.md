@@ -558,9 +558,12 @@ active/featured set bounded.
   feature there — coloring by it would be a single-color flat legend. Both dropped
   `operator:type` (3-11% parent, 0-28% child — the weakest candidate in every sampled
   city, not just regionally skewed).
-- **community-centre** — `[community_centre, operator]`. Thin list: `community_centre:for`
-  (2-19%), `wheelchair` (2-32%, near-zero in 3 of 4 cities) and `fee` (0% everywhere) were
-  all dropped as near-absent. Only the centre's own type and its operator cleared the bar.
+- **community-centre** — `[community_centre, operator, wheelchair]`. `community_centre:for`
+  (2-19%) and `fee` (0% everywhere) dropped as near-absent. `wheelchair` (2-32%, near-zero
+  in 3 of 4 cities) was initially dropped on coverage but **restored in the consolidation
+  pass**: a community centre is an enterable, staffed civic building, so it falls under the
+  transversal accessibility rule — the near-empty Missing bucket is the equity finding, not
+  a reason to hide the filter (same exception as `sports-centres` and `chalets` below).
 - **town-halls** — `[building, wheelchair, townhall:type]`. `building` (townhall vs civic
   vs yes) is well-covered everywhere (38-100%). `wheelchair` is genuinely regional — strong
   in Europe (84-100%), absent in the Rio/Cape Town sample (0%) — kept per the
@@ -568,6 +571,41 @@ active/featured set bounded.
   Town, 95% Paris) encodes administrative level and was added after showing up unprompted
   in "Most used tags". Dropped `operator` — for a town hall it is near-tautological (the
   municipality itself) and inconsistent (0-63%).
+
+### Consolidation pass (epic #245)
+
+The six domain batches (food, sport/recreation, public amenities, tourism, social,
+healthcare) were folded into one branch and given a single uniform review. Decisions made
+during that pass, beyond the per-domain notes above:
+
+- **`wheelchair` restored on enterable venues.** `community-centre`, `sports-centres` and
+  `chalets` had dropped `wheelchair` on low coverage; all three are enterable/staffed
+  places a person visits, so the transversal accessibility rule applies (the all-Missing
+  legend is the finding). `sports-centres` also now matches `fitness-centers`, the same
+  kind of leisure building, which already carried it.
+- **`sport` label unified to "Sport".** The `sport` filterableTag key (used only by the
+  recreation templates: pitches, sports-centres, stadiums, tracks, ice-rinks) had picked up
+  two labels across batches ("Activity" vs "Sport"); consolidated to "Sport" (en) /
+  "Deporte" (es) / "Esporte" (pt-BR).
+- **motels — added from the gap audit.** `tourism=motel` is wiki-documented short-stay
+  lodging (`wheelchair` a documented useful combination). It is regionally concentrated:
+  real Brazilian coverage (Sao Paulo 32, Rio 16) but sparse elsewhere (Berlin 6, thin in
+  most cities) — the same regionally-mapped pattern as `traffic-calming`, so it earns a
+  template demonstrated in Sao Paulo + Rio. `filterableTags [wheelchair]` (near-zero
+  coverage, so the all-Missing legend is the accessibility finding; `rooms` is a numeric
+  count, a poor color-by). Note the tag spans two regional meanings — the North American
+  roadside motor-lodge and the Brazilian/Latin American short-stay motel — so the
+  description is kept neutral ("short-stay lodging") across locales.
+- **alpine-huts — `access` re-checked, not added.** The wiki documents `access` (public
+  vs members-only), but it is 0% in both demonstrators (Chamonix, Zermatt) and is not an
+  equity-essential key, so the coverage bar applies — kept as `[operator, capacity]`.
+  `wheelchair` stays off: a mountain refuge reached only on foot/ski is the genuine
+  "nothing to enter by wheelchair" case, not a coverage drop.
+- **Shared-infra fixes carried in from the food batch apply catalog-wide:** the
+  semicolon-boundary value match in `buildOverpassQuery` (`prisma/lib/template-parser.ts`)
+  and the semicolon-split token counting in `computeTagDimension`
+  (`src/lib/filter-dimensions.ts`), merged with healthcare's `keepEmpty` all-Missing legend
+  in the same file.
 
 ### Linear-network templates (ways)
 
