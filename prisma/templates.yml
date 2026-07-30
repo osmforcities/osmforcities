@@ -274,8 +274,8 @@ templates:
   - ["meadows","landuse=meadow","agriculture","Leaf"]
   - ["animal-keeping","landuse=animal_keeping","agriculture","PawPrint"]
   # Specialized farmyard types (feedlots, stockyards, poultry, dairy)
-  - ["feedlots","farmyard=feedlot","agriculture","PawPrint"]
-  - ["stockyards","farmyard=stockyard","agriculture","PawPrint"]
+  - ["feedlots","farmyard=feedlot","agriculture","Beef"]
+  - ["stockyards","farmyard=stockyard","agriculture","Beef"]
   - ["poultry-yards","farmyard=poultry","agriculture","Egg"]
   - ["dairy-yards","farmyard=dairy","agriculture","Milk"]
   # Agricultural buildings
@@ -284,10 +284,10 @@ templates:
   - ["farm-auxiliary","building=farm_auxiliary","agriculture","Wrench"]
   - ["greenhouses","building=greenhouse","agriculture","Sprout"]
   # Livestock housing
-  - ["livestock-buildings","building=livestock","agriculture","PawPrint"]
-  - ["cowsheds","building=cowshed","agriculture","PawPrint"]
-  - ["pig-sties","building=sty","agriculture","PawPrint"]
-  - ["stables","building=stable","agriculture","PawPrint"]
+  - ["livestock-buildings","building=livestock","agriculture","Warehouse"]
+  - ["cowsheds","building=cowshed","agriculture","Beef"]
+  - ["pig-sties","building=sty","agriculture","Warehouse"]
+  - ["stables","building=stable","agriculture","Warehouse"]
   # Agricultural storage
   - ["silos","building=silo;man_made=silo","agriculture","Warehouse"]
   - ["bunker-silos","man_made=bunker_silo","agriculture","Warehouse"]
@@ -474,7 +474,6 @@ filterableTags:
   surveillance:     [surveillance:type, surveillance]
   pipeline:         [substance]
   storage-tanks:    [content]
-  fences:           [fence_type]
   # Per-sport courts (subsets of pitches): surface/lit like the pitches template
   football:         [surface, lit]
   basketball:       [surface, lit]
@@ -1021,8 +1020,6 @@ demonstrators:
   storage-tanks:
     - { area: 62422,   note: "Berlin, DE - content (water/gas/silage/...) ~76%" }
     - { area: 62428,   note: "Munich, DE - solid content coverage" }
-  fences:
-    - { area: 62422,   note: "Berlin, DE - huge sample; fence_type varied over thousands of features (~23%)" }
   football:
     - { area: 62428,   note: "Munich, DE - surface 76%, lit 64%" }
     - { area: 71525,   note: "Paris, FR - surface 61%, lit 44%" }

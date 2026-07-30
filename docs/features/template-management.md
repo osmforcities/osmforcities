@@ -623,8 +623,6 @@ coverage (our Overpass), and decide add / remove / keep-age-only.
 - **tower** `[tower:type]`, **surveillance** `[surveillance:type, surveillance]`,
   **pipeline** `[substance]`, **storage-tanks** `[content]` — infrastructure "type"
   classifiers, all 61-89% across Berlin/Munich/London.
-- **fences** `[fence_type]` — 23% Berlin over a huge base (6.7k tagged features), varied;
-  same coverage tier accepted for `fountains`' `drinking_water` (23%).
 - **football / basketball / tennis** `[surface, lit]` — court subsets of `pitches`; both
   keys 42-76% in Munich/Paris (same keys `pitches` uses).
 
@@ -638,8 +636,10 @@ caves, coastlines, springs, glaciers, grasslands, scrub, heath, sand, rock, the
 `natural-surfaces` umbrella, urban-trees/street-trees, etc.); most agriculture (farmland —
 `crop` only ~3-10%; the building/`man_made` structures — barns, silos, greenhouses,
 slurry/manure stores, etc.); most infrastructure (street-lamps, chimney, mast, water-tower,
-water-works, pumping-station, utility-pole, tailings-pond); walls/hedges (`wall` 4-9%);
-monuments, waterfall, dam, emergency-phones, nature-reserves, golf-courses; and the thin
+water-works, pumping-station, utility-pole, tailings-pond); barriers — walls/hedges
+(`wall` 4-9%) and **fences** (`fence_type` only 14-23% *and* the dataset is impractically
+large to render — Berlin alone has ~29k fences, so no color-by was added); monuments,
+waterfall, dam, emergency-phones, nature-reserves, golf-courses; and the thin
 per-sport templates (baseball — real but US-only, N=4 in the European samples;
 gymnasiums/climbing/shooting/archery/equestrian — thin or no colorable facet; **skiing** —
 sparse as `sport=skiing`, ski slopes are mapped with `piste:*`, flagged as a future

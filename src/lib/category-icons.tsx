@@ -170,7 +170,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-30T11:54:18.832Z
+ * Generated: 2026-07-30T13:01:48.788Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -345,7 +345,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "courts":
       return <Scale className="w-5 h-5" />;
     case "cowsheds":
-      return <PawPrint className="w-5 h-5" />;
+      return <Beef className="w-5 h-5" />;
     case "crossings":
       return <Footprints className="w-5 h-5" />;
     case "cycleways":
@@ -391,7 +391,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "fast-food":
       return <Sandwich className="w-5 h-5" />;
     case "feedlots":
-      return <PawPrint className="w-5 h-5" />;
+      return <Beef className="w-5 h-5" />;
     case "fell":
       return <Mountain className="w-5 h-5" />;
     case "fences":
@@ -485,7 +485,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "libraries":
       return <LibraryBig className="w-5 h-5" />;
     case "livestock-buildings":
-      return <PawPrint className="w-5 h-5" />;
+      return <Warehouse className="w-5 h-5" />;
     case "luggage-lockers":
       return <Luggage className="w-5 h-5" />;
     case "managed-green":
@@ -547,7 +547,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "physiotherapists":
       return <Dumbbell className="w-5 h-5" />;
     case "pig-sties":
-      return <PawPrint className="w-5 h-5" />;
+      return <Warehouse className="w-5 h-5" />;
     case "pipeline":
       return <Cable className="w-5 h-5" />;
     case "pitches":
@@ -637,11 +637,11 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "springs":
       return <Droplets className="w-5 h-5" />;
     case "stables":
-      return <PawPrint className="w-5 h-5" />;
+      return <Warehouse className="w-5 h-5" />;
     case "stadiums":
       return <Ticket className="w-5 h-5" />;
     case "stockyards":
-      return <PawPrint className="w-5 h-5" />;
+      return <Beef className="w-5 h-5" />;
     case "stone":
       return <Mountain className="w-5 h-5" />;
     case "storage-tanks":
