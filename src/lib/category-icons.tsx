@@ -9,6 +9,7 @@ import {
   Backpack,
   Banknote,
   BedDouble,
+  BedSingle,
   Beef,
   Beer,
   BicepsFlexed,
@@ -169,7 +170,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-30T10:53:55.562Z
+ * Generated: 2026-07-30T11:05:42.086Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -511,6 +512,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Landmark className="w-5 h-5" />;
     case "moor":
       return <Leaf className="w-5 h-5" />;
+    case "motels":
+      return <BedSingle className="w-5 h-5" />;
     case "mud":
       return <Droplets className="w-5 h-5" />;
     case "museums":

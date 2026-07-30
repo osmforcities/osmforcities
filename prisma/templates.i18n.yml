@@ -540,6 +540,15 @@ templates:
       en: Hotels
       pt: Hotéis
       es: Hoteles
+  motels:
+    name:
+      en: Motels
+      pt: Motéis
+      es: Moteles
+    desc:
+      en: Roadside short-term lodging for travelers by car
+      pt: Hospedagem de curta duração à beira da estrada para quem viaja de carro
+      es: Alojamiento de corta estancia junto a la carretera para viajeros en coche
   attractions:
     name:
       en: Attractions

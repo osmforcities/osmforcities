@@ -73,6 +73,7 @@ templates:
   - ["research-institute","amenity=research_institute","education","Microscope"]
 # Tourism
   - ["hotels","tourism=hotel","tourism","Hotel"]
+  - ["motels","tourism=motel","tourism","BedSingle"]
   - ["attractions","tourism=attraction","tourism","Star"]
   - ["viewpoints","tourism=viewpoint","tourism","Binoculars"]
   - ["campsites","tourism=camp_site","tourism","Tent"]
@@ -375,6 +376,7 @@ filterableTags:
   post-boxes:      [post_box:type]
   give-box:        [wheelchair, covered]
   hotels:           [stars, wheelchair, internet_access]
+  motels:           [wheelchair]
   attractions:      [wheelchair]
   campsites:        [shower, power_supply, wheelchair]
   hotel-guesthouse: [wheelchair, internet_access]
@@ -681,6 +683,9 @@ demonstrators:
     - { area: 71525,   note: "Paris, FR - large set, strong stars/wheelchair/internet_access tagging" }
     - { area: 347950,  note: "Barcelona, ES - well-rounded coverage across all three keys" }
     - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, weaker but real coverage" }
+  motels:
+    - { area: 298285,  note: "Sao Paulo, BR - Brazilian motel culture, largest sample (32); wheelchair near-zero, so the all-Missing legend is itself the accessibility finding" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - second Brazilian representative (16); tourism=motel is regionally concentrated, sparse outside Latin America" }
   attractions:
     - { area: 71525,   note: "Paris, FR - wheelchair coverage clearly varied (yes/no/limited)" }
     - { area: 347950,  note: "Barcelona, ES - highest wheelchair coverage observed" }
