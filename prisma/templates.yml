@@ -98,7 +98,7 @@ templates:
   - ["government-office","office=government","government","Landmark"]
   - ["courts","amenity=courthouse","government","Scale"]
   - ["police-stations","amenity=police","government","Siren"]
-  - ["prisons","amenity=prison","government","Fence"]
+  - ["prisons","amenity=prison","government","Building"]
 # Emergency
   - ["fire-stations","amenity=fire_station","emergency","FireExtinguisher"]
   - ["ambulance-stations","emergency=ambulance_station","emergency","Ambulance"]
@@ -107,7 +107,7 @@ templates:
   - ["defibrillators","emergency=defibrillator","emergency","HeartPulse"]
 # Environment
   - ["waterfall","waterway=waterfall","environment","Waves"]
-  - ["dam","waterway=dam","environment","Construction"]
+  - ["dam","waterway=dam","environment","BrickWall"]
 # Services
   - ["recycling","amenity=recycling","services","Recycle"]
   - ["waste-disposal","amenity=waste_disposal","services","Trash2"]
@@ -156,7 +156,7 @@ templates:
   - ["stadiums","leisure=stadium","leisure","Ticket"]
   - ["pitches","leisure=pitch","leisure","Goal"]
   - ["golf-courses","leisure=golf_course","leisure","LandPlot"]
-  - ["tracks","leisure=track","leisure","Repeat"]
+  - ["tracks","leisure=track","leisure","Route"]
   - ["fitness-stations","leisure=fitness_station","leisure","PersonStanding"]
   - ["ice-rinks","leisure=ice_rink","leisure","Snowflake"]
   - ["nature-reserves","leisure=nature_reserve","leisure","Trees"]
@@ -177,7 +177,7 @@ templates:
   - ["orchards","landuse=orchard","nature","Apple"]
   - ["grasslands","natural=grassland","nature","Sprout"]
   - ["wetlands","natural=wetland","nature","Droplets"]
-  - ["beaches","natural=beach","nature","TreePalm"]
+  - ["beaches","natural=beach","nature","Waves"]
   - ["peaks","natural=peak","nature","Mountain"]
   - ["cliffs","natural=cliff","nature","Mountain"]
   - ["caves","natural=cave_entrance","nature","Mountain"]
@@ -206,7 +206,7 @@ templates:
   - ["storage-tanks","man_made=storage_tank","infrastructure","Cylinder"]
   - ["chimney","man_made=chimney","infrastructure","Factory"]
   - ["pipeline","man_made=pipeline","infrastructure","Cable"]
-  - ["mast","man_made=mast","infrastructure","RadioTower"]
+  - ["mast","man_made=mast","infrastructure","Antenna"]
   - ["water-works","man_made=water_works","infrastructure","Droplets"]
   - ["wastewater-plant","man_made=wastewater_plant","infrastructure","Factory"]
   - ["pumping-station","man_made=pumping_station","infrastructure","Gauge"]
@@ -272,10 +272,10 @@ templates:
   - ["farmland","landuse=farmland","agriculture","Wheat"]
   - ["farmyards","landuse=farmyard","agriculture","Tractor"]
   - ["meadows","landuse=meadow","agriculture","Leaf"]
-  - ["animal-keeping","landuse=animal_keeping","agriculture","PawPrint"]
+  - ["animal-keeping","landuse=animal_keeping","agriculture","Fence"]
   # Specialized farmyard types (feedlots, stockyards, poultry, dairy)
-  - ["feedlots","farmyard=feedlot","agriculture","Beef"]
-  - ["stockyards","farmyard=stockyard","agriculture","Beef"]
+  - ["feedlots","farmyard=feedlot","agriculture","Fence"]
+  - ["stockyards","farmyard=stockyard","agriculture","Fence"]
   - ["poultry-yards","farmyard=poultry","agriculture","Egg"]
   - ["dairy-yards","farmyard=dairy","agriculture","Milk"]
   # Agricultural buildings
@@ -285,7 +285,7 @@ templates:
   - ["greenhouses","building=greenhouse","agriculture","Sprout"]
   # Livestock housing
   - ["livestock-buildings","building=livestock","agriculture","Warehouse"]
-  - ["cowsheds","building=cowshed","agriculture","Beef"]
+  - ["cowsheds","building=cowshed","agriculture","Warehouse"]
   - ["pig-sties","building=sty","agriculture","Warehouse"]
   - ["stables","building=stable","agriculture","Warehouse"]
   # Agricultural storage
@@ -293,8 +293,8 @@ templates:
   - ["bunker-silos","man_made=bunker_silo","agriculture","Warehouse"]
   - ["agricultural-tanks","man_made=storage_tank","agriculture","Cylinder"]
   # Organic fertilizer storage (slurry/manure infrastructure)
-  - ["slurry-basins","man_made=slurry_basin","agriculture","Droplet"]
-  - ["slurry-tanks","building=slurry_tank;man_made=slurry_tank","agriculture","Droplet"]
+  - ["slurry-basins","man_made=slurry_basin","agriculture","Container"]
+  - ["slurry-tanks","building=slurry_tank;man_made=slurry_tank","agriculture","Cylinder"]
   - ["manure-storage","man_made=storage_tank&content=manure","agriculture","Package"]
   # Horticulture and plant production
   - ["greenhouse-horticulture","landuse=greenhouse_horticulture","agriculture","Sprout"]
