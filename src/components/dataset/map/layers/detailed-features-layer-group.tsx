@@ -14,9 +14,11 @@ import {
 } from "./map-style";
 import { createSmallPolygonProxyPoints } from "./polygon-proxy-points";
 
-// Proxy circles carry small polygons at low zoom, then hand off to the
-// real footprints as they become resolvable
-const PROXY_FADE = ["interpolate", ["linear"], ["zoom"], 12.5, 0.9, 14, 0];
+// Proxy circles carry small polygons at low zoom, then hand off to the real
+// footprints as they become resolvable. Fully opaque through z13 so the circle
+// hides its (still-tiny) polygon rather than letting it show through, then a
+// quick crossfade to the resolved footprint by z14.
+const PROXY_FADE = ["interpolate", ["linear"], ["zoom"], 13, 1, 14, 0];
 import type { CuratedTheme } from "@/lib/curated-themes";
 import { buildCuratedColorExpression } from "@/lib/curated-themes";
 import { PALETTES } from "@/lib/map-palettes";
@@ -69,21 +71,6 @@ export function DetailedFeaturesLayerGroup({
 
   return (
     <>
-      {proxyPoints.length > 0 && (
-        <MapLayer
-          id="polygon-proxy-points"
-          features={proxyPoints}
-          layerType="circle"
-          filter={visibilityFilter}
-          paint={{
-            ...buildThemePointPaint(themeColor, proxyPoints.length),
-            "circle-opacity": PROXY_FADE,
-            "circle-stroke-opacity": PROXY_FADE,
-          }}
-          layout={{ "circle-sort-key": AGE_SORT_KEY }}
-        />
-      )}
-
       {polygonFeatures.length > 0 && (
         <MapLayer
           id="detailed-polygons"
@@ -106,6 +93,24 @@ export function DetailedFeaturesLayerGroup({
                 }
               : POLYGON_STYLE.stroke,
           }}
+        />
+      )}
+
+      {/* Above the polygons so a small polygon's circle covers it at low zoom
+          and crossfades out (PROXY_FADE) to reveal the real footprint by ~z14,
+          instead of the subpixel polygon covering its own proxy */}
+      {proxyPoints.length > 0 && (
+        <MapLayer
+          id="polygon-proxy-points"
+          features={proxyPoints}
+          layerType="circle"
+          filter={visibilityFilter}
+          paint={{
+            ...buildThemePointPaint(themeColor, proxyPoints.length),
+            "circle-opacity": PROXY_FADE,
+            "circle-stroke-opacity": PROXY_FADE,
+          }}
+          layout={{ "circle-sort-key": AGE_SORT_KEY }}
         />
       )}
 
