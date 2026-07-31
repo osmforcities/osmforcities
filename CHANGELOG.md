@@ -15,7 +15,7 @@
 
 ### Fixed
 
-- Judge /api/health against the real 24h dataset-refresh cadence to stop false "degraded" reports [#435]
+- Judge dataset-fleet health against the real 24h refresh cadence — on both /api/health and the admin dataset-updates badge — to stop false "degraded" reports [#435], [#443]
 - Stop a single failing dataset from jamming the dataset-update queue [#432]
 
 [#414]: https://github.com/osmforcities/osmforcities/pull/414
@@ -25,6 +25,7 @@
 [#436]: https://github.com/osmforcities/osmforcities/pull/436
 [#437]: https://github.com/osmforcities/osmforcities/pull/437
 [#438]: https://github.com/osmforcities/osmforcities/pull/438
+[#443]: https://github.com/osmforcities/osmforcities/pull/443
 
 ## 1.15.0
 
