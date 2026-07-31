@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
 import { getTranslations, getLocale } from "next-intl/server";
 import { DATASET_FAILURE_FLAG_THRESHOLD } from "@/lib/constants";
+import { isFleetHealthy } from "@/lib/dataset-health";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,6 @@ export const metadata: Metadata = {
 
 async function getUpdateStatus() {
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
   const activeWhere = { isActive: true } as const;
 
   const [activeTotal, refreshed24h, flagged, freshness, flaggedDatasets] =
@@ -54,7 +54,7 @@ async function getUpdateStatus() {
     flagged,
     newestCheck,
     oldestCheck: freshness._min.lastChecked,
-    isHealthy: !!newestCheck && newestCheck >= twoHoursAgo,
+    isHealthy: isFleetHealthy(newestCheck),
     flaggedDatasets,
   };
 }

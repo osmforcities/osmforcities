@@ -1,23 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-
-// The update-datasets cron refreshes each dataset on roughly this cadence
-// (a dataset becomes eligible once its lastAttempted is older than this window;
-// see api/tasks/update-datasets). The fleet refreshes in a daily burst then sits
-// idle, so a healthy system only produces a *successful* check about once per
-// interval — health must be judged against that cadence, not a tighter one.
-const REFRESH_INTERVAL_HOURS = 24;
-// Grace on top of the interval before we call the pipeline stalled: absorbs the
-// idle gap between bursts plus cron/Overpass jitter. Peak healthy age of the
-// newest successful check is ~the idle gap (< interval); this margin keeps a
-// healthy idle stretch from tripping a false alarm.
-const GRACE_HOURS = 6;
-const STALE_THRESHOLD_MS =
-  (REFRESH_INTERVAL_HOURS + GRACE_HOURS) * 60 * 60 * 1000;
+import { isFleetHealthy } from "@/lib/dataset-health";
 
 export async function GET() {
-  const staleBefore = new Date(Date.now() - STALE_THRESHOLD_MS);
-
   try {
     // "Has ANY active dataset refreshed successfully recently?" — the newest
     // lastChecked across the fleet. lastChecked advances only on success, so:
@@ -45,7 +30,7 @@ export async function GET() {
       reference = oldestActive?.createdAt ?? null;
     }
 
-    const isDegraded = reference !== null && reference < staleBefore;
+    const isDegraded = !isFleetHealthy(reference);
 
     return NextResponse.json(
       {
