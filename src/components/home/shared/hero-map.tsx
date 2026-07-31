@@ -1,10 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
-import Map, { NavigationControl } from "react-map-gl/maplibre";
+import Map from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { HERO_LOCATIONS } from "./hero-map-locations";
 import { mapStyle } from "@/lib/map-tiles";
+import { MapZoomControl } from "@/components/ui/map-zoom-control";
 
 export function HeroMap() {
 
@@ -36,9 +37,7 @@ export function HeroMap() {
         key={location?.id ?? "hero-map"}
         style={{ width: "100%", height: "100%" }}
       >
-        <div className="absolute right-3 bottom-3">
-          <NavigationControl showCompass={false} visualizePitch={false} />
-        </div>
+        <MapZoomControl />
       </Map>
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-black/25 via-transparent to-transparent" />
     </div>

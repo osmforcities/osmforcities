@@ -32,15 +32,34 @@ templates:
   - ["drinking-water","amenity=drinking_water","amenities","Droplet"]
   - ["post-offices","amenity=post_office","amenities","Mail"]
   - ["parcel-lockers","amenity=parcel_locker","amenities","Package"]
+  - ["shower","amenity=shower","amenities","ShowerHead"]
+  - ["public-bookcase","amenity=public_bookcase","amenities","BookOpen"]
+  - ["luggage-lockers","amenity=luggage_locker","amenities","Luggage"]
+  - ["post-boxes","amenity=post_box","amenities","Mailbox"]
+  - ["give-box","amenity=give_box","amenities","Gift"]
 # Healthcare
   - ["hospitals","amenity=hospital","healthcare","Hospital"]
   - ["clinics","amenity=clinic","healthcare","Stethoscope"]
   - ["doctors","amenity=doctors","healthcare","Stethoscope"]
-  - ["dentists","amenity=dentist","healthcare","Smile"]
+  - ["dentists","amenity=dentist","healthcare","SmilePlus"]
   - ["pharmacies","amenity=pharmacy","healthcare","Pill"]
   - ["health-post","amenity=health_post","healthcare","Cross"]
   - ["nursing-home","amenity=nursing_home","healthcare","BedDouble"]
   - ["veterinary","amenity=veterinary","healthcare","PawPrint"]
+  - ["opticians","shop=optician","healthcare","Glasses"]
+  - ["medical-laboratories","healthcare=laboratory","healthcare","FlaskConical"]
+  - ["psychotherapists","healthcare=psychotherapist","healthcare","Armchair"]
+  - ["physiotherapists","healthcare=physiotherapist","healthcare","Dumbbell"]
+  - ["optometrists","healthcare=optometrist","healthcare","Eye"]
+  - ["podiatrists","healthcare=podiatrist","healthcare","Footprints"]
+  - ["rehabilitation-centres","healthcare=rehabilitation","healthcare","PersonStanding"]
+  - ["counselling-services","healthcare=counselling","healthcare","MessagesSquare"]
+  - ["speech-therapists","healthcare=speech_therapist","healthcare","MessageCircle"]
+  - ["occupational-therapists","healthcare=occupational_therapist","healthcare","Puzzle"]
+  - ["alternative-medicine","healthcare=alternative","healthcare","Leaf"]
+  - ["blood-donation","healthcare=blood_donation","healthcare","Droplet"]
+  - ["dialysis-centres","healthcare=dialysis","healthcare","Droplets"]
+  - ["midwives","healthcare=midwife","healthcare","Baby"]
 # Education
   - ["schools","amenity=school","education","School"]
   - ["universities","amenity=university","education","GraduationCap"]
@@ -54,13 +73,14 @@ templates:
   - ["research-institute","amenity=research_institute","education","Microscope"]
 # Tourism
   - ["hotels","tourism=hotel","tourism","Hotel"]
+  - ["motels","tourism=motel","tourism","BedSingle"]
   - ["attractions","tourism=attraction","tourism","Star"]
   - ["viewpoints","tourism=viewpoint","tourism","Binoculars"]
   - ["campsites","tourism=camp_site","tourism","Tent"]
   - ["alpine-huts","tourism=alpine_hut","tourism","Mountain"]
   - ["caravan-sites","tourism=caravan_site","tourism","Caravan"]
-  - ["chalets","tourism=chalet","tourism","Home"]
   - ["wilderness-huts","tourism=wilderness_hut","tourism","Tent"]
+  - ["chalets","tourism=chalet","tourism","Home"]
 # Culture
   - ["cinemas","amenity=cinema","culture","Film"]
   - ["monuments","historic=monument","culture","Landmark"]
@@ -73,25 +93,28 @@ templates:
   - ["social-facility","amenity=social_facility","social","HeartHandshake"]
   - ["community-centre","amenity=community_centre","social","Users"]
   - ["town-halls","amenity=townhall","social","Landmark"]
-  - ["senior-centers","amenity=senior centre","social","Users"]
+  - ["senior-centers","amenity=social_facility&social_facility:for=senior","social","Accessibility","social-facility"]
 # Government
   - ["government-office","office=government","government","Landmark"]
-  - ["courts","amenity=court","government","Scale"]
+  - ["courts","amenity=courthouse","government","Scale"]
   - ["police-stations","amenity=police","government","Siren"]
-  - ["prisons","amenity=prison","government","Fence"]
+  - ["prisons","amenity=prison","government","Building"]
 # Emergency
   - ["fire-stations","amenity=fire_station","emergency","FireExtinguisher"]
-  - ["ambulance-stations","amenity=ambulance_station","emergency","Ambulance"]
+  - ["ambulance-stations","emergency=ambulance_station","emergency","Ambulance"]
   - ["emergency-phones","emergency=phone","emergency","Phone"]
+  - ["fire-hydrants","emergency=fire_hydrant","emergency","Flame"]
+  - ["defibrillators","emergency=defibrillator","emergency","HeartPulse"]
 # Environment
   - ["waterfall","waterway=waterfall","environment","Waves"]
-  - ["dam","waterway=dam","environment","Construction"]
+  - ["dam","waterway=dam","environment","BrickWall"]
 # Services
   - ["recycling","amenity=recycling","services","Recycle"]
   - ["waste-disposal","amenity=waste_disposal","services","Trash2"]
   - ["benches","amenity=bench","services","RockingChair"]
   - ["telephones","amenity=telephone","services","Phone"]
-  - ["internet-access","amenity=internet_access","services","Wifi"]
+  - ["waste-basket","amenity=waste_basket","services","Trash"]
+  - ["bottle-return","amenity=vending_machine&vending=bottle_return","services","Undo2"]
 # Shops
   - ["supermarkets","shop=supermarket","shops","ShoppingCart"]
   - ["bakeries","shop=bakery","shops","Croissant"]
@@ -108,10 +131,12 @@ templates:
   - ["furniture","shop=furniture","shops","Sofa"]
   - ["electronics","shop=electronics","shops","Tv"]
   - ["mobile-phone","shop=mobile_phone","shops","Smartphone"]
-  - ["optician","shop=optician","shops","Glasses"]
   - ["shoes","shop=shoes","shops","Footprints"]
   - ["jewelry","shop=jewelry","shops","Gem"]
   - ["bicycle-shop","shop=bicycle","shops","Store"]
+# Markets
+  # Multi-vendor public markets (distinct from single-vendor shops)
+  - ["markets","amenity=marketplace","shops","ShoppingBasket"]
 # Food
   - ["restaurants","amenity=restaurant","food","UtensilsCrossed"]
   - ["cafes","amenity=cafe","food","Coffee"]
@@ -119,16 +144,21 @@ templates:
   - ["bars","amenity=bar","food","Martini"]
   - ["pubs","amenity=pub","food","Beer"]
   - ["ice-cream","amenity=ice_cream","food","IceCreamCone"]
+  - ["food-court","amenity=food_court","food","ChefHat"]
+  - ["food-vending","amenity=vending_machine&vending=food;amenity=vending_machine&vending=drinks;amenity=vending_machine&vending=coffee;amenity=vending_machine&vending=water;amenity=vending_machine&vending=milk;amenity=vending_machine&vending=ice_cream;amenity=vending_machine&vending=bread;amenity=vending_machine&vending=sweets;amenity=vending_machine&vending=pizza;amenity=vending_machine&vending=eggs","food","CupSoda"]
 # Leisure
   - ["parks","leisure=park","leisure","TreePine"]
   - ["playgrounds","leisure=playground","leisure","ToyBrick"]
   - ["gardens","leisure=garden","leisure","Flower2"]
-  - ["fitness-centers","leisure=fitness_center","leisure","Dumbbell"]
+  - ["fitness-centers","leisure=fitness_centre","leisure","Dumbbell"]
   - ["swimming-pools","leisure=swimming_pool","leisure","Waves"]
-  - ["sports-centres","leisure=sports_centre","leisure","Dumbbell"]
-  - ["stadiums","leisure=stadium","leisure","Trophy"]
+  - ["sports-centres","leisure=sports_centre","leisure","LayoutGrid"]
+  - ["stadiums","leisure=stadium","leisure","Ticket"]
   - ["pitches","leisure=pitch","leisure","Goal"]
   - ["golf-courses","leisure=golf_course","leisure","LandPlot"]
+  - ["tracks","leisure=track","leisure","Route"]
+  - ["fitness-stations","leisure=fitness_station","leisure","PersonStanding"]
+  - ["ice-rinks","leisure=ice_rink","leisure","Snowflake"]
   - ["nature-reserves","leisure=nature_reserve","leisure","Trees"]
   - ["marinas","leisure=marina","leisure","Anchor"]
   - ["dog-parks","leisure=dog_park","leisure","Dog"]
@@ -147,7 +177,7 @@ templates:
   - ["orchards","landuse=orchard","nature","Apple"]
   - ["grasslands","natural=grassland","nature","Sprout"]
   - ["wetlands","natural=wetland","nature","Droplets"]
-  - ["beaches","natural=beach","nature","TreePalm"]
+  - ["beaches","natural=beach","nature","Waves"]
   - ["peaks","natural=peak","nature","Mountain"]
   - ["cliffs","natural=cliff","nature","Mountain"]
   - ["caves","natural=cave_entrance","nature","Mountain"]
@@ -160,7 +190,6 @@ templates:
   - ["natural-surfaces","natural=scrub;natural=heath;natural=moor;natural=fell;natural=rock;natural=stone;natural=sand;natural=shingle;natural=mud","nature","Mountain"]
   - ["scrub","natural=scrub","nature","Shrub"]
   - ["heath","natural=heath","nature","Leaf"]
-  - ["moor","natural=moor","nature","Leaf"]
   - ["fell","natural=fell","nature","Mountain"]
   - ["rock","natural=rock","nature","Mountain"]
   - ["stone","natural=stone","nature","Mountain"]
@@ -177,7 +206,7 @@ templates:
   - ["storage-tanks","man_made=storage_tank","infrastructure","Cylinder"]
   - ["chimney","man_made=chimney","infrastructure","Factory"]
   - ["pipeline","man_made=pipeline","infrastructure","Cable"]
-  - ["mast","man_made=mast","infrastructure","RadioTower"]
+  - ["mast","man_made=mast","infrastructure","Antenna"]
   - ["water-works","man_made=water_works","infrastructure","Droplets"]
   - ["wastewater-plant","man_made=wastewater_plant","infrastructure","Factory"]
   - ["pumping-station","man_made=pumping_station","infrastructure","Gauge"]
@@ -202,34 +231,31 @@ templates:
   - ["hotel-guesthouse","tourism=guest_house;tourism=hostel","housing","BedDouble"]
 # Sports facilities
   - ["football","sport=soccer","sports","Volleyball"]
-  - ["basketball","sport=basketball","sports","Dribbble"]
+  - ["basketball","sport=basketball","sports","CircleDot"]
   - ["tennis","sport=tennis","sports","Trophy"]
   - ["swimming","sport=swimming","sports","Waves"]
   - ["golf","sport=golf","sports","LandPlot"]
   - ["skiing","sport=skiing","sports","MountainSnow"]
-  - ["ice-skating","sport=ice_skating","sports","Snowflake"]
-  - ["ice-hockey","sport=ice_hockey","sports","Snowflake"]
-  - ["baseball","sport=baseball","sports","Trophy"]
+  - ["baseball","sport=baseball","sports","Diamond"]
   - ["athletics","sport=athletics","sports","Medal"]
-  - ["gymnasiums","sport=gymnastics","sports","Dumbbell"]
-  - ["multi-sport","sport=multi","sports","Trophy"]
+  - ["gymnasiums","sport=gymnastics","sports","BicepsFlexed"]
   - ["shooting","sport=shooting","sports","Target"]
   - ["archery","sport=archery","sports","Crosshair"]
   - ["climbing","sport=climbing","sports","Mountain"]
-  - ["equestrian","sport=equestrian","sports","PawPrint"]
-# Public facilities
-  - ["fountains","amenity=fountain","public","Droplets"]
-  - ["clocks","amenity=clock","public","Clock"]
-  - ["guideposts","tourism=guidepost","public","Signpost"]
-  - ["information-boards","tourism=information","public","Info"]
-  - ["markers","tourism=information;tourism=guidepost","public","MapPin"]
+  - ["equestrian","sport=equestrian","sports","Ribbon"]
+# Misc facilities (fountains, clocks, wayfinding)
+  - ["fountains","amenity=fountain","amenities","Droplets"]
+  - ["clocks","amenity=clock","services","Clock"]
+  # Consolidated: tourism=information covers guideposts/boards/maps/route markers via
+  # the information= sub-tag (color-by). Replaces the former guideposts + markers
+  # templates, which were dead/redundant (guideposts alone returns 0 features in most
+  # cities - real guidepost data lives under tourism=information&information=guidepost).
+  - ["information-boards","tourism=information","services","Info"]
 # Religion
+  # Single worship template; the former church/mosque/synagogue/temple/shrine
+  # value-templates queried loose religion=* selectors (matching cemeteries,
+  # schools, etc.) and are replaced by the `religion` color-by filter below.
   - ["places-of-worship","amenity=place_of_worship","religion","Landmark"]
-  - ["church","religion=christian","religion","Church"]
-  - ["mosque","religion=islam","religion","MoonStar"]
-  - ["synagogue","religion=jewish","religion","Star"]
-  - ["temple","religion=buddhist;religion=hindu;religion=sikh;religion=taoist","religion","Landmark"]
-  - ["shrine","religion=shinto","religion","Landmark"]
 # Barriers
   - ["walls","barrier=wall","barriers","BrickWall"]
   - ["fences","barrier=fence","barriers","Fence"]
@@ -246,10 +272,10 @@ templates:
   - ["farmland","landuse=farmland","agriculture","Wheat"]
   - ["farmyards","landuse=farmyard","agriculture","Tractor"]
   - ["meadows","landuse=meadow","agriculture","Leaf"]
-  - ["animal-keeping","landuse=animal_keeping","agriculture","PawPrint"]
+  - ["animal-keeping","landuse=animal_keeping","agriculture","Fence"]
   # Specialized farmyard types (feedlots, stockyards, poultry, dairy)
-  - ["feedlots","farmyard=feedlot","agriculture","PawPrint"]
-  - ["stockyards","farmyard=stockyard","agriculture","PawPrint"]
+  - ["feedlots","farmyard=feedlot","agriculture","Fence"]
+  - ["stockyards","farmyard=stockyard","agriculture","Fence"]
   - ["poultry-yards","farmyard=poultry","agriculture","Egg"]
   - ["dairy-yards","farmyard=dairy","agriculture","Milk"]
   # Agricultural buildings
@@ -258,17 +284,17 @@ templates:
   - ["farm-auxiliary","building=farm_auxiliary","agriculture","Wrench"]
   - ["greenhouses","building=greenhouse","agriculture","Sprout"]
   # Livestock housing
-  - ["livestock-buildings","building=livestock","agriculture","PawPrint"]
-  - ["cowsheds","building=cowshed","agriculture","PawPrint"]
-  - ["pig-sties","building=sty","agriculture","PawPrint"]
-  - ["stables","building=stable","agriculture","PawPrint"]
+  - ["livestock-buildings","building=livestock","agriculture","Warehouse"]
+  - ["cowsheds","building=cowshed","agriculture","Warehouse"]
+  - ["pig-sties","building=sty","agriculture","Warehouse"]
+  - ["stables","building=stable","agriculture","Warehouse"]
   # Agricultural storage
   - ["silos","building=silo;man_made=silo","agriculture","Warehouse"]
   - ["bunker-silos","man_made=bunker_silo","agriculture","Warehouse"]
   - ["agricultural-tanks","man_made=storage_tank","agriculture","Cylinder"]
   # Organic fertilizer storage (slurry/manure infrastructure)
-  - ["slurry-basins","man_made=slurry_basin","agriculture","Droplet"]
-  - ["slurry-tanks","building=slurry_tank;man_made=slurry_tank","agriculture","Droplet"]
+  - ["slurry-basins","man_made=slurry_basin","agriculture","Container"]
+  - ["slurry-tanks","building=slurry_tank;man_made=slurry_tank","agriculture","Cylinder"]
   - ["manure-storage","man_made=storage_tank&content=manure","agriculture","Package"]
   # Horticulture and plant production
   - ["greenhouse-horticulture","landuse=greenhouse_horticulture","agriculture","Sprout"]
@@ -297,6 +323,68 @@ filterableTags:
   ev-charging:     [capacity, operator, access, fee]
   crossings:       [crossing, crossing:markings, tactile_paving, traffic_signals:sound]
   railway-stations: [station, wheelchair, operator, network]
+  hospitals:   [operator:type, emergency, wheelchair, operator]
+  clinics:     [healthcare:speciality, operator:type, wheelchair, operator]
+  doctors:     [healthcare:speciality, wheelchair]
+  dentists:    [wheelchair]
+  pharmacies:  [dispensing, wheelchair, brand]
+  veterinary:  [wheelchair]
+  opticians:   [wheelchair, brand]
+  medical-laboratories: [healthcare:speciality, wheelchair, operator, brand]
+  psychotherapists: [wheelchair]
+  physiotherapists: [wheelchair]
+  podiatrists: [wheelchair]
+  rehabilitation-centres: [operator, wheelchair]
+  counselling-services: [wheelchair, operator]
+  speech-therapists: [wheelchair]
+  occupational-therapists: [wheelchair]
+  alternative-medicine: [healthcare:speciality, wheelchair]
+  optometrists: [wheelchair]
+  health-post: [wheelchair]
+  nursing-home: [wheelchair]
+  blood-donation: [operator, wheelchair]
+  dialysis-centres: [operator, wheelchair]
+  midwives: [wheelchair]
+  restaurants:      [cuisine, wheelchair, outdoor_seating, takeaway, delivery, diet:vegetarian]
+  cafes:            [cuisine, outdoor_seating, indoor_seating, wheelchair, takeaway, internet_access]
+  fast-food:        [cuisine, takeaway, outdoor_seating, wheelchair, delivery]
+  bars:             [wheelchair, outdoor_seating, smoking]
+  pubs:             [wheelchair, outdoor_seating, smoking, internet_access, real_ale, food]
+  ice-cream:        [wheelchair, outdoor_seating, takeaway]
+  food-vending:     [vending, operator, brand]
+  pitches:         [sport, surface, lit]
+  sports-centres:  [sport, wheelchair]
+  swimming-pools:  [access, location]
+  playgrounds:     [access]
+  stadiums:        [sport]
+  tracks:          [sport, surface, lit]
+  fitness-stations: [fitness_station]
+  ice-rinks:       [sport, seasonal]
+  public-toilets:  [access, fee, wheelchair, changing_table, toilets:disposal]
+  benches:         [backrest, material]
+  drinking-water:  [man_made, operator, bottle]
+  post-offices:    [operator, brand, wheelchair]
+  parcel-lockers:  [brand, operator]
+  recycling:       [recycling_type, operator]
+  bottle-return:   [operator]
+  public-bookcase: [public_bookcase:type]
+  luggage-lockers: [fee, operator]
+  fountains:       [drinking_water]
+  clocks:          [display, support, visibility]
+  information-boards: [information]
+  post-boxes:      [post_box:type]
+  give-box:        [wheelchair, covered]
+  hotels:           [stars, wheelchair, internet_access]
+  motels:           [wheelchair]
+  attractions:      [wheelchair]
+  campsites:        [shower, power_supply, wheelchair]
+  hotel-guesthouse: [wheelchair, internet_access]
+  alpine-huts:      [operator, capacity]
+  chalets:          [operator, internet_access, wheelchair]
+  social-facility:  [social_facility, social_facility:for, operator, wheelchair]
+  community-centre: [community_centre, operator, wheelchair]
+  town-halls:       [building, wheelchair, townhall:type]
+  senior-centers:   [social_facility, operator, wheelchair]
   transit-platforms: [tactile_paving, wheelchair, shelter, bench, lit]
   subway-entrances: [wheelchair]
   taxi-ranks:       [capacity, operator]
@@ -319,6 +407,77 @@ filterableTags:
   music-school:       [operator, operator:type, wheelchair]
   language-school:    [operator, operator:type, wheelchair]
   research-institute: [operator, operator:type, wheelchair]
+  # Financial
+  atms:             [operator, brand, cash_in, wheelchair]
+  banks:            [brand, operator, atm, wheelchair]
+  # Culture (wheelchair = transversal equity signal on enterable venues)
+  museums:          [museum, operator, fee, wheelchair]
+  theatres:         [operator, wheelchair]
+  cinemas:          [brand, operator, wheelchair]
+  arts-centre:      [operator, wheelchair]
+  gallery:          [operator, fee, wheelchair]
+  memorials:        [memorial]
+  # Government
+  government-office: [government, operator, admin_level, wheelchair]
+  courts:           [operator, wheelchair]
+  police-stations:  [operator, wheelchair]
+  # Emergency
+  fire-stations:    [operator, wheelchair]
+  ambulance-stations: [operator]
+  fire-hydrants:    [fire_hydrant:type, fire_hydrant:position, fire_hydrant:diameter, fire_hydrant:pressure]
+  defibrillators:   [access, indoor]
+  # Religion (replaces the deprecated per-religion value templates)
+  places-of-worship: [religion, denomination, wheelchair]
+  # Markets: age-view only — operator/organic near-absent (Barcelona 6%/2%, Sao Paulo 13%/1%)
+  # Shops (wheelchair = transversal equity signal; brand/operator = chain vs independent)
+  supermarkets:     [brand, operator, organic, wheelchair]
+  bakeries:         [brand, wheelchair]
+  convenience:      [brand, wheelchair]
+  butchers:         [wheelchair]
+  greengrocers:     [organic, wheelchair]
+  department-stores: [brand, wheelchair]
+  shopping-malls:   [operator]
+  clothes:          [clothes, brand, wheelchair]
+  chemist:          [brand, wheelchair]
+  fuel:             [brand, operator]
+  hardware:         [brand, wheelchair]
+  diy:              [brand, wheelchair]
+  furniture:        [brand, wheelchair]
+  electronics:      [brand, wheelchair]
+  mobile-phone:     [brand, wheelchair]
+  shoes:            [brand, wheelchair]
+  jewelry:          [wheelchair]
+  # Leisure (green spaces not covered by the recreation/sport batch)
+  parks:            [access]
+  gardens:          [garden:type, access]
+  marinas:          [fee, operator]
+  fitness-centers:  [sport, wheelchair]
+  # Barriers
+  gates:            [access]
+  # Quick triage (epic #245 consolidation): clear wiki-documented additions to
+  # previously-untouched templates. Nature "type" keys are single colorable subtype
+  # keys with strong coverage (Berlin: water= 68%, leaf_type 74%, wetland= 83%).
+  forests:          [leaf_type]
+  woods:            [leaf_type]
+  water:            [water]
+  wetlands:         [wetland]
+  # Consistency with sibling templates in the same category
+  bicycle-shop:     [brand, wheelchair]
+  prisons:          [operator, wheelchair]
+  # Full untouched-template review (epic #245 closure): measured colorable keys with
+  # real coverage. Nature/agriculture: orchards trees 29-33%, beaches surface 26-91%.
+  orchards:         [trees]
+  beaches:          [surface]
+  dog-parks:        [access]
+  # Infrastructure "type" keys, strong coverage (Berlin/Munich/London 61-89%)
+  tower:            [tower:type]
+  surveillance:     [surveillance:type, surveillance]
+  pipeline:         [substance]
+  storage-tanks:    [content]
+  # Per-sport courts (subsets of pitches): surface/lit like the pitches template
+  football:         [surface, lit]
+  basketball:       [surface, lit]
+  tennis:           [surface, lit]
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -350,6 +509,244 @@ demonstrators:
     - { area: 347950,  note: "Barcelona, ES - near-complete operator/network tagging" }
     - { area: 71525,   note: "Paris, FR - large set, varied networks/operators, strong accessibility" }
     - { area: 62428,   note: "Munich, DE - good wheelchair coverage, mixed train/subway modes" }
+  hospitals:
+    - { area: 62428,   note: "Munich, DE - excellent operator/emergency/wheelchair coverage across the German clinic network" }
+    - { area: 175905,  note: "New York City, US - North American representative, best emergency-care coverage in the batch (91%)" }
+    - { area: 71525,   note: "Paris, FR - large hospital set, clean operator + operator:type + wheelchair tagging" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, strong operator/operator:type/emergency across public and private networks" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, solid emergency + operator:type tagging" }
+    - { area: 1293250, note: "Taipei, TW - East Asian representative, strong emergency coverage across military/university/private hospitals" }
+  clinics:
+    - { area: 62428,   note: "Munich, DE - clean operator/operator:type/wheelchair tagging, well-bucketed specialties" }
+    - { area: 175905,  note: "New York City, US - North American representative, largest sample in the batch (677)" }
+    - { area: 1293250, note: "Taipei, TW - large sample, rich clean specialty distribution led by traditional_chinese_medicine" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, strong operator/operator:type, distinctive public-health specialty tagging" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, large municipal clinic network" }
+  doctors:
+    - { area: 62428,   note: "Munich, DE - largest sample (935), rich clean specialty distribution, strong wheelchair coverage" }
+    - { area: 175905,  note: "New York City, US - North American representative, huge sample (681), strong specialty coverage (61%)" }
+    - { area: 1293250, note: "Taipei, TW - excellent wheelchair coverage, clean specialty buckets" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative" }
+    - { area: 347950,  note: "Barcelona, ES - Iberian representative, distinct specialty mix" }
+  dentists:
+    - { area: 62428,   note: "Munich, DE - largest sample, strong 3-way wheelchair split" }
+    - { area: 1293250, note: "Taipei, TW - large sample, solid wheelchair coverage" }
+  pharmacies:
+    - { area: 62428,   note: "Munich, DE - 91% wheelchair coverage, near-complete dispensing tagging" }
+    - { area: 175905,  note: "New York City, US - North American representative, largest sample in the batch (1,112)" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, strong dispensing coverage" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, solid dispensing + wheelchair" }
+    - { area: 1293250, note: "Taipei, TW - East Asian representative" }
+  health-post:
+    - { area: 103703,  note: "Manila, PH - only tested city with meaningful health_post data; thin sample but real healthcare provider-type variety" }
+  nursing-home:
+    - { area: 62428,   note: "Munich, DE - largest sample found despite the tag's near-total deprecation elsewhere; thin data, honest outlier pick" }
+  veterinary:
+    - { area: 62428,   note: "Munich, DE - 44% wheelchair coverage, clean 3-way split" }
+    - { area: 1293250, note: "Taipei, TW - 28% wheelchair coverage, clean 3-way split" }
+  opticians:
+    - { area: 62428,   note: "Munich, DE - 76% wheelchair coverage, clean chain-brand tagging (Apollo-Optik, Fielmann)" }
+    - { area: 175905,  note: "New York City, US - North American representative, largest sample (383)" }
+    - { area: 1293250, note: "Taipei, TW - large sample (217), strong wheelchair + brand coverage" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, real chain-brand data (Oticas Carol)" }
+  medical-laboratories:
+    - { area: 71525,   note: "Paris, FR - large sample (171), near-complete specialty tagging (biology vs radiology split)" }
+    - { area: 175905,  note: "New York City, US - North American representative, better-balanced specialty split than Rio (dropped)" }
+  psychotherapists:
+    - { area: 62428,   note: "Munich, DE - largest sample (128), clean wheelchair split" }
+    - { area: 1293250, note: "Taipei, TW - smaller sample, confirms the tag outside Europe" }
+  physiotherapists:
+    - { area: 62428,   note: "Munich, DE - largest sample found (160); tag is Europe-heavy, Taipei/Rio too thin to include" }
+  optometrists:
+    - { area: 175905,  note: "New York City, US - largest sample by far (83), though dominated by one chain (Cohen's Fashion Optical)" }
+  podiatrists:
+    - { area: 62428,   note: "Munich, DE - 50% wheelchair coverage, clean 3-way split" }
+  rehabilitation-centres:
+    - { area: 207359,  note: "Los Angeles, US - 44% operator coverage, real institutional operators (Legacy Healing, Ensign Group)" }
+    - { area: 175905,  note: "New York City, US - real institutional operators (VillageCare, Jamaica Hospital)" }
+  counselling-services:
+    - { area: 62428,   note: "Munich, DE - only city with usable wheelchair (39%) and operator (39%) coverage" }
+  speech-therapists:
+    - { area: 62428,   note: "Munich, DE - only city with usable wheelchair coverage (18%)" }
+  occupational-therapists:
+    - { area: 62428,   note: "Munich, DE - 50% wheelchair coverage, clean 3-way split" }
+  alternative-medicine:
+    - { area: 175905,  note: "New York City, US - largest sample (170), acupuncture/chiropractic/massage/herbalism well split" }
+    - { area: 207359,  note: "Los Angeles, US - chiropractic-led (84% speciality coverage)" }
+    - { area: 1293250, note: "Taipei, TW - best wheelchair coverage (40%), traditional_chinese_medicine-led" }
+    - { area: 5326784, note: "Madrid, ES - European representative, chiropractic/acupuncture/osteopathy/naturopathy mix" }
+  blood-donation:
+    - { area: 62422,   note: "Berlin, DE - DRK/blood-service operators, clean operator split, European representative" }
+    - { area: 175905,  note: "New York City, US - North American representative, Red Cross + hospital blood centres" }
+    - { area: 175342,  note: "London, GB - NHS Blood and Transplant donor centres, consistent operator tagging" }
+  dialysis-centres:
+    - { area: 175905,  note: "New York City, US - largest sample by far (29), strong chain operators (Fresenius, DaVita)" }
+    - { area: 62422,   note: "Berlin, DE - European representative, institutional dialysis operators" }
+  midwives:
+    - { area: 62422,   note: "Berlin, DE - largest sample (21); midwife tagging is Europe-heavy" }
+    - { area: 175342,  note: "London, GB - second representative, NHS/independent midwifery practices" }
+  restaurants:
+    - { area: 71525,   note: "Paris, FR - 9k restaurants, strong cuisine/outdoor_seating/wheelchair tagging" }
+    - { area: 451516,  note: "Wroclaw, PL - near-universal cuisine tagging (97%), strong takeaway/delivery" }
+    - { area: 347950,  note: "Barcelona, ES - large set, wide cuisine variety" }
+    - { area: 1376330, note: "Mexico City, MX - Latin American representative, distinct cuisine mix" }
+  cafes:
+    - { area: 71525,   note: "Paris, FR - clear indoor/outdoor seating split, strong wheelchair coverage" }
+    - { area: 451516,  note: "Wroclaw, PL - solid cuisine/wheelchair/seating tagging" }
+    - { area: 1376330, note: "Mexico City, MX - Latin American representative, internet_access stands out" }
+  fast-food:
+    - { area: 71525,   note: "Paris, FR - strong cuisine/outdoor_seating tagging" }
+    - { area: 451516,  note: "Wroclaw, PL - near-universal cuisine, high takeaway/delivery coverage" }
+    - { area: 1376330, note: "Mexico City, MX - Latin American representative, brand-chain heavy" }
+  bars:
+    - { area: 71525,   note: "Paris, FR - solid outdoor_seating/wheelchair/smoking tagging" }
+    - { area: 451516,  note: "Wroclaw, PL - solid outdoor_seating/wheelchair tagging" }
+  pubs:
+    - { area: 71525,   note: "Paris, FR - outdoor_seating/wheelchair/smoking tagging, small but consistent set" }
+    - { area: 451516,  note: "Wroclaw, PL - strongest wheelchair/outdoor_seating coverage found" }
+    - { area: 175342,  note: "Greater London, UK - pub-culture heartland, 3.2k pubs; real_ale (15%) and food (19%) only show real signal at this scale" }
+  ice-cream:
+    - { area: 71525,   note: "Paris, FR - wheelchair/outdoor_seating/takeaway all present despite small dataset" }
+    - { area: 451516,  note: "Wroclaw, PL - consistent wheelchair/outdoor_seating/takeaway signal" }
+    - { area: 1376330, note: "Mexico City, MX - Latin American representative, outdoor_seating stands out" }
+  food-vending:
+    - { area: 19631009, note: "Tokyo 23 Wards, JP - 6.4k machines, full vending-type diversity (drinks/coffee/food/ice_cream/milk/sweets/water)" }
+    - { area: 71525,     note: "Paris, FR - smaller set but richest operator (78%) and brand (69%) tagging" }
+  pitches:
+    - { area: 62428,   note: "Munich, DE - best surface/lit coverage of any city checked" }
+    - { area: 71525,   note: "Paris, FR - strong all-round sport/surface/lit tagging" }
+    - { area: 347950,  note: "Barcelona, ES - near-universal sport tagging (99.8%)" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - large sample, Latin American representative" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, strong sport/surface" }
+  sports-centres:
+    - { area: 79604,   note: "Cape Town, ZA - best sport-tag coverage (75%)" }
+    - { area: 347950,  note: "Barcelona, ES - strong sport tagging (66%)" }
+    - { area: 71525,   note: "Paris, FR - strong sport tagging (64%)" }
+    - { area: 62428,   note: "Munich, DE - solid sport tagging (58%)" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative" }
+  swimming-pools:
+    - { area: 1634158, note: "Montreal, CA - best-balanced access/location split, North American representative" }
+    - { area: 62428,   note: "Munich, DE - dense pool tagging with strong access split" }
+    - { area: 71525,   note: "Paris, FR - well-rounded access/location tagging" }
+    - { area: 347950,  note: "Barcelona, ES - strong access coverage" }
+  playgrounds:
+    - { area: 71525,   note: "Paris, FR - near-complete access (public/private) tagging" }
+    - { area: 62428,   note: "Munich, DE - strong access coverage" }
+    - { area: 347950,  note: "Barcelona, ES - solid access coverage" }
+    - { area: 1634158, note: "Montreal, CA - North American representative" }
+  stadiums:
+    - { area: 2697338, note: "Rio de Janeiro, BR - largest sample (29 stadiums), strong sport tagging" }
+    - { area: 71525,   note: "Paris, FR - near-complete sport tagging" }
+    - { area: 62428,   note: "Munich, DE - solid sport/wheelchair tagging" }
+    - { area: 347950,  note: "Barcelona, ES - solid sport tagging" }
+  tracks:
+    - { area: 62428,   note: "Munich, DE - best surface/lit coverage" }
+    - { area: 71525,   note: "Paris, FR - near-universal sport/surface tagging" }
+    - { area: 79604,   note: "Cape Town, ZA - strong sport/surface (61%), African representative" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - large sample (80 tracks), Latin American representative" }
+  fitness-stations:
+    - { area: 71525,   note: "Paris, FR - best equipment-type tagging (fitness_station 50%)" }
+    - { area: 62428,   note: "Munich, DE - strong equipment-type tagging (42%)" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - large sample (219), Brazil's outdoor-gym culture" }
+    - { area: 347950,  note: "Barcelona, ES - moderate equipment-type tagging" }
+  ice-rinks:
+    - { area: 1634158, note: "Montreal, CA - by far the strongest sample (64 rinks), clear seasonal/sport split" }
+    - { area: 406091,  note: "Oslo, NO - cold-climate representative, though thin (8 rinks)" }
+  public-toilets:
+    - { area: 71525,   note: "Paris, FR - 928 features, near-complete fee/wheelchair, toilets:disposal well used" }
+    - { area: 62428,   note: "Munich, DE - strong fee/wheelchair/access tagging" }
+    - { area: 54517,   note: "Rennes, FR - solid wheelchair/access, smaller but clean" }
+  benches:
+    - { area: 71525,   note: "Paris, FR - 14.9k features, near-complete backrest, strong material" }
+    - { area: 62428,   note: "Munich, DE - 16.4k features, best backrest+material coverage" }
+    - { area: 54517,   note: "Rennes, FR - smaller set, consistent backrest tagging" }
+  drinking-water:
+    - { area: 1293250, note: "Taipei, TW - 1.2k features, strong operator tagging" }
+    - { area: 419203,  note: "Utrecht, NL - near-complete operator/bottle, clean small set" }
+    - { area: 62428,   note: "Munich, DE - best man_made/fountain subtype tagging" }
+  post-offices:
+    - { area: 71525,   note: "Paris, FR - 213 features, 93% wheelchair, 95% operator" }
+    - { area: 62428,   note: "Munich, DE - solid operator/wheelchair mix" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - brand diversity (franchise counters vs Correios)" }
+  parcel-lockers:
+    - { area: 451516,  note: "Wroclaw, PL - 898 features, InPost heartland, near-complete brand/operator" }
+    - { area: 62428,   note: "Munich, DE - 233 features, DHL Packstation, 99% brand" }
+    - { area: 71525,   note: "Paris, FR - mixed brands, moderate coverage" }
+  recycling:
+    - { area: 62428,   note: "Munich, DE - 1.2k features, recycling_type near-universal" }
+    - { area: 54517,   note: "Rennes, FR - operator coverage clearest here" }
+    - { area: 347950,  note: "Barcelona, ES - 4.3k features, largest volume" }
+  bottle-return:
+    - { area: 62422,   note: "Berlin, DE - only city checked (of 15) with real operator diversity: Netto, Kaufland, Rewe, Lidl" }
+  public-bookcase:
+    - { area: 62428,   note: "Munich, DE - 81 features, 60% type coverage, metal_cabinet dominant" }
+    - { area: 71525,   note: "Paris, FR - 174 features, largest volume" }
+    - { area: 62422,   note: "Berlin, DE - 123 features, 60% type coverage, phone_box dominant (repurposed booths)" }
+  luggage-lockers:
+    - { area: 71525,   note: "Paris, FR - 26 features, best fee/operator coverage" }
+    - { area: 62422,   note: "Berlin, DE - 22 features, strong indoor/fee tagging" }
+    - { area: 62428,   note: "Munich, DE - 15 features, Hauptbahnhof cluster" }
+  fountains:
+    - { area: 62428,   note: "Munich, DE - 571 features, largest volume, clean drinking_water split" }
+    - { area: 71525,   note: "Paris, FR - 305 features, real no/yes drinking_water split" }
+  clocks:
+    - { area: 62428,   note: "Munich, DE - 100 features, display/support/visibility all present" }
+    - { area: 71525,   note: "Paris, FR - 392 features, largest volume, rich support diversity" }
+  information-boards:
+    - { area: 71525,   note: "Paris, FR - 2.1k features, near-universal information sub-tag (board/terminal/map/guidepost)" }
+    - { area: 62428,   note: "Munich, DE - 1.6k features, strong guidepost/board/map split" }
+  post-boxes:
+    - { area: 62422,   note: "Berlin, DE - 2.4k features, largest volume, clean lamp/pillar/wall split" }
+    - { area: 62428,   note: "Munich, DE - 747 features, strong post_box:type coverage" }
+    - { area: 71525,   note: "Paris, FR - 1.2k features, thinner type coverage but huge volume" }
+  give-box:
+    - { area: 62428,   note: "Munich, DE - 22 features, Kreislaufschraenke movement, best wheelchair/covered coverage" }
+    - { area: 62422,   note: "Berlin, DE - 11 features, weaker but present; template is Germany-concentrated overall" }
+  hotels:
+    - { area: 71525,   note: "Paris, FR - large set, strong stars/wheelchair/internet_access tagging" }
+    - { area: 347950,  note: "Barcelona, ES - well-rounded coverage across all three keys" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, weaker but real coverage" }
+  motels:
+    - { area: 298285,  note: "Sao Paulo, BR - Brazilian motel culture, largest sample (32); wheelchair near-zero, so the all-Missing legend is itself the accessibility finding" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - second Brazilian representative (16); tourism=motel is regionally concentrated, sparse outside Latin America" }
+  attractions:
+    - { area: 71525,   note: "Paris, FR - wheelchair coverage clearly varied (yes/no/limited)" }
+    - { area: 347950,  note: "Barcelona, ES - highest wheelchair coverage observed" }
+  campsites:
+    - { area: 435514,  note: "Prague, CZ - largest in-city sample, shower/power_supply both present" }
+    - { area: 62428,   note: "Munich, DE - small sample but confirms the same signal outside CZ; wheelchair shows a real Yes/Limited split, not flat" }
+  hotel-guesthouse:
+    - { area: 435514,  note: "Prague, CZ - strong internet_access tagging (wlan), real wheelchair split" }
+    - { area: 347950,  note: "Barcelona, ES - three-way wheelchair split (yes/limited/no)" }
+  alpine-huts:
+    - { area: 104836,  note: "Chamonix-Mont-Blanc, FR - CAF-operated huts, strong operator tagging" }
+    - { area: 1685406, note: "Zermatt, CH - near-complete capacity tagging, SAC-operated huts" }
+  chalets:
+    - { area: 1629145, note: "Madeira, PT - small but individually curated, varied internet_access; operator names are distinct real businesses (e.g. Ana Lodges, Paulo Moniz) despite low 20% coverage; most other regions (Algarve bulk import, Sintra, Douro, Porto) show near-zero tag coverage despite real feature counts" }
+  social-facility:
+    - { area: 1543125, note: "Tokyo, JP - largest sample by far, municipal open-data import, strong facility-type/operator" }
+    - { area: 175342,  note: "Greater London, UK - very large sample, near-complete facility-type + serves" }
+    - { area: 175905,  note: "New York City, US - large sample, North American representative" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, near-complete facility-type tagging" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative" }
+  community-centre:
+    - { area: 62428,   note: "Munich, DE - best operator/centre-type balance" }
+    - { area: 1543125, note: "Tokyo, JP - very large sample, municipal open-data import" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, solid operator/centre-type split" }
+    - { area: 2697338, note: "Rio de Janeiro, BR - Latin American representative, strong centre-type tagging" }
+    - { area: 175905,  note: "New York City, US - North American representative" }
+  town-halls:
+    - { area: 71525,   note: "Paris, FR - near-complete building/wheelchair/townhall:type across all arrondissement mairies" }
+    - { area: 1543125, note: "Tokyo, JP - largest sample by far, all three keys present at real volume" }
+    - { area: 298285,  note: "Sao Paulo, BR - Latin American representative, strong townhall:type coverage" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, strong building-type + townhall:type" }
+    - { area: 62428,   note: "Munich, DE - thin sample but excellent wheelchair coverage" }
+  senior-centers:
+    - { area: 62428,   note: "Munich, DE - best-balanced across facility-type/operator/wheelchair" }
+    - { area: 1543125, note: "Tokyo, JP - largest sample by far, municipal open-data import" }
+    - { area: 79604,   note: "Cape Town, ZA - African representative, large sample, strong facility-type + operator" }
+    - { area: 175905,  note: "New York City, US - North American representative, strong wheelchair coverage" }
+    - { area: 298285,  note: "Sao Paulo, BR - Latin American representative" }
   transit-platforms:
     - { area: 62428,   note: "Munich, DE - dense multimodal platforms, near-complete tactile_paving/bench/shelter/lit, strong wheelchair" }
     - { area: 419203,  note: "Utrecht, NL - well-tagged bus/tram platforms, good tactile_paving + shelter" }
@@ -447,6 +844,191 @@ demonstrators:
     - { area: 62428,   note: "Munich, DE - best operator/operator:type coverage (small sample)" }
     - { area: 451516,  note: "Wroclaw, PL - consistent operator/operator:type pairing (small sample)" }
     - { area: 71525,   note: "Paris, FR - largest sample among candidates" }
+  places-of-worship:
+    - { area: 298285,  note: "Sao Paulo, BR - best religion coverage, strong Catholic/Evangelical/Pentecostal denomination spread" }
+    - { area: 1293250, note: "Taipei, TW - best religion variance (Taoist/Buddhist/Chinese-folk/Christian mix), non-Western" }
+    - { area: 79604,   note: "Cape Town, ZA - highest religion coverage, African multi-faith spread" }
+  atms:
+    - { area: 62422,   note: "Berlin, DE - strongest across all four keys, large sample, well-split cash_in/wheelchair" }
+    - { area: 1293250, note: "Taipei, TW - Asian spread, strong operator/brand" }
+    - { area: 1376330, note: "Mexico City, MX - Latin American spread, good operator/brand" }
+  banks:
+    - { area: 62428,   note: "Munich, DE - operator/atm/wheelchair leader, only region where operator beats brand" }
+    - { area: 175342,  note: "London, GB - brand leader, large sample, good per-bank spread" }
+    - { area: 298285,  note: "Sao Paulo, BR - Latin American spread, brand-heavy on largest sample" }
+  museums:
+    - { area: 71525,   note: "Paris, FR - fee/wheelchair leader, well-rounded sample" }
+    - { area: 175905,  note: "New York, US - museum-type leader, rich category spread" }
+    - { area: 1376330, note: "Mexico City, MX - operator leader, Latin American spread" }
+  theatres:
+    - { area: 62422,   note: "Berlin, DE - best on operator and wheelchair, largest reliable sample" }
+    - { area: 71525,   note: "Paris, FR - largest raw sample, usable wheelchair spread" }
+  cinemas:
+    - { area: 175342,  note: "London, GB - brand leader, largest sample" }
+    - { area: 71525,   note: "Paris, FR - best balance of brand/operator/wheelchair" }
+    - { area: 175905,  note: "New York, US - third reliable sample, moderate coverage across keys" }
+  arts-centre:
+    - { area: 62422,   note: "Berlin, DE - best volume and coverage, well-varied operator names" }
+    - { area: 62428,   note: "Munich, DE - mid-size alternative, strong wheelchair" }
+    - { area: 71525,   note: "Paris, FR - largest raw volume, geographic spread" }
+  gallery:
+    - { area: 62422,   note: "Berlin, DE - best coverage across operator/fee/wheelchair, large volume" }
+    - { area: 71525,   note: "Paris, FR - largest raw volume, FR spread" }
+    - { area: 175342,  note: "London, GB - solid volume, anglophone spread" }
+  memorials:
+    - { area: 62422,   note: "Berlin, DE - huge volume, near-universal memorial= (Stolperstein-dense, a real local pattern)" }
+    - { area: 175342,  note: "London, GB - best-balanced memorial= variance (plaque/blue_plaque/war_memorial/statue)" }
+    - { area: 451516,  note: "Wroclaw, PL - cleanest proportional spread, Central/Eastern Europe diversity" }
+  government-office:
+    - { area: 62422,   note: "Berlin, DE - best across government/operator/admin_level/wheelchair, well-spread government= values" }
+    - { area: 71525,   note: "Paris, FR - second-largest volume, best admin_level coverage, FR spread" }
+    - { area: 419203,  note: "Utrecht, NL - smaller but strong wheelchair, Benelux spread" }
+  courts:
+    - { area: 62422,   note: "Berlin, DE - best wheelchair signal with real yes/no/limited spread" }
+    - { area: 175905,  note: "New York, US - best operator signal, several distinct court-system agencies (EU cities collapse to one state entity)" }
+    - { area: 71525,   note: "Paris, FR - geographic diversity, modest wheelchair spread" }
+  police-stations:
+    - { area: 62422,   note: "Berlin, DE - best operator/wheelchair coverage and variance (federal/state/local forces)" }
+    - { area: 71525,   note: "Paris, FR - high operator coverage, distinct national/municipal values" }
+    - { area: 62428,   note: "Munich, DE - secondary EU anchor, some operator variance" }
+  fire-stations:
+    - { area: 62428,   note: "Munich, DE - best operator variance (professional + several volunteer brigades)" }
+    - { area: 62422,   note: "Berlin, DE - highest volume, operator near single-valued" }
+    - { area: 419203,  note: "Utrecht, NL - small NL sample for regional spread" }
+  ambulance-stations:
+    - { area: 62428,   note: "Munich, DE - best signal, spread across many public+private ambulance operators" }
+    - { area: 175342,  note: "London, GB - largest sample, operator present if org-skewed" }
+    - { area: 298285,  note: "Sao Paulo, BR - geographic diversity, public SAMU-dominated (itself a BR signal)" }
+  fire-hydrants:
+    - { area: 62422,   note: "Berlin, DE - best all-around type/position/diameter coverage and variance" }
+    - { area: 62428,   note: "Munich, DE - near-identical strength, best diameter coverage" }
+    - { area: 54517,   note: "Rennes, FR - geographic spread, good type coverage (pillar-dominated), weak diameter/pressure" }
+  defibrillators:
+    - { area: 71525,   note: "Paris, FR - highest volume, strong access variance" }
+    - { area: 62422,   note: "Berlin, DE - best access coverage, high indoor coverage" }
+    - { area: 62428,   note: "Munich, DE - solid secondary EU sample, good access/indoor spread" }
+  supermarkets:
+    - { area: 62422,   note: "Berlin, DE - best across all four keys, many chains, real wheelchair spread" }
+    - { area: 347950,  note: "Barcelona, ES - Iberian brand mix, Southern-Europe spread" }
+    - { area: 62428,   note: "Munich, DE - alternate DE demonstrator, strong wheelchair/brand" }
+  bakeries:
+    - { area: 62428,   note: "Munich, DE - best overall: brand across several regional chains + strong wheelchair spread" }
+    - { area: 451516,  note: "Wroclaw, PL - highest brand coverage, distinct Polish chains" }
+    - { area: 71525,   note: "Paris, FR - largest raw sample, France spread" }
+  convenience:
+    - { area: 1293250, note: "Taipei, TW - dominant demonstrator: brand across 7-Eleven/FamilyMart/Hi-Life/OK Mart" }
+    - { area: 175342,  note: "London, GB - largest sample, western-chain brand spread" }
+    - { area: 298285,  note: "Sao Paulo, BR - regional spread, moderate brand coverage" }
+  butchers:
+    - { area: 62428,   note: "Munich, DE - best wheelchair coverage and spread" }
+    - { area: 62422,   note: "Berlin, DE - solid coverage, larger urban market" }
+  greengrocers:
+    - { area: 71525,   note: "Paris, FR - best organic variance on largest reliable sample, decent wheelchair" }
+    - { area: 347950,  note: "Barcelona, ES - largest raw count, Iberian spread" }
+    - { area: 62422,   note: "Berlin, DE - best wheelchair, small sample; backup DE demonstrator" }
+  department-stores:
+    - { area: 62422,   note: "Berlin, DE - best balanced brand/wheelchair, real chain spread" }
+    - { area: 175342,  note: "London, GB - best brand coverage, largest strong sample" }
+    - { area: 175905,  note: "New York, US - largest volume, strong brand, market spread (weak wheelchair)" }
+  shopping-malls:
+    - { area: 1293250, note: "Taipei, TW - best operator coverage among candidates, Asian spread" }
+    - { area: 175342,  note: "London, GB - decent operator coverage on a good sample" }
+    - { area: 298285,  note: "Sao Paulo, BR - largest raw mall count, Latin American spread (operator thin but present)" }
+  clothes:
+    - { area: 62428,   note: "Munich, DE - best all-around: clothes-type spread + best wheelchair" }
+    - { area: 71525,   note: "Paris, FR - largest volume, deep brand variety" }
+    - { area: 298285,  note: "Sao Paulo, BR - Latin America spread (wheelchair near-absent regionally)" }
+  chemist:
+    - { area: 62422,   note: "Berlin, DE - largest DE volume, excellent brand and wheelchair" }
+    - { area: 62428,   note: "Munich, DE - best brand coverage, clean drugstore-chain spread" }
+    - { area: 175342,  note: "London, GB - largest raw volume, confirms genuine UK-native usage" }
+  fuel:
+    - { area: 298285,  note: "Sao Paulo, BR - huge volume, best brand variance (Ipiranga/Shell/BR)" }
+    - { area: 419203,  note: "Utrecht, NL - best operator coverage/variance, clean dataset" }
+    - { area: 62428,   note: "Munich, DE - balanced brand and operator, European chain diversity" }
+  hardware:
+    - { area: 62422,   note: "Berlin, DE - best wheelchair coverage and largest sample, some brand signal" }
+    - { area: 62428,   note: "Munich, DE - second-best brand/wheelchair, independent+chain mix" }
+  diy:
+    - { area: 62422,   note: "Berlin, DE - largest sample, excellent brand variance (7 chains) and wheelchair" }
+    - { area: 62428,   note: "Munich, DE - best wheelchair and brand coverage rates" }
+    - { area: 419203,  note: "Utrecht, NL - non-DE demonstrator, high brand coverage" }
+  furniture:
+    - { area: 71525,   note: "Paris, FR - largest sample, best brand variance (designer/chain brands)" }
+    - { area: 62428,   note: "Munich, DE - best wheelchair coverage, reasonable brand presence" }
+  electronics:
+    - { area: 1293250, note: "Taipei, TW - largest sample, best brand variance, non-Western regional chains" }
+    - { area: 71525,   note: "Paris, FR - balanced brand and wheelchair, recognizable Euro chains" }
+    - { area: 62428,   note: "Munich, DE - best wheelchair coverage" }
+  mobile-phone:
+    - { area: 62422,   note: "Berlin, DE - best overall brand/wheelchair, wide carrier-brand spread" }
+    - { area: 298285,  note: "Sao Paulo, BR - regional diversity, distinct Brazilian carriers" }
+    - { area: 71525,   note: "Paris, FR - large sample, good brand variance" }
+  shoes:
+    - { area: 62422,   note: "Berlin, DE - best overall brand/wheelchair, strong chain variance" }
+    - { area: 71525,   note: "Paris, FR - large sample, good brand variance" }
+    - { area: 347950,  note: "Barcelona, ES - Iberian regional spread" }
+  jewelry:
+    - { area: 62422,   note: "Berlin, DE - best wheelchair coverage and spread" }
+    - { area: 71525,   note: "Paris, FR - large sample, moderate coverage" }
+    - { area: 347950,  note: "Barcelona, ES - regional spread" }
+  parks:
+    - { area: 62428,   note: "Munich, DE - largest well-tagged sample, clean access variance" }
+    - { area: 406091,  note: "Oslo, NO - best access coverage, Nordic spread" }
+    - { area: 298285,  note: "Sao Paulo, BR - Latin American spread, largest raw count (access thin, as expected)" }
+  gardens:
+    - { area: 62428,   note: "Munich, DE - best on garden:type and access, rich variance on both" }
+    - { area: 71525,   note: "Paris, FR - large sample, strong access coverage" }
+    - { area: 298285,  note: "Sao Paulo, BR - Latin American spread, largest raw counts" }
+  marinas:
+    - { area: 175905,  note: "New York, US - largest sample, only city with usable operator signal" }
+    - { area: 406091,  note: "Oslo, NO - best fee coverage, Nordic spread" }
+  golf-courses:
+    - { area: 79604,   note: "Cape Town, ZA - largest raw count of courses" }
+    - { area: 175905,  note: "New York, US - second-largest, only city with any access signal" }
+  fitness-centers:
+    - { area: 62422,   note: "Berlin, DE - best sport-type coverage and variety (yoga/fitness/pilates/cycling), large sample" }
+    - { area: 71525,   note: "Paris, FR - large sample, good sport-type and wheelchair spread" }
+    - { area: 1634158, note: "Montreal, CA - non-European diversity, real sport/wheelchair spread" }
+  gates:
+    - { area: 54517,   note: "Rennes, FR - best access coverage, clean variance" }
+    - { area: 451516,  note: "Wroclaw, PL - largest sample, excellent access variance" }
+    - { area: 419203,  note: "Utrecht, NL - strong access coverage, regional spread" }
+  markets:
+    - { area: 347950,  note: "Barcelona, ES - municipal markets, mostly building-mapped (age-view dataset)" }
+    - { area: 298285,  note: "Sao Paulo, BR - marketplaces incl. street feiras" }
+  # Untouched-template review (epic #245 closure)
+  orchards:
+    - { area: 347950,  note: "Barcelona, ES - trees (species) well tagged (~33%)" }
+    - { area: 79604,   note: "Cape Town, ZA - largest sample, strong trees coverage (~29%)" }
+  beaches:
+    - { area: 347950,  note: "Barcelona, ES - near-complete surface (sand/pebbles) tagging" }
+    - { area: 79604,   note: "Cape Town, ZA - larger sample, real surface variance" }
+  dog-parks:
+    - { area: 175905,  note: "New York City, US - strongest access coverage (~37%)" }
+    - { area: 62422,   note: "Berlin, DE - solid access coverage, European representative" }
+  tower:
+    - { area: 175342,  note: "London, GB - largest sample, ~80% tower:type (communication/observation/...)" }
+    - { area: 62422,   note: "Berlin, DE - strong tower:type coverage" }
+    - { area: 62428,   note: "Munich, DE - strong tower:type coverage" }
+  surveillance:
+    - { area: 62422,   note: "Berlin, DE - large sample, near-complete surveillance:type + surveillance" }
+    - { area: 175342,  note: "London, GB - CCTV-dense, strong surveillance:type" }
+  pipeline:
+    - { area: 62428,   note: "Munich, DE - substance (water/gas/...) ~87%" }
+    - { area: 62422,   note: "Berlin, DE - strong substance coverage" }
+  storage-tanks:
+    - { area: 62422,   note: "Berlin, DE - content (water/gas/silage/...) ~76%" }
+    - { area: 62428,   note: "Munich, DE - solid content coverage" }
+  football:
+    - { area: 62428,   note: "Munich, DE - surface 76%, lit 64%" }
+    - { area: 71525,   note: "Paris, FR - surface 61%, lit 44%" }
+  basketball:
+    - { area: 62428,   note: "Munich, DE - surface 66%, lit 56%" }
+    - { area: 71525,   note: "Paris, FR - surface 54%, lit 45%" }
+  tennis:
+    - { area: 62428,   note: "Munich, DE - surface 71%, lit 55%" }
+    - { area: 71525,   note: "Paris, FR - surface 42%, lit 25%" }
 
 # Category to icon mapping (fallback for templates without icon)
 categories:
@@ -469,7 +1051,6 @@ categories:
   infrastructure: Gauge
   housing: Building2
   sports: Trophy
-  public: Info
   religion: Landmark
   barriers: Square
   agriculture: Wheat

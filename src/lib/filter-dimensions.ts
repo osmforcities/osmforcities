@@ -57,6 +57,15 @@ const isAgeCategory = (v: unknown): v is AgeCategory =>
  * original casing for display. Returns values sorted desc by count plus a `missing`
  * count. Salvaged from the removed map-themes auto-detection minus the
  * color/scoring/category-count gating — here we surface every value.
+ *
+ * OSM tags routinely combine multiple values on one key with `;` (e.g.
+ * `vending=drinks;food`, matching the Overpass query builder's own semicolon-list
+ * convention — see buildOverpassQuery in prisma/lib/template-parser.ts). Each
+ * semicolon-separated token is counted toward its own value bucket, so a
+ * combined-value feature contributes to every value it actually carries rather
+ * than rendering as one literal, untranslated "a;b" row. This means a single
+ * feature can count toward more than one bucket for the same key — expected for
+ * a multi-valued field, not a double-count bug.
  */
 function computeTagDimension(features: Feature[], key: string): FilterDimension {
   const countByLower = new Map<string, number>();
@@ -71,13 +80,19 @@ function computeTagDimension(features: Feature[], key: string): FilterDimension 
       continue;
     }
 
-    const value = String(raw);
-    const lower = value.toLowerCase();
-    countByLower.set(lower, (countByLower.get(lower) ?? 0) + 1);
+    const tokens = String(raw)
+      .split(";")
+      .map((t) => t.trim())
+      .filter(Boolean);
 
-    if (!casingByLower.has(lower)) casingByLower.set(lower, new Map());
-    const casing = casingByLower.get(lower)!;
-    casing.set(value, (casing.get(value) ?? 0) + 1);
+    for (const value of tokens.length > 0 ? tokens : [String(raw)]) {
+      const lower = value.toLowerCase();
+      countByLower.set(lower, (countByLower.get(lower) ?? 0) + 1);
+
+      if (!casingByLower.has(lower)) casingByLower.set(lower, new Map());
+      const casing = casingByLower.get(lower)!;
+      casing.set(value, (casing.get(value) ?? 0) + 1);
+    }
   }
 
   const values: FilterDimensionValue[] = Array.from(countByLower.entries())
@@ -127,18 +142,25 @@ function computeAgeDimension(features: Feature[]): FilterDimension {
 /**
  * Turn a dataset's geojson features into filter dimensions for the FilterPanel.
  *
- * Emits one dimension per allow-listed tag that is present in at least one feature
- * (sorted desc by count, with a `missing` count), plus an always-present `age`
- * dimension. Pure — pass a custom `filterableTags` to override the default seed list.
+ * Emits one dimension per allow-listed tag (sorted desc by count, with a `missing`
+ * count), plus an always-present `age` dimension. Pure — pass a custom
+ * `filterableTags` to override the default seed list.
+ *
+ * `keepEmpty` controls all-missing tags (present in the list but carried by no
+ * feature). Default `false` drops them — right for the heuristic default seed,
+ * where an absent tag is just noise. Curated per-template lists pass `true`: every
+ * key was deliberately chosen, so a 100%-Missing dimension is the finding (an
+ * accessibility/data gap) and must stay colorable — its legend is a single "Missing"
+ * row and the map paints every feature the missing color.
  */
 export function computeFilterDimensions(
   features: Feature[],
-  filterableTags: readonly string[] = FILTERABLE_TAGS
+  filterableTags: readonly string[] = FILTERABLE_TAGS,
+  { keepEmpty = false }: { keepEmpty?: boolean } = {}
 ): FilterDimension[] {
   const tagDimensions = filterableTags
     .map((key) => computeTagDimension(features, key))
-    // Only surface tags actually present in the data.
-    .filter((dim) => dim.values.length > 0);
+    .filter((dim) => keepEmpty || dim.values.length > 0);
 
   return [...tagDimensions, computeAgeDimension(features)];
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Map, { NavigationControl } from "react-map-gl/maplibre";
+import Map from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Link } from "react-aria-components";
@@ -9,6 +9,7 @@ import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FeatureCollection } from "geojson";
 import { mapStyle } from "@/lib/map-tiles";
+import { MapZoomControl } from "@/components/ui/map-zoom-control";
 import { getTemplateIcon } from "@/lib/category-icons";
 import { calculateBbox, computeInitialViewState } from "@/lib/utils";
 import type { InitialViewState } from "@/lib/utils";
@@ -151,14 +152,13 @@ export function FeaturedDatasetMapClient({
         {processedData && (
           <MapLayers geoJSONData={processedData} curatedTheme={null} />
         )}
-        <div className="absolute right-3 bottom-3">
-          <NavigationControl showCompass={false} visualizePitch={false} />
-        </div>
+        <MapZoomControl />
       </Map>
 
-      {/* Bottom is owned by the info card on small screens, so the legend moves to the top-left corner there */}
+      {/* Bottom is owned by the info card on small screens, so the legend moves
+          to the top-right corner there (top-left holds the shared zoom control) */}
       {processedData && (
-        <div className="absolute start-3 top-3 sm:start-4 sm:top-auto sm:bottom-4">
+        <div className="absolute end-3 top-3 sm:end-auto sm:start-4 sm:top-auto sm:bottom-4">
           <AgeLegendCompact />
         </div>
       )}

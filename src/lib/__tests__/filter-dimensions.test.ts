@@ -70,6 +70,27 @@ describe("computeFilterDimensions — tag dimensions", () => {
     ]);
   });
 
+  it("splits semicolon-combined values and counts each token separately", () => {
+    // OSM tags routinely combine values on one key, e.g. vending=drinks;food.
+    const features = [
+      feature({ amenity: "drinks;food" }),
+      feature({ amenity: "food" }),
+      feature({ amenity: "drinks" }),
+    ];
+
+    const amenity = byKey(computeFilterDimensions(features), "amenity");
+
+    // the combined-value feature counts toward BOTH "drinks" and "food" —
+    // never rendered as its own literal "drinks;food" row.
+    expect(amenity!.values).toEqual(
+      expect.arrayContaining([
+        { value: "drinks", count: 2 },
+        { value: "food", count: 2 },
+      ]),
+    );
+    expect(amenity!.values).toHaveLength(2);
+  });
+
   it("coerces non-string tag values to strings", () => {
     // `amenity` is allow-listed; use it with a numeric-ish value to exercise coercion
     const features = [
@@ -119,6 +140,27 @@ describe("computeFilterDimensions — tag dimensions", () => {
 
     expect(byKey(dims, "colour")).toBeDefined();
     expect(byKey(dims, "surface")).toBeUndefined();
+  });
+
+  it("drops an all-missing curated tag by default", () => {
+    const features = [feature({ amenity: "hospital" })];
+
+    const dims = computeFilterDimensions(features, ["wheelchair"]);
+
+    expect(byKey(dims, "wheelchair")).toBeUndefined();
+  });
+
+  it("keeps an all-missing curated tag when keepEmpty is set (Missing is the finding)", () => {
+    const features = [feature({ amenity: "hospital" }), feature({ amenity: "clinic" })];
+
+    const dim = byKey(
+      computeFilterDimensions(features, ["wheelchair"], { keepEmpty: true }),
+      "wheelchair"
+    );
+
+    expect(dim).toBeDefined();
+    expect(dim!.values).toEqual([]);
+    expect(dim!.missing).toBe(2);
   });
 });
 

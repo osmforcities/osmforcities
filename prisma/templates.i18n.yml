@@ -27,6 +27,15 @@ templates:
       en: Bicycle Shop
       pt: Loja de bicicletas
       es: Tienda de bicicletas
+  markets:
+    name:
+      en: Markets
+      pt: Mercados e feiras
+      es: Mercados
+    desc:
+      en: Public marketplaces
+      pt: Mercados e feiras públicas
+      es: Mercados públicos
   bus-stops:
     name:
       en: Bus Stops
@@ -189,6 +198,51 @@ templates:
       en: Parcel Lockers
       pt: Lockers de encomendas
       es: Consignas de paquetes
+  shower:
+    name:
+      en: Showers
+      pt: Chuveiros públicos
+      es: Duchas públicas
+    desc:
+      en: Showers
+      pt: Chuveiros públicos
+      es: Duchas públicas
+  public-bookcase:
+    name:
+      en: Public Bookcases
+      pt: Estantes públicas de livros
+      es: Estanterías públicas de libros
+    desc:
+      en: Public Bookcases
+      pt: Estantes públicas de livros
+      es: Estanterías públicas de libros
+  luggage-lockers:
+    name:
+      en: Luggage Lockers
+      pt: Guarda-volumes
+      es: Consignas de equipaje
+    desc:
+      en: Luggage Lockers
+      pt: Guarda-volumes
+      es: Consignas de equipaje
+  post-boxes:
+    name:
+      en: Post Boxes
+      pt: Caixas de coleta postal
+      es: Buzones de correos
+    desc:
+      en: Post Boxes
+      pt: Caixas de coleta postal
+      es: Buzones de correos
+  give-box:
+    name:
+      en: Give Boxes
+      pt: Armários de doação
+      es: Armarios de intercambio
+    desc:
+      en: Give Boxes
+      pt: Armários de doação
+      es: Armarios de intercambio
   hospitals:
     name:
       en: Hospitals
@@ -261,6 +315,132 @@ templates:
       en: Veterinary
       pt: Veterinários
       es: Veterinaria
+  opticians:
+    name:
+      en: Opticians
+      pt: Óticas
+      es: Ópticas
+    desc:
+      en: Opticians
+      pt: Óticas
+      es: Ópticas
+  medical-laboratories:
+    name:
+      en: Medical Laboratories
+      pt: Laboratórios médicos
+      es: Laboratorios médicos
+    desc:
+      en: Medical Laboratories
+      pt: Laboratórios médicos
+      es: Laboratorios médicos
+  psychotherapists:
+    name:
+      en: Psychotherapists
+      pt: Psicoterapeutas
+      es: Psicoterapeutas
+    desc:
+      en: Psychotherapists
+      pt: Psicoterapeutas
+      es: Psicoterapeutas
+  physiotherapists:
+    name:
+      en: Physiotherapists
+      pt: Fisioterapeutas
+      es: Fisioterapeutas
+    desc:
+      en: Physiotherapists
+      pt: Fisioterapeutas
+      es: Fisioterapeutas
+  optometrists:
+    name:
+      en: Optometrists
+      pt: Optometristas
+      es: Optometristas
+    desc:
+      en: Optometrists
+      pt: Optometristas
+      es: Optometristas
+  podiatrists:
+    name:
+      en: Podiatrists
+      pt: Podólogos
+      es: Podólogos
+    desc:
+      en: Podiatrists
+      pt: Podólogos
+      es: Podólogos
+  rehabilitation-centres:
+    name:
+      en: Rehabilitation Centres
+      pt: Centros de reabilitação
+      es: Centros de rehabilitación
+    desc:
+      en: Rehabilitation Centres
+      pt: Centros de reabilitação
+      es: Centros de rehabilitación
+  counselling-services:
+    name:
+      en: Counselling Services
+      pt: Serviços de aconselhamento
+      es: Servicios de asesoramiento
+    desc:
+      en: Counselling Services
+      pt: Serviços de aconselhamento
+      es: Servicios de asesoramiento
+  speech-therapists:
+    name:
+      en: Speech Therapists
+      pt: Fonoaudiólogos
+      es: Logopedas
+    desc:
+      en: Speech Therapists
+      pt: Fonoaudiólogos
+      es: Logopedas
+  occupational-therapists:
+    name:
+      en: Occupational Therapists
+      pt: Terapeutas ocupacionais
+      es: Terapeutas ocupacionales
+    desc:
+      en: Occupational Therapists
+      pt: Terapeutas ocupacionais
+      es: Terapeutas ocupacionales
+  alternative-medicine:
+    name:
+      en: Alternative Medicine
+      pt: Medicina alternativa
+      es: Medicina alternativa
+    desc:
+      en: Alternative Medicine
+      pt: Medicina alternativa
+      es: Medicina alternativa
+  blood-donation:
+    name:
+      en: Blood Donation
+      pt: Doação de sangue
+      es: Donación de sangre
+    desc:
+      en: Blood Donation
+      pt: Doação de sangue
+      es: Donación de sangre
+  dialysis-centres:
+    name:
+      en: Dialysis Centres
+      pt: Centros de diálise
+      es: Centros de diálisis
+    desc:
+      en: Dialysis Centres
+      pt: Centros de diálise
+      es: Centros de diálisis
+  midwives:
+    name:
+      en: Midwives
+      pt: Parteiras
+      es: Parteras
+    desc:
+      en: Midwives
+      pt: Parteiras
+      es: Parteras
   schools:
     name:
       en: Schools
@@ -360,6 +540,17 @@ templates:
       en: Hotels
       pt: Hotéis
       es: Hoteles
+  motels:
+    name:
+      en: Motels
+      pt: Motéis
+      es: Moteles
+    # tourism=motel spans two regional meanings (roadside motor lodge vs the Brazilian/
+    # Latin American short-stay motel); keep the description neutral across locales.
+    desc:
+      en: Short-stay lodging
+      pt: Hospedagem de curta permanência
+      es: Alojamiento de estancia corta
   attractions:
     name:
       en: Attractions
@@ -405,15 +596,6 @@ templates:
       en: Caravan Sites
       pt: Áreas para trailers
       es: Áreas para caravanas
-  chalets:
-    name:
-      en: Chalets
-      pt: Chalés
-      es: Chalés
-    desc:
-      en: Chalets
-      pt: Chalés
-      es: Chalés
   wilderness-huts:
     name:
       en: Wilderness Huts
@@ -423,6 +605,15 @@ templates:
       en: Wilderness Huts
       pt: Abrigos em áreas naturais
       es: Refugios en zonas naturales
+  chalets:
+    name:
+      en: Chalets
+      pt: Chalés
+      es: Chalés
+    desc:
+      en: Chalets
+      pt: Chalés
+      es: Chalés
   cinemas:
     name:
       en: Cinemas
@@ -585,6 +776,24 @@ templates:
       en: Emergency Phones
       pt: Telefones de emergência
       es: Teléfonos de emergencia
+  fire-hydrants:
+    name:
+      en: Fire Hydrants
+      pt: Hidrantes
+      es: Hidrantes
+    desc:
+      en: Fire Hydrants
+      pt: Hidrantes
+      es: Hidrantes
+  defibrillators:
+    name:
+      en: Defibrillators
+      pt: Desfibriladores
+      es: Desfibriladores
+    desc:
+      en: Public access defibrillators (AEDs)
+      pt: Desfibriladores de acesso público (DEAs)
+      es: Desfibriladores de acceso público (DEA)
   waterfall:
     name:
       en: Waterfall
@@ -621,6 +830,24 @@ templates:
       en: Waste Disposal
       pt: Descarte de resíduos
       es: Eliminación de residuos
+  waste-basket:
+    name:
+      en: Waste Baskets
+      pt: Lixeiras
+      es: Papeleras
+    desc:
+      en: Waste Baskets
+      pt: Lixeiras
+      es: Papeleras
+  bottle-return:
+    name:
+      en: Bottle Return Machines
+      pt: Máquinas de retorno de garrafas
+      es: Máquinas de retorno de botellas
+    desc:
+      en: Bottle Return Machines
+      pt: Máquinas de retorno de garrafas
+      es: Máquinas de retorno de botellas
   benches:
     name:
       en: Benches
@@ -639,15 +866,6 @@ templates:
       en: Telephones
       pt: Telefones públicos
       es: Teléfonos públicos
-  internet-access:
-    name:
-      en: Internet Access
-      pt: Acesso à internet
-      es: Acceso a internet
-    desc:
-      en: Internet Access
-      pt: Acesso à internet
-      es: Acceso a internet
   supermarkets:
     name:
       en: Supermarkets
@@ -783,15 +1001,6 @@ templates:
       en: Mobile Phone
       pt: Celulares
       es: Teléfonos móviles
-  optician:
-    name:
-      en: Optician
-      pt: Óticas
-      es: Ópticas
-    desc:
-      en: Optician
-      pt: Óticas
-      es: Ópticas
   shoes:
     name:
       en: Shoes
@@ -864,6 +1073,24 @@ templates:
       en: Ice Cream
       pt: Sorveterias
       es: Heladerías
+  food-court:
+    name:
+      en: Food Courts
+      pt: Praças de alimentação
+      es: Patios de comidas
+    desc:
+      en: Food Courts
+      pt: Praças de alimentação
+      es: Patios de comidas
+  food-vending:
+    name:
+      en: Food & Drink Vending
+      pt: Vending machines de alimentos
+      es: Máquinas expendedoras de alimentos
+    desc:
+      en: Food & Drink Vending
+      pt: Vending machines de alimentos
+      es: Máquinas expendedoras de alimentos
   parks:
     name:
       en: Parks
@@ -945,6 +1172,33 @@ templates:
       en: Golf Courses
       pt: Campos de golfe
       es: Campos de golf
+  tracks:
+    name:
+      en: Tracks
+      pt: Pistas de atletismo
+      es: Pistas de atletismo
+    desc:
+      en: Tracks
+      pt: Pistas de atletismo
+      es: Pistas de atletismo
+  fitness-stations:
+    name:
+      en: Fitness Stations
+      pt: Estações de ginástica
+      es: Estaciones de ejercicio
+    desc:
+      en: Fitness Stations
+      pt: Estações de ginástica
+      es: Estaciones de ejercicio
+  ice-rinks:
+    name:
+      en: Ice Rinks
+      pt: Pistas de gelo
+      es: Pistas de hielo
+    desc:
+      en: Ice Rinks
+      pt: Pistas de gelo
+      es: Pistas de hielo
   nature-reserves:
     name:
       en: Nature Reserves
@@ -1170,15 +1424,6 @@ templates:
       en: Heath
       pt: Charneca
       es: Brezal
-  moor:
-    name:
-      en: Moor
-      pt: Pântano
-      es: Páramo
-    desc:
-      en: Moor
-      pt: Pântano
-      es: Páramo
   fell:
     name:
       en: Fell
@@ -1548,24 +1793,6 @@ templates:
       en: Skiing
       pt: Esqui
       es: Esquí
-  ice-skating:
-    name:
-      en: Ice Skating
-      pt: Patinação no gelo
-      es: Patinaje sobre hielo
-    desc:
-      en: Ice Skating
-      pt: Patinação no gelo
-      es: Patinaje sobre hielo
-  ice-hockey:
-    name:
-      en: Ice Hockey
-      pt: Hóquei no gelo
-      es: Hockey sobre hielo
-    desc:
-      en: Ice Hockey
-      pt: Hóquei no gelo
-      es: Hockey sobre hielo
   baseball:
     name:
       en: Baseball
@@ -1593,15 +1820,6 @@ templates:
       en: Gymnasiums
       pt: Ginásios
       es: Gimnasios
-  multi-sport:
-    name:
-      en: Multi Sport
-      pt: Poliesportivo
-      es: Polideportivo
-    desc:
-      en: Multi Sport
-      pt: Poliesportivo
-      es: Polideportivo
   shooting:
     name:
       en: Shooting
@@ -1656,33 +1874,15 @@ templates:
       en: Clocks
       pt: Relógios públicos
       es: Relojes públicos
-  guideposts:
-    name:
-      en: Guideposts
-      pt: Marcos de trilha
-      es: Hitos de senderismo
-    desc:
-      en: Guideposts
-      pt: Marcos de trilha
-      es: Hitos de senderismo
   information-boards:
     name:
-      en: Information Boards
-      pt: Painéis informativos
-      es: Paneles informativos
+      en: Wayfinding & Information
+      pt: Sinalização e informação
+      es: Señalización e información
     desc:
-      en: Information Boards
-      pt: Painéis informativos
-      es: Paneles informativos
-  markers:
-    name:
-      en: Markers
-      pt: Marcadores e painéis
-      es: Marcadores y paneles
-    desc:
-      en: Markers
-      pt: Marcadores e painéis
-      es: Marcadores y paneles
+      en: Wayfinding & Information
+      pt: Sinalização e informação
+      es: Señalización e información
   places-of-worship:
     name:
       en: Places Of Worship
@@ -1692,51 +1892,6 @@ templates:
       en: Places Of Worship
       pt: Locais de culto
       es: Lugares de culto
-  church:
-    name:
-      en: Church
-      pt: Igrejas
-      es: Iglesias
-    desc:
-      en: Church
-      pt: Igrejas
-      es: Iglesias
-  mosque:
-    name:
-      en: Mosque
-      pt: Mesquitas
-      es: Mezquitas
-    desc:
-      en: Mosque
-      pt: Mesquitas
-      es: Mezquitas
-  synagogue:
-    name:
-      en: Synagogue
-      pt: Sinagogas
-      es: Sinagogas
-    desc:
-      en: Synagogue
-      pt: Sinagogas
-      es: Sinagogas
-  temple:
-    name:
-      en: Temple
-      pt: Templos
-      es: Templos
-    desc:
-      en: Temple
-      pt: Templos
-      es: Templos
-  shrine:
-    name:
-      en: Shrine
-      pt: Santuários
-      es: Santuarios
-    desc:
-      en: Shrine
-      pt: Santuários
-      es: Santuarios
   walls:
     name:
       en: Walls

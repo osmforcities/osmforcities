@@ -25,6 +25,7 @@ import { StyleTuningPanel } from "./map/style-tuning-panel";
 import { useMapData, useFeatureSelection } from "./map/hooks";
 import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
+import { MapZoomControl } from "@/components/ui/map-zoom-control";
 import { mapStyle } from "@/lib/map-tiles";
 import { AGE_COLORS } from "./map/layers/map-style";
 import {
@@ -105,7 +106,7 @@ export const DatasetFullMap = forwardRef<
   const filterDimensions = useMemo(
     () =>
       features?.length
-        ? computeFilterDimensions(features, filterableTags)
+        ? computeFilterDimensions(features, filterableTags, { keepEmpty: true })
         : [],
     [features, filterableTags]
   );
@@ -204,7 +205,7 @@ export const DatasetFullMap = forwardRef<
       {/* Map */}
       <div className="flex-1 relative">
         {hasFilteredData && (
-          /* Legend: the map's single control */
+          /* Legend: the map's primary control (zoom sits top-left) */
           <div className="absolute z-10 top-4 end-4">
             <InteractiveLegend
               views={views}
@@ -241,6 +242,7 @@ export const DatasetFullMap = forwardRef<
             touchZoomRotate={true}
           >
             {boundary && <AoiBoundaryLayer boundary={boundary} />}
+            <MapZoomControl />
             <MemoizedMapLayers
               geoJSONData={processedData}
               curatedTheme={activeTheme}

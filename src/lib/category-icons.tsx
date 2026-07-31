@@ -1,16 +1,21 @@
 import {
+  Accessibility,
   Ambulance,
   Anchor,
   Antenna,
   Apple,
+  Armchair,
   Baby,
   Backpack,
   Banknote,
   BedDouble,
+  BedSingle,
   Beef,
   Beer,
+  BicepsFlexed,
   Bike,
   Binoculars,
+  BookOpen,
   BrickWall,
   Building,
   Building2,
@@ -23,37 +28,44 @@ import {
   Caravan,
   Carrot,
   Cctv,
-  Church,
+  ChefHat,
+  CircleDot,
   Clock,
   Coffee,
-  Construction,
+  Container,
   Croissant,
   Cross,
   Crosshair,
+  CupSoda,
   Cylinder,
+  Diamond,
   Dog,
   DollarSign,
   DoorOpen,
-  Dribbble,
   Droplet,
   Droplets,
   Dumbbell,
   Egg,
+  Eye,
   Factory,
   Fence,
   Film,
   FireExtinguisher,
+  Flame,
+  FlaskConical,
   Flower2,
   Footprints,
   Fuel,
   Gauge,
   Gem,
+  Gift,
   Glasses,
   Goal,
   GraduationCap,
   Hammer,
   Heart,
   HeartHandshake,
+  HeartPulse,
   Home,
   Hospital,
   Hotel,
@@ -63,28 +75,35 @@ import {
   LandPlot,
   Landmark,
   Languages,
+  LayoutGrid,
   Leaf,
   LibraryBig,
   Lightbulb,
+  Luggage,
   Mail,
+  Mailbox,
   MapPin,
   Martini,
   Medal,
+  MessageCircle,
+  MessagesSquare,
   Microscope,
   Milestone,
   Milk,
-  MoonStar,
   Mountain,
   MountainSnow,
   Music,
   Package,
   Palette,
   PawPrint,
+  PersonStanding,
   Phone,
   Pill,
+  Puzzle,
   RadioTower,
   RailSymbol,
   Recycle,
+  Ribbon,
   RockingChair,
   Route,
   Sandwich,
@@ -95,12 +114,14 @@ import {
   Ship,
   Shirt,
   ShoppingBag,
+  ShoppingBasket,
   ShoppingCart,
+  ShowerHead,
   Shrub,
   Signpost,
   Siren,
   Smartphone,
-  Smile,
+  SmilePlus,
   Snowflake,
   Sofa,
   Sprout,
@@ -113,6 +134,7 @@ import {
   Tent,
   Theater,
   ThermometerSun,
+  Ticket,
   Toilet,
   ToyBrick,
   Tractor,
@@ -121,14 +143,15 @@ import {
   TrainFrontTunnel,
   TrainTrack,
   TramFront,
+  Trash,
   Trash2,
   TreeDeciduous,
-  TreePalm,
   TreePine,
   Trees,
   TriangleAlert,
   Trophy,
   Tv,
+  Undo2,
   Users,
   Utensils,
   UtensilsCrossed,
@@ -137,7 +160,6 @@ import {
   Waves,
   Waypoints,
   Wheat,
-  Wifi,
   Wrench,
   Zap
 } from "lucide-react";
@@ -146,7 +168,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-07-28T22:40:43.772Z
+ * Generated: 2026-07-30T14:34:41.052Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -188,8 +210,6 @@ export function getCategoryIcon(category: string) {
       return <TreePine className="w-5 h-5" />;
     case "nature":
       return <Leaf className="w-5 h-5" />;
-    case "public":
-      return <Info className="w-5 h-5" />;
     case "religion":
       return <Landmark className="w-5 h-5" />;
     case "services":
@@ -224,10 +244,12 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Cylinder className="w-5 h-5" />;
     case "alpine-huts":
       return <Mountain className="w-5 h-5" />;
+    case "alternative-medicine":
+      return <Leaf className="w-5 h-5" />;
     case "ambulance-stations":
       return <Ambulance className="w-5 h-5" />;
     case "animal-keeping":
-      return <PawPrint className="w-5 h-5" />;
+      return <Fence className="w-5 h-5" />;
     case "apartments":
       return <Building2 className="w-5 h-5" />;
     case "archery":
@@ -249,11 +271,11 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "bars":
       return <Martini className="w-5 h-5" />;
     case "baseball":
-      return <Trophy className="w-5 h-5" />;
+      return <Diamond className="w-5 h-5" />;
     case "basketball":
-      return <Dribbble className="w-5 h-5" />;
+      return <CircleDot className="w-5 h-5" />;
     case "beaches":
-      return <TreePalm className="w-5 h-5" />;
+      return <Waves className="w-5 h-5" />;
     case "benches":
       return <RockingChair className="w-5 h-5" />;
     case "bicycle-parking":
@@ -262,6 +284,10 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Bike className="w-5 h-5" />;
     case "bicycle-shop":
       return <Store className="w-5 h-5" />;
+    case "blood-donation":
+      return <Droplet className="w-5 h-5" />;
+    case "bottle-return":
+      return <Undo2 className="w-5 h-5" />;
     case "bridges":
       return <Waypoints className="w-5 h-5" />;
     case "bunker-silos":
@@ -290,8 +316,6 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Backpack className="w-5 h-5" />;
     case "chimney":
       return <Factory className="w-5 h-5" />;
-    case "church":
-      return <Church className="w-5 h-5" />;
     case "cinemas":
       return <Film className="w-5 h-5" />;
     case "cliffs":
@@ -314,10 +338,12 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Users className="w-5 h-5" />;
     case "convenience":
       return <Store className="w-5 h-5" />;
+    case "counselling-services":
+      return <MessagesSquare className="w-5 h-5" />;
     case "courts":
       return <Scale className="w-5 h-5" />;
     case "cowsheds":
-      return <PawPrint className="w-5 h-5" />;
+      return <Warehouse className="w-5 h-5" />;
     case "crossings":
       return <Footprints className="w-5 h-5" />;
     case "cycleways":
@@ -325,11 +351,15 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "dairy-yards":
       return <Milk className="w-5 h-5" />;
     case "dam":
-      return <Construction className="w-5 h-5" />;
+      return <BrickWall className="w-5 h-5" />;
+    case "defibrillators":
+      return <HeartPulse className="w-5 h-5" />;
     case "dentists":
-      return <Smile className="w-5 h-5" />;
+      return <SmilePlus className="w-5 h-5" />;
     case "department-stores":
       return <Store className="w-5 h-5" />;
+    case "dialysis-centres":
+      return <Droplets className="w-5 h-5" />;
     case "diy":
       return <Wrench className="w-5 h-5" />;
     case "doctors":
@@ -347,7 +377,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "emergency-phones":
       return <Phone className="w-5 h-5" />;
     case "equestrian":
-      return <PawPrint className="w-5 h-5" />;
+      return <Ribbon className="w-5 h-5" />;
     case "ev-charging":
       return <Zap className="w-5 h-5" />;
     case "farm-auxiliary":
@@ -359,17 +389,25 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "fast-food":
       return <Sandwich className="w-5 h-5" />;
     case "feedlots":
-      return <PawPrint className="w-5 h-5" />;
+      return <Fence className="w-5 h-5" />;
     case "fell":
       return <Mountain className="w-5 h-5" />;
     case "fences":
       return <Fence className="w-5 h-5" />;
     case "ferry-terminals":
       return <Ship className="w-5 h-5" />;
+    case "fire-hydrants":
+      return <Flame className="w-5 h-5" />;
     case "fire-stations":
       return <FireExtinguisher className="w-5 h-5" />;
     case "fitness-centers":
       return <Dumbbell className="w-5 h-5" />;
+    case "fitness-stations":
+      return <PersonStanding className="w-5 h-5" />;
+    case "food-court":
+      return <ChefHat className="w-5 h-5" />;
+    case "food-vending":
+      return <CupSoda className="w-5 h-5" />;
     case "football":
       return <Volleyball className="w-5 h-5" />;
     case "footways":
@@ -390,6 +428,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <DoorOpen className="w-5 h-5" />;
     case "geyser":
       return <Droplets className="w-5 h-5" />;
+    case "give-box":
+      return <Gift className="w-5 h-5" />;
     case "glaciers":
       return <MountainSnow className="w-5 h-5" />;
     case "golf":
@@ -406,10 +446,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Sprout className="w-5 h-5" />;
     case "greenhouses":
       return <Sprout className="w-5 h-5" />;
-    case "guideposts":
-      return <Signpost className="w-5 h-5" />;
     case "gymnasiums":
-      return <Dumbbell className="w-5 h-5" />;
+      return <BicepsFlexed className="w-5 h-5" />;
     case "hardware":
       return <Hammer className="w-5 h-5" />;
     case "health-post":
@@ -430,14 +468,10 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Home className="w-5 h-5" />;
     case "ice-cream":
       return <IceCreamCone className="w-5 h-5" />;
-    case "ice-hockey":
-      return <Snowflake className="w-5 h-5" />;
-    case "ice-skating":
+    case "ice-rinks":
       return <Snowflake className="w-5 h-5" />;
     case "information-boards":
       return <Info className="w-5 h-5" />;
-    case "internet-access":
-      return <Wifi className="w-5 h-5" />;
     case "irrigated-green":
       return <Droplet className="w-5 h-5" />;
     case "jewelry":
@@ -449,33 +483,35 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "libraries":
       return <LibraryBig className="w-5 h-5" />;
     case "livestock-buildings":
-      return <PawPrint className="w-5 h-5" />;
+      return <Warehouse className="w-5 h-5" />;
+    case "luggage-lockers":
+      return <Luggage className="w-5 h-5" />;
     case "managed-green":
       return <Leaf className="w-5 h-5" />;
     case "manure-storage":
       return <Package className="w-5 h-5" />;
     case "marinas":
       return <Anchor className="w-5 h-5" />;
-    case "markers":
-      return <MapPin className="w-5 h-5" />;
+    case "markets":
+      return <ShoppingBasket className="w-5 h-5" />;
     case "mast":
-      return <RadioTower className="w-5 h-5" />;
+      return <Antenna className="w-5 h-5" />;
     case "meadows":
       return <Leaf className="w-5 h-5" />;
+    case "medical-laboratories":
+      return <FlaskConical className="w-5 h-5" />;
     case "memorials":
       return <Landmark className="w-5 h-5" />;
+    case "midwives":
+      return <Baby className="w-5 h-5" />;
     case "mobile-phone":
       return <Smartphone className="w-5 h-5" />;
     case "monuments":
       return <Landmark className="w-5 h-5" />;
-    case "moor":
-      return <Leaf className="w-5 h-5" />;
-    case "mosque":
-      return <MoonStar className="w-5 h-5" />;
+    case "motels":
+      return <BedSingle className="w-5 h-5" />;
     case "mud":
       return <Droplets className="w-5 h-5" />;
-    case "multi-sport":
-      return <Trophy className="w-5 h-5" />;
     case "museums":
       return <Landmark className="w-5 h-5" />;
     case "music-school":
@@ -488,8 +524,12 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Trees className="w-5 h-5" />;
     case "nursing-home":
       return <BedDouble className="w-5 h-5" />;
-    case "optician":
+    case "occupational-therapists":
+      return <Puzzle className="w-5 h-5" />;
+    case "opticians":
       return <Glasses className="w-5 h-5" />;
+    case "optometrists":
+      return <Eye className="w-5 h-5" />;
     case "orchards":
       return <Apple className="w-5 h-5" />;
     case "parcel-lockers":
@@ -502,8 +542,10 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Mountain className="w-5 h-5" />;
     case "pharmacies":
       return <Pill className="w-5 h-5" />;
+    case "physiotherapists":
+      return <Dumbbell className="w-5 h-5" />;
     case "pig-sties":
-      return <PawPrint className="w-5 h-5" />;
+      return <Warehouse className="w-5 h-5" />;
     case "pipeline":
       return <Cable className="w-5 h-5" />;
     case "pitches":
@@ -514,14 +556,22 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Sprout className="w-5 h-5" />;
     case "playgrounds":
       return <ToyBrick className="w-5 h-5" />;
+    case "podiatrists":
+      return <Footprints className="w-5 h-5" />;
     case "police-stations":
       return <Siren className="w-5 h-5" />;
+    case "post-boxes":
+      return <Mailbox className="w-5 h-5" />;
     case "post-offices":
       return <Mail className="w-5 h-5" />;
     case "poultry-yards":
       return <Egg className="w-5 h-5" />;
     case "prisons":
-      return <Fence className="w-5 h-5" />;
+      return <Building className="w-5 h-5" />;
+    case "psychotherapists":
+      return <Armchair className="w-5 h-5" />;
+    case "public-bookcase":
+      return <BookOpen className="w-5 h-5" />;
     case "public-toilets":
       return <Toilet className="w-5 h-5" />;
     case "public-transit":
@@ -536,6 +586,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Train className="w-5 h-5" />;
     case "recycling":
       return <Recycle className="w-5 h-5" />;
+    case "rehabilitation-centres":
+      return <PersonStanding className="w-5 h-5" />;
     case "research-institute":
       return <Microscope className="w-5 h-5" />;
     case "residential":
@@ -553,7 +605,7 @@ export function getTemplateIcon(templateId: string, category: string) {
     case "scrub":
       return <Shrub className="w-5 h-5" />;
     case "senior-centers":
-      return <Users className="w-5 h-5" />;
+      return <Accessibility className="w-5 h-5" />;
     case "shingle":
       return <Mountain className="w-5 h-5" />;
     case "shoes":
@@ -562,30 +614,32 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Target className="w-5 h-5" />;
     case "shopping-malls":
       return <ShoppingBag className="w-5 h-5" />;
-    case "shrine":
-      return <Landmark className="w-5 h-5" />;
+    case "shower":
+      return <ShowerHead className="w-5 h-5" />;
     case "silos":
       return <Warehouse className="w-5 h-5" />;
     case "skiing":
       return <MountainSnow className="w-5 h-5" />;
     case "slurry-basins":
-      return <Droplet className="w-5 h-5" />;
+      return <Container className="w-5 h-5" />;
     case "slurry-tanks":
-      return <Droplet className="w-5 h-5" />;
+      return <Cylinder className="w-5 h-5" />;
     case "social-facility":
       return <HeartHandshake className="w-5 h-5" />;
+    case "speech-therapists":
+      return <MessageCircle className="w-5 h-5" />;
     case "speed-cameras":
       return <Camera className="w-5 h-5" />;
     case "sports-centres":
-      return <Dumbbell className="w-5 h-5" />;
+      return <LayoutGrid className="w-5 h-5" />;
     case "springs":
       return <Droplets className="w-5 h-5" />;
     case "stables":
-      return <PawPrint className="w-5 h-5" />;
+      return <Warehouse className="w-5 h-5" />;
     case "stadiums":
-      return <Trophy className="w-5 h-5" />;
+      return <Ticket className="w-5 h-5" />;
     case "stockyards":
-      return <PawPrint className="w-5 h-5" />;
+      return <Fence className="w-5 h-5" />;
     case "stone":
       return <Mountain className="w-5 h-5" />;
     case "storage-tanks":
@@ -604,16 +658,12 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Waves className="w-5 h-5" />;
     case "swimming-pools":
       return <Waves className="w-5 h-5" />;
-    case "synagogue":
-      return <Star className="w-5 h-5" />;
     case "tailings-pond":
       return <Factory className="w-5 h-5" />;
     case "taxi-ranks":
       return <CarTaxiFront className="w-5 h-5" />;
     case "telephones":
       return <Phone className="w-5 h-5" />;
-    case "temple":
-      return <Landmark className="w-5 h-5" />;
     case "tennis":
       return <Trophy className="w-5 h-5" />;
     case "theatres":
@@ -622,6 +672,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <RadioTower className="w-5 h-5" />;
     case "town-halls":
       return <Landmark className="w-5 h-5" />;
+    case "tracks":
+      return <Route className="w-5 h-5" />;
     case "traffic-calming":
       return <TrafficCone className="w-5 h-5" />;
     case "traffic-lights":
@@ -650,6 +702,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Binoculars className="w-5 h-5" />;
     case "walls":
       return <BrickWall className="w-5 h-5" />;
+    case "waste-basket":
+      return <Trash className="w-5 h-5" />;
     case "waste-disposal":
       return <Trash2 className="w-5 h-5" />;
     case "wastewater-plant":

@@ -148,6 +148,14 @@ export function toTitleCase(id: string): string {
 }
 
 /**
+ * Escape regex metacharacters in a literal value for embedding in an Overpass
+ * QL regex filter.
+ */
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
  * Build Overpass query from key=value pair.
  *
  * Supports composite queries:
@@ -158,8 +166,13 @@ export function toTitleCase(id: string): string {
  * - Mixed: "highway=footway;highway=path&surface=paved"
  *   Example: (footway) OR (path WITH paved surface)
  *
- * Note: YAML is trusted developer input, so no sanitization is needed.
- * Overpass QL handles its own escaping for query values.
+ * Value matches use a semicolon-boundary regex ("(^|;)value(;|$)") rather than
+ * exact equality, since OSM tags on keys like vending=* or cuisine=* are
+ * routinely multi-valued (e.g. vending=drinks;food) and an exact match would
+ * silently miss those combined-value features.
+ *
+ * Note: YAML is trusted developer input, so no sanitization is needed beyond
+ * regex-escaping the value itself.
  */
 export function buildOverpassQuery(kv: string): string {
   // Split on ; to get OR groups
@@ -187,7 +200,8 @@ export function buildOverpassQuery(kv: string): string {
       }
 
       if (value && value !== "*") {
-        tagFilters.push(`"${key}"="${value}"`);
+        const escaped = escapeRegex(value);
+        tagFilters.push(`"${key}"~"(^|;)${escaped}(;|$)"`);
       } else {
         tagFilters.push(`"${key}"`);
       }
