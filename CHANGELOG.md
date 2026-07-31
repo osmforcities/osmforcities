@@ -1,5 +1,31 @@
 # osmforcities
 
+## 1.16.0
+
+### Added
+
+- New dataset templates across many domains: markets, fire hydrants, defibrillators, and a wide set of food, sport, public-amenity, tourism, and social-care templates from a wiki-grounded catalog review [#438], [#417]
+- Healthcare template pass: 11 allied-health templates (opticians, physiotherapists, psychotherapists, laboratories, and more) plus blood-donation, dialysis-centres, and midwives, with a localized specialty legend [#414]
+
+### Changed
+
+- Curated per-template map legends ("Color by") tuned against live coverage across the whole template catalog, with demonstrator cities and refreshed category icons [#438], [#417], [#414]
+- Consistent zoom control on all platform maps [#436]
+- Align area and line map strokes with point-marker styling for a coherent look [#437]
+
+### Fixed
+
+- Judge /api/health against the real 24h dataset-refresh cadence to stop false "degraded" reports [#435]
+- Stop a single failing dataset from jamming the dataset-update queue [#432]
+
+[#414]: https://github.com/osmforcities/osmforcities/pull/414
+[#417]: https://github.com/osmforcities/osmforcities/pull/417
+[#432]: https://github.com/osmforcities/osmforcities/pull/432
+[#435]: https://github.com/osmforcities/osmforcities/pull/435
+[#436]: https://github.com/osmforcities/osmforcities/pull/436
+[#437]: https://github.com/osmforcities/osmforcities/pull/437
+[#438]: https://github.com/osmforcities/osmforcities/pull/438
+
 ## 1.15.0
 
 ### Added
