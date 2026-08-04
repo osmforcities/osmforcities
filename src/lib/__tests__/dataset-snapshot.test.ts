@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   fetchDatasetSnapshot,
   DatasetTooLargeError,
+  DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
 import { prisma } from "@/lib/db";
 import { MAX_DATASET_BYTES, OVERPASS_BYTES_PER_ELEMENT_ESTIMATE } from "@/lib/constants";
@@ -233,5 +234,63 @@ describe("fetchDatasetSnapshot", () => {
         create: expect.objectContaining({ status: "ok" }),
       })
     );
+  });
+
+  it("rejects instantly from a fresh timeout verdict", async () => {
+    findUnique.mockResolvedValue({
+      id: "check-1",
+      areaId: 1,
+      templateId: "tpl-1",
+      status: "timeout",
+      estimatedBytes: null,
+      actualBytes: null,
+      checkedAt: new Date(),
+    });
+    const fetchSpy = vi.mocked(fetch);
+
+    await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
+      DatasetSizeCheckTimeoutError
+    );
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  // A timeout is usually transient load, unlike too_large — it must expire in
+  // minutes, not hold the area+template hostage for a full day.
+  it("retries a timeout verdict well before the too_large TTL expires", async () => {
+    findUnique.mockResolvedValue({
+      id: "check-1",
+      areaId: 1,
+      templateId: "tpl-1",
+      status: "timeout",
+      estimatedBytes: null,
+      actualBytes: null,
+      checkedAt: new Date(Date.now() - 31 * 60 * 1000),
+    });
+
+    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    expect(snapshot.dataCount).toBe(2);
+    expect(upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({ status: "ok" }),
+      })
+    );
+  });
+
+  it("still honours a too_large verdict at an age that expires a timeout", async () => {
+    findUnique.mockResolvedValue({
+      id: "check-1",
+      areaId: 1,
+      templateId: "tpl-1",
+      status: "too_large",
+      estimatedBytes: 20_000_000,
+      actualBytes: null,
+      checkedAt: new Date(Date.now() - 31 * 60 * 1000),
+    });
+    const fetchSpy = vi.mocked(fetch);
+
+    await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
+      DatasetTooLargeError
+    );
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 });
