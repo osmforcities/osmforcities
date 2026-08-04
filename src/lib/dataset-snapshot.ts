@@ -61,7 +61,11 @@ async function recordSizeCheck(
   });
 }
 
-/** Reject immediately if a fresh verdict already marked this area+template too large */
+/**
+ * Reject immediately if a fresh verdict already marked this area+template too
+ * large or timed out. The two kinds age differently: too_large is stable, a
+ * timeout is usually transient load.
+ */
 async function assertNoFreshNegativeVerdict(
   areaId: number,
   templateId: string

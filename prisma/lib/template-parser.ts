@@ -207,7 +207,8 @@ const MULTI_VALUE_KEYS = new Set([
  * cost/recall evidence behind the split.
  *
  * Note: YAML is trusted developer input, so no sanitization is needed beyond
- * regex-escaping the value itself.
+ * escaping the value for the form it lands in — regex metacharacters on the
+ * MULTI_VALUE_KEYS path, quotes and backslashes on the exact-match path.
  */
 export function buildOverpassQuery(kv: string): string {
   // Split on ; to get OR groups

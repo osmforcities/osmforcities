@@ -13,6 +13,15 @@ YAML is the source of truth; deploy runs the sync. No admin UI.
   parent, and optional `filterableTags`. Row: `[id, query, category, icon?, parent?]`.
   Query syntax: `;` = OR, `&` = AND, `*`/empty = wildcard; `{OSM_RELATION_ID}` is
   substituted per area at fetch time.
+- **Value matching** — values compile to exact `["key"="value"]` so Overpass can use its
+  value index. Keys in `MULTI_VALUE_KEYS` (`prisma/lib/template-parser.ts`) instead get a
+  semicolon-boundary regex, for values OSM routinely combines (`vending=drinks;food`).
+  A regex cannot use the index and scans every element carrying the key in the area —
+  21.4s vs 1.27s for `highway=traffic_signals` in Tucson — so it is reserved for keys that
+  need it. **Adding a template on a key not in that set:** check taginfo first
+  (`/api/4/key/values?key=<key>&query=%3B`) and add the key if semicolon-combined values
+  are material. Low-cardinality keys pay almost nothing for the regex; high-cardinality
+  primary keys (`highway`, `building`, `natural`, `amenity`) pay 3-17x.
 - **Sub-template** — a template with a `parent`. Use when the query is a strict subset
   of a broader template (`bus-stops` under `public-transit`). Standalone → top-level.
 - **Parent (umbrella)** — a template whose query is the union of its children, giving a
@@ -398,6 +407,12 @@ active/featured set bounded.
   `building`, `highway`, `railway`, `waterway`) is a primary classification key that OSM
   convention treats as single-valued; only descriptive/attribute keys like `vending=*` are
   routinely semicolon-combined.
+  **Superseded 2026-08-04:** the catalog-wide regex was reverted to exact match for all
+  keys except `MULTI_VALUE_KEYS` — the regex defeats Overpass's value index, and on
+  high-cardinality keys it made the size-check pre-flight time out and blacklist the
+  area+template for 24h (`highway=traffic_signals` in Tucson: 21.4s vs 1.27s). The reading
+  above was right that these keys are single-valued in practice; it was wrong that the
+  regex was free. See Value matching under Definitions.
 - **canteens — rejected.** `amenity=canteen` returned zero features in 5 of 6 test cities
   (Paris, Wrocław, Barcelona, Mexico City, Tokyo); only Munich had any data (16 features).
   Even there, `access` (the key that would carry a students-vs-employees food-security
@@ -603,6 +618,7 @@ during that pass, beyond the per-domain notes above:
   "nothing to enter by wheelchair" case, not a coverage drop.
 - **Shared-infra fixes carried in from the food batch apply catalog-wide:** the
   semicolon-boundary value match in `buildOverpassQuery` (`prisma/lib/template-parser.ts`)
+  — since narrowed to `MULTI_VALUE_KEYS`, see Value matching under Definitions —
   and the semicolon-split token counting in `computeTagDimension`
   (`src/lib/filter-dimensions.ts`), merged with healthcare's `keepEmpty` all-Missing legend
   in the same file.
