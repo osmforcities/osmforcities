@@ -105,6 +105,46 @@ describe("countOverpassElements", () => {
     expect(decodeURIComponent(body)).toBe("data=[out:json]; rel(1); out count;");
   });
 
+  // The pre-flight exists to protect the data fetch, so it must never be
+  // stricter than the fetch it guards: a 10s cap made Overpass abort counting
+  // queries that the 25s data query then served without trouble, and the
+  // resulting "timeout" verdict blocked the area+template for 24h.
+  it("does not shrink the template's own timeout", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () =>
+        Promise.resolve({ elements: [{ type: "count", tags: { total: "1" } }] }),
+    } as unknown as Response);
+    vi.stubGlobal("fetch", fetchMock);
+
+    await countOverpassElements(
+      "[out:json][timeout:25]; rel(1); out geom meta;"
+    );
+
+    const body = decodeURIComponent(
+      String((fetchMock.mock.calls[0][1] as RequestInit).body)
+    );
+    const timeout = Number(body.match(/\[timeout:(\d+)\]/)?.[1]);
+    expect(timeout).toBeGreaterThanOrEqual(25);
+  });
+
+  it("returns 0 for a genuinely empty result", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: () =>
+          Promise.resolve({
+            elements: [{ type: "count", tags: { total: "0" } }],
+          }),
+      } as unknown as Response)
+    );
+
+    await expect(countOverpassElements("query")).resolves.toBe(0);
+  });
+
   it("throws OverpassTimeoutError on a 504 response", async () => {
     vi.stubGlobal(
       "fetch",

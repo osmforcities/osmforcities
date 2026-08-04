@@ -16,6 +16,7 @@ import { prisma } from "@/lib/db";
 import {
   MAX_DATASET_BYTES,
   OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
+  SIZE_CHECK_TIMEOUT_TTL_MINUTES,
   SIZE_CHECK_TTL_HOURS,
 } from "@/lib/constants";
 
@@ -70,7 +71,10 @@ async function assertNoFreshNegativeVerdict(
   });
   if (!check) return;
 
-  const ttlMs = SIZE_CHECK_TTL_HOURS * 60 * 60 * 1000;
+  const ttlMs =
+    check.status === "timeout"
+      ? SIZE_CHECK_TIMEOUT_TTL_MINUTES * 60 * 1000
+      : SIZE_CHECK_TTL_HOURS * 60 * 60 * 1000;
   if (Date.now() - check.checkedAt.getTime() > ttlMs) return;
 
   if (check.status === "too_large") {
