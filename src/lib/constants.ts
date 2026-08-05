@@ -17,8 +17,16 @@ export const MAX_DATASET_BYTES = 25 * 1024 * 1024;
 /** Empirical average JSON bytes per Overpass element, used to pre-estimate payload size from an element count */
 export const OVERPASS_BYTES_PER_ELEMENT_ESTIMATE = 500;
 
-/** Hours an AreaSizeCheck verdict stays fresh before re-checking against Overpass */
+/** Hours a "too_large" AreaSizeCheck verdict stays fresh before re-checking against Overpass */
 export const SIZE_CHECK_TTL_HOURS = 24;
+
+/**
+ * Minutes a "timeout" AreaSizeCheck verdict stays fresh. Much shorter than
+ * SIZE_CHECK_TTL_HOURS: a dataset that is too large stays too large, but a
+ * timeout is usually transient Overpass load, and caching it for a day
+ * blackholes the area+template long after the blip has passed.
+ */
+export const SIZE_CHECK_TIMEOUT_TTL_MINUTES = 30;
 
 /** Consecutive failed refresh attempts before a dataset is flagged for admin review */
 export const DATASET_FAILURE_FLAG_THRESHOLD = 3;

@@ -156,6 +156,40 @@ function escapeRegex(value: string): string {
 }
 
 /**
+ * Escape a literal value for embedding in a double-quoted Overpass QL string.
+ */
+function escapeQuoted(value: string): string {
+  return value.replace(/[\\"]/g, "\\$&");
+}
+
+/**
+ * Keys whose values are routinely semicolon-combined in OSM, so an exact match
+ * would silently miss features (e.g. sport=soccer;basketball).
+ *
+ * Everything else uses exact match, which lets Overpass hit the value index.
+ * The difference is large on high-cardinality keys: for highway=traffic_signals
+ * in Tucson the regex form takes 21.4s (and trips the size-check pre-flight)
+ * while exact match takes 1.27s. Measured global semicolon usage justifies the
+ * split — highway has 1,326 semicolon uses worldwide and natural 213 of 93.0M,
+ * whereas sport has 20,452 distinct semicolon-combined values.
+ *
+ * When adding a template on a key that is not listed here, check taginfo for
+ * semicolon-combined values first:
+ *   https://taginfo.openstreetmap.org/api/4/key/values?key=<key>&query=%3B
+ * and add the key below if they are material.
+ */
+const MULTI_VALUE_KEYS = new Set([
+  "content",
+  "healthcare",
+  "social_facility:for",
+  "species",
+  "sport",
+  "traffic_calming",
+  "traffic_sign",
+  "vending",
+]);
+
+/**
  * Build Overpass query from key=value pair.
  *
  * Supports composite queries:
@@ -166,13 +200,15 @@ function escapeRegex(value: string): string {
  * - Mixed: "highway=footway;highway=path&surface=paved"
  *   Example: (footway) OR (path WITH paved surface)
  *
- * Value matches use a semicolon-boundary regex ("(^|;)value(;|$)") rather than
- * exact equality, since OSM tags on keys like vending=* or cuisine=* are
- * routinely multi-valued (e.g. vending=drinks;food) and an exact match would
- * silently miss those combined-value features.
+ * Value matches use exact equality so Overpass can use its value index. Keys in
+ * MULTI_VALUE_KEYS instead use a semicolon-boundary regex ("(^|;)value(;|$)"),
+ * since their values are routinely combined (e.g. vending=drinks;food) and an
+ * exact match would silently miss those features. See MULTI_VALUE_KEYS for the
+ * cost/recall evidence behind the split.
  *
  * Note: YAML is trusted developer input, so no sanitization is needed beyond
- * regex-escaping the value itself.
+ * escaping the value for the form it lands in — regex metacharacters on the
+ * MULTI_VALUE_KEYS path, quotes and backslashes on the exact-match path.
  */
 export function buildOverpassQuery(kv: string): string {
   // Split on ; to get OR groups
@@ -200,8 +236,11 @@ export function buildOverpassQuery(kv: string): string {
       }
 
       if (value && value !== "*") {
-        const escaped = escapeRegex(value);
-        tagFilters.push(`"${key}"~"(^|;)${escaped}(;|$)"`);
+        if (MULTI_VALUE_KEYS.has(key)) {
+          tagFilters.push(`"${key}"~"(^|;)${escapeRegex(value)}(;|$)"`);
+        } else {
+          tagFilters.push(`"${key}"="${escapeQuoted(value)}"`);
+        }
       } else {
         tagFilters.push(`"${key}"`);
       }

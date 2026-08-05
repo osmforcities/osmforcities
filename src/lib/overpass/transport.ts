@@ -105,9 +105,11 @@ export async function executeOverpassQuery(
 export async function countOverpassElements(query: string): Promise<number> {
   preventExternalCallsInTests();
 
-  const countQuery = query
-    .replace(/\[timeout:\d+\]/, "[timeout:10]")
-    .replace(/\bout(\s+[^;]+)?;\s*$/, "out count;");
+  // Only the output statement changes — the template's own [timeout:N] is kept.
+  // Capping the count at a lower value made Overpass abort (HTTP 200 + remark)
+  // on queries the data fetch then served fine, and that false timeout verdict
+  // blocked the area+template for SIZE_CHECK_TTL_HOURS.
+  const countQuery = query.replace(/\bout(\s+[^;]+)?;\s*$/, "out count;");
 
   let response: Response;
   try {
