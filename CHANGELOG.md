@@ -1,5 +1,13 @@
 # osmforcities
 
+## 1.16.1
+
+### Fixed
+
+- Datasets no longer get stuck behind a false "too large" pre-flight failure: template queries now use exact tag matching on indexed keys, so size checks answer in ~1s instead of timing out, and a timed-out check is retried after 30 minutes instead of being cached for 24 hours [#446]
+
+[#446]: https://github.com/osmforcities/osmforcities/pull/446
+
 ## 1.16.0
 
 ### Added
