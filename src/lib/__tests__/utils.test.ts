@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { isSmallAreaBounds, computeInitialViewState } from "@/lib/utils";
+import {
+  isSmallAreaBounds,
+  computeInitialViewState,
+  getAreaCharacteristics,
+} from "@/lib/utils";
 import type { Bbox } from "@/types/geojson";
 
 // GeoJSON bbox order: [minLon, minLat, maxLon, maxLat]
@@ -145,5 +149,50 @@ describe("computeInitialViewState", () => {
     );
 
     expect(view).toEqual({ longitude: 0, latitude: 0, zoom: 2 });
+  });
+});
+
+describe("getAreaCharacteristics", () => {
+  const messages: Record<string, string> = {
+    city: "City",
+    census: "Census Area",
+  };
+
+  // Mirrors next-intl: a missing message resolves to the NAMESPACED key
+  // ("AddressTypes.census"), never the bare key.
+  const t = Object.assign(
+    (key: string) => messages[key] ?? `AddressTypes.${key}`,
+    { has: (key: string) => key in messages }
+  ) as unknown as Parameters<typeof getAreaCharacteristics>[1];
+
+  it("translates a known address type", () => {
+    expect(getAreaCharacteristics({ id: 1, addresstype: "city" }, t)).toEqual([
+      "City",
+      "ID: 1",
+    ]);
+  });
+
+  it("translates census, the reported Nominatim value", () => {
+    expect(getAreaCharacteristics({ id: 2, addresstype: "census" }, t)).toEqual([
+      "Census Area",
+      "ID: 2",
+    ]);
+  });
+
+  it("Title-Cases an untranslated type instead of leaking the message key", () => {
+    const result = getAreaCharacteristics(
+      { id: 3, addresstype: "isolated_dwelling" },
+      t
+    );
+
+    expect(result).toEqual(["Isolated Dwelling", "ID: 3"]);
+    expect(result[0]).not.toContain("AddressTypes.");
+  });
+
+  it("falls back to type when addresstype is absent", () => {
+    expect(getAreaCharacteristics({ id: 4, type: "city" }, t)).toEqual([
+      "City",
+      "ID: 4",
+    ]);
   });
 });

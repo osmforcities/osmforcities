@@ -277,7 +277,17 @@
     "administrative": "Área Administrativa",
     "postcode": "Código Postal",
     "road": "Rua",
-    "house_number": "Número da Casa"
+    "house_number": "Número da Casa",
+    "census": "Área Censitária",
+    "borough": "Distrito Municipal",
+    "quarter": "Quarteirão",
+    "locality": "Localidade",
+    "island": "Ilha",
+    "islet": "Ilhota",
+    "civil_parish": "Freguesia",
+    "isolated_dwelling": "Habitação Isolada",
+    "subdistrict": "Subdistrito",
+    "allotments": "Loteamento"
   },
   "AreaSelector": {
     "searchPlaceholder": "Digite pelo menos 3 caracteres para pesquisar",

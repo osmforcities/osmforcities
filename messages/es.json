@@ -277,7 +277,17 @@
     "administrative": "Área Administrativa",
     "postcode": "Código Postal",
     "road": "Calle",
-    "house_number": "Número de Casa"
+    "house_number": "Número de Casa",
+    "census": "Área Censal",
+    "borough": "Distrito Municipal",
+    "quarter": "Barrio",
+    "locality": "Localidad",
+    "island": "Isla",
+    "islet": "Islote",
+    "civil_parish": "Parroquia",
+    "isolated_dwelling": "Vivienda Aislada",
+    "subdistrict": "Subdistrito",
+    "allotments": "Parcelas"
   },
   "AreaSelector": {
     "searchPlaceholder": "Por favor ingresa al menos 3 caracteres para buscar",

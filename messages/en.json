@@ -277,7 +277,17 @@
     "administrative": "Administrative Area",
     "postcode": "Postal Code",
     "road": "Road",
-    "house_number": "House Number"
+    "house_number": "House Number",
+    "census": "Census Area",
+    "borough": "Borough",
+    "quarter": "Quarter",
+    "locality": "Locality",
+    "island": "Island",
+    "islet": "Islet",
+    "civil_parish": "Civil Parish",
+    "isolated_dwelling": "Isolated Dwelling",
+    "subdistrict": "Subdistrict",
+    "allotments": "Allotments"
   },
   "AreaSelector": {
     "searchPlaceholder": "Please enter at least 3 characters to search",

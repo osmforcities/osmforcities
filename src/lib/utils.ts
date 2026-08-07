@@ -179,45 +179,23 @@ export function getAreaCharacteristics(
 
   const characteristics: string[] = [];
 
-  // Add address type
+  // Add address type. Nominatim derives addresstype from the main OSM tag, so the
+  // value set is open-ended — anything we do not ship a message for falls back to
+  // Title Case rather than rendering the raw "AddressTypes.<key>" message key.
   const addressType = item.addresstype || item.type;
   if (addressType) {
-    try {
-      const translatedType = translateAddressType(addressType as never);
-
-      // If translation returns the same key, it means it's not translated
-      // Show the original value with a fallback format
-      if (translatedType === addressType) {
-        // Convert snake_case to Title Case for better display
-        const formattedType = addressType
+    if (translateAddressType.has(addressType as never)) {
+      characteristics.push(translateAddressType(addressType as never));
+    } else {
+      characteristics.push(
+        addressType
           .split("_")
           .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ");
+          .join(" ")
+      );
 
-        characteristics.push(formattedType);
-
-        // Log untranslated address types for debugging
-        if (process.env.NODE_ENV === "development") {
-          console.warn(`Untranslated address type: ${addressType}`);
-        }
-      } else {
-        characteristics.push(translatedType);
-      }
-    } catch (error) {
-      // Fallback to formatted original value if translation fails
-      const formattedType = addressType
-        .split("_")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
-
-      characteristics.push(formattedType);
-
-      // Log translation errors for debugging
       if (process.env.NODE_ENV === "development") {
-        console.warn(
-          `Translation error for address type "${addressType}":`,
-          error
-        );
+        console.warn(`Untranslated address type: ${addressType}`);
       }
     }
   }
