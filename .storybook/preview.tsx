@@ -7,11 +7,13 @@ import React from 'react';
 import enMessages from '../messages/en.json';
 import esMessages from '../messages/es.json';
 import ptBRMessages from '../messages/pt-BR.json';
+import frMessages from '../messages/fr.json';
 
 const messages: Record<string, Record<string, unknown>> = {
   en: enMessages,
   es: esMessages,
   'pt-BR': ptBRMessages,
+  fr: frMessages,
 };
 
 const preview: Preview = {
@@ -48,6 +50,7 @@ const preview: Preview = {
           { value: 'en', title: 'English' },
           { value: 'es', title: 'Español' },
           { value: 'pt-BR', title: 'Português (BR)' },
+          { value: 'fr', title: 'Français' },
         ],
         dynamicTitle: true,
       },

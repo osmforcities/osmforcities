@@ -9,6 +9,7 @@ This project uses [next-intl](https://next-intl.com/) for internationalization (
 - **English (en)** - Default language
 - **Spanish (es)** - Español
 - **Portuguese (pt-BR)** - Português Brasileiro
+- **French (fr)** - Français
 
 ## File Structure
 
@@ -17,6 +18,7 @@ messages/
 ├── en.json          # English translations (source)
 ├── es.json          # Spanish translations
 ├── pt-BR.json       # Portuguese (Brazil) translations
+├── fr.json          # French translations
 └── en.d.json.ts     # TypeScript definitions
 ```
 
@@ -47,7 +49,7 @@ head -10 messages/en.json
 ## Two Translation Systems
 
 ### UI Translations (next-intl)
-- Files: `messages/en.json`, `messages/pt-BR.json`, `messages/es.json`
+- Files: `messages/en.json`, `messages/pt-BR.json`, `messages/es.json`, `messages/fr.json`
 - Content: Interface text, labels, buttons, navigation
 - Usage: `getTranslations()`, `useTranslations()`
 
@@ -57,7 +59,7 @@ head -10 messages/en.json
 - Code: `src/lib/template-locale.ts` → `resolveTemplateForLocale()`
 - Content: Dataset template names and descriptions
 
-Both use the URL locale (`/en/...`, `/pt-BR/...`, `/es/...`).
+Both use the URL locale (`/en/...`, `/pt-BR/...`, `/es/...`, `/fr/...`).
 
 ## Using Template Translations
 

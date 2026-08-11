@@ -1,0 +1,1084 @@
+{
+  "Index": {
+    "title": "Bienvenue sur OSM for Cities",
+    "description": "Suivez et surveillez les données OpenStreetMap de votre ville",
+    "learnMore": "En savoir plus",
+    "enter": "Entrer"
+  },
+  "Navigation": {
+    "home": "Accueil",
+    "dashboard": "Tableau de bord",
+    "about": "À propos",
+    "myDatasets": "Mes jeux de données",
+    "public": "Publics",
+    "saved": "Enregistrés",
+    "templates": "Modèles",
+    "users": "Utilisateurs",
+    "preferences": "Préférences",
+    "brandName": "OSM for Cities",
+    "explore": "Explorer",
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter",
+    "mainMenu": "Menu de navigation principal",
+    "menu": "Menu",
+    "close": "Fermer",
+    "breadcrumbLabel": "Fil d'Ariane"
+  },
+  "Common": {
+    "shareFeedback": "Donner votre avis",
+    "viewOnGitHub": "Voir sur GitHub"
+  },
+  "TabLayout": {
+    "welcomeBack": "Bon retour, {name}",
+    "welcomeBackGeneric": "Bon retour",
+    "manageDatasetsSubtitle": "Gérez vos jeux de données et explorez la plateforme",
+    "saved": "Enregistrés",
+    "savedAriaLabel": "Enregistrés - Voir les jeux de données que vous avez enregistrés",
+    "explore": "Explorer",
+    "templates": "Modèles",
+    "users": "Utilisateurs",
+    "usersAriaLabel": "Utilisateurs - Accéder à la page de gestion des utilisateurs",
+    "templatesAriaLabel": "Modèles - Accéder à la page de gestion des modèles",
+    "datasetsTab": "Jeux de données",
+    "datasetsTabAriaLabel": "Jeux de données - Accéder à la page d'état des mises à jour des jeux de données",
+    "myDatasetsEmptyMessage": "Vous n'avez pas encore créé de jeu de données.",
+    "myDatasetsEmptyAction": "Créer un jeu de données",
+    "openParen": "(",
+    "closeParen": ")",
+    "datasets": "Jeux de données :",
+    "viewAllTemplates": "Voir tous les modèles",
+    "viewAllUsers": "Voir tous les utilisateurs",
+    "noSavedDatasetsTitle": "Aucun jeu de données enregistré pour l'instant",
+    "noSavedDatasetsDescription": "Recherchez ci-dessus pour commencer.",
+    "savedDatasetsGridLabel": "Jeux de données enregistrés",
+    "saveCount": "{count, plural, =1 {# enregistrement} other {# enregistrements}}",
+    "saveCountAriaLabel": "{used, number} jeux de données enregistrés sur {limit, number}",
+    "savedLabel": "{used, number}/{limit, number} enregistrés",
+    "limitReachedSuffix": "— limite atteinte",
+    "quotaInfoTooltip": "Chaque utilisateur peut enregistrer jusqu'à {limit, number} jeux de données. Retirez-en un depuis votre tableau de bord pour libérer une place.",
+    "quotaInfoButtonLabel": "Que signifie la limite d'enregistrement ?",
+    "active": "Actif",
+    "inactive": "Inactif"
+  },
+  "Public": {
+    "metaTitle": "Jeux de données publics - OSM for Cities",
+    "metaDescription": "Tous les jeux de données publics de la plateforme",
+    "title": "Jeux de données publics",
+    "emptyMessage": "Aucun jeu de données public trouvé.",
+    "emptyActionText": "Créer le premier jeu de données public"
+  },
+  "DatasetList": {
+    "active": "Actif",
+    "inactive": "Inactif",
+    "public": "Public",
+    "private": "Privé",
+    "dataCount": "Nombre de données : {count, number}",
+    "saves": "Enregistrements",
+    "view": "Voir",
+    "deactivate": "Désactiver",
+    "activate": "Activer",
+    "makePrivate": "Rendre privé",
+    "makePublic": "Rendre public",
+    "delete": "Supprimer",
+    "deleting": "Suppression...",
+    "by": "par",
+    "cannotDeleteTooltip": "Impossible de supprimer un jeu de données avec {count, plural, =0 {aucun enregistrement} one {# enregistrement} other {# enregistrements}}. Rendez-le d'abord privé ou demandez aux personnes concernées de le retirer de leurs enregistrements.",
+    "in": "dans",
+    "colon": ":",
+    "openParen": "(",
+    "closeParen": ")",
+    "backToHome": "Retour à l'accueil",
+    "datasetStats": "Statistiques du jeu de données",
+    "category": "Catégorie",
+    "totalFeatures": "Total des éléments",
+    "totalEditors": "Total des contributeurs",
+    "changesets": "Groupes de modifications",
+    "avgAgeDays": "Âge moyen (jours)",
+    "recentActivity": "Activité récente (3 derniers mois)",
+    "elementsEdited": "Éléments modifiés",
+    "percentOfTotal": "% du total",
+    "activeEditors": "Contributeurs actifs",
+    "recentChangesets": "Groupes de modifications récents",
+    "overallAssessment": "Évaluation globale",
+    "activityLevel": "Niveau d'activité",
+    "communityStrength": "Force de la communauté",
+    "communityActivity": "Activité de la communauté",
+    "lastChecked": "Dernière vérification :"
+  },
+  "Watched": {
+    "metaTitle": "Enregistrés - OSM for Cities",
+    "metaDescription": "Jeux de données que vous avez enregistrés",
+    "title": "Enregistrés",
+    "emptyMessage": "Vous n'avez pas encore enregistré de jeu de données.",
+    "emptyActionText": "Parcourir les jeux de données publics"
+  },
+  "EnterPage": {
+    "metaTitle": "Connexion - OSM for Cities",
+    "metaDescription": "Connectez-vous pour suivre les jeux de données OpenStreetMap",
+    "signIn": "Se connecter",
+    "enterEmailToStart": "Saisissez votre e-mail pour commencer",
+    "notFound": "Introuvable",
+    "testAuthNotEnabled": "L'authentification de test n'est pas activée.",
+    "signInWithEmailPassword": "Connectez-vous avec votre e-mail et votre mot de passe",
+    "createAccount": "Créer un compte",
+    "signupForTesting": "Inscription à des fins de test",
+    "testEnvOnly": "Cette page n'est disponible qu'en environnement de test."
+  },
+  "DatasetPage": {
+    "backToHome": "Retour à l'accueil",
+    "emptyTitle": "Aucun élément « {dataset} » trouvé dans {area}",
+    "emptyDescription": "Ce jeu de données ne contient encore aucun élément dans cette zone. Il n'existe peut-être pas ici, ou les données n'ont pas été cartographiées dans OpenStreetMap.",
+    "tooLargeTitle": "{dataset} dans {area} est trop volumineux pour être affiché",
+    "tooLargeDescription": "Ce jeu de données est trop volumineux pour être affiché sur une carte. Essayez un modèle plus spécifique, ou <link>travaillez avec les données brutes dans Overpass Turbo</link>.",
+    "backToArea": "← Retour à {area}",
+    "backToAreaLabel": "Retour à {area}",
+    "categoryFacetLabel": "Catégorie : {category}. Voir tous les jeux de données {category} dans {area}.",
+    "categoryUncategorized": "Autre",
+    "back": "Retour",
+    "features": "Éléments",
+    "geomPoints": "Points",
+    "geomLines": "Lignes",
+    "geomAreas": "Surfaces",
+    "geomPointsLower": "points",
+    "geomLinesLower": "lignes",
+    "geomAreasLower": "surfaces",
+    "geomNone": "sans {type}",
+    "detailTotal": "Total",
+    "detailTitleGeometry": "Éléments par type",
+    "detailTitleFreshness": "Éléments par dernière modification",
+    "detailTitleMappers": "Cartographes par dernière modification",
+    "titleMappers": "Cartographes",
+    "titleFeatures": "Éléments",
+    "titleTags": "Attributs",
+    "statsRegion": "Statistiques du jeu de données",
+    "geometryMix": "Répartition des géométries",
+    "mostUsedTags": "Attributs les plus utilisés",
+    "tagCoverage": "Couverture critique",
+    "recentlyEdited": "Modifiés récemment",
+    "activeRecently": "Actifs récemment",
+    "band90d": "≤ 90 j",
+    "band90dTo1y": "90 j–1 an",
+    "band1yTo2y": "1–2 ans",
+    "band2yPlus": "2 ans et +",
+    "bandWithin1y": "Moins d'1 an",
+    "share": "Partager",
+    "shareCopied": "Lien copié",
+    "linkCopied": "Lien copié dans le presse-papiers",
+    "linkCopyFailed": "Impossible de copier le lien",
+    "datasetSynced": "Jeu de données synchronisé",
+    "shareTooltip": "Copier le lien vers ce jeu de données",
+    "admin": "Admin",
+    "lastEdited": "Modifié",
+    "lastCheckedLabel": "Récupéré",
+    "timestampDescription": "{label} {relative}",
+    "fetchCadence": "Les jeux de données sont synchronisés une fois par jour dans OSM for Cities ; ceci est le délai actuel par rapport à OpenStreetMap.",
+    "downloadData": "Télécharger les données",
+    "download": "Télécharger",
+    "datasetTitle": "{template}",
+    "invalidData": "Données invalides",
+    "invalidDataMessage": "Le jeu de données contient des données GeoJSON invalides.",
+    "value": "Valeur",
+    "refreshData": "Synchroniser",
+    "refreshing": "Synchronisation...",
+    "refreshTitle": "Synchroniser avec les dernières données OpenStreetMap",
+    "refreshInactiveTitle": "Seuls les jeux de données actifs peuvent être synchronisés",
+    "save": "Enregistrer",
+    "signInToSave": "Connectez-vous pour enregistrer",
+    "unsave": "Retirer",
+    "saveTooltip": "Enregistrer pour y revenir plus tard",
+    "unsaveTooltip": "Retirer des enregistrés",
+    "saveLimitReached": "Limite d'enregistrement atteinte",
+    "saveLimitMessage": "Vous pouvez enregistrer jusqu'à {limit, number} jeux de données. Retirez-en d'abord un depuis votre tableau de bord. <link>Aller au tableau de bord</link>.",
+    "featured": "En vedette",
+    "featuredTooltip": "Ceci est un jeu de données en vedette",
+    "feature": "Mettre en vedette",
+    "unfeature": "Retirer de la vedette",
+    "featureTitle": "Mettre ce jeu de données en vedette sur la page d'accueil",
+    "unfeatureTitle": "Retirer des jeux de données en vedette",
+    "featureError": "Impossible de mettre à jour le statut en vedette. Réessayez."
+  },
+  "AuthForm": {
+    "checkYourEmail": "Consultez votre boîte mail",
+    "sentLinkTo": "Nous avons envoyé un lien à {email}",
+    "tryDifferentEmail": "Essayer une autre adresse",
+    "emailPlaceholder": "E-mail",
+    "sending": "Envoi...",
+    "continue": "Continuer",
+    "emailIcon": "📧"
+  },
+  "AreaPage": {
+    "backToHome": "← Retour à l'accueil",
+    "osmId": "ID OSM",
+    "adminLevel": "Niveau administratif",
+    "population": "Population",
+    "country": "Pays",
+    "findData": "Trouver des données",
+    "filterByCategory": "Filtrer par catégorie",
+    "status": "Statut",
+    "statusAll": "Tous",
+    "statusFeatured": "En vedette",
+    "statusSaved": "Enregistrés",
+    "statFeatures": "{count} éléments",
+    "statContributors": "{count} contributeurs",
+    "statSaved": "{count} enregistrements",
+    "lastEditedAria": "Dernière modification",
+    "featuredBadge": "En vedette",
+    "allDatasets": "Tous les types de données",
+    "searchPlaceholder": "Rechercher des types de données...",
+    "noResults": "Aucun type de données trouvé",
+    "noResultsDescription": "Essayez un autre terme de recherche ou une autre catégorie.",
+    "noDatasetsAvailable": "Aucun jeu de données disponible",
+    "noDatasetsDescription": "Il n'y a actuellement aucun jeu de données disponible pour cette zone. Revenez plus tard ou contactez-nous si vous avez besoin de types de données spécifiques.",
+    "moreTags": "+{count} de plus",
+    "dataset": "jeu de données",
+    "datasets": "jeux de données",
+    "idLabel": "ID : ",
+    "comingSoon": "La découverte de jeux de données arrive bientôt !",
+    "comingSoonDescription": "Vous pourrez explorer et créer des jeux de données pour cette zone directement depuis cette page.",
+    "areaDetails": "Détails de la zone",
+    "boundingBox": "Emprise",
+    "sections": {
+      "featured": "En vedette",
+      "largest": "Plus grands jeux de données",
+      "mostSaved": "Les plus enregistrés",
+      "mostContributors": "Le plus de contributeurs",
+      "recentlyEdited": "Modifiés récemment"
+    }
+  },
+  "CategoryCards": {
+    "title": "Trouver des données dans {area}",
+    "subtitle": "Parcourez les catégories de données OpenStreetMap. La disponibilité dépend de la cartographie locale."
+  },
+  "NavSearch": {
+    "searchPlaceholder": "Rechercher des villes et des zones...",
+    "noAreasFound": "Aucune zone trouvée",
+    "searching": "Recherche...",
+    "typeMoreChars": "Saisissez {count} caractère{count, plural, one {} other {s}} de plus pour rechercher",
+    "searchHint": "Essayez de rechercher des villes, des régions ou des pays",
+    "idLabel": "ID : ",
+    "clearSearch": "Effacer la recherche"
+  },
+  "AddressTypes": {
+    "city": "Grande ville",
+    "town": "Ville",
+    "village": "Village",
+    "hamlet": "Hameau",
+    "municipality": "Municipalité",
+    "county": "Comté",
+    "state": "État",
+    "country": "Pays",
+    "region": "Région",
+    "province": "Province",
+    "district": "District",
+    "suburb": "Banlieue",
+    "neighbourhood": "Quartier",
+    "city_block": "Îlot urbain",
+    "city_district": "Arrondissement",
+    "administrative": "Zone administrative",
+    "postcode": "Code postal",
+    "road": "Voie",
+    "house_number": "Numéro de rue",
+    "census": "Zone de recensement",
+    "borough": "Arrondissement",
+    "locality": "Lieu-dit",
+    "island": "Île",
+    "islet": "Îlot",
+    "civil_parish": "Paroisse civile",
+    "isolated_dwelling": "Habitat isolé",
+    "subdistrict": "Sous-district",
+    "allotments": "Jardins familiaux"
+  },
+  "AreaSelector": {
+    "searchPlaceholder": "Veuillez saisir au moins 3 caractères pour rechercher",
+    "searchDescription": "Seules les zones administratives (villes, communes, quartiers) apparaîtront dans les résultats",
+    "id": "ID :",
+    "noAreasFound": "Aucune zone trouvée. Essayez un autre terme de recherche.",
+    "boundingBox": "Emprise : [",
+    "boundingBoxEnd": "]",
+    "viewOnOsm": "Voir sur OpenStreetMap →",
+    "change": "Changer"
+  },
+  "CreateDatasetWizard": {
+    "selectArea": "Sélectionnez une zone",
+    "selectAreaDescription": "Saisissez un nom de zone et choisissez parmi les suggestions. Il peut s'agir d'une ville, d'un quartier ou de toute zone administrative dans OpenStreetMap.",
+    "nextSelectTemplate": "Suivant : sélectionner un modèle",
+    "selectTemplate": "Sélectionnez un modèle",
+    "selectTemplateDescription": "Choisissez un modèle de données qui définit les éléments OpenStreetMap à suivre.",
+    "back": "Retour",
+    "nextTestQuery": "Suivant : tester la requête",
+    "testYourQuery": "Testez votre requête",
+    "testQueryDescription": "Testez la requête du modèle sélectionné sur la zone choisie pour voir quelles données seront suivies.",
+    "nextConfirm": "Suivant : confirmer",
+    "confirmDatasetCreation": "Confirmez la création du jeu de données",
+    "confirmDescription": "Vérifiez vos sélections et créez votre jeu de données.",
+    "selectedArea": "Zone sélectionnée :",
+    "selectedTemplate": "Modèle sélectionné :"
+  },
+  "CreateDatasetPage": {
+    "backToHome": "← Retour à l'accueil",
+    "createNewDataset": "Créer un nouveau jeu de données",
+    "createDescription": "Suivez les étapes ci-dessous pour créer un nouveau jeu de données de suivi des données OpenStreetMap."
+  },
+  "QueryTester": {
+    "selectAreaTemplateFirst": "Veuillez d'abord sélectionner une zone et un modèle.",
+    "queryPreview": "Aperçu de la requête",
+    "queryingOverpass": "Interrogation de l'API Overpass...",
+    "error": "Erreur",
+    "noResults": "Aucun résultat",
+    "noResultsDescription": "La requête n'a renvoyé aucun résultat. Cela peut signifier :",
+    "noFeaturesMatch": "Aucun élément ne correspond aux critères dans cette zone",
+    "areaNoAmenities": "La zone ne contient peut-être pas les équipements spécifiés",
+    "queryNeedsAdjustment": "La requête doit peut-être être ajustée",
+    "testQuery": "Tester la requête",
+    "testingQuery": "Test de la requête..."
+  },
+  "TemplateSelector": {
+    "close": "✕",
+    "noTemplatesFound": "Aucun modèle ne correspond à \"",
+    "quote": "\"",
+    "selected": "✓",
+    "selectedTemplate": "Modèle sélectionné :",
+    "searchPlaceholder": "Rechercher des modèles..."
+  },
+  "PreferencesPage": {
+    "emailPreferences": "Préférences d'e-mail",
+    "reports": "Rapports",
+    "reportsDescription": "Recevez des e-mails lorsque vos jeux de données enregistrés changent."
+  },
+  "PreferencesForm": {
+    "enableReports": "Activer les rapports",
+    "frequency": "Fréquence :",
+    "daily": "Quotidien",
+    "weekly": "Hebdomadaire",
+    "language": "Langue"
+  },
+  "TemplatesPage": {
+    "templates": "Modèles",
+    "openParen": "(",
+    "closeParen": ")",
+    "noTemplatesFound": "Aucun modèle trouvé.",
+    "datasets": "Jeux de données :",
+    "tags": "Attributs :"
+  },
+  "UsersPage": {
+    "users": "Utilisateurs",
+    "openParen": "(",
+    "closeParen": ")",
+    "noUsersFound": "Aucun utilisateur trouvé.",
+    "datasets": "Jeux de données :",
+    "joined": "Inscription : {date}"
+  },
+  "DatasetUpdatesPage": {
+    "title": "Mises à jour des jeux de données",
+    "healthOk": "Sain",
+    "healthDegraded": "Dégradé",
+    "statActive": "Jeux de données actifs",
+    "statRefreshed": "Actualisés (24 h)",
+    "statStale": "Obsolètes / jamais vérifiés",
+    "statFlagged": "Signalés pour vérification",
+    "newestCheck": "Actualisation la plus récente : {value}",
+    "oldestCheck": "Actualisation la plus ancienne : {value}",
+    "never": "Jamais",
+    "flaggedHeading": "Jeux de données signalés",
+    "flaggedCount": "({count, number})",
+    "flaggedEmpty": "Aucun jeu de données n'est actuellement en échec.",
+    "failureCount": "{count, plural, =1 {# échec consécutif} other {# échecs consécutifs}}",
+    "lastError": "Dernière erreur : {message}",
+    "lastAttempted": "Dernière tentative : {value}",
+    "lastChecked": "Dernière vérification : {value}"
+  },
+  "DatasetMap": {
+    "back": "Retour",
+    "openInOsm": "Ouvrir dans OpenStreetMap",
+    "key": "Clé",
+    "value": "Valeur",
+    "lastEditedBy": "Dernière modification par <link>{user}</link>",
+    "mapLabel": "Carte interactive du jeu de données",
+    "fullScreenMapLabel": "Carte interactive en plein écran du jeu de données",
+    "loadingMap": "Chargement de la carte...",
+    "noDataAvailable": "Aucune donnée disponible. Les données seront automatiquement actualisées lorsque vous visiterez cette page.",
+    "noGeographicData": "Aucune donnée géographique trouvée dans les résultats du jeu de données.",
+    "tags": "Attributs",
+    "meta": "Méta",
+    "noAdditionalInfo": "Aucune information supplémentaire disponible",
+    "colon": ":",
+    "lastEditedLegend": "Dernière modification",
+    "recentChanges": "il y a ≤ 7 jours",
+    "mediumChanges": "il y a 8 à 30 jours",
+    "olderChanges": "il y a 31 à 90 jours",
+    "veryOldChanges": "il y a plus de 90 jours",
+    "legendViewLabel": "Colorer par",
+    "legendOther": "Autre",
+    "legendMissing": "Manquant",
+    "collapseLegend": "Masquer la légende",
+    "expandLegend": "Afficher la légende"
+  },
+  "DatasetWatchButton": {
+    "privateDataset": "Jeu de données privé"
+  },
+  "PublicDatasetsFeed": {
+    "noDatasetsYet": "Aucun jeu de données public pour l'instant.",
+    "title": "Jeux de données urbains publics",
+    "subtitle": "Découvrez les jeux de données que d'autres suivent dans différentes villes",
+    "dataCount": "Nombre de données : {count, number}",
+    "lastChecked": "Dernière vérification : {date}",
+    "never": "Jamais",
+    "by": "Par",
+    "viewDataset": "Voir le jeu de données",
+    "in": "dans",
+    "colon": ":",
+    "datasetTitle": "{templateName} à {cityName} ({countryCode})"
+  },
+  "Home": {
+    "hero": {
+      "title": "Comprenez votre ville grâce aux données ouvertes",
+      "description": "OSM for Cities organise les données OpenStreetMap en jeux de données que vous pouvez suivre. Suivez les écoles, les transports, les parcs et les cliniques au fil de leurs changements, recevez des mises à jour par e-mail et comprenez comment votre ville évolue dans le temps.",
+      "seeHowItWorks": "Voir comment ça marche",
+      "exploreDatasets": "Explorer les jeux de données",
+      "osmAttribution": "© les contributeurs d'OpenStreetMap"
+    },
+    "featuredDataset": {
+      "title": "{template} à {city}",
+      "viewDataset": "Voir le jeu de données",
+      "stats": {
+        "features": "Éléments",
+        "contributors": "Contributeurs",
+        "lastEdited": "Dernière modification"
+      }
+    },
+    "features": {
+      "subtitle": "Fonctionnalités",
+      "title": "Comment fonctionne OSM for Cities",
+      "description": "Suivez des jeux de données, surveillez les changements, explorez les données visuellement et téléchargez-les pour analyse",
+      "curate": {
+        "title": "Sélectionnez vos jeux de données",
+        "description": "Choisissez ce qui compte pour votre ville. Suivez les écoles, les transports, les parcs, les cliniques ou tout jeu de données suivi dans OpenStreetMap. Organisez les infrastructures qui vous tiennent à cœur."
+      },
+      "notifications": {
+        "title": "Soyez averti des changements",
+        "description": "Recevez des alertes par e-mail lorsque les jeux de données que vous suivez sont mis à jour. Restez informé des nouveaux équipements, des évolutions d'infrastructure et du développement urbain au fil des modifications apportées à la carte par les contributeurs OpenStreetMap."
+      },
+      "inspect": {
+        "title": "Inspectez les données sur une carte",
+        "description": "Explorez les jeux de données visuellement sur une carte interactive. Cliquez sur un élément pour voir ses informations détaillées, comparez les données historiques et comprenez les relations spatiales de votre ville."
+      },
+      "download": {
+        "title": "Téléchargez les données pour analyse",
+        "description": "Exportez les jeux de données au format GeoJSON pour les utiliser dans des outils externes, des projets de recherche ou des analyses personnalisées. Toutes les données sont disponibles sous licence Open Database License (ODbL).",
+        "licenseLink": "https://www.openstreetmap.org/copyright/"
+      }
+    },
+    "useCases": {
+      "subtitle": "Cas d'usage",
+      "title": "Les cartes servent de nombreux usages",
+      "description": "Un même jeu de données raconte des histoires différentes selon qui le lit et ce qu'il cherche à savoir.",
+      "urbanPlanners": {
+        "category": "Urbanistes",
+        "title": "Surveiller les évolutions des infrastructures",
+        "description": "Suivez les écoles, les transports, la santé et d'autres services à travers les quartiers pour comprendre les lacunes de couverture et les dynamiques de développement."
+      },
+      "journalists": {
+        "category": "Journalistes",
+        "title": "Suivre les sujets de développement urbain",
+        "description": "Surveillez les ouvertures et fermetures d'équipements, identifiez les disparités entre quartiers et vérifiez des affirmations avec des données à jour."
+      },
+      "researchers": {
+        "category": "Chercheurs",
+        "title": "Étudier les dynamiques de changement urbain",
+        "description": "Accédez à des données fiables pour analyser l'évolution des services dans le temps et comparer l'accessibilité entre différentes zones."
+      },
+      "developers": {
+        "category": "Acteurs de la civic tech",
+        "title": "Construire avec des données fiables",
+        "description": "Accédez à des jeux de données urbains cohérents et à jour pour vos applications, outils d'analyse et projets de cartographie communautaire."
+      },
+      "communityGroups": {
+        "category": "Collectifs locaux",
+        "title": "Surveiller les services locaux",
+        "description": "Suivez les équipements et services essentiels de votre secteur pour identifier les manques et défendre les besoins de la communauté."
+      },
+      "publicInstitutions": {
+        "category": "Institutions publiques et ONG",
+        "title": "Partager la localisation des services",
+        "description": "Offrez un accès transparent à l'emplacement actuel des équipements et gardez une vision des services disponibles."
+      },
+      "residents": {
+        "category": "Habitants",
+        "title": "Rester informé localement",
+        "description": "Suivez les évolutions de votre quartier et recevez des mises à jour lorsque de nouveaux services ouvrent ou que des services existants déménagent près de chez vous."
+      },
+      "businesses": {
+        "category": "Entreprises",
+        "title": "Surveiller l'exactitude des localisations",
+        "description": "Vérifiez comment vos établissements apparaissent dans les données cartographiques et assurez-vous que vos clients trouvent des services à jour à proximité."
+      }
+    },
+    "showcase": {
+      "subtitle": "Catégories",
+      "title": "Explorez les catégories de jeux de données",
+      "description": "Parcourez les différents types d'infrastructures urbaines suivis dans OpenStreetMap",
+      "datasets": {
+        "healthcare": {
+          "category": "Santé",
+          "title": "Établissements et services médicaux",
+          "description": "Hôpitaux, cliniques, pharmacies et autres établissements de santé qui fournissent des services médicaux essentiels aux communautés."
+        },
+        "transportation": {
+          "category": "Transports",
+          "title": "Infrastructures de transport",
+          "description": "Arrêts de bus, vélos en libre-service, bornes de recharge et autres équipements qui maintiennent les villes en mouvement et connectées."
+        },
+        "education": {
+          "category": "Éducation",
+          "title": "Établissements d'enseignement",
+          "description": "Écoles, universités, bibliothèques et jardins d'enfants qui offrent des possibilités d'apprentissage à tous les âges."
+        },
+        "leisure": {
+          "category": "Sports et loisirs",
+          "title": "Équipements et activités sportives",
+          "description": "Installations sportives, espaces de loisirs et équipements qui favorisent un mode de vie actif et l'engagement communautaire."
+        },
+        "environment": {
+          "category": "Environnement",
+          "title": "Éléments naturels et environnementaux",
+          "description": "Cascades, barrages, bassins de résidus et autres éléments environnementaux qui influencent les écosystèmes locaux."
+        },
+        "amenities": {
+          "category": "Équipements publics",
+          "title": "Équipements publics essentiels",
+          "description": "Toilettes publiques, points d'eau potable et équipements collectifs qui soutiennent la vie urbaine quotidienne des habitants et des visiteurs."
+        },
+        "tourism": {
+          "category": "Tourisme",
+          "title": "Hébergement et attractions",
+          "description": "Hôtels, chambres d'hôtes et attractions touristiques qui accueillent les visiteurs et mettent en valeur la culture locale."
+        },
+        "culture": {
+          "category": "Culture et patrimoine",
+          "title": "Lieux culturels et monuments",
+          "description": "Cinémas, monuments, galeries et sites patrimoniaux qui préservent et mettent en valeur la culture et l'histoire locales."
+        },
+        "social": {
+          "category": "Services sociaux",
+          "title": "Équipements communautaires et sociaux",
+          "description": "Structures sociales, centres communautaires et services qui soutiennent les populations vulnérables et le bien-être collectif."
+        }
+      }
+    },
+    "signup": {
+      "title": "Commencer",
+      "description": "Créez un compte pour suivre des jeux de données et recevoir des e-mails lorsque les données changent.",
+      "signUp": "Créer un compte"
+    },
+    "footer": {
+      "about": "À propos",
+      "contact": "Contact",
+      "github": "GitHub"
+    }
+  },
+  "DatasetLoading": {
+    "creatingDataset": "Création du jeu de données",
+    "thisUsuallyTakesLessThan30Seconds": "Cela prend généralement moins de 30 secondes"
+  },
+  "Email": {
+    "magicLinkSubject": "Connexion à OSM for Cities",
+    "magicLinkBody": "Cliquez sur {magicLink} pour vous connecter.",
+    "reportSubjectChanged": "{count} {datasets} avec des changements {lastPeriod}",
+    "reportSubjectNoChanges": "Aucun changement {lastPeriod}",
+    "reportChanged": "Les jeux de données suivants ont été mis à jour {lastPeriod} :",
+    "reportNoChanges": "Il n'y a eu aucun changement sur vos {savedDatasetsLink} {lastPeriod}.",
+    "reportSaved": "jeux de données enregistrés",
+    "preferencesPage": "page des préférences",
+    "lastPeriodDay": "au cours du dernier jour",
+    "lastPeriodWeek": "au cours de la dernière semaine",
+    "generatedAt": "Ce rapport a été généré à {timestamp}Z. Toutes les dates affichées sont en UTC.",
+    "unsubscribe": "Pour ne plus recevoir ces rapports, rendez-vous sur la {preferencesLink}.",
+    "datasetsOne": "jeu de données",
+    "datasetsOther": "jeux de données",
+    "templateDeprecated": "Ce modèle a été retiré du catalogue.",
+    "templateDeprecatedDaysRemaining": "Il vous reste {days} jour{days, plural, =1 {} other {s}} avant la suppression de ce jeu de données.",
+    "greeting": "Bonjour !"
+  },
+  "AboutPage": {
+    "metaTitle": "À propos - OSM for Cities",
+    "metaDescription": "Découvrez OSM for Cities - des jeux de données OpenStreetMap mis à jour quotidiennement",
+    "title": "À propos du projet",
+    "description1": "**OSM for Cities** est une plateforme pour explorer et suivre les mises à jour d'OpenStreetMap — une carte du monde libre et ouverte construite par des bénévoles. Chaque jour, des personnes ajoutent et améliorent des données sur les rues, les bâtiments, les écoles, les parcs, les transports et bien plus. Ce projet vous permet de suivre ces changements dans les lieux qui vous tiennent à cœur.",
+    "description2": "Vous pouvez vouloir garder un œil sur les modifications des écoles de votre région, ou suivre l'ajout de passages piétons, d'arrêts de bus ou de stationnements vélo dans votre ville. Peut-être êtes-vous simplement curieux de l'évolution du parc de votre quartier. Qu'il s'agisse d'un jeu de données pour l'urbanisme ou de quelque chose de plus personnel et informel, la plateforme vous permet de le créer et de le suivre.",
+    "featuresTitle": "Fonctionnalités principales",
+    "features": {
+      "create": "Créez des jeux de données personnalisés en choisissant un lieu et un thème",
+      "follow": "Suivez des jeux de données et recevez des résumés quotidiens ou hebdomadaires",
+      "activity": "Consultez l'activité des contributeurs et la fréquence des modifications pour chaque jeu de données"
+    },
+    "projectTitle": "Le projet",
+    "projectDescription1": "OSM for Cities a été créé par",
+    "projectDescription2": "et incubé lors d'un cycle",
+    "projectDescription3": "Labs. C'est une expérimentation ouverte pour rendre les données OSM utiles et accessibles — conçue pour les villes, mais suffisamment flexible pour servir de suivi OSM générique.",
+    "projectEvolution": "Sa direction évoluera avec l'usage et les retours de la communauté.",
+    "getInvolvedTitle": "Participer",
+    "getInvolvedDescription": "Vos retours contribuent à façonner ce projet. Que vous ayez des idées de nouvelles fonctionnalités, trouvé quelque chose qui ne fonctionne pas tout à fait, ou simplement envie de partager la façon dont vous l'utilisez — nous serions ravis de vous lire."
+  },
+  "DatasetErrors": {
+    "templateNotFoundTitle": "Modèle de jeu de données introuvable",
+    "templateNotFoundDescription": "Le modèle de jeu de données \"{templateId}\" n'existe pas ou n'est plus disponible.",
+    "templateNotFoundForArea": "Nous n'avons pas trouvé ce type de jeu de données pour {areaName}.",
+    "viewAvailableDatasets": "Voir les jeux de données disponibles pour {areaName}",
+    "browseAllTemplates": "Parcourir tous les modèles",
+    "backToHome": "Retour à l'accueil",
+    "areaNotFoundTitle": "Zone introuvable",
+    "areaNotFoundDescription": "La zone avec l'ID \"{areaId}\" n'existe pas dans OpenStreetMap ou n'a pas pu être trouvée. Vérifiez l'ID de la zone et réessayez.",
+    "searchForAreas": "Rechercher des zones",
+    "checkOnOSM": "Vérifier sur OpenStreetMap",
+    "requestTimedOutTitle": "Délai d'attente dépassé",
+    "datasetTooLargeTitle": "Jeu de données trop volumineux",
+    "datasetCreationFailedTitle": "Échec de la création du jeu de données",
+    "timeoutDescription": "La création de ce jeu de données a pris trop de temps. Cela arrive généralement avec de très grandes zones ou pendant les périodes de forte affluence.",
+    "tooLargeDescription": "Cette zone contient trop de données pour le modèle sélectionné. Essayez une zone plus petite ou un modèle plus spécifique.",
+    "creationErrorDescription": "Une erreur s'est produite lors de la création du jeu de données",
+    "creationErrorDescriptionWithDetails": "Une erreur s'est produite lors de la création du jeu de données \"{templateName}\" pour {areaName}.",
+    "creationErrorFor": "\"{templateName}\" pour {areaName}",
+    "tryAgain": "Réessayer",
+    "retryCreation": "Relancer la création",
+    "chooseDifferentTemplate": "Choisir un autre modèle",
+    "suggestions": "Suggestions :",
+    "suggestionSmallerArea": "Essayez une ville ou un district plus petit plutôt qu'une grande région",
+    "suggestionSpecificTemplate": "Utilisez un modèle plus spécifique (par ex. \"Écoles primaires\" plutôt que \"Toutes les écoles\")",
+    "suggestionContactUs": "Contactez-nous si vous avez besoin de données pour de grandes zones",
+    "somethingWentWrongTitle": "Une erreur s'est produite",
+    "unexpectedErrorDescription": "Une erreur inattendue s'est produite lors du chargement du jeu de données. Veuillez réessayer.",
+    "errorDetails": "Détails de l'erreur"
+  },
+  "DatasetUpsell": {
+    "accountRequired": "Connectez-vous pour voir",
+    "signInToBrowse": "Explorez la carte de <strong>{dataset} dans {area}</strong>, réalisée par la communauté OpenStreetMap.",
+    "continueWithEmail": "Continuer avec l'e-mail",
+    "back": "Retour"
+  },
+  "ExplorePage": {
+    "metaTitle": "Explorer — OSM for Cities",
+    "title": "Explorer",
+    "description": "Découvrez les données ouvertes de villes du monde entier",
+    "noDatasets": "Aucun jeu de données en vedette pour l'instant.",
+    "noDatasetsFound": "Aucun jeu de données trouvé",
+    "seeAll": "Tout voir →",
+    "backToExplore": "← Retour à Explorer",
+    "stats": {
+      "features": "Éléments",
+      "contributors": "Contributeurs",
+      "lastEdited": "Dernière modification",
+      "saves": "Enregistrements"
+    },
+    "sections": {
+      "featured": "En vedette",
+      "largest": "Plus grands jeux de données",
+      "mostSaved": "Les plus enregistrés",
+      "mostContributors": "Le plus de contributeurs",
+      "recentlyEdited": "Modifiés récemment"
+    }
+  },
+  "SEO": {
+    "home": {
+      "title": "OSM for Cities - Parcourez et téléchargez des données urbaines",
+      "description": "Recherchez n'importe quelle ville, parcourez plus de 200 catégories d'infrastructures urbaines et téléchargez les données en GeoJSON. Construit sur OpenStreetMap."
+    },
+    "about": {
+      "title": "À propos - OSM for Cities",
+      "description": "OSM for Cities rend les données OpenStreetMap accessibles. Parcourez plus de 200 catégories et téléchargez des données urbaines."
+    },
+    "dataset": {
+      "title": "{template} dans {area} - OSM for Cities",
+      "description": "Jeu de données {description} pour {area}"
+    },
+    "area": {
+      "title": "{area} - Jeux de données - OSM for Cities",
+      "description": "Explorez les jeux de données OpenStreetMap pour {area}"
+    }
+  },
+  "TagLabel": {
+    "shelter": "Abri",
+    "bench": "Banc",
+    "covered": "Couvert",
+    "lit": "Éclairé",
+    "tactile_paving": "Bandes podotactiles",
+    "operator": "Opérateur",
+    "network": "Réseau",
+    "bicycle_rental": "Type",
+    "bicycle_parking": "Type",
+    "capacity": "Capacité",
+    "access": "Accès",
+    "fee": "Payant",
+    "crossing": "Passage",
+    "crossing:markings": "Marquage",
+    "station": "Type de station",
+    "wheelchair": "Accès fauteuil roulant",
+    "cuisine": "Cuisine",
+    "outdoor_seating": "Terrasse",
+    "indoor_seating": "Places en intérieur",
+    "takeaway": "À emporter",
+    "delivery": "Livraison",
+    "diet:vegetarian": "Options végétariennes",
+    "smoking": "Fumeurs",
+    "vending": "Type",
+    "real_ale": "Real ale",
+    "food": "Restauration",
+    "changing_table": "Table à langer",
+    "toilets:disposal": "Type d'évacuation",
+    "backrest": "Dossier",
+    "material": "Matériau",
+    "man_made": "Type d'équipement",
+    "bottle": "Remplissage de bouteilles",
+    "recycling_type": "Type de recyclage",
+    "public_bookcase:type": "Type de contenant",
+    "information": "Type",
+    "drinking_water": "Potable",
+    "display": "Affichage",
+    "support": "Support",
+    "visibility": "Visibilité",
+    "post_box:type": "Type de boîte",
+    "stars": "Étoiles",
+    "shower": "Douche",
+    "power_supply": "Alimentation électrique",
+    "social_facility": "Type d'établissement",
+    "social_facility:for": "Public accueilli",
+    "community_centre": "Type de centre",
+    "building": "Type de bâtiment",
+    "townhall:type": "Type de mairie",
+    "parking": "Type",
+    "surface": "Revêtement",
+    "location": "Emplacement",
+    "seasonal": "Saisonnier",
+    "fitness_station": "Type",
+    "traffic_signals:sound": "Signal sonore",
+    "smoothness": "Régularité",
+    "oneway": "Sens unique",
+    "maxspeed": "Limite de vitesse",
+    "sidewalk": "Trottoir",
+    "railway": "Type de voie ferrée",
+    "electrified": "Électrification",
+    "usage": "Usage",
+    "service": "Voie de service",
+    "traffic_calming": "Type",
+    "operator:type": "Type d'opérateur",
+    "emergency": "Urgences",
+    "healthcare:speciality": "Spécialité",
+    "dispensing": "Délivrance d'ordonnances",
+    "isced:level": "Niveau d'enseignement",
+    "internet_access": "Accès Internet",
+    "brand": "Marque",
+    "atm": "Distributeur de billets",
+    "museum": "Type de musée",
+    "memorial": "Type de mémorial",
+    "government": "Type d'administration",
+    "admin_level": "Niveau administratif",
+    "religion": "Religion",
+    "denomination": "Confession",
+    "organic": "Bio",
+    "clothes": "Type de vêtements",
+    "garden:type": "Type de jardin",
+    "leaf_type": "Type de feuillage",
+    "water": "Type de plan d'eau",
+    "wetland": "Type de zone humide",
+    "trees": "Arbres cultivés",
+    "tower:type": "Type de tour",
+    "surveillance:type": "Type de surveillance",
+    "surveillance": "Zone de surveillance",
+    "substance": "Substance",
+    "content": "Contenu",
+    "fire_hydrant:type": "Type de borne incendie",
+    "fire_hydrant:position": "Position",
+    "fire_hydrant:diameter": "Diamètre de conduite",
+    "fire_hydrant:pressure": "Pression",
+    "cash_in": "Dépôt d'espèces",
+    "indoor": "Intérieur",
+    "sport": "Sport"
+  },
+  "TagValue": {
+    "__common__": {
+      "yes": "Oui",
+      "no": "Non",
+      "limited": "Limité",
+      "unknown": "Inconnu"
+    },
+    "healthcare:speciality": {
+      "general": "Médecine générale",
+      "internal": "Médecine interne",
+      "paediatrics": "Pédiatrie",
+      "gynaecology": "Gynécologie",
+      "dermatology": "Dermatologie",
+      "psychiatry": "Psychiatrie",
+      "neurology": "Neurologie",
+      "cardiology": "Cardiologie",
+      "ophthalmology": "Ophtalmologie",
+      "otolaryngology": "Oto-rhino-laryngologie (ORL)",
+      "orthopaedics": "Orthopédie",
+      "urology": "Urologie",
+      "radiology": "Radiologie",
+      "surgery": "Chirurgie",
+      "plastic_surgery": "Chirurgie plastique",
+      "neurosurgery": "Neurochirurgie",
+      "gastroenterology": "Gastro-entérologie",
+      "oncology": "Oncologie",
+      "nephrology": "Néphrologie",
+      "orthodontics": "Orthodontie",
+      "pulmonology": "Pneumologie",
+      "palliative": "Soins palliatifs",
+      "proctology": "Proctologie",
+      "phlebology": "Phlébologie",
+      "child_psychiatry": "Pédopsychiatrie",
+      "diabetology": "Diabétologie",
+      "dentist": "Dentisterie",
+      "stomatology": "Stomatologie",
+      "psychotherapy": "Psychothérapie",
+      "physiatry": "Médecine physique",
+      "anaesthetics": "Anesthésie",
+      "biology": "Biologie médicale",
+      "acupuncture": "Acupuncture",
+      "chiropractic": "Chiropraxie",
+      "osteopathy": "Ostéopathie",
+      "naturopathy": "Naturopathie",
+      "homeopathy": "Homéopathie",
+      "traditional_chinese_medicine": "Médecine traditionnelle chinoise",
+      "massage": "Massothérapie",
+      "reiki": "Reiki"
+    },
+    "operator:type": {
+      "public": "Public",
+      "private": "Privé",
+      "government": "Gouvernement",
+      "religious": "Religieux",
+      "university": "Université",
+      "ngo": "ONG",
+      "community": "Communautaire",
+      "business": "Entreprise",
+      "military": "Militaire",
+      "private_non_profit": "Privé à but non lucratif"
+    },
+    "religion": {
+      "christian": "Christianisme",
+      "muslim": "Islam",
+      "jewish": "Judaïsme",
+      "buddhist": "Bouddhisme",
+      "hindu": "Hindouisme",
+      "sikh": "Sikhisme",
+      "taoist": "Taoïsme",
+      "shinto": "Shintoïsme",
+      "bahai": "Bahaïsme",
+      "jain": "Jaïnisme"
+    },
+    "fire_hydrant:type": {
+      "pillar": "Poteau",
+      "underground": "Souterrain",
+      "wall": "Mural",
+      "pipe": "Tuyau"
+    },
+    "memorial": {
+      "plaque": "Plaque",
+      "statue": "Statue",
+      "war_memorial": "Monument aux morts",
+      "bust": "Buste",
+      "stone": "Pierre",
+      "sculpture": "Sculpture",
+      "stele": "Stèle"
+    },
+    "leaf_type": {
+      "broadleaved": "Feuillu",
+      "needleleaved": "Résineux",
+      "mixed": "Mixte",
+      "leafless": "Sans feuilles"
+    },
+    "fitness_station": {
+      "horizontal_bar": "Barre fixe",
+      "parallel_bars": "Barres parallèles",
+      "horizontal_ladder": "Échelle horizontale",
+      "sit-up": "Banc à abdominaux",
+      "sign": "Panneau d'instructions",
+      "elliptical_trainer": "Vélo elliptique",
+      "exercise_bike": "Vélo d'appartement"
+    },
+    "location": {
+      "outdoor": "Extérieur",
+      "indoor": "Intérieur",
+      "roof": "Sur le toit",
+      "underground": "Souterrain"
+    },
+    "seasonal": {
+      "winter": "Hiver",
+      "spring": "Printemps",
+      "summer": "Été",
+      "autumn": "Automne"
+    },
+    "access": {
+      "private": "Privé",
+      "customers": "Clients",
+      "permissive": "Toléré",
+      "designated": "Réservé",
+      "permit": "Sur autorisation"
+    },
+    "public_bookcase:type": {
+      "metal_cabinet": "Armoire métallique",
+      "glass_cabinet": "Armoire vitrée",
+      "wooden_cabinet": "Armoire en bois",
+      "phone_box": "Ancienne cabine téléphonique",
+      "shelf": "Étagère",
+      "reading_box": "Boîte à lire"
+    },
+    "information": {
+      "board": "Panneau d'information",
+      "terminal": "Borne",
+      "map": "Carte",
+      "guidepost": "Poteau indicateur",
+      "office": "Office de tourisme",
+      "route_marker": "Balise d'itinéraire"
+    },
+    "display": {
+      "analog": "Analogique",
+      "digital": "Numérique",
+      "sundial": "Cadran solaire"
+    },
+    "support": {
+      "wall": "Mur",
+      "wall_mounted": "Fixé au mur",
+      "pole": "Poteau",
+      "roof": "Toit",
+      "ground": "Sol",
+      "pillar": "Pilier",
+      "billboard": "Panneau d'affichage",
+      "street_lamp": "Lampadaire"
+    },
+    "visibility": {
+      "area": "Zone",
+      "street": "Rue",
+      "house": "Maison"
+    },
+    "post_box:type": {
+      "pillar": "Boîte sur pied",
+      "lamp": "Boîte sur poteau",
+      "wall": "Boîte murale"
+    },
+    "toilets:disposal": {
+      "flush": "Chasse d'eau",
+      "pitlatrine": "Latrines à fosse",
+      "chemical": "Chimique",
+      "bucket": "Seau"
+    },
+    "man_made": {
+      "water_tap": "Robinet",
+      "fountain": "Fontaine",
+      "drinking_fountain": "Fontaine à boire",
+      "water_well": "Puits"
+    },
+    "recycling_type": {
+      "container": "Conteneur",
+      "centre": "Centre de recyclage"
+    },
+    "bicycle_parking": {
+      "stands": "Arceaux",
+      "wide_stands": "Arceaux larges",
+      "low_stands": "Arceaux bas",
+      "large_stands": "Grands arceaux",
+      "wall_loops": "Anneaux muraux",
+      "safe_loops": "Anneaux sécurisés",
+      "ground_slots": "Fentes au sol",
+      "rack": "Râtelier",
+      "two-tier": "À deux étages",
+      "shed": "Abri",
+      "floor": "Sol",
+      "lockers": "Consignes",
+      "building": "Bâtiment",
+      "bollard": "Borne",
+      "anchors": "Ancrages",
+      "handlebar_holder": "Support de guidon",
+      "crossbar": "Barre transversale",
+      "informal": "Informel"
+    },
+    "parking": {
+      "surface": "En surface",
+      "underground": "Souterrain",
+      "multi-storey": "À étages",
+      "rooftop": "Sur le toit",
+      "street_side": "En bord de rue",
+      "lane": "Sur voie",
+      "sheds": "Abris",
+      "carports": "Auvents",
+      "garage_boxes": "Boxes"
+    },
+    "surface": {
+      "asphalt": "Asphalte",
+      "concrete": "Béton",
+      "paving_stones": "Pavés",
+      "sett": "Pavés taillés",
+      "cobblestone": "Pavés irréguliers",
+      "paved": "Revêtu",
+      "unpaved": "Non revêtu",
+      "compacted": "Compacté",
+      "fine_gravel": "Gravier fin",
+      "gravel": "Gravier",
+      "ground": "Sol naturel",
+      "dirt": "Terre",
+      "grass": "Herbe"
+    },
+    "traffic_signals:sound": {
+      "locate": "Localisation uniquement",
+      "walk": "Traversée uniquement"
+    },
+    "smoothness": {
+      "excellent": "Excellent",
+      "good": "Bon",
+      "intermediate": "Intermédiaire",
+      "bad": "Mauvais",
+      "very_bad": "Très mauvais",
+      "horrible": "Horrible",
+      "very_horrible": "Exécrable",
+      "impassable": "Impraticable"
+    },
+    "oneway": {
+      "-1": "Sens inverse"
+    },
+    "sidewalk": {
+      "both": "Des deux côtés",
+      "left": "Côté gauche",
+      "right": "Côté droit",
+      "separate": "Cartographié séparément",
+      "none": "Aucun"
+    },
+    "railway": {
+      "tram": "Tramway",
+      "subway": "Métro",
+      "light_rail": "Métro léger",
+      "rail": "Train classique"
+    },
+    "electrified": {
+      "contact_line": "Caténaire",
+      "rail": "Troisième rail"
+    },
+    "usage": {
+      "main": "Ligne principale",
+      "branch": "Ligne secondaire",
+      "industrial": "Industriel",
+      "tourism": "Touristique",
+      "military": "Militaire"
+    },
+    "service": {
+      "yard": "Faisceau de triage",
+      "siding": "Voie d'évitement",
+      "spur": "Embranchement",
+      "crossover": "Communication"
+    },
+    "traffic_calming": {
+      "hump": "Dos d'âne",
+      "bump": "Ralentisseur",
+      "table": "Plateau surélevé",
+      "island": "Îlot",
+      "dip": "Creux",
+      "cushion": "Coussin berlinois",
+      "chicane": "Chicane",
+      "choker": "Rétrécissement",
+      "rumble_strip": "Bande rugueuse"
+    },
+    "internet_access": {
+      "wlan": "Wi-Fi",
+      "terminal": "Borne"
+    }
+  }
+}

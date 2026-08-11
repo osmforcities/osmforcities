@@ -41,11 +41,12 @@ export const AREA_BOUNDS_MAX_SPAN_DEG = 0.25;
 export const AREA_INFO_TTL_DAYS = 30;
 
 /** Supported locales for translations */
-export const SUPPORTED_LOCALES = ["en", "pt-BR", "es"] as const;
+export const SUPPORTED_LOCALES = ["en", "pt-BR", "es", "fr"] as const;
 
 /** Map app locale to YML file locale key (YML uses 'pt' not 'pt-BR') */
 export const YML_LOCALE_MAP: Record<string, string> = {
   "pt-BR": "pt",
   en: "en",
   es: "es",
+  fr: "fr",
 };

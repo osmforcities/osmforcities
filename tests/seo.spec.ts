@@ -20,10 +20,12 @@ test.describe("SEO Implementation", () => {
       const enHreflang = await page.locator('link[rel="alternate"][hreflang="en"]').getAttribute("href");
       const ptBrHreflang = await page.locator('link[rel="alternate"][hreflang="pt-BR"]').getAttribute("href");
       const esHreflang = await page.locator('link[rel="alternate"][hreflang="es"]').getAttribute("href");
+      const frHreflang = await page.locator('link[rel="alternate"][hreflang="fr"]').getAttribute("href");
 
       expect(enHreflang).toMatch(/https:\/\/osmforcities\.org\/en\/?/);
       expect(ptBrHreflang).toMatch(/https:\/\/osmforcities\.org\/pt-BR\/?/);
       expect(esHreflang).toMatch(/https:\/\/osmforcities\.org\/es\/?/);
+      expect(frHreflang).toMatch(/https:\/\/osmforcities\.org\/fr\/?/);
     });
 
     test("should have structured data (JSON-LD) on home page", async ({ page }) => {
@@ -112,9 +114,11 @@ test.describe("SEO Implementation", () => {
       expect(text).toContain("Disallow: /en/dashboard");
       expect(text).toContain("Disallow: /pt-BR/dashboard");
       expect(text).toContain("Disallow: /es/dashboard");
+      expect(text).toContain("Disallow: /fr/dashboard");
       expect(text).toContain("Disallow: /en/preferences");
       expect(text).toContain("Disallow: /pt-BR/preferences");
       expect(text).toContain("Disallow: /es/preferences");
+      expect(text).toContain("Disallow: /fr/preferences");
 
       // Should reference sitemap
       expect(text).toContain("Sitemap:");
@@ -130,11 +134,13 @@ test.describe("SEO Implementation", () => {
       expect(text).toContain("<loc>https://osmforcities.org/en/</loc>");
       expect(text).toContain("<loc>https://osmforcities.org/pt-BR/</loc>");
       expect(text).toContain("<loc>https://osmforcities.org/es/</loc>");
+      expect(text).toContain("<loc>https://osmforcities.org/fr/</loc>");
 
       // Should include about page for all locales
       expect(text).toContain("<loc>https://osmforcities.org/en/about</loc>");
       expect(text).toContain("<loc>https://osmforcities.org/pt-BR/about</loc>");
       expect(text).toContain("<loc>https://osmforcities.org/es/about</loc>");
+      expect(text).toContain("<loc>https://osmforcities.org/fr/about</loc>");
     });
   });
 });
