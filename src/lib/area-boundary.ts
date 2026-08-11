@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { unstable_cache, revalidateTag } from "next/cache";
 import simplify from "@turf/simplify";
 import {
   executeOverpassQuery,
@@ -27,6 +28,39 @@ function isRealPolygon(fc: FeatureCollection): boolean {
   return false;
 }
 
+export const AREA_BOUNDARY_TAG = "area-boundaries";
+
+/**
+ * Stored boundary for an area, simplified for display. Null when nothing usable
+ * is stored yet (no geojson, or only a bbox rectangle).
+ *
+ * Cached because both the dataset page and /api/areas/[id]/boundary call this on
+ * every request, and each call otherwise re-reads a multi-MB polygon out of
+ * Postgres and re-runs Douglas-Peucker over it. Boundaries effectively never
+ * change, so this revalidates daily; bust AREA_BOUNDARY_TAG to refresh sooner.
+ *
+ * Only the read path is cached. The Overpass fallback below writes back to the
+ * DB, and caching that too would pin a `null` result in place and keep sending
+ * every subsequent request to Overpass.
+ */
+const getStoredBoundary = unstable_cache(
+  async (areaId: number): Promise<FeatureCollection | null> => {
+    const area = await prisma.area.findUnique({
+      where: { id: areaId },
+      select: { geojson: true },
+    });
+
+    if (!area?.geojson) return null;
+
+    const stored = area.geojson as unknown as FeatureCollection;
+    if (!isRealPolygon(stored)) return null;
+
+    return simplify(stored, { tolerance: BOUNDARY_SIMPLIFICATION_TOLERANCE, highQuality: false });
+  },
+  ["area-boundary-stored"],
+  { revalidate: 86400, tags: [AREA_BOUNDARY_TAG] }
+);
+
 /**
  * Fetch area boundary for visualization.
  * Checks DB cache first, then fetches from Overpass if needed.
@@ -36,17 +70,8 @@ function isRealPolygon(fc: FeatureCollection): boolean {
  * @returns Simplified boundary GeoJSON, or null if not found
  */
 export async function getAreaBoundary(areaId: number): Promise<FeatureCollection | null> {
-  const area = await prisma.area.findUnique({
-    where: { id: areaId },
-    select: { geojson: true },
-  });
-
-  if (area?.geojson) {
-    const cached = area.geojson as unknown as FeatureCollection;
-    if (isRealPolygon(cached)) {
-      return simplify(cached, { tolerance: BOUNDARY_SIMPLIFICATION_TOLERANCE, highQuality: false });
-    }
-  }
+  const stored = await getStoredBoundary(areaId);
+  if (stored) return stored;
 
   const queryString = `[out:json][timeout:60];rel(${areaId});out geom;`;
   let overpassData;
@@ -75,6 +100,14 @@ export async function getAreaBoundary(areaId: number): Promise<FeatureCollection
     where: { id: areaId },
     data: { geojson: JSON.parse(JSON.stringify(featureCollection)) },
   });
+
+  // We just stored a boundary that getStoredBoundary has cached as absent. Drop
+  // the tag so the next caller reads it from the DB instead of hitting Overpass
+  // again. Throws when there is no request store (during render, and in vitest);
+  // best-effort is fine, the only cost is re-querying Overpass.
+  try {
+    revalidateTag(AREA_BOUNDARY_TAG);
+  } catch {}
 
   return simplify(featureCollection, { tolerance: BOUNDARY_SIMPLIFICATION_TOLERANCE, highQuality: false });
 }
