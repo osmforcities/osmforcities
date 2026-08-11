@@ -1,6 +1,6 @@
 /**
- * Localization helpers for curated OSM tag keys and values shown in the
- * interactive map legend.
+ * Localization helpers for OSM-derived keys and values: curated tag keys and
+ * values in the interactive map legend, and Nominatim address types in search.
  *
  * - Tag KEYS (legend view labels) resolve from the `TagLabel` namespace.
  * - Tag VALUES (legend category rows) resolve from the `TagValue` namespace with
@@ -23,11 +23,24 @@ export type MessageResolver = {
   has(key: string): boolean;
 };
 
+const capitalize = (word: string) => word.charAt(0).toUpperCase() + word.slice(1);
+
 /** Fallback prettifier: "tactile_paving" -> "Tactile paving". */
+export function toSentenceCase(raw: string): string {
+  const spaced = raw.replace(/_/g, " ").trim();
+  if (!spaced) return raw;
+  return capitalize(spaced);
+}
+
+/**
+ * Fallback prettifier: "isolated_dwelling" -> "Isolated Dwelling". Used where the
+ * neighbouring translated strings are Title Case (the AddressTypes badges), so a
+ * sentence-cased fallback would read as a different kind of label.
+ */
 export function toTitleCase(raw: string): string {
   const spaced = raw.replace(/_/g, " ").trim();
   if (!spaced) return raw;
-  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+  return spaced.split(" ").map(capitalize).join(" ");
 }
 
 /**
@@ -36,7 +49,7 @@ export function toTitleCase(raw: string): string {
  * a missing-key error.
  */
 export function tagLabel(tTagLabel: MessageResolver, field: string): string {
-  return tTagLabel.has(field) ? tTagLabel(field) : toTitleCase(field);
+  return tTagLabel.has(field) ? tTagLabel(field) : toSentenceCase(field);
 }
 
 /**

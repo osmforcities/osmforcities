@@ -4,7 +4,7 @@ import { bbox } from "@turf/bbox";
 import type { FeatureCollection } from "geojson";
 import { BboxSchema, type Bbox } from "@/types/geojson";
 import type { Area } from "@/types/area";
-import type { useTranslations } from "next-intl";
+import { toTitleCase, type MessageResolver } from "./tag-i18n";
 import {
   SUPPORTED_LOCALES,
   AREA_BOUNDS_MAX_SPAN_DEG,
@@ -173,7 +173,7 @@ export function getAreaCharacteristics(
         country?: string;
         countryCode?: string;
       },
-  translateAddressType: ReturnType<typeof useTranslations<"AddressTypes">>
+  translateAddressType: MessageResolver
 ): string[] {
   if (typeof item.id === "string" && item.id === "no-results") return [];
 
@@ -184,15 +184,10 @@ export function getAreaCharacteristics(
   // Title Case rather than rendering the raw "AddressTypes.<key>" message key.
   const addressType = item.addresstype || item.type;
   if (addressType) {
-    if (translateAddressType.has(addressType as never)) {
-      characteristics.push(translateAddressType(addressType as never));
+    if (translateAddressType.has(addressType)) {
+      characteristics.push(translateAddressType(addressType));
     } else {
-      characteristics.push(
-        addressType
-          .split("_")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ")
-      );
+      characteristics.push(toTitleCase(addressType));
 
       if (process.env.NODE_ENV === "development") {
         console.warn(`Untranslated address type: ${addressType}`);

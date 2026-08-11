@@ -5,6 +5,8 @@ import {
   getAreaCharacteristics,
 } from "@/lib/utils";
 import type { Bbox } from "@/types/geojson";
+import type { MessageResolver } from "@/lib/tag-i18n";
+import enMessages from "../../../messages/en.json";
 
 // GeoJSON bbox order: [minLon, minLat, maxLon, maxLat]
 const smallTownBbox: Bbox = [-9.2, 38.69, -9.1, 38.79]; // ~0.1 deg span
@@ -160,10 +162,10 @@ describe("getAreaCharacteristics", () => {
 
   // Mirrors next-intl: a missing message resolves to the NAMESPACED key
   // ("AddressTypes.census"), never the bare key.
-  const t = Object.assign(
+  const t: MessageResolver = Object.assign(
     (key: string) => messages[key] ?? `AddressTypes.${key}`,
     { has: (key: string) => key in messages }
-  ) as unknown as Parameters<typeof getAreaCharacteristics>[1];
+  );
 
   it("translates a known address type", () => {
     expect(getAreaCharacteristics({ id: 1, addresstype: "city" }, t)).toEqual([
@@ -194,5 +196,12 @@ describe("getAreaCharacteristics", () => {
       "City",
       "ID: 4",
     ]);
+  });
+
+  // The cases above assert the lookup logic against a hand-built dict, so they
+  // would still pass if a key were dropped from the shipped messages. i18n:check
+  // only enforces locale parity, so guard the values themselves here.
+  it("ships a message for census, the reported Nominatim value", () => {
+    expect(enMessages.AddressTypes).toHaveProperty("census");
   });
 });
