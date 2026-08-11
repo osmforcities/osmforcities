@@ -17,7 +17,7 @@ export default async function NavBar() {
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 shadow-sm">
-      <div className="w-full max-w-7xl mx-auto px-2 md:px-4">
+      <div className="w-full px-3 md:px-6">
         <div className="flex h-16 items-center justify-between">
           <Link
             href="/"
