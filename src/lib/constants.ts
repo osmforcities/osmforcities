@@ -1,3 +1,5 @@
+import { AVAILABLE_LOCALES } from "@/i18n/constants";
+
 export const GITHUB_REPO_URL = "https://github.com/osmforcities/osmforcities";
 
 /** Maximum number of datasets a user can save */
@@ -41,7 +43,7 @@ export const AREA_BOUNDS_MAX_SPAN_DEG = 0.25;
 export const AREA_INFO_TTL_DAYS = 30;
 
 /** Supported locales for translations */
-export const SUPPORTED_LOCALES = ["en", "pt-BR", "es", "fr"] as const;
+export const SUPPORTED_LOCALES = AVAILABLE_LOCALES;
 
 /** Map app locale to YML file locale key (YML uses 'pt' not 'pt-BR') */
 export const YML_LOCALE_MAP: Record<string, string> = {

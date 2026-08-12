@@ -51,7 +51,7 @@
     "noSavedDatasetsTitle": "Aucun jeu de données enregistré pour l'instant",
     "noSavedDatasetsDescription": "Recherchez ci-dessus pour commencer.",
     "savedDatasetsGridLabel": "Jeux de données enregistrés",
-    "saveCount": "{count, plural, =1 {# enregistrement} other {# enregistrements}}",
+    "saveCount": "{count, plural, one {# enregistrement} other {# enregistrements}}",
     "saveCountAriaLabel": "{used, number} jeux de données enregistrés sur {limit, number}",
     "savedLabel": "{used, number}/{limit, number} enregistrés",
     "limitReachedSuffix": "— limite atteinte",
@@ -382,7 +382,7 @@
     "flaggedHeading": "Jeux de données signalés",
     "flaggedCount": "({count, number})",
     "flaggedEmpty": "Aucun jeu de données n'est actuellement en échec.",
-    "failureCount": "{count, plural, =1 {# échec consécutif} other {# échecs consécutifs}}",
+    "failureCount": "{count, plural, one {# échec consécutif} other {# échecs consécutifs}}",
     "lastError": "Dernière erreur : {message}",
     "lastAttempted": "Dernière tentative : {value}",
     "lastChecked": "Dernière vérification : {value}"
@@ -596,7 +596,7 @@
     "datasetsOne": "jeu de données",
     "datasetsOther": "jeux de données",
     "templateDeprecated": "Ce modèle a été retiré du catalogue.",
-    "templateDeprecatedDaysRemaining": "Il vous reste {days} jour{days, plural, =1 {} other {s}} avant la suppression de ce jeu de données.",
+    "templateDeprecatedDaysRemaining": "Il vous reste {days} jour{days, plural, one {} other {s}} avant la suppression de ce jeu de données.",
     "greeting": "Bonjour !"
   },
   "AboutPage": {
