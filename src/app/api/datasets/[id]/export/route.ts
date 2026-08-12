@@ -41,8 +41,6 @@ export async function GET(
       "_"
     );
 
-    // Compact: indentation costs ~1.6x bytes and stringify/gzip CPU for a file
-    // that goes straight to disk.
     return new NextResponse(JSON.stringify(dataset.geojson), {
       status: 200,
       headers: {
