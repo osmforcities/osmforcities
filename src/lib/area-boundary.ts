@@ -28,13 +28,18 @@ function isRealPolygon(fc: FeatureCollection): boolean {
   return false;
 }
 
-export const AREA_BOUNDARY_TAG = "area-boundaries";
+const AREA_BOUNDARY_TAG = "area-boundaries";
 
 /**
  * Stored boundary, simplified. Null when nothing usable is stored yet.
  *
  * Only the read path is cached: the Overpass fallback below writes back to the
  * DB, and caching that too would pin a `null` and keep re-querying Overpass.
+ *
+ * TTL is deliberately short. A `null` gets cached like any other result, and the
+ * bust after the fallback write cannot run from a Server Component render — the
+ * dataset page is exactly that. So for a cold area the TTL, not the bust, is
+ * what bounds how long every visitor keeps re-hitting Overpass.
  */
 const getStoredBoundary = unstable_cache(
   async (areaId: number): Promise<FeatureCollection | null> => {
@@ -51,7 +56,7 @@ const getStoredBoundary = unstable_cache(
     return simplify(stored, { tolerance: BOUNDARY_SIMPLIFICATION_TOLERANCE, highQuality: false });
   },
   ["area-boundary-stored"],
-  { revalidate: 86400, tags: [AREA_BOUNDARY_TAG] }
+  { revalidate: 300, tags: [AREA_BOUNDARY_TAG] }
 );
 
 /**
@@ -94,9 +99,10 @@ export async function getAreaBoundary(areaId: number): Promise<FeatureCollection
     data: { geojson: JSON.parse(JSON.stringify(featureCollection)) },
   });
 
-  // getStoredBoundary has this cached as absent. Busts all areas, not just this
-  // one — unstable_cache tags are static per function. Throws without a request
-  // store (render, vitest); best-effort, worst case is one more Overpass query.
+  // getStoredBoundary has this cached as absent. Only lands from a Route Handler
+  // (/api/areas/[id]/boundary); from a page render it always throws and the
+  // short TTL above is what clears the stale null instead. Busts every area, not
+  // just this one — unstable_cache tags are static per function.
   try {
     revalidateTag(AREA_BOUNDARY_TAG);
   } catch {}
