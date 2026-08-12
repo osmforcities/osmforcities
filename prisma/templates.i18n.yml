@@ -5,2169 +5,2651 @@ templates:
       en: Bicycle Parking
       pt: Estacionamento para bicicletas
       es: Estacionamiento de bicicletas
+      fr: Stationnement vélo
     desc:
       en: Bicycle Parking
       pt: Estacionamento para bicicletas
       es: Estacionamiento de bicicletas
+      fr: Stationnement vélo
   bicycle-rental:
     name:
       en: Bicycle Rental
       pt: Aluguel de bicicletas
       es: Alquiler de bicicletas
+      fr: Location de vélos
     desc:
       en: Bicycle Rental
       pt: Aluguel de bicicletas
       es: Alquiler de bicicletas
+      fr: Location de vélos
   bicycle-shop:
     name:
       en: Bicycle Shop
       pt: Loja de bicicletas
       es: Tienda de bicicletas
+      fr: Magasins de vélos
     desc:
       en: Bicycle Shop
       pt: Loja de bicicletas
       es: Tienda de bicicletas
+      fr: Magasins de vélos
   markets:
     name:
       en: Markets
       pt: Mercados e feiras
       es: Mercados
+      fr: Marchés
     desc:
       en: Public marketplaces
       pt: Mercados e feiras públicas
       es: Mercados públicos
+      fr: Marchés publics
   bus-stops:
     name:
       en: Bus Stops
       pt: Pontos de ônibus
       es: Paradas de autobús
+      fr: Arrêts de bus
     desc:
       en: Bus Stops
       pt: Pontos de ônibus
       es: Paradas de autobús
+      fr: Arrêts de bus
   ev-charging:
     name:
       en: Ev Charging
       pt: Recarga para veículos elétricos
       es: Carga de vehículos eléctricos
+      fr: Recharge de véhicules électriques
     desc:
       en: Ev Charging
       pt: Recarga para veículos elétricos
       es: Carga de vehículos eléctricos
+      fr: Recharge de véhicules électriques
   railway-stations:
     name:
       en: Railway Stations
       pt: Estações ferroviárias
       es: Estaciones de tren
+      fr: Gares ferroviaires
     desc:
       en: Railway Stations
       pt: Estações ferroviárias
       es: Estaciones de tren
+      fr: Gares ferroviaires
   tram-stops:
     name:
       en: Tram Stops
       pt: Paradas de bonde
       es: Paradas de tranvía
+      fr: Arrêts de tramway
     desc:
       en: Tram Stops
       pt: Paradas de bonde
       es: Paradas de tranvía
+      fr: Arrêts de tramway
   subway-entrances:
     name:
       en: Subway Entrances
       pt: Acessos ao metrô
       es: Accesos de metro
+      fr: Entrées de métro
     desc:
       en: Subway Entrances
       pt: Acessos ao metrô
       es: Accesos de metro
+      fr: Entrées de métro
   transit-platforms:
     name:
       en: Transit Platforms
       pt: Plataformas de transporte público
       es: Andenes de transporte público
+      fr: Quais de transport en commun
     desc:
       en: Transit Platforms
       pt: Plataformas de transporte público
       es: Andenes de transporte público
+      fr: Quais de transport en commun
   ferry-terminals:
     name:
       en: Ferry Terminals
       pt: Terminais de balsas
       es: Terminales de ferry
+      fr: Terminaux de ferry
     desc:
       en: Ferry Terminals
       pt: Terminais de balsas
       es: Terminales de ferry
+      fr: Terminaux de ferry
   taxi-ranks:
     name:
       en: Taxi Ranks
       pt: Pontos de táxi
       es: Paradas de taxi
+      fr: Stations de taxi
     desc:
       en: Taxi Ranks
       pt: Pontos de táxi
       es: Paradas de taxi
+      fr: Stations de taxi
   parking:
     name:
       en: Parking
       pt: Estacionamentos
       es: Estacionamientos
+      fr: Parkings
     desc:
       en: Parking
       pt: Estacionamentos
       es: Estacionamientos
+      fr: Parkings
   rail-tracks:
     name:
       en: Rail Tracks
       pt: Trilhos ferroviários
       es: Vías férreas
+      fr: Voies ferrées
     desc:
       en: Tram, subway, light rail and mainline railway tracks
       pt: Trilhos de bonde, metrô, VLT e ferrovias
       es: Vías de tranvía, metro, tren ligero y ferrocarril
+      fr: Voies de tramway, métro, train léger et chemin de fer
   busways:
     name:
       en: Busways
       pt: Corredores de ônibus
       es: Corredores de autobús
+      fr: Couloirs de bus
     desc:
       en: Dedicated bus rapid transit corridors
       pt: Corredores exclusivos de ônibus (BRT)
       es: Corredores exclusivos de autobús (BRT)
+      fr: Couloirs réservés de bus à haut niveau de service (BRT)
   bus-lanes:
     name:
       en: Bus Lanes
       pt: Faixas de ônibus
       es: Carriles de autobús
+      fr: Voies de bus
     desc:
       en: On-street exclusive bus lanes
       pt: Faixas exclusivas de ônibus na via
       es: Carriles exclusivos de autobús en la vía
+      fr: Voies réservées aux bus sur chaussée
   atms:
     name:
       en: Atms
       pt: Caixas eletrônicos
       es: Cajeros automáticos
+      fr: Distributeurs automatiques de billets
     desc:
       en: Atms
       pt: Caixas eletrônicos
       es: Cajeros automáticos
+      fr: Distributeurs automatiques de billets
   banks:
     name:
       en: Banks
       pt: Bancos
       es: Bancos
+      fr: Banques
     desc:
       en: Banks
       pt: Bancos
       es: Bancos
+      fr: Banques
   public-toilets:
     name:
       en: Public Toilets
       pt: Banheiros públicos
       es: Baños públicos
+      fr: Toilettes publiques
     desc:
       en: Public Toilets
       pt: Banheiros públicos
       es: Baños públicos
+      fr: Toilettes publiques
   drinking-water:
     name:
       en: Drinking Water
       pt: Água potável
       es: Agua potable
+      fr: Eau potable
     desc:
       en: Drinking Water
       pt: Água potável
       es: Agua potable
+      fr: Eau potable
   post-offices:
     name:
       en: Post Offices
       pt: Correios
       es: Oficinas de correos
+      fr: Bureaux de poste
     desc:
       en: Post Offices
       pt: Correios
       es: Oficinas de correos
+      fr: Bureaux de poste
   parcel-lockers:
     name:
       en: Parcel Lockers
       pt: Lockers de encomendas
       es: Consignas de paquetes
+      fr: Consignes à colis
     desc:
       en: Parcel Lockers
       pt: Lockers de encomendas
       es: Consignas de paquetes
+      fr: Consignes à colis
   shower:
     name:
       en: Showers
       pt: Chuveiros públicos
       es: Duchas públicas
+      fr: Douches publiques
     desc:
       en: Showers
       pt: Chuveiros públicos
       es: Duchas públicas
+      fr: Douches publiques
   public-bookcase:
     name:
       en: Public Bookcases
       pt: Estantes públicas de livros
       es: Estanterías públicas de libros
+      fr: Boîtes à livres
     desc:
       en: Public Bookcases
       pt: Estantes públicas de livros
       es: Estanterías públicas de libros
+      fr: Boîtes à livres
   luggage-lockers:
     name:
       en: Luggage Lockers
       pt: Guarda-volumes
       es: Consignas de equipaje
+      fr: Consignes à bagages
     desc:
       en: Luggage Lockers
       pt: Guarda-volumes
       es: Consignas de equipaje
+      fr: Consignes à bagages
   post-boxes:
     name:
       en: Post Boxes
       pt: Caixas de coleta postal
       es: Buzones de correos
+      fr: Boîtes aux lettres
     desc:
       en: Post Boxes
       pt: Caixas de coleta postal
       es: Buzones de correos
+      fr: Boîtes aux lettres
   give-box:
     name:
       en: Give Boxes
       pt: Armários de doação
       es: Armarios de intercambio
+      fr: Boîtes à dons
     desc:
       en: Give Boxes
       pt: Armários de doação
       es: Armarios de intercambio
+      fr: Boîtes à dons
   hospitals:
     name:
       en: Hospitals
       pt: Hospitais
       es: Hospitales
+      fr: Hôpitaux
     desc:
       en: Hospitals
       pt: Hospitais
       es: Hospitales
+      fr: Hôpitaux
   clinics:
     name:
       en: Clinics
       pt: Clínicas
       es: Clínicas
+      fr: Cliniques
     desc:
       en: Clinics
       pt: Clínicas
       es: Clínicas
+      fr: Cliniques
   doctors:
     name:
       en: Doctors
       pt: Médicos
       es: Médicos
+      fr: Médecins
     desc:
       en: Doctors
       pt: Médicos
       es: Médicos
+      fr: Médecins
   dentists:
     name:
       en: Dentists
       pt: Dentistas
       es: Dentistas
+      fr: Dentistes
     desc:
       en: Dentists
       pt: Dentistas
       es: Dentistas
+      fr: Dentistes
   pharmacies:
     name:
       en: Pharmacies
       pt: Farmácias
       es: Farmacias
+      fr: Pharmacies
     desc:
       en: Pharmacies
       pt: Farmácias
       es: Farmacias
+      fr: Pharmacies
   health-post:
     name:
       en: Health Post
       pt: Posto de saúde
       es: Puesto de salud
+      fr: Poste de santé
     desc:
       en: Health Post
       pt: Posto de saúde
       es: Puesto de salud
+      fr: Poste de santé
   nursing-home:
     name:
       en: Nursing Home
       pt: Lar de idosos
       es: Residencia de ancianos
+      fr: Maison de retraite
     desc:
       en: Nursing Home
       pt: Lar de idosos
       es: Residencia de ancianos
+      fr: Maison de retraite
   veterinary:
     name:
       en: Veterinary
       pt: Veterinários
       es: Veterinaria
+      fr: Vétérinaires
     desc:
       en: Veterinary
       pt: Veterinários
       es: Veterinaria
+      fr: Vétérinaires
   opticians:
     name:
       en: Opticians
       pt: Óticas
       es: Ópticas
+      fr: Opticiens
     desc:
       en: Opticians
       pt: Óticas
       es: Ópticas
+      fr: Opticiens
   medical-laboratories:
     name:
       en: Medical Laboratories
       pt: Laboratórios médicos
       es: Laboratorios médicos
+      fr: Laboratoires médicaux
     desc:
       en: Medical Laboratories
       pt: Laboratórios médicos
       es: Laboratorios médicos
+      fr: Laboratoires médicaux
   psychotherapists:
     name:
       en: Psychotherapists
       pt: Psicoterapeutas
       es: Psicoterapeutas
+      fr: Psychothérapeutes
     desc:
       en: Psychotherapists
       pt: Psicoterapeutas
       es: Psicoterapeutas
+      fr: Psychothérapeutes
   physiotherapists:
     name:
       en: Physiotherapists
       pt: Fisioterapeutas
       es: Fisioterapeutas
+      fr: Kinésithérapeutes
     desc:
       en: Physiotherapists
       pt: Fisioterapeutas
       es: Fisioterapeutas
+      fr: Kinésithérapeutes
   optometrists:
     name:
       en: Optometrists
       pt: Optometristas
       es: Optometristas
+      fr: Optométristes
     desc:
       en: Optometrists
       pt: Optometristas
       es: Optometristas
+      fr: Optométristes
   podiatrists:
     name:
       en: Podiatrists
       pt: Podólogos
       es: Podólogos
+      fr: Podologues
     desc:
       en: Podiatrists
       pt: Podólogos
       es: Podólogos
+      fr: Podologues
   rehabilitation-centres:
     name:
       en: Rehabilitation Centres
       pt: Centros de reabilitação
       es: Centros de rehabilitación
+      fr: Centres de réadaptation
     desc:
       en: Rehabilitation Centres
       pt: Centros de reabilitação
       es: Centros de rehabilitación
+      fr: Centres de réadaptation
   counselling-services:
     name:
       en: Counselling Services
       pt: Serviços de aconselhamento
       es: Servicios de asesoramiento
+      fr: Services de conseil
     desc:
       en: Counselling Services
       pt: Serviços de aconselhamento
       es: Servicios de asesoramiento
+      fr: Services de conseil
   speech-therapists:
     name:
       en: Speech Therapists
       pt: Fonoaudiólogos
       es: Logopedas
+      fr: Orthophonistes
     desc:
       en: Speech Therapists
       pt: Fonoaudiólogos
       es: Logopedas
+      fr: Orthophonistes
   occupational-therapists:
     name:
       en: Occupational Therapists
       pt: Terapeutas ocupacionais
       es: Terapeutas ocupacionales
+      fr: Ergothérapeutes
     desc:
       en: Occupational Therapists
       pt: Terapeutas ocupacionais
       es: Terapeutas ocupacionales
+      fr: Ergothérapeutes
   alternative-medicine:
     name:
       en: Alternative Medicine
       pt: Medicina alternativa
       es: Medicina alternativa
+      fr: Médecine alternative
     desc:
       en: Alternative Medicine
       pt: Medicina alternativa
       es: Medicina alternativa
+      fr: Médecine alternative
   blood-donation:
     name:
       en: Blood Donation
       pt: Doação de sangue
       es: Donación de sangre
+      fr: Don du sang
     desc:
       en: Blood Donation
       pt: Doação de sangue
       es: Donación de sangre
+      fr: Don du sang
   dialysis-centres:
     name:
       en: Dialysis Centres
       pt: Centros de diálise
       es: Centros de diálisis
+      fr: Centres de dialyse
     desc:
       en: Dialysis Centres
       pt: Centros de diálise
       es: Centros de diálisis
+      fr: Centres de dialyse
   midwives:
     name:
       en: Midwives
       pt: Parteiras
       es: Parteras
+      fr: Sages-femmes
     desc:
       en: Midwives
       pt: Parteiras
       es: Parteras
+      fr: Sages-femmes
   schools:
     name:
       en: Schools
       pt: Escolas
       es: Escuelas
+      fr: Écoles
     desc:
       en: Schools
       pt: Escolas
       es: Escuelas
+      fr: Écoles
   universities:
     name:
       en: Universities
       pt: Universidades
       es: Universidades
+      fr: Universités
     desc:
       en: Universities
       pt: Universidades
       es: Universidades
+      fr: Universités
   libraries:
     name:
       en: Libraries
       pt: Bibliotecas
       es: Bibliotecas
+      fr: Bibliothèques
     desc:
       en: Libraries
       pt: Bibliotecas
       es: Bibliotecas
+      fr: Bibliothèques
   kindergarten:
     name:
       en: Kindergarten
       pt: Jardins de infância
       es: Jardines de infancia
+      fr: Jardins d'enfants
     desc:
       en: Kindergarten
       pt: Jardins de infância
       es: Jardines de infancia
+      fr: Jardins d'enfants
   college:
     name:
       en: College
       pt: Faculdades
       es: Facultades
+      fr: Établissements d'enseignement supérieur
     desc:
       en: College
       pt: Faculdades
       es: Facultades
+      fr: Établissements d'enseignement supérieur
   childcare:
     name:
       en: Childcare
       pt: Creches
       es: Guarderías
+      fr: Crèches
     desc:
       en: Childcare
       pt: Creches
       es: Guarderías
+      fr: Crèches
   driving-school:
     name:
       en: Driving Schools
       pt: Autoescolas
       es: Autoescuelas
+      fr: Auto-écoles
     desc:
       en: Driving Schools
       pt: Autoescolas
       es: Autoescuelas
+      fr: Auto-écoles
   music-school:
     name:
       en: Music Schools
       pt: Escolas de música
       es: Escuelas de música
+      fr: Écoles de musique
     desc:
       en: Music Schools
       pt: Escolas de música
       es: Escuelas de música
+      fr: Écoles de musique
   language-school:
     name:
       en: Language Schools
       pt: Escolas de idiomas
       es: Escuelas de idiomas
+      fr: Écoles de langues
     desc:
       en: Language Schools
       pt: Escolas de idiomas
       es: Escuelas de idiomas
+      fr: Écoles de langues
   research-institute:
     name:
       en: Research Institutes
       pt: Institutos de pesquisa
       es: Institutos de investigación
+      fr: Instituts de recherche
     desc:
       en: Research Institutes
       pt: Institutos de pesquisa
       es: Institutos de investigación
+      fr: Instituts de recherche
   hotels:
     name:
       en: Hotels
       pt: Hotéis
       es: Hoteles
+      fr: Hôtels
     desc:
       en: Hotels
       pt: Hotéis
       es: Hoteles
+      fr: Hôtels
   motels:
     name:
       en: Motels
       pt: Motéis
       es: Moteles
+      fr: Motels
     # tourism=motel spans two regional meanings (roadside motor lodge vs the Brazilian/
     # Latin American short-stay motel); keep the description neutral across locales.
     desc:
       en: Short-stay lodging
       pt: Hospedagem de curta permanência
       es: Alojamiento de estancia corta
+      fr: Hébergement de courte durée
   attractions:
     name:
       en: Attractions
       pt: Atrações
       es: Atracciones
+      fr: Attractions
     desc:
       en: Attractions
       pt: Atrações
       es: Atracciones
+      fr: Attractions
   viewpoints:
     name:
       en: Viewpoints
       pt: Mirantes
       es: Miradores
+      fr: Points de vue
     desc:
       en: Viewpoints
       pt: Mirantes
       es: Miradores
+      fr: Points de vue
   campsites:
     name:
       en: Campsites
       pt: Áreas de acampamento
       es: Zonas de acampada
+      fr: Campings
     desc:
       en: Campsites
       pt: Áreas de acampamento
       es: Zonas de acampada
+      fr: Campings
   alpine-huts:
     name:
       en: Alpine Huts
       pt: Refúgios alpinos
       es: Refugios alpinos
+      fr: Refuges alpins
     desc:
       en: Alpine Huts
       pt: Refúgios alpinos
       es: Refugios alpinos
+      fr: Refuges alpins
   caravan-sites:
     name:
       en: Caravan Sites
       pt: Áreas para trailers
       es: Áreas para caravanas
+      fr: Aires pour camping-cars
     desc:
       en: Caravan Sites
       pt: Áreas para trailers
       es: Áreas para caravanas
+      fr: Aires pour camping-cars
   wilderness-huts:
     name:
       en: Wilderness Huts
       pt: Abrigos em áreas naturais
       es: Refugios en zonas naturales
+      fr: Refuges non gardés
     desc:
       en: Wilderness Huts
       pt: Abrigos em áreas naturais
       es: Refugios en zonas naturales
+      fr: Refuges non gardés
   chalets:
     name:
       en: Chalets
       pt: Chalés
       es: Chalés
+      fr: Chalets
     desc:
       en: Chalets
       pt: Chalés
       es: Chalés
+      fr: Chalets
   cinemas:
     name:
       en: Cinemas
       pt: Cinemas
       es: Cines
+      fr: Cinémas
     desc:
       en: Cinemas
       pt: Cinemas
       es: Cines
+      fr: Cinémas
   monuments:
     name:
       en: Monuments
       pt: Monumentos
       es: Monumentos
+      fr: Monuments
     desc:
       en: Monuments
       pt: Monumentos
       es: Monumentos
+      fr: Monuments
   arts-centre:
     name:
       en: Arts Centre
       pt: Centro cultural
       es: Centro cultural
+      fr: Centre culturel
     desc:
       en: Arts Centre
       pt: Centro cultural
       es: Centro cultural
+      fr: Centre culturel
   gallery:
     name:
       en: Gallery
       pt: Galeria
       es: Galería
+      fr: Galerie
     desc:
       en: Gallery
       pt: Galeria
       es: Galería
+      fr: Galerie
   memorials:
     name:
       en: Memorials
       pt: Memoriais
       es: Monumentos conmemorativos
+      fr: Mémoriaux
     desc:
       en: Memorials
       pt: Memoriais
       es: Monumentos conmemorativos
+      fr: Mémoriaux
   museums:
     name:
       en: Museums
       pt: Museus
       es: Museos
+      fr: Musées
     desc:
       en: Museums
       pt: Museus
       es: Museos
+      fr: Musées
   theatres:
     name:
       en: Theatres
       pt: Teatros
       es: Teatros
+      fr: Théâtres
     desc:
       en: Theatres
       pt: Teatros
       es: Teatros
+      fr: Théâtres
   social-facility:
     name:
       en: Social Facility
       pt: Instalação de assistência social
       es: Instalación de asistencia social
+      fr: Établissements d'action sociale
     desc:
       en: Social Facility
       pt: Instalação de assistência social
       es: Instalación de asistencia social
+      fr: Établissements d'action sociale
   community-centre:
     name:
       en: Community Centre
       pt: Centro comunitário
       es: Centro comunitario
+      fr: Centre communautaire
     desc:
       en: Community Centre
       pt: Centro comunitário
       es: Centro comunitario
+      fr: Centre communautaire
   town-halls:
     name:
       en: Town Halls
       pt: Prefeituras
       es: Ayuntamientos
+      fr: Mairies
     desc:
       en: Town Halls
       pt: Prefeituras
       es: Ayuntamientos
+      fr: Mairies
   senior-centers:
     name:
       en: Senior Centers
       pt: Centros para idosos
       es: Centros de mayores
+      fr: Centres pour personnes âgées
     desc:
       en: Senior Centers
       pt: Centros para idosos
       es: Centros de mayores
+      fr: Centres pour personnes âgées
   government-office:
     name:
       en: Government Office
       pt: Repartição pública
       es: Oficina gubernamental
+      fr: Administrations publiques
     desc:
       en: Government Office
       pt: Repartição pública
       es: Oficina gubernamental
+      fr: Administrations publiques
   courts:
     name:
       en: Courts
       pt: Tribunais
       es: Juzgados
+      fr: Tribunaux
     desc:
       en: Courts
       pt: Tribunais
       es: Juzgados
+      fr: Tribunaux
   police-stations:
     name:
       en: Police Stations
       pt: Delegacias
       es: Comisarías
+      fr: Commissariats
     desc:
       en: Police Stations
       pt: Delegacias
       es: Comisarías
+      fr: Commissariats
   prisons:
     name:
       en: Prisons
       pt: Presídios
       es: Prisiones
+      fr: Prisons
     desc:
       en: Prisons
       pt: Presídios
       es: Prisiones
+      fr: Prisons
   fire-stations:
     name:
       en: Fire Stations
       pt: Corpos de bombeiros
       es: Parques de bomberos
+      fr: Casernes de pompiers
     desc:
       en: Fire Stations
       pt: Corpos de bombeiros
       es: Parques de bomberos
+      fr: Casernes de pompiers
   ambulance-stations:
     name:
       en: Ambulance Stations
       pt: Postos de ambulância
       es: Bases de ambulancias
+      fr: Bases d'ambulances
     desc:
       en: Ambulance Stations
       pt: Postos de ambulância
       es: Bases de ambulancias
+      fr: Bases d'ambulances
   emergency-phones:
     name:
       en: Emergency Phones
       pt: Telefones de emergência
       es: Teléfonos de emergencia
+      fr: Téléphones d'urgence
     desc:
       en: Emergency Phones
       pt: Telefones de emergência
       es: Teléfonos de emergencia
+      fr: Téléphones d'urgence
   fire-hydrants:
     name:
       en: Fire Hydrants
       pt: Hidrantes
       es: Hidrantes
+      fr: Bouches d'incendie
     desc:
       en: Fire Hydrants
       pt: Hidrantes
       es: Hidrantes
+      fr: Bouches d'incendie
   defibrillators:
     name:
       en: Defibrillators
       pt: Desfibriladores
       es: Desfibriladores
+      fr: Défibrillateurs
     desc:
       en: Public access defibrillators (AEDs)
       pt: Desfibriladores de acesso público (DEAs)
       es: Desfibriladores de acceso público (DEA)
+      fr: Défibrillateurs en accès public (DAE)
   waterfall:
     name:
       en: Waterfall
       pt: Cachoeiras
       es: Cascadas
+      fr: Cascades
     desc:
       en: Waterfall
       pt: Cachoeiras
       es: Cascadas
+      fr: Cascades
   dam:
     name:
       en: Dam
       pt: Barragens
       es: Presas
+      fr: Barrages
     desc:
       en: Dam
       pt: Barragens
       es: Presas
+      fr: Barrages
   recycling:
     name:
       en: Recycling
       pt: Coleta seletiva
       es: Reciclaje
+      fr: Recyclage
     desc:
       en: Recycling
       pt: Coleta seletiva
       es: Reciclaje
+      fr: Recyclage
   waste-disposal:
     name:
       en: Waste Disposal
       pt: Descarte de resíduos
       es: Eliminación de residuos
+      fr: Élimination des déchets
     desc:
       en: Waste Disposal
       pt: Descarte de resíduos
       es: Eliminación de residuos
+      fr: Élimination des déchets
   waste-basket:
     name:
       en: Waste Baskets
       pt: Lixeiras
       es: Papeleras
+      fr: Poubelles
     desc:
       en: Waste Baskets
       pt: Lixeiras
       es: Papeleras
+      fr: Poubelles
   bottle-return:
     name:
       en: Bottle Return Machines
       pt: Máquinas de retorno de garrafas
       es: Máquinas de retorno de botellas
+      fr: Machines de consigne de bouteilles
     desc:
       en: Bottle Return Machines
       pt: Máquinas de retorno de garrafas
       es: Máquinas de retorno de botellas
+      fr: Machines de consigne de bouteilles
   benches:
     name:
       en: Benches
       pt: Bancos
       es: Bancos
+      fr: Bancs
     desc:
       en: Benches
       pt: Bancos
       es: Bancos
+      fr: Bancs
   telephones:
     name:
       en: Telephones
       pt: Telefones públicos
       es: Teléfonos públicos
+      fr: Téléphones publics
     desc:
       en: Telephones
       pt: Telefones públicos
       es: Teléfonos públicos
+      fr: Téléphones publics
   supermarkets:
     name:
       en: Supermarkets
       pt: Supermercados
       es: Supermercados
+      fr: Supermarchés
     desc:
       en: Supermarkets
       pt: Supermercados
       es: Supermercados
+      fr: Supermarchés
   bakeries:
     name:
       en: Bakeries
       pt: Padarias
       es: Panaderías
+      fr: Boulangeries
     desc:
       en: Bakeries
       pt: Padarias
       es: Panaderías
+      fr: Boulangeries
   convenience:
     name:
       en: Convenience
       pt: Lojas de conveniência
       es: Tiendas de conveniencia
+      fr: Supérettes
     desc:
       en: Convenience
       pt: Lojas de conveniência
       es: Tiendas de conveniencia
+      fr: Supérettes
   butchers:
     name:
       en: Butchers
       pt: Açougue
       es: Carnicerías
+      fr: Boucheries
     desc:
       en: Butchers
       pt: Açougue
       es: Carnicerías
+      fr: Boucheries
   greengrocers:
     name:
       en: Greengrocers
       pt: Hortifrúti
       es: Fruterías
+      fr: Primeurs
     desc:
       en: Greengrocers
       pt: Hortifrúti
       es: Fruterías
+      fr: Primeurs
   department-stores:
     name:
       en: Department Stores
       pt: Lojas de departamento
       es: Grandes almacenes
+      fr: Grands magasins
     desc:
       en: Department Stores
       pt: Lojas de departamento
       es: Grandes almacenes
+      fr: Grands magasins
   shopping-malls:
     name:
       en: Shopping Malls
       pt: Shoppings
       es: Centros comerciales
+      fr: Centres commerciaux
     desc:
       en: Shopping Malls
       pt: Shoppings
       es: Centros comerciales
+      fr: Centres commerciaux
   clothes:
     name:
       en: Clothes
       pt: Lojas de roupas
       es: Tiendas de ropa
+      fr: Magasins de vêtements
     desc:
       en: Clothes
       pt: Lojas de roupas
       es: Tiendas de ropa
+      fr: Magasins de vêtements
   chemist:
     name:
       en: Chemist
       pt: Farmácia
       es: Farmacia
+      fr: Drogueries
     desc:
       en: Chemist
       pt: Farmácia
       es: Farmacia
+      fr: Drogueries
   fuel:
     name:
       en: Fuel
       pt: Postos de combustível
       es: Estaciones de servicio
+      fr: Stations-service
     desc:
       en: Fuel
       pt: Postos de combustível
       es: Estaciones de servicio
+      fr: Stations-service
   hardware:
     name:
       en: Hardware
       pt: Lojas de ferragens
       es: Ferreterías
+      fr: Quincailleries
     desc:
       en: Hardware
       pt: Lojas de ferragens
       es: Ferreterías
+      fr: Quincailleries
   diy:
     name:
       en: Diy
       pt: Lojas de construção
       es: Tiendas de bricolaje
+      fr: Magasins de bricolage
     desc:
       en: Diy
       pt: Lojas de construção
       es: Tiendas de bricolaje
+      fr: Magasins de bricolage
   furniture:
     name:
       en: Furniture
       pt: Móveis
       es: Muebles
+      fr: Meubles
     desc:
       en: Furniture
       pt: Móveis
       es: Muebles
+      fr: Meubles
   electronics:
     name:
       en: Electronics
       pt: Eletrônicos
       es: Electrónicos
+      fr: Électronique
     desc:
       en: Electronics
       pt: Eletrônicos
       es: Electrónicos
+      fr: Électronique
   mobile-phone:
     name:
       en: Mobile Phone
       pt: Celulares
       es: Teléfonos móviles
+      fr: Téléphones mobiles
     desc:
       en: Mobile Phone
       pt: Celulares
       es: Teléfonos móviles
+      fr: Téléphones mobiles
   shoes:
     name:
       en: Shoes
       pt: Calçados
       es: Calzado
+      fr: Chaussures
     desc:
       en: Shoes
       pt: Calçados
       es: Calzado
+      fr: Chaussures
   jewelry:
     name:
       en: Jewelry
       pt: Joalherias
       es: Joyerías
+      fr: Bijouteries
     desc:
       en: Jewelry
       pt: Joalherias
       es: Joyerías
+      fr: Bijouteries
   restaurants:
     name:
       en: Restaurants
       pt: Restaurantes
       es: Restaurantes
+      fr: Restaurants
     desc:
       en: Restaurants
       pt: Restaurantes
       es: Restaurantes
+      fr: Restaurants
   cafes:
     name:
       en: Cafes
       pt: Cafés
       es: Cafeterías
+      fr: Cafés
     desc:
       en: Cafes
       pt: Cafés
       es: Cafeterías
+      fr: Cafés
   fast-food:
     name:
       en: Fast Food
       pt: Fast food
       es: Comida rápida
+      fr: Restauration rapide
     desc:
       en: Fast Food
       pt: Fast food
       es: Comida rápida
+      fr: Restauration rapide
   bars:
     name:
       en: Bars
       pt: Bares
       es: Bares
+      fr: Bars
     desc:
       en: Bars
       pt: Bares
       es: Bares
+      fr: Bars
   pubs:
     name:
       en: Pubs
       pt: Pubs
       es: Pubs
+      fr: Pubs
     desc:
       en: Pubs
       pt: Pubs
       es: Pubs
+      fr: Pubs
   ice-cream:
     name:
       en: Ice Cream
       pt: Sorveterias
       es: Heladerías
+      fr: Marchands de glaces
     desc:
       en: Ice Cream
       pt: Sorveterias
       es: Heladerías
+      fr: Marchands de glaces
   food-court:
     name:
       en: Food Courts
       pt: Praças de alimentação
       es: Patios de comidas
+      fr: Aires de restauration
     desc:
       en: Food Courts
       pt: Praças de alimentação
       es: Patios de comidas
+      fr: Aires de restauration
   food-vending:
     name:
       en: Food & Drink Vending
       pt: Vending machines de alimentos
       es: Máquinas expendedoras de alimentos
+      fr: Distributeurs de nourriture et boissons
     desc:
       en: Food & Drink Vending
       pt: Vending machines de alimentos
       es: Máquinas expendedoras de alimentos
+      fr: Distributeurs de nourriture et boissons
   parks:
     name:
       en: Parks
       pt: Parques
       es: Parques
+      fr: Parcs
     desc:
       en: Parks
       pt: Parques
       es: Parques
+      fr: Parcs
   playgrounds:
     name:
       en: Playgrounds
       pt: Playgrounds
       es: Parques infantiles
+      fr: Aires de jeux
     desc:
       en: Playgrounds
       pt: Playgrounds
       es: Parques infantiles
+      fr: Aires de jeux
   gardens:
     name:
       en: Gardens
       pt: Jardins
       es: Jardines
+      fr: Jardins
     desc:
       en: Gardens
       pt: Jardins
       es: Jardines
+      fr: Jardins
   fitness-centers:
     name:
       en: Fitness Centers
       pt: Academias
       es: Gimnasios
+      fr: Salles de sport
     desc:
       en: Fitness Centers
       pt: Academias
       es: Gimnasios
+      fr: Salles de sport
   swimming-pools:
     name:
       en: Swimming Pools
       pt: Piscinas
       es: Piscinas
+      fr: Piscines
     desc:
       en: Swimming Pools
       pt: Piscinas
       es: Piscinas
+      fr: Piscines
   sports-centres:
     name:
       en: Sports Centres
       pt: Centros esportivos
       es: Centros deportivos
+      fr: Centres sportifs
     desc:
       en: Sports Centres
       pt: Centros esportivos
       es: Centros deportivos
+      fr: Centres sportifs
   stadiums:
     name:
       en: Stadiums
       pt: Estádios
       es: Estadios
+      fr: Stades
     desc:
       en: Stadiums
       pt: Estádios
       es: Estadios
+      fr: Stades
   pitches:
     name:
       en: Pitches
       pt: Campos esportivos
       es: Campos deportivos
+      fr: Terrains de sport
     desc:
       en: Pitches
       pt: Campos esportivos
       es: Campos deportivos
+      fr: Terrains de sport
   golf-courses:
     name:
       en: Golf Courses
       pt: Campos de golfe
       es: Campos de golf
+      fr: Terrains de golf
     desc:
       en: Golf Courses
       pt: Campos de golfe
       es: Campos de golf
+      fr: Terrains de golf
   tracks:
     name:
       en: Tracks
       pt: Pistas de atletismo
       es: Pistas de atletismo
+      fr: Pistes d'athlétisme
     desc:
       en: Tracks
       pt: Pistas de atletismo
       es: Pistas de atletismo
+      fr: Pistes d'athlétisme
   fitness-stations:
     name:
       en: Fitness Stations
       pt: Estações de ginástica
       es: Estaciones de ejercicio
+      fr: Aires de fitness
     desc:
       en: Fitness Stations
       pt: Estações de ginástica
       es: Estaciones de ejercicio
+      fr: Aires de fitness
   ice-rinks:
     name:
       en: Ice Rinks
       pt: Pistas de gelo
       es: Pistas de hielo
+      fr: Patinoires
     desc:
       en: Ice Rinks
       pt: Pistas de gelo
       es: Pistas de hielo
+      fr: Patinoires
   nature-reserves:
     name:
       en: Nature Reserves
       pt: Reservas naturais
       es: Reservas naturales
+      fr: Réserves naturelles
     desc:
       en: Nature Reserves
       pt: Reservas naturais
       es: Reservas naturales
+      fr: Réserves naturelles
   marinas:
     name:
       en: Marinas
       pt: Marinas
       es: Marinas
+      fr: Ports de plaisance
     desc:
       en: Marinas
       pt: Marinas
       es: Marinas
+      fr: Ports de plaisance
   dog-parks:
     name:
       en: Dog Parks
       pt: Parques para cães
       es: Parques para perros
+      fr: Parcs canins
     desc:
       en: Dog Parks
       pt: Parques para cães
       es: Parques para perros
+      fr: Parcs canins
   urban-trees:
     name:
       en: Urban Trees
       pt: Árvores urbanas
       es: Árboles urbanos
+      fr: Arbres urbains
     desc:
       en: Urban Trees
       pt: Árvores urbanas
       es: Árboles urbanos
+      fr: Arbres urbains
   street-trees:
     name:
       en: Street Trees
       pt: Árvores de rua
       es: Árboles callejeros
+      fr: Arbres d'alignement
     desc:
       en: Street Trees
       pt: Árvores de rua
       es: Árboles callejeros
+      fr: Arbres d'alignement
   managed-green:
     name:
       en: Managed Green
       pt: Áreas verdes planejadas
       es: Áreas verdes planificadas
+      fr: Espaces verts aménagés
     desc:
       en: Managed Green
       pt: Áreas verdes planejadas
       es: Áreas verdes planificadas
+      fr: Espaces verts aménagés
   natural-vegetation:
     name:
       en: Natural Vegetation
       pt: Vegetação natural
       es: Vegetación natural
+      fr: Végétation naturelle
     desc:
       en: Natural Vegetation
       pt: Vegetação natural
       es: Vegetación natural
+      fr: Végétation naturelle
   forests:
     name:
       en: Forests
       pt: Florestas
       es: Bosques
+      fr: Forêts
     desc:
       en: Forests
       pt: Florestas
       es: Bosques
+      fr: Forêts
   woods:
     name:
       en: Woods
       pt: Bosques
       es: Bosques
+      fr: Bois
     desc:
       en: Woods
       pt: Bosques
       es: Bosques
+      fr: Bois
   orchards:
     name:
       en: Orchards
       pt: Pomares
       es: Huertos
+      fr: Vergers
     desc:
       en: Orchards
       pt: Pomares
       es: Huertos
+      fr: Vergers
   grasslands:
     name:
       en: Grasslands
       pt: Pastagens
       es: Pastizales
+      fr: Prairies naturelles
     desc:
       en: Grasslands
       pt: Pastagens
       es: Pastizales
+      fr: Prairies naturelles
   wetlands:
     name:
       en: Wetlands
       pt: Áreas úmidas
       es: Humedales
+      fr: Zones humides
     desc:
       en: Wetlands
       pt: Áreas úmidas
       es: Humedales
+      fr: Zones humides
   beaches:
     name:
       en: Beaches
       pt: Praias
       es: Playas
+      fr: Plages
     desc:
       en: Beaches
       pt: Praias
       es: Playas
+      fr: Plages
   peaks:
     name:
       en: Peaks
       pt: Picos
       es: Picos
+      fr: Sommets
     desc:
       en: Peaks
       pt: Picos
       es: Picos
+      fr: Sommets
   cliffs:
     name:
       en: Cliffs
       pt: Penhasco
       es: Acantilados
+      fr: Falaises
     desc:
       en: Cliffs
       pt: Penhasco
       es: Acantilados
+      fr: Falaises
   caves:
     name:
       en: Caves
       pt: Cavernas
       es: Cuevas
+      fr: Grottes
     desc:
       en: Caves
       pt: Cavernas
       es: Cuevas
+      fr: Grottes
   water:
     name:
       en: Water
       pt: Água
       es: Agua
+      fr: Eau
     desc:
       en: Water
       pt: Água
       es: Agua
+      fr: Eau
   coastlines:
     name:
       en: Coastlines
       pt: Linha costeira
       es: Litorales
+      fr: Littoral
     desc:
       en: Coastlines
       pt: Linha costeira
       es: Litorales
+      fr: Littoral
   springs:
     name:
       en: Springs
       pt: Nascentes
       es: Fuentes
+      fr: Sources
     desc:
       en: Springs
       pt: Nascentes
       es: Fuentes
+      fr: Sources
   hot-springs:
     name:
       en: Hot Springs
       pt: Fontes termais
       es: Aguas termales
+      fr: Sources chaudes
     desc:
       en: Hot Springs
       pt: Fontes termais
       es: Aguas termales
+      fr: Sources chaudes
   geyser:
     name:
       en: Geyser
       pt: Gêiseres
       es: Géiseres
+      fr: Geysers
     desc:
       en: Geyser
       pt: Gêiseres
       es: Géiseres
+      fr: Geysers
   glaciers:
     name:
       en: Glaciers
       pt: Geleiras
       es: Glaciares
+      fr: Glaciers
     desc:
       en: Glaciers
       pt: Geleiras
       es: Glaciares
+      fr: Glaciers
   natural-surfaces:
     name:
       en: Natural Surfaces
       pt: Superfícies naturais
       es: Superficies naturales
+      fr: Surfaces naturelles
     desc:
       en: Natural Surfaces
       pt: Superfícies naturais
       es: Superficies naturales
+      fr: Surfaces naturelles
   scrub:
     name:
       en: Scrub
       pt: Vegetação rasteira
       es: Matorral
+      fr: Broussailles
     desc:
       en: Scrub
       pt: Vegetação rasteira
       es: Matorral
+      fr: Broussailles
   heath:
     name:
       en: Heath
       pt: Charneca
       es: Brezal
+      fr: Lande
     desc:
       en: Heath
       pt: Charneca
       es: Brezal
+      fr: Lande
   fell:
     name:
       en: Fell
       pt: Colina
       es: Monte
+      fr: Pelouse alpine
     desc:
       en: Fell
       pt: Colina
       es: Monte
+      fr: Pelouse alpine
   rock:
     name:
       en: Rock
       pt: Rocha
       es: Roca
+      fr: Roche
     desc:
       en: Rock
       pt: Rocha
       es: Roca
+      fr: Roche
   stone:
     name:
       en: Stone
       pt: Pedra
       es: Piedra
+      fr: Pierre
     desc:
       en: Stone
       pt: Pedra
       es: Piedra
+      fr: Pierre
   sand:
     name:
       en: Sand
       pt: Areia
       es: Arena
+      fr: Sable
     desc:
       en: Sand
       pt: Areia
       es: Arena
+      fr: Sable
   shingle:
     name:
       en: Shingle
       pt: Cascalho
       es: Guijarros
+      fr: Galets
     desc:
       en: Shingle
       pt: Cascalho
       es: Guijarros
+      fr: Galets
   mud:
     name:
       en: Mud
       pt: Lama
       es: Barro
+      fr: Boue
     desc:
       en: Mud
       pt: Lama
       es: Barro
+      fr: Boue
   street-lamps:
     name:
       en: Street Lamps
       pt: Postes de iluminação
       es: Farolas
+      fr: Lampadaires
     desc:
       en: Street Lamps
       pt: Postes de iluminação
       es: Farolas
+      fr: Lampadaires
   surveillance:
     name:
       en: Surveillance
       pt: Câmeras de vigilância
       es: Cámaras de vigilancia
+      fr: Caméras de surveillance
     desc:
       en: Surveillance
       pt: Câmeras de vigilância
       es: Cámaras de vigilancia
+      fr: Caméras de surveillance
   tailings-pond:
     name:
       en: Tailings Pond
       pt: Barragem de rejeitos
       es: Balsa de residuos mineros
+      fr: Bassin de résidus miniers
     desc:
       en: Mining tailings storage infrastructure
       pt: Infraestrutura de armazenamento de rejeitos de mineração
       es: Infraestructura de almacenamiento de residuos mineros
+      fr: Infrastructure de stockage de résidus miniers
   tower:
     name:
       en: Tower
       pt: Torres
       es: Torres
+      fr: Tours
     desc:
       en: Tower
       pt: Torres
       es: Torres
+      fr: Tours
   communications-tower:
     name:
       en: Communications Tower
       pt: Torre de comunicações
       es: Torre de comunicaciones
+      fr: Tour de télécommunications
     desc:
       en: Communications Tower
       pt: Torre de comunicações
       es: Torre de comunicaciones
+      fr: Tour de télécommunications
   water-tower:
     name:
       en: Water Tower
       pt: Caixa d'água
       es: Depósito de agua
+      fr: Château d'eau
     desc:
       en: Water Tower
       pt: Caixa d'água
       es: Depósito de agua
+      fr: Château d'eau
   storage-tanks:
     name:
       en: Storage Tanks
       pt: Tanques de armazenamento
       es: Depósitos
+      fr: Réservoirs de stockage
     desc:
       en: Storage Tanks
       pt: Tanques de armazenamento
       es: Depósitos
+      fr: Réservoirs de stockage
   chimney:
     name:
       en: Chimney
       pt: Chaminés
       es: Chimeneas
+      fr: Cheminées
     desc:
       en: Chimney
       pt: Chaminés
       es: Chimeneas
+      fr: Cheminées
   pipeline:
     name:
       en: Pipeline
       pt: Dutos
       es: Tuberías
+      fr: Canalisations
     desc:
       en: Pipeline
       pt: Dutos
       es: Tuberías
+      fr: Canalisations
   mast:
     name:
       en: Mast
       pt: Mastros
       es: Mástiles
+      fr: Mâts
     desc:
       en: Mast
       pt: Mastros
       es: Mástiles
+      fr: Mâts
   water-works:
     name:
       en: Water Works
       pt: Estação de tratamento de água
       es: Estación de tratamiento de agua
+      fr: Station de traitement de l'eau
     desc:
       en: Water Works
       pt: Estação de tratamento de água
       es: Estación de tratamiento de agua
+      fr: Station de traitement de l'eau
   wastewater-plant:
     name:
       en: Wastewater Plant
       pt: Estação de tratamento de esgoto
       es: Estación de tratamiento de aguas residuales
+      fr: Station d'épuration
     desc:
       en: Wastewater Plant
       pt: Estação de tratamento de esgoto
       es: Estación de tratamiento de aguas residuales
+      fr: Station d'épuration
   pumping-station:
     name:
       en: Pumping Station
       pt: Estação de bombeamento
       es: Estación de bombeo
+      fr: Station de pompage
     desc:
       en: Pumping Station
       pt: Estação de bombeamento
       es: Estación de bombeo
+      fr: Station de pompage
   utility-pole:
     name:
       en: Utility Pole
       pt: Postes de rede
       es: Postes de servicios
+      fr: Poteaux de réseau
     desc:
       en: Utility Pole
       pt: Postes de rede
       es: Postes de servicios
+      fr: Poteaux de réseau
   roads:
     name:
       en: Roads
       pt: Vias
       es: Carreteras
+      fr: Routes
     desc:
       en: Roads
       pt: Vias
       es: Carreteras
+      fr: Routes
   footways:
     name:
       en: Footways
       pt: Calçadas e trilhas
       es: Aceras y senderos
+      fr: Trottoirs et sentiers
     desc:
       en: Footways
       pt: Calçadas e trilhas
       es: Aceras y senderos
+      fr: Trottoirs et sentiers
   cycleways:
     name:
       en: Cycleways
       pt: Ciclovias
       es: Carriles bici
+      fr: Pistes cyclables
     desc:
       en: Cycleways
       pt: Ciclovias
       es: Carriles bici
+      fr: Pistes cyclables
   bridges:
     name:
       en: Bridges
       pt: Pontes
       es: Puentes
+      fr: Ponts
     desc:
       en: Bridges
       pt: Pontes
       es: Puentes
+      fr: Ponts
   tunnels:
     name:
       en: Tunnels
       pt: Túneis
       es: Túneles
+      fr: Tunnels
     desc:
       en: Tunnels
       pt: Túneis
       es: Túneles
+      fr: Tunnels
   crossings:
     name:
       en: Crossings
       pt: Faixas de pedestres
       es: Pasos de peatones
+      fr: Passages piétons
     desc:
       en: Crossings
       pt: Faixas de pedestres
       es: Pasos de peatones
+      fr: Passages piétons
   traffic-signs:
     name:
       en: Traffic Signs
       pt: Placas de trânsito
       es: Señales de tráfico
+      fr: Panneaux de signalisation
     desc:
       en: Traffic Signs
       pt: Placas de trânsito
       es: Señales de tráfico
+      fr: Panneaux de signalisation
   traffic-lights:
     name:
       en: Traffic Lights
       pt: Semáforos
       es: Semáforos
+      fr: Feux de circulation
     desc:
       en: Traffic Lights
       pt: Semáforos
       es: Semáforos
+      fr: Feux de circulation
   speed-cameras:
     name:
       en: Speed Cameras
       pt: Radares
       es: Radares
+      fr: Radars
     desc:
       en: Speed Cameras
       pt: Radares
       es: Radares
+      fr: Radars
   traffic-calming:
     name:
       en: Traffic Calming
       pt: Medidas de acalmamento de tráfego
       es: Pacificación de tráfico
+      fr: Modération du trafic
     desc:
       en: Traffic Calming
       pt: Medidas de acalmamento de tráfego
       es: Pacificación de tráfico
+      fr: Modération du trafic
   apartments:
     name:
       en: Apartments
       pt: Apartamentos
       es: Apartamentos
+      fr: Appartements
     desc:
       en: Apartments
       pt: Apartamentos
       es: Apartamentos
+      fr: Appartements
   houses:
     name:
       en: Houses
       pt: Casas
       es: Casas
+      fr: Maisons
     desc:
       en: Houses
       pt: Casas
       es: Casas
+      fr: Maisons
   residential:
     name:
       en: Residential
       pt: Área residencial
       es: Zona residencial
+      fr: Zone résidentielle
     desc:
       en: Residential
       pt: Área residencial
       es: Zona residencial
+      fr: Zone résidentielle
   dormitories:
     name:
       en: Dormitories
       pt: Alojamentos
       es: Residencias estudiantiles
+      fr: Résidences étudiantes
     desc:
       en: Dormitories
       pt: Alojamentos
       es: Residencias estudiantiles
+      fr: Résidences étudiantes
   hotel-guesthouse:
     name:
       en: Hotel Guesthouse
       pt: Hotéis e pousadas
       es: Hoteles y hostales
+      fr: Hôtels et maisons d'hôtes
     desc:
       en: Hotel Guesthouse
       pt: Hotéis e pousadas
       es: Hoteles y hostales
+      fr: Hôtels et maisons d'hôtes
   football:
     name:
       en: Football
       pt: Futebol
       es: Fútbol
+      fr: Football
     desc:
       en: Football
       pt: Futebol
       es: Fútbol
+      fr: Football
   basketball:
     name:
       en: Basketball
       pt: Basquete
       es: Baloncesto
+      fr: Basket-ball
     desc:
       en: Basketball
       pt: Basquete
       es: Baloncesto
+      fr: Basket-ball
   tennis:
     name:
       en: Tennis
       pt: Tênis
       es: Tenis
+      fr: Tennis
     desc:
       en: Tennis
       pt: Tênis
       es: Tenis
+      fr: Tennis
   swimming:
     name:
       en: Swimming
       pt: Natação
       es: Natación
+      fr: Natation
     desc:
       en: Swimming
       pt: Natação
       es: Natación
+      fr: Natation
   golf:
     name:
       en: Golf
       pt: Golfe
       es: Golf
+      fr: Golf
     desc:
       en: Golf
       pt: Golfe
       es: Golf
+      fr: Golf
   skiing:
     name:
       en: Skiing
       pt: Esqui
       es: Esquí
+      fr: Ski
     desc:
       en: Skiing
       pt: Esqui
       es: Esquí
+      fr: Ski
   baseball:
     name:
       en: Baseball
       pt: Beisebol
       es: Béisbol
+      fr: Baseball
     desc:
       en: Baseball
       pt: Beisebol
       es: Béisbol
+      fr: Baseball
   athletics:
     name:
       en: Athletics
       pt: Atletismo
       es: Atletismo
+      fr: Athlétisme
     desc:
       en: Athletics
       pt: Atletismo
       es: Atletismo
+      fr: Athlétisme
   gymnasiums:
     name:
       en: Gymnasiums
       pt: Ginásios
       es: Gimnasios
+      fr: Gymnases
     desc:
       en: Gymnasiums
       pt: Ginásios
       es: Gimnasios
+      fr: Gymnases
   shooting:
     name:
       en: Shooting
       pt: Tiro esportivo
       es: Tiro deportivo
+      fr: Tir sportif
     desc:
       en: Shooting
       pt: Tiro esportivo
       es: Tiro deportivo
+      fr: Tir sportif
   archery:
     name:
       en: Archery
       pt: Arco e flecha
       es: Tiro con arco
+      fr: Tir à l'arc
     desc:
       en: Archery
       pt: Arco e flecha
       es: Tiro con arco
+      fr: Tir à l'arc
   climbing:
     name:
       en: Climbing
       pt: Escalada
       es: Escalada
+      fr: Escalade
     desc:
       en: Climbing
       pt: Escalada
       es: Escalada
+      fr: Escalade
   equestrian:
     name:
       en: Equestrian
       pt: Equitação
       es: Hípica
+      fr: Équitation
     desc:
       en: Equestrian
       pt: Equitação
       es: Hípica
+      fr: Équitation
   fountains:
     name:
       en: Fountains
       pt: Fontes
       es: Fuentes
+      fr: Fontaines
     desc:
       en: Fountains
       pt: Fontes
       es: Fuentes
+      fr: Fontaines
   clocks:
     name:
       en: Clocks
       pt: Relógios públicos
       es: Relojes públicos
+      fr: Horloges publiques
     desc:
       en: Clocks
       pt: Relógios públicos
       es: Relojes públicos
+      fr: Horloges publiques
   information-boards:
     name:
       en: Wayfinding & Information
       pt: Sinalização e informação
       es: Señalización e información
+      fr: Signalétique et information
     desc:
       en: Wayfinding & Information
       pt: Sinalização e informação
       es: Señalización e información
+      fr: Signalétique et information
   places-of-worship:
     name:
       en: Places Of Worship
       pt: Locais de culto
       es: Lugares de culto
+      fr: Lieux de culte
     desc:
       en: Places Of Worship
       pt: Locais de culto
       es: Lugares de culto
+      fr: Lieux de culte
   walls:
     name:
       en: Walls
       pt: Muros
       es: Muros
+      fr: Murs
     desc:
       en: Walls
       pt: Muros
       es: Muros
+      fr: Murs
   fences:
     name:
       en: Fences
       pt: Cercas
       es: Vallas
+      fr: Clôtures
     desc:
       en: Fences
       pt: Cercas
       es: Vallas
+      fr: Clôtures
   hedges:
     name:
       en: Hedges
       pt: Cercas vivas
       es: Setos
+      fr: Haies
     desc:
       en: Hedges
       pt: Cercas vivas
       es: Setos
+      fr: Haies
   gates:
     name:
       en: Gates
       pt: Portões
       es: Portones
+      fr: Portails
     desc:
       en: Gates
       pt: Portões
       es: Portones
+      fr: Portails
   farmland:
     name:
       en: Farmland
       pt: Área agrícola
       es: Tierra agrícola
+      fr: Terres agricoles
     desc:
       en: Farmland
       pt: Área agrícola
       es: Tierra agrícola
+      fr: Terres agricoles
   farmyards:
     name:
       en: Farmyards
       pt: Pátios de fazenda
       es: Patios de granja
+      fr: Cours de ferme
     desc:
       en: Farmyards
       pt: Pátios de fazenda
       es: Patios de granja
+      fr: Cours de ferme
   meadows:
     name:
       en: Meadows
       pt: Prados
       es: Praderas
+      fr: Prés
     desc:
       en: Meadows
       pt: Prados
       es: Praderas
+      fr: Prés
   animal-keeping:
     name:
       en: Animal Keeping
       pt: Criação de animais
       es: Cría de animales
+      fr: Élevage d'animaux
     desc:
       en: Land use for animal keeping
       pt: Uso do solo para criação de animais
       es: Uso del suelo para cría de animales
+      fr: Terrains dédiés à l'élevage d'animaux
   feedlots:
     name:
       en: Feedlots
       pt: Currais de engorda
       es: Feedlots
+      fr: Parcs d'engraissement
     desc:
       en: Feedlot infrastructure
       pt: Infraestrutura de currais de engorda
       es: Infraestructura de feedlots
+      fr: Infrastructure de parcs d'engraissement
   stockyards:
     name:
       en: Stockyards
       pt: Currais de gado
       es: Corrales de ganado
+      fr: Parcs à bestiaux
     desc:
       en: Livestock handling infrastructure
       pt: Infraestrutura de manejo de gado
       es: Infraestructura de manejo de ganado
+      fr: Infrastructure de gestion du bétail
   poultry-yards:
     name:
       en: Poultry Yards
       pt: Avicultura
       es: Corrales de aves
+      fr: Élevages de volailles
     desc:
       en: Poultry farming infrastructure
       pt: Infraestrutura de avicultura
       es: Infraestructura de avicultura
+      fr: Infrastructure d'élevage de volailles
   dairy-yards:
     name:
       en: Dairy Yards
       pt: Laticínios
       es: Instalaciones lecheras
+      fr: Installations laitières
     desc:
       en: Dairy farming infrastructure
       pt: Infraestrutura de laticínios
       es: Infraestructura lechera
+      fr: Infrastructure d'élevage laitier
   barns:
     name:
       en: Barns
       pt: Celeiros
       es: Graneros
+      fr: Granges
     desc:
       en: Barns
       pt: Celeiros
       es: Graneros
+      fr: Granges
   agricultural-buildings:
     name:
       en: Agricultural Buildings
       pt: Construções agrícolas
       es: Edificios agrícolas
+      fr: Bâtiments agricoles
     desc:
       en: Agricultural Buildings
       pt: Construções agrícolas
       es: Edificios agrícolas
+      fr: Bâtiments agricoles
   farm-auxiliary:
     name:
       en: Farm Auxiliary
       pt: Instalações auxiliares de fazenda
       es: Instalaciones auxiliares de granja
+      fr: Installations agricoles auxiliaires
     desc:
       en: Farm Auxiliary
       pt: Instalações auxiliares de fazenda
       es: Instalaciones auxiliares de granja
+      fr: Installations agricoles auxiliaires
   greenhouses:
     name:
       en: Greenhouses
       pt: Estufas
       es: Invernaderos
+      fr: Serres
     desc:
       en: Greenhouses
       pt: Estufas
       es: Invernaderos
+      fr: Serres
   livestock-buildings:
     name:
       en: Livestock Buildings
       pt: Construções para criação de animais
       es: Edificios para ganado
+      fr: Bâtiments d'élevage
     desc:
       en: Livestock Buildings
       pt: Construções para criação de animais
       es: Edificios para ganado
+      fr: Bâtiments d'élevage
   cowsheds:
     name:
       en: Cowsheds
       pt: Estábulos para gado
       es: Establos para vacas
+      fr: Étables
     desc:
       en: Cowsheds
       pt: Estábulos para gado
       es: Establos para vacas
+      fr: Étables
   pig-sties:
     name:
       en: Pig Sties
       pt: Chiqueiros
       es: Porquerizas
+      fr: Porcheries
     desc:
       en: Pig Sties
       pt: Chiqueiros
       es: Porquerizas
+      fr: Porcheries
   stables:
     name:
       en: Stables
       pt: Estábulos
       es: Establos
+      fr: Écuries
     desc:
       en: Stables
       pt: Estábulos
       es: Establos
+      fr: Écuries
   silos:
     name:
       en: Silos
       pt: Silos
       es: Silos
+      fr: Silos
     desc:
       en: Silos
       pt: Silos
       es: Silos
+      fr: Silos
   bunker-silos:
     name:
       en: Bunker Silos
       pt: Silos tipo bunker
       es: Silos tipo búnker
+      fr: Silos-couloirs
     desc:
       en: Bunker Silos
       pt: Silos tipo bunker
       es: Silos tipo búnker
+      fr: Silos-couloirs
   agricultural-tanks:
     name:
       en: Agricultural Tanks
       pt: Tanques agrícolas
       es: Depósitos agrícolas
+      fr: Cuves agricoles
     desc:
       en: Agricultural Tanks
       pt: Tanques agrícolas
       es: Depósitos agrícolas
+      fr: Cuves agricoles
   slurry-basins:
     name:
       en: Slurry Basins
       pt: Bacias de esterco
       es: Balsas de purín
+      fr: Bassins à lisier
     desc:
       en: Agricultural slurry storage infrastructure
       pt: Infraestrutura de armazenamento de esterco
       es: Infraestructura de almacenamiento de purín
+      fr: Infrastructure de stockage de lisier
   slurry-tanks:
     name:
       en: Slurry Tanks
       pt: Tanques de esterco
       es: Depósitos de purín
+      fr: Cuves à lisier
     desc:
       en: Agricultural slurry storage infrastructure
       pt: Infraestrutura de armazenamento de esterco
       es: Infraestructura de almacenamiento de purín
+      fr: Infrastructure de stockage de lisier
   manure-storage:
     name:
       en: Manure Storage
       pt: Armazenamento de esterco
       es: Almacenamiento de estiércol
+      fr: Stockage de fumier
     desc:
       en: Manure storage infrastructure
       pt: Infraestrutura de armazenamento de esterco
       es: Infraestructura de almacenamiento de estiércol
+      fr: Infrastructure de stockage de fumier
   greenhouse-horticulture:
     name:
       en: Greenhouse Horticulture
       pt: Horticultura em estufa
       es: Horticultura en invernadero
+      fr: Horticulture sous serre
     desc:
       en: Greenhouse Horticulture
       pt: Horticultura em estufa
       es: Horticultura en invernadero
+      fr: Horticulture sous serre
   plant-nurseries:
     name:
       en: Plant Nurseries
       pt: Viveiros de plantas
       es: Viveros de plantas
+      fr: Pépinières
     desc:
       en: Plant Nurseries
       pt: Viveiros de plantas
       es: Viveros de plantas
+      fr: Pépinières
   trees-with-species:
     name:
       en: Trees With Species
       pt: Árvores com espécie identificada
       es: Árboles con especie identificada
+      fr: Arbres avec espèce identifiée
     desc:
       en: Trees With Species
       pt: Árvores com espécie identificada
       es: Árboles con especie identificada
+      fr: Arbres avec espèce identifiée
   irrigated-green:
     name:
       en: Irrigated Green
       pt: Áreas verdes irrigadas
       es: Áreas verdes regadas
+      fr: Espaces verts irrigués
     desc:
       en: Irrigated Green
       pt: Áreas verdes irrigadas
       es: Áreas verdes regadas
+      fr: Espaces verts irrigués
   vegetation-risk-context:
     name:
       en: Vegetation Risk Context
       pt: Contexto de vegetação para planejamento
       es: Contexto de vegetación para planificación
+      fr: Contexte de végétation pour la planification
     desc:
       en: Vegetation context for emergency planning
       pt: Contexto de vegetação para planejamento de emergência
       es: Contexto de vegetación para planificación de emergencias
+      fr: Contexte de végétation pour la planification d'urgence

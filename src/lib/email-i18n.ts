@@ -6,9 +6,10 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { createTranslator } from "use-intl/core";
+import type { AvailableLocale } from "@/i18n/constants";
 
 /** Supported locales for emails. */
-export type Locale = "en" | "pt-BR" | "es";
+export type Locale = AvailableLocale;
 
 /** Shared HTML style for email links. */
 export const EMAIL_LINK_STYLE = 'style="color: #007bff; text-decoration: none;"';
