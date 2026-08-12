@@ -6,10 +6,10 @@ import { BboxSchema, type Bbox } from "@/types/geojson";
 import type { Area } from "@/types/area";
 import { toTitleCase, type MessageResolver } from "./tag-i18n";
 import {
-  SUPPORTED_LOCALES,
   AREA_BOUNDS_MAX_SPAN_DEG,
   DATASET_MAP_DEFAULT_ZOOM,
 } from "./constants";
+import { AVAILABLE_LOCALES } from "@/i18n/constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -214,7 +214,7 @@ export function getAreaCharacteristics(
  */
 export function buildLocaleUrls(siteUrl: string, path?: string): Record<string, string> {
   return Object.fromEntries(
-    SUPPORTED_LOCALES.map((locale) => [
+    AVAILABLE_LOCALES.map((locale) => [
       locale,
       path ? `${siteUrl}/${locale}${path}` : `${siteUrl}/${locale}`,
     ])

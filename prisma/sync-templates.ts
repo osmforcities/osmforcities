@@ -11,11 +11,8 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-import {
-  DEPRECATION_DAYS,
-  SUPPORTED_LOCALES,
-  YML_LOCALE_MAP,
-} from "../src/lib/constants";
+import { DEPRECATION_DAYS, YML_LOCALE_MAP } from "../src/lib/constants";
+import { AVAILABLE_LOCALES } from "../src/i18n/constants";
 import {
   loadTemplatesI18n,
   loadTemplatesYaml,
@@ -170,7 +167,7 @@ async function main() {
     upserted++;
 
     // Upsert translations
-    for (const locale of SUPPORTED_LOCALES) {
+    for (const locale of AVAILABLE_LOCALES) {
       const ymlLocale = YML_LOCALE_MAP[locale] ?? locale;
       const translatedName = i18n?.name?.[ymlLocale] ?? name;
       const translatedDesc =

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { SUPPORTED_LOCALES } from "@/lib/constants";
+import { AVAILABLE_LOCALES } from "@/i18n/constants";
 import { buildLocaleUrls } from "@/lib/utils";
 import { DEFAULT_SEO } from "@/lib/metadata";
 
@@ -15,7 +15,7 @@ const PUBLIC_ROUTES = ["/", "/about"];
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [];
 
-  for (const locale of SUPPORTED_LOCALES) {
+  for (const locale of AVAILABLE_LOCALES) {
     for (const route of PUBLIC_ROUTES) {
       staticPages.push({
         url: `${siteUrl}/${locale}${route}`,
