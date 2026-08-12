@@ -31,17 +31,10 @@ function isRealPolygon(fc: FeatureCollection): boolean {
 export const AREA_BOUNDARY_TAG = "area-boundaries";
 
 /**
- * Stored boundary for an area, simplified for display. Null when nothing usable
- * is stored yet (no geojson, or only a bbox rectangle).
+ * Stored boundary, simplified. Null when nothing usable is stored yet.
  *
- * Cached because both the dataset page and /api/areas/[id]/boundary call this on
- * every request, and each call otherwise re-reads a multi-MB polygon out of
- * Postgres and re-runs Douglas-Peucker over it. Boundaries effectively never
- * change, so this revalidates daily; bust AREA_BOUNDARY_TAG to refresh sooner.
- *
- * Only the read path is cached. The Overpass fallback below writes back to the
- * DB, and caching that too would pin a `null` result in place and keep sending
- * every subsequent request to Overpass.
+ * Only the read path is cached: the Overpass fallback below writes back to the
+ * DB, and caching that too would pin a `null` and keep re-querying Overpass.
  */
 const getStoredBoundary = unstable_cache(
   async (areaId: number): Promise<FeatureCollection | null> => {
@@ -101,10 +94,9 @@ export async function getAreaBoundary(areaId: number): Promise<FeatureCollection
     data: { geojson: JSON.parse(JSON.stringify(featureCollection)) },
   });
 
-  // We just stored a boundary that getStoredBoundary has cached as absent. Drop
-  // the tag so the next caller reads it from the DB instead of hitting Overpass
-  // again. Throws when there is no request store (during render, and in vitest);
-  // best-effort is fine, the only cost is re-querying Overpass.
+  // getStoredBoundary has this cached as absent. Busts all areas, not just this
+  // one — unstable_cache tags are static per function. Throws without a request
+  // store (render, vitest); best-effort, worst case is one more Overpass query.
   try {
     revalidateTag(AREA_BOUNDARY_TAG);
   } catch {}
