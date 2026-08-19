@@ -1,5 +1,30 @@
 # osmforcities
 
+## 1.17.0
+
+### Added
+
+- French is now a full app language alongside English, Spanish and Portuguese, with translated names and descriptions across the template catalog [#458]
+
+### Changed
+
+- Dataset downloads are substantially smaller — GeoJSON exports are no longer pretty-printed, cutting a São Paulo bicycle-parking download from 6.5 MB to 4.0 MB [#457]
+- Area boundaries are cached instead of re-read and re-simplified on every request, so dataset and area pages stop repeating the same multi-megabyte work [#457]
+- The navbar now stretches to the full window width [#454]
+
+### Fixed
+
+- Search results show translated address labels instead of leaking raw `AddressTypes` message keys [#455]
+
+### Security
+
+- Updated the transitive `nanoid` dependency to 3.3.18, clearing a high-severity advisory about custom generators looping indefinitely at size zero
+
+[#454]: https://github.com/osmforcities/osmforcities/pull/454
+[#455]: https://github.com/osmforcities/osmforcities/pull/455
+[#457]: https://github.com/osmforcities/osmforcities/pull/457
+[#458]: https://github.com/osmforcities/osmforcities/pull/458
+
 ## 1.16.1
 
 ### Fixed
