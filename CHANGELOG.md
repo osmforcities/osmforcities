@@ -16,6 +16,10 @@
 
 - Search results show translated address labels instead of leaking raw `AddressTypes` message keys [#455]
 
+### Security
+
+- Updated the transitive `nanoid` dependency to 3.3.18, clearing a high-severity advisory about custom generators looping indefinitely at size zero
+
 [#454]: https://github.com/osmforcities/osmforcities/pull/454
 [#455]: https://github.com/osmforcities/osmforcities/pull/455
 [#457]: https://github.com/osmforcities/osmforcities/pull/457
