@@ -67,6 +67,7 @@ describe("getLocalizedMetadata", () => {
         en: `${siteUrl}/en/about`,
         "pt-BR": `${siteUrl}/pt-BR/about`,
         es: `${siteUrl}/es/about`,
+        fr: `${siteUrl}/fr/about`,
       });
     });
   });

@@ -4,12 +4,12 @@ import { bbox } from "@turf/bbox";
 import type { FeatureCollection } from "geojson";
 import { BboxSchema, type Bbox } from "@/types/geojson";
 import type { Area } from "@/types/area";
-import type { useTranslations } from "next-intl";
+import { toTitleCase, type MessageResolver } from "./tag-i18n";
 import {
-  SUPPORTED_LOCALES,
   AREA_BOUNDS_MAX_SPAN_DEG,
   DATASET_MAP_DEFAULT_ZOOM,
 } from "./constants";
+import { AVAILABLE_LOCALES } from "@/i18n/constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -173,51 +173,24 @@ export function getAreaCharacteristics(
         country?: string;
         countryCode?: string;
       },
-  translateAddressType: ReturnType<typeof useTranslations<"AddressTypes">>
+  translateAddressType: MessageResolver
 ): string[] {
   if (typeof item.id === "string" && item.id === "no-results") return [];
 
   const characteristics: string[] = [];
 
-  // Add address type
+  // Add address type. Nominatim derives addresstype from the main OSM tag, so the
+  // value set is open-ended — anything we do not ship a message for falls back to
+  // Title Case rather than rendering the raw "AddressTypes.<key>" message key.
   const addressType = item.addresstype || item.type;
   if (addressType) {
-    try {
-      const translatedType = translateAddressType(addressType as never);
+    if (translateAddressType.has(addressType)) {
+      characteristics.push(translateAddressType(addressType));
+    } else {
+      characteristics.push(toTitleCase(addressType));
 
-      // If translation returns the same key, it means it's not translated
-      // Show the original value with a fallback format
-      if (translatedType === addressType) {
-        // Convert snake_case to Title Case for better display
-        const formattedType = addressType
-          .split("_")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ");
-
-        characteristics.push(formattedType);
-
-        // Log untranslated address types for debugging
-        if (process.env.NODE_ENV === "development") {
-          console.warn(`Untranslated address type: ${addressType}`);
-        }
-      } else {
-        characteristics.push(translatedType);
-      }
-    } catch (error) {
-      // Fallback to formatted original value if translation fails
-      const formattedType = addressType
-        .split("_")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
-
-      characteristics.push(formattedType);
-
-      // Log translation errors for debugging
       if (process.env.NODE_ENV === "development") {
-        console.warn(
-          `Translation error for address type "${addressType}":`,
-          error
-        );
+        console.warn(`Untranslated address type: ${addressType}`);
       }
     }
   }
@@ -241,7 +214,7 @@ export function getAreaCharacteristics(
  */
 export function buildLocaleUrls(siteUrl: string, path?: string): Record<string, string> {
   return Object.fromEntries(
-    SUPPORTED_LOCALES.map((locale) => [
+    AVAILABLE_LOCALES.map((locale) => [
       locale,
       path ? `${siteUrl}/${locale}${path}` : `${siteUrl}/${locale}`,
     ])

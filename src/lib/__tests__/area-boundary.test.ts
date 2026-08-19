@@ -17,7 +17,15 @@ vi.mock("@/lib/overpass/transport", () => ({
   }),
 }));
 
-import { fetchOsmRelationData } from "@/lib/area-boundary";
+// unstable_cache is identity here so the tests exercise the real read path;
+// revalidateTag is a no-op (it throws without a request store outside Next).
+vi.mock("next/cache", () => ({
+  unstable_cache: <T>(fn: T) => fn,
+  revalidateTag: vi.fn(),
+}));
+
+import { fetchOsmRelationData, getAreaBoundary } from "@/lib/area-boundary";
+import { prisma } from "@/lib/db";
 import {
   executeOverpassQuery,
   convertOverpassToGeoJSON,
@@ -25,6 +33,56 @@ import {
 
 const mockExecuteOverpassQuery = vi.mocked(executeOverpassQuery);
 const mockConvert = vi.mocked(convertOverpassToGeoJSON);
+const mockFindUnique = vi.mocked(prisma.area.findUnique);
+const mockUpdate = vi.mocked(prisma.area.update);
+
+/** A real boundary: >5 points in the outer ring. */
+const storedPolygon = {
+  type: "FeatureCollection",
+  features: [
+    {
+      type: "Feature",
+      properties: {},
+      geometry: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [13.0, -8.9],
+            [13.1, -8.9],
+            [13.2, -8.85],
+            [13.2, -8.8],
+            [13.1, -8.75],
+            [13.0, -8.8],
+            [13.0, -8.9],
+          ],
+        ],
+      },
+    },
+  ],
+};
+
+/** A bbox rectangle: exactly 5 points, treated as "no real boundary stored". */
+const storedBbox = {
+  type: "FeatureCollection",
+  features: [
+    {
+      type: "Feature",
+      properties: {},
+      geometry: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [13.0, -8.9],
+            [13.2, -8.9],
+            [13.2, -8.7],
+            [13.0, -8.7],
+            [13.0, -8.9],
+          ],
+        ],
+      },
+    },
+  ],
+};
 
 const luandaRelation = {
   type: "relation",
@@ -109,5 +167,84 @@ describe("fetchOsmRelationData", () => {
     } as never);
 
     expect(await fetchOsmRelationData(1802546)).toBeNull();
+  });
+});
+
+describe("getAreaBoundary", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockConvert.mockReturnValue({ type: "FeatureCollection", features: [] });
+  });
+
+  it("returns the stored boundary without querying Overpass", async () => {
+    mockFindUnique.mockResolvedValueOnce({ geojson: storedPolygon } as never);
+
+    const result = await getAreaBoundary(1802546);
+
+    expect(result?.features).toHaveLength(1);
+    expect(mockExecuteOverpassQuery).not.toHaveBeenCalled();
+  });
+
+  it("simplifies the stored boundary rather than returning it verbatim", async () => {
+    mockFindUnique.mockResolvedValueOnce({ geojson: storedPolygon } as never);
+
+    const result = await getAreaBoundary(1802546);
+
+    const ring = (result?.features[0].geometry as { coordinates: number[][][] })
+      .coordinates[0];
+    const storedRing = storedPolygon.features[0].geometry.coordinates[0];
+    expect(ring.length).toBeLessThanOrEqual(storedRing.length);
+    // Still a closed ring after simplification.
+    expect(ring[0]).toEqual(ring[ring.length - 1]);
+  });
+
+  it("falls back to Overpass when only a bbox rectangle is stored", async () => {
+    mockFindUnique.mockResolvedValueOnce({ geojson: storedBbox } as never);
+    mockExecuteOverpassQuery.mockResolvedValueOnce({ elements: [] } as never);
+    mockConvert.mockReturnValueOnce({
+      type: "FeatureCollection",
+      features: [
+        {
+          id: "relation/1802546",
+          type: "Feature",
+          properties: {},
+          geometry: storedPolygon.features[0].geometry,
+        },
+      ],
+    } as never);
+
+    const result = await getAreaBoundary(1802546);
+
+    expect(mockExecuteOverpassQuery).toHaveBeenCalledOnce();
+    // The freshly fetched boundary is written back for the next caller.
+    expect(mockUpdate).toHaveBeenCalledOnce();
+    expect(result?.features).toHaveLength(1);
+  });
+
+  it("falls back to Overpass when nothing is stored", async () => {
+    mockFindUnique.mockResolvedValueOnce({ geojson: null } as never);
+    mockExecuteOverpassQuery.mockResolvedValueOnce({ elements: [] } as never);
+    mockConvert.mockReturnValueOnce({
+      type: "FeatureCollection",
+      features: [
+        {
+          id: "relation/1802546",
+          type: "Feature",
+          properties: {},
+          geometry: storedPolygon.features[0].geometry,
+        },
+      ],
+    } as never);
+
+    expect(await getAreaBoundary(1802546)).not.toBeNull();
+    expect(mockExecuteOverpassQuery).toHaveBeenCalledOnce();
+  });
+
+  it("returns null when nothing is stored and Overpass fails", async () => {
+    mockFindUnique.mockResolvedValueOnce({ geojson: null } as never);
+    mockExecuteOverpassQuery.mockRejectedValueOnce(new Error("timeout"));
+
+    expect(await getAreaBoundary(1802546)).toBeNull();
+    expect(mockUpdate).not.toHaveBeenCalled();
   });
 });

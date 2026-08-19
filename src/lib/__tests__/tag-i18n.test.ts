@@ -1,7 +1,13 @@
 // src/lib/__tests__/tag-i18n.test.ts
 
 import { describe, it, expect } from "vitest";
-import { tagLabel, tagValue, toTitleCase, type MessageResolver } from "../tag-i18n";
+import {
+  tagLabel,
+  tagValue,
+  toSentenceCase,
+  toTitleCase,
+  type MessageResolver,
+} from "../tag-i18n";
 
 /**
  * Build a MessageResolver over a flat dict of dot-joined keys, e.g.
@@ -16,10 +22,17 @@ const resolver = (dict: Record<string, string>): MessageResolver => {
   return fn;
 };
 
-describe("toTitleCase", () => {
+describe("toSentenceCase", () => {
   it("prettifies snake_case keys", () => {
-    expect(toTitleCase("tactile_paving")).toBe("Tactile paving");
-    expect(toTitleCase("covered")).toBe("Covered");
+    expect(toSentenceCase("tactile_paving")).toBe("Tactile paving");
+    expect(toSentenceCase("covered")).toBe("Covered");
+  });
+});
+
+describe("toTitleCase", () => {
+  it("capitalizes every word, unlike toSentenceCase", () => {
+    expect(toTitleCase("isolated_dwelling")).toBe("Isolated Dwelling");
+    expect(toTitleCase("census")).toBe("Census");
   });
 });
 

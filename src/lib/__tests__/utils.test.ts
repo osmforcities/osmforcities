@@ -1,6 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { isSmallAreaBounds, computeInitialViewState } from "@/lib/utils";
+import {
+  isSmallAreaBounds,
+  computeInitialViewState,
+  getAreaCharacteristics,
+} from "@/lib/utils";
 import type { Bbox } from "@/types/geojson";
+import type { MessageResolver } from "@/lib/tag-i18n";
+import enMessages from "../../../messages/en.json";
 
 // GeoJSON bbox order: [minLon, minLat, maxLon, maxLat]
 const smallTownBbox: Bbox = [-9.2, 38.69, -9.1, 38.79]; // ~0.1 deg span
@@ -145,5 +151,57 @@ describe("computeInitialViewState", () => {
     );
 
     expect(view).toEqual({ longitude: 0, latitude: 0, zoom: 2 });
+  });
+});
+
+describe("getAreaCharacteristics", () => {
+  const messages: Record<string, string> = {
+    city: "City",
+    census: "Census Area",
+  };
+
+  // Mirrors next-intl: a missing message resolves to the NAMESPACED key
+  // ("AddressTypes.census"), never the bare key.
+  const t: MessageResolver = Object.assign(
+    (key: string) => messages[key] ?? `AddressTypes.${key}`,
+    { has: (key: string) => key in messages }
+  );
+
+  it("translates a known address type", () => {
+    expect(getAreaCharacteristics({ id: 1, addresstype: "city" }, t)).toEqual([
+      "City",
+      "ID: 1",
+    ]);
+  });
+
+  it("translates census, the reported Nominatim value", () => {
+    expect(getAreaCharacteristics({ id: 2, addresstype: "census" }, t)).toEqual([
+      "Census Area",
+      "ID: 2",
+    ]);
+  });
+
+  it("Title-Cases an untranslated type instead of leaking the message key", () => {
+    const result = getAreaCharacteristics(
+      { id: 3, addresstype: "isolated_dwelling" },
+      t
+    );
+
+    expect(result).toEqual(["Isolated Dwelling", "ID: 3"]);
+    expect(result[0]).not.toContain("AddressTypes.");
+  });
+
+  it("falls back to type when addresstype is absent", () => {
+    expect(getAreaCharacteristics({ id: 4, type: "city" }, t)).toEqual([
+      "City",
+      "ID: 4",
+    ]);
+  });
+
+  // The cases above assert the lookup logic against a hand-built dict, so they
+  // would still pass if a key were dropped from the shipped messages. i18n:check
+  // only enforces locale parity, so guard the values themselves here.
+  it("ships a message for census, the reported Nominatim value", () => {
+    expect(enMessages.AddressTypes).toHaveProperty("census");
   });
 });

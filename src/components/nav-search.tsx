@@ -15,6 +15,7 @@ import { Search, X } from "lucide-react";
 import { useNominatimAreas } from "@/hooks/useNominatimSearch";
 import { Area } from "@/types/area";
 import { getAreaCharacteristics } from "@/lib/utils";
+import type { MessageResolver } from "@/lib/tag-i18n";
 
 type SearchResultItem = Area | SpecialSearchItem;
 
@@ -54,7 +55,11 @@ const createSpecialSearchItem = (
 
 function NavSearch() {
   const t = useTranslations("NavSearch");
-  const translateAddressType = useTranslations("AddressTypes");
+  // Nominatim address types are resolved dynamically (from OSM data), which
+  // cannot be checked against next-intl's literal message-key types.
+  const translateAddressType = useTranslations(
+    "AddressTypes"
+  ) as unknown as MessageResolver;
   const locale = useLocale();
   const router = useRouter();
 

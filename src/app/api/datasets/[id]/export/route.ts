@@ -41,11 +41,13 @@ export async function GET(
       "_"
     );
 
-    return new NextResponse(JSON.stringify(dataset.geojson, null, 2), {
+    return new NextResponse(JSON.stringify(dataset.geojson), {
       status: 200,
       headers: {
         "Content-Type": "application/geo+json",
         "Content-Disposition": `attachment; filename="${safeName}"`,
+        // No Cache-Control on purpose: a cached response never reaches the
+        // origin, so the DATASET_DOWNLOAD event above would go unrecorded.
       },
     });
   } catch (error) {

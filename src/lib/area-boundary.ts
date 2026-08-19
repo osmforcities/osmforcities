@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { unstable_cache, revalidateTag } from "next/cache";
 import simplify from "@turf/simplify";
 import {
   executeOverpassQuery,
@@ -27,6 +28,37 @@ function isRealPolygon(fc: FeatureCollection): boolean {
   return false;
 }
 
+const AREA_BOUNDARY_TAG = "area-boundaries";
+
+/**
+ * Stored boundary, simplified. Null when nothing usable is stored yet.
+ *
+ * Only the read path is cached: the Overpass fallback below writes back to the
+ * DB, and caching that too would pin a `null` and keep re-querying Overpass.
+ *
+ * TTL is deliberately short. A `null` gets cached like any other result, and the
+ * bust after the fallback write cannot run from a Server Component render — the
+ * dataset page is exactly that. So for a cold area the TTL, not the bust, is
+ * what bounds how long every visitor keeps re-hitting Overpass.
+ */
+const getStoredBoundary = unstable_cache(
+  async (areaId: number): Promise<FeatureCollection | null> => {
+    const area = await prisma.area.findUnique({
+      where: { id: areaId },
+      select: { geojson: true },
+    });
+
+    if (!area?.geojson) return null;
+
+    const stored = area.geojson as unknown as FeatureCollection;
+    if (!isRealPolygon(stored)) return null;
+
+    return simplify(stored, { tolerance: BOUNDARY_SIMPLIFICATION_TOLERANCE, highQuality: false });
+  },
+  ["area-boundary-stored"],
+  { revalidate: 300, tags: [AREA_BOUNDARY_TAG] }
+);
+
 /**
  * Fetch area boundary for visualization.
  * Checks DB cache first, then fetches from Overpass if needed.
@@ -36,17 +68,8 @@ function isRealPolygon(fc: FeatureCollection): boolean {
  * @returns Simplified boundary GeoJSON, or null if not found
  */
 export async function getAreaBoundary(areaId: number): Promise<FeatureCollection | null> {
-  const area = await prisma.area.findUnique({
-    where: { id: areaId },
-    select: { geojson: true },
-  });
-
-  if (area?.geojson) {
-    const cached = area.geojson as unknown as FeatureCollection;
-    if (isRealPolygon(cached)) {
-      return simplify(cached, { tolerance: BOUNDARY_SIMPLIFICATION_TOLERANCE, highQuality: false });
-    }
-  }
+  const stored = await getStoredBoundary(areaId);
+  if (stored) return stored;
 
   const queryString = `[out:json][timeout:60];rel(${areaId});out geom;`;
   let overpassData;
@@ -75,6 +98,14 @@ export async function getAreaBoundary(areaId: number): Promise<FeatureCollection
     where: { id: areaId },
     data: { geojson: JSON.parse(JSON.stringify(featureCollection)) },
   });
+
+  // getStoredBoundary has this cached as absent. Only lands from a Route Handler
+  // (/api/areas/[id]/boundary); from a page render it always throws and the
+  // short TTL above is what clears the stale null instead. Busts every area, not
+  // just this one — unstable_cache tags are static per function.
+  try {
+    revalidateTag(AREA_BOUNDARY_TAG);
+  } catch {}
 
   return simplify(featureCollection, { tolerance: BOUNDARY_SIMPLIFICATION_TOLERANCE, highQuality: false });
 }

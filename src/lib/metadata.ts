@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { Locale } from "@/i18n/routing";
-import { SUPPORTED_LOCALES } from "./constants";
+import { AVAILABLE_LOCALES } from "@/i18n/constants";
 import { buildLocaleUrls } from "./utils";
 
 export interface PageMetadata {
@@ -54,7 +54,7 @@ export function getLocalizedMetadata(
       url,
       images,
       locale,
-      alternateLocale: SUPPORTED_LOCALES.filter((l) => l !== locale) as Locale[],
+      alternateLocale: AVAILABLE_LOCALES.filter((l) => l !== locale) as Locale[],
     },
     robots: {
       index: !noIndex,
