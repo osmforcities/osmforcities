@@ -23,6 +23,7 @@ import {
 } from "./map/interactive-legend";
 import { StyleTuningPanel } from "./map/style-tuning-panel";
 import { useMapData, useFeatureSelection } from "./map/hooks";
+import { INTERACTIVE_LAYER_IDS } from "./map/layers/layer-ids";
 import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
 import { MapZoomControl } from "@/components/ui/map-zoom-control";
@@ -49,6 +50,9 @@ type DatasetFullMapProps = {
 
 const AGE_VIEW_ID = "age";
 
+// Stable reference: a fresh [] each render would churn the click handler
+const NO_FEATURES: Feature[] = [];
+
 const AGE_LABEL_KEYS = {
   recent: "recentChanges",
   medium: "mediumChanges",
@@ -71,6 +75,12 @@ export const DatasetFullMap = forwardRef<
   const locale = useLocale();
   const mapRef = useRef<MapRef | null>(null);
 
+  const { processedData, initialViewState, hasFilteredData } = useMapData({
+    dataset,
+  });
+
+  const features = processedData?.features;
+
   const {
     selectedFeature,
     handleFeatureClick,
@@ -78,7 +88,7 @@ export const DatasetFullMap = forwardRef<
     handleMouseLeave,
     handleDeselect,
     cursor,
-  } = useFeatureSelection(onFeatureSelect);
+  } = useFeatureSelection(onFeatureSelect, features ?? NO_FEATURES);
 
   // Expose deselect function to parent
   useImperativeHandle(
@@ -88,12 +98,6 @@ export const DatasetFullMap = forwardRef<
     }),
     [handleDeselect]
   );
-
-  const { processedData, initialViewState, hasFilteredData } = useMapData({
-    dataset,
-  });
-
-  const features = processedData?.features;
 
   // One pass over the features feeds both the curated tag themes and the
   // age bucket counts for the legend rows
@@ -229,11 +233,7 @@ export const DatasetFullMap = forwardRef<
             onClick={handleFeatureClick}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            interactiveLayerIds={[
-              "detailed-polygons",
-              "detailed-lines",
-              "detailed-points",
-            ]}
+            interactiveLayerIds={INTERACTIVE_LAYER_IDS}
             scrollZoom={true}
             dragPan={true}
             dragRotate={false}
@@ -250,7 +250,9 @@ export const DatasetFullMap = forwardRef<
             />
             {/* Panel writes age paint to the shared layers; keep it out of
                 curated-theme views so it cannot stomp their colors */}
-            {!activeTheme && <StyleTuningPanel features={processedData.features} />}
+            {!activeTheme && (
+              <StyleTuningPanel features={processedData.features} />
+            )}
             {selectedFeature && (
               <Source
                 id="highlight-feature"

@@ -15,6 +15,13 @@ import {
   type MapStyleKnobs,
 } from "./layers/map-style";
 import { createSmallPolygonProxyPoints } from "./layers/polygon-proxy-points";
+import {
+  POLYGON_LAYER_ID,
+  POLYGON_STROKE_LAYER_ID,
+  LINE_LAYER_ID,
+  POINT_LAYER_ID,
+  PROXY_LAYER_ID,
+} from "./layers/layer-ids";
 
 type AgeCategory = keyof AgeCategoryValues<number>;
 
@@ -266,48 +273,40 @@ function StyleTuningPanelInner({ features }: StyleTuningPanelProps) {
     setPaint("basemap-mute", "background-opacity", knobs.basemapWashOpacity);
 
     setPaint(
-      "detailed-points",
+      POINT_LAYER_ID,
       "circle-radius",
       buildPointRadiusForCount(pointCount, knobs)
     );
-    setPaint("detailed-points", "circle-color", ageColor);
-    setPaint("detailed-points", "circle-opacity", ageCase(knobs.point.opacity));
+    setPaint(POINT_LAYER_ID, "circle-color", ageColor);
+    setPaint(POINT_LAYER_ID, "circle-opacity", ageCase(knobs.point.opacity));
     setPaint(
-      "detailed-points",
+      POINT_LAYER_ID,
       "circle-stroke-width",
       buildPointStrokeWidth(knobs)
     );
-    setPaint("detailed-points", "circle-stroke-color", knobs.point.strokeColor);
+    setPaint(POINT_LAYER_ID, "circle-stroke-color", knobs.point.strokeColor);
 
     // Proxy circles share the point look; their fade opacity stays untouched
     setPaint(
-      "polygon-proxy-points",
+      PROXY_LAYER_ID,
       "circle-radius",
       buildPointRadiusForCount(proxyPointCount, knobs)
     );
     setPaint(
-      "polygon-proxy-points",
+      PROXY_LAYER_ID,
       "circle-stroke-width",
       buildPointStrokeWidth(knobs)
     );
-    setPaint(
-      "polygon-proxy-points",
-      "circle-stroke-color",
-      knobs.point.strokeColor
-    );
-    setPaint("polygon-proxy-points", "circle-color", ageColor);
+    setPaint(PROXY_LAYER_ID, "circle-stroke-color", knobs.point.strokeColor);
+    setPaint(PROXY_LAYER_ID, "circle-color", ageColor);
 
-    setPaint("detailed-lines", "line-color", ageColor);
-    setPaint("detailed-lines", "line-width", buildLineWidth(knobs));
+    setPaint(LINE_LAYER_ID, "line-color", ageColor);
+    setPaint(LINE_LAYER_ID, "line-width", buildLineWidth(knobs));
 
-    setPaint("detailed-polygons", "fill-color", ageColor);
+    setPaint(POLYGON_LAYER_ID, "fill-color", ageColor);
+    setPaint(POLYGON_STROKE_LAYER_ID, "line-color", knobs.point.strokeColor);
     setPaint(
-      "detailed-polygons-stroke",
-      "line-color",
-      knobs.point.strokeColor
-    );
-    setPaint(
-      "detailed-polygons-stroke",
+      POLYGON_STROKE_LAYER_ID,
       "line-width",
       buildPolygonStrokeWidth(knobs)
     );
