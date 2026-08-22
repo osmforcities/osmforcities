@@ -1,4 +1,6 @@
 import type { Feature } from "geojson";
+import type { MapGeoJSONFeature } from "maplibre-gl";
+import { PROXY_LAYER_ID } from "./layer-ids";
 import { bbox } from "@turf/bbox";
 import { centroid } from "@turf/centroid";
 
@@ -21,4 +23,17 @@ export function createSmallPolygonProxyPoints(
       ...feature,
       geometry: centroid(feature).geometry,
     }));
+}
+
+// A proxy hit comes back as the centroid Point; hand back the polygon it stands
+// for, so the highlight draws the footprint and not a dot that outlives the fade.
+export function resolveProxyFeature(
+  hit: MapGeoJSONFeature,
+  sourceFeatures: Feature[]
+): Feature {
+  if (hit.layer?.id !== PROXY_LAYER_ID) return hit;
+  const id = hit.properties?.id;
+  // Matching on undefined would pick the first id-less polygon
+  if (id == null) return hit;
+  return sourceFeatures.find((f) => f.properties?.id === id) ?? hit;
 }
