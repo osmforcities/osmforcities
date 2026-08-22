@@ -5,7 +5,11 @@ import {
   createSmallPolygonProxyPoints,
   resolveProxyFeature,
 } from "../polygon-proxy-points";
-import { INTERACTIVE_LAYER_IDS, PROXY_LAYER_ID } from "../layer-ids";
+import {
+  INTERACTIVE_LAYER_IDS,
+  POLYGON_LAYER_ID,
+  PROXY_LAYER_ID,
+} from "../layer-ids";
 
 const pool: Feature = {
   type: "Feature",
@@ -25,7 +29,7 @@ const pool: Feature = {
 };
 
 const asHit = (feature: Feature, layerId: string) =>
-  ({ ...feature, layer: { id: layerId } }) as unknown as MapGeoJSONFeature;
+  ({ ...feature, layer: { id: layerId } } as unknown as MapGeoJSONFeature);
 
 describe("INTERACTIVE_LAYER_IDS", () => {
   // Drop the proxy layer and every low-zoom click hits nothing (#468)
@@ -44,7 +48,7 @@ describe("resolveProxyFeature", () => {
   });
 
   it("leaves a hit on a real layer alone", () => {
-    const direct = asHit(pool, "detailed-polygons");
+    const direct = asHit(pool, POLYGON_LAYER_ID);
     expect(resolveProxyFeature(direct, [pool])).toBe(direct);
   });
 
