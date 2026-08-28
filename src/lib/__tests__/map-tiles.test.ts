@@ -16,15 +16,15 @@ describe("cartodb tile URLs", () => {
     process.env = { ...originalEnv };
   });
 
-  it("carries the key on every subdomain when set", async () => {
-    const urls = await cartoUrls("test_key_123");
+  it("carries the baked-in key by default", async () => {
+    const urls = await cartoUrls();
     expect(urls).toHaveLength(4);
-    for (const url of urls) expect(url).toContain("?key=test_key_123");
+    for (const url of urls) expect(url).toMatch(/\?key=cb1_\w+$/);
   });
 
-  // Without the ternary this emits "?key=undefined", which CARTO rejects —
-  // the watermark returns behind a URL that looks correct
-  it("emits no query string when unset", async () => {
-    for (const url of await cartoUrls()) expect(url).not.toContain("?");
+  it("lets the env var override the key", async () => {
+    for (const url of await cartoUrls("override_key")) {
+      expect(url).toContain("?key=override_key");
+    }
   });
 });
