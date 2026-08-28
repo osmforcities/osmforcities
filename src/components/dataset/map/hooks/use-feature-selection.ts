@@ -1,17 +1,20 @@
 import { useState, useCallback } from "react";
 import type { MapLayerMouseEvent } from "react-map-gl/maplibre";
 import type { Feature } from "geojson";
+import { resolveProxyFeature } from "../layers/polygon-proxy-points";
 
 export function useFeatureSelection(
-  onFeatureSelect?: (feature: Feature | null) => void
+  onFeatureSelect?: (feature: Feature | null) => void,
+  sourceFeatures: Feature[] = []
 ) {
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
   const [cursor, setCursor] = useState<string>("grab");
 
   const handleFeatureClick = useCallback(
     (event: MapLayerMouseEvent) => {
-      const feature = event.features?.[0] as Feature | undefined;
-      if (feature) {
+      const hit = event.features?.[0];
+      if (hit) {
+        const feature = resolveProxyFeature(hit, sourceFeatures);
         setSelectedFeature(feature);
         onFeatureSelect?.(feature);
       } else {
@@ -19,7 +22,7 @@ export function useFeatureSelection(
         onFeatureSelect?.(null);
       }
     },
-    [onFeatureSelect]
+    [onFeatureSelect, sourceFeatures]
   );
 
   const handleMouseEnter = useCallback(() => setCursor("pointer"), []);

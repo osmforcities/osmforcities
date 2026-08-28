@@ -13,6 +13,13 @@ import {
   DEFAULT_STYLE_KNOBS,
 } from "./map-style";
 import { createSmallPolygonProxyPoints } from "./polygon-proxy-points";
+import {
+  POLYGON_LAYER_ID,
+  POLYGON_STROKE_LAYER_ID,
+  LINE_LAYER_ID,
+  POINT_LAYER_ID,
+  PROXY_LAYER_ID,
+} from "./layer-ids";
 
 // Proxy circles carry small polygons at low zoom, then hand off to the real
 // footprints as they become resolvable. Fully opaque through z13 so the circle
@@ -73,7 +80,7 @@ export function DetailedFeaturesLayerGroup({
     <>
       {polygonFeatures.length > 0 && (
         <MapLayer
-          id="detailed-polygons"
+          id={POLYGON_LAYER_ID}
           features={polygonFeatures}
           layerType="fill"
           filter={visibilityFilter}
@@ -83,7 +90,7 @@ export function DetailedFeaturesLayerGroup({
               : POLYGON_STYLE.fill
           }
           strokeLayer={{
-            id: "detailed-polygons-stroke",
+            id: POLYGON_STROKE_LAYER_ID,
             type: "line",
             paint: themeColor
               ? {
@@ -101,7 +108,7 @@ export function DetailedFeaturesLayerGroup({
           instead of the subpixel polygon covering its own proxy */}
       {proxyPoints.length > 0 && (
         <MapLayer
-          id="polygon-proxy-points"
+          id={PROXY_LAYER_ID}
           features={proxyPoints}
           layerType="circle"
           filter={visibilityFilter}
@@ -116,7 +123,7 @@ export function DetailedFeaturesLayerGroup({
 
       {lineFeatures.length > 0 && (
         <MapLayer
-          id="detailed-lines"
+          id={LINE_LAYER_ID}
           features={lineFeatures}
           layerType="line"
           filter={visibilityFilter}
@@ -135,7 +142,7 @@ export function DetailedFeaturesLayerGroup({
 
       {pointFeatures.length > 0 && (
         <MapLayer
-          id="detailed-points"
+          id={POINT_LAYER_ID}
           features={pointFeatures}
           layerType="circle"
           filter={visibilityFilter}

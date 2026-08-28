@@ -1,5 +1,16 @@
 # osmforcities
 
+## 1.17.1
+
+### Fixed
+
+- The basemap no longer shows CARTO's "API KEY REQUIRED" watermark — tile requests now carry a CARTO Basemaps API key, baked into the build so every environment gets it [#472], [#473]
+- Clicking a polygon feature at low zoom opens its detail panel again — the proxy circles that stand in for small polygons below ~z14 are now clickable and show a pointer cursor [#469]
+
+[#469]: https://github.com/osmforcities/osmforcities/pull/469
+[#472]: https://github.com/osmforcities/osmforcities/pull/472
+[#473]: https://github.com/osmforcities/osmforcities/pull/473
+
 ## 1.17.0
 
 ### Added
