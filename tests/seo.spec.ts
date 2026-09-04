@@ -21,11 +21,13 @@ test.describe("SEO Implementation", () => {
       const ptBrHreflang = await page.locator('link[rel="alternate"][hreflang="pt-BR"]').getAttribute("href");
       const esHreflang = await page.locator('link[rel="alternate"][hreflang="es"]').getAttribute("href");
       const frHreflang = await page.locator('link[rel="alternate"][hreflang="fr"]').getAttribute("href");
+      const deHreflang = await page.locator('link[rel="alternate"][hreflang="de"]').getAttribute("href");
 
       expect(enHreflang).toMatch(/https:\/\/osmforcities\.org\/en\/?/);
       expect(ptBrHreflang).toMatch(/https:\/\/osmforcities\.org\/pt-BR\/?/);
       expect(esHreflang).toMatch(/https:\/\/osmforcities\.org\/es\/?/);
       expect(frHreflang).toMatch(/https:\/\/osmforcities\.org\/fr\/?/);
+      expect(deHreflang).toMatch(/https:\/\/osmforcities\.org\/de\/?/);
     });
 
     test("should have structured data (JSON-LD) on home page", async ({ page }) => {
