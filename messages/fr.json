@@ -603,21 +603,12 @@
     "metaTitle": "À propos - OSM for Cities",
     "metaDescription": "Découvrez OSM for Cities - des jeux de données OpenStreetMap mis à jour quotidiennement",
     "title": "À propos du projet",
-    "description1": "**OSM for Cities** est une plateforme pour explorer et suivre les mises à jour d'OpenStreetMap — une carte du monde libre et ouverte construite par des bénévoles. Chaque jour, des personnes ajoutent et améliorent des données sur les rues, les bâtiments, les écoles, les parcs, les transports et bien plus. Ce projet vous permet de suivre ces changements dans les lieux qui vous tiennent à cœur.",
-    "description2": "Vous pouvez vouloir garder un œil sur les modifications des écoles de votre région, ou suivre l'ajout de passages piétons, d'arrêts de bus ou de stationnements vélo dans votre ville. Peut-être êtes-vous simplement curieux de l'évolution du parc de votre quartier. Qu'il s'agisse d'un jeu de données pour l'urbanisme ou de quelque chose de plus personnel et informel, la plateforme vous permet de le créer et de le suivre.",
-    "featuresTitle": "Fonctionnalités principales",
-    "features": {
-      "create": "Créez des jeux de données personnalisés en choisissant un lieu et un thème",
-      "follow": "Suivez des jeux de données et recevez des résumés quotidiens ou hebdomadaires",
-      "activity": "Consultez l'activité des contributeurs et la fréquence des modifications pour chaque jeu de données"
-    },
-    "projectTitle": "Le projet",
-    "projectDescription1": "OSM for Cities a été créé par",
-    "projectDescription2": "et incubé lors d'un cycle",
-    "projectDescription3": "Labs. C'est une expérimentation ouverte pour rendre les données OSM utiles et accessibles — conçue pour les villes, mais suffisamment flexible pour servir de suivi OSM générique.",
-    "projectEvolution": "Sa direction évoluera avec l'usage et les retours de la communauté.",
+    "description1": "<strong>OSM for Cities</strong> est une plateforme pour explorer et suivre les mises à jour d'OpenStreetMap, une carte du monde libre et ouverte construite par des bénévoles. Créez des jeux de données personnalisés en choisissant un lieu et un thème, suivez-les avec des résumés quotidiens ou hebdomadaires et consultez l'activité des contributeurs et la fréquence des modifications.",
+    "projectDescription1": "OSM for Cities a été créé et est maintenu par",
+    "projectDescription2": ". C'est une expérimentation ouverte pour rendre les données OSM utiles et accessibles, conçue pour les villes, mais suffisamment flexible pour servir de suivi OSM générique.",
     "getInvolvedTitle": "Participer",
-    "getInvolvedDescription": "Vos retours contribuent à façonner ce projet. Que vous ayez des idées de nouvelles fonctionnalités, trouvé quelque chose qui ne fonctionne pas tout à fait, ou simplement envie de partager la façon dont vous l'utilisez — nous serions ravis de vous lire."
+    "getInvolvedDescription": "Vos retours contribuent à façonner ce projet. Que vous ayez des idées de nouvelles fonctionnalités, trouvé quelque chose qui ne fonctionne pas tout à fait, ou simplement envie de partager la façon dont vous l'utilisez, nous serions ravis de vous lire.",
+    "acknowledgmentsTitle": "Remerciements"
   },
   "DatasetErrors": {
     "templateNotFoundTitle": "Modèle de jeu de données introuvable",
