@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   fetchDatasetSnapshot,
+  snapshotDatasetColumns,
   DatasetTooLargeError,
   DatasetSizeCheckTimeoutError,
+  type DatasetSnapshot,
 } from "@/lib/dataset-snapshot";
 import { prisma } from "@/lib/db";
 import { MAX_DATASET_BYTES, OVERPASS_BYTES_PER_ELEMENT_ESTIMATE } from "@/lib/constants";
@@ -292,5 +294,60 @@ describe("fetchDatasetSnapshot", () => {
       DatasetTooLargeError
     );
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe("snapshotDatasetColumns", () => {
+  const mostRecent = new Date("2025-01-01T00:00:00Z");
+  const makeSnapshot = (): DatasetSnapshot => ({
+    geojson: { type: "FeatureCollection", features: [] },
+    bbox: [-0.2, 51.5, -0.1, 51.6],
+    dataCount: 2,
+    stats: {
+      editorsCount: 3,
+      elementVersionsCount: 5,
+      changesetsCount: 4,
+      oldestElement: new Date("2022-01-01T00:00:00Z"),
+      mostRecentElement: mostRecent,
+      averageElementAge: 100,
+      averageElementVersion: 1.5,
+      recentActivity: { elementsEdited: 2, changesets: 1, editors: 1 },
+      qualityMetrics: {
+        staleElementsCount: 1,
+        recentlyUpdatedElementsCount: 1,
+        staleElementsPercentage: 50,
+        recentlyUpdatedElementsPercentage: 50,
+      },
+    },
+  });
+
+  it("derives the denormalized columns from stats", () => {
+    const cols = snapshotDatasetColumns(makeSnapshot());
+    expect(cols.lastEditedAt).toEqual(mostRecent);
+    expect(cols.contributorsCount).toBe(3);
+    expect(cols.recentlyEditedCount).toBe(2);
+    expect(cols.dataCount).toBe(2);
+    expect(cols.lastChecked).toBeInstanceOf(Date);
+  });
+
+  it("maps a null mostRecentElement to null lastEditedAt and passes null bbox through", () => {
+    const snapshot = makeSnapshot();
+    snapshot.stats.mostRecentElement = null;
+    snapshot.bbox = null;
+    const cols = snapshotDatasetColumns(snapshot);
+    expect(cols.lastEditedAt).toBeNull();
+    expect(cols.bbox).toBeNull();
+  });
+
+  it("clones the JSON blobs and serializes Dates inside stats to ISO strings", () => {
+    const snapshot = makeSnapshot();
+    const cols = snapshotDatasetColumns(snapshot);
+    expect(cols.geojson).not.toBe(snapshot.geojson);
+    expect(cols.geojson).toEqual(snapshot.geojson);
+    expect(cols.stats).not.toBe(snapshot.stats);
+    expect(cols.stats.mostRecentElement).toBe("2025-01-01T00:00:00.000Z");
+    expect(cols.stats.oldestElement).toBe("2022-01-01T00:00:00.000Z");
+    expect(cols.bbox).not.toBe(snapshot.bbox);
+    expect(cols.bbox).toEqual(snapshot.bbox);
   });
 });

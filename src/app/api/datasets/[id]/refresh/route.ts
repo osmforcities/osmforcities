@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import {
   fetchDatasetSnapshot,
+  snapshotDatasetColumns,
   DatasetTooLargeError,
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
@@ -67,15 +68,8 @@ export async function POST(
         id: datasetId,
       },
       data: {
-        dataCount: snapshot.dataCount,
-        lastChecked: new Date(),
-        stats: JSON.parse(JSON.stringify(snapshot.stats)),
-        geojson: JSON.parse(JSON.stringify(snapshot.geojson)),
-        bbox: snapshot.bbox ? JSON.parse(JSON.stringify(snapshot.bbox)) : null,
+        ...snapshotDatasetColumns(snapshot),
         updatedAt: new Date(),
-        lastEditedAt: snapshot.stats.mostRecentElement ?? null,
-        contributorsCount: snapshot.stats.editorsCount,
-        recentlyEditedCount: snapshot.stats.recentActivity.elementsEdited,
         lastAttempted: new Date(),
         consecutiveFailures: 0,
         lastError: null,

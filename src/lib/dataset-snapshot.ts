@@ -125,6 +125,25 @@ export interface DatasetSnapshot {
   dataCount: number;
 }
 
+/**
+ * The Dataset row columns derived from a snapshot, spreadable into both
+ * prisma.dataset.create and .update data. The JSON round-trips are required:
+ * Prisma Json columns need the Dates inside the blobs serialized to ISO
+ * strings (structuredClone would preserve them).
+ */
+export function snapshotDatasetColumns(snapshot: DatasetSnapshot) {
+  return {
+    geojson: JSON.parse(JSON.stringify(snapshot.geojson)),
+    bbox: snapshot.bbox ? JSON.parse(JSON.stringify(snapshot.bbox)) : null,
+    stats: JSON.parse(JSON.stringify(snapshot.stats)),
+    dataCount: snapshot.dataCount,
+    lastChecked: new Date(),
+    lastEditedAt: snapshot.stats.mostRecentElement ?? null,
+    contributorsCount: snapshot.stats.editorsCount,
+    recentlyEditedCount: snapshot.stats.recentActivity.elementsEdited,
+  };
+}
+
 function extractDatasetStats(overpassData: OverpassData): DatasetStats {
   if (!overpassData.elements || !Array.isArray(overpassData.elements)) {
     return {

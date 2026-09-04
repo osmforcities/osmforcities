@@ -14,15 +14,10 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 
-vi.mock("@/lib/dataset-snapshot", () => {
-  class DatasetTooLargeError extends Error {}
-  class DatasetSizeCheckTimeoutError extends Error {}
-  return {
-    fetchDatasetSnapshot: vi.fn(),
-    DatasetTooLargeError,
-    DatasetSizeCheckTimeoutError,
-  };
-});
+vi.mock("@/lib/dataset-snapshot", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/dataset-snapshot")>()),
+  fetchDatasetSnapshot: vi.fn(),
+}));
 
 vi.mock("@/lib/umami", () => ({
   trackEvent: vi.fn().mockResolvedValue(undefined),
