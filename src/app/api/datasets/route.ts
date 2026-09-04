@@ -8,6 +8,7 @@ import { refreshAreaInfoIfStale, resolveAreaCenter } from "@/lib/area-refresh";
 import { mergeAreaNames, toStoredNames } from "@/lib/area-name";
 import {
   fetchDatasetSnapshot,
+  snapshotDatasetColumns,
   DatasetTooLargeError,
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
@@ -99,11 +100,7 @@ export async function POST(req: NextRequest) {
         templateId,
         areaId: area.id,
         cityName: area.name,
-        geojson: JSON.parse(JSON.stringify(snapshot.geojson)),
-        bbox: snapshot.bbox ? JSON.parse(JSON.stringify(snapshot.bbox)) : null,
-        dataCount: snapshot.dataCount,
-        lastChecked: new Date(),
-        stats: JSON.parse(JSON.stringify(snapshot.stats)),
+        ...snapshotDatasetColumns(snapshot),
       },
       include: { template: true },
     });
