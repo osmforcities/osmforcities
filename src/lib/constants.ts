@@ -46,4 +46,5 @@ export const YML_LOCALE_MAP: Record<string, string> = {
   en: "en",
   es: "es",
   fr: "fr",
+  de: "de",
 };
