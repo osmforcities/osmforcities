@@ -60,6 +60,75 @@ export async function getOrCreateDataset(
   return { dataset, wasCreated: true };
 }
 
+// The detail-page shape (geojson payload included), used by both the read and
+// the on-demand create below. Distinct from the card-select in
+// dataset-section-select and consumed only in this module.
+const DATASET_DETAIL_SELECT = {
+  id: true,
+  templateId: true,
+  areaId: true,
+  cityName: true,
+  geojson: true,
+  bbox: true,
+  dataCount: true,
+  lastChecked: true,
+  stats: true,
+  createdAt: true,
+  updatedAt: true,
+  isActive: true,
+  isFeatured: true,
+  template: {
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+      tags: true,
+      filterableTags: true,
+      translations: {
+        select: {
+          locale: true,
+          name: true,
+          description: true,
+        },
+      },
+    },
+  },
+  area: {
+    select: {
+      id: true,
+      name: true,
+      names: true,
+      countryCode: true,
+      bounds: true,
+      centerLat: true,
+      centerLon: true,
+      refreshedAt: true,
+      geojson: true,
+    },
+  },
+  user: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+    },
+  },
+  savedBy: {
+    select: {
+      id: true,
+      userId: true,
+      createdAt: true,
+    },
+  },
+} as const;
+
 async function getDatasetWithDetails(areaId: number, templateId: string, locale: string) {
   const dataset = await prisma.dataset.findFirst({
     where: {
@@ -67,71 +136,7 @@ async function getDatasetWithDetails(areaId: number, templateId: string, locale:
       templateId,
       isActive: true,
     },
-    select: {
-      id: true,
-      templateId: true,
-      areaId: true,
-      cityName: true,
-      geojson: true,
-      bbox: true,
-      dataCount: true,
-      lastChecked: true,
-      stats: true,
-      createdAt: true,
-      updatedAt: true,
-      isActive: true,
-      isFeatured: true,
-      template: {
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          category: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-            },
-          },
-          tags: true,
-          filterableTags: true,
-          translations: {
-            select: {
-              locale: true,
-              name: true,
-              description: true,
-            },
-          },
-        },
-      },
-      area: {
-        select: {
-          id: true,
-          name: true,
-          names: true,
-          countryCode: true,
-          bounds: true,
-          centerLat: true,
-          centerLon: true,
-          refreshedAt: true,
-          geojson: true,
-        },
-      },
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      },
-      savedBy: {
-        select: {
-          id: true,
-          userId: true,
-          createdAt: true,
-        },
-      },
-    },
+    select: DATASET_DETAIL_SELECT,
   });
 
   if (!dataset) {
@@ -224,71 +229,7 @@ async function createDatasetOnDemand(
         isActive: true,
         ...snapshotDatasetColumns(snapshot),
       },
-      select: {
-        id: true,
-        templateId: true,
-        areaId: true,
-        cityName: true,
-        geojson: true,
-        bbox: true,
-        dataCount: true,
-        lastChecked: true,
-        stats: true,
-        createdAt: true,
-        updatedAt: true,
-        isActive: true,
-        isFeatured: true,
-        template: {
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            category: {
-              select: {
-                id: true,
-                name: true,
-                slug: true,
-              },
-            },
-            tags: true,
-            filterableTags: true,
-            translations: {
-              select: {
-                locale: true,
-                name: true,
-                description: true,
-              },
-            },
-          },
-        },
-        area: {
-          select: {
-            id: true,
-            name: true,
-            names: true,
-            countryCode: true,
-            bounds: true,
-            centerLat: true,
-            centerLon: true,
-            refreshedAt: true,
-            geojson: true,
-          },
-        },
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        savedBy: {
-          select: {
-            id: true,
-            userId: true,
-            createdAt: true,
-          },
-        },
-      },
+      select: DATASET_DETAIL_SELECT,
     });
 
     await trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`);

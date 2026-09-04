@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { getLocale, getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/db";
+import { DATASET_SELECT } from "@/lib/dataset-section-select";
 import { processDatasetStats } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { resolveDatasetAreaName } from "@/lib/area-name";
@@ -9,42 +10,13 @@ import { HeroMap } from "./hero-map";
 import { FeaturedDatasetMapClient } from "./featured-dataset-map-client";
 
 const FEATURED_DATASET_SELECT = {
-  id: true,
-  cityName: true,
-  dataCount: true,
-  stats: true,
-  areaId: true,
-  templateId: true,
+  ...DATASET_SELECT,
   area: {
     select: {
-      id: true,
-      name: true,
-      names: true,
-      countryCode: true,
+      ...DATASET_SELECT.area.select,
       bounds: true,
       centerLat: true,
       centerLon: true,
-    },
-  },
-  template: {
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      category: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-        },
-      },
-      translations: {
-        select: {
-          locale: true,
-          name: true,
-          description: true,
-        },
-      },
     },
   },
 } as const;
