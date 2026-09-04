@@ -1,5 +1,23 @@
 # osmforcities
 
+## 1.18.0
+
+### Added
+
+- German is now a full app language alongside English, Spanish, Portuguese and French, with translated names and descriptions across the template catalog [#484]
+
+### Changed
+
+- The dataset refresh cron only updates cataloged datasets (featured or saved by someone), so hidden cache-row datasets no longer hit Overpass — previously ~91% of daily refresh load was waste [#485]
+- Datasets nobody ever featured or saved are deleted after a 30-day grace period, and deactivated oversized datasets have their stored GeoJSON cleared [#485]
+
+### Security
+
+- Updated transitive dependencies to clear two moderate advisories: `@xmldom/xmldom` to 0.8.15 (XML fragment injection during serialization) and `@humanfs/node` to 0.16.8 (dev-only, recursive copy following symlinks)
+
+[#484]: https://github.com/osmforcities/osmforcities/pull/484
+[#485]: https://github.com/osmforcities/osmforcities/pull/485
+
 ## 1.17.1
 
 ### Fixed

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import {
   fetchDatasetSnapshot,
@@ -7,6 +8,49 @@ import {
 } from "@/lib/dataset-snapshot";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
+import {
+  CATALOG_FILTER,
+  UNCATALOGED_FILTER,
+} from "@/lib/dataset-catalog-filter";
+
+// Uncataloged cache rows survive this long after creation so a visitor has time
+// to save; deleted rows are recreated on the next visit (#482).
+const CLEANUP_GRACE_DAYS = 30;
+
+// Deactivated rows never serve their geojson again — drop the payload. A sweep
+// (rather than nulling at deactivation time) also heals rows deactivated
+// before this existed.
+async function clearGeojsonOfDeactivatedDatasets(): Promise<number> {
+  const swept = await prisma.dataset.updateMany({
+    where: { isActive: false, geojson: { not: Prisma.AnyNull } },
+    data: { geojson: Prisma.JsonNull },
+  });
+  return swept.count;
+}
+
+async function deleteUnattendedDatasets(): Promise<number> {
+  const graceCutoff = new Date(
+    Date.now() - CLEANUP_GRACE_DAYS * 24 * 60 * 60 * 1000
+  );
+  const stale = await prisma.dataset.findMany({
+    where: { ...UNCATALOGED_FILTER, createdAt: { lt: graceCutoff } },
+    select: { id: true, cityName: true },
+  });
+  if (stale.length === 0) {
+    return 0;
+  }
+
+  // The filter is re-checked in the delete so a save landing between the two
+  // queries wins.
+  const { count } = await prisma.dataset.deleteMany({
+    where: { id: { in: stale.map((d) => d.id) }, ...UNCATALOGED_FILTER },
+  });
+  console.log(
+    `Cleanup: deleted ${count} uncataloged cache datasets: ` +
+      stale.map((d) => `${d.id} (${d.cityName})`).join(", ")
+  );
+  return count;
+}
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
@@ -46,6 +90,9 @@ export async function POST(req: NextRequest) {
       where: {
         isActive: true,
         OR: [{ lastAttempted: null }, { lastAttempted: { lt: oneDayAgo } }],
+        // Only cataloged datasets (featured or saved) are worth refreshing —
+        // uncataloged cache rows serve nobody and were ~91% of Overpass load (#482).
+        ...CATALOG_FILTER,
       },
       include: {
         template: true,
@@ -177,6 +224,9 @@ export async function POST(req: NextRequest) {
 
     await Promise.allSettled(analyticsEvents);
 
+    const geojsonCleared = await clearGeojsonOfDeactivatedDatasets();
+    const deleted = await deleteUnattendedDatasets();
+
     return NextResponse.json({
       success: true,
       message: "Dataset update task completed",
@@ -184,6 +234,7 @@ export async function POST(req: NextRequest) {
         task: "update-datasets",
         limit,
         ...results,
+        cleanup: { deleted, geojsonCleared },
       },
     });
   } catch (error) {
