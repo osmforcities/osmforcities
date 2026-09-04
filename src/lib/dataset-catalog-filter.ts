@@ -15,5 +15,5 @@ export const CATALOG_FILTER = {
  * Derived, not duplicated, so the two can never drift apart.
  */
 export const UNCATALOGED_FILTER = {
-  NOT: CATALOG_FILTER.AND,
+  NOT: CATALOG_FILTER,
 };
