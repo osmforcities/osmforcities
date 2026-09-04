@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
 import { mapAppLocaleToDb, resolveTemplateForLocale } from "@/lib/template-locale";
+import { readStats } from "@/lib/dataset-stats";
 
 export type AreaTemplate = {
   id: string;
@@ -68,10 +69,6 @@ export function buildAreaDataTypes(
   });
 }
 
-type DatasetStatsShape =
-  | { editorsCount?: number; mostRecentElement?: string | null }
-  | null;
-
 /**
  * Fetch the created datasets for an area as status records keyed by templateId.
  */
@@ -92,7 +89,7 @@ export async function getAreaCreatedDatasets(
   });
 
   return rows.map((r) => {
-    const stats = r.stats as DatasetStatsShape;
+    const stats = readStats(r);
     return {
       templateId: r.templateId,
       dataCount: r.dataCount,

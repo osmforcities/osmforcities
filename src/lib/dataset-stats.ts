@@ -1,4 +1,5 @@
 import { Dataset } from "@prisma/client";
+import type { StoredDatasetStats } from "@/lib/dataset-snapshot";
 
 export interface ProcessedDatasetStats {
   features: number;
@@ -6,14 +7,21 @@ export interface ProcessedDatasetStats {
   lastEdited: string;
 }
 
+/**
+ * The one sanctioned reader of the Dataset.stats JSON column. Deliberately a
+ * cast, not a zod parse: legacy blobs missing newer fields must still be
+ * served, so every StoredDatasetStats field is optional. Returns null for
+ * null/scalar/array values.
+ */
+export function readStats(dataset: { stats: unknown }): StoredDatasetStats | null {
+  const s = dataset.stats;
+  return s && typeof s === "object" && !Array.isArray(s)
+    ? (s as StoredDatasetStats)
+    : null;
+}
+
 export function processDatasetStats(dataset: Pick<Dataset, 'dataCount' | 'stats'>, locale: string): ProcessedDatasetStats {
-  const stats = dataset.stats as
-    | {
-        editorsCount?: number;
-        mostRecentElement?: string | null;
-      }
-    | undefined
-    | null;
+  const stats = readStats(dataset);
 
   return {
     features: dataset.dataCount,

@@ -20,7 +20,6 @@ export const TagCountSchema = z.object({
 });
 
 export const DatasetStatsSchema = z.object({
-  lastEdited: z.coerce.date().nullable().optional(),
   editorsCount: z.number(),
   elementVersionsCount: z.number(),
   changesetsCount: z.number(),
@@ -138,7 +137,6 @@ export const DatasetSchema = z.object({
 });
 
 export type Dataset = z.infer<typeof DatasetSchema>;
-export type DatasetStats = z.infer<typeof DatasetStatsSchema>;
 export type CreateDatasetInput = z.infer<typeof CreateDatasetSchema>;
 export type SaveDatasetInput = z.infer<typeof SaveDatasetSchema>;
 export type UnsaveDatasetInput = z.infer<typeof UnsaveDatasetSchema>;
