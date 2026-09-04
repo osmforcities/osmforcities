@@ -305,12 +305,12 @@ export async function generateNextUserReport(): Promise<{
   });
 
   const datasetsWithRecentChanges = recentDatasets
-    .filter((dataset) => {
-      const stats = readStats(dataset);
-      if (!stats?.mostRecentElement) return false;
-      return new Date(stats.mostRecentElement) >= since;
-    })
-    .map((d) => ({ ...d, stats: readStats(d) ?? {} }));
+    .map((d) => ({ ...d, stats: readStats(d) ?? {} }))
+    .filter(
+      (d) =>
+        d.stats.mostRecentElement &&
+        new Date(d.stats.mostRecentElement) >= since
+    );
 
   // Don't send email if no recent updates, but DO update lastReportSent
   // Note: Users with no watched datasets are excluded by the query filter
