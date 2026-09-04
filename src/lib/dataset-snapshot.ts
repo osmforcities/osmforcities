@@ -118,6 +118,18 @@ export interface DatasetStats {
   tagCounts?: TagCount[];
 }
 
+/**
+ * DatasetStats as stored in the Dataset.stats JSON column: Dates are ISO
+ * strings (the JSON round-trip in snapshotDatasetColumns) and every field is
+ * optional because legacy rows predate newer fields. Derived from DatasetStats
+ * so the two shapes cannot drift. Read it via readStats in lib/dataset-stats.
+ */
+export type StoredDatasetStats = {
+  [K in keyof DatasetStats]?: DatasetStats[K] extends Date | null
+    ? string | null
+    : DatasetStats[K];
+};
+
 export interface DatasetSnapshot {
   geojson: FeatureCollection;
   stats: DatasetStats;

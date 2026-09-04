@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/db";
 import { htmlToText } from "html-to-text";
+import { readStats } from "@/lib/dataset-stats";
+import type { StoredDatasetStats } from "@/lib/dataset-snapshot";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getDatasetUrl } from "@/lib/urls";
 import {
@@ -17,11 +19,7 @@ export interface EmailContent {
   text: string;
 }
 
-interface DatasetStatsData {
-  mostRecentElement?: string;
-}
-
-interface DatasetStats {
+interface UserReportData {
   user: {
     id: string;
     email: string;
@@ -48,8 +46,8 @@ function formatUTCDate(date: Date | null): string {
   return date.toISOString().split("T")[0];
 }
 
-function getLatestChangeDate(datasets: Array<{ stats?: DatasetStatsData }>): string | null {
-  const stats = datasets[0]?.stats as DatasetStatsData | undefined;
+function getLatestChangeDate(datasets: Array<{ stats?: StoredDatasetStats }>): string | null {
+  const stats = datasets[0]?.stats;
   return stats?.mostRecentElement
     ? new Date(stats.mostRecentElement).toLocaleDateString()
     : null;
@@ -134,7 +132,7 @@ function generateEmailBodyWithChanges(
 }
 
 async function generateEmailContent(
-  data: DatasetStats,
+  data: UserReportData,
   userLocale: Locale
 ): Promise<EmailContent> {
   const { user, recentDatasets } = data;
@@ -308,17 +306,11 @@ export async function generateNextUserReport(): Promise<{
 
   const datasetsWithRecentChanges = recentDatasets
     .filter((dataset) => {
-      if (!dataset.stats || typeof dataset.stats !== "object") return false;
-
-      const stats = dataset.stats as DatasetStatsData;
-      const mostRecentElement = stats.mostRecentElement;
-
-      if (!mostRecentElement) return false;
-
-      const lastChangeDate = new Date(mostRecentElement);
-      return lastChangeDate >= since;
+      const stats = readStats(dataset);
+      if (!stats?.mostRecentElement) return false;
+      return new Date(stats.mostRecentElement) >= since;
     })
-    .map((d) => ({ ...d, stats: d.stats as DatasetStatsData }));
+    .map((d) => ({ ...d, stats: readStats(d) ?? {} }));
 
   // Don't send email if no recent updates, but DO update lastReportSent
   // Note: Users with no watched datasets are excluded by the query filter
@@ -330,7 +322,7 @@ export async function generateNextUserReport(): Promise<{
     return null;
   }
 
-  const datasetStats: DatasetStats = {
+  const datasetStats: UserReportData = {
     user: {
       id: user.id,
       email: user.email,
