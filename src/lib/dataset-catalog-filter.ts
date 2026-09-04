@@ -9,3 +9,11 @@
 export const CATALOG_FILTER = {
   AND: [{ OR: [{ isFeatured: true }, { savedBy: { some: {} } }] }],
 };
+
+/**
+ * The exact complement of CATALOG_FILTER: cache rows serving nobody.
+ * Derived, not duplicated, so the two can never drift apart.
+ */
+export const UNCATALOGED_FILTER = {
+  NOT: CATALOG_FILTER.AND,
+};
