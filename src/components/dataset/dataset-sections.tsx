@@ -43,14 +43,12 @@ export type DatasetSectionsData = {
   largest: SectionDataset[];
 };
 
-export type SectionKey = DatasetSectionKey;
-
 type Stat = { type: StatType; label: string; value: string | number };
 
 type SectionT = Awaited<ReturnType<typeof getTranslations<"ExplorePage">>>;
 
 function sectionStats(
-  section: SectionKey,
+  section: DatasetSectionKey,
   dataset: SectionDataset,
   locale: string,
   t: SectionT
@@ -100,7 +98,7 @@ export async function DatasetSectionGrid({
   datasets,
   locale,
 }: {
-  section: SectionKey;
+  section: DatasetSectionKey;
   datasets: SectionDataset[];
   locale: string;
 }) {
@@ -127,7 +125,7 @@ export async function DatasetSectionGrid({
   );
 }
 
-const SECTION_ORDER: SectionKey[] = [
+const SECTION_ORDER: DatasetSectionKey[] = [
   "featured",
   "recentlyEdited",
   "mostSaved",
@@ -147,7 +145,7 @@ export async function DatasetSections({
 }: {
   data: DatasetSectionsData;
   locale: string;
-  seeAllHrefs?: Partial<Record<SectionKey, string>>;
+  seeAllHrefs?: Partial<Record<DatasetSectionKey, string>>;
 }) {
   const t = await getTranslations("ExplorePage");
 
