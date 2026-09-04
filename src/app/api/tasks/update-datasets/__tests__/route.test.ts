@@ -4,7 +4,14 @@ import { prisma } from "@/lib/db";
 import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 
 vi.mock("@/lib/db", () => ({
-  prisma: { dataset: { findMany: vi.fn(), update: vi.fn() } },
+  prisma: {
+    dataset: {
+      findMany: vi.fn(),
+      update: vi.fn(),
+      updateMany: vi.fn(),
+      deleteMany: vi.fn(),
+    },
+  },
 }));
 
 vi.mock("@/lib/dataset-snapshot", () => {
@@ -21,8 +28,13 @@ vi.mock("@/lib/umami", () => ({
   trackEvent: vi.fn().mockResolvedValue(undefined),
 }));
 
+import { Prisma } from "@prisma/client";
 import { POST } from "../route";
 import { DatasetSizeCheckTimeoutError } from "@/lib/dataset-snapshot";
+import {
+  CATALOG_FILTER,
+  UNCATALOGED_FILTER,
+} from "@/lib/dataset-catalog-filter";
 
 const dataset = {
   id: "ds-1",
@@ -64,6 +76,8 @@ describe("POST /api/tasks/update-datasets", () => {
     process.env.DATASET_UPDATE_LIMIT = "1";
     vi.mocked(prisma.dataset.findMany).mockResolvedValue([dataset] as never);
     vi.mocked(prisma.dataset.update).mockResolvedValue({} as never);
+    vi.mocked(prisma.dataset.updateMany).mockResolvedValue({ count: 0 } as never);
+    vi.mocked(prisma.dataset.deleteMany).mockResolvedValue({ count: 0 } as never);
   });
 
   it("claims the slot upfront (advances lastAttempted) even when the refresh fails", async () => {
@@ -145,6 +159,68 @@ describe("POST /api/tasks/update-datasets", () => {
     // The skipped dataset is counted, so the totals reconcile.
     expect(body.data.failed).toBe(1);
     expect(body.data.successful + body.data.failed).toBe(body.data.totalFound);
+  });
+
+  it("refreshes only cataloged datasets (catalog filter in the refresh query)", async () => {
+    await call();
+
+    const refreshWhere = vi.mocked(prisma.dataset.findMany).mock.calls[0][0]
+      ?.where;
+    expect(refreshWhere).toEqual(expect.objectContaining(CATALOG_FILTER));
+  });
+
+  it("deletes stale uncataloged datasets past the grace period", async () => {
+    vi.mocked(prisma.dataset.findMany)
+      .mockResolvedValueOnce([] as never) // refresh pass
+      .mockResolvedValueOnce([{ id: "stale-1", cityName: "X" }] as never); // cleanup pass
+    vi.mocked(prisma.dataset.deleteMany).mockResolvedValue({
+      count: 1,
+    } as never);
+
+    const res = await call();
+    const body = await res.json();
+
+    const cleanupWhere = vi.mocked(prisma.dataset.findMany).mock.calls[1][0]
+      ?.where as Record<string, unknown>;
+    expect(cleanupWhere).toMatchObject({
+      ...UNCATALOGED_FILTER,
+      createdAt: { lt: expect.any(Date) },
+    });
+    // The delete re-checks the mutable predicates so a save landing between the
+    // two queries wins.
+    expect(prisma.dataset.deleteMany).toHaveBeenCalledWith({
+      where: {
+        id: { in: ["stale-1"] },
+        ...UNCATALOGED_FILTER,
+      },
+    });
+    expect(body.data.cleanup.deleted).toBe(1);
+  });
+
+  it("skips the delete when nothing is stale", async () => {
+    vi.mocked(prisma.dataset.findMany).mockResolvedValue([] as never);
+
+    const res = await call();
+    const body = await res.json();
+
+    expect(prisma.dataset.deleteMany).not.toHaveBeenCalled();
+    expect(body.data.cleanup.deleted).toBe(0);
+  });
+
+  it("sweeps geojson from deactivated datasets", async () => {
+    vi.mocked(prisma.dataset.findMany).mockResolvedValue([] as never);
+    vi.mocked(prisma.dataset.updateMany).mockResolvedValue({
+      count: 2,
+    } as never);
+
+    const res = await call();
+    const body = await res.json();
+
+    expect(prisma.dataset.updateMany).toHaveBeenCalledWith({
+      where: { isActive: false, geojson: { not: Prisma.AnyNull } },
+      data: { geojson: Prisma.JsonNull },
+    });
+    expect(body.data.cleanup.geojsonCleared).toBe(2);
   });
 
   it("returns 401 without the cron secret", async () => {
