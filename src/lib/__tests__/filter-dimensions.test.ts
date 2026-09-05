@@ -5,9 +5,9 @@ import type { Feature } from "geojson";
 import {
   computeFilterDimensions,
   FILTERABLE_TAGS,
-  AGE_CATEGORY_ORDER,
   type FilterDimension,
 } from "../filter-dimensions";
+import { AGE_CATEGORY_ORDER } from "../feature-age";
 
 const feature = (properties: Record<string, unknown> | null): Feature =>
   ({ type: "Feature", geometry: null, properties } as unknown as Feature);
@@ -164,13 +164,16 @@ describe("computeFilterDimensions — tag dimensions", () => {
   });
 });
 
+// _ts is epoch seconds; helpers build values relative to now
+const tsDaysAgo = (days: number) => Math.floor(Date.now() / 1000) - days * 86_400;
+
 describe("computeFilterDimensions — age dimension", () => {
   it("is always present with buckets in ordinal order, omitting zero-count buckets", () => {
     const features = [
-      feature({ ageCategory: "older" }),
-      feature({ ageCategory: "recent" }),
-      feature({ ageCategory: "recent" }),
-      feature({ ageCategory: "very-old" }),
+      feature({ _ts: tsDaysAgo(60) }), // older
+      feature({ _ts: tsDaysAgo(1) }), // recent
+      feature({ _ts: tsDaysAgo(2) }), // recent
+      feature({ _ts: tsDaysAgo(400) }), // very-old
     ];
 
     const age = byKey(computeFilterDimensions(features), "age");
@@ -184,22 +187,27 @@ describe("computeFilterDimensions — age dimension", () => {
     ]);
   });
 
-  it("counts features without a valid ageCategory as missing", () => {
+  it("counts features without a valid _ts as very-old, mirroring the paint fallback", () => {
     const features = [
-      feature({ ageCategory: "recent" }),
-      feature({ ageCategory: "bogus" }),
+      feature({ _ts: tsDaysAgo(1) }),
+      feature({ _ts: "bogus" }),
       feature({}),
       feature(null),
     ];
 
     const age = byKey(computeFilterDimensions(features), "age");
 
-    expect(age!.missing).toBe(3);
-    expect(age!.values).toEqual([{ value: "recent", count: 1 }]);
+    expect(age!.missing).toBe(0);
+    expect(age!.values).toEqual([
+      { value: "recent", count: 1 },
+      { value: "very-old", count: 3 },
+    ]);
   });
 
   it("keeps age buckets in the declared ordinal order", () => {
-    const features = AGE_CATEGORY_ORDER.map((c) => feature({ ageCategory: c }));
+    const features = [1, 20, 60, 400].map((days) =>
+      feature({ _ts: tsDaysAgo(days) })
+    );
 
     const age = byKey(computeFilterDimensions(features), "age");
 
@@ -219,9 +227,11 @@ describe("computeFilterDimensions — edge cases", () => {
 
     const dims = computeFilterDimensions(features);
 
-    // no tag dimensions; age present with everything missing
+    // no tag dimensions; age present with everything bucketed very-old
     expect(dims).toHaveLength(1);
-    expect(byKey(dims, "age")!.missing).toBe(2);
+    expect(byKey(dims, "age")!.values).toEqual([
+      { value: "very-old", count: 2 },
+    ]);
   });
 
   it("exposes a non-empty default allow-list", () => {

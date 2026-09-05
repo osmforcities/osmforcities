@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import type { Feature } from "geojson";
+import { AGE_TS_KEY } from "@/lib/feature-age";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -26,7 +27,7 @@ type FeatureDetailPanelProps = {
   onBack: () => void;
 };
 
-const INTERNAL_KEYS = new Set(["ageCategory", "uid"]);
+const INTERNAL_KEYS = new Set([AGE_TS_KEY, "uid"]);
 const METADATA_KEYS = new Set(["user", "timestamp", "version", "changeset"]);
 
 export function FeatureDetailPanel({

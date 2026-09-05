@@ -1,21 +1,16 @@
 import type { FeatureCollection, Feature } from "geojson";
-import { calculateAge } from "./utils";
+import { AGE_TS_KEY } from "./feature-age";
 
-type FeatureAgeCategory = "recent" | "medium" | "older" | "very-old";
-
-const categorizeFeatureByAge = (feature: Feature): FeatureAgeCategory => {
-  const timestamp = feature.properties?.["@timestamp"] || feature.properties?.timestamp;
-  if (!timestamp) return "very-old";
-
-  // Unparsable timestamps get the same fallback as missing ones; calculateAge
-  // would return 0 and mislabel them as recent edits
-  if (isNaN(new Date(timestamp).getTime())) return "very-old";
-
-  const age = calculateAge(timestamp);
-  if (age <= 7) return "recent";
-  if (age <= 30) return "medium";
-  if (age <= 90) return "older";
-  return "very-old";
+// Numeric epoch-seconds edit timestamp. Age buckets are computed at render
+// time from this via ageStep (feature-age.ts), not baked per-feature; a
+// missing `_ts` falls into the very-old bucket there, so unparsable or absent
+// timestamps stamp nothing.
+const featureTs = (feature: Feature): number | undefined => {
+  const timestamp =
+    feature.properties?.["@timestamp"] || feature.properties?.timestamp;
+  if (!timestamp) return undefined;
+  const ms = new Date(timestamp).getTime();
+  return isNaN(ms) ? undefined : Math.floor(ms / 1000);
 };
 
 export const processOSMFeaturesForVisualization = (
@@ -23,12 +18,13 @@ export const processOSMFeaturesForVisualization = (
 ): FeatureCollection => {
   return {
     ...geojson,
-    features: geojson.features.map((feature) => ({
-      ...feature,
-      properties: {
-        ...feature.properties,
-        ageCategory: categorizeFeatureByAge(feature),
-      },
-    })),
+    features: geojson.features.map((feature) => {
+      const ts = featureTs(feature);
+      if (ts === undefined) return feature;
+      return {
+        ...feature,
+        properties: { ...feature.properties, [AGE_TS_KEY]: ts },
+      };
+    }),
   };
 };

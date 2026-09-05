@@ -1,9 +1,4 @@
-export type AgeCategoryValues<T> = {
-  recent: T;
-  medium: T;
-  older: T;
-  "very-old": T;
-};
+import { ageStep, type AgeCategoryValues } from "@/lib/feature-age";
 
 export type AgeCategoryColors = AgeCategoryValues<string>;
 
@@ -93,24 +88,9 @@ export const DEFAULT_STYLE_KNOBS: MapStyleKnobs = {
 
 export const AGE_COLORS = DEFAULT_STYLE_KNOBS.colors;
 
-// The one mapping from per-age values to a MapLibre case expression.
-// Collapses to the bare value when everything matches and skips branches
-// equal to the fallback, so the common uniform cases cost nothing
-export function ageCase<T>(values: AgeCategoryValues<T>): T | unknown[] {
-  const fallback = values["very-old"];
-  const branches: unknown[] = [];
-  for (const category of ["recent", "medium", "older"] as const) {
-    if (values[category] !== fallback) {
-      branches.push(["==", ["get", "ageCategory"], category], values[category]);
-    }
-  }
-  if (branches.length === 0) return fallback;
-  return ["case", ...branches, fallback];
-}
-
 // Draw order within a layer: strictly newer above older, so recent never
 // hides under the very-old majority and very-old never covers older
-export const AGE_SORT_KEY = ageCase({
+export const AGE_SORT_KEY = ageStep({
   recent: 3,
   medium: 2,
   older: 1,
@@ -120,7 +100,7 @@ export const AGE_SORT_KEY = ageCase({
 // Interpolate outputs may be per-feature expressions, which lets a single
 // zoom curve carry per-category radius boosts
 function applyRadiusBoosts(value: number, boosts: AgeCategoryValues<number>) {
-  return ageCase({
+  return ageStep({
     recent: value + boosts.recent,
     medium: value + boosts.medium,
     older: value + boosts.older,
@@ -190,7 +170,7 @@ export function buildPointStrokeWidth(knobs: MapStyleKnobs) {
   // become outlined markers at street level; recent keeps a halo throughout
   const halo = knobs.recent.haloWidth;
   const withHalo = (stroke: number) =>
-    ageCase({
+    ageStep({
       recent: Math.max(halo, stroke),
       medium: stroke,
       older: stroke,
@@ -219,7 +199,7 @@ export function buildBoundaryStyle(knobs: MapStyleKnobs) {
 export function buildPolygonStyle(knobs: MapStyleKnobs) {
   return {
     fill: {
-      "fill-color": ageCase(knobs.colors),
+      "fill-color": ageStep(knobs.colors),
       "fill-opacity": 0.7,
     },
     stroke: {
@@ -234,7 +214,7 @@ export function buildPolygonStyle(knobs: MapStyleKnobs) {
 
 export function buildLineStyle(knobs: MapStyleKnobs) {
   return {
-    "line-color": ageCase(knobs.colors),
+    "line-color": ageStep(knobs.colors),
     "line-width": buildLineWidth(knobs),
     "line-opacity": 0.9,
   };
@@ -243,8 +223,8 @@ export function buildLineStyle(knobs: MapStyleKnobs) {
 export function buildPointStyle(knobs: MapStyleKnobs) {
   return {
     "circle-radius": 2,
-    "circle-color": ageCase(knobs.colors),
-    "circle-opacity": ageCase(knobs.point.opacity),
+    "circle-color": ageStep(knobs.colors),
+    "circle-opacity": ageStep(knobs.point.opacity),
     "circle-stroke-width": buildPointStrokeWidth(knobs),
     "circle-stroke-color": knobs.point.strokeColor,
   };

@@ -196,19 +196,28 @@ describe("buildAgeVisibilityFilter", () => {
     expect(buildAgeVisibilityFilter(new Set())).toBeUndefined();
   });
 
-  it("maps each bucket to its visibility with very-old as fallback", () => {
-    const filter = buildAgeVisibilityFilter(new Set(["recent", "very-old"]));
+  it("maps each bucket to its visibility via a step on _ts with very-old as base", () => {
+    const filter = buildAgeVisibilityFilter(
+      new Set(["recent", "very-old"])
+    ) as unknown[];
 
-    expect(filter).toEqual([
-      "case",
-      ["==", ["get", "ageCategory"], "recent"],
+    expect(filter[0]).toBe("step");
+    expect(filter[1]).toEqual(["number", ["get", "_ts"], 0]);
+    // step outputs: base (very-old), then per-cutoff older, medium, recent
+    expect([filter[2], filter[4], filter[6], filter[8]]).toEqual([
       false,
-      ["==", ["get", "ageCategory"], "medium"],
       true,
-      ["==", ["get", "ageCategory"], "older"],
       true,
       false,
     ]);
+  });
+
+  it("stays a valid expression when every bucket is hidden", () => {
+    const filter = buildAgeVisibilityFilter(
+      new Set(["recent", "medium", "older", "very-old"])
+    );
+
+    expect(filter).toEqual(["literal", false]);
   });
 });
 

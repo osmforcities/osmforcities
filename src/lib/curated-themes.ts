@@ -6,9 +6,9 @@ import type {
 import {
   computeFilterDimensions,
   FILTERABLE_TAGS,
-  AGE_CATEGORY_ORDER,
   type FilterDimension,
 } from "./filter-dimensions";
+import { AGE_CATEGORY_ORDER, ageStep } from "./feature-age";
 import { PALETTES } from "./map-palettes";
 
 /**
@@ -175,25 +175,27 @@ const tagValue = (field: string) => [
 ];
 
 /**
- * MapLibre filter hiding the given age buckets. Features without a valid
- * ageCategory follow the "very-old" bucket, mirroring the paint fallback in
- * map-style's ageCase. Returns undefined when nothing is hidden (no filter).
+ * MapLibre filter hiding the given age buckets, bucketing `_ts` at call time
+ * like the paint expressions. Features without a valid `_ts` follow the
+ * "very-old" bucket, mirroring ageStep's fallback. Returns undefined when
+ * nothing is hidden (no filter).
  */
 export function buildAgeVisibilityFilter(
   hidden: ReadonlySet<string>
 ): FilterSpecification | undefined {
   if (hidden.size === 0) return undefined;
   const [recent, medium, older, veryOld] = AGE_CATEGORY_ORDER;
-  return [
-    "case",
-    ["==", ["get", "ageCategory"], recent],
-    !hidden.has(recent),
-    ["==", ["get", "ageCategory"], medium],
-    !hidden.has(medium),
-    ["==", ["get", "ageCategory"], older],
-    !hidden.has(older),
-    !hidden.has(veryOld),
-  ] as FilterSpecification;
+  const filter = ageStep({
+    recent: !hidden.has(recent),
+    medium: !hidden.has(medium),
+    older: !hidden.has(older),
+    "very-old": !hidden.has(veryOld),
+  });
+  // ageStep collapses to a bare boolean when every bucket is hidden; a filter
+  // root must be an expression
+  return (
+    Array.isArray(filter) ? filter : ["literal", filter]
+  ) as FilterSpecification;
 }
 
 /**

@@ -11,6 +11,7 @@
  * stays correct if the template changes.
  */
 import type { Feature } from "geojson";
+import { AGE_TS_KEY } from "./feature-age";
 
 // Property keys carried by osmtogeojson output that are NOT real OSM tags — the
 // combined id, the "@"-prefixed internals, per-element metadata, and app-added
@@ -22,7 +23,7 @@ const NON_TAG_KEYS = new Set([
   "timestamp",
   "version",
   "changeset",
-  "ageCategory",
+  AGE_TS_KEY,
   "uid",
 ]);
 
