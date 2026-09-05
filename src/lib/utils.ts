@@ -142,21 +142,6 @@ export function computeInitialViewState(
   return { longitude: 0, latitude: 0, zoom: 2 };
 }
 
-export const calculateAge = (timestamp: string) => {
-  const featureDate = new Date(timestamp);
-  const currentDate = new Date();
-
-  if (isNaN(featureDate.getTime())) {
-    console.warn(`Invalid timestamp: ${timestamp}`);
-    return 0;
-  }
-
-  const diffTime = Math.abs(currentDate.getTime() - featureDate.getTime());
-  const ageInDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  return ageInDays;
-};
-
 /**
  * Get area characteristics as an array of strings for display
  * @param item - The area item to get characteristics for

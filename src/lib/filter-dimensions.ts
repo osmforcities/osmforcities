@@ -1,6 +1,12 @@
 // src/lib/filter-dimensions.ts
 
 import type { Feature } from "geojson";
+import {
+  AGE_CATEGORY_ORDER,
+  AGE_TS_KEY,
+  ageCategoryOfTs,
+  type AgeCategory,
+} from "./feature-age";
 
 /**
  * A single filterable value within a dimension, with how many features carry it.
@@ -35,22 +41,6 @@ export const FILTERABLE_TAGS: readonly string[] = [
   "material",
   "leaf_type",
 ];
-
-/**
- * Fixed ordinal order for the age dimension, mirroring the buckets assigned by
- * `categorizeFeatureByAge` in osm-data-processor.ts.
- */
-export const AGE_CATEGORY_ORDER = [
-  "recent",
-  "medium",
-  "older",
-  "very-old",
-] as const;
-
-type AgeCategory = (typeof AGE_CATEGORY_ORDER)[number];
-
-const isAgeCategory = (v: unknown): v is AgeCategory =>
-  typeof v === "string" && (AGE_CATEGORY_ORDER as readonly string[]).includes(v);
 
 /**
  * Count an allow-listed tag across features, case-folded, preserving the dominant
@@ -116,27 +106,25 @@ function dominantCasing(casing: Map<string, number>): string {
 }
 
 /**
- * Count the internal `ageCategory` property into ordinal buckets. Zero-count buckets
- * are omitted; features without a valid category count toward `missing`.
+ * Bucket the internal numeric `_ts` property (epoch seconds) into ordinal age
+ * buckets against a single `now`. Zero-count buckets are omitted. Features
+ * without a valid `_ts` count as "very-old", mirroring the map's paint
+ * fallback (ageStep coerces missing `_ts` to 0), so `missing` is always 0.
  */
 function computeAgeDimension(features: Feature[]): FilterDimension {
+  const now = Date.now();
   const counts = new Map<AgeCategory, number>();
-  let missing = 0;
 
   for (const feature of features) {
-    const category = feature.properties?.ageCategory;
-    if (isAgeCategory(category)) {
-      counts.set(category, (counts.get(category) ?? 0) + 1);
-    } else {
-      missing++;
-    }
+    const category = ageCategoryOfTs(feature.properties?.[AGE_TS_KEY], now);
+    counts.set(category, (counts.get(category) ?? 0) + 1);
   }
 
   const values: FilterDimensionValue[] = AGE_CATEGORY_ORDER.filter((c) =>
     counts.has(c)
   ).map((c) => ({ value: c, count: counts.get(c)! }));
 
-  return { key: "age", kind: "age", values, missing };
+  return { key: "age", kind: "age", values, missing: 0 };
 }
 
 /**

@@ -34,7 +34,7 @@ describe("computeTagCounts", () => {
         version: 3,
         changeset: 9,
         uid: 42,
-        ageCategory: "recent",
+        _ts: 1735689600,
         "@relations": [],
       }),
     ]);
