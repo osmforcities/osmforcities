@@ -3,8 +3,8 @@
 import type { Feature } from "geojson";
 import {
   AGE_CATEGORY_ORDER,
-  AGE_TS_KEY,
   ageCategoryOfTs,
+  featureTs,
   type AgeCategory,
 } from "./feature-age";
 
@@ -106,17 +106,20 @@ function dominantCasing(casing: Map<string, number>): string {
 }
 
 /**
- * Bucket the internal numeric `_ts` property (epoch seconds) into ordinal age
- * buckets against a single `now`. Zero-count buckets are omitted. Features
- * without a valid `_ts` count as "very-old", mirroring the map's paint
- * fallback (ageStep coerces missing `_ts` to 0), so `missing` is always 0.
+ * Bucket each feature's edit timestamp into ordinal age buckets against a
+ * single `now`. Zero-count buckets are omitted. Features without a usable
+ * timestamp count as "very-old", mirroring the map's paint fallback (ageStep
+ * coerces missing `_ts` to 0), so `missing` is always 0.
+ *
+ * Reads through featureTs, so this works on both the client's stamped `_ts`
+ * features and raw snapshot features carrying only the OSM meta timestamp.
  */
 function computeAgeDimension(features: Feature[]): FilterDimension {
   const now = Date.now();
   const counts = new Map<AgeCategory, number>();
 
   for (const feature of features) {
-    const category = ageCategoryOfTs(feature.properties?.[AGE_TS_KEY], now);
+    const category = ageCategoryOfTs(featureTs(feature), now);
     counts.set(category, (counts.get(category) ?? 0) + 1);
   }
 
@@ -146,9 +149,65 @@ export function computeFilterDimensions(
   filterableTags: readonly string[] = FILTERABLE_TAGS,
   { keepEmpty = false }: { keepEmpty?: boolean } = {}
 ): FilterDimension[] {
-  const tagDimensions = filterableTags
+  return [
+    ...computeTagDimensions(features, filterableTags, keepEmpty),
+    computeAgeDimension(features),
+  ];
+}
+
+/** One dimension per allow-listed tag, in list order. */
+function computeTagDimensions(
+  features: Feature[],
+  filterableTags: readonly string[],
+  keepEmpty: boolean
+): FilterDimension[] {
+  return filterableTags
     .map((key) => computeTagDimension(features, key))
     .filter((dim) => keepEmpty || dim.values.length > 0);
+}
 
-  return [...tagDimensions, computeAgeDimension(features)];
+/**
+ * Same keys in the same order — i.e. the template's filterableTags have not
+ * been retuned since the snapshot. Order matters: it drives the legend's view
+ * list, and computeTagDimensions emits one dimension per tag in list order.
+ */
+function sameTagKeys(
+  dimensions: FilterDimension[],
+  filterableTags: readonly string[]
+): boolean {
+  return (
+    dimensions.length === filterableTags.length &&
+    filterableTags.every((key, i) => dimensions[i].key === key)
+  );
+}
+
+/**
+ * Filter dimensions for the map legend, preferring the ones computed at
+ * snapshot time (#499) over a client-side pass across every feature.
+ *
+ * Stored tag dimensions are used when their keys still match the template's
+ * current `filterableTags`; a retuned template, or a dataset not yet
+ * re-snapshotted, falls back to computing from features.
+ *
+ * Age counts stay live while the client holds the features, so they share one
+ * `now` with the paint expressions. With no features — the vector-tile case
+ * (#489), where the client only ever holds the viewport — the stored counts
+ * are used instead and are frozen at snapshot time.
+ */
+export function resolveFilterDimensions(
+  features: Feature[],
+  filterableTags: readonly string[],
+  stored?: FilterDimension[]
+): FilterDimension[] {
+  const storedTags = stored?.filter((d) => d.kind === "tag");
+  const tagDimensions =
+    storedTags && sameTagKeys(storedTags, filterableTags)
+      ? storedTags
+      : computeTagDimensions(features, filterableTags, true);
+
+  const storedAge = stored?.find((d) => d.kind === "age");
+  const ageDimension =
+    features.length === 0 && storedAge ? storedAge : computeAgeDimension(features);
+
+  return [...tagDimensions, ageDimension];
 }

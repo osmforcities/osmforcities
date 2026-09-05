@@ -1,18 +1,10 @@
-import type { FeatureCollection, Feature } from "geojson";
-import { AGE_TS_KEY } from "./feature-age";
+import type { FeatureCollection } from "geojson";
+import { AGE_TS_KEY, featureTs } from "./feature-age";
 
-// Numeric epoch-seconds edit timestamp. Age buckets are computed at render
-// time from this via ageStep (feature-age.ts), not baked per-feature; a
-// missing `_ts` falls into the very-old bucket there, so unparsable or absent
-// timestamps stamp nothing.
-const featureTs = (feature: Feature): number | undefined => {
-  const timestamp =
-    feature.properties?.["@timestamp"] || feature.properties?.timestamp;
-  if (!timestamp) return undefined;
-  const ms = new Date(timestamp).getTime();
-  return isNaN(ms) ? undefined : Math.floor(ms / 1000);
-};
-
+// Stamps the numeric epoch-seconds `_ts` the map paints from. Age buckets are
+// computed at render time via ageStep (feature-age.ts), not baked per-feature;
+// a missing `_ts` falls into the very-old bucket there, so unparsable or
+// absent timestamps stamp nothing.
 export const processOSMFeaturesForVisualization = (
   geojson: FeatureCollection
 ): FeatureCollection => {

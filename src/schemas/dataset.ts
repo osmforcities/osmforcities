@@ -19,6 +19,15 @@ export const TagCountSchema = z.object({
   count: z.number().int().nonnegative(),
 });
 
+export const FilterDimensionSchema = z.object({
+  key: z.string(),
+  kind: z.enum(["tag", "age"]),
+  values: z.array(
+    z.object({ value: z.string(), count: z.number().int().nonnegative() })
+  ),
+  missing: z.number().int().nonnegative(),
+});
+
 export const DatasetStatsSchema = z.object({
   editorsCount: z.number(),
   elementVersionsCount: z.number(),
@@ -59,6 +68,11 @@ export const DatasetStatsSchema = z.object({
   // Per-key tag presence counts, sorted desc. Optional: absent until a dataset is
   // (re)snapshotted — the panel reads these stored counts only, no client fallback.
   tagCounts: z.array(TagCountSchema).optional(),
+
+  // Legend dimensions computed at snapshot time. Optional: absent until a
+  // dataset is (re)snapshotted — the map falls back to computing them from the
+  // features it holds.
+  filterDimensions: z.array(FilterDimensionSchema).optional(),
 });
 
 export const CreateDatasetSchema = z.object({

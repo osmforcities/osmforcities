@@ -35,7 +35,7 @@ import {
   buildTagVisibilityFilter,
   buildLegendRows,
 } from "@/lib/curated-themes";
-import { computeFilterDimensions } from "@/lib/filter-dimensions";
+import { resolveFilterDimensions } from "@/lib/filter-dimensions";
 import { tagLabel, tagValue, type MessageResolver } from "@/lib/tag-i18n";
 
 export interface DatasetFullMapHandle {
@@ -99,20 +99,24 @@ export const DatasetFullMap = forwardRef<
     [handleDeselect]
   );
 
-  // One pass over the features feeds both the curated tag themes and the
-  // age bucket counts for the legend rows
+  // Feeds both the curated tag themes and the age bucket counts for the legend
+  // rows. Stored stats carry the dimensions when the snapshot has them (#499);
+  // only the age counts are recomputed, and only while features are held.
   // Schema types this optional (input/output asymmetry at the API boundary), so
   // memoize the []-fallback to a stable reference the filterDimensions dep can use.
   const filterableTags = useMemo(
     () => dataset.template.filterableTags ?? [],
     [dataset.template.filterableTags]
   );
+  const storedDimensions = dataset.stats?.filterDimensions;
   const filterDimensions = useMemo(
     () =>
-      features?.length
-        ? computeFilterDimensions(features, filterableTags, { keepEmpty: true })
-        : [],
-    [features, filterableTags]
+      resolveFilterDimensions(
+        features ?? NO_FEATURES,
+        filterableTags,
+        storedDimensions
+      ),
+    [features, filterableTags, storedDimensions]
   );
 
   // Curated tag themes from the allow-list — no auto-detection
