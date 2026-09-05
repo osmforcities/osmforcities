@@ -603,21 +603,12 @@
     "metaTitle": "Über das Projekt - OSM for Cities",
     "metaDescription": "Erfahre mehr über OSM for Cities - täglich aktualisierte Datensätze aus OpenStreetMap",
     "title": "Über das Projekt",
-    "description1": "**OSM for Cities** ist eine Plattform, um Aktualisierungen aus OpenStreetMap zu entdecken und zu verfolgen — einer freien, offenen Weltkarte, die von Freiwilligen erstellt wird. Jeden Tag fügen Menschen Daten zu Straßen, Gebäuden, Schulen, Parks, Verkehr und mehr hinzu und verbessern sie. Dieses Projekt gibt dir die Möglichkeit, diese Änderungen an Orten zu verfolgen, die dir wichtig sind.",
-    "description2": "Vielleicht möchtest du Änderungen an Schulen in deiner Region im Auge behalten oder beobachten, wie Fußgängerüberwege, Bushaltestellen oder Fahrradständer in deiner Stadt hinzukommen. Vielleicht bist du einfach neugierig, wie sich der Park in deiner Nachbarschaft entwickelt. Ob für die Stadtplanung oder etwas ganz Persönliches — auf der Plattform kannst du solche Datensätze erstellen und verfolgen.",
-    "featuresTitle": "Funktionen im Überblick",
-    "features": {
-      "create": "Erstelle eigene Datensätze, indem du einen Ort und ein Thema auswählst",
-      "follow": "Folge Datensätzen und erhalte tägliche oder wöchentliche Zusammenfassungen",
-      "activity": "Sieh dir für jeden Datensatz die Aktivität der Mitwirkenden und die Bearbeitungshäufigkeit an"
-    },
-    "projectTitle": "Das Projekt",
-    "projectDescription1": "OSM for Cities wurde entwickelt von",
-    "projectDescription2": "und entstand in einem",
-    "projectDescription3": "Labs-Zyklus. Es ist ein offenes Experiment, OSM-Daten auf nützliche, zugängliche Weise aufzubereiten — für Städte konzipiert, aber flexibel genug, um als generischer OSM-Tracker zu dienen.",
-    "projectEvolution": "Seine Ausrichtung wird sich mit der Nutzung und dem Feedback der Community weiterentwickeln.",
+    "description1": "<strong>OSM for Cities</strong> ist eine Plattform, um Aktualisierungen aus OpenStreetMap zu entdecken und zu verfolgen, einer freien, offenen Weltkarte, die von Freiwilligen erstellt wird. Erstelle eigene Datensätze, indem du einen Ort und ein Thema auswählst, folge ihnen mit täglichen oder wöchentlichen Zusammenfassungen und sieh dir die Aktivität der Mitwirkenden und die Bearbeitungshäufigkeit an.",
+    "projectDescription1": "OSM for Cities wurde entwickelt und wird gepflegt von",
+    "projectDescription2": ". Es ist ein offenes Experiment, OSM-Daten auf nützliche, zugängliche Weise aufzubereiten: für Städte konzipiert, aber flexibel genug, um als generischer OSM-Tracker zu dienen.",
     "getInvolvedTitle": "Mach mit",
-    "getInvolvedDescription": "Dein Feedback hilft, dieses Projekt zu gestalten. Ob du Ideen für neue Funktionen hast, etwas gefunden hast, das nicht richtig funktioniert, oder einfach erzählen möchtest, wie du die Plattform nutzt — wir freuen uns, von dir zu hören."
+    "getInvolvedDescription": "Dein Feedback hilft, dieses Projekt zu gestalten. Ob du Ideen für neue Funktionen hast, etwas gefunden hast, das nicht richtig funktioniert, oder einfach erzählen möchtest, wie du die Plattform nutzt, wir freuen uns, von dir zu hören.",
+    "acknowledgmentsTitle": "Danksagung"
   },
   "DatasetErrors": {
     "templateNotFoundTitle": "Datensatzvorlage nicht gefunden",
