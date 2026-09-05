@@ -11,6 +11,10 @@ import { calculateBbox } from "@/lib/utils";
 import { computeRecencyBands } from "@/lib/dataset-recency";
 import { computeGeometryMix, type GeometryMix } from "@/lib/dataset-geometry";
 import { computeTagCounts, type TagCount } from "@/lib/dataset-tags";
+import {
+  computeFilterDimensions,
+  type FilterDimension,
+} from "@/lib/filter-dimensions";
 import type { Bbox } from "@/types/geojson";
 import { prisma } from "@/lib/db";
 import {
@@ -116,6 +120,14 @@ export interface DatasetStats {
   mapperRecencyBands?: number[];
   geometryMix?: GeometryMix;
   tagCounts?: TagCount[];
+  // Legend dimensions for the template's filterableTags, so the map does not
+  // have to walk every feature (and, under vector tiles, cannot). The age
+  // dimension is stored too but the client recomputes it while it still holds
+  // features — stored age counts freeze at snapshot time.
+  // Every distinct value is kept, so a high-cardinality curated key stores a
+  // long list. Bounded in practice by the curated allow-lists; cap with top-N
+  // plus an "other" residual only if a stats blob actually gets fat.
+  filterDimensions?: FilterDimension[];
 }
 
 /**
@@ -261,6 +273,20 @@ function extractDatasetStats(overpassData: OverpassData): DatasetStats {
   };
 }
 
+/**
+ * Read the template's curated filterable tags here rather than threading them
+ * through all four callers, each of which would then have to keep its own
+ * template `select` in sync. Missing template (or none curated) yields an
+ * age-only dimension list.
+ */
+async function templateFilterableTags(templateId: string): Promise<string[]> {
+  const template = await prisma.template.findUnique({
+    where: { id: templateId },
+    select: { filterableTags: true },
+  });
+  return template?.filterableTags ?? [];
+}
+
 export async function fetchDatasetSnapshot(
   areaId: number,
   rawQuery: string,
@@ -324,6 +350,13 @@ export async function fetchDatasetSnapshot(
   stats.mapperRecencyBands = mapperRecencyBands;
   stats.geometryMix = computeGeometryMix(geojson.features);
   stats.tagCounts = computeTagCounts(geojson.features);
+  stats.filterDimensions = computeFilterDimensions(
+    geojson.features,
+    await templateFilterableTags(templateId),
+    // Curated keys: a 100%-Missing dimension is the finding, not noise —
+    // matches how the map calls this (full-map.tsx).
+    { keepEmpty: true }
+  );
   const bbox = calculateBbox(geojson);
   return {
     geojson,

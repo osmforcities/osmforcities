@@ -11,6 +11,8 @@
  * recency bands (dataset-recency.ts); do not unify them.
  */
 
+import type { Feature } from "geojson";
+
 export const AGE_TS_KEY = "_ts";
 
 /** Fixed ordinal order for the buckets, oldest last. */
@@ -25,6 +27,24 @@ export type AgeCategory = (typeof AGE_CATEGORY_ORDER)[number];
 export type AgeCategoryValues<T> = Record<AgeCategory, T>;
 
 const DAY_S = 86_400;
+
+/**
+ * Resolve a feature's edit timestamp to epoch seconds. Prefers the stamped
+ * numeric `_ts`, falling back to the raw OSM meta timestamp, so the same
+ * bucketing works on snapshot features (flat `timestamp` from osmtogeojson,
+ * server side) and on the slim geojson payload (`@timestamp`). Absent or
+ * unparsable timestamps return undefined, which buckets as "very-old".
+ */
+export function featureTs(feature: Feature): number | undefined {
+  const stamped = feature.properties?.[AGE_TS_KEY];
+  if (typeof stamped === "number" && Number.isFinite(stamped)) return stamped;
+
+  const raw =
+    feature.properties?.["@timestamp"] || feature.properties?.timestamp;
+  if (!raw) return undefined;
+  const ms = new Date(raw).getTime();
+  return isNaN(ms) ? undefined : Math.floor(ms / 1000);
+}
 
 /**
  * Bucket a `_ts` value in JS, for legend counts. Missing or non-numeric values

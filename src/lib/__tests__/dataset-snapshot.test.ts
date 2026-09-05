@@ -15,6 +15,9 @@ vi.mock("@/lib/db", () => ({
       findUnique: vi.fn(),
       upsert: vi.fn(),
     },
+    template: {
+      findUnique: vi.fn(),
+    },
   },
 }));
 
@@ -72,6 +75,7 @@ function mockFetchImplementation(fullData: unknown, count = 2) {
 
 const findUnique = vi.mocked(prisma.areaSizeCheck.findUnique);
 const upsert = vi.mocked(prisma.areaSizeCheck.upsert);
+const templateFindUnique = vi.mocked(prisma.template.findUnique);
 
 describe("fetchDatasetSnapshot", () => {
   beforeEach(() => {
@@ -80,6 +84,8 @@ describe("fetchDatasetSnapshot", () => {
     findUnique.mockResolvedValue(null);
     upsert.mockReset();
     upsert.mockResolvedValue({} as never);
+    templateFindUnique.mockReset();
+    templateFindUnique.mockResolvedValue({ filterableTags: [] } as never);
   });
 
   afterEach(() => {
@@ -147,6 +153,37 @@ describe("fetchDatasetSnapshot", () => {
     const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
     // Both node fixtures carry a `name` tag -> one entry, count 2.
     expect(snapshot.stats.tagCounts).toEqual([{ key: "name", count: 2 }]);
+  });
+
+  it("persists filter dimensions for the template's curated tags", async () => {
+    templateFindUnique.mockResolvedValue({
+      filterableTags: ["name", "surface"],
+    } as never);
+
+    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+
+    // Both fixtures carry `name`; none carry `surface` — kept anyway
+    // (keepEmpty), since a 100%-Missing curated key is the finding.
+    expect(snapshot.stats.filterDimensions).toEqual([
+      {
+        key: "name",
+        kind: "tag",
+        values: [
+          { value: "Test Node", count: 1 },
+          { value: "Old Node", count: 1 },
+        ],
+        missing: 0,
+      },
+      { key: "surface", kind: "tag", values: [], missing: 2 },
+      // 2025/2022 fixtures are both well past 90 days
+      { key: "age", kind: "age", values: [{ value: "very-old", count: 2 }], missing: 0 },
+    ]);
+  });
+
+  it("stores an age-only dimension list when the template curates no tags", async () => {
+    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+
+    expect(snapshot.stats.filterDimensions?.map((d) => d.key)).toEqual(["age"]);
   });
 
   it("returns bbox as null when no features produced", async () => {

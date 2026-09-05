@@ -4,6 +4,7 @@ import { describe, it, expect } from "vitest";
 import type { Feature } from "geojson";
 import {
   computeFilterDimensions,
+  resolveFilterDimensions,
   FILTERABLE_TAGS,
   type FilterDimension,
 } from "../filter-dimensions";
@@ -236,5 +237,105 @@ describe("computeFilterDimensions — edge cases", () => {
 
   it("exposes a non-empty default allow-list", () => {
     expect(FILTERABLE_TAGS.length).toBeGreaterThan(0);
+  });
+});
+
+describe("computeFilterDimensions — timestamp sources", () => {
+  it("buckets raw OSM meta timestamps identically to a stamped _ts", () => {
+    const iso = new Date(tsDaysAgo(20) * 1000).toISOString();
+    const stamped = computeFilterDimensions([feature({ _ts: tsDaysAgo(20) })]);
+    const raw = computeFilterDimensions([feature({ timestamp: iso })]);
+    const slim = computeFilterDimensions([feature({ "@timestamp": iso })]);
+
+    const expected = [{ value: "medium", count: 1 }];
+    expect(byKey(stamped, "age")!.values).toEqual(expected);
+    expect(byKey(raw, "age")!.values).toEqual(expected);
+    expect(byKey(slim, "age")!.values).toEqual(expected);
+  });
+});
+
+describe("resolveFilterDimensions", () => {
+  const features = [
+    feature({ surface: "asphalt", _ts: tsDaysAgo(1) }),
+    feature({ surface: "gravel", _ts: tsDaysAgo(400) }),
+  ];
+  const storedSurface: FilterDimension = {
+    key: "surface",
+    kind: "tag",
+    values: [{ value: "stored-only", count: 99 }],
+    missing: 0,
+  };
+  const storedAge: FilterDimension = {
+    key: "age",
+    kind: "age",
+    values: [{ value: "very-old", count: 99 }],
+    missing: 0,
+  };
+
+  it("uses stored tag dimensions when they cover the current filterableTags", () => {
+    const dims = resolveFilterDimensions(features, ["surface"], [
+      storedSurface,
+      storedAge,
+    ]);
+
+    expect(byKey(dims, "surface")).toEqual(storedSurface);
+  });
+
+  it("recomputes the age dimension from features, never from stored counts", () => {
+    const dims = resolveFilterDimensions(features, ["surface"], [
+      storedSurface,
+      storedAge,
+    ]);
+
+    expect(byKey(dims, "age")!.values).toEqual([
+      { value: "recent", count: 1 },
+      { value: "very-old", count: 1 },
+    ]);
+  });
+
+  it("falls back to computing when the template's tags changed since the snapshot", () => {
+    const dims = resolveFilterDimensions(features, ["material"], [
+      storedSurface,
+      storedAge,
+    ]);
+
+    expect(byKey(dims, "surface")).toBeUndefined();
+    // keepEmpty: a curated key carried by no feature still gets a dimension
+    expect(byKey(dims, "material")).toEqual({
+      key: "material",
+      kind: "tag",
+      values: [],
+      missing: 2,
+    });
+  });
+
+  it("falls back to computing when nothing is stored", () => {
+    const dims = resolveFilterDimensions(features, ["surface"], undefined);
+
+    expect(byKey(dims, "surface")!.values).toEqual([
+      { value: "asphalt", count: 1 },
+      { value: "gravel", count: 1 },
+    ]);
+  });
+
+  it("uses the stored age counts with no features — the vector-tile case", () => {
+    const dims = resolveFilterDimensions([], ["surface"], [
+      storedSurface,
+      storedAge,
+    ]);
+
+    expect(byKey(dims, "surface")).toEqual(storedSurface);
+    expect(byKey(dims, "age")).toEqual(storedAge);
+  });
+
+  it("returns an empty age dimension with neither features nor stored age", () => {
+    const dims = resolveFilterDimensions([], ["surface"], [storedSurface]);
+
+    expect(byKey(dims, "age")).toEqual({
+      key: "age",
+      kind: "age",
+      values: [],
+      missing: 0,
+    });
   });
 });
