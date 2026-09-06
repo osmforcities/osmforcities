@@ -1,13 +1,23 @@
 import { prisma } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 import {
   ackTileJob,
+  downloadTileNdjson,
   downloadTileOutputs,
   getTileJob,
   pruneTileArchives,
   tilerEnabled,
   type TileJob,
 } from "./client";
-import { readPulledStats, tilerStatsToDatasetColumns } from "./stats";
+import {
+  readPulledFeatures,
+  readPulledStats,
+  tilerStatsToDatasetColumns,
+} from "./stats";
+import {
+  MAX_DATASET_BYTES,
+  OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
+} from "@/lib/constants";
 
 export type TilePollResults = {
   checked: number;
@@ -32,33 +42,70 @@ export async function reconcileDataset(
 ): Promise<ReconcileOutcome> {
   if (job === null) {
     // Swept by the tiler before we pulled (PMTILER_MAX_AGE_DAYS). The next
-    // daily snapshot resubmits naturally.
+    // daily submit retries; the refresh did not complete, so it counts.
     await prisma.dataset.update({
       where: { id: dataset.id },
-      data: { tilesState: "failed", tilesError: "job expired before pull" },
+      data: {
+        tilesState: "failed",
+        tilesError: "job expired before pull",
+        consecutiveFailures: { increment: 1 },
+        lastError: "tile job expired before pull",
+      },
     });
     return "failed";
   }
   if (job.state === "done") {
+    // Phase 3: this write is THE refresh — the tiler is the data source.
+    // A failed archive download throws to the caller (row stays pending,
+    // next tick retries); only a stats READ problem degrades gracefully.
     await downloadTileOutputs(dataset.tilesJobId);
+    let mapped: ReturnType<typeof tilerStatsToDatasetColumns> = null;
+    try {
+      mapped = tilerStatsToDatasetColumns(
+        await readPulledStats(dataset.tilesJobId)
+      );
+    } catch (error) {
+      console.error(
+        `Stats read from tiler failed for dataset ${dataset.id}:`,
+        error
+      );
+    }
 
-    // Tiles-only datasets (no app-computed stats) take theirs from the
-    // tiler's stats.json; under-cap datasets keep the app's own numbers so
-    // any conversion drift between the two pipelines stays observable.
-    let statsColumns: Record<string, unknown> = {};
-    const row = await prisma.dataset.findUnique({
-      where: { id: dataset.id },
-      select: { stats: true },
-    });
-    if (row && row.stats === null) {
+    if (!mapped) {
+      // Archive is served but the stats were unusable (unknown schema, read
+      // error): keep the previous authoritative columns untouched — do not
+      // claim a completed refresh (lastChecked stays put).
+      await prisma.dataset.update({
+        where: { id: dataset.id },
+        data: {
+          tilesState: "done",
+          tilesUpdatedAt: new Date(),
+          tilesError: null,
+        },
+      });
+      await ackTileJob(dataset.tilesJobId).catch(() => {});
+      await pruneTileArchives(dataset.id).catch(() => {});
+      return "completed";
+    }
+
+    // GeoJSON backfill keeps export/?slim/fallback alive for datasets that
+    // fit the storage cap; larger ones store JsonNull (the old over-cap
+    // semantics — tiles are their only representation).
+    let geojson: Prisma.InputJsonValue | typeof Prisma.JsonNull =
+      Prisma.JsonNull;
+    const underCap =
+      mapped.dataCount * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE <=
+      MAX_DATASET_BYTES;
+    if (underCap) {
       try {
-        const mapped = tilerStatsToDatasetColumns(
-          await readPulledStats(dataset.tilesJobId)
-        );
-        if (mapped) statsColumns = mapped;
+        await downloadTileNdjson(dataset.tilesJobId);
+        const collection = await readPulledFeatures(dataset.tilesJobId);
+        if (collection) {
+          geojson = collection as unknown as Prisma.InputJsonValue;
+        }
       } catch (error) {
         console.error(
-          `Stats fill from tiler failed for dataset ${dataset.id}:`,
+          `GeoJSON backfill failed for dataset ${dataset.id}:`,
           error
         );
       }
@@ -67,7 +114,11 @@ export async function reconcileDataset(
     await prisma.dataset.update({
       where: { id: dataset.id },
       data: {
-        ...statsColumns,
+        ...mapped,
+        geojson,
+        lastChecked: new Date(), // the pull IS the refresh (health keys on this)
+        consecutiveFailures: 0,
+        lastError: null,
         tilesState: "done",
         tilesUpdatedAt: new Date(),
         tilesError: null,
@@ -85,9 +136,17 @@ export async function reconcileDataset(
     const message =
       (job.errorKind ? `${job.errorKind}: ` : "") +
       (job.error ?? "tiler job failed");
+    // Phase 3: a tiler failure is THE refresh failure — feed the same
+    // admin-review counters recordFailure used to. The previous archive and
+    // stats keep serving; no deactivation (tiles cap far exceeds 25 MB).
     await prisma.dataset.update({
       where: { id: dataset.id },
-      data: { tilesState: "failed", tilesError: message },
+      data: {
+        tilesState: "failed",
+        tilesError: message,
+        consecutiveFailures: { increment: 1 },
+        lastError: message,
+      },
     });
     return "failed";
   }

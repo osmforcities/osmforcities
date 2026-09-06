@@ -3,10 +3,11 @@ import { prisma } from "@/lib/db";
 import {
   getTileJob,
   downloadTileOutputs,
+  downloadTileNdjson,
   ackTileJob,
   pruneTileArchives,
 } from "@/lib/tiler/client";
-import { readPulledStats } from "@/lib/tiler/stats";
+import { readPulledFeatures, readPulledStats } from "@/lib/tiler/stats";
 import { pollPendingTileJobs } from "@/lib/tiler/poll";
 
 vi.mock("@/lib/db", () => ({
@@ -23,14 +24,16 @@ vi.mock("@/lib/tiler/client", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/tiler/client")>()),
   getTileJob: vi.fn(),
   downloadTileOutputs: vi.fn(),
+  downloadTileNdjson: vi.fn(),
   ackTileJob: vi.fn(),
   pruneTileArchives: vi.fn(),
 }));
 
-// Keep the mapper real; only the file read is stubbed.
+// Keep the mapper real; only the file reads are stubbed.
 vi.mock("@/lib/tiler/stats", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/tiler/stats")>()),
   readPulledStats: vi.fn(),
+  readPulledFeatures: vi.fn(),
 }));
 
 const pendingRow = { id: "ds-1", tilesJobId: "ds-1-100" };
@@ -51,6 +54,8 @@ beforeEach(() => {
   } as never);
   vi.mocked(prisma.dataset.update).mockResolvedValue({} as never);
   vi.mocked(downloadTileOutputs).mockResolvedValue(undefined);
+  vi.mocked(downloadTileNdjson).mockResolvedValue(undefined);
+  vi.mocked(readPulledFeatures).mockResolvedValue(null);
   vi.mocked(ackTileJob).mockResolvedValue(undefined);
   vi.mocked(pruneTileArchives).mockResolvedValue(undefined);
 });
@@ -88,11 +93,8 @@ describe("pollPendingTileJobs", () => {
     expect(pruneTileArchives).toHaveBeenCalledWith("ds-1");
   });
 
-  it("fills stats from the tiler's stats.json for tiles-only datasets", async () => {
+  it("writes the authoritative refresh columns from tiler stats on done", async () => {
     vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "done" });
-    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
-      stats: null,
-    } as never);
     vi.mocked(readPulledStats).mockResolvedValue({
       schemaVersion: 1,
       features: 42,
@@ -126,6 +128,72 @@ describe("pollPendingTileJobs", () => {
     expect(
       (data.stats as { tagCounts: unknown[] }).tagCounts
     ).toEqual([{ key: "building", count: 42 }]);
+    // Phase 3: the pull IS the refresh
+    expect(data.lastChecked).toBeInstanceOf(Date);
+    expect(data.consecutiveFailures).toBe(0);
+    expect(data.lastError).toBeNull();
+    // Under the backfill boundary: ndjson was pulled (backfill itself
+    // returned null here, so geojson stays JsonNull)
+    expect(downloadTileNdjson).toHaveBeenCalledWith("ds-1-100");
+  });
+
+  it("backfills the geojson column from the pulled ndjson when it fits", async () => {
+    vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "done" });
+    vi.mocked(readPulledStats).mockResolvedValue({
+      schemaVersion: 1,
+      features: 2,
+      editorsCount: 1,
+      changesetsCount: 1,
+      elementVersionsCount: 2,
+      oldestElement: null,
+      mostRecentElement: null,
+      averageElementAge: null,
+      averageElementVersion: 1,
+      recentActivity: { elementsEdited: 0, changesets: 0, editors: 0 },
+      qualityMetrics: {},
+      editRecencyBands: [0, 0, 0, 2],
+      mapperRecencyBands: [0, 0, 0, 1],
+      tagCounts: [],
+      filterDimensions: [],
+      geometryMix: { points: 2, lines: 0, areas: 0, lineKm: 0, areaKm2: 0 },
+      bbox: [1, 2, 3, 4],
+    });
+    const collection = {
+      type: "FeatureCollection" as const,
+      features: [{ type: "Feature", properties: { id: "node/1" } }],
+    };
+    vi.mocked(readPulledFeatures).mockResolvedValue(collection);
+
+    await pollPendingTileJobs();
+
+    expect(updateData(0).geojson).toEqual(collection);
+  });
+
+  it("skips the ndjson pull for datasets over the backfill boundary", async () => {
+    vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "done" });
+    vi.mocked(readPulledStats).mockResolvedValue({
+      schemaVersion: 1,
+      features: 2_000_000, // far over MAX_DATASET_BYTES / 500
+      editorsCount: 1,
+      changesetsCount: 1,
+      elementVersionsCount: 2,
+      oldestElement: null,
+      mostRecentElement: null,
+      averageElementAge: null,
+      averageElementVersion: 1,
+      recentActivity: { elementsEdited: 0, changesets: 0, editors: 0 },
+      qualityMetrics: {},
+      editRecencyBands: [0, 0, 0, 2],
+      mapperRecencyBands: [0, 0, 0, 1],
+      tagCounts: [],
+      filterDimensions: [],
+      geometryMix: { points: 0, lines: 0, areas: 2, lineKm: 0, areaKm2: 1 },
+      bbox: [1, 2, 3, 4],
+    });
+
+    await pollPendingTileJobs();
+
+    expect(downloadTileNdjson).not.toHaveBeenCalled();
   });
 
   it("skips the stats fill on an unknown schemaVersion", async () => {
@@ -154,14 +222,17 @@ describe("pollPendingTileJobs", () => {
     const results = await pollPendingTileJobs();
 
     expect(results.failed).toBe(1);
+    // Phase 3: a tiler failure IS the refresh failure — admin counters fed
     expect(updateData(0)).toEqual({
       tilesState: "failed",
       tilesError: "too_large: runtime error: out of memory",
+      consecutiveFailures: { increment: 1 },
+      lastError: "too_large: runtime error: out of memory",
     });
     expect(downloadTileOutputs).not.toHaveBeenCalled();
   });
 
-  it("marks a swept (404) job failed so the next snapshot resubmits", async () => {
+  it("marks a swept (404) job failed so the next submit retries", async () => {
     vi.mocked(getTileJob).mockResolvedValue(null);
 
     const results = await pollPendingTileJobs();
@@ -170,6 +241,8 @@ describe("pollPendingTileJobs", () => {
     expect(updateData(0)).toEqual({
       tilesState: "failed",
       tilesError: "job expired before pull",
+      consecutiveFailures: { increment: 1 },
+      lastError: "tile job expired before pull",
     });
   });
 

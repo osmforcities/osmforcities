@@ -1,6 +1,9 @@
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
+import { Prisma } from "@prisma/client";
 import { tilesDir } from "./client";
+import { AGE_CATEGORY_ORDER } from "@/lib/feature-age";
+import { MAX_DATASET_BYTES } from "@/lib/constants";
 
 /**
  * Map the tiler's stats.json onto Dataset columns for tiles-only datasets
@@ -29,6 +32,9 @@ type TilerStats = {
   mapperRecencyBands: number[];
   tagCounts: Array<{ key: string; count: number }>;
   filterDimensions?: unknown[];
+  // Present when the job was submitted with ageBandsDays: per-feature counts
+  // in the app's legend buckets (AGE_LEGEND_BANDS_DAYS) plus "older".
+  ageBands?: number[];
   geometryMix: Record<string, number>;
   bbox: number[] | null;
 };
@@ -54,6 +60,25 @@ export function tilerStatsToDatasetColumns(raw: unknown) {
     );
     return null;
   }
+  // ageBands (per-feature counts in the legend's buckets, "older" last) map
+  // onto the stored age dimension — same shape computeAgeDimension writes:
+  // zero-count buckets omitted, missing always 0.
+  const filterDimensions = [...(s.filterDimensions ?? [])];
+  if (
+    Array.isArray(s.ageBands) &&
+    s.ageBands.length === AGE_CATEGORY_ORDER.length
+  ) {
+    filterDimensions.push({
+      key: "age",
+      kind: "age",
+      missing: 0,
+      values: AGE_CATEGORY_ORDER.map((value, index) => ({
+        value,
+        count: s.ageBands![index],
+      })).filter((entry) => entry.count > 0),
+    });
+  }
+
   const stats = {
     editorsCount: s.editorsCount,
     elementVersionsCount: s.elementVersionsCount,
@@ -67,15 +92,65 @@ export function tilerStatsToDatasetColumns(raw: unknown) {
     editRecencyBands: s.editRecencyBands,
     mapperRecencyBands: s.mapperRecencyBands,
     tagCounts: s.tagCounts,
-    filterDimensions: s.filterDimensions,
+    filterDimensions,
     geometryMix: s.geometryMix,
   };
   return {
     stats: JSON.parse(JSON.stringify(stats)),
     dataCount: s.features,
-    bbox: s.bbox ?? null,
+    bbox: s.bbox ?? Prisma.JsonNull,
     lastEditedAt: s.mostRecentElement ? new Date(s.mostRecentElement) : null,
     contributorsCount: s.editorsCount,
     recentlyEditedCount: s.recentActivity?.elementsEdited ?? null,
   };
+}
+
+// Tiler ndjson convention (@-prefixed meta) → the app's stored flat shape
+// (osmtogeojson flatProperties: unprefixed id/user/uid/timestamp/version/
+// changeset alongside the raw tags).
+const META_KEY_MAP: Record<string, string> = {
+  "@id": "id",
+  "@user": "user",
+  "@uid": "uid",
+  "@timestamp": "timestamp",
+  "@version": "version",
+  "@changeset": "changeset",
+};
+
+/**
+ * Rebuild the stored-geojson FeatureCollection from a pulled data.ndjson
+ * (jobs submitted with keepMeta). Returns null when the file is absent or
+ * too large for the geojson column — callers then store JsonNull, exactly
+ * the old over-cap behavior.
+ */
+export async function readPulledFeatures(jobId: string): Promise<{
+  type: "FeatureCollection";
+  features: unknown[];
+} | null> {
+  const filePath = path.join(tilesDir(), `${jobId}.ndjson`);
+  try {
+    // ndjson size ≈ the serialized collection (meta keys shrink by one char,
+    // _ts drops) — a deterministic stand-in for the storage cap.
+    if ((await stat(filePath)).size > MAX_DATASET_BYTES) return null;
+  } catch {
+    return null;
+  }
+  const raw = await readFile(filePath, "utf8");
+  const features: unknown[] = [];
+  for (const line of raw.split("\n")) {
+    if (!line) continue;
+    const feature = JSON.parse(line) as {
+      id?: unknown;
+      properties?: Record<string, unknown> | null;
+    };
+    const mapped: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(feature.properties ?? {})) {
+      if (key === "_ts") continue; // client re-stamps at render time
+      mapped[META_KEY_MAP[key] ?? key] = value;
+    }
+    feature.properties = mapped;
+    if (mapped.id) feature.id = mapped.id; // app features carry it at both levels
+    features.push(feature);
+  }
+  return { type: "FeatureCollection", features };
 }
