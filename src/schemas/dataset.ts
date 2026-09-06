@@ -93,6 +93,9 @@ export const DatasetSchema = z.object({
   cityName: z.string(),
   isActive: z.boolean(),
   lastChecked: z.coerce.date().nullable(),
+  // Latest tile-bake job state ("pending" | "done" | "failed"); optional so
+  // card-shaped selects that don't fetch it still parse.
+  tilesState: z.string().nullable().optional(),
   dataCount: z.number(),
   stats: DatasetStatsSchema.nullable(),
   createdAt: z.coerce.date(),
