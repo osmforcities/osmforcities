@@ -199,7 +199,7 @@ export function DatasetActionsSection({
       <div className="flex gap-2">
         <Button
           onClick={() => downloadDataset(dataset)}
-          disabled={!dataset.geojson}
+          disabled={!(dataset.hasGeojson ?? Boolean(dataset.geojson))}
           className="h-8 flex-1 text-sm"
           variant="outline"
           title={t("downloadData")}
