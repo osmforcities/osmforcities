@@ -61,7 +61,9 @@ export async function pollPendingTileJobs(): Promise<TilePollResults> {
         });
         // Best-effort housekeeping: a failed ack just leaves the job for the
         // tiler's own sweep. Prune never rejects (it logs internally).
-        await ackTileJob(jobId).catch(() => {});
+        await ackTileJob(jobId).catch((error) => {
+          console.error(`Tile job ack failed for ${jobId}:`, error);
+        });
         await pruneTileArchives(dataset.id);
         results.completed++;
       } else if (job.state === "failed") {
