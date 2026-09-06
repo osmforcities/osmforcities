@@ -3,6 +3,7 @@ import { mkdir, readdir, rename, unlink } from "node:fs/promises";
 import path from "node:path";
 import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
+import type { Dataset } from "@prisma/client";
 
 /**
  * Client for the overpass-pmtiler service (see overpass-pmtiler/API.md).
@@ -29,12 +30,11 @@ export type TileJob = {
   errorKind?: string;
 };
 
-/** Columns written next to snapshotDatasetColumns() at snapshot time. */
-export type TilesColumns = {
-  tilesJobId?: string;
-  tilesState?: string;
-  tilesError?: string | null;
-};
+/** Columns written next to snapshotDatasetColumns() at snapshot time —
+ * Pick'd from the Prisma model so the type cannot drift from the schema. */
+export type TilesColumns = Partial<
+  Pick<Dataset, "tilesJobId" | "tilesState" | "tilesError">
+>;
 
 const REQUEST_TIMEOUT_MS = 30_000;
 const DOWNLOAD_TIMEOUT_MS = 10 * 60_000;
