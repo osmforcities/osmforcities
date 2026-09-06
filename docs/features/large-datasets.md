@@ -127,6 +127,15 @@ scheduler) -> pull outputs -> serve from app nginx. Dataset status maps from
 job state; "processing, check back later" is `state != done`. `failed`
 carries the Overpass error text through.
 
+**Implemented (#487 phases 1-2, additive):** `Dataset` carries
+`tilesJobId/tilesState/tilesUpdatedAt/tilesError`; every successful snapshot
+submits a bake job (`src/lib/tiler/submit.ts`); the update-datasets cron
+reconciles pending jobs (`src/lib/tiler/poll.ts`) — pull to `TILES_DIR`, ack,
+keep current + previous archive; `GET /api/tiles/{jobId}.pmtiles` serves with
+Range support (nginx can shadow the path later). `TILER_URL` unset = kill
+switch. Job state surfaces on the admin datasets page, dashboard cards, and
+the dataset page. The map still renders geojson until #489.
+
 Main real work item: relation/multipolygon assembly in the convert stage —
 the spike skipped relations (15,783 in SP buildings).
 
