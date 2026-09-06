@@ -60,10 +60,13 @@ street-network refresh → 245,136 features, no ndjson pull, lastChecked advance
 archive generations retained; outage drill → consecutiveFailures 1 + lastError with old
 data serving, recovery resets to 0. Unit suite 426 green.
 
-Known deferred: blue/green tile swap — during a refresh bake the NEW pending tilesJobId
-replaces the pointer, so big (no-geojson) datasets show the processing panel instead of
-the previous archive until reconcile (~minutes). Fix = a served-job column; revisit with
-the DatasetSnapshot-model question at PR time.
+~~Known deferred: blue/green tile swap~~ **RESOLVED (round 5)**: `tilesServedJobId`
+column (backfilled for done rows) — serving reads ONLY it; it moves at reconcile-done.
+E2E-verified: SP street-network map stayed up on the previous archive (-708256) through
+a full rebuild, then swapped to the new one (-712111) after reconcile. The processing
+panel is now creation-only. Gotcha hit: `next dev` daemon holds its Prisma client from
+startup — restart it after any `prisma generate` or selects on new columns throw as a
+"Dataset Creation Failed" card with nothing in the server log.
 
 ## Round 3: São Paulo (metro-class) — VALIDATED (2026-09-06 evening)
 
