@@ -8,6 +8,7 @@ import {
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
 import { submitTilesForDataset } from "@/lib/tiler/submit";
+import { pollPendingTileJobs } from "@/lib/tiler/poll";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import {
@@ -221,6 +222,8 @@ export async function POST(req: NextRequest) {
 
     await Promise.allSettled(analyticsEvents);
 
+    const tiles = await pollPendingTileJobs();
+
     const geojsonCleared = await clearGeojsonOfDeactivatedDatasets();
     const deleted = await deleteUnattendedDatasets();
 
@@ -231,6 +234,7 @@ export async function POST(req: NextRequest) {
         task: "update-datasets",
         limit,
         ...results,
+        tiles,
         cleanup: { deleted, geojsonCleared },
       },
     });
