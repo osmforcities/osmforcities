@@ -45,6 +45,7 @@ export type TilesColumns = {
 };
 
 const REQUEST_TIMEOUT_MS = 30_000;
+const DOWNLOAD_TIMEOUT_MS = 10 * 60_000;
 
 // Budgets injected into over-cap (tiles-only) jobs: the tiler puts them into
 // the query's settings block. Overpass maxsize is driven by area evaluation,
@@ -113,7 +114,12 @@ export async function getTileJob(id: string): Promise<TileJob | null> {
 }
 
 async function downloadToFile(url: string, destination: string): Promise<void> {
-  const response = await fetch(url);
+  // Generous ceiling (archives are tens of MB): a slow pull finishes, a
+  // stalled one aborts — the signal also rejects the body stream mid-pipe,
+  // so a wedged connection can never hang the poll tick forever.
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(DOWNLOAD_TIMEOUT_MS),
+  });
   if (!response.ok || !response.body) {
     throw new Error(`Tiler download failed: ${response.status} for ${url}`);
   }
