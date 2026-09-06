@@ -18,8 +18,15 @@ async function getUpdateStatus() {
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
   const activeWhere = { isActive: true } as const;
 
-  const [activeTotal, refreshed24h, flagged, freshness, flaggedDatasets] =
-    await Promise.all([
+  const [
+    activeTotal,
+    refreshed24h,
+    flagged,
+    freshness,
+    flaggedDatasets,
+    tilesByState,
+    tilesFailedDatasets,
+  ] = await Promise.all([
       prisma.dataset.count({ where: activeWhere }),
       prisma.dataset.count({
         where: { ...activeWhere, lastChecked: { gte: oneDayAgo } },
@@ -44,7 +51,21 @@ async function getUpdateStatus() {
         orderBy: [{ consecutiveFailures: "desc" }, { lastAttempted: "asc" }],
         take: 100,
       }),
+      prisma.dataset.groupBy({
+        by: ["tilesState"],
+        where: { tilesState: { not: null } },
+        _count: true,
+      }),
+      prisma.dataset.findMany({
+        where: { tilesState: "failed" },
+        include: { template: true },
+        orderBy: { updatedAt: "desc" },
+        take: 100,
+      }),
     ]);
+
+  const tilesCount = (state: string) =>
+    tilesByState.find((row) => row.tilesState === state)?._count ?? 0;
 
   const newestCheck = freshness._max.lastChecked;
   return {
@@ -56,6 +77,10 @@ async function getUpdateStatus() {
     oldestCheck: freshness._min.lastChecked,
     isHealthy: isFleetHealthy(newestCheck),
     flaggedDatasets,
+    tilesPending: tilesCount("pending"),
+    tilesDone: tilesCount("done"),
+    tilesFailed: tilesCount("failed"),
+    tilesFailedDatasets,
   };
 }
 
@@ -142,6 +167,61 @@ export default async function DatasetsPage() {
                 {t("oldestCheck", { value: fmt(status.oldestCheck) })}
               </div>
             </div>
+          </div>
+
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-black dark:text-white">
+              {t("tilesHeading")}
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <StatTile label={t("statTilesPending")} value={status.tilesPending} />
+              <StatTile label={t("statTilesDone")} value={status.tilesDone} />
+              <StatTile label={t("statTilesFailed")} value={status.tilesFailed} />
+            </div>
+
+            <h3 className="text-lg font-semibold text-black dark:text-white">
+              {t("tilesFailedHeading")}
+            </h3>
+            {status.tilesFailedDatasets.length === 0 ? (
+              <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-6 text-center">
+                <p className="text-gray-600 dark:text-gray-400">
+                  {t("tilesFailedEmpty")}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {status.tilesFailedDatasets.map((dataset) => (
+                  <div
+                    key={dataset.id}
+                    className="border border-gray-200 dark:border-gray-800 rounded-lg p-4"
+                  >
+                    <div className="flex justify-between items-start mb-2 gap-3">
+                      <div>
+                        <h3 className="font-semibold text-black dark:text-white">
+                          {dataset.cityName}
+                        </h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {dataset.template.name}
+                        </p>
+                      </div>
+                      <span className="px-2 py-1 text-xs rounded bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 whitespace-nowrap">
+                        {t("statTilesFailed")}
+                      </span>
+                    </div>
+                    {dataset.tilesError && (
+                      <p className="text-sm text-gray-700 dark:text-gray-300 font-mono break-words">
+                        {t("tilesError", { message: dataset.tilesError })}
+                      </p>
+                    )}
+                    <div className="flex flex-wrap gap-x-6 gap-y-1 mt-2 text-xs text-gray-500">
+                      <span>
+                        {t("tilesUpdatedAt", { value: fmt(dataset.tilesUpdatedAt) })}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div>

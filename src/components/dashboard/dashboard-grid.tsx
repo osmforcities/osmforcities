@@ -12,6 +12,7 @@ type Dataset = {
   cityName: string;
   isActive: boolean;
   dataCount: number;
+  tilesState?: string | null;
   template: {
     id: string;
     name: string;
@@ -145,6 +146,17 @@ export function DashboardGrid({ datasets, saveLimit }: DashboardGridProps) {
                   {dataset._count && dataset._count.savedBy > 0 && (
                     <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-700">
                       {t("saveCount", { count: dataset._count.savedBy })}
+                    </span>
+                  )}
+                  {/* Quiet when tiles are ready — badge only for in-flight or failed bakes. */}
+                  {dataset.tilesState === "pending" && (
+                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-yellow-100 text-yellow-700">
+                      {t("tilesProcessing")}
+                    </span>
+                  )}
+                  {dataset.tilesState === "failed" && (
+                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-orange-100 text-orange-700">
+                      {t("tilesFailed")}
                     </span>
                   )}
                 </div>
