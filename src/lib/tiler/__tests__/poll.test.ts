@@ -132,6 +132,8 @@ describe("pollPendingTileJobs", () => {
     expect(data.lastChecked).toBeInstanceOf(Date);
     expect(data.consecutiveFailures).toBe(0);
     expect(data.lastError).toBeNull();
+    // Blue/green: the serving pointer moves only here
+    expect(data.tilesServedJobId).toBe("ds-1-100");
     // Under the backfill boundary: ndjson was pulled (backfill itself
     // returned null here, so geojson stays JsonNull)
     expect(downloadTileNdjson).toHaveBeenCalledWith("ds-1-100");

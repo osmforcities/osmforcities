@@ -79,6 +79,7 @@ export async function reconcileDataset(
         where: { id: dataset.id },
         data: {
           tilesState: "done",
+          tilesServedJobId: dataset.tilesJobId,
           tilesUpdatedAt: new Date(),
           tilesError: null,
         },
@@ -120,6 +121,9 @@ export async function reconcileDataset(
         consecutiveFailures: 0,
         lastError: null,
         tilesState: "done",
+        // Blue/green swap: only now does the map's pointer move to the new
+        // archive — the previous one served straight through the bake.
+        tilesServedJobId: dataset.tilesJobId,
         tilesUpdatedAt: new Date(),
         tilesError: null,
       },

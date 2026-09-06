@@ -67,7 +67,7 @@ export function transformDataset(
   // failure class). hasGeojson preserves the export affordance.
   const tilesRender =
     datasetTilesPath(
-      rawDataset as { tilesState?: string | null; tilesJobId?: string | null }
+      rawDataset as { tilesServedJobId?: string | null }
     ) !== null;
 
   return DatasetSchema.parse({

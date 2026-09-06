@@ -80,6 +80,7 @@ const DATASET_DETAIL_SELECT = {
   isFeatured: true,
   tilesState: true,
   tilesJobId: true,
+  tilesServedJobId: true,
   template: {
     select: {
       id: true,

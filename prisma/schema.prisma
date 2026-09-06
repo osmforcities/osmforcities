@@ -135,6 +135,7 @@ model Dataset {
   contributorsCount   Int?
   recentlyEditedCount Int?
   tilesJobId          String?
+  tilesServedJobId    String?
   tilesState          String?
   tilesUpdatedAt      DateTime?
   tilesError          String?
