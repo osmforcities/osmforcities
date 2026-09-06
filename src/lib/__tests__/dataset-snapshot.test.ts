@@ -397,6 +397,43 @@ describe("fetchDatasetSnapshot — tiles-only lane (tiler enabled)", () => {
     expect(snapshot.tilesOnly).toBe(true);
   });
 
+  it("retries a timed-out count probe with raised budgets (metro-class)", async () => {
+    // First probe: 504. Retry: over-cap count → tiles-only lane.
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: false, status: 504 } as Response)
+      .mockReturnValueOnce(makeFetchResponse(makeCountResponse(overCapCount)));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const snapshot = await fetchDatasetSnapshot(1, "[out:json][timeout:25]; rel(1); out;", "tpl-1");
+
+    expect(snapshot.tilesOnly).toBe(true);
+    expect(snapshot.dataCount).toBe(overCapCount);
+    // The retry query carries the raised settings block
+    const retryBody = decodeURIComponent(
+      ((fetchMock.mock.calls[1][1] as RequestInit).body as string).replace("data=", "")
+    );
+    expect(retryBody).toContain("[timeout:180]");
+    expect(retryBody).toContain("[maxsize:1073741824]");
+    // No timeout verdict recorded — the retry succeeded
+    expect(upsert).not.toHaveBeenCalled();
+  });
+
+  it("records a timeout when the raised-budget retry also times out", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: false, status: 504 } as Response)
+    );
+    await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
+      DatasetSizeCheckTimeoutError
+    );
+    expect(upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        update: expect.objectContaining({ status: "timeout" }),
+      })
+    );
+  });
+
   it("still honors a fresh timeout verdict", async () => {
     findUnique.mockResolvedValue({
       status: "timeout",
