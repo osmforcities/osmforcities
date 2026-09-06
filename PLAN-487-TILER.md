@@ -35,6 +35,23 @@ Gotchas learned:
 - Age-legend counts (7/30/90d buckets) are empty for tiles-only datasets — tiler bands are
   90/365/730d. Known limitation; map colors unaffected.
 
+## Round 3: São Paulo (metro-class) — VALIDATED (2026-09-06 evening)
+
+- Count-probe raised-budget retry added (`withRaisedProbeBudgets`: [timeout:180] +
+  [maxsize:1GiB] on the retry only; transport takes a client timeout). Without it the
+  SP probe dies at [timeout:25]/512 MiB before the tiles-only lane can engage.
+- **SP buildings: 2,142,603 elements — created in 93 s** (probe + retry only), baked via
+  the local tiler through the tunnel (2.2 GB fetch), 56 MB archive, page at 112 MB heap.
+  Stats tiler-sourced: 1,659 mappers, 244 km² footprints, height 97%.
+- **SP street-network: 245,136 elements**, 23,036 line-km (matches the canonical tiler
+  stress figure exactly), 70,889 points, 130 MB heap.
+- Tiler crash recovery exercised twice for real: background processes were externally
+  killed mid-fetch; restart re-queued both jobs FIFO and replayed clean. The processing
+  panel rode out both outages (catch + reschedule). Services now run as detached nohup
+  daemons (logs in the session scratchpad; stop via `pkill -f pmtiler.py` /
+  `pkill -f "next dev"`).
+- Spool empty after acks; disk back to ~18 GB free.
+
 ## Round 1 status (2026-09-06 morning)
 
 ALL 7 STEPS IMPLEMENTED AND COMMITTED on `feat/487-tiler-client` (local only, no push/PR).
