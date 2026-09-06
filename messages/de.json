@@ -698,6 +698,7 @@
     }
   },
   "TagLabel": {
+    "highway": "Straßenklasse",
     "shelter": "Unterstand",
     "bench": "Sitzbank",
     "covered": "Überdacht",

@@ -707,6 +707,7 @@
     }
   },
   "TagLabel": {
+    "highway": "Clase de vía",
     "shelter": "Marquesina",
     "bench": "Banco",
     "covered": "Cubierto",
