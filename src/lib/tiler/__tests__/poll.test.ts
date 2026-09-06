@@ -129,6 +129,20 @@ describe("pollPendingTileJobs", () => {
     expect(prisma.dataset.update).not.toHaveBeenCalled();
   });
 
+  it("never throws — a failing pending-datasets query returns empty results", async () => {
+    vi.mocked(prisma.dataset.findMany).mockRejectedValue(new Error("db blip"));
+
+    const results = await pollPendingTileJobs();
+
+    expect(results).toEqual({
+      checked: 0,
+      completed: 0,
+      failed: 0,
+      stillPending: 0,
+    });
+    expect(getTileJob).not.toHaveBeenCalled();
+  });
+
   it("a failed download leaves the row pending for the next tick", async () => {
     vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "done" });
     vi.mocked(downloadTileOutputs).mockRejectedValue(new Error("disk full"));

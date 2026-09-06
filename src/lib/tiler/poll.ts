@@ -30,10 +30,17 @@ export async function pollPendingTileJobs(): Promise<TilePollResults> {
   };
   if (!tilerEnabled()) return results;
 
-  const pending = await prisma.dataset.findMany({
-    where: { tilesState: "pending", tilesJobId: { not: null } },
-    select: { id: true, tilesJobId: true },
-  });
+  let pending: { id: string; tilesJobId: string | null }[];
+  try {
+    pending = await prisma.dataset.findMany({
+      where: { tilesState: "pending", tilesJobId: { not: null } },
+      select: { id: true, tilesJobId: true },
+    });
+  } catch (error) {
+    // A DB blip here must not fail the surrounding cron tick.
+    console.error("Tile poll: failed to list pending datasets:", error);
+    return results;
+  }
 
   for (const dataset of pending) {
     results.checked++;
