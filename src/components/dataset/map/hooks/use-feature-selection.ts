@@ -14,7 +14,14 @@ export function useFeatureSelection(
     (event: MapLayerMouseEvent) => {
       const hit = event.features?.[0];
       if (hit) {
-        const feature = resolveProxyFeature(hit, sourceFeatures);
+        let feature = resolveProxyFeature(hit, sourceFeatures);
+        // Vector tiles carry the OSM id as "@id" (raw-tag convention), while
+        // the geojson path and the detail panel use "id" — normalize the hit
+        // so the panel's OSM link works on both sources.
+        const props = feature.properties;
+        if (props && !props.id && props["@id"]) {
+          feature = { ...feature, properties: { ...props, id: props["@id"] } };
+        }
         setSelectedFeature(feature);
         onFeatureSelect?.(feature);
       } else {

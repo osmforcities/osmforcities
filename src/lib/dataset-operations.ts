@@ -79,6 +79,7 @@ const DATASET_DETAIL_SELECT = {
   isActive: true,
   isFeatured: true,
   tilesState: true,
+  tilesJobId: true,
   template: {
     select: {
       id: true,
