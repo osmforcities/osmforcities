@@ -59,7 +59,18 @@ export function tilesDir(): string {
   return process.env.TILES_DIR || "./data/tiles";
 }
 
-/** Tiler job ids must match [A-Za-z0-9._-]{1,128}; cuid + epoch does. */
+// The tiler's own id rule (see overpass-pmtiler ID_RE): its charset plus the
+// "."/".." exclusion — those match the charset but are dangerous as path
+// segments. Enforced on the consumer side too so an id read back from the DB
+// or the tiler can never traverse out of TILES_DIR.
+const JOB_ID_RE = /^(?!\.\.?$)[A-Za-z0-9._-]{1,128}$/;
+
+function requireValidJobId(id: string): string {
+  if (!JOB_ID_RE.test(id)) throw new Error(`Invalid tile job id: ${id}`);
+  return id;
+}
+
+/** Tiler job ids must match JOB_ID_RE; cuid + epoch does. */
 export function newTileJobId(datasetId: string): string {
   return `${datasetId}-${Math.floor(Date.now() / 1000)}`;
 }
@@ -84,7 +95,7 @@ export async function submitTileJob(input: {
 
 /** null when the job is unknown (404 — swept or never submitted). */
 export async function getTileJob(id: string): Promise<TileJob | null> {
-  const response = await fetch(`${requireTilerUrl()}/jobs/${id}`, {
+  const response = await fetch(`${requireTilerUrl()}/jobs/${requireValidJobId(id)}`, {
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
   if (response.status === 404) return null;
@@ -127,6 +138,7 @@ async function downloadToFile(url: string, destination: string): Promise<void> {
  * `{jobId}.pmtiles` / `{jobId}.stats.json`.
  */
 export async function downloadTileOutputs(id: string): Promise<void> {
+  requireValidJobId(id); // the id becomes a filename in TILES_DIR
   const dir = tilesDir();
   await mkdir(dir, { recursive: true });
   await downloadToFile(
@@ -141,7 +153,7 @@ export async function downloadTileOutputs(id: string): Promise<void> {
 
 /** Ack a pulled job so the tiler frees its spool. 404 (already swept) is fine. */
 export async function ackTileJob(id: string): Promise<void> {
-  const response = await fetch(`${requireTilerUrl()}/jobs/${id}`, {
+  const response = await fetch(`${requireTilerUrl()}/jobs/${requireValidJobId(id)}`, {
     method: "DELETE",
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });

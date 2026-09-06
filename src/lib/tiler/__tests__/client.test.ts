@@ -6,6 +6,7 @@ import {
   tilerEnabled,
   newTileJobId,
   getTileJob,
+  downloadTileOutputs,
   submitTilesColumns,
   pruneTileArchives,
 } from "@/lib/tiler/client";
@@ -72,6 +73,18 @@ describe("getTileJob", () => {
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
     await expect(getTileJob("d1-1")).rejects.toThrow("TILER_URL is not set");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("rejects ids outside the tiler charset before any fetch or path use", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    for (const bad of ["../escape", "a/b", "..", ".", "", "x".repeat(129)]) {
+      await expect(getTileJob(bad)).rejects.toThrow("Invalid tile job id");
+      await expect(downloadTileOutputs(bad)).rejects.toThrow(
+        "Invalid tile job id"
+      );
+    }
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });
