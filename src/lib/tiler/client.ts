@@ -171,8 +171,13 @@ export async function pruneTileArchives(datasetId: string): Promise<void> {
   let names: string[];
   try {
     names = await readdir(tilesDir());
-  } catch {
-    return; // no dir yet, nothing to prune
+  } catch (error) {
+    // Missing dir just means nothing to prune; anything else (permissions,
+    // I/O) is worth a log line now that this runs on the cron loop.
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+      console.error(`Tile archive prune failed to read ${tilesDir()}:`, error);
+    }
+    return;
   }
   const epochs = names
     .filter((n) => n.startsWith(`${datasetId}-`) && n.endsWith(".pmtiles"))
