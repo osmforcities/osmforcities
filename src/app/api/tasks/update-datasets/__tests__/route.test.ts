@@ -23,6 +23,21 @@ vi.mock("@/lib/umami", () => ({
   trackEvent: vi.fn().mockResolvedValue(undefined),
 }));
 
+// Tiler integration is additive and covered by its own tests — stub it here so
+// this suite's prisma call-order assertions stay about the refresh queue.
+vi.mock("@/lib/tiler/submit", () => ({
+  submitTilesForDataset: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock("@/lib/tiler/poll", () => ({
+  pollPendingTileJobs: vi.fn().mockResolvedValue({
+    checked: 0,
+    completed: 0,
+    failed: 0,
+    stillPending: 0,
+  }),
+}));
+
 import { Prisma } from "@prisma/client";
 import { POST } from "../route";
 import { DatasetSizeCheckTimeoutError } from "@/lib/dataset-snapshot";
