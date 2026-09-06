@@ -47,9 +47,12 @@ export type TilesColumns = {
 const REQUEST_TIMEOUT_MS = 30_000;
 
 // Budgets injected into over-cap (tiles-only) jobs: the tiler puts them into
-// the query's settings block. 3 GiB clears Amsterdam-class buildings with
-// headroom under the tiler's 4 GiB cap; SP-class measured 2.23 GB (#322).
-export const LARGE_JOB_MAXSIZE_BYTES = 3 * 1024 * 1024 * 1024;
+// the query's settings block. Overpass maxsize is driven by area evaluation,
+// not output size — SP buildings (2.23 GB output) fetched at 768 MiB — and
+// our instance's areas dispatcher refuses somewhere between 1 and 3 GiB
+// (3 GiB → Dispatcher_Client protocol_error), so 1 GiB is the measured-safe
+// ceiling. See docs/features/large-datasets.md.
+export const LARGE_JOB_MAXSIZE_BYTES = 1024 * 1024 * 1024;
 export const LARGE_JOB_TIMEOUT_SECONDS = 1800;
 
 function tilerUrl(): string | null {
