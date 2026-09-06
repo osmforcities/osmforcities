@@ -1,6 +1,41 @@
 # App ↔ tiler integration: submit, poll, pull, serve, surface (issue #487 phases 1–2, app side)
 
-## Status (2026-09-06)
+## Round 2 status (2026-09-06 afternoon)
+
+Implemented and committed on top of round 1 (still local, no push/PR):
+
+1. **#489 render swap**: `pmtiles` package + protocol registration; `TilesLayerGroup`
+   (vector source, same layer ids/paints, geometry-type filters); `use-map-data` forks on
+   `datasetTilesPath()` (kill switch `NEXT_PUBLIC_TILES_ENABLED=true`); viewport from stored
+   bbox; `@id`→`id` selection shim. Verified in browser: tiles render, age colors, legend
+   from stored dims, click → detail panel with working OSM link.
+2. **RSC payload**: geojson stripped when tiles render; `hasGeojson` keeps download for
+   under-cap datasets; inline-FeatureCollection absent from the document (verified).
+3. **Job-status UX**: `GET /api/datasets/[id]/tiles-status` proxy (reconciles on demand —
+   watcher gets tiles at bake end, not next cron tick); `TilesProcessingPanel` in the map
+   area with live stage + progress bar + failure state; i18n ×5.
+4. **Tiles-only lane**: over-cap snapshots return `{tilesOnly}` instead of throwing (no
+   too_large verdict recorded; cached verdicts ignored when tiler up); large jobs submit
+   with maxsize/timeout; on pull, tiles-only datasets take stats/dataCount/bbox/recency
+   columns from the tiler's stats.json (`src/lib/tiler/stats.ts`).
+5. **Templates**: `buildings` (building key-presence) + `street-network` (highway) with
+   filterableTags + i18n; `roads` untouched.
+6. **E2E verified**: Delft buildings 39.6k tiles-only → processing panel walked the stages,
+   page flipped to tile map, stats from tiler, click+OSM link works, download disabled.
+   Delft street-network 14.8k under-cap renders from tiles with full age legend, download
+   enabled. Amsterdam buildings 197,775: creation in 25 s (count probe only).
+
+Gotchas learned:
+- maxsize 3 GiB → Overpass areas-dispatcher `protocol_error` (HTML 200 body). Instance
+  ceiling is between 1 and 3 GiB; SP's 2.23 GB fetch ran at 768 MiB. Constant now 1 GiB.
+- Tiler passes HTML error bodies to its converter as a "format" error — filed
+  overpass-pmtiler#39.
+- Delft buildings is borderline ~25 MB: flaps between tiles-only and full path between
+  refreshes. Harmless (both paths render from tiles) but worth remembering.
+- Age-legend counts (7/30/90d buckets) are empty for tiles-only datasets — tiler bands are
+  90/365/730d. Known limitation; map colors unaffected.
+
+## Round 1 status (2026-09-06 morning)
 
 ALL 7 STEPS IMPLEMENTED AND COMMITTED on `feat/487-tiler-client` (local only, no push/PR).
 E2E-verified against a live local tiler (tunnel + pmtiler on :8099, dev server :3001):
