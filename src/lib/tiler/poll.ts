@@ -60,9 +60,9 @@ export async function pollPendingTileJobs(): Promise<TilePollResults> {
           },
         });
         // Best-effort housekeeping: a failed ack just leaves the job for the
-        // tiler's own sweep, and prune retries on the next completion.
+        // tiler's own sweep. Prune never rejects (it logs internally).
         await ackTileJob(jobId).catch(() => {});
-        await pruneTileArchives(dataset.id).catch(() => {});
+        await pruneTileArchives(dataset.id);
         results.completed++;
       } else if (job.state === "failed") {
         // errorKind "too_large" is a permanent refusal for this query —
