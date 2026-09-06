@@ -37,6 +37,7 @@ export type TilesColumns = {
 };
 
 const REQUEST_TIMEOUT_MS = 30_000;
+const DOWNLOAD_TIMEOUT_MS = 10 * 60_000;
 
 function tilerUrl(): string | null {
   return process.env.TILER_URL || null;
@@ -86,7 +87,12 @@ export async function getTileJob(id: string): Promise<TileJob | null> {
 }
 
 async function downloadToFile(url: string, destination: string): Promise<void> {
-  const response = await fetch(url);
+  // Generous ceiling (archives are tens of MB): a slow pull finishes, a
+  // stalled one aborts — the signal also rejects the body stream mid-pipe,
+  // so a wedged connection can never hang the poll tick forever.
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(DOWNLOAD_TIMEOUT_MS),
+  });
   if (!response.ok || !response.body) {
     throw new Error(`Tiler download failed: ${response.status} for ${url}`);
   }
