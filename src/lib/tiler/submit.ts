@@ -56,7 +56,18 @@ export async function submitTilesForDataset(datasetId: string): Promise<void> {
         : undefined
     );
     if (Object.keys(columns).length > 0) {
-      await prisma.dataset.update({ where: { id: datasetId }, data: columns });
+      // Phase 3: a failed submit is a failed refresh — feed the admin-review
+      // counters so a multi-day tiler outage flags datasets like any other
+      // persistent failure. Reconcile clears both on the next success.
+      const data =
+        columns.tilesState === "failed"
+          ? {
+              ...columns,
+              consecutiveFailures: { increment: 1 },
+              lastError: columns.tilesError ?? "tile job submit failed",
+            }
+          : columns;
+      await prisma.dataset.update({ where: { id: datasetId }, data });
     }
   } catch (error) {
     console.error(`Tiles submit for dataset ${datasetId} failed:`, error);
