@@ -96,6 +96,8 @@ export const DatasetSchema = z.object({
   // Latest tile-bake job state ("pending" | "done" | "failed"); optional so
   // card-shaped selects that don't fetch it still parse.
   tilesState: z.string().nullable().optional(),
+  // Job id doubles as the served archive name: /api/tiles/{tilesJobId}.pmtiles
+  tilesJobId: z.string().nullable().optional(),
   dataCount: z.number(),
   stats: DatasetStatsSchema.nullable(),
   createdAt: z.coerce.date(),
