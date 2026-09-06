@@ -35,6 +35,36 @@ Gotchas learned:
 - Age-legend counts (7/30/90d buckets) are empty for tiles-only datasets — tiler bands are
   90/365/730d. Known limitation; map colors unaffected.
 
+## Round 4: PHASE 3 — the tiler IS the data source (2026-09-06 evening, E2E-verified)
+
+Tiler PR #40 MERGED (keepMeta → @meta in ndjson only, tiles byte-identical via
+tippecanoe -x; ageBandsDays → per-feature ageBands in stats). App side:
+- Refresh = submit (cron + manual): no app-side Overpass fetch at all; Overpass load per
+  refresh halved. Manual refresh responds `{success, tilesState, tilesJobId}` instantly;
+  the queued sr-announcement + live TilesPendingNotice (shared useTilesStatus hook) flip
+  the page when the bake lands. Old archive/stats keep serving meanwhile.
+- reconcileDataset is THE refresh writer: tiler stats (now incl. the age dimension mapped
+  from ageBands — the age-legend gap is FIXED for all tile datasets), lastChecked (health
+  keys on it), failure counters (reset on success; increment + lastError on job failure,
+  sweep-404, and submit-time outage). Archive-download failures stay pending and retry.
+- GeoJSON backfill: under-boundary datasets (features×500 ≤ 25 MB) pull data.ndjson and
+  rebuild the geojson column in the EXACT stored shape (flat tags + unprefixed
+  id/user/uid/timestamp/version/changeset) — export/?slim/detail-panel meta verified
+  byte-shape-identical. Over-boundary rows store jsonb null (established convention).
+- Creation = probe-only for every size; DatasetTooLargeError is tiler-off-only now.
+- Kill switch intact: TILER_URL unset = full legacy path (unit-covered).
+
+E2E: drinking-water refresh → instant submit, reconcile fills stats+age dim+backfilled
+geojson (verified properties + export 200 + age legend counts in tiles mode); SP
+street-network refresh → 245,136 features, no ndjson pull, lastChecked advanced, both
+archive generations retained; outage drill → consecutiveFailures 1 + lastError with old
+data serving, recovery resets to 0. Unit suite 426 green.
+
+Known deferred: blue/green tile swap — during a refresh bake the NEW pending tilesJobId
+replaces the pointer, so big (no-geojson) datasets show the processing panel instead of
+the previous archive until reconcile (~minutes). Fix = a served-job column; revisit with
+the DatasetSnapshot-model question at PR time.
+
 ## Round 3: São Paulo (metro-class) — VALIDATED (2026-09-06 evening)
 
 - Count-probe raised-budget retry added (`withRaisedProbeBudgets`: [timeout:180] +
