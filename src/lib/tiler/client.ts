@@ -55,6 +55,12 @@ const REQUEST_TIMEOUT_MS = 30_000;
 export const LARGE_JOB_MAXSIZE_BYTES = 1024 * 1024 * 1024;
 export const LARGE_JOB_TIMEOUT_SECONDS = 1800;
 
+// The map legend's age buckets (recent/medium/older/very-old — see
+// ageCategoryOfTs in src/lib/feature-age.ts). Sent as ageBandsDays so the
+// tiler's stats carry matching per-feature counts; mapped back to the stored
+// age dimension at pull time (tiler/stats.ts).
+export const AGE_LEGEND_BANDS_DAYS = [7, 30, 90];
+
 function tilerUrl(): string | null {
   return process.env.TILER_URL || null;
 }
@@ -78,6 +84,8 @@ export async function submitTileJob(input: {
   filterableTags?: string[];
   maxsize?: number;
   timeout?: number;
+  keepMeta?: boolean;
+  ageBandsDays?: number[];
 }): Promise<void> {
   const response = await fetch(`${tilerUrl()}/jobs`, {
     method: "POST",
@@ -124,7 +132,9 @@ async function downloadToFile(url: string, destination: string): Promise<void> {
 
 /**
  * Pull output.pmtiles and stats.json for a done job into TILES_DIR as
- * `{jobId}.pmtiles` / `{jobId}.stats.json`.
+ * `{jobId}.pmtiles` / `{jobId}.stats.json`. With includeNdjson, also pull
+ * `data.ndjson` (the geojson-backfill source — only requested for datasets
+ * whose features fit the storage cap).
  */
 export async function downloadTileOutputs(id: string): Promise<void> {
   const dir = tilesDir();
@@ -136,6 +146,20 @@ export async function downloadTileOutputs(id: string): Promise<void> {
   await downloadToFile(
     `${tilerUrl()}/jobs/${id}/stats.json`,
     path.join(dir, `${id}.stats.json`)
+  );
+}
+
+/**
+ * Pull data.ndjson (the geojson-backfill source) as `{jobId}.ndjson`.
+ * Requested separately — only for datasets whose features fit the storage
+ * cap, decided after the stats are read.
+ */
+export async function downloadTileNdjson(id: string): Promise<void> {
+  const dir = tilesDir();
+  await mkdir(dir, { recursive: true });
+  await downloadToFile(
+    `${tilerUrl()}/jobs/${id}/data.ndjson`,
+    path.join(dir, `${id}.ndjson`)
   );
 }
 
@@ -168,7 +192,7 @@ export async function pruneTileArchives(datasetId: string): Promise<void> {
     .filter((e) => /^\d+$/.test(e))
     .sort((a, b) => Number(b) - Number(a));
   for (const epoch of epochs.slice(2)) {
-    for (const suffix of [".pmtiles", ".stats.json"]) {
+    for (const suffix of [".pmtiles", ".stats.json", ".ndjson"]) {
       await unlink(path.join(tilesDir(), `${datasetId}-${epoch}${suffix}`)).catch(
         () => {}
       );
@@ -191,7 +215,16 @@ export async function submitTilesColumns(
   if (!tilerEnabled()) return {};
   const id = newTileJobId(datasetId);
   try {
-    await submitTileJob({ id, query, filterableTags, ...budgets });
+    // keepMeta feeds the geojson backfill (editor metadata in the ndjson);
+    // ageBandsDays gives the stats age-legend counts in the app's buckets.
+    await submitTileJob({
+      id,
+      query,
+      filterableTags,
+      keepMeta: true,
+      ageBandsDays: AGE_LEGEND_BANDS_DAYS,
+      ...budgets,
+    });
     return { tilesJobId: id, tilesState: "pending", tilesError: null };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

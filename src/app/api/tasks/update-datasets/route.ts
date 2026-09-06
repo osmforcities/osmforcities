@@ -8,6 +8,7 @@ import {
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
 import { submitTilesForDataset } from "@/lib/tiler/submit";
+import { tilerEnabled } from "@/lib/tiler/client";
 import { pollPendingTileJobs } from "@/lib/tiler/poll";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
@@ -162,24 +163,28 @@ export async function POST(req: NextRequest) {
       }
 
       try {
+        if (tilerEnabled()) {
+          // Phase 3: refresh = submit. The tiler is the data source; the row
+          // keeps serving its previous archive/stats until the bake lands and
+          // reconcileDataset swaps them (lastChecked advances there too).
+          await submitTilesForDataset(dataset.id);
+        } else {
+          const snapshot = await fetchDatasetSnapshot(
+            dataset.areaId,
+            dataset.template.overpassQuery,
+            dataset.templateId
+          );
 
-        const snapshot = await fetchDatasetSnapshot(
-          dataset.areaId,
-          dataset.template.overpassQuery,
-          dataset.templateId
-        );
-
-        await prisma.dataset.update({
-          where: { id: dataset.id },
-          data: {
-            ...snapshotDatasetColumns(snapshot),
-            updatedAt: new Date(),
-            consecutiveFailures: 0,
-            lastError: null,
-          },
-        });
-
-        await submitTilesForDataset(dataset.id);
+          await prisma.dataset.update({
+            where: { id: dataset.id },
+            data: {
+              ...snapshotDatasetColumns(snapshot),
+              updatedAt: new Date(),
+              consecutiveFailures: 0,
+              lastError: null,
+            },
+          });
+        }
 
         analyticsEvents.push(
           trackEvent(

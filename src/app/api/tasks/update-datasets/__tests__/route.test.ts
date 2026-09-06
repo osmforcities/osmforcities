@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
@@ -39,6 +39,7 @@ vi.mock("@/lib/tiler/poll", () => ({
 }));
 
 import { Prisma } from "@prisma/client";
+import { submitTilesForDataset } from "@/lib/tiler/submit";
 import { POST } from "../route";
 import { DatasetSizeCheckTimeoutError } from "@/lib/dataset-snapshot";
 import {
@@ -82,6 +83,8 @@ const updateCallsMatching = (predicate: (data: Record<string, unknown>) => boole
 describe("POST /api/tasks/update-datasets", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Legacy (tiler-off) refresh path — phase-3 submit path tested below
+    vi.stubEnv("TILER_URL", "");
     process.env.CRON_ROUTE_SECRET = "secret";
     process.env.DATASET_UPDATE_LIMIT = "1";
     vi.mocked(prisma.dataset.findMany).mockResolvedValue([dataset] as never);
@@ -241,5 +244,31 @@ describe("POST /api/tasks/update-datasets", () => {
     );
     expect(res.status).toBe(401);
     expect(prisma.dataset.findMany).not.toHaveBeenCalled();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  describe("phase 3 (tiler enabled): refresh = submit", () => {
+    beforeEach(() => {
+      vi.stubEnv("TILER_URL", "http://127.0.0.1:8099");
+    });
+
+    it("claims and submits — no app-side fetch, no column write", async () => {
+      const res = await call();
+      const body = await res.json();
+
+      expect(body.data.successful).toBe(1);
+      expect(fetchDatasetSnapshot).not.toHaveBeenCalled();
+      expect(submitTilesForDataset).toHaveBeenCalledWith("ds-1");
+      // Only the claim touches the row; data lands at reconcile
+      expect(
+        updateCallsMatching((d) => d.lastAttempted instanceof Date)
+      ).toHaveLength(1);
+      expect(
+        updateCallsMatching((d) => "lastChecked" in d || "geojson" in d)
+      ).toHaveLength(0);
+    });
   });
 });

@@ -377,11 +377,16 @@ export async function fetchDatasetSnapshot(
       throw retryError;
     }
   }
+  if (tilesLane) {
+    // Phase 3: the tiler is the data source for EVERY size. Creation stores
+    // the probe count and the caller submits the bake; stats (and, for
+    // under-cap datasets, the geojson column) arrive at reconcile. The 25 MB
+    // boundary is now only the backfill decision at pull time.
+    return tilesOnlySnapshot(elementCount);
+  }
+
   const estimatedBytes = elementCount * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE;
   if (estimatedBytes > MAX_DATASET_BYTES) {
-    if (tilesLane) {
-      return tilesOnlySnapshot(elementCount);
-    }
     await recordSizeCheck(areaId, templateId, "too_large", { estimatedBytes });
     throw new DatasetTooLargeError(estimatedBytes, true);
   }
@@ -394,10 +399,6 @@ export async function fetchDatasetSnapshot(
     );
   } catch (error) {
     if (error instanceof OverpassResponseTooLargeError) {
-      // Estimate said under, actual said over: same routing decision
-      if (tilesLane) {
-        return tilesOnlySnapshot(elementCount);
-      }
       await recordSizeCheck(areaId, templateId, "too_large", {
         estimatedBytes,
         actualBytes: error.bytesRead,

@@ -444,10 +444,12 @@ describe("fetchDatasetSnapshot — tiles-only lane (tiler enabled)", () => {
     );
   });
 
-  it("leaves under-cap datasets on the full-snapshot path", async () => {
-    const snapshot = await fetchFullSnapshot(1, "query", "tpl-1");
-    expect(snapshot.tilesOnly).toBeFalsy();
-    expect(snapshot.geojson.type).toBe("FeatureCollection");
+  it("returns a probe-only snapshot for under-cap datasets too (phase 3)", async () => {
+    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    expect(snapshot.tilesOnly).toBe(true);
+    expect(snapshot.dataCount).toBe(2);
+    // Count probe only — the app never fetches the feature data
+    expect(vi.mocked(fetch)).toHaveBeenCalledTimes(1);
   });
 });
 
