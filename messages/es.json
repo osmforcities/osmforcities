@@ -136,6 +136,8 @@
     "tilesFailedTitle": "Falló el procesamiento del mapa",
     "tilesFailedTooLarge": "Este conjunto de datos es demasiado grande para procesarlo ahora.",
     "tilesFailedRetryNote": "Se reintentará en la próxima actualización programada.",
+    "refreshQueued": "Actualización en cola: los nuevos datos aparecerán al terminar el procesamiento.",
+    "tilesRefreshFailedNotice": "La última actualización de datos falló; se muestra la versión anterior.",
     "backToHome": "Volver al Inicio",
     "emptyTitle": "No se encontró ningún {dataset} en {area}",
     "emptyDescription": "Este conjunto de datos aún no tiene elementos en esta área. Puede que no exista aquí, o que los datos no se hayan mapeado en OpenStreetMap.",

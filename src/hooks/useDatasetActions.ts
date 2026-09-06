@@ -87,6 +87,7 @@ export function useDatasetActions() {
     error?: string;
     dataCount?: number;
     lastChecked?: Date;
+    tilesState?: string | null;
   }> => {
     setIsLoading(true);
     try {
@@ -98,6 +99,7 @@ export function useDatasetActions() {
         success: result.success,
         dataCount: result.dataCount,
         lastChecked: result.lastChecked,
+        tilesState: result.tilesState,
       };
     } catch (error) {
       console.error("Error refreshing dataset:", error);

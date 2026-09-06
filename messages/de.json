@@ -136,6 +136,8 @@
     "tilesFailedTitle": "Kartenverarbeitung fehlgeschlagen",
     "tilesFailedTooLarge": "Dieser Datensatz ist derzeit zu groß für die Verarbeitung.",
     "tilesFailedRetryNote": "Beim nächsten geplanten Update wird es erneut versucht.",
+    "refreshQueued": "Aktualisierung eingereiht — neue Daten erscheinen nach Abschluss der Verarbeitung.",
+    "tilesRefreshFailedNotice": "Die letzte Datenaktualisierung ist fehlgeschlagen; die vorherige Version wird angezeigt.",
     "backToHome": "Zurück zur Startseite",
     "emptyTitle": "Keine Objekte für „{dataset}“ in {area} gefunden",
     "emptyDescription": "Dieser Datensatz enthält in diesem Gebiet noch keine Objekte. Möglicherweise gibt es hier keine, oder die Daten wurden in OpenStreetMap noch nicht erfasst.",

@@ -136,6 +136,8 @@
     "tilesFailedTitle": "Échec du traitement de la carte",
     "tilesFailedTooLarge": "Ce jeu de données est trop volumineux pour être traité pour le moment.",
     "tilesFailedRetryNote": "Une nouvelle tentative aura lieu à la prochaine mise à jour planifiée.",
+    "refreshQueued": "Mise à jour en file d'attente — les nouvelles données apparaîtront une fois le traitement terminé.",
+    "tilesRefreshFailedNotice": "La dernière mise à jour des données a échoué ; la version précédente est affichée.",
     "backToHome": "Retour à l'accueil",
     "emptyTitle": "Aucun élément « {dataset} » trouvé dans {area}",
     "emptyDescription": "Ce jeu de données ne contient encore aucun élément dans cette zone. Il n'existe peut-être pas ici, ou les données n'ont pas été cartographiées dans OpenStreetMap.",

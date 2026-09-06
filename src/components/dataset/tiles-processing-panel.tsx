@@ -15,13 +15,13 @@ type TilesStatus = {
 const POLL_MS = 4000;
 
 /**
- * Fills the map area while a tile bake runs: live stage + progress from the
- * tiles-status proxy, page refresh the moment the archive is ready. Without
- * this, a tiles-only dataset (no geojson at all) would sit on an eternal
- * empty state.
+ * Poll the tiles-status proxy while a bake runs; refresh the page the moment
+ * the archive lands (the proxy reconciles on demand, so "done" means the
+ * pulled data is already in the row). Shared by the full processing panel
+ * (tiles-only datasets) and the small refresh notice (datasets still
+ * rendering their previous data).
  */
-export function TilesProcessingPanel({ datasetId }: { datasetId: string }) {
-  const t = useTranslations("DatasetPage");
+function useTilesStatus(datasetId: string): TilesStatus | null {
   const router = useRouter();
   const [status, setStatus] = useState<TilesStatus | null>(null);
 
@@ -53,6 +53,18 @@ export function TilesProcessingPanel({ datasetId }: { datasetId: string }) {
       if (timer) clearTimeout(timer);
     };
   }, [datasetId, router]);
+
+  return status;
+}
+
+/**
+ * Fills the map area while a tile bake runs: live stage + progress. Without
+ * this, a tiles-only dataset (no geojson at all) would sit on an eternal
+ * empty state.
+ */
+export function TilesProcessingPanel({ datasetId }: { datasetId: string }) {
+  const t = useTranslations("DatasetPage");
+  const status = useTilesStatus(datasetId);
 
   const stage = status?.stage ?? "queued";
   const pct = status?.progress?.pct;
@@ -109,5 +121,26 @@ export function TilesProcessingPanel({ datasetId }: { datasetId: string }) {
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * One-line variant for datasets that keep rendering their previous data
+ * during a refresh bake: shows the pending notice, flips the page when the
+ * new data lands, downgrades to a quiet failure line if the bake fails.
+ */
+export function TilesPendingNotice({ datasetId }: { datasetId: string }) {
+  const t = useTranslations("DatasetPage");
+  const status = useTilesStatus(datasetId);
+
+  if (status?.state === "failed") {
+    return (
+      <p className="mt-2 text-xs text-orange-700">
+        {t("tilesRefreshFailedNotice")}
+      </p>
+    );
+  }
+  return (
+    <p className="mt-2 text-xs text-gray-500">{t("tilesProcessingNotice")}</p>
   );
 }
