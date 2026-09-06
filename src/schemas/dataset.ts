@@ -98,6 +98,9 @@ export const DatasetSchema = z.object({
   tilesState: z.string().nullable().optional(),
   // Job id doubles as the served archive name: /api/tiles/{tilesJobId}.pmtiles
   tilesJobId: z.string().nullable().optional(),
+  // True when the DB row holds geojson even if it was stripped from this
+  // payload (tiles render instead) — gates the export/download affordance.
+  hasGeojson: z.boolean().optional(),
   dataCount: z.number(),
   stats: DatasetStatsSchema.nullable(),
   createdAt: z.coerce.date(),
