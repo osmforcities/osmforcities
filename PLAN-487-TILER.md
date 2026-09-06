@@ -1,5 +1,27 @@
 # App ↔ tiler integration: submit, poll, pull, serve, surface (issue #487 phases 1–2, app side)
 
+## Status (2026-09-06)
+
+ALL 7 STEPS IMPLEMENTED AND COMMITTED on `feat/487-tiler-client` (local only, no push/PR).
+E2E-verified against a live local tiler (tunnel + pmtiler on :8099, dev server :3001):
+
+- create via `POST /api/datasets` (Baarle-Nassau drinking-water) → job submitted, baked,
+  `filterDimensions` from template filterableTags
+- cron tick → `tiles: {checked:1, completed:1}`; archive + stats in `data/tiles/`;
+  job acked (404 on tiler); `GET /api/tiles/{jobId}.pmtiles` answers 206 with correct
+  Content-Range; file starts with PMTiles magic
+- outage path: tiler stopped, admin refresh → snapshot succeeds untouched
+  (`lastError` null, 0 failures), `tilesState=failed / tilesError="fetch failed"`;
+  dashboard card shows "Tiles failed"; admin page failed-bakes list shows it;
+  NOT in Flagged datasets (tiles never dirty the refresh queue)
+- recovery: tiler restarted, refresh → pending; dataset page shows the processing
+  notice; cron → done, tilesError cleared, current + previous archives both kept
+- `pnpm type-check` clean; unit suite: 24 new tiler tests green, only pre-existing
+  data-dependent failures remain (need populated 5433 test DB)
+
+Remaining before PR (future session): remove this file from the branch, review diff,
+push + draft PR on explicit go. Test admin user was granted isAdmin in the worktree DB.
+
 ## Context
 
 The tiler (overpass-pmtiler) is done and API-stable (`overpass-pmtiler/API.md`). The app has
