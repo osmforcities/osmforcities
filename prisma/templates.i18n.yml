@@ -2329,6 +2329,32 @@ templates:
       es: Carreteras
       fr: Routes
       de: Straßen
+  street-network:
+    name:
+      en: Street network
+      pt: Malha viária
+      es: Red vial
+      fr: Réseau viaire
+      de: Straßennetz
+    desc:
+      en: The complete street and path network
+      pt: A malha completa de vias e caminhos
+      es: La red completa de calles y caminos
+      fr: Le réseau complet de rues et de chemins
+      de: Das vollständige Straßen- und Wegenetz
+  buildings:
+    name:
+      en: Buildings
+      pt: Edificações
+      es: Edificios
+      fr: Bâtiments
+      de: Gebäude
+    desc:
+      en: All building footprints
+      pt: Todas as edificações mapeadas
+      es: Todas las huellas de edificios
+      fr: Toutes les emprises de bâtiments
+      de: Alle Gebäudegrundrisse
   footways:
     name:
       en: Footways

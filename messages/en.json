@@ -706,6 +706,7 @@
     }
   },
   "TagLabel": {
+    "highway": "Road class",
     "shelter": "Shelter",
     "bench": "Bench",
     "covered": "Covered",
