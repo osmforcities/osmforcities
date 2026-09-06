@@ -28,6 +28,7 @@ import { useMapData, useFeatureSelection } from "./map/hooks";
 import { INTERACTIVE_LAYER_IDS } from "./map/layers/layer-ids";
 import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
+import { TilesProcessingPanel } from "./tiles-processing-panel";
 import { MapZoomControl } from "@/components/ui/map-zoom-control";
 import { mapStyle } from "@/lib/map-tiles";
 import { AGE_COLORS } from "./map/layers/map-style";
@@ -204,6 +205,11 @@ export const DatasetFullMap = forwardRef<
 
   // Early return for no data — tiles mode needs no geojson
   if (!dataset.geojson && !tilesPath) {
+    // Tiles-only dataset mid-bake (or failed): live job status instead of an
+    // eternal empty state
+    if (dataset.tilesState === "pending" || dataset.tilesState === "failed") {
+      return <TilesProcessingPanel datasetId={dataset.id} />;
+    }
     return <MapNoDataState hasData={false} />;
   }
 
