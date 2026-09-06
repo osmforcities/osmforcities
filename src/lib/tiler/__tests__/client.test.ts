@@ -66,6 +66,14 @@ describe("getTileJob", () => {
     );
     await expect(getTileJob("d1-1")).rejects.toThrow("500");
   });
+
+  it("fails fast with a clear error when TILER_URL is unset", async () => {
+    vi.stubEnv("TILER_URL", "");
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(getTileJob("d1-1")).rejects.toThrow("TILER_URL is not set");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 });
 
 describe("submitTilesColumns", () => {

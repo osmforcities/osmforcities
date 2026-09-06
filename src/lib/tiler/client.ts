@@ -43,6 +43,14 @@ function tilerUrl(): string | null {
   return process.env.TILER_URL || null;
 }
 
+// Fail fast with a clear error instead of fetching "null/jobs/..." if a
+// caller forgets the tilerEnabled() gate.
+function requireTilerUrl(): string {
+  const url = tilerUrl();
+  if (!url) throw new Error("TILER_URL is not set (tiler integration disabled)");
+  return url;
+}
+
 export function tilerEnabled(): boolean {
   return tilerUrl() !== null;
 }
@@ -61,7 +69,7 @@ export async function submitTileJob(input: {
   query: string;
   filterableTags?: string[];
 }): Promise<void> {
-  const response = await fetch(`${tilerUrl()}/jobs`, {
+  const response = await fetch(`${requireTilerUrl()}/jobs`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
@@ -76,7 +84,7 @@ export async function submitTileJob(input: {
 
 /** null when the job is unknown (404 — swept or never submitted). */
 export async function getTileJob(id: string): Promise<TileJob | null> {
-  const response = await fetch(`${tilerUrl()}/jobs/${id}`, {
+  const response = await fetch(`${requireTilerUrl()}/jobs/${id}`, {
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
   if (response.status === 404) return null;
@@ -102,10 +110,15 @@ async function downloadToFile(url: string, destination: string): Promise<void> {
     path.dirname(destination),
     `.tmp-${path.basename(destination)}`
   );
-  await pipeline(
-    Readable.fromWeb(response.body as import("stream/web").ReadableStream),
-    createWriteStream(temp)
-  );
+  try {
+    await pipeline(
+      Readable.fromWeb(response.body as import("stream/web").ReadableStream),
+      createWriteStream(temp)
+    );
+  } catch (error) {
+    await unlink(temp).catch(() => {}); // don't let a partial temp linger
+    throw error;
+  }
   await rename(temp, destination);
 }
 
@@ -117,18 +130,18 @@ export async function downloadTileOutputs(id: string): Promise<void> {
   const dir = tilesDir();
   await mkdir(dir, { recursive: true });
   await downloadToFile(
-    `${tilerUrl()}/jobs/${id}/output.pmtiles`,
+    `${requireTilerUrl()}/jobs/${id}/output.pmtiles`,
     path.join(dir, `${id}.pmtiles`)
   );
   await downloadToFile(
-    `${tilerUrl()}/jobs/${id}/stats.json`,
+    `${requireTilerUrl()}/jobs/${id}/stats.json`,
     path.join(dir, `${id}.stats.json`)
   );
 }
 
 /** Ack a pulled job so the tiler frees its spool. 404 (already swept) is fine. */
 export async function ackTileJob(id: string): Promise<void> {
-  const response = await fetch(`${tilerUrl()}/jobs/${id}`, {
+  const response = await fetch(`${requireTilerUrl()}/jobs/${id}`, {
     method: "DELETE",
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
