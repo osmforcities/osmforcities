@@ -12,6 +12,7 @@ import {
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
 import { Prisma } from "@prisma/client";
+import { submitTilesForDataset } from "@/lib/tiler/submit";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { createLogger } from "@/lib/logger";
@@ -231,6 +232,8 @@ async function createDatasetOnDemand(
       },
       select: DATASET_DETAIL_SELECT,
     });
+
+    await submitTilesForDataset(dataset.id);
 
     await trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`);
 

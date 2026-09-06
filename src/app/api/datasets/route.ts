@@ -12,6 +12,7 @@ import {
   DatasetTooLargeError,
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
+import { submitTilesForDataset } from "@/lib/tiler/submit";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
@@ -104,6 +105,8 @@ export async function POST(req: NextRequest) {
       },
       include: { template: true },
     });
+
+    await submitTilesForDataset(dataset.id);
 
     await trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`, getClientInfo(req));
 

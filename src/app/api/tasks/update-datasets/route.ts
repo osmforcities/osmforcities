@@ -7,6 +7,7 @@ import {
   DatasetTooLargeError,
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
+import { submitTilesForDataset } from "@/lib/tiler/submit";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import {
@@ -176,6 +177,8 @@ export async function POST(req: NextRequest) {
             lastError: null,
           },
         });
+
+        await submitTilesForDataset(dataset.id);
 
         analyticsEvents.push(
           trackEvent(
