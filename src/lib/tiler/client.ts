@@ -46,6 +46,12 @@ export type TilesColumns = {
 
 const REQUEST_TIMEOUT_MS = 30_000;
 
+// Budgets injected into over-cap (tiles-only) jobs: the tiler puts them into
+// the query's settings block. 3 GiB clears Amsterdam-class buildings with
+// headroom under the tiler's 4 GiB cap; SP-class measured 2.23 GB (#322).
+export const LARGE_JOB_MAXSIZE_BYTES = 3 * 1024 * 1024 * 1024;
+export const LARGE_JOB_TIMEOUT_SECONDS = 1800;
+
 function tilerUrl(): string | null {
   return process.env.TILER_URL || null;
 }
@@ -67,6 +73,8 @@ export async function submitTileJob(input: {
   id: string;
   query: string;
   filterableTags?: string[];
+  maxsize?: number;
+  timeout?: number;
 }): Promise<void> {
   const response = await fetch(`${tilerUrl()}/jobs`, {
     method: "POST",
@@ -174,12 +182,13 @@ export async function pruneTileArchives(datasetId: string): Promise<void> {
 export async function submitTilesColumns(
   datasetId: string,
   query: string,
-  filterableTags: string[]
+  filterableTags: string[],
+  budgets?: { maxsize: number; timeout: number }
 ): Promise<TilesColumns> {
   if (!tilerEnabled()) return {};
   const id = newTileJobId(datasetId);
   try {
-    await submitTileJob({ id, query, filterableTags });
+    await submitTileJob({ id, query, filterableTags, ...budgets });
     return { tilesJobId: id, tilesState: "pending", tilesError: null };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

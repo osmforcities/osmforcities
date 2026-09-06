@@ -17,6 +17,8 @@ import {
 } from "@/lib/filter-dimensions";
 import type { Bbox } from "@/types/geojson";
 import { prisma } from "@/lib/db";
+import { Prisma } from "@prisma/client";
+import { tilerEnabled } from "@/lib/tiler/client";
 import {
   MAX_DATASET_BYTES,
   OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
@@ -142,12 +144,24 @@ export type StoredDatasetStats = {
     : DatasetStats[K];
 };
 
-export interface DatasetSnapshot {
-  geojson: FeatureCollection;
-  stats: DatasetStats;
-  bbox: Bbox | null;
-  dataCount: number;
-}
+export type DatasetSnapshot =
+  | {
+      tilesOnly?: false;
+      geojson: FeatureCollection;
+      stats: DatasetStats;
+      bbox: Bbox | null;
+      dataCount: number;
+    }
+  | {
+      // Over-cap dataset routed to the tiler (the tiles-only lane): the app
+      // never fetches the features; stats/bbox arrive when the archive is
+      // pulled (reconcileDataset), geojson never does.
+      tilesOnly: true;
+      geojson: null;
+      stats: null;
+      bbox: null;
+      dataCount: number;
+    };
 
 /**
  * The Dataset row columns derived from a snapshot, spreadable into both
@@ -156,6 +170,18 @@ export interface DatasetSnapshot {
  * strings (structuredClone would preserve them).
  */
 export function snapshotDatasetColumns(snapshot: DatasetSnapshot) {
+  if (snapshot.tilesOnly) {
+    return {
+      geojson: Prisma.JsonNull,
+      bbox: Prisma.JsonNull,
+      stats: Prisma.JsonNull,
+      dataCount: snapshot.dataCount,
+      lastChecked: new Date(),
+      lastEditedAt: null,
+      contributorsCount: null,
+      recentlyEditedCount: null,
+    };
+  }
   return {
     geojson: JSON.parse(JSON.stringify(snapshot.geojson)),
     bbox: snapshot.bbox ? JSON.parse(JSON.stringify(snapshot.bbox)) : null,
@@ -166,6 +192,10 @@ export function snapshotDatasetColumns(snapshot: DatasetSnapshot) {
     contributorsCount: snapshot.stats.editorsCount,
     recentlyEditedCount: snapshot.stats.recentActivity.elementsEdited,
   };
+}
+
+function tilesOnlySnapshot(dataCount: number): DatasetSnapshot {
+  return { tilesOnly: true, geojson: null, stats: null, bbox: null, dataCount };
 }
 
 function extractDatasetStats(overpassData: OverpassData): DatasetStats {
@@ -297,13 +327,23 @@ export async function fetchDatasetSnapshot(
     areaId.toString()
   );
 
-  await assertNoFreshNegativeVerdict(areaId, templateId);
+  // With the tiler up, over-cap is a routing decision (tiles-only lane), not
+  // a refusal — so a cached too_large verdict must not block the count probe,
+  // and no fresh too_large verdict is recorded when the lane takes over.
+  const tilesLane = tilerEnabled();
+
+  try {
+    await assertNoFreshNegativeVerdict(areaId, templateId);
+  } catch (error) {
+    if (!(tilesLane && error instanceof DatasetTooLargeError)) throw error;
+  }
 
   // Cheap pre-flight: reject before Overpass serializes anything if the
   // estimated payload already exceeds the cap
+  let elementCount: number;
   let estimatedBytes: number;
   try {
-    const elementCount = await countOverpassElements(queryString);
+    elementCount = await countOverpassElements(queryString);
     estimatedBytes = elementCount * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE;
   } catch (error) {
     if (error instanceof OverpassTimeoutError) {
@@ -313,6 +353,9 @@ export async function fetchDatasetSnapshot(
     throw error;
   }
   if (estimatedBytes > MAX_DATASET_BYTES) {
+    if (tilesLane) {
+      return tilesOnlySnapshot(elementCount);
+    }
     await recordSizeCheck(areaId, templateId, "too_large", { estimatedBytes });
     throw new DatasetTooLargeError(estimatedBytes, true);
   }
@@ -325,6 +368,10 @@ export async function fetchDatasetSnapshot(
     );
   } catch (error) {
     if (error instanceof OverpassResponseTooLargeError) {
+      // Estimate said under, actual said over: same routing decision
+      if (tilesLane) {
+        return tilesOnlySnapshot(elementCount);
+      }
       await recordSizeCheck(areaId, templateId, "too_large", {
         estimatedBytes,
         actualBytes: error.bytesRead,

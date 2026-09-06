@@ -77,8 +77,19 @@ const findUnique = vi.mocked(prisma.areaSizeCheck.findUnique);
 const upsert = vi.mocked(prisma.areaSizeCheck.upsert);
 const templateFindUnique = vi.mocked(prisma.template.findUnique);
 
+// Narrows the snapshot union for the full-fetch assertions below.
+async function fetchFullSnapshot(
+  ...args: Parameters<typeof fetchDatasetSnapshot>
+) {
+  const snapshot = await fetchDatasetSnapshot(...args);
+  if (snapshot.tilesOnly) throw new Error("expected a full snapshot");
+  return snapshot;
+}
+
 describe("fetchDatasetSnapshot", () => {
   beforeEach(() => {
+    // Tiler disabled: these tests cover the classic size-capped path.
+    vi.stubEnv("TILER_URL", "");
     vi.stubGlobal("fetch", mockFetchImplementation(mockOverpassData));
     findUnique.mockReset();
     findUnique.mockResolvedValue(null);
@@ -90,6 +101,7 @@ describe("fetchDatasetSnapshot", () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
   });
 
   it("substitutes {OSM_RELATION_ID} in the raw query before calling Overpass", async () => {
@@ -108,23 +120,23 @@ describe("fetchDatasetSnapshot", () => {
   });
 
   it("returns correct dataCount from features length", async () => {
-    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    const snapshot = await fetchFullSnapshot(1, "query", "tpl-1");
     expect(snapshot.dataCount).toBe(2);
   });
 
   it("returns geojson as a FeatureCollection", async () => {
-    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    const snapshot = await fetchFullSnapshot(1, "query", "tpl-1");
     expect(snapshot.geojson.type).toBe("FeatureCollection");
     expect(Array.isArray(snapshot.geojson.features)).toBe(true);
   });
 
   it("returns stats with editorsCount matching unique users", async () => {
-    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    const snapshot = await fetchFullSnapshot(1, "query", "tpl-1");
     expect(snapshot.stats.editorsCount).toBe(2);
   });
 
   it("persists recency bands summing to the timestamped features / distinct mappers", async () => {
-    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    const snapshot = await fetchFullSnapshot(1, "query", "tpl-1");
     // Exact buckets depend on the current date (covered in dataset-recency
     // tests); here assert shape and totals: 2 timestamped features, 2 mappers.
     expect(snapshot.stats.editRecencyBands).toHaveLength(4);
@@ -138,7 +150,7 @@ describe("fetchDatasetSnapshot", () => {
   });
 
   it("persists geometry mix from the geojson features", async () => {
-    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    const snapshot = await fetchFullSnapshot(1, "query", "tpl-1");
     // 2 node fixtures -> 2 Point features, no lines/areas.
     expect(snapshot.stats.geometryMix).toEqual({
       points: 2,
@@ -150,7 +162,7 @@ describe("fetchDatasetSnapshot", () => {
   });
 
   it("persists tag counts from the geojson features", async () => {
-    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    const snapshot = await fetchFullSnapshot(1, "query", "tpl-1");
     // Both node fixtures carry a `name` tag -> one entry, count 2.
     expect(snapshot.stats.tagCounts).toEqual([{ key: "name", count: 2 }]);
   });
@@ -160,7 +172,7 @@ describe("fetchDatasetSnapshot", () => {
       filterableTags: ["name", "surface"],
     } as never);
 
-    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    const snapshot = await fetchFullSnapshot(1, "query", "tpl-1");
 
     // Both fixtures carry `name`; none carry `surface` — kept anyway
     // (keepEmpty), since a 100%-Missing curated key is the finding.
@@ -181,7 +193,7 @@ describe("fetchDatasetSnapshot", () => {
   });
 
   it("stores an age-only dimension list when the template curates no tags", async () => {
-    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    const snapshot = await fetchFullSnapshot(1, "query", "tpl-1");
 
     expect(snapshot.stats.filterDimensions?.map((d) => d.key)).toEqual(["age"]);
   });
@@ -191,7 +203,7 @@ describe("fetchDatasetSnapshot", () => {
       "fetch",
       mockFetchImplementation({ ...mockOverpassData, elements: [] })
     );
-    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    const snapshot = await fetchFullSnapshot(1, "query", "tpl-1");
     expect(snapshot.bbox).toBeNull();
   });
 
@@ -266,7 +278,7 @@ describe("fetchDatasetSnapshot", () => {
       checkedAt: new Date(Date.now() - 25 * 60 * 60 * 1000),
     });
 
-    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    const snapshot = await fetchFullSnapshot(1, "query", "tpl-1");
     expect(snapshot.dataCount).toBe(2);
     expect(upsert).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -306,7 +318,7 @@ describe("fetchDatasetSnapshot", () => {
       checkedAt: new Date(Date.now() - 31 * 60 * 1000),
     });
 
-    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    const snapshot = await fetchFullSnapshot(1, "query", "tpl-1");
     expect(snapshot.dataCount).toBe(2);
     expect(upsert).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -334,9 +346,77 @@ describe("fetchDatasetSnapshot", () => {
   });
 });
 
+describe("fetchDatasetSnapshot — tiles-only lane (tiler enabled)", () => {
+  const overCapCount =
+    Math.ceil(MAX_DATASET_BYTES / OVERPASS_BYTES_PER_ELEMENT_ESTIMATE) + 1;
+
+  beforeEach(() => {
+    vi.stubEnv("TILER_URL", "http://127.0.0.1:8099");
+    vi.stubGlobal("fetch", mockFetchImplementation(mockOverpassData));
+    findUnique.mockReset();
+    findUnique.mockResolvedValue(null);
+    upsert.mockReset();
+    upsert.mockResolvedValue({} as never);
+    templateFindUnique.mockReset();
+    templateFindUnique.mockResolvedValue({ filterableTags: [] } as never);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
+
+  it("routes an over-cap estimate to a tiles-only snapshot, records no verdict, skips the fetch", async () => {
+    vi.stubGlobal(
+      "fetch",
+      mockFetchImplementation(mockOverpassData, overCapCount)
+    );
+    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    expect(snapshot.tilesOnly).toBe(true);
+    expect(snapshot.dataCount).toBe(overCapCount);
+    expect(snapshot.geojson).toBeNull();
+    expect(snapshot.stats).toBeNull();
+    // No too_large verdict recorded (a 24h cache entry would block retries),
+    // and only the count probe ran — never the full fetch.
+    expect(upsert).not.toHaveBeenCalled();
+    expect(vi.mocked(fetch)).toHaveBeenCalledTimes(1);
+  });
+
+  it("ignores a cached too_large verdict and re-probes", async () => {
+    findUnique.mockResolvedValue({
+      status: "too_large",
+      checkedAt: new Date(),
+      estimatedBytes: 999_999_999,
+      actualBytes: null,
+    } as never);
+    vi.stubGlobal(
+      "fetch",
+      mockFetchImplementation(mockOverpassData, overCapCount)
+    );
+    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    expect(snapshot.tilesOnly).toBe(true);
+  });
+
+  it("still honors a fresh timeout verdict", async () => {
+    findUnique.mockResolvedValue({
+      status: "timeout",
+      checkedAt: new Date(),
+    } as never);
+    await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
+      DatasetSizeCheckTimeoutError
+    );
+  });
+
+  it("leaves under-cap datasets on the full-snapshot path", async () => {
+    const snapshot = await fetchFullSnapshot(1, "query", "tpl-1");
+    expect(snapshot.tilesOnly).toBeFalsy();
+    expect(snapshot.geojson.type).toBe("FeatureCollection");
+  });
+});
+
 describe("snapshotDatasetColumns", () => {
   const mostRecent = new Date("2025-01-01T00:00:00Z");
-  const makeSnapshot = (): DatasetSnapshot => ({
+  const makeSnapshot = (): Extract<DatasetSnapshot, { tilesOnly?: false }> => ({
     geojson: { type: "FeatureCollection", features: [] },
     bbox: [-0.2, 51.5, -0.1, 51.6],
     dataCount: 2,

@@ -6,12 +6,14 @@ import {
   ackTileJob,
   pruneTileArchives,
 } from "@/lib/tiler/client";
+import { readPulledStats } from "@/lib/tiler/stats";
 import { pollPendingTileJobs } from "@/lib/tiler/poll";
 
 vi.mock("@/lib/db", () => ({
   prisma: {
     dataset: {
       findMany: vi.fn(),
+      findUnique: vi.fn(),
       update: vi.fn(),
     },
   },
@@ -23,6 +25,12 @@ vi.mock("@/lib/tiler/client", async (importOriginal) => ({
   downloadTileOutputs: vi.fn(),
   ackTileJob: vi.fn(),
   pruneTileArchives: vi.fn(),
+}));
+
+// Keep the mapper real; only the file read is stubbed.
+vi.mock("@/lib/tiler/stats", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/tiler/stats")>()),
+  readPulledStats: vi.fn(),
 }));
 
 const pendingRow = { id: "ds-1", tilesJobId: "ds-1-100" };
@@ -37,6 +45,10 @@ beforeEach(() => {
   vi.clearAllMocks();
   vi.stubEnv("TILER_URL", "http://127.0.0.1:8099");
   vi.mocked(prisma.dataset.findMany).mockResolvedValue([pendingRow] as never);
+  // Non-null stored stats: the done-branch skips the tiler stats fill
+  vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+    stats: {},
+  } as never);
   vi.mocked(prisma.dataset.update).mockResolvedValue({} as never);
   vi.mocked(downloadTileOutputs).mockResolvedValue(undefined);
   vi.mocked(ackTileJob).mockResolvedValue(undefined);
@@ -74,6 +86,61 @@ describe("pollPendingTileJobs", () => {
     expect(updateData(0).tilesUpdatedAt).toBeInstanceOf(Date);
     expect(ackTileJob).toHaveBeenCalledWith("ds-1-100");
     expect(pruneTileArchives).toHaveBeenCalledWith("ds-1");
+  });
+
+  it("fills stats from the tiler's stats.json for tiles-only datasets", async () => {
+    vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "done" });
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+      stats: null,
+    } as never);
+    vi.mocked(readPulledStats).mockResolvedValue({
+      schemaVersion: 1,
+      features: 42,
+      editorsCount: 3,
+      changesetsCount: 4,
+      elementVersionsCount: 9,
+      oldestElement: "2020-01-01T00:00:00Z",
+      mostRecentElement: "2026-01-01T00:00:00Z",
+      averageElementAge: 100,
+      averageElementVersion: 2,
+      recentActivity: { elementsEdited: 5, changesets: 2, editors: 2 },
+      qualityMetrics: {},
+      editRecencyBands: [1, 1, 1, 39],
+      mapperRecencyBands: [1, 0, 0, 2],
+      tagCounts: [{ key: "building", count: 42 }],
+      filterDimensions: [],
+      geometryMix: { points: 0, lines: 0, areas: 42, lineKm: 0, areaKm2: 1 },
+      bbox: [1, 2, 3, 4],
+    });
+
+    const results = await pollPendingTileJobs();
+
+    expect(results.completed).toBe(1);
+    const data = updateData(0);
+    expect(data.tilesState).toBe("done");
+    expect(data.dataCount).toBe(42);
+    expect(data.contributorsCount).toBe(3);
+    expect(data.recentlyEditedCount).toBe(5);
+    expect(data.bbox).toEqual([1, 2, 3, 4]);
+    expect(data.lastEditedAt).toEqual(new Date("2026-01-01T00:00:00Z"));
+    expect(
+      (data.stats as { tagCounts: unknown[] }).tagCounts
+    ).toEqual([{ key: "building", count: 42 }]);
+  });
+
+  it("skips the stats fill on an unknown schemaVersion", async () => {
+    vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "done" });
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+      stats: null,
+    } as never);
+    vi.mocked(readPulledStats).mockResolvedValue({ schemaVersion: 2 });
+
+    const results = await pollPendingTileJobs();
+
+    expect(results.completed).toBe(1);
+    const data = updateData(0);
+    expect(data.tilesState).toBe("done");
+    expect(data.stats).toBeUndefined();
   });
 
   it("records a failed job with its errorKind prefix", async () => {

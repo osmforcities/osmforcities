@@ -7,6 +7,7 @@ import {
   tilerEnabled,
   type TileJob,
 } from "./client";
+import { readPulledStats, tilerStatsToDatasetColumns } from "./stats";
 
 export type TilePollResults = {
   checked: number;
@@ -40,9 +41,33 @@ export async function reconcileDataset(
   }
   if (job.state === "done") {
     await downloadTileOutputs(dataset.tilesJobId);
+
+    // Tiles-only datasets (no app-computed stats) take theirs from the
+    // tiler's stats.json; under-cap datasets keep the app's own numbers so
+    // any conversion drift between the two pipelines stays observable.
+    let statsColumns: Record<string, unknown> = {};
+    const row = await prisma.dataset.findUnique({
+      where: { id: dataset.id },
+      select: { stats: true },
+    });
+    if (row && row.stats === null) {
+      try {
+        const mapped = tilerStatsToDatasetColumns(
+          await readPulledStats(dataset.tilesJobId)
+        );
+        if (mapped) statsColumns = mapped;
+      } catch (error) {
+        console.error(
+          `Stats fill from tiler failed for dataset ${dataset.id}:`,
+          error
+        );
+      }
+    }
+
     await prisma.dataset.update({
       where: { id: dataset.id },
       data: {
+        ...statsColumns,
         tilesState: "done",
         tilesUpdatedAt: new Date(),
         tilesError: null,
