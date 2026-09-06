@@ -28,6 +28,14 @@ export type TileJob = {
   startedAt?: string;
   error?: string;
   errorKind?: string;
+  /** Present only while a stage runs: {stage, bytes|pct|features|total}. */
+  progress?: {
+    stage: string;
+    bytes?: number;
+    pct?: number;
+    features?: number;
+    total?: number;
+  };
 };
 
 /** Columns written next to snapshotDatasetColumns() at snapshot time —

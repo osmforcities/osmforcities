@@ -5,6 +5,7 @@ import {
   getTileJob,
   pruneTileArchives,
   tilerEnabled,
+  type TileJob,
 } from "./client";
 
 export type TilePollResults = {
@@ -14,12 +15,67 @@ export type TilePollResults = {
   stillPending: number;
 };
 
+export type ReconcileOutcome = "completed" | "failed" | "pending";
+
+/**
+ * Apply one tiler job's current state to its dataset row: pull + ack + prune
+ * on done, record failures, leave running jobs pending. Callers fetch the job
+ * themselves (the cron loop and the tiles-status endpoint share this; the
+ * endpoint also wants the raw job for progress display). Idempotent and safe
+ * to race with the cron poll: downloads are temp+rename, ack tolerates 404,
+ * and the done-update writes the same values.
+ */
+export async function reconcileDataset(
+  dataset: { id: string; tilesJobId: string },
+  job: TileJob | null
+): Promise<ReconcileOutcome> {
+  if (job === null) {
+    // Swept by the tiler before we pulled (PMTILER_MAX_AGE_DAYS). The next
+    // daily snapshot resubmits naturally.
+    await prisma.dataset.update({
+      where: { id: dataset.id },
+      data: { tilesState: "failed", tilesError: "job expired before pull" },
+    });
+    return "failed";
+  }
+  if (job.state === "done") {
+    await downloadTileOutputs(dataset.tilesJobId);
+    await prisma.dataset.update({
+      where: { id: dataset.id },
+      data: {
+        tilesState: "done",
+        tilesUpdatedAt: new Date(),
+        tilesError: null,
+      },
+    });
+    // Best-effort housekeeping: a failed ack just leaves the job for the
+    // tiler's own sweep. Prune never rejects (it logs internally).
+    await ackTileJob(dataset.tilesJobId).catch((error) => {
+      console.error(`Tile job ack failed for ${dataset.tilesJobId}:`, error);
+    });
+    await pruneTileArchives(dataset.id);
+    return "completed";
+  }
+  if (job.state === "failed") {
+    // errorKind "too_large" is a permanent refusal for this query —
+    // prefixed so nothing downstream blind-retries it.
+    const message =
+      (job.errorKind ? `${job.errorKind}: ` : "") +
+      (job.error ?? "tiler job failed");
+    await prisma.dataset.update({
+      where: { id: dataset.id },
+      data: { tilesState: "failed", tilesError: message },
+    });
+    return "failed";
+  }
+  return "pending";
+}
+
 /**
  * Reconcile every dataset with a pending tile job against the tiler — runs on
- * the existing cron tick, no scheduler of its own. Done jobs are pulled to
- * TILES_DIR, acked, and pruned; failures land in tilesError; transient errors
- * (tiler unreachable, download hiccup) leave the row pending for the next
- * tick. Never throws.
+ * the existing cron tick, no scheduler of its own. Transient errors (tiler
+ * unreachable, download hiccup) leave the row pending for the next tick.
+ * Never throws.
  */
 export async function pollPendingTileJobs(): Promise<TilePollResults> {
   const results: TilePollResults = {
@@ -47,46 +103,13 @@ export async function pollPendingTileJobs(): Promise<TilePollResults> {
     const jobId = dataset.tilesJobId as string;
     try {
       const job = await getTileJob(jobId);
-
-      if (job === null) {
-        // Swept by the tiler before we pulled (PMTILER_MAX_AGE_DAYS). The
-        // next daily snapshot resubmits naturally.
-        await prisma.dataset.update({
-          where: { id: dataset.id },
-          data: { tilesState: "failed", tilesError: "job expired before pull" },
-        });
-        results.failed++;
-      } else if (job.state === "done") {
-        await downloadTileOutputs(jobId);
-        await prisma.dataset.update({
-          where: { id: dataset.id },
-          data: {
-            tilesState: "done",
-            tilesUpdatedAt: new Date(),
-            tilesError: null,
-          },
-        });
-        // Best-effort housekeeping: a failed ack just leaves the job for the
-        // tiler's own sweep. Prune never rejects (it logs internally).
-        await ackTileJob(jobId).catch((error) => {
-          console.error(`Tile job ack failed for ${jobId}:`, error);
-        });
-        await pruneTileArchives(dataset.id);
-        results.completed++;
-      } else if (job.state === "failed") {
-        // errorKind "too_large" is a permanent refusal for this query —
-        // prefixed so nothing downstream blind-retries it.
-        const message =
-          (job.errorKind ? `${job.errorKind}: ` : "") +
-          (job.error ?? "tiler job failed");
-        await prisma.dataset.update({
-          where: { id: dataset.id },
-          data: { tilesState: "failed", tilesError: message },
-        });
-        results.failed++;
-      } else {
-        results.stillPending++;
-      }
+      const outcome = await reconcileDataset(
+        { id: dataset.id, tilesJobId: jobId },
+        job
+      );
+      if (outcome === "completed") results.completed++;
+      else if (outcome === "failed") results.failed++;
+      else results.stillPending++;
     } catch (error) {
       console.error(`Tile job poll failed for dataset ${dataset.id}:`, error);
       results.stillPending++;
