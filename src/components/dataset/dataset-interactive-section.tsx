@@ -13,6 +13,7 @@ import { DatasetPanelStats } from "@/components/dataset/dataset-panel-stats";
 import { DatasetTimestamps } from "@/components/dataset/dataset-timestamps";
 import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
 import { FeatureDetailPanel } from "@/components/dataset/feature-detail-panel";
+import { TilesPendingNotice } from "@/components/dataset/tiles-processing-panel";
 
 type DatasetInteractiveSectionProps = {
   dataset: Dataset;
@@ -87,6 +88,12 @@ export function DatasetInteractiveSection({
                 <CategoryFacet dataset={dataset} areaName={areaName} />
                 <DatasetTimestamps dataset={dataset} lastChecked={lastChecked} />
               </div>
+              {/* Live: polls tiles-status and refreshes the page when the
+                  refresh bake lands (the map keeps rendering the previous
+                  data meanwhile). */}
+              {dataset.tilesState === "pending" && (
+                <TilesPendingNotice datasetId={dataset.id} />
+              )}
             </div>
 
             {/* Section 2 — tiered stats: the only scrollable region. A tinted

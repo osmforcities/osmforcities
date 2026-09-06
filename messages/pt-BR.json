@@ -58,7 +58,9 @@
     "quotaInfoTooltip": "Cada usuário pode salvar até {limit, number} conjuntos de dados. Remova um do seu painel para liberar espaço.",
     "quotaInfoButtonLabel": "O que significa o limite de salvos?",
     "active": "Ativo",
-    "inactive": "Inativo"
+    "inactive": "Inativo",
+    "tilesProcessing": "Gerando tiles",
+    "tilesFailed": "Falha nos tiles"
   },
   "Public": {
     "metaTitle": "Conjuntos de Dados Públicos - OSM for Cities",
@@ -125,6 +127,17 @@
     "testEnvOnly": "Esta página está disponível apenas no ambiente de teste."
   },
   "DatasetPage": {
+    "tilesProcessingNotice": "Os dados do mapa estão sendo processados para renderização mais rápida.",
+    "tilesProcessingTitle": "Preparando os dados do mapa",
+    "tilesStageQueued": "Aguardando na fila",
+    "tilesStageFetching": "Buscando dados do OpenStreetMap ({mb, number} MB)",
+    "tilesStageConverting": "Convertendo elementos ({pct, number}%)",
+    "tilesStageBaking": "Gerando tiles do mapa ({pct, number}%)",
+    "tilesFailedTitle": "Falha no processamento do mapa",
+    "tilesFailedTooLarge": "Este conjunto de dados é grande demais para processar agora.",
+    "tilesFailedRetryNote": "Uma nova tentativa será feita na próxima atualização programada.",
+    "refreshQueued": "Atualização na fila — os novos dados aparecerão quando o processamento terminar.",
+    "tilesRefreshFailedNotice": "A última atualização de dados falhou; exibindo a versão anterior.",
     "backToHome": "Voltar ao Início",
     "emptyTitle": "Nenhum {dataset} encontrado em {area}",
     "emptyDescription": "Este conjunto de dados ainda não tem feições nesta área. Pode não existir aqui, ou os dados ainda não foram mapeados no OpenStreetMap.",
@@ -385,7 +398,15 @@
     "failureCount": "{count, plural, =1 {# falha consecutiva} other {# falhas consecutivas}}",
     "lastError": "Último erro: {message}",
     "lastAttempted": "Última tentativa: {value}",
-    "lastChecked": "Última verificação: {value}"
+    "lastChecked": "Última verificação: {value}",
+    "tilesHeading": "Tiles vetoriais",
+    "statTilesPending": "Tiles em processamento",
+    "statTilesDone": "Tiles prontos",
+    "statTilesFailed": "Falha nos tiles",
+    "tilesFailedHeading": "Gerações de tiles com falha",
+    "tilesFailedEmpty": "Nenhuma geração de tiles está falhando no momento.",
+    "tilesError": "Erro de tiles: {message}",
+    "tilesUpdatedAt": "Tiles atualizados: {value}"
   },
   "DatasetMap": {
     "back": "Voltar",
@@ -696,6 +717,7 @@
     }
   },
   "TagLabel": {
+    "highway": "Classe da via",
     "shelter": "Abrigo",
     "bench": "Banco",
     "covered": "Coberto",

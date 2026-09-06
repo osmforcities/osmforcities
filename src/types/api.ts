@@ -29,6 +29,9 @@ const RefreshResponseSchema = z.object({
   success: z.boolean(),
   dataCount: z.number().optional(),
   lastChecked: z.coerce.date().optional(),
+  // Phase 3 (tiler as data source): refresh is submit-only — "pending" means
+  // the data lands when the bake reconciles, not in this response.
+  tilesState: z.string().nullable().optional(),
 });
 
 const UpdateDatasetSchema = z.object({

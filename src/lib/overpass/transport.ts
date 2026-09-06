@@ -102,7 +102,10 @@ export async function executeOverpassQuery(
   return data as OverpassResponse;
 }
 
-export async function countOverpassElements(query: string): Promise<number> {
+export async function countOverpassElements(
+  query: string,
+  timeoutMs: number = COUNT_REQUEST_TIMEOUT_MS
+): Promise<number> {
   preventExternalCallsInTests();
 
   // Only the output statement changes — the template's own [timeout:N] is kept.
@@ -120,7 +123,7 @@ export async function countOverpassElements(query: string): Promise<number> {
         "User-Agent": getUserAgent(),
       },
       body: `data=${encodeURIComponent(countQuery)}`,
-      signal: AbortSignal.timeout(COUNT_REQUEST_TIMEOUT_MS),
+      signal: AbortSignal.timeout(timeoutMs),
     });
   } catch (error) {
     if (isTimeoutError(error)) throw new OverpassTimeoutError();

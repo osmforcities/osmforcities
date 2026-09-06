@@ -58,7 +58,9 @@
     "quotaInfoTooltip": "Jeder Benutzer kann bis zu {limit, number} Datensätze speichern. Entferne einen aus deinem Dashboard, um einen Platz freizugeben.",
     "quotaInfoButtonLabel": "Was bedeutet das Speicherlimit?",
     "active": "Aktiv",
-    "inactive": "Inaktiv"
+    "inactive": "Inaktiv",
+    "tilesProcessing": "Kacheln werden erstellt",
+    "tilesFailed": "Kacheln fehlgeschlagen"
   },
   "Public": {
     "metaTitle": "Öffentliche Datensätze - OSM for Cities",
@@ -125,6 +127,17 @@
     "testEnvOnly": "Diese Seite ist nur in der Testumgebung verfügbar."
   },
   "DatasetPage": {
+    "tilesProcessingNotice": "Kartendaten werden für schnelleres Rendern aufbereitet.",
+    "tilesProcessingTitle": "Kartendaten werden vorbereitet",
+    "tilesStageQueued": "Wartet in der Warteschlange",
+    "tilesStageFetching": "Daten werden von OpenStreetMap geladen ({mb, number} MB)",
+    "tilesStageConverting": "Objekte werden konvertiert ({pct, number} %)",
+    "tilesStageBaking": "Kartenkacheln werden erstellt ({pct, number} %)",
+    "tilesFailedTitle": "Kartenverarbeitung fehlgeschlagen",
+    "tilesFailedTooLarge": "Dieser Datensatz ist derzeit zu groß für die Verarbeitung.",
+    "tilesFailedRetryNote": "Beim nächsten geplanten Update wird es erneut versucht.",
+    "refreshQueued": "Aktualisierung eingereiht — neue Daten erscheinen nach Abschluss der Verarbeitung.",
+    "tilesRefreshFailedNotice": "Die letzte Datenaktualisierung ist fehlgeschlagen; die vorherige Version wird angezeigt.",
     "backToHome": "Zurück zur Startseite",
     "emptyTitle": "Keine Objekte für „{dataset}“ in {area} gefunden",
     "emptyDescription": "Dieser Datensatz enthält in diesem Gebiet noch keine Objekte. Möglicherweise gibt es hier keine, oder die Daten wurden in OpenStreetMap noch nicht erfasst.",
@@ -385,7 +398,15 @@
     "failureCount": "{count, plural, =1 {# Fehlschlag in Folge} other {# Fehlschläge in Folge}}",
     "lastError": "Letzter Fehler: {message}",
     "lastAttempted": "Letzter Versuch: {value}",
-    "lastChecked": "Zuletzt geprüft: {value}"
+    "lastChecked": "Zuletzt geprüft: {value}",
+    "tilesHeading": "Vektorkacheln",
+    "statTilesPending": "Kacheln in Arbeit",
+    "statTilesDone": "Kacheln bereit",
+    "statTilesFailed": "Kacheln fehlgeschlagen",
+    "tilesFailedHeading": "Fehlgeschlagene Kachel-Erstellungen",
+    "tilesFailedEmpty": "Derzeit schlägt keine Kachel-Erstellung fehl.",
+    "tilesError": "Kachel-Fehler: {message}",
+    "tilesUpdatedAt": "Kacheln aktualisiert: {value}"
   },
   "DatasetMap": {
     "back": "Zurück",
@@ -687,6 +708,7 @@
     }
   },
   "TagLabel": {
+    "highway": "Straßenklasse",
     "shelter": "Unterstand",
     "bench": "Sitzbank",
     "covered": "Überdacht",

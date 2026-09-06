@@ -30,11 +30,11 @@ import type { CuratedTheme } from "@/lib/curated-themes";
 import { buildCuratedColorExpression } from "@/lib/curated-themes";
 import { PALETTES } from "@/lib/map-palettes";
 
-// Shared circle paint for the point + proxy-point layers. In a curated tag view
-// the color comes from the theme expression; otherwise it falls back to the
-// count-scaled default point style. Callers add their own opacity (e.g. the
-// proxy fade) on top.
-function buildThemePointPaint(themeColor: unknown[] | null, count: number) {
+// Shared circle paint for the point + proxy-point layers (also reused by the
+// vector-tile layer group). In a curated tag view the color comes from the
+// theme expression; otherwise it falls back to the count-scaled default point
+// style. Callers add their own opacity (e.g. the proxy fade) on top.
+export function buildThemePointPaint(themeColor: unknown[] | null, count: number) {
   return {
     ...POINT_STYLE,
     "circle-radius": themeColor ? 4 : buildPointRadiusForCount(count),

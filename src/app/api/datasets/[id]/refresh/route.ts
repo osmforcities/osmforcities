@@ -7,6 +7,8 @@ import {
   DatasetTooLargeError,
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
+import { submitTilesForDataset } from "@/lib/tiler/submit";
+import { tilerEnabled } from "@/lib/tiler/client";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
@@ -57,6 +59,25 @@ export async function POST(
       );
     }
 
+    if (tilerEnabled()) {
+      // Phase 3: refresh = submit. Data lands via reconcileDataset when the
+      // bake completes; the page's tiles-status poll delivers it.
+      await submitTilesForDataset(datasetId);
+      const row = await prisma.dataset.findUnique({
+        where: { id: datasetId },
+        select: { tilesJobId: true, tilesState: true, tilesError: true },
+      });
+
+      await trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
+
+      return NextResponse.json({
+        success: row?.tilesState === "pending",
+        tilesState: row?.tilesState ?? null,
+        tilesJobId: row?.tilesJobId ?? null,
+        error: row?.tilesState === "failed" ? row?.tilesError : undefined,
+      });
+    }
+
     const snapshot = await fetchDatasetSnapshot(
       dataset.areaId,
       dataset.template.overpassQuery,
@@ -91,6 +112,8 @@ export async function POST(
         },
       },
     });
+
+    await submitTilesForDataset(datasetId);
 
     await trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
 

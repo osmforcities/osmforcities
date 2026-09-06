@@ -3,7 +3,9 @@ import type { Dataset } from "@/schemas/dataset";
 
 export function useDatasetDownload() {
   const downloadDataset = useCallback(async (dataset: Dataset) => {
-    if (!dataset.geojson) return;
+    // hasGeojson covers payloads whose FeatureCollection was stripped because
+    // tiles render — the export API reads the DB row, so download still works.
+    if (!(dataset.hasGeojson ?? Boolean(dataset.geojson))) return;
 
     const defaultFilename = `${dataset.template.name}-${dataset.cityName}.geojson`;
 
@@ -27,6 +29,9 @@ export function useDatasetDownload() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch {
+      // Inline fallback needs the payload to actually hold the features —
+      // a tiles-render payload stripped them, so there is nothing to save.
+      if (!dataset.geojson) return;
       const blob = new Blob([JSON.stringify(dataset.geojson, null, 2)], {
         type: "application/json",
       });

@@ -127,8 +127,50 @@ scheduler) -> pull outputs -> serve from app nginx. Dataset status maps from
 job state; "processing, check back later" is `state != done`. `failed`
 carries the Overpass error text through.
 
-Main real work item: relation/multipolygon assembly in the convert stage —
-the spike skipped relations (15,783 in SP buildings).
+**Implemented (#487 phases 1-2, additive):** `Dataset` carries
+`tilesJobId/tilesState/tilesUpdatedAt/tilesError`; every successful snapshot
+submits a bake job (`src/lib/tiler/submit.ts`); the update-datasets cron
+reconciles pending jobs (`src/lib/tiler/poll.ts`) — pull to `TILES_DIR`, ack,
+keep current + previous archive; `GET /api/tiles/{jobId}.pmtiles` serves with
+Range support (nginx can shadow the path later). `TILER_URL` unset = kill
+switch. Job state surfaces on the admin datasets page, dashboard cards, and
+the dataset page.
+
+**Implemented (#489 + tiles-only lane, 2026-09-06, feat/487-tiler-client):**
+- Render swap: `TilesLayerGroup` (vector source, `source-layer: features`,
+  same layer ids/paint builders as the geojson path, geometry-type filters);
+  pmtiles protocol registered once (`src/lib/pmtiles-protocol.ts`); opt-in via
+  `NEXT_PUBLIC_TILES_ENABLED=true`; viewport from stored bbox; tiles-mode
+  payload ships no geojson (`hasGeojson` keeps the export affordance).
+- Tiles-only lane: over-cap snapshots return a `tilesOnly` variant instead of
+  throwing (no `too_large` verdict recorded; cached verdicts ignored while the
+  tiler is up); large jobs submit with raised budgets; tiles-only datasets take
+  stats/dataCount/bbox/recency columns from the tiler's `stats.json` at pull.
+- Processing UX: `GET /api/datasets/[id]/tiles-status` proxies live job
+  stage/progress and reconciles on demand; `TilesProcessingPanel` fills the map
+  area (stage + progress bar, failure states) and refreshes into the map on
+  completion.
+- Templates `buildings` + `street-network` (key-presence queries).
+- Measured (local tiler through the SSH tunnel, 2026-09-06): Delft buildings
+  39.6k tiles-only end-to-end ~30 s; Amsterdam buildings 197,775 → creation
+  25 s (count probe only), 197 MB fetch ≈ 90 s tunnel, 13.6 MB archive, page
+  at **99 MB JS heap / 276 KB document** (vs 1.2 GB / 123.6 MB for the #407
+  inline-geojson baseline at 1/6 the size).
+- Budget gotcha: our areas dispatcher refuses `[maxsize:3221225472]`
+  (`Dispatcher_Client protocol_error`, returned as an HTML 200 page —
+  overpass-pmtiler#39); 1 GiB works and SP's 2.23 GB fetch needs only 768 MiB.
+  `LARGE_JOB_MAXSIZE_BYTES = 1 GiB`.
+- Known limitation: age-legend counts are empty for tiles-only datasets (app
+  buckets 7/30/90d vs tiler recency bands 90/365/730d); map age colors are
+  unaffected (`step` on `_ts` in the tile).
+
+Main real work item: SP-class (metro) creation through the app — the
+app-side count probe needs raised budgets (>= 640 MiB / ~64 s, see the
+measured table above), then the tiles-only lane handles the rest.
+
+Relation/multipolygon assembly in the convert stage shipped in the tiler
+(overpass-pmtiler#6): `type=multipolygon|boundary` assemble, others are
+counted in `relationsSkipped`.
 
 Open (measure before build): query-latency impact on live Overpass while a
 bake runs (checklist item that still needs a probe).
@@ -154,5 +196,6 @@ bake runs (checklist item that still needs a probe).
    the box (only remaining pre-build measurement).
 4. Rewrite #490 (and touch up #487) to the settled design; service work items
    tracked in the overpass-pmtiler repo.
-5. Then: app-side work (#489 protocol + vector source) in a worktree, behind a
-   flag, landed as a draft PR first.
+5. ~~app-side work (#489 protocol + vector source)~~ **IN PROGRESS
+   (feat/487-tiler-client worktree, behind NEXT_PUBLIC_TILES_ENABLED)** — see
+   the implemented sections above; draft PR still pending.

@@ -15,6 +15,7 @@ import {
 import type { Dataset } from "@/schemas/dataset";
 import { useDatasetDownload } from "@/hooks/useDatasetDownload";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
+import { useRouter } from "@/i18n/navigation";
 import { useEffect, useRef, useState } from "react";
 
 type DatasetActionsSectionProps = {
@@ -31,6 +32,7 @@ export function DatasetActionsSection({
   onRefreshed,
 }: DatasetActionsSectionProps) {
   const t = useTranslations("DatasetPage");
+  const router = useRouter();
   const { downloadDataset } = useDatasetDownload();
   const { saveDataset, unsaveDataset, refreshDataset, isLoading } =
     useDatasetActions();
@@ -139,8 +141,15 @@ export function DatasetActionsSection({
     try {
       const result = await refreshDataset(dataset.id);
       if (result.success) {
-        onRefreshed?.(result.lastChecked ?? new Date());
-        setStatusMessage(t("datasetSynced"));
+        if (result.tilesState === "pending") {
+          // Phase 3: submit-only — the pending notice (tiles-status poll)
+          // takes over and flips the page when the bake lands
+          setStatusMessage(t("refreshQueued"));
+          router.refresh();
+        } else {
+          onRefreshed?.(result.lastChecked ?? new Date());
+          setStatusMessage(t("datasetSynced"));
+        }
       } else {
         console.error("Failed to refresh dataset:", result.error);
         setStatusMessage("");
@@ -199,7 +208,7 @@ export function DatasetActionsSection({
       <div className="flex gap-2">
         <Button
           onClick={() => downloadDataset(dataset)}
-          disabled={!dataset.geojson}
+          disabled={!(dataset.hasGeojson ?? Boolean(dataset.geojson))}
           className="h-8 flex-1 text-sm"
           variant="outline"
           title={t("downloadData")}

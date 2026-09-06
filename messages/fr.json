@@ -58,7 +58,9 @@
     "quotaInfoTooltip": "Chaque utilisateur peut enregistrer jusqu'à {limit, number} jeux de données. Retirez-en un depuis votre tableau de bord pour libérer une place.",
     "quotaInfoButtonLabel": "Que signifie la limite d'enregistrement ?",
     "active": "Actif",
-    "inactive": "Inactif"
+    "inactive": "Inactif",
+    "tilesProcessing": "Tuiles en cours",
+    "tilesFailed": "Tuiles en échec"
   },
   "Public": {
     "metaTitle": "Jeux de données publics - OSM for Cities",
@@ -125,6 +127,17 @@
     "testEnvOnly": "Cette page n'est disponible qu'en environnement de test."
   },
   "DatasetPage": {
+    "tilesProcessingNotice": "Les données de la carte sont en cours de traitement pour un rendu plus rapide.",
+    "tilesProcessingTitle": "Préparation des données de la carte",
+    "tilesStageQueued": "En attente dans la file",
+    "tilesStageFetching": "Récupération des données depuis OpenStreetMap ({mb, number} Mo)",
+    "tilesStageConverting": "Conversion des objets ({pct, number} %)",
+    "tilesStageBaking": "Génération des tuiles de la carte ({pct, number} %)",
+    "tilesFailedTitle": "Échec du traitement de la carte",
+    "tilesFailedTooLarge": "Ce jeu de données est trop volumineux pour être traité pour le moment.",
+    "tilesFailedRetryNote": "Une nouvelle tentative aura lieu à la prochaine mise à jour planifiée.",
+    "refreshQueued": "Mise à jour en file d'attente — les nouvelles données apparaîtront une fois le traitement terminé.",
+    "tilesRefreshFailedNotice": "La dernière mise à jour des données a échoué ; la version précédente est affichée.",
     "backToHome": "Retour à l'accueil",
     "emptyTitle": "Aucun élément « {dataset} » trouvé dans {area}",
     "emptyDescription": "Ce jeu de données ne contient encore aucun élément dans cette zone. Il n'existe peut-être pas ici, ou les données n'ont pas été cartographiées dans OpenStreetMap.",
@@ -385,7 +398,15 @@
     "failureCount": "{count, plural, one {# échec consécutif} other {# échecs consécutifs}}",
     "lastError": "Dernière erreur : {message}",
     "lastAttempted": "Dernière tentative : {value}",
-    "lastChecked": "Dernière vérification : {value}"
+    "lastChecked": "Dernière vérification : {value}",
+    "tilesHeading": "Tuiles vectorielles",
+    "statTilesPending": "Tuiles en cours",
+    "statTilesDone": "Tuiles prêtes",
+    "statTilesFailed": "Tuiles en échec",
+    "tilesFailedHeading": "Générations de tuiles en échec",
+    "tilesFailedEmpty": "Aucune génération de tuiles n'est actuellement en échec.",
+    "tilesError": "Erreur de tuiles : {message}",
+    "tilesUpdatedAt": "Tuiles mises à jour : {value}"
   },
   "DatasetMap": {
     "back": "Retour",
@@ -687,6 +708,7 @@
     }
   },
   "TagLabel": {
+    "highway": "Classe de voie",
     "shelter": "Abri",
     "bench": "Banc",
     "covered": "Couvert",
