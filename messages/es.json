@@ -58,7 +58,9 @@
     "quotaInfoTooltip": "Cada usuario puede guardar hasta {limit, number} conjuntos de datos. Quita uno del panel para liberar espacio.",
     "quotaInfoButtonLabel": "¿Qué significa el límite de guardados?",
     "active": "Activo",
-    "inactive": "Inactivo"
+    "inactive": "Inactivo",
+    "tilesProcessing": "Generando teselas",
+    "tilesFailed": "Teselas fallidas"
   },
   "Public": {
     "metaTitle": "Conjuntos de Datos Públicos - OSM for Cities",
@@ -125,6 +127,7 @@
     "testEnvOnly": "Esta página solo está disponible en el entorno de prueba."
   },
   "DatasetPage": {
+    "tilesProcessingNotice": "Los datos del mapa se están procesando para un renderizado más rápido.",
     "backToHome": "Volver al Inicio",
     "emptyTitle": "No se encontró ningún {dataset} en {area}",
     "emptyDescription": "Este conjunto de datos aún no tiene elementos en esta área. Puede que no exista aquí, o que los datos no se hayan mapeado en OpenStreetMap.",
@@ -385,7 +388,15 @@
     "failureCount": "{count, plural, =1 {# fallo consecutivo} other {# fallos consecutivos}}",
     "lastError": "Último error: {message}",
     "lastAttempted": "Último intento: {value}",
-    "lastChecked": "Última revisión: {value}"
+    "lastChecked": "Última revisión: {value}",
+    "tilesHeading": "Teselas vectoriales",
+    "statTilesPending": "Teselas en proceso",
+    "statTilesDone": "Teselas listas",
+    "statTilesFailed": "Teselas fallidas",
+    "tilesFailedHeading": "Generaciones de teselas fallidas",
+    "tilesFailedEmpty": "Ninguna generación de teselas está fallando actualmente.",
+    "tilesError": "Error de teselas: {message}",
+    "tilesUpdatedAt": "Teselas actualizadas: {value}"
   },
   "DatasetMap": {
     "back": "Volver",

@@ -58,7 +58,9 @@
     "quotaInfoTooltip": "Jeder Benutzer kann bis zu {limit, number} Datensätze speichern. Entferne einen aus deinem Dashboard, um einen Platz freizugeben.",
     "quotaInfoButtonLabel": "Was bedeutet das Speicherlimit?",
     "active": "Aktiv",
-    "inactive": "Inaktiv"
+    "inactive": "Inaktiv",
+    "tilesProcessing": "Kacheln werden erstellt",
+    "tilesFailed": "Kacheln fehlgeschlagen"
   },
   "Public": {
     "metaTitle": "Öffentliche Datensätze - OSM for Cities",
@@ -125,6 +127,7 @@
     "testEnvOnly": "Diese Seite ist nur in der Testumgebung verfügbar."
   },
   "DatasetPage": {
+    "tilesProcessingNotice": "Kartendaten werden für schnelleres Rendern aufbereitet.",
     "backToHome": "Zurück zur Startseite",
     "emptyTitle": "Keine Objekte für „{dataset}“ in {area} gefunden",
     "emptyDescription": "Dieser Datensatz enthält in diesem Gebiet noch keine Objekte. Möglicherweise gibt es hier keine, oder die Daten wurden in OpenStreetMap noch nicht erfasst.",
@@ -385,7 +388,15 @@
     "failureCount": "{count, plural, =1 {# Fehlschlag in Folge} other {# Fehlschläge in Folge}}",
     "lastError": "Letzter Fehler: {message}",
     "lastAttempted": "Letzter Versuch: {value}",
-    "lastChecked": "Zuletzt geprüft: {value}"
+    "lastChecked": "Zuletzt geprüft: {value}",
+    "tilesHeading": "Vektorkacheln",
+    "statTilesPending": "Kacheln in Arbeit",
+    "statTilesDone": "Kacheln bereit",
+    "statTilesFailed": "Kacheln fehlgeschlagen",
+    "tilesFailedHeading": "Fehlgeschlagene Kachel-Erstellungen",
+    "tilesFailedEmpty": "Derzeit schlägt keine Kachel-Erstellung fehl.",
+    "tilesError": "Kachel-Fehler: {message}",
+    "tilesUpdatedAt": "Kacheln aktualisiert: {value}"
   },
   "DatasetMap": {
     "back": "Zurück",

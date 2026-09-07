@@ -58,7 +58,9 @@
     "quotaInfoTooltip": "Each user can save up to {limit, number} datasets. Unsave one from your dashboard to free a slot.",
     "quotaInfoButtonLabel": "What does the save limit mean?",
     "active": "Active",
-    "inactive": "Inactive"
+    "inactive": "Inactive",
+    "tilesProcessing": "Tiles processing",
+    "tilesFailed": "Tiles failed"
   },
   "Public": {
     "metaTitle": "Public Datasets - OSM for Cities",
@@ -125,6 +127,7 @@
     "testEnvOnly": "This page is only available in test environment."
   },
   "DatasetPage": {
+    "tilesProcessingNotice": "Map data is being processed for faster rendering.",
     "backToHome": "Back to Home",
     "emptyTitle": "No {dataset} found in {area}",
     "emptyDescription": "This dataset has no features in this area yet. It may not exist here, or the data has not been mapped in OpenStreetMap.",
@@ -385,7 +388,15 @@
     "failureCount": "{count, plural, =1 {# consecutive failure} other {# consecutive failures}}",
     "lastError": "Last error: {message}",
     "lastAttempted": "Last attempted: {value}",
-    "lastChecked": "Last checked: {value}"
+    "lastChecked": "Last checked: {value}",
+    "tilesHeading": "Vector tiles",
+    "statTilesPending": "Tiles processing",
+    "statTilesDone": "Tiles ready",
+    "statTilesFailed": "Tiles failed",
+    "tilesFailedHeading": "Failed tile bakes",
+    "tilesFailedEmpty": "No tile bakes are currently failing.",
+    "tilesError": "Tiles error: {message}",
+    "tilesUpdatedAt": "Tiles updated: {value}"
   },
   "DatasetMap": {
     "back": "Back",

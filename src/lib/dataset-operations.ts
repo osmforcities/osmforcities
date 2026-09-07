@@ -78,6 +78,7 @@ const DATASET_DETAIL_SELECT = {
   updatedAt: true,
   isActive: true,
   isFeatured: true,
+  tilesState: true,
   template: {
     select: {
       id: true,
