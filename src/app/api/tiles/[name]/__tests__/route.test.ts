@@ -62,6 +62,27 @@ describe("GET /api/tiles/[name]", () => {
     expect(res.headers.get("content-range")).toBe("bytes */16");
   });
 
+  it("ignores an unparseable Range header and serves the full body (RFC 7233)", async () => {
+    for (const bad of ["bytes=abc-def", "bytes=-", "items=0-5"]) {
+      const res = await call("d1-100.pmtiles", bad);
+      expect(res.status).toBe(200);
+      expect(await res.text()).toBe(CONTENT);
+    }
+  });
+
+  it("serves an empty archive without crashing", async () => {
+    await writeFile(path.join(dir, "empty-1.pmtiles"), "");
+
+    const full = await call("empty-1.pmtiles");
+    expect(full.status).toBe(200);
+    expect(full.headers.get("content-length")).toBe("0");
+    expect(await full.text()).toBe("");
+
+    const ranged = await call("empty-1.pmtiles", "bytes=0-5");
+    expect(ranged.status).toBe(416);
+    expect(ranged.headers.get("content-range")).toBe("bytes */0");
+  });
+
   it("rejects names outside the archive charset", async () => {
     expect((await call("nope.txt")).status).toBe(400);
     expect((await call("%2e%2e%2fsecret.pmtiles")).status).toBe(400);

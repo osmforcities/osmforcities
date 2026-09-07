@@ -47,14 +47,11 @@ export async function GET(
   let end = size - 1;
   let status = 200;
 
-  if (range) {
-    const match = RANGE_RE.exec(range);
-    const from = match?.[1];
-    const to = match?.[2];
-    if (!match || (from === "" && to === "")) {
-      headers["Content-Range"] = `bytes */${size}`;
-      return new NextResponse(null, { status: 416, headers });
-    }
+  // RFC 7233: an unparseable Range header is ignored (full 200), never 416;
+  // 416 is reserved for well-formed but unsatisfiable ranges.
+  const match = range ? RANGE_RE.exec(range) : null;
+  if (match && !(match[1] === "" && match[2] === "")) {
+    const [, from, to] = match;
     if (from === "") {
       // suffix range: last N bytes
       start = Math.max(0, size - Number(to));
@@ -71,6 +68,10 @@ export async function GET(
   }
 
   headers["Content-Length"] = String(end - start + 1);
+  if (size === 0) {
+    // createReadStream rejects end: -1; an empty body needs no stream.
+    return new NextResponse(null, { status, headers });
+  }
   const stream = Readable.toWeb(
     createReadStream(filePath, { start, end })
   ) as ReadableStream;
