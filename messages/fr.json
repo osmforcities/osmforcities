@@ -698,7 +698,7 @@
     }
   },
   "TagLabel": {
-    "highway": "Classe de voie",
+    "highway": "Type de voie",
     "shelter": "Abri",
     "bench": "Banc",
     "covered": "Couvert",
