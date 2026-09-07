@@ -155,8 +155,20 @@ describe("pruneTileArchives", () => {
     ]);
   });
 
-  it("is a no-op when the tiles dir does not exist", async () => {
+  it("is a silent no-op when the tiles dir does not exist", async () => {
     vi.stubEnv("TILES_DIR", path.join(dir, "missing"));
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     await expect(pruneTileArchives("d1")).resolves.toBeUndefined();
+    expect(errorSpy).not.toHaveBeenCalled();
+  });
+
+  it("logs (but does not throw) on non-ENOENT readdir errors", async () => {
+    // A file where the dir should be -> readdir fails with ENOTDIR.
+    const notADir = path.join(dir, "not-a-dir");
+    await writeFile(notADir, "x");
+    vi.stubEnv("TILES_DIR", notADir);
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    await expect(pruneTileArchives("d1")).resolves.toBeUndefined();
+    expect(errorSpy).toHaveBeenCalledOnce();
   });
 });
