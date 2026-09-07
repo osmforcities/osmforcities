@@ -6,6 +6,7 @@ import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
 import { getTranslations, getLocale } from "next-intl/server";
 import { DATASET_FAILURE_FLAG_THRESHOLD } from "@/lib/constants";
 import { isFleetHealthy } from "@/lib/dataset-health";
+import { tilerEnabled } from "@/lib/tiler/client";
 
 export const dynamic = "force-dynamic";
 
@@ -27,42 +28,44 @@ async function getUpdateStatus() {
     tilesByState,
     tilesFailedDatasets,
   ] = await Promise.all([
-      prisma.dataset.count({ where: activeWhere }),
-      prisma.dataset.count({
-        where: { ...activeWhere, lastChecked: { gte: oneDayAgo } },
-      }),
-      prisma.dataset.count({
-        where: {
-          ...activeWhere,
-          consecutiveFailures: { gte: DATASET_FAILURE_FLAG_THRESHOLD },
-        },
-      }),
-      prisma.dataset.aggregate({
-        where: { ...activeWhere, lastChecked: { not: null } },
-        _max: { lastChecked: true },
-        _min: { lastChecked: true },
-      }),
-      prisma.dataset.findMany({
-        where: {
-          ...activeWhere,
-          consecutiveFailures: { gte: DATASET_FAILURE_FLAG_THRESHOLD },
-        },
-        include: { template: true },
-        orderBy: [{ consecutiveFailures: "desc" }, { lastAttempted: "asc" }],
-        take: 100,
-      }),
-      prisma.dataset.groupBy({
-        by: ["tilesState"],
-        where: { tilesState: { not: null } },
-        _count: true,
-      }),
-      prisma.dataset.findMany({
-        where: { tilesState: "failed" },
-        include: { template: true },
-        orderBy: { updatedAt: "desc" },
-        take: 100,
-      }),
-    ]);
+    prisma.dataset.count({ where: activeWhere }),
+    prisma.dataset.count({
+      where: { ...activeWhere, lastChecked: { gte: oneDayAgo } },
+    }),
+    prisma.dataset.count({
+      where: {
+        ...activeWhere,
+        consecutiveFailures: { gte: DATASET_FAILURE_FLAG_THRESHOLD },
+      },
+    }),
+    prisma.dataset.aggregate({
+      where: { ...activeWhere, lastChecked: { not: null } },
+      _max: { lastChecked: true },
+      _min: { lastChecked: true },
+    }),
+    prisma.dataset.findMany({
+      where: {
+        ...activeWhere,
+        consecutiveFailures: { gte: DATASET_FAILURE_FLAG_THRESHOLD },
+      },
+      include: { template: true },
+      orderBy: [{ consecutiveFailures: "desc" }, { lastAttempted: "asc" }],
+      take: 100,
+    }),
+    // Active only, like the flagged list — an inactive dataset is never
+    // resubmitted, so its stale state would sit here forever.
+    prisma.dataset.groupBy({
+      by: ["tilesState"],
+      where: { ...activeWhere, tilesState: { not: null } },
+      _count: true,
+    }),
+    prisma.dataset.findMany({
+      where: { ...activeWhere, tilesState: "failed" },
+      include: { template: true },
+      orderBy: { updatedAt: "desc" },
+      take: 100,
+    }),
+  ]);
 
   const tilesCount = (state: string) =>
     tilesByState.find((row) => row.tilesState === state)?._count ?? 0;
@@ -87,8 +90,12 @@ async function getUpdateStatus() {
 function StatTile({ label, value }: { label: string; value: number }) {
   return (
     <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-4">
-      <div className="text-2xl font-bold text-black dark:text-white">{value}</div>
-      <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">{label}</div>
+      <div className="text-2xl font-bold text-black dark:text-white">
+        {value}
+      </div>
+      <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        {label}
+      </div>
     </div>
   );
 }
@@ -154,7 +161,10 @@ export default async function DatasetsPage() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <StatTile label={t("statActive")} value={status.activeTotal} />
-              <StatTile label={t("statRefreshed")} value={status.refreshed24h} />
+              <StatTile
+                label={t("statRefreshed")}
+                value={status.refreshed24h}
+              />
               <StatTile label={t("statStale")} value={status.staleOrNever} />
               <StatTile label={t("statFlagged")} value={status.flagged} />
             </div>
@@ -169,60 +179,71 @@ export default async function DatasetsPage() {
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-black dark:text-white">
-              {t("tilesHeading")}
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <StatTile label={t("statTilesPending")} value={status.tilesPending} />
-              <StatTile label={t("statTilesDone")} value={status.tilesDone} />
-              <StatTile label={t("statTilesFailed")} value={status.tilesFailed} />
-            </div>
+          {/* Like the rest of the tiler integration: invisible until TILER_URL is set. */}
+          {tilerEnabled() && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold text-black dark:text-white">
+                {t("tilesHeading")}
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <StatTile
+                  label={t("statTilesPending")}
+                  value={status.tilesPending}
+                />
+                <StatTile label={t("statTilesDone")} value={status.tilesDone} />
+                <StatTile
+                  label={t("statTilesFailed")}
+                  value={status.tilesFailed}
+                />
+              </div>
 
-            <h3 className="text-lg font-semibold text-black dark:text-white">
-              {t("tilesFailedHeading")}
-            </h3>
-            {status.tilesFailedDatasets.length === 0 ? (
-              <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-6 text-center">
-                <p className="text-gray-600 dark:text-gray-400">
-                  {t("tilesFailedEmpty")}
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {status.tilesFailedDatasets.map((dataset) => (
-                  <div
-                    key={dataset.id}
-                    className="border border-gray-200 dark:border-gray-800 rounded-lg p-4"
-                  >
-                    <div className="flex justify-between items-start mb-2 gap-3">
-                      <div>
-                        <h3 className="font-semibold text-black dark:text-white">
-                          {dataset.cityName}
-                        </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {dataset.template.name}
-                        </p>
+              <h3 className="text-lg font-semibold text-black dark:text-white">
+                {t("tilesFailedHeading")}
+              </h3>
+              {status.tilesFailedDatasets.length === 0 ? (
+                <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-6 text-center">
+                  <p className="text-gray-600 dark:text-gray-400">
+                    {t("tilesFailedEmpty")}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {status.tilesFailedDatasets.map((dataset) => (
+                    <div
+                      key={dataset.id}
+                      className="border border-gray-200 dark:border-gray-800 rounded-lg p-4"
+                    >
+                      <div className="flex justify-between items-start mb-2 gap-3">
+                        <div>
+                          <h3 className="font-semibold text-black dark:text-white">
+                            {dataset.cityName}
+                          </h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {dataset.template.name}
+                          </p>
+                        </div>
+                        <span className="px-2 py-1 text-xs rounded bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 whitespace-nowrap">
+                          {t("statTilesFailed")}
+                        </span>
                       </div>
-                      <span className="px-2 py-1 text-xs rounded bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 whitespace-nowrap">
-                        {t("statTilesFailed")}
-                      </span>
+                      {dataset.tilesError && (
+                        <p className="text-sm text-gray-700 dark:text-gray-300 font-mono break-words">
+                          {t("tilesError", { message: dataset.tilesError })}
+                        </p>
+                      )}
+                      <div className="flex flex-wrap gap-x-6 gap-y-1 mt-2 text-xs text-gray-500">
+                        <span>
+                          {t("tilesUpdatedAt", {
+                            value: fmt(dataset.tilesUpdatedAt),
+                          })}
+                        </span>
+                      </div>
                     </div>
-                    {dataset.tilesError && (
-                      <p className="text-sm text-gray-700 dark:text-gray-300 font-mono break-words">
-                        {t("tilesError", { message: dataset.tilesError })}
-                      </p>
-                    )}
-                    <div className="flex flex-wrap gap-x-6 gap-y-1 mt-2 text-xs text-gray-500">
-                      <span>
-                        {t("tilesUpdatedAt", { value: fmt(dataset.tilesUpdatedAt) })}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           <div>
             <div className="flex items-center gap-2 mb-4">
