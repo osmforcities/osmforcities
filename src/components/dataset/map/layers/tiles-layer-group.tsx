@@ -1,15 +1,13 @@
 import { useMemo } from "react";
 import { Source, Layer } from "react-map-gl/maplibre";
 import type { FilterSpecification } from "maplibre-gl";
+import { AGE_SORT_KEY } from "./map-style";
 import {
-  POLYGON_STYLE,
-  LINE_STYLE,
-  AGE_SORT_KEY,
-  buildPolygonStrokeWidth,
-  buildLineWidth,
-  DEFAULT_STYLE_KNOBS,
-} from "./map-style";
-import { buildThemePointPaint } from "./detailed-features-layer-group";
+  buildThemePointPaint,
+  buildThemePolygonFillPaint,
+  buildThemePolygonStrokePaint,
+  buildThemeLinePaint,
+} from "./detailed-features-layer-group";
 import {
   POLYGON_LAYER_ID,
   POLYGON_STROKE_LAYER_ID,
@@ -64,23 +62,10 @@ export function TilesLayerGroup({
 
   // Same loose paint typing as MapLayer: the builders emit expression arrays
   // that MapLibre's strict literal types reject at compile time.
-  const fillPaint: Record<string, unknown> = themeColor
-    ? { "fill-color": themeColor, "fill-opacity": 0.7 }
-    : POLYGON_STYLE.fill;
-  const strokePaint: Record<string, unknown> = themeColor
-    ? {
-        "line-color": themeColor,
-        "line-width": buildPolygonStrokeWidth(DEFAULT_STYLE_KNOBS),
-        "line-opacity": 0.9,
-      }
-    : POLYGON_STYLE.stroke;
-  const linePaint: Record<string, unknown> = themeColor
-    ? {
-        "line-color": themeColor,
-        "line-width": buildLineWidth(DEFAULT_STYLE_KNOBS),
-        "line-opacity": 0.9,
-      }
-    : LINE_STYLE;
+  const fillPaint: Record<string, unknown> = buildThemePolygonFillPaint(themeColor);
+  const strokePaint: Record<string, unknown> =
+    buildThemePolygonStrokePaint(themeColor);
+  const linePaint: Record<string, unknown> = buildThemeLinePaint(themeColor);
   const pointPaint: Record<string, unknown> = buildThemePointPaint(
     themeColor,
     dataCount

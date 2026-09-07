@@ -46,6 +46,34 @@ export function buildThemePointPaint(themeColor: unknown[] | null, count: number
   };
 }
 
+// Fill/stroke/line twins of buildThemePointPaint, shared with the vector-tile
+// layer group so the two paint definitions cannot drift apart.
+export function buildThemePolygonFillPaint(themeColor: unknown[] | null) {
+  return themeColor
+    ? { "fill-color": themeColor, "fill-opacity": 0.7 }
+    : POLYGON_STYLE.fill;
+}
+
+export function buildThemePolygonStrokePaint(themeColor: unknown[] | null) {
+  return themeColor
+    ? {
+        "line-color": themeColor,
+        "line-width": buildPolygonStrokeWidth(DEFAULT_STYLE_KNOBS),
+        "line-opacity": 0.9,
+      }
+    : POLYGON_STYLE.stroke;
+}
+
+export function buildThemeLinePaint(themeColor: unknown[] | null) {
+  return themeColor
+    ? {
+        "line-color": themeColor,
+        "line-width": buildLineWidth(DEFAULT_STYLE_KNOBS),
+        "line-opacity": 0.9,
+      }
+    : LINE_STYLE;
+}
+
 type DetailedFeaturesLayerGroupProps = {
   polygonFeatures: Feature[];
   lineFeatures: Feature[];
@@ -84,21 +112,11 @@ export function DetailedFeaturesLayerGroup({
           features={polygonFeatures}
           layerType="fill"
           filter={visibilityFilter}
-          paint={
-            themeColor
-              ? { "fill-color": themeColor, "fill-opacity": 0.7 }
-              : POLYGON_STYLE.fill
-          }
+          paint={buildThemePolygonFillPaint(themeColor)}
           strokeLayer={{
             id: POLYGON_STROKE_LAYER_ID,
             type: "line",
-            paint: themeColor
-              ? {
-                  "line-color": themeColor,
-                  "line-width": buildPolygonStrokeWidth(DEFAULT_STYLE_KNOBS),
-                  "line-opacity": 0.9,
-                }
-              : POLYGON_STYLE.stroke,
+            paint: buildThemePolygonStrokePaint(themeColor),
           }}
         />
       )}
@@ -127,15 +145,7 @@ export function DetailedFeaturesLayerGroup({
           features={lineFeatures}
           layerType="line"
           filter={visibilityFilter}
-          paint={
-            themeColor
-              ? {
-                  "line-color": themeColor,
-                  "line-width": buildLineWidth(DEFAULT_STYLE_KNOBS),
-                  "line-opacity": 0.9,
-                }
-              : LINE_STYLE
-          }
+          paint={buildThemeLinePaint(themeColor)}
           layout={themeColor ? undefined : { "line-sort-key": AGE_SORT_KEY }}
         />
       )}
