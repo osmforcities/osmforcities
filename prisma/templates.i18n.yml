@@ -2332,16 +2332,16 @@ templates:
   highways:
     name:
       en: Highways
-      pt: Vias
+      pt: Vias e caminhos
       es: Vías
       fr: Voies
       de: Straßen und Wege
     desc:
-      en: All roads, streets and paths
-      pt: Todas as vias, ruas e caminhos
-      es: Todas las vías, calles y caminos
-      fr: Toutes les routes, rues et chemins
-      de: Alle Straßen, Wege und Pfade
+      en: Everything tagged as part of the road network, including crossings and signals
+      pt: Tudo que é mapeado como parte da rede viária, incluindo travessias e semáforos
+      es: Todo lo etiquetado como parte de la red vial, incluidos cruces y semáforos
+      fr: Tout ce qui est cartographié comme faisant partie du réseau routier, y compris passages et feux
+      de: Alles, was als Teil des Straßennetzes erfasst ist, einschließlich Übergängen und Ampeln
   buildings:
     name:
       en: Buildings
