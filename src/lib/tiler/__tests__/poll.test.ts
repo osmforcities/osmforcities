@@ -6,7 +6,7 @@ import {
   ackTileJob,
   pruneTileArchives,
 } from "@/lib/tiler/client";
-import { pollPendingTileJobs } from "@/lib/tiler/poll";
+import { pollPendingTileJobs, reconcileDataset } from "@/lib/tiler/poll";
 
 vi.mock("@/lib/db", () => ({
   prisma: {
@@ -141,6 +141,22 @@ describe("pollPendingTileJobs", () => {
       stillPending: 0,
     });
     expect(getTileJob).not.toHaveBeenCalled();
+  });
+
+  it("a concurrent reconcile of the same job downloads once (second stays pending)", async () => {
+    let release!: () => void;
+    vi.mocked(downloadTileOutputs).mockImplementation(
+      () => new Promise((resolve) => (release = () => resolve(undefined)))
+    );
+    const job = { id: "ds-1-100", state: "done" as const };
+
+    const first = reconcileDataset(pendingRow, job);
+    const second = await reconcileDataset(pendingRow, job);
+    expect(second).toBe("pending");
+
+    release();
+    expect(await first).toBe("completed");
+    expect(downloadTileOutputs).toHaveBeenCalledTimes(1);
   });
 
   it("a failed download leaves the row pending for the next tick", async () => {

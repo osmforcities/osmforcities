@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 
@@ -23,36 +24,25 @@ const POLL_MS = 4000;
 export function TilesProcessingPanel({ datasetId }: { datasetId: string }) {
   const t = useTranslations("DatasetPage");
   const router = useRouter();
-  const [status, setStatus] = useState<TilesStatus | null>(null);
+
+  // Poll while the job runs; stop on a terminal state. A fetch error leaves
+  // data unset, so the interval keeps firing through transient blips.
+  const { data: status } = useQuery<TilesStatus>({
+    queryKey: ["tiles-status", datasetId],
+    queryFn: async () => {
+      const response = await fetch(`/api/datasets/${datasetId}/tiles-status`);
+      if (!response.ok) throw new Error(String(response.status));
+      return response.json();
+    },
+    refetchInterval: (query) => {
+      const state = query.state.data?.state;
+      return state === undefined || state === "pending" ? POLL_MS : false;
+    },
+  });
 
   useEffect(() => {
-    let cancelled = false;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-
-    const tick = async () => {
-      try {
-        const response = await fetch(`/api/datasets/${datasetId}/tiles-status`);
-        if (!response.ok) throw new Error(String(response.status));
-        const body: TilesStatus = await response.json();
-        if (cancelled) return;
-        setStatus(body);
-        if (body.state === "done") {
-          router.refresh();
-          return;
-        }
-        if (body.state === "failed" || body.state === "none") return;
-      } catch {
-        // Transient (network blip, dev-server reload) — keep polling
-      }
-      if (!cancelled) timer = setTimeout(tick, POLL_MS);
-    };
-
-    tick();
-    return () => {
-      cancelled = true;
-      if (timer) clearTimeout(timer);
-    };
-  }, [datasetId, router]);
+    if (status?.state === "done") router.refresh();
+  }, [status?.state, router]);
 
   const stage = status?.stage ?? "queued";
   const pct = status?.progress?.pct;

@@ -17,6 +17,15 @@ export type TilePollResults = {
 
 export type ReconcileOutcome = "completed" | "failed" | "pending";
 
+// Jobs whose outputs are being pulled right now. A pull takes seconds to
+// minutes while the row still reads "pending", and the tiles-status route is
+// polled every 4s (per open tab) alongside the cron tick — without this every
+// poll would start another download of the same archive.
+// ponytail: in-process guard; a DB claim (tilesState transition) if the app
+// ever runs more than one Node process. Unique temp names in downloadToFile
+// already make cross-process races safe, just wasteful.
+const inflightPulls = new Set<string>();
+
 /**
  * Apply one tiler job's current state to its dataset row: pull + ack + prune
  * on done, record failures, leave running jobs pending. Callers fetch the job
@@ -39,15 +48,21 @@ export async function reconcileDataset(
     return "failed";
   }
   if (job.state === "done") {
-    await downloadTileOutputs(dataset.tilesJobId);
-    await prisma.dataset.update({
-      where: { id: dataset.id },
-      data: {
-        tilesState: "done",
-        tilesUpdatedAt: new Date(),
-        tilesError: null,
-      },
-    });
+    if (inflightPulls.has(dataset.tilesJobId)) return "pending";
+    inflightPulls.add(dataset.tilesJobId);
+    try {
+      await downloadTileOutputs(dataset.tilesJobId);
+      await prisma.dataset.update({
+        where: { id: dataset.id },
+        data: {
+          tilesState: "done",
+          tilesUpdatedAt: new Date(),
+          tilesError: null,
+        },
+      });
+    } finally {
+      inflightPulls.delete(dataset.tilesJobId);
+    }
     // Best-effort housekeeping: a failed ack just leaves the job for the
     // tiler's own sweep. Prune never rejects (it logs internally).
     await ackTileJob(dataset.tilesJobId).catch((error) => {
