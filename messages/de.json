@@ -707,6 +707,7 @@
     }
   },
   "TagLabel": {
+    "highway": "Straßentyp",
     "shelter": "Unterstand",
     "bench": "Sitzbank",
     "covered": "Überdacht",

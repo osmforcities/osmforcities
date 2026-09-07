@@ -716,6 +716,7 @@
     }
   },
   "TagLabel": {
+    "highway": "Tipo de via",
     "shelter": "Abrigo",
     "bench": "Banco",
     "covered": "Coberto",
