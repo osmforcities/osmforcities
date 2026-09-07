@@ -13,6 +13,7 @@ import {
   Star,
 } from "lucide-react";
 import type { Dataset } from "@/schemas/dataset";
+import { hasDownloadableGeojson } from "@/lib/dataset-tiles";
 import { useDatasetDownload } from "@/hooks/useDatasetDownload";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
 import { useEffect, useRef, useState } from "react";
@@ -199,7 +200,7 @@ export function DatasetActionsSection({
       <div className="flex gap-2">
         <Button
           onClick={() => downloadDataset(dataset)}
-          disabled={!(dataset.hasGeojson ?? Boolean(dataset.geojson))}
+          disabled={!hasDownloadableGeojson(dataset)}
           className="h-8 flex-1 text-sm"
           variant="outline"
           title={t("downloadData")}

@@ -16,3 +16,15 @@ export function datasetTilesPath(dataset: TilesFields): string | null {
   if (dataset.tilesState !== "done" || !dataset.tilesJobId) return null;
   return `/api/tiles/${dataset.tilesJobId}.pmtiles`;
 }
+
+/**
+ * Can this payload be downloaded as geojson? hasGeojson covers tiles-render
+ * payloads whose FeatureCollection was stripped (the export API reads the DB
+ * row); older payload shapes without the field fall back to the inline data.
+ */
+export function hasDownloadableGeojson(dataset: {
+  hasGeojson?: boolean;
+  geojson?: unknown;
+}): boolean {
+  return dataset.hasGeojson ?? Boolean(dataset.geojson);
+}

@@ -1,11 +1,10 @@
 import { useCallback } from "react";
 import type { Dataset } from "@/schemas/dataset";
+import { hasDownloadableGeojson } from "@/lib/dataset-tiles";
 
 export function useDatasetDownload() {
   const downloadDataset = useCallback(async (dataset: Dataset) => {
-    // hasGeojson covers payloads whose FeatureCollection was stripped because
-    // tiles render — the export API reads the DB row, so download still works.
-    if (!(dataset.hasGeojson ?? Boolean(dataset.geojson))) return;
+    if (!hasDownloadableGeojson(dataset)) return;
 
     const defaultFilename = `${dataset.template.name}-${dataset.cityName}.geojson`;
 
