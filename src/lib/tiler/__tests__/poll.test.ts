@@ -12,7 +12,7 @@ vi.mock("@/lib/db", () => ({
   prisma: {
     dataset: {
       findMany: vi.fn(),
-      update: vi.fn(),
+      updateMany: vi.fn(),
     },
   },
 }));
@@ -28,7 +28,7 @@ vi.mock("@/lib/tiler/client", async (importOriginal) => ({
 const pendingRow = { id: "ds-1", tilesJobId: "ds-1-100" };
 
 const updateData = (call: number) =>
-  vi.mocked(prisma.dataset.update).mock.calls[call][0].data as Record<
+  vi.mocked(prisma.dataset.updateMany).mock.calls[call][0].data as Record<
     string,
     unknown
   >;
@@ -37,7 +37,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   vi.stubEnv("TILER_URL", "http://127.0.0.1:8099");
   vi.mocked(prisma.dataset.findMany).mockResolvedValue([pendingRow] as never);
-  vi.mocked(prisma.dataset.update).mockResolvedValue({} as never);
+  vi.mocked(prisma.dataset.updateMany).mockResolvedValue({ count: 1 } as never);
   vi.mocked(downloadTileOutputs).mockResolvedValue(undefined);
   vi.mocked(ackTileJob).mockResolvedValue(undefined);
   vi.mocked(pruneTileArchives).mockResolvedValue(undefined);
@@ -112,7 +112,7 @@ describe("pollPendingTileJobs", () => {
     const results = await pollPendingTileJobs();
 
     expect(results.stillPending).toBe(1);
-    expect(prisma.dataset.update).not.toHaveBeenCalled();
+    expect(prisma.dataset.updateMany).not.toHaveBeenCalled();
   });
 
   it("treats a transient error (tiler unreachable) as still pending", async () => {
@@ -126,7 +126,7 @@ describe("pollPendingTileJobs", () => {
       failed: 0,
       stillPending: 1,
     });
-    expect(prisma.dataset.update).not.toHaveBeenCalled();
+    expect(prisma.dataset.updateMany).not.toHaveBeenCalled();
   });
 
   it("never throws — a failing pending-datasets query returns empty results", async () => {
@@ -152,11 +152,41 @@ describe("pollPendingTileJobs", () => {
 
     const first = reconcileDataset(pendingRow, job);
     const second = await reconcileDataset(pendingRow, job);
-    expect(second).toBe("pending");
+    expect(second).toEqual({ outcome: "pending" });
 
     release();
-    expect(await first).toBe("completed");
+    expect(await first).toEqual({ outcome: "completed" });
     expect(downloadTileOutputs).toHaveBeenCalledTimes(1);
+  });
+
+  it("a stale reconcile never clobbers a committed outcome", async () => {
+    // The lost race: this caller read the row while pending, but a concurrent
+    // reconcile finished the job (wrote done, acked — so the lookup 404s)
+    // before this one committed. The conditional write matches 0 rows.
+    vi.mocked(prisma.dataset.updateMany).mockResolvedValue({
+      count: 0,
+    } as never);
+
+    expect(await reconcileDataset(pendingRow, null)).toEqual({
+      outcome: "pending",
+    });
+    expect(
+      await reconcileDataset(pendingRow, { id: "ds-1-100", state: "failed" })
+    ).toEqual({ outcome: "pending" });
+    expect(
+      await reconcileDataset(pendingRow, { id: "ds-1-100", state: "done" })
+    ).toEqual({ outcome: "pending" });
+    // The loser of the done-race must not ack or prune — the winner does.
+    expect(ackTileJob).not.toHaveBeenCalled();
+    expect(pruneTileArchives).not.toHaveBeenCalled();
+    // Every write went through the conditional guard.
+    for (const call of vi.mocked(prisma.dataset.updateMany).mock.calls) {
+      expect(call[0].where).toEqual({
+        id: "ds-1",
+        tilesJobId: "ds-1-100",
+        tilesState: "pending",
+      });
+    }
   });
 
   it("a failed download leaves the row pending for the next tick", async () => {
@@ -166,7 +196,7 @@ describe("pollPendingTileJobs", () => {
     const results = await pollPendingTileJobs();
 
     expect(results.stillPending).toBe(1);
-    expect(prisma.dataset.update).not.toHaveBeenCalled();
+    expect(prisma.dataset.updateMany).not.toHaveBeenCalled();
     expect(ackTileJob).not.toHaveBeenCalled();
   });
 });

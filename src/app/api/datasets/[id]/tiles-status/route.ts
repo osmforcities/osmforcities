@@ -45,17 +45,15 @@ export async function GET(
 
   try {
     const job = await getTileJob(dataset.tilesJobId);
-    const outcome = await reconcileDataset(
+    const result = await reconcileDataset(
       { id: dataset.id, tilesJobId: dataset.tilesJobId },
       job
     );
-    if (outcome === "completed") return NextResponse.json({ state: "done" });
-    if (outcome === "failed") {
-      const row = await prisma.dataset.findUnique({
-        where: { id },
-        select: { tilesError: true },
-      });
-      return NextResponse.json(failedBody(row?.tilesError ?? null));
+    if (result.outcome === "completed") {
+      return NextResponse.json({ state: "done" });
+    }
+    if (result.outcome === "failed") {
+      return NextResponse.json(failedBody(result.error ?? null));
     }
     return NextResponse.json({
       state: "pending",

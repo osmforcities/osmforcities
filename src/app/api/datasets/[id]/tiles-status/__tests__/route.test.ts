@@ -100,7 +100,7 @@ describe("GET /api/datasets/[id]/tiles-status", () => {
   it("reconciles a done job inline and reports done", async () => {
     vi.mocked(prisma.dataset.findUnique).mockResolvedValue(row() as never);
     vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "done" });
-    vi.mocked(reconcileDataset).mockResolvedValue("completed");
+    vi.mocked(reconcileDataset).mockResolvedValue({ outcome: "completed" });
 
     expect(await (await get()).json()).toEqual({ state: "done" });
     expect(reconcileDataset).toHaveBeenCalledWith(
@@ -109,17 +109,16 @@ describe("GET /api/datasets/[id]/tiles-status", () => {
     );
   });
 
-  it("re-reads the recorded error when reconcile fails the job", async () => {
-    vi.mocked(prisma.dataset.findUnique)
-      .mockResolvedValueOnce(row() as never)
-      .mockResolvedValueOnce(
-        row({ tilesError: "too_large: refused" }) as never
-      );
+  it("reports the reconcile's error when it fails the job", async () => {
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue(row() as never);
     vi.mocked(getTileJob).mockResolvedValue({
       id: "ds-1-100",
       state: "failed",
     });
-    vi.mocked(reconcileDataset).mockResolvedValue("failed");
+    vi.mocked(reconcileDataset).mockResolvedValue({
+      outcome: "failed",
+      error: "too_large: refused",
+    });
 
     expect(await (await get()).json()).toEqual({
       state: "failed",
@@ -135,7 +134,7 @@ describe("GET /api/datasets/[id]/tiles-status", () => {
       state: "fetching",
       progress: { stage: "fetching", bytes: 1048576 },
     });
-    vi.mocked(reconcileDataset).mockResolvedValue("pending");
+    vi.mocked(reconcileDataset).mockResolvedValue({ outcome: "pending" });
 
     expect(await (await get()).json()).toEqual({
       state: "pending",
