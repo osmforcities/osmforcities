@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 type TilesStatus = {
   state: "pending" | "done" | "failed" | "none";
   stage?: string;
-  progress?: { stage: string; bytes?: number; pct?: number } | null;
+  progress?: { bytes?: number; pct?: number } | null;
   error?: string | null;
   tooLarge?: boolean;
 };
@@ -43,6 +43,11 @@ export function TilesProcessingPanel({ datasetId }: { datasetId: string }) {
   useEffect(() => {
     if (status?.state === "done") router.refresh();
   }, [status?.state, router]);
+
+  // "none" means no tile job exists for this dataset — nothing to narrate.
+  // Unreachable via full-map's gating (panel mounts only on pending/failed),
+  // but a frozen "queued" panel would be worse than an empty map area.
+  if (status?.state === "none") return null;
 
   const stage = status?.stage ?? "queued";
   const pct = status?.progress?.pct;
