@@ -216,7 +216,7 @@ templates:
   - ["buildings","building","infrastructure","Building"]
 # Transport infrastructure
   - ["roads","highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=unclassified","transport","Route"]
-  - ["street-network","highway","transport","Waypoints"]
+  - ["highways","highway","transport","Waypoints"]
   - ["footways","highway=footway;highway=path","transport","Footprints"]
   - ["cycleways","highway=cycleway","transport","Bike"]
   - ["bridges","man_made=bridge","transport","Waypoints"]
@@ -397,7 +397,7 @@ filterableTags:
   rail-tracks:      [railway, electrified, usage, service]
   busways:          [surface]
   roads:            [surface, maxspeed, lit, sidewalk]
-  street-network:   [highway, surface, lit]
+  highways:         [highway, surface, lit]
   buildings:        [building]
   footways:         [surface, lit, smoothness]
   cycleways:        [surface, lit, oneway, smoothness]

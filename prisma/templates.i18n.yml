@@ -2329,19 +2329,19 @@ templates:
       es: Carreteras
       fr: Routes
       de: Straßen
-  street-network:
+  highways:
     name:
-      en: Street network
-      pt: Malha viária
-      es: Red vial
-      fr: Réseau viaire
-      de: Straßennetz
+      en: Highways
+      pt: Vias
+      es: Vías
+      fr: Voies
+      de: Straßen und Wege
     desc:
-      en: The complete street and path network
-      pt: A malha completa de vias e caminhos
-      es: La red completa de calles y caminos
-      fr: Le réseau complet de rues et de chemins
-      de: Das vollständige Straßen- und Wegenetz
+      en: All roads, streets and paths
+      pt: Todas as vias, ruas e caminhos
+      es: Todas las vías, calles y caminos
+      fr: Toutes les routes, rues et chemins
+      de: Alle Straßen, Wege und Pfade
   buildings:
     name:
       en: Buildings

@@ -168,7 +168,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-09-06T13:56:50.966Z
+ * Generated: 2026-09-07T18:06:35.354Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -458,6 +458,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Leaf className="w-5 h-5" />;
     case "hedges":
       return <Shrub className="w-5 h-5" />;
+    case "highways":
+      return <Waypoints className="w-5 h-5" />;
     case "hospitals":
       return <Hospital className="w-5 h-5" />;
     case "hot-springs":
@@ -648,8 +650,6 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Cylinder className="w-5 h-5" />;
     case "street-lamps":
       return <Lightbulb className="w-5 h-5" />;
-    case "street-network":
-      return <Waypoints className="w-5 h-5" />;
     case "street-trees":
       return <TreeDeciduous className="w-5 h-5" />;
     case "subway-entrances":
