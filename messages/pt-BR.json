@@ -135,6 +135,7 @@
     "tilesStageBaking": "Gerando tiles do mapa ({pct, number}%)",
     "tilesFailedTitle": "Falha no processamento do mapa",
     "tilesFailedTooLarge": "Este conjunto de dados é grande demais para processar agora.",
+    "tilesFailedGeneric": "Algo deu errado ao processar os dados do mapa.",
     "tilesFailedRetryNote": "Uma nova tentativa será feita na próxima atualização programada.",
     "backToHome": "Voltar ao Início",
     "emptyTitle": "Nenhum {dataset} encontrado em {area}",

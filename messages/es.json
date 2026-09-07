@@ -135,6 +135,7 @@
     "tilesStageBaking": "Generando teselas del mapa ({pct, number} %)",
     "tilesFailedTitle": "Falló el procesamiento del mapa",
     "tilesFailedTooLarge": "Este conjunto de datos es demasiado grande para procesarlo ahora.",
+    "tilesFailedGeneric": "Algo salió mal al procesar los datos del mapa.",
     "tilesFailedRetryNote": "Se reintentará en la próxima actualización programada.",
     "backToHome": "Volver al Inicio",
     "emptyTitle": "No se encontró ningún {dataset} en {area}",

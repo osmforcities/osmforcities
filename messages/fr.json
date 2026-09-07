@@ -135,6 +135,7 @@
     "tilesStageBaking": "Génération des tuiles de la carte ({pct, number} %)",
     "tilesFailedTitle": "Échec du traitement de la carte",
     "tilesFailedTooLarge": "Ce jeu de données est trop volumineux pour être traité pour le moment.",
+    "tilesFailedGeneric": "Une erreur est survenue lors du traitement des données de la carte.",
     "tilesFailedRetryNote": "Une nouvelle tentative aura lieu à la prochaine mise à jour planifiée.",
     "backToHome": "Retour à l'accueil",
     "emptyTitle": "Aucun élément « {dataset} » trouvé dans {area}",

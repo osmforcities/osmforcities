@@ -135,6 +135,7 @@
     "tilesStageBaking": "Kartenkacheln werden erstellt ({pct, number} %)",
     "tilesFailedTitle": "Kartenverarbeitung fehlgeschlagen",
     "tilesFailedTooLarge": "Dieser Datensatz ist derzeit zu groß für die Verarbeitung.",
+    "tilesFailedGeneric": "Bei der Verarbeitung der Kartendaten ist ein Fehler aufgetreten.",
     "tilesFailedRetryNote": "Beim nächsten geplanten Update wird es erneut versucht.",
     "backToHome": "Zurück zur Startseite",
     "emptyTitle": "Keine Objekte für „{dataset}“ in {area} gefunden",

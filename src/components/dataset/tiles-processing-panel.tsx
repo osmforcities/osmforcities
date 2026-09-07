@@ -67,8 +67,12 @@ export function TilesProcessingPanel({ datasetId }: { datasetId: string }) {
           data-testid="tiles-failed-panel"
         >
           <h3 className="font-semibold text-gray-900">{t("tilesFailedTitle")}</h3>
+          {/* Raw tiler errors are operator material (kept in tilesError and
+              shown on the admin page) — end users get localized copy only. */}
           <p className="text-sm text-gray-600">
-            {status.tooLarge ? t("tilesFailedTooLarge") : status.error}
+            {status.tooLarge
+              ? t("tilesFailedTooLarge")
+              : t("tilesFailedGeneric")}
           </p>
           <p className="text-xs text-gray-500">{t("tilesFailedRetryNote")}</p>
         </div>

@@ -135,6 +135,7 @@
     "tilesStageBaking": "Building map tiles ({pct, number}%)",
     "tilesFailedTitle": "Map processing failed",
     "tilesFailedTooLarge": "This dataset is too large to process right now.",
+    "tilesFailedGeneric": "Something went wrong while processing the map data.",
     "tilesFailedRetryNote": "It will be retried on the next scheduled update.",
     "backToHome": "Back to Home",
     "emptyTitle": "No {dataset} found in {area}",
