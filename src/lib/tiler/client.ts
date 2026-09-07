@@ -1,4 +1,5 @@
 import { createWriteStream } from "node:fs";
+import { randomUUID } from "node:crypto";
 import { mkdir, readdir, rename, unlink } from "node:fs/promises";
 import path from "node:path";
 import { Readable } from "node:stream";
@@ -28,6 +29,14 @@ export type TileJob = {
   startedAt?: string;
   error?: string;
   errorKind?: string;
+  /** Present only while a stage runs: {stage, bytes|pct|features|total}. */
+  progress?: {
+    stage: string;
+    bytes?: number;
+    pct?: number;
+    features?: number;
+    total?: number;
+  };
 };
 
 /** Columns written next to snapshotDatasetColumns() at snapshot time —
@@ -116,10 +125,13 @@ async function downloadToFile(url: string, destination: string): Promise<void> {
     throw new Error(`Tiler download failed: ${response.status} for ${url}`);
   }
   // Temp file + rename so a crashed pull never leaves a partial archive
-  // where the serving route would find it.
+  // where the serving route would find it. The temp name is unique per
+  // invocation: concurrent pulls of the same job (cron racing the
+  // tiles-status route) must never interleave writes into one file — each
+  // streams its own temp and the atomic renames land identical content.
   const temp = path.join(
     path.dirname(destination),
-    `.tmp-${path.basename(destination)}`
+    `.tmp-${randomUUID()}-${path.basename(destination)}`
   );
   try {
     await pipeline(
