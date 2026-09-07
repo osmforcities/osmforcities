@@ -12,7 +12,8 @@ import { tilesDir } from "@/lib/tiler/client";
  * caching. In production nginx can shadow this exact path.
  */
 
-// Tiler job-id charset plus the extension; no separators, so no traversal.
+// Tiler job-id charset plus the extension. No path separators in the charset,
+// so a matching name can never traverse out of tilesDir().
 const NAME_RE = /^[A-Za-z0-9._-]+\.pmtiles$/;
 
 // bytes=start-end | bytes=start- | bytes=-suffix (single range only)
@@ -23,7 +24,7 @@ export async function GET(
   { params }: { params: Promise<{ name: string }> }
 ) {
   const { name } = await params;
-  if (!NAME_RE.test(name) || name.includes("..")) {
+  if (!NAME_RE.test(name)) {
     return NextResponse.json({ error: "Invalid archive name" }, { status: 400 });
   }
 
