@@ -106,11 +106,11 @@ export async function POST(req: NextRequest) {
       include: { template: true },
     });
 
-    await submitTilesForDataset(dataset.id);
+    const tilesColumns = await submitTilesForDataset(dataset.id);
 
     await trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`, getClientInfo(req));
 
-    return NextResponse.json(dataset, { status: 201 });
+    return NextResponse.json({ ...dataset, ...tilesColumns }, { status: 201 });
   } catch (err) {
     if (err instanceof DatasetTooLargeError) {
       return NextResponse.json({ error: err.message }, { status: 422 });
