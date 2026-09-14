@@ -237,7 +237,7 @@ async function createDatasetOnDemand(
 
     // Only the two columns DATASET_DETAIL_SELECT reads — merging the whole
     // column set would give the create path a shape the read path lacks
-    // (tilesError stays operator-only, see #512).
+    // (tilesError is operator-only).
     const { tilesState, tilesJobId } = await submitTilesForDataset(dataset.id);
 
     await trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`);

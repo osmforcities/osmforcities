@@ -106,8 +106,8 @@ export async function POST(req: NextRequest) {
       include: { template: true },
     });
 
-    // Only the client-facing pair — a failed submit returns tilesError too,
-    // and the raw tiler message stays operator-only (#512).
+    // Only the client-facing pair — a failed submit also returns tilesError,
+    // and the raw tiler message is operator-only.
     const { tilesState, tilesJobId } = await submitTilesForDataset(dataset.id);
 
     await trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`, getClientInfo(req));
