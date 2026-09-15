@@ -44,8 +44,11 @@ Implementation constraints discovered:
   `JSON.parse` per element. Token-level streaming (stream-json) is ~40x slower
   at the same bounded memory. osmtogeojson is unusable here (superlinear,
   whole-collection).
-- Usable per-query maxsize ceiling on our instance is between 1 and 3 GiB;
-  requests >= 4 GiB fail with an areas-dispatcher protocol error.
+- Per-query maxsize: 1 GiB is the working ceiling — the largest value measured
+  good (SP state, 2.7M elements, counts at it). 3 GiB and above fail with an
+  areas-dispatcher protocol error, and nothing between 1 and 3 GiB was
+  measured, so sizing above 1 GiB buys nothing. The app sends 1 GiB as
+  `LARGE_JOB_MAXSIZE_BYTES` (`src/lib/tiler/client.ts`).
 
 ## Worst-case bounds
 
