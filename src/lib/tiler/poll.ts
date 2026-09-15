@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import {
   ackTileJob,
@@ -7,6 +8,7 @@ import {
   tilerEnabled,
   type TileJob,
 } from "./client";
+import { readPulledStats, tilerStatsToDatasetColumns } from "./stats";
 
 export type TilePollResults = {
   checked: number;
@@ -34,10 +36,9 @@ const inflightPulls = new Set<string>();
 // row of a resubmitted one (hence tilesJobId in the guard, not just state).
 async function commitOutcome(
   dataset: { id: string; tilesJobId: string },
-  data: {
+  data: Prisma.DatasetUpdateManyMutationInput & {
     tilesState: string;
     tilesError: string | null;
-    tilesUpdatedAt?: Date;
   }
 ): Promise<boolean> {
   const { count } = await prisma.dataset.updateMany({
@@ -82,7 +83,31 @@ export async function reconcileDataset(
     let won: boolean;
     try {
       await downloadTileOutputs(dataset.tilesJobId);
+
+      // Only tiles-only datasets take the tiler's stats. Ones the app fetched
+      // keep its own, so drift between the two pipelines stays visible.
+      let statsColumns: Prisma.DatasetUpdateManyMutationInput = {};
+      const row = await prisma.dataset.findUnique({
+        where: { id: dataset.id },
+        select: { stats: true },
+      });
+      if (row && row.stats === null) {
+        try {
+          const mapped = tilerStatsToDatasetColumns(
+            await readPulledStats(dataset.tilesJobId)
+          );
+          if (mapped) statsColumns = mapped;
+        } catch (error) {
+          // Losing the stats must not also lose the archive.
+          console.error(
+            `Stats fill from tiler failed for dataset ${dataset.id}:`,
+            error
+          );
+        }
+      }
+
       won = await commitOutcome(dataset, {
+        ...statsColumns,
         tilesState: "done",
         tilesUpdatedAt: new Date(),
         tilesError: null,
