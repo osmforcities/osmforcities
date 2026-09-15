@@ -1,7 +1,7 @@
 # Large Datasets (vector tiles + metro-scale extraction)
 
 Architecture for datasets beyond the 25 MB interactive cap (epic #322).
-Decided 2026-09-04 from live capacity probes against our Overpass instance
+Decided 2026-09-04 from live capacity probes against the Overpass backend
 (spike record: SPIKE-CHUNKING.md at repo root, uncommitted). Chunked extraction
 was designed, probed, and discarded the same day — single-query extraction wins.
 
@@ -15,11 +15,11 @@ was designed, probed, and discarded the same day — single-query extraction win
 - Above the interactive cap, the stored representation is an nd-geojson file
   on disk, not JSONB. Snapshot stats are computed in the same streaming pass
   (all stats are accumulator-shaped).
-- Refresh: full refetch at low cadence. `[adiff:]` deltas are impossible on
-  our instance (DB imported without attic data; re-import ~doubles disk and
-  does not fit).
+- Refresh: full refetch at low cadence. `[adiff:]` deltas need attic data,
+  which the backend does not carry; re-importing with it is not on the table
+  (reasoning in the infra repo).
 
-## Measured facts (2026-09-04, our instance: 12 vCPU / 64 GB / defaults)
+## Measured facts (2026-09-04, stock Overpass defaults)
 
 Overpass `maxsize` is driven by area evaluation, not output size (a 210 MB
 result fits in a 64 MiB budget). Per-query defaults: 512 MiB / `timeout:25`.
@@ -83,20 +83,20 @@ as a draft PR first.
 
 ## overpass-pmtiler: settled design (2026-09-05)
 
-Extraction+bake service co-located on the Overpass box. Name `overpass-pmtiler`;
-developed in its own (currently private) repo, deployed by an ansible role
-`pmtiler` (systemd unit `pmtiler.service`, nginx location `/pmtiler/` on the
-existing IP-allowlisted vhost — app IPs are already in `overpass_allowed_ips`,
-nothing new is exposed).
+Extraction+bake service co-located with Overpass, so a multi-GB fetch is a
+localhost read. Name `overpass-pmtiler`; developed in its own (currently
+private) repo. Deployment lives in the infra repo: it reuses the existing
+restricted vhost and exposes nothing new.
 
 Decisions (brainstorm 2026-09-05):
 
-- **App box pulls outputs.** On `done`, app downloads the archive + stats to
-  its own disk and serves via existing nginx/CF. Overpass box stays private;
-  serving path identical for small and metro datasets.
+- **The app pulls outputs.** On `done`, the app downloads the archive + stats
+  to its own disk and serves them through the existing web tier. The Overpass
+  side stays private; serving path identical for small and metro datasets.
 - **ALL datasets bake via the tiler.** One bake path; tippecanoe never runs on
-  the 3.7 GB app box. #487 shrinks to "download + serve". Tiler down =>
-  snapshots queue and retry via existing cron, same as Overpass being down.
+  the app host, which has neither the memory nor the disk for it. #487 shrinks
+  to "download + serve". Tiler down => snapshots queue and retry via existing
+  cron, same as Overpass being down.
 - **Tiler is the single Overpass data client.** Job input is the Overpass
   query; tiler fetches via localhost (the 2.2 GB metro wire transfer
   disappears), stream-converts, computes stats, bakes. App's Overpass
@@ -123,7 +123,7 @@ state = one JSON file per job in a spool dir, no database. Fetch = streamed
 localhost `POST /api/interpreter` to disk. Bake = apt tippecanoe under `nice`.
 Serial execution doubles as contention control: at most one bake competes with
 live Overpass queries. Cleanup: DELETE on ack + cron sweep of jobs older than
-N days (disk: 269 G free, ~3 GB transient per metro job).
+N days (~3 GB transient per metro job).
 
 App side: snapshot flow = submit -> poll on the existing cron tick (no new
 scheduler) -> pull outputs -> serve from app nginx. Dataset status maps from
@@ -162,8 +162,8 @@ bake runs (checklist item that still needs a probe).
 2. ~~overpass-box tiler service exploration~~ **SETTLED (2026-09-05)** — design
    above; service work tracked in the overpass-pmtiler repo (milestone v0.1 =
    one SP-class job end-to-end; issues 1-8 seeded 2026-09-05).
-3. Contention probe: measure live Overpass query latency while a bake runs on
-   the box (only remaining pre-build measurement).
+3. Contention probe: measure live Overpass query latency while a bake runs
+   alongside it (only remaining pre-build measurement).
 4. Rewrite #490 (and touch up #487) to the settled design; service work items
    tracked in the overpass-pmtiler repo.
 5. Then: app-side work (#489 protocol + vector source) in a worktree, behind a
