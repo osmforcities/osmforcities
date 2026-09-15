@@ -235,7 +235,10 @@ async function createDatasetOnDemand(
       select: DATASET_DETAIL_SELECT,
     });
 
-    await submitTilesForDataset(dataset.id);
+    // Only the two columns DATASET_DETAIL_SELECT reads — merging the whole
+    // column set would give the create path a shape the read path lacks
+    // (tilesError is operator-only).
+    const { tilesState, tilesJobId } = await submitTilesForDataset(dataset.id);
 
     await trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`);
 
@@ -244,6 +247,8 @@ async function createDatasetOnDemand(
 
     return {
       ...dataset,
+      tilesState: tilesState ?? dataset.tilesState,
+      tilesJobId: tilesJobId ?? dataset.tilesJobId,
       template: resolvedTemplate,
     };
   } catch (error) {

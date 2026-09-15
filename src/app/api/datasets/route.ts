@@ -106,11 +106,20 @@ export async function POST(req: NextRequest) {
       include: { template: true },
     });
 
-    await submitTilesForDataset(dataset.id);
+    // Only the client-facing pair — a failed submit also returns tilesError,
+    // and the raw tiler message is operator-only.
+    const { tilesState, tilesJobId } = await submitTilesForDataset(dataset.id);
 
     await trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`, getClientInfo(req));
 
-    return NextResponse.json(dataset, { status: 201 });
+    return NextResponse.json(
+      {
+        ...dataset,
+        tilesState: tilesState ?? dataset.tilesState,
+        tilesJobId: tilesJobId ?? dataset.tilesJobId,
+      },
+      { status: 201 }
+    );
   } catch (err) {
     if (err instanceof DatasetTooLargeError) {
       return NextResponse.json({ error: err.message }, { status: 422 });

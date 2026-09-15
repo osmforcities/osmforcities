@@ -81,6 +81,20 @@ describe("submitTilesForDataset", () => {
 
   it("never throws — a DB error is logged, not propagated", async () => {
     vi.mocked(prisma.dataset.findUnique).mockRejectedValue(new Error("db down"));
-    await expect(submitTilesForDataset("ds-1")).resolves.toBeUndefined();
+    await expect(submitTilesForDataset("ds-1")).resolves.toEqual({});
+  });
+
+  it("returns the persisted columns so creation can render pending first paint", async () => {
+    vi.mocked(submitTilesColumns).mockResolvedValue({
+      tilesJobId: "ds-1-100",
+      tilesState: "pending",
+      tilesError: null,
+    });
+
+    await expect(submitTilesForDataset("ds-1")).resolves.toEqual({
+      tilesJobId: "ds-1-100",
+      tilesState: "pending",
+      tilesError: null,
+    });
   });
 });
