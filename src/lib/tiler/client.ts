@@ -48,6 +48,17 @@ export type TilesColumns = Partial<
 const REQUEST_TIMEOUT_MS = 30_000;
 const DOWNLOAD_TIMEOUT_MS = 10 * 60_000;
 
+// Overpass budgets for over-cap (tiles-only) jobs, in the units the tiler's
+// settings block expects: maxsize in bytes, timeout in seconds.
+//
+// maxsize bounds the query's working set during area evaluation, not the size
+// of the response, so it is sized from what the Overpass instance accepts
+// rather than from the dataset. Both values are tuned to the instance we run
+// against and sit well inside its measured ceiling; retune them against the
+// probe numbers in docs/features/large-datasets.md.
+export const LARGE_JOB_MAXSIZE_BYTES = 1024 * 1024 * 1024; // 1 GiB
+export const LARGE_JOB_TIMEOUT_SECONDS = 1800; // 30 minutes
+
 function tilerUrl(): string | null {
   return process.env.TILER_URL || null;
 }
@@ -88,6 +99,8 @@ export async function submitTileJob(input: {
   id: string;
   query: string;
   filterableTags?: string[];
+  maxsize?: number;
+  timeout?: number;
 }): Promise<void> {
   const response = await fetch(`${requireTilerUrl()}/jobs`, {
     method: "POST",
@@ -214,12 +227,13 @@ export async function pruneTileArchives(datasetId: string): Promise<void> {
 export async function submitTilesColumns(
   datasetId: string,
   query: string,
-  filterableTags: string[]
+  filterableTags: string[],
+  budgets?: { maxsize: number; timeout: number }
 ): Promise<TilesColumns> {
   if (!tilerEnabled()) return {};
   const id = newTileJobId(datasetId);
   try {
-    await submitTileJob({ id, query, filterableTags });
+    await submitTileJob({ id, query, filterableTags, ...budgets });
     return { tilesJobId: id, tilesState: "pending", tilesError: null };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

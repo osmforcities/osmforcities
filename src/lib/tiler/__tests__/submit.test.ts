@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { prisma } from "@/lib/db";
-import { submitTilesColumns } from "@/lib/tiler/client";
+import {
+  LARGE_JOB_MAXSIZE_BYTES,
+  LARGE_JOB_TIMEOUT_SECONDS,
+  submitTilesColumns,
+} from "@/lib/tiler/client";
 import { submitTilesForDataset } from "@/lib/tiler/submit";
 
 vi.mock("@/lib/db", () => ({
@@ -20,6 +24,7 @@ vi.mock("@/lib/tiler/client", async (importOriginal) => ({
 
 const row = {
   areaId: 47798,
+  dataCount: 100,
   template: {
     overpassQuery: "[out:json];rel({OSM_RELATION_ID});out geom meta;",
     filterableTags: ["surface"],
@@ -56,7 +61,8 @@ describe("submitTilesForDataset", () => {
     expect(submitTilesColumns).toHaveBeenCalledWith(
       "ds-1",
       "[out:json];rel(47798);out geom meta;",
-      ["surface"]
+      ["surface"],
+      undefined // under-cap: default tiler budgets
     );
     expect(prisma.dataset.update).toHaveBeenCalledWith({
       where: { id: "ds-1" },
@@ -66,6 +72,27 @@ describe("submitTilesForDataset", () => {
         tilesError: null,
       },
     });
+  });
+
+  it("passes raised budgets for an over-cap (tiles-only) dataset", async () => {
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+      ...row,
+      dataCount: 10_000_000,
+    } as never);
+    vi.mocked(submitTilesColumns).mockResolvedValue({
+      tilesJobId: "ds-1-100",
+      tilesState: "pending",
+      tilesError: null,
+    });
+
+    await submitTilesForDataset("ds-1");
+
+    expect(submitTilesColumns).toHaveBeenCalledWith(
+      "ds-1",
+      "[out:json];rel(47798);out geom meta;",
+      ["surface"],
+      { maxsize: LARGE_JOB_MAXSIZE_BYTES, timeout: LARGE_JOB_TIMEOUT_SECONDS }
+    );
   });
 
   it("writes nothing for an unknown dataset or an empty column set", async () => {

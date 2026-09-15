@@ -9,6 +9,8 @@ import {
   downloadTileOutputs,
   submitTilesColumns,
   pruneTileArchives,
+  LARGE_JOB_MAXSIZE_BYTES,
+  LARGE_JOB_TIMEOUT_SECONDS,
 } from "@/lib/tiler/client";
 
 beforeEach(() => {
@@ -105,6 +107,24 @@ describe("submitTilesColumns", () => {
     expect(body.id).toBe(columns.tilesJobId);
     expect(body.query).toBe("[out:json];...");
     expect(body.filterableTags).toEqual(["name"]);
+    expect(body.maxsize).toBeUndefined();
+    expect(body.timeout).toBeUndefined();
+  });
+
+  it("puts raised budgets in the submit body", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, status: 202 } as Response);
+    vi.stubGlobal("fetch", fetchMock);
+
+    await submitTilesColumns("d1", "[out:json]", ["name"], {
+      maxsize: LARGE_JOB_MAXSIZE_BYTES,
+      timeout: LARGE_JOB_TIMEOUT_SECONDS,
+    });
+
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    expect(body.maxsize).toBe(LARGE_JOB_MAXSIZE_BYTES);
+    expect(body.timeout).toBe(LARGE_JOB_TIMEOUT_SECONDS);
   });
 
   it("returns empty columns when the tiler is disabled", async () => {
