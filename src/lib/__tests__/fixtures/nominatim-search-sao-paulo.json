@@ -1,0 +1,79 @@
+[
+  {
+    "place_id": 9054698,
+    "osm_type": "relation",
+    "osm_id": 298285,
+    "lat": "-23.5506507",
+    "lon": "-46.6333824",
+    "class": "boundary",
+    "type": "administrative",
+    "place_rank": 16,
+    "importance": 0.7552016442287615,
+    "addresstype": "city",
+    "name": "São Paulo",
+    "display_name": "São Paulo, Southeast Region, Brazil",
+    "address": {
+      "city": "São Paulo",
+      "state": "São Paulo",
+      "region": "Southeast Region",
+      "country": "Brazil",
+      "country_code": "br"
+    },
+    "extratags": {
+      "wikidata": "Q174",
+      "population": "11451999",
+      "admin_level": "8"
+    },
+    "boundingbox": ["-24.0079003", "-23.3577551", "-46.8262692", "-46.3650898"]
+  },
+  {
+    "place_id": 13662212,
+    "osm_type": "node",
+    "osm_id": 5390979124,
+    "lat": "-1.2043218",
+    "lon": "-47.1583944",
+    "class": "place",
+    "type": "suburb",
+    "place_rank": 19,
+    "importance": 0.7552016442287615,
+    "addresstype": "suburb",
+    "name": "São Paulo",
+    "display_name": "São Paulo, Capanema, Pará, North Region, 68700-540, Brazil",
+    "address": {
+      "suburb": "São Paulo",
+      "town": "Capanema",
+      "state": "Pará",
+      "postcode": "68700-540",
+      "country": "Brazil",
+      "country_code": "br"
+    },
+    "extratags": { "wikidata": "Q174" },
+    "boundingbox": ["-1.2243218", "-1.1843218", "-47.1783944", "-47.1383944"]
+  },
+  {
+    "place_id": 12000664,
+    "osm_type": "relation",
+    "osm_id": 298204,
+    "lat": "-22.0702705",
+    "lon": "-48.4333875",
+    "class": "boundary",
+    "type": "administrative",
+    "place_rank": 8,
+    "importance": 0.7245181148387051,
+    "addresstype": "state",
+    "name": "São Paulo",
+    "display_name": "São Paulo, Southeast Region, Brazil",
+    "address": {
+      "state": "São Paulo",
+      "region": "Southeast Region",
+      "country": "Brazil",
+      "country_code": "br"
+    },
+    "extratags": {
+      "wikidata": "Q175",
+      "population": "45538936",
+      "admin_level": "4"
+    },
+    "boundingbox": ["-25.4895759", "-19.7823272", "-53.1090000", "-44.1613652"]
+  }
+]

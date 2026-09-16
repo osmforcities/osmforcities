@@ -13,11 +13,10 @@ import {
 } from "react-aria-components";
 import { Search, X } from "lucide-react";
 import { useNominatimAreas } from "@/hooks/useNominatimSearch";
-import { Area } from "@/types/area";
-import { getAreaCharacteristics } from "@/lib/utils";
-import type { MessageResolver } from "@/lib/tag-i18n";
+import type { AreaSearchResult as AreaSearchResultData } from "@/lib/area-search";
+import { AreaSearchResult } from "@/components/area-search-result";
 
-type SearchResultItem = Area | SpecialSearchItem;
+type SearchResultItem = AreaSearchResultData | SpecialSearchItem;
 
 type SpecialSearchItem = {
   id: "no-results" | "loading" | "need-more-chars" | "search-hint";
@@ -55,11 +54,6 @@ const createSpecialSearchItem = (
 
 function NavSearch() {
   const t = useTranslations("NavSearch");
-  // Nominatim address types are resolved dynamically (from OSM data), which
-  // cannot be checked against next-intl's literal message-key types.
-  const translateAddressType = useTranslations(
-    "AddressTypes"
-  ) as unknown as MessageResolver;
   const locale = useLocale();
   const router = useRouter();
 
@@ -271,47 +265,20 @@ function NavSearch() {
                   );
                 }
 
-                // Type guard to check if item is an Area
-                const isArea = typeof item.id === "number";
-
                 return (
                   <ListBoxItem
                     key={item.id.toString()}
                     id={item.id.toString()}
+                    textValue={item.name}
                     className="px-4 py-3 cursor-pointer transition-all duration-150 ease-in-out data-[hovered]:bg-olive-100 data-[hovered]:shadow-sm data-[focused]:bg-olive-100 data-[focused]:outline-none data-[selected]:bg-olive-200 data-[selected]:shadow-md data-[selected]:font-semibold"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm text-gray-900 truncate">
-                          {item.name}
-                        </p>
-                        {isArea && (
-                          <>
-                            <p className="text-xs text-gray-600 mt-1">
-                              {item.state && item.country
-                                ? `${item.state}, ${item.country}`
-                                : item.state || item.country || ""}
-                            </p>
-                            <p className="text-xs text-gray-400 mt-1">
-                              {t("idLabel")}
-                              {item.id}
-                            </p>
-                          </>
-                        )}
-                      </div>
-                      {isArea && (
-                        <div className="flex-shrink-0 ml-3">
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-olive-100 text-olive-800">
-                            {
-                              getAreaCharacteristics(
-                                item,
-                                translateAddressType
-                              )[0]
-                            }
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                    {typeof item.id === "number" ? (
+                      <AreaSearchResult area={item as AreaSearchResultData} />
+                    ) : (
+                      <p className="font-medium text-sm text-gray-900 truncate">
+                        {item.name}
+                      </p>
+                    )}
                   </ListBoxItem>
                 );
               }}

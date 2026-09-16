@@ -1,0 +1,74 @@
+[
+  {
+    "place_id": 314009005,
+    "osm_type": "relation",
+    "osm_id": 114686,
+    "lat": "23.6585116",
+    "lon": "-102.0077097",
+    "class": "boundary",
+    "type": "administrative",
+    "place_rank": 4,
+    "importance": 0.8936823669554844,
+    "addresstype": "country",
+    "name": "Mexico",
+    "display_name": "Mexico",
+    "address": { "country": "Mexico", "country_code": "mx" },
+    "extratags": {
+      "wikidata": "Q96",
+      "population": "129900000",
+      "admin_level": "2"
+    },
+    "boundingbox": ["14.3811832", "32.7187133", "-118.5991880", "-86.4932660"]
+  },
+  {
+    "place_id": 312749671,
+    "osm_type": "relation",
+    "osm_id": 1376330,
+    "lat": "19.3207722",
+    "lon": "-99.1514678",
+    "class": "boundary",
+    "type": "administrative",
+    "place_rank": 8,
+    "importance": 0.7820130584016439,
+    "addresstype": "state",
+    "name": "Mexico City",
+    "display_name": "Mexico City, Mexico",
+    "address": {
+      "state": "Mexico City",
+      "country": "Mexico",
+      "country_code": "mx"
+    },
+    "extratags": {
+      "wikidata": "Q1489",
+      "population": "9209944",
+      "admin_level": "4"
+    },
+    "boundingbox": ["19.0487187", "19.5927573", "-99.3649242", "-98.9403028"]
+  },
+  {
+    "place_id": 312420108,
+    "osm_type": "relation",
+    "osm_id": 17483459,
+    "lat": "19.4326296",
+    "lon": "-99.1331785",
+    "class": "boundary",
+    "type": "administrative",
+    "place_rank": 16,
+    "importance": 0.7820130584016439,
+    "addresstype": "city",
+    "name": "Mexico City",
+    "display_name": "Mexico City, Cuauhtémoc, Mexico City, Mexico",
+    "address": {
+      "city": "Mexico City",
+      "state": "Mexico City",
+      "country": "Mexico",
+      "country_code": "mx"
+    },
+    "extratags": {
+      "wikidata": "Q1489",
+      "population": "9209944",
+      "admin_level": "8"
+    },
+    "boundingbox": ["19.2419543", "19.5796926", "-99.3150003", "-98.9750504"]
+  }
+]

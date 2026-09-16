@@ -84,7 +84,6 @@ Translations are organized by feature/page sections:
     "noDatasetsAvailable": "No datasets available",
     "noDatasetsDescription": "There are currently no datasets available for this area...",
     "moreTags": "+{count} more",
-    "idLabel": "ID: ",
     "viewOnOpenStreetMap": "View on OpenStreetMap →"
   },
   "Navigation": {

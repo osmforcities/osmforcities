@@ -135,5 +135,29 @@ test.describe("Navbar", () => {
         timeout: LISTBOX_TIMEOUT,
       });
     });
+
+    test("should show one result for boundaries sharing a wikidata id", async ({
+      page,
+    }) => {
+      const searchInput = page.getByTestId("nav-search-input");
+
+      await searchInput.click();
+      await searchInput.fill("Paris");
+
+      const options = page.getByRole("option");
+      await expect(options.first()).toContainText("Ile-de-France, France", {
+        timeout: LISTBOX_TIMEOUT,
+      });
+      await expect(options).toHaveCount(1);
+      await expect(options.first()).toContainText("City");
+
+      await searchInput.press("ArrowDown");
+      await searchInput.press("Enter");
+
+      // The commune (admin_level 8) wins over the département
+      await expect(page).toHaveURL(getLocalizedPath("/area/7444"), {
+        timeout: LISTBOX_TIMEOUT,
+      });
+    });
   });
 });
