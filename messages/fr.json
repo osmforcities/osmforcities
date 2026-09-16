@@ -58,7 +58,9 @@
     "quotaInfoTooltip": "Chaque utilisateur peut enregistrer jusqu'à {limit, number} jeux de données. Retirez-en un depuis votre tableau de bord pour libérer une place.",
     "quotaInfoButtonLabel": "Que signifie la limite d'enregistrement ?",
     "active": "Actif",
-    "inactive": "Inactif"
+    "inactive": "Inactif",
+    "tilesProcessing": "Tuiles en cours",
+    "tilesFailed": "Tuiles en échec"
   },
   "Public": {
     "metaTitle": "Jeux de données publics - OSM for Cities",
@@ -125,6 +127,16 @@
     "testEnvOnly": "Cette page n'est disponible qu'en environnement de test."
   },
   "DatasetPage": {
+    "tilesProcessingNotice": "Les données de la carte sont en cours de traitement pour un rendu plus rapide.",
+    "tilesProcessingTitle": "Préparation des données de la carte",
+    "tilesStageQueued": "En attente dans la file",
+    "tilesStageFetching": "Récupération des données depuis OpenStreetMap ({mb, number} Mo)",
+    "tilesStageConverting": "Conversion des objets ({pct, number} %)",
+    "tilesStageBaking": "Génération des tuiles de la carte ({pct, number} %)",
+    "tilesFailedTitle": "Échec du traitement de la carte",
+    "tilesFailedTooLarge": "Ce jeu de données est trop volumineux pour être traité pour le moment.",
+    "tilesFailedGeneric": "Une erreur est survenue lors du traitement des données de la carte.",
+    "tilesFailedRetryNote": "Une nouvelle tentative aura lieu à la prochaine mise à jour planifiée.",
     "backToHome": "Retour à l'accueil",
     "emptyTitle": "Aucun élément « {dataset} » trouvé dans {area}",
     "emptyDescription": "Ce jeu de données ne contient encore aucun élément dans cette zone. Il n'existe peut-être pas ici, ou les données n'ont pas été cartographiées dans OpenStreetMap.",
@@ -232,7 +244,6 @@
     "moreTags": "+{count} de plus",
     "dataset": "jeu de données",
     "datasets": "jeux de données",
-    "idLabel": "ID : ",
     "comingSoon": "La découverte de jeux de données arrive bientôt !",
     "comingSoonDescription": "Vous pourrez explorer et créer des jeux de données pour cette zone directement depuis cette page.",
     "areaDetails": "Détails de la zone",
@@ -255,7 +266,7 @@
     "searching": "Recherche...",
     "typeMoreChars": "Saisissez {count} caractère{count, plural, one {} other {s}} de plus pour rechercher",
     "searchHint": "Essayez de rechercher des villes, des régions ou des pays",
-    "idLabel": "ID : ",
+    "population": "{count, plural, one {{count, number, ::compact-short .#} habitant} other {{count, number, ::compact-short .#} habitants}}",
     "clearSearch": "Effacer la recherche"
   },
   "AddressTypes": {
@@ -385,7 +396,15 @@
     "failureCount": "{count, plural, one {# échec consécutif} other {# échecs consécutifs}}",
     "lastError": "Dernière erreur : {message}",
     "lastAttempted": "Dernière tentative : {value}",
-    "lastChecked": "Dernière vérification : {value}"
+    "lastChecked": "Dernière vérification : {value}",
+    "tilesHeading": "Tuiles vectorielles",
+    "statTilesPending": "Tuiles en cours",
+    "statTilesDone": "Tuiles prêtes",
+    "statTilesFailed": "Tuiles en échec",
+    "tilesFailedHeading": "Générations de tuiles en échec",
+    "tilesFailedEmpty": "Aucune génération de tuiles n'est actuellement en échec.",
+    "tilesError": "Erreur de tuiles : {message}",
+    "tilesUpdatedAt": "Tuiles mises à jour : {value}"
   },
   "DatasetMap": {
     "back": "Retour",
@@ -603,21 +622,12 @@
     "metaTitle": "À propos - OSM for Cities",
     "metaDescription": "Découvrez OSM for Cities - des jeux de données OpenStreetMap mis à jour quotidiennement",
     "title": "À propos du projet",
-    "description1": "**OSM for Cities** est une plateforme pour explorer et suivre les mises à jour d'OpenStreetMap — une carte du monde libre et ouverte construite par des bénévoles. Chaque jour, des personnes ajoutent et améliorent des données sur les rues, les bâtiments, les écoles, les parcs, les transports et bien plus. Ce projet vous permet de suivre ces changements dans les lieux qui vous tiennent à cœur.",
-    "description2": "Vous pouvez vouloir garder un œil sur les modifications des écoles de votre région, ou suivre l'ajout de passages piétons, d'arrêts de bus ou de stationnements vélo dans votre ville. Peut-être êtes-vous simplement curieux de l'évolution du parc de votre quartier. Qu'il s'agisse d'un jeu de données pour l'urbanisme ou de quelque chose de plus personnel et informel, la plateforme vous permet de le créer et de le suivre.",
-    "featuresTitle": "Fonctionnalités principales",
-    "features": {
-      "create": "Créez des jeux de données personnalisés en choisissant un lieu et un thème",
-      "follow": "Suivez des jeux de données et recevez des résumés quotidiens ou hebdomadaires",
-      "activity": "Consultez l'activité des contributeurs et la fréquence des modifications pour chaque jeu de données"
-    },
-    "projectTitle": "Le projet",
-    "projectDescription1": "OSM for Cities a été créé par",
-    "projectDescription2": "et incubé lors d'un cycle",
-    "projectDescription3": "Labs. C'est une expérimentation ouverte pour rendre les données OSM utiles et accessibles — conçue pour les villes, mais suffisamment flexible pour servir de suivi OSM générique.",
-    "projectEvolution": "Sa direction évoluera avec l'usage et les retours de la communauté.",
+    "description1": "<strong>OSM for Cities</strong> est une plateforme pour explorer et suivre les mises à jour d'OpenStreetMap, une carte du monde libre et ouverte construite par des bénévoles. Créez des jeux de données personnalisés en choisissant un lieu et un thème, suivez-les avec des résumés quotidiens ou hebdomadaires et consultez l'activité des contributeurs et la fréquence des modifications.",
+    "projectDescription1": "OSM for Cities a été créé et est maintenu par",
+    "projectDescription2": ". C'est une expérimentation ouverte pour rendre les données OSM utiles et accessibles, conçue pour les villes, mais suffisamment flexible pour servir de suivi OSM générique.",
     "getInvolvedTitle": "Participer",
-    "getInvolvedDescription": "Vos retours contribuent à façonner ce projet. Que vous ayez des idées de nouvelles fonctionnalités, trouvé quelque chose qui ne fonctionne pas tout à fait, ou simplement envie de partager la façon dont vous l'utilisez — nous serions ravis de vous lire."
+    "getInvolvedDescription": "Vos retours contribuent à façonner ce projet. Que vous ayez des idées de nouvelles fonctionnalités, trouvé quelque chose qui ne fonctionne pas tout à fait, ou simplement envie de partager la façon dont vous l'utilisez, nous serions ravis de vous lire.",
+    "acknowledgmentsTitle": "Remerciements"
   },
   "DatasetErrors": {
     "templateNotFoundTitle": "Modèle de jeu de données introuvable",
@@ -696,6 +706,7 @@
     }
   },
   "TagLabel": {
+    "highway": "Type de voie",
     "shelter": "Abri",
     "bench": "Banc",
     "covered": "Couvert",

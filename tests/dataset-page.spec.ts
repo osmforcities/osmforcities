@@ -81,7 +81,7 @@ test.describe.serial("Feature detail panel", () => {
           name: "Test Bicycle Parking",
           bicycle_parking: "stands",
           capacity: "8",
-          ageCategory: "recent",
+          _ts: 1718447400,
         },
       });
     });

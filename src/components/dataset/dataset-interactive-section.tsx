@@ -87,6 +87,12 @@ export function DatasetInteractiveSection({
                 <CategoryFacet dataset={dataset} areaName={areaName} />
                 <DatasetTimestamps dataset={dataset} lastChecked={lastChecked} />
               </div>
+              {/* Informational only until the map consumes tiles (#489). */}
+              {dataset.tilesState === "pending" && (
+                <p className="mt-2 text-xs text-gray-500">
+                  {t("tilesProcessingNotice")}
+                </p>
+              )}
             </div>
 
             {/* Section 2 — tiered stats: the only scrollable region. A tinted

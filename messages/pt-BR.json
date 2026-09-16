@@ -58,7 +58,9 @@
     "quotaInfoTooltip": "Cada usuário pode salvar até {limit, number} conjuntos de dados. Remova um do seu painel para liberar espaço.",
     "quotaInfoButtonLabel": "O que significa o limite de salvos?",
     "active": "Ativo",
-    "inactive": "Inativo"
+    "inactive": "Inativo",
+    "tilesProcessing": "Gerando tiles",
+    "tilesFailed": "Falha nos tiles"
   },
   "Public": {
     "metaTitle": "Conjuntos de Dados Públicos - OSM for Cities",
@@ -125,6 +127,16 @@
     "testEnvOnly": "Esta página está disponível apenas no ambiente de teste."
   },
   "DatasetPage": {
+    "tilesProcessingNotice": "Os dados do mapa estão sendo processados para renderização mais rápida.",
+    "tilesProcessingTitle": "Preparando os dados do mapa",
+    "tilesStageQueued": "Aguardando na fila",
+    "tilesStageFetching": "Buscando dados do OpenStreetMap ({mb, number} MB)",
+    "tilesStageConverting": "Convertendo elementos ({pct, number}%)",
+    "tilesStageBaking": "Gerando tiles do mapa ({pct, number}%)",
+    "tilesFailedTitle": "Falha no processamento do mapa",
+    "tilesFailedTooLarge": "Este conjunto de dados é grande demais para processar agora.",
+    "tilesFailedGeneric": "Algo deu errado ao processar os dados do mapa.",
+    "tilesFailedRetryNote": "Uma nova tentativa será feita na próxima atualização programada.",
     "backToHome": "Voltar ao Início",
     "emptyTitle": "Nenhum {dataset} encontrado em {area}",
     "emptyDescription": "Este conjunto de dados ainda não tem feições nesta área. Pode não existir aqui, ou os dados ainda não foram mapeados no OpenStreetMap.",
@@ -232,7 +244,6 @@
     "moreTags": "+{count} mais",
     "dataset": "dataset",
     "datasets": "datasets",
-    "idLabel": "ID: ",
     "comingSoon": "Descoberta de datasets em breve!",
     "comingSoonDescription": "Você poderá explorar e criar datasets para esta área diretamente desta página.",
     "areaDetails": "Detalhes da Área",
@@ -255,7 +266,7 @@
     "searching": "Buscando...",
     "typeMoreChars": "Digite {count} caractere{count, plural, one {} other {s}} a mais para buscar",
     "searchHint": "Tente buscar por cidades, regiões ou países",
-    "idLabel": "ID: ",
+    "population": "{count, plural, one {{count, number, ::compact-short .#} habitante} other {{count, number, ::compact-short .#} habitantes}}",
     "clearSearch": "Limpar pesquisa"
   },
   "AddressTypes": {
@@ -385,7 +396,15 @@
     "failureCount": "{count, plural, =1 {# falha consecutiva} other {# falhas consecutivas}}",
     "lastError": "Último erro: {message}",
     "lastAttempted": "Última tentativa: {value}",
-    "lastChecked": "Última verificação: {value}"
+    "lastChecked": "Última verificação: {value}",
+    "tilesHeading": "Tiles vetoriais",
+    "statTilesPending": "Tiles em processamento",
+    "statTilesDone": "Tiles prontos",
+    "statTilesFailed": "Falha nos tiles",
+    "tilesFailedHeading": "Gerações de tiles com falha",
+    "tilesFailedEmpty": "Nenhuma geração de tiles está falhando no momento.",
+    "tilesError": "Erro de tiles: {message}",
+    "tilesUpdatedAt": "Tiles atualizados: {value}"
   },
   "DatasetMap": {
     "back": "Voltar",
@@ -612,21 +631,12 @@
     "metaTitle": "Sobre - OSM for Cities",
     "metaDescription": "Saiba mais sobre OSM for Cities - Conjuntos de dados atualizados diariamente do OpenStreetMap",
     "title": "Sobre o projeto",
-    "description1": "**OSM for Cities** é uma plataforma para explorar e acompanhar atualizações do OpenStreetMap — um mapa aberto e gratuito do mundo construído por voluntários. Todos os dias, pessoas adicionam e melhoram dados sobre ruas, edifícios, escolas, parques, transportes e muito mais. Este projeto oferece uma forma de acompanhar essas mudanças em lugares que são importantes para você.",
-    "description2": "Você pode querer acompanhar edições em escolas da sua região, ou monitorar como faixas de pedestres, pontos de ônibus ou bicicletários estão sendo adicionados à sua cidade. Talvez esteja apenas curioso sobre como o parque do seu bairro está evoluindo. Seja para planejamento urbano ou para algo mais pessoal e informal, a plataforma permite que você crie e acompanhe conjuntos de dados.",
-    "featuresTitle": "Funcionalidades principais",
-    "features": {
-      "create": "Crie conjuntos de dados personalizados selecionando um lugar e um tema",
-      "follow": "Siga conjuntos de dados e receba resumos de atualizações diárias ou semanais",
-      "activity": "Veja a atividade de colaboradores e a frequência de edições em cada conjunto de dados"
-    },
-    "projectTitle": "O projeto",
-    "projectDescription1": "OSM for Cities foi criado por",
-    "projectDescription2": "e incubado em um ciclo Labs da",
-    "projectDescription3": ". É um experimento aberto em como apresentar dados do OSM de maneiras úteis e acessíveis — projetado para cidades, mas flexível o suficiente para funcionar como um rastreador genérico do OSM.",
-    "projectEvolution": "O rumo do projeto evolui com o uso e o feedback da comunidade.",
+    "description1": "<strong>OSM for Cities</strong> permite explorar e acompanhar atualizações do OpenStreetMap, o mapa livre e aberto do mundo construído por voluntários. Crie conjuntos de dados personalizados escolhendo um lugar e um tema, acompanhe com resumos diários ou semanais e veja a atividade dos colaboradores e a frequência de edições.",
+    "projectDescription1": "OSM for Cities foi criado e é mantido por",
+    "projectDescription2": ". É um experimento aberto em apresentar dados do OSM de maneiras úteis e acessíveis: projetado para cidades, mas flexível o suficiente para funcionar como um rastreador genérico do OSM.",
     "getInvolvedTitle": "Participe",
-    "getInvolvedDescription": "Seu feedback ajuda a moldar este projeto. Pode ser uma ideia para novos recursos, algo que não funciona bem, ou simplesmente compartilhar como você está usando — adoraríamos ouvir de você."
+    "getInvolvedDescription": "Seu feedback ajuda a moldar este projeto. Seja uma ideia para novos recursos, algo que não funciona bem ou apenas compartilhar como você está usando, adoraríamos ouvir de você.",
+    "acknowledgmentsTitle": "Agradecimentos"
   },
   "DatasetErrors": {
     "templateNotFoundTitle": "Modelo de Conjunto de Dados Não Encontrado",
@@ -705,6 +715,7 @@
     }
   },
   "TagLabel": {
+    "highway": "Tipo de via",
     "shelter": "Abrigo",
     "bench": "Banco",
     "covered": "Coberto",

@@ -2329,6 +2329,32 @@ templates:
       es: Carreteras
       fr: Routes
       de: Straßen
+  highways:
+    name:
+      en: Highways
+      pt: Vias e caminhos
+      es: Vías
+      fr: Voies
+      de: Straßen und Wege
+    desc:
+      en: Everything tagged as part of the road network, including crossings and signals
+      pt: Tudo que é mapeado como parte da rede viária, incluindo travessias e semáforos
+      es: Todo lo etiquetado como parte de la red vial, incluidos cruces y semáforos
+      fr: Tout ce qui est cartographié comme faisant partie du réseau routier, y compris passages et feux
+      de: Alles, was als Teil des Straßennetzes erfasst ist, einschließlich Übergängen und Ampeln
+  buildings:
+    name:
+      en: Buildings
+      pt: Edificações
+      es: Edificios
+      fr: Bâtiments
+      de: Gebäude
+    desc:
+      en: All building footprints
+      pt: Todas as edificações mapeadas
+      es: Todas las huellas de edificios
+      fr: Toutes les emprises de bâtiments
+      de: Alle Gebäudegrundrisse
   footways:
     name:
       en: Footways

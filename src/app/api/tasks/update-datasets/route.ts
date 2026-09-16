@@ -3,9 +3,12 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import {
   fetchDatasetSnapshot,
+  snapshotDatasetColumns,
   DatasetTooLargeError,
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
+import { submitTilesForDataset } from "@/lib/tiler/submit";
+import { pollPendingTileJobs } from "@/lib/tiler/poll";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import {
@@ -169,19 +172,14 @@ export async function POST(req: NextRequest) {
         await prisma.dataset.update({
           where: { id: dataset.id },
           data: {
-            geojson: JSON.parse(JSON.stringify(snapshot.geojson)),
-            bbox: snapshot.bbox ? JSON.parse(JSON.stringify(snapshot.bbox)) : null,
-            stats: JSON.parse(JSON.stringify(snapshot.stats)),
-            dataCount: snapshot.dataCount,
-            lastChecked: new Date(),
+            ...snapshotDatasetColumns(snapshot),
             updatedAt: new Date(),
-            lastEditedAt: snapshot.stats.mostRecentElement ?? null,
-            contributorsCount: snapshot.stats.editorsCount,
-            recentlyEditedCount: snapshot.stats.recentActivity.elementsEdited,
             consecutiveFailures: 0,
             lastError: null,
           },
         });
+
+        await submitTilesForDataset(dataset.id);
 
         analyticsEvents.push(
           trackEvent(
@@ -224,6 +222,8 @@ export async function POST(req: NextRequest) {
 
     await Promise.allSettled(analyticsEvents);
 
+    const tiles = await pollPendingTileJobs();
+
     const geojsonCleared = await clearGeojsonOfDeactivatedDatasets();
     const deleted = await deleteUnattendedDatasets();
 
@@ -234,6 +234,7 @@ export async function POST(req: NextRequest) {
         task: "update-datasets",
         limit,
         ...results,
+        tiles,
         cleanup: { deleted, geojsonCleared },
       },
     });

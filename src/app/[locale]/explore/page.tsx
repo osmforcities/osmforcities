@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/db";
-import { CATALOG_FILTER } from "@/lib/dataset-catalog-filter";
-import { DATASET_SELECT } from "@/lib/dataset-section-select";
+import { sectionQueryArgs } from "@/lib/dataset-section-select";
 import { DatasetSections } from "@/components/dataset/dataset-sections";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
@@ -32,65 +31,14 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
   setRequestLocale(locale);
   const t = await getTranslations("ExplorePage");
 
-  const [featured, recentlyEdited, mostWatched, mostContributors, largest] = await Promise.all([
-    prisma.dataset.findMany({
-      where: { isFeatured: true, dataCount: { gt: 0 } },
-      select: {
-        ...DATASET_SELECT,
-        _count: {
-          select: { savedBy: true }
-        }
-      },
-      orderBy: { createdAt: "desc" },
-      take: 20,
-    }).then(datasets => shuffleArray(datasets).slice(0, 6)),
-    prisma.dataset.findMany({
-      where: { isActive: true, dataCount: { gt: 0 }, lastEditedAt: { not: null }, ...CATALOG_FILTER },
-      select: {
-        ...DATASET_SELECT,
-        recentlyEditedCount: true,
-        lastEditedAt: true,
-        _count: {
-          select: { savedBy: true }
-        }
-      },
-      orderBy: { lastEditedAt: "desc" },
-      take: 6,
-    }),
-    prisma.dataset.findMany({
-      where: { isActive: true, dataCount: { gt: 0 }, savedBy: { some: {} } },
-      select: {
-        ...DATASET_SELECT,
-        _count: {
-          select: { savedBy: true }
-        }
-      },
-      orderBy: { savedBy: { _count: 'desc' } },
-      take: 6,
-    }),
-    prisma.dataset.findMany({
-      where: { isActive: true, dataCount: { gt: 0 }, contributorsCount: { not: null }, ...CATALOG_FILTER },
-      select: {
-        ...DATASET_SELECT,
-        contributorsCount: true,
-        _count: {
-          select: { savedBy: true }
-        }
-      },
-      orderBy: { contributorsCount: "desc" },
-      take: 6,
-    }),
-    prisma.dataset.findMany({
-      where: { isActive: true, dataCount: { gt: 0 }, ...CATALOG_FILTER },
-      select: {
-        ...DATASET_SELECT,
-        _count: {
-          select: { savedBy: true }
-        }
-      },
-      orderBy: { dataCount: "desc" },
-      take: 6,
-    }),
+  const [featured, recentlyEdited, mostSaved, mostContributors, largest] = await Promise.all([
+    prisma.dataset
+      .findMany(sectionQueryArgs("featured", 20))
+      .then((datasets) => shuffleArray(datasets).slice(0, 6)),
+    prisma.dataset.findMany(sectionQueryArgs("recentlyEdited", 6)),
+    prisma.dataset.findMany(sectionQueryArgs("mostSaved", 6)),
+    prisma.dataset.findMany(sectionQueryArgs("mostContributors", 6)),
+    prisma.dataset.findMany(sectionQueryArgs("largest", 6)),
   ]);
 
   return (
@@ -109,7 +57,7 @@ export default async function FeaturedDatasetsPage({ params }: { params: Promise
           data={{
             featured,
             recentlyEdited,
-            mostSaved: mostWatched,
+            mostSaved,
             mostContributors,
             largest,
           }}

@@ -3,9 +3,11 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import {
   fetchDatasetSnapshot,
+  snapshotDatasetColumns,
   DatasetTooLargeError,
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
+import { submitTilesForDataset } from "@/lib/tiler/submit";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
@@ -67,15 +69,8 @@ export async function POST(
         id: datasetId,
       },
       data: {
-        dataCount: snapshot.dataCount,
-        lastChecked: new Date(),
-        stats: JSON.parse(JSON.stringify(snapshot.stats)),
-        geojson: JSON.parse(JSON.stringify(snapshot.geojson)),
-        bbox: snapshot.bbox ? JSON.parse(JSON.stringify(snapshot.bbox)) : null,
+        ...snapshotDatasetColumns(snapshot),
         updatedAt: new Date(),
-        lastEditedAt: snapshot.stats.mostRecentElement ?? null,
-        contributorsCount: snapshot.stats.editorsCount,
-        recentlyEditedCount: snapshot.stats.recentActivity.elementsEdited,
         lastAttempted: new Date(),
         consecutiveFailures: 0,
         lastError: null,
@@ -97,6 +92,8 @@ export async function POST(
         },
       },
     });
+
+    await submitTilesForDataset(datasetId);
 
     await trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
 

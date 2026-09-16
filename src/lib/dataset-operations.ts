@@ -7,10 +7,12 @@ import { refreshAreaInfoIfStale, resolveAreaCenter } from "@/lib/area-refresh";
 import { mergeAreaNames, toStoredNames } from "@/lib/area-name";
 import {
   fetchDatasetSnapshot,
+  snapshotDatasetColumns,
   DatasetTooLargeError,
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
 import { Prisma } from "@prisma/client";
+import { submitTilesForDataset } from "@/lib/tiler/submit";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { createLogger } from "@/lib/logger";
@@ -59,6 +61,77 @@ export async function getOrCreateDataset(
   return { dataset, wasCreated: true };
 }
 
+// The detail-page shape (geojson payload included), used by both the read and
+// the on-demand create below. Distinct from the card-select in
+// dataset-section-select and consumed only in this module.
+const DATASET_DETAIL_SELECT = {
+  id: true,
+  templateId: true,
+  areaId: true,
+  cityName: true,
+  geojson: true,
+  bbox: true,
+  dataCount: true,
+  lastChecked: true,
+  stats: true,
+  createdAt: true,
+  updatedAt: true,
+  isActive: true,
+  isFeatured: true,
+  tilesState: true,
+  tilesJobId: true,
+  template: {
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+      tags: true,
+      filterableTags: true,
+      translations: {
+        select: {
+          locale: true,
+          name: true,
+          description: true,
+        },
+      },
+    },
+  },
+  area: {
+    select: {
+      id: true,
+      name: true,
+      names: true,
+      countryCode: true,
+      bounds: true,
+      centerLat: true,
+      centerLon: true,
+      refreshedAt: true,
+      geojson: true,
+    },
+  },
+  user: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+    },
+  },
+  savedBy: {
+    select: {
+      id: true,
+      userId: true,
+      createdAt: true,
+    },
+  },
+} as const;
+
 async function getDatasetWithDetails(areaId: number, templateId: string, locale: string) {
   const dataset = await prisma.dataset.findFirst({
     where: {
@@ -66,71 +139,7 @@ async function getDatasetWithDetails(areaId: number, templateId: string, locale:
       templateId,
       isActive: true,
     },
-    select: {
-      id: true,
-      templateId: true,
-      areaId: true,
-      cityName: true,
-      geojson: true,
-      bbox: true,
-      dataCount: true,
-      lastChecked: true,
-      stats: true,
-      createdAt: true,
-      updatedAt: true,
-      isActive: true,
-      isFeatured: true,
-      template: {
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          category: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-            },
-          },
-          tags: true,
-          filterableTags: true,
-          translations: {
-            select: {
-              locale: true,
-              name: true,
-              description: true,
-            },
-          },
-        },
-      },
-      area: {
-        select: {
-          id: true,
-          name: true,
-          names: true,
-          countryCode: true,
-          bounds: true,
-          centerLat: true,
-          centerLon: true,
-          refreshedAt: true,
-          geojson: true,
-        },
-      },
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      },
-      savedBy: {
-        select: {
-          id: true,
-          userId: true,
-          createdAt: true,
-        },
-      },
-    },
+    select: DATASET_DETAIL_SELECT,
   });
 
   if (!dataset) {
@@ -221,81 +230,15 @@ async function createDatasetOnDemand(
         areaId: area.id,
         cityName: area.name,
         isActive: true,
-        geojson: JSON.parse(JSON.stringify(snapshot.geojson)),
-        bbox: snapshot.bbox ? JSON.parse(JSON.stringify(snapshot.bbox)) : null,
-        dataCount: snapshot.dataCount,
-        lastChecked: new Date(),
-        stats: JSON.parse(JSON.stringify(snapshot.stats)),
-        lastEditedAt: snapshot.stats.mostRecentElement ?? null,
-        contributorsCount: snapshot.stats.editorsCount,
-        recentlyEditedCount: snapshot.stats.recentActivity.elementsEdited,
+        ...snapshotDatasetColumns(snapshot),
       },
-      select: {
-        id: true,
-        templateId: true,
-        areaId: true,
-        cityName: true,
-        geojson: true,
-        bbox: true,
-        dataCount: true,
-        lastChecked: true,
-        stats: true,
-        createdAt: true,
-        updatedAt: true,
-        isActive: true,
-        isFeatured: true,
-        template: {
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            category: {
-              select: {
-                id: true,
-                name: true,
-                slug: true,
-              },
-            },
-            tags: true,
-            filterableTags: true,
-            translations: {
-              select: {
-                locale: true,
-                name: true,
-                description: true,
-              },
-            },
-          },
-        },
-        area: {
-          select: {
-            id: true,
-            name: true,
-            names: true,
-            countryCode: true,
-            bounds: true,
-            centerLat: true,
-            centerLon: true,
-            refreshedAt: true,
-            geojson: true,
-          },
-        },
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        savedBy: {
-          select: {
-            id: true,
-            userId: true,
-            createdAt: true,
-          },
-        },
-      },
+      select: DATASET_DETAIL_SELECT,
     });
+
+    // Only the two columns DATASET_DETAIL_SELECT reads — merging the whole
+    // column set would give the create path a shape the read path lacks
+    // (tilesError is operator-only).
+    const { tilesState, tilesJobId } = await submitTilesForDataset(dataset.id);
 
     await trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`);
 
@@ -304,6 +247,8 @@ async function createDatasetOnDemand(
 
     return {
       ...dataset,
+      tilesState: tilesState ?? dataset.tilesState,
+      tilesJobId: tilesJobId ?? dataset.tilesJobId,
       template: resolvedTemplate,
     };
   } catch (error) {

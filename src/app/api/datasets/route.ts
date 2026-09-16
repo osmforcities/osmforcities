@@ -8,9 +8,11 @@ import { refreshAreaInfoIfStale, resolveAreaCenter } from "@/lib/area-refresh";
 import { mergeAreaNames, toStoredNames } from "@/lib/area-name";
 import {
   fetchDatasetSnapshot,
+  snapshotDatasetColumns,
   DatasetTooLargeError,
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
+import { submitTilesForDataset } from "@/lib/tiler/submit";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
@@ -99,18 +101,25 @@ export async function POST(req: NextRequest) {
         templateId,
         areaId: area.id,
         cityName: area.name,
-        geojson: JSON.parse(JSON.stringify(snapshot.geojson)),
-        bbox: snapshot.bbox ? JSON.parse(JSON.stringify(snapshot.bbox)) : null,
-        dataCount: snapshot.dataCount,
-        lastChecked: new Date(),
-        stats: JSON.parse(JSON.stringify(snapshot.stats)),
+        ...snapshotDatasetColumns(snapshot),
       },
       include: { template: true },
     });
 
+    // Only the client-facing pair — a failed submit also returns tilesError,
+    // and the raw tiler message is operator-only.
+    const { tilesState, tilesJobId } = await submitTilesForDataset(dataset.id);
+
     await trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`, getClientInfo(req));
 
-    return NextResponse.json(dataset, { status: 201 });
+    return NextResponse.json(
+      {
+        ...dataset,
+        tilesState: tilesState ?? dataset.tilesState,
+        tilesJobId: tilesJobId ?? dataset.tilesJobId,
+      },
+      { status: 201 }
+    );
   } catch (err) {
     if (err instanceof DatasetTooLargeError) {
       return NextResponse.json({ error: err.message }, { status: 422 });

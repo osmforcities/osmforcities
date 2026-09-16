@@ -1,4 +1,6 @@
 import { Page, Route } from "@playwright/test";
+// Real Nominatim response: Paris commune and département share wikidata Q90.
+import mockNominatimSearchParisResponse from "../../src/lib/__tests__/fixtures/nominatim-search-paris.json";
 
 export const mockNominatimSearchResponse = [
   {
@@ -78,7 +80,13 @@ export function setupGlobalApiMocks(page: Page) {
     const url = new URL(route.request().url());
     const query = url.searchParams.get("q");
 
-    if (query?.includes("são") || query?.includes("sao")) {
+    if (query?.toLowerCase().includes("paris")) {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(mockNominatimSearchParisResponse),
+      });
+    } else if (query?.includes("são") || query?.includes("sao")) {
       await route.fulfill({
         status: 200,
         contentType: "application/json",

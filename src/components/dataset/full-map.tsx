@@ -15,6 +15,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useTranslations, useLocale } from "next-intl";
 import type { Dataset } from "@/schemas/dataset";
 import { MapLayers } from "./map/layers";
+import { TilesLayerGroup } from "./map/layers/tiles-layer-group";
+import { ensurePmtilesProtocol } from "@/lib/pmtiles-protocol";
 import { AoiBoundaryLayer } from "./map/aoi-boundary-layer";
 import {
   InteractiveLegend,
@@ -26,6 +28,7 @@ import { useMapData, useFeatureSelection } from "./map/hooks";
 import { INTERACTIVE_LAYER_IDS } from "./map/layers/layer-ids";
 import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
+import { TilesProcessingPanel } from "./tiles-processing-panel";
 import { MapZoomControl } from "@/components/ui/map-zoom-control";
 import { mapStyle } from "@/lib/map-tiles";
 import { AGE_COLORS } from "./map/layers/map-style";
@@ -35,7 +38,7 @@ import {
   buildTagVisibilityFilter,
   buildLegendRows,
 } from "@/lib/curated-themes";
-import { computeFilterDimensions } from "@/lib/filter-dimensions";
+import { resolveFilterDimensions } from "@/lib/filter-dimensions";
 import { tagLabel, tagValue, type MessageResolver } from "@/lib/tag-i18n";
 
 export interface DatasetFullMapHandle {
@@ -63,6 +66,9 @@ const AGE_LABEL_KEYS = {
 // Only memoize heavy components that actually benefit from it
 const MemoizedMapLayers = React.memo(MapLayers);
 
+// Idempotent, browser-only; a no-op during SSR of this client module.
+ensurePmtilesProtocol();
+
 export const DatasetFullMap = forwardRef<
   DatasetFullMapHandle,
   DatasetFullMapProps
@@ -75,9 +81,8 @@ export const DatasetFullMap = forwardRef<
   const locale = useLocale();
   const mapRef = useRef<MapRef | null>(null);
 
-  const { processedData, initialViewState, hasFilteredData } = useMapData({
-    dataset,
-  });
+  const { processedData, tilesPath, initialViewState, hasFilteredData } =
+    useMapData({ dataset });
 
   const features = processedData?.features;
 
@@ -99,20 +104,24 @@ export const DatasetFullMap = forwardRef<
     [handleDeselect]
   );
 
-  // One pass over the features feeds both the curated tag themes and the
-  // age bucket counts for the legend rows
+  // Feeds both the curated tag themes and the age bucket counts for the legend
+  // rows. Stored stats carry the dimensions when the snapshot has them (#499);
+  // only the age counts are recomputed, and only while features are held.
   // Schema types this optional (input/output asymmetry at the API boundary), so
   // memoize the []-fallback to a stable reference the filterDimensions dep can use.
   const filterableTags = useMemo(
     () => dataset.template.filterableTags ?? [],
     [dataset.template.filterableTags]
   );
+  const storedDimensions = dataset.stats?.filterDimensions;
   const filterDimensions = useMemo(
     () =>
-      features?.length
-        ? computeFilterDimensions(features, filterableTags, { keepEmpty: true })
-        : [],
-    [features, filterableTags]
+      resolveFilterDimensions(
+        features ?? NO_FEATURES,
+        filterableTags,
+        storedDimensions
+      ),
+    [features, filterableTags, storedDimensions]
   );
 
   // Curated tag themes from the allow-list — no auto-detection
@@ -194,13 +203,18 @@ export const DatasetFullMap = forwardRef<
     });
   }, []);
 
-  // Early return for no data
-  if (!dataset.geojson) {
+  // Early return for no data — tiles mode needs no geojson
+  if (!dataset.geojson && !tilesPath) {
+    // Tiles-only dataset mid-bake (or failed): live job status instead of an
+    // eternal empty state
+    if (dataset.tilesState === "pending" || dataset.tilesState === "failed") {
+      return <TilesProcessingPanel datasetId={dataset.id} />;
+    }
     return <MapNoDataState hasData={false} />;
   }
 
-  // Error state
-  if (!processedData) {
+  // Error state (geojson mode only: tiles mode holds no client features)
+  if (!tilesPath && !processedData) {
     return <MapErrorState />;
   }
 
@@ -243,14 +257,26 @@ export const DatasetFullMap = forwardRef<
           >
             {boundary && <AoiBoundaryLayer boundary={boundary} />}
             <MapZoomControl />
-            <MemoizedMapLayers
-              geoJSONData={processedData}
-              curatedTheme={activeTheme}
-              visibilityFilter={visibilityFilter}
-            />
+            {tilesPath ? (
+              <TilesLayerGroup
+                tilesUrl={`pmtiles://${tilesPath}`}
+                dataCount={dataset.dataCount}
+                curatedTheme={activeTheme}
+                visibilityFilter={visibilityFilter}
+              />
+            ) : (
+              processedData && (
+                <MemoizedMapLayers
+                  geoJSONData={processedData}
+                  curatedTheme={activeTheme}
+                  visibilityFilter={visibilityFilter}
+                />
+              )
+            )}
             {/* Panel writes age paint to the shared layers; keep it out of
-                curated-theme views so it cannot stomp their colors */}
-            {!activeTheme && (
+                curated-theme views so it cannot stomp their colors.
+                Dev tool over client-held features — geojson mode only. */}
+            {!activeTheme && processedData && (
               <StyleTuningPanel features={processedData.features} />
             )}
             {selectedFeature && (

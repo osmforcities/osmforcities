@@ -19,8 +19,16 @@ export const TagCountSchema = z.object({
   count: z.number().int().nonnegative(),
 });
 
+export const FilterDimensionSchema = z.object({
+  key: z.string(),
+  kind: z.enum(["tag", "age"]),
+  values: z.array(
+    z.object({ value: z.string(), count: z.number().int().nonnegative() })
+  ),
+  missing: z.number().int().nonnegative(),
+});
+
 export const DatasetStatsSchema = z.object({
-  lastEdited: z.coerce.date().nullable().optional(),
   editorsCount: z.number(),
   elementVersionsCount: z.number(),
   changesetsCount: z.number(),
@@ -60,6 +68,11 @@ export const DatasetStatsSchema = z.object({
   // Per-key tag presence counts, sorted desc. Optional: absent until a dataset is
   // (re)snapshotted — the panel reads these stored counts only, no client fallback.
   tagCounts: z.array(TagCountSchema).optional(),
+
+  // Legend dimensions computed at snapshot time. Optional: absent until a
+  // dataset is (re)snapshotted — the map falls back to computing them from the
+  // features it holds.
+  filterDimensions: z.array(FilterDimensionSchema).optional(),
 });
 
 export const CreateDatasetSchema = z.object({
@@ -80,6 +93,14 @@ export const DatasetSchema = z.object({
   cityName: z.string(),
   isActive: z.boolean(),
   lastChecked: z.coerce.date().nullable(),
+  // Latest tile-bake job state ("pending" | "done" | "failed"); optional so
+  // card-shaped selects that don't fetch it still parse.
+  tilesState: z.string().nullable().optional(),
+  // Job id doubles as the served archive name: /api/tiles/{tilesJobId}.pmtiles
+  tilesJobId: z.string().nullable().optional(),
+  // True when the DB row holds geojson even if it was stripped from this
+  // payload (tiles render instead) — gates the export/download affordance.
+  hasGeojson: z.boolean().optional(),
   dataCount: z.number(),
   stats: DatasetStatsSchema.nullable(),
   createdAt: z.coerce.date(),
@@ -138,7 +159,6 @@ export const DatasetSchema = z.object({
 });
 
 export type Dataset = z.infer<typeof DatasetSchema>;
-export type DatasetStats = z.infer<typeof DatasetStatsSchema>;
 export type CreateDatasetInput = z.infer<typeof CreateDatasetSchema>;
 export type SaveDatasetInput = z.infer<typeof SaveDatasetSchema>;
 export type UnsaveDatasetInput = z.infer<typeof UnsaveDatasetSchema>;

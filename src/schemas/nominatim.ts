@@ -12,6 +12,12 @@ export const NominatimResultSchema = z.object({
   class: z.string(), // Primary category (e.g., "place", "amenity")
   type: z.string(), // Subcategory within class (e.g., "city", "village", "town")
   addresstype: z.string().optional(), // Address type (e.g., "municipality", "city", "village")
+  // Search ranking hints. This schema also validates /lookup (area page,
+  // dataset creation, refresh), so a malformed hint is dropped, never fatal.
+  importance: z.number().optional().catch(undefined),
+  place_rank: z.number().optional().catch(undefined), // 4 country, 8 state, 16 city (normalized across countries)
+  // Raw OSM tags plus Nominatim's admin_level; only present when the request includes extratags=1.
+  extratags: z.record(z.string(), z.string()).nullish().catch(undefined),
   boundingbox: z.array(z.string()).length(4), // [minLat, maxLat, minLon, maxLon]
   lat: z.string(),
   lon: z.string(),

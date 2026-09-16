@@ -211,8 +211,12 @@ templates:
   - ["wastewater-plant","man_made=wastewater_plant","infrastructure","Factory"]
   - ["pumping-station","man_made=pumping_station","infrastructure","Gauge"]
   - ["utility-pole","man_made=utility_pole","infrastructure","Cable"]
+# Large-footprint key-presence templates (tiles-only in most cities: rendered
+# from PMTiles, geojson never stored — #487/#489)
+  - ["buildings","building","infrastructure","Building"]
 # Transport infrastructure
   - ["roads","highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=unclassified","transport","Route"]
+  - ["highways","highway","transport","Waypoints"]
   - ["footways","highway=footway;highway=path","transport","Footprints"]
   - ["cycleways","highway=cycleway","transport","Bike"]
   - ["bridges","man_made=bridge","transport","Waypoints"]
@@ -393,6 +397,8 @@ filterableTags:
   rail-tracks:      [railway, electrified, usage, service]
   busways:          [surface]
   roads:            [surface, maxspeed, lit, sidewalk]
+  highways:         [highway, surface, lit]
+  buildings:        [building]
   footways:         [surface, lit, smoothness]
   cycleways:        [surface, lit, oneway, smoothness]
   traffic-calming:  [traffic_calming]

@@ -1,0 +1,80 @@
+[
+  {
+    "place_id": 416665509,
+    "osm_type": "relation",
+    "osm_id": 175342,
+    "lat": "51.5074456",
+    "lon": "-0.1277653",
+    "class": "boundary",
+    "type": "administrative",
+    "place_rank": 10,
+    "importance": 0.8920997258748663,
+    "addresstype": "city",
+    "name": "Greater London",
+    "display_name": "Greater London, England, United Kingdom",
+    "address": {
+      "city": "Greater London",
+      "state": "England",
+      "country": "United Kingdom",
+      "country_code": "gb"
+    },
+    "extratags": {
+      "wikidata": "Q84",
+      "population": "8908083",
+      "admin_level": "5"
+    },
+    "boundingbox": ["51.2867601", "51.6918741", "-0.5103751", "0.3340155"]
+  },
+  {
+    "place_id": 280474187,
+    "osm_type": "relation",
+    "osm_id": 51800,
+    "lat": "51.5156177",
+    "lon": "-0.0919983",
+    "class": "boundary",
+    "type": "administrative",
+    "place_rank": 12,
+    "importance": 0.6623892775866359,
+    "addresstype": "city",
+    "name": "City of London",
+    "display_name": "City of London, Greater London, England, United Kingdom",
+    "address": {
+      "city": "City of London",
+      "state": "England",
+      "country": "United Kingdom",
+      "country_code": "gb"
+    },
+    "extratags": {
+      "wikidata": "Q23311",
+      "population": "10847",
+      "admin_level": "6"
+    },
+    "boundingbox": ["51.5068709", "51.5233122", "-0.1138295", "-0.0727619"]
+  },
+  {
+    "place_id": 369764566,
+    "osm_type": "relation",
+    "osm_id": 7485368,
+    "lat": "42.9836747",
+    "lon": "-81.2496068",
+    "class": "boundary",
+    "type": "administrative",
+    "place_rank": 12,
+    "importance": 0.6114082963930206,
+    "addresstype": "city",
+    "name": "London",
+    "display_name": "London, Southwestern Ontario, Ontario, Canada",
+    "address": {
+      "city": "London",
+      "state": "Ontario",
+      "country": "Canada",
+      "country_code": "ca"
+    },
+    "extratags": {
+      "wikidata": "Q92561",
+      "population": "383822",
+      "admin_level": "6"
+    },
+    "boundingbox": ["42.8245667", "43.0730461", "-81.3906556", "-81.1070784"]
+  }
+]

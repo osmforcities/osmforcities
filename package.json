@@ -1,6 +1,6 @@
 {
   "name": "osmforcities",
-  "version": "1.18.0",
+  "version": "1.19.0",
   "private": true,
   "scripts": {
     "dev": "COMMIT_HASH=$(git rev-parse HEAD 2>/dev/null || echo 'unknown') next dev",
@@ -57,6 +57,7 @@
     "next-auth": "5.0.0-beta.32",
     "next-intl": "^4.9.1",
     "osmtogeojson": "3.0.0-beta.5",
+    "pmtiles": "^4.5.0",
     "postmark": "^4.0.5",
     "react": "^19.2.3",
     "react-aria-components": "^1.12.1",

@@ -7,6 +7,7 @@ import { processDatasetStats, formatRelativeTime } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { resolveDatasetAreaName } from "@/lib/area-name";
 import { getDatasetPath } from "@/lib/urls";
+import type { DatasetSectionKey } from "@/lib/dataset-section-select";
 
 type SectionTemplate = {
   id: string;
@@ -42,14 +43,100 @@ export type DatasetSectionsData = {
   largest: SectionDataset[];
 };
 
-export type SectionKey = keyof DatasetSectionsData;
-
 type Stat = { type: StatType; label: string; value: string | number };
+
+type SectionT = Awaited<ReturnType<typeof getTranslations<"ExplorePage">>>;
+
+function sectionStats(
+  section: DatasetSectionKey,
+  dataset: SectionDataset,
+  locale: string,
+  t: SectionT
+): Stat[] {
+  switch (section) {
+    case "featured": {
+      const s = processDatasetStats(dataset, locale);
+      return [
+        { type: "features", label: t("stats.features"), value: s.features },
+        { type: "contributors", label: t("stats.contributors"), value: s.contributors },
+        { type: "lastEdited", label: t("stats.lastEdited"), value: s.lastEdited },
+      ];
+    }
+    case "recentlyEdited":
+      return [
+        {
+          type: "lastEdited",
+          label: t("stats.lastEdited"),
+          value: formatRelativeTime(dataset.lastEditedAt, locale),
+        },
+      ];
+    case "mostSaved":
+      return [
+        { type: "savedBy", label: t("stats.saves"), value: dataset._count.savedBy },
+      ];
+    case "mostContributors":
+      return [
+        {
+          type: "contributors",
+          label: t("stats.contributors"),
+          value: dataset.contributorsCount || 0,
+        },
+      ];
+    case "largest":
+      return [
+        { type: "features", label: t("stats.features"), value: dataset.dataCount },
+      ];
+  }
+}
+
+/**
+ * The card grid for one dataset section — shared by DatasetSections below and
+ * the explore see-all pages.
+ */
+export async function DatasetSectionGrid({
+  section,
+  datasets,
+  locale,
+}: {
+  section: DatasetSectionKey;
+  datasets: SectionDataset[];
+  locale: string;
+}) {
+  const t = await getTranslations("ExplorePage");
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {datasets.map((dataset) => {
+        const resolved = resolveTemplateForLocale(dataset.template, locale);
+        return (
+          <DatasetCard
+            key={dataset.id}
+            name={resolved.name}
+            city={resolveDatasetAreaName(dataset, locale)}
+            country={dataset.area.countryCode ?? ""}
+            category={resolved.category?.slug ?? "other"}
+            templateId={dataset.templateId}
+            href={getDatasetPath({ locale, areaId: dataset.areaId, templateId: dataset.templateId })}
+            stats={sectionStats(section, dataset, locale, t)}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+const SECTION_ORDER: DatasetSectionKey[] = [
+  "featured",
+  "recentlyEdited",
+  "mostSaved",
+  "mostContributors",
+  "largest",
+];
 
 /**
  * Shared dataset sections (Featured / Recently Edited / Most Saved /
- * Most Contributors / Largest) used by both the Explore page and area pages.
- * Renders the same `DatasetCard`s and section layout. Empty sections are hidden.
+ * Most Contributors / Largest) used by the Explore page. Renders the same
+ * `DatasetCard`s and section layout. Empty sections are hidden.
  */
 export async function DatasetSections({
   data,
@@ -58,108 +145,22 @@ export async function DatasetSections({
 }: {
   data: DatasetSectionsData;
   locale: string;
-  seeAllHrefs?: Partial<Record<SectionKey, string>>;
+  seeAllHrefs?: Partial<Record<DatasetSectionKey, string>>;
 }) {
   const t = await getTranslations("ExplorePage");
 
-  const card = (dataset: SectionDataset, stats: Stat[]) => {
-    const resolved = resolveTemplateForLocale(dataset.template, locale);
-    return (
-      <DatasetCard
-        key={dataset.id}
-        name={resolved.name}
-        city={resolveDatasetAreaName(dataset, locale)}
-        country={dataset.area.countryCode ?? ""}
-        category={resolved.category?.slug ?? "other"}
-        templateId={dataset.templateId}
-        href={getDatasetPath({ locale, areaId: dataset.areaId, templateId: dataset.templateId })}
-        stats={stats}
-      />
-    );
-  };
-
   return (
     <>
-      {data.featured.length > 0 && (
+      {SECTION_ORDER.filter((section) => data[section].length > 0).map((section) => (
         <Section
-          title={t("sections.featured")}
-          seeAllHref={seeAllHrefs?.featured}
+          key={section}
+          title={t(`sections.${section}`)}
+          seeAllHref={seeAllHrefs?.[section]}
           seeAllLabel={t("seeAll")}
         >
-          {data.featured.map((dataset) => {
-            const s = processDatasetStats(dataset, locale);
-            return card(dataset, [
-              { type: "features", label: t("stats.features"), value: s.features },
-              { type: "contributors", label: t("stats.contributors"), value: s.contributors },
-              { type: "lastEdited", label: t("stats.lastEdited"), value: s.lastEdited },
-            ]);
-          })}
+          <DatasetSectionGrid section={section} datasets={data[section]} locale={locale} />
         </Section>
-      )}
-
-      {data.recentlyEdited.length > 0 && (
-        <Section
-          title={t("sections.recentlyEdited")}
-          seeAllHref={seeAllHrefs?.recentlyEdited}
-          seeAllLabel={t("seeAll")}
-        >
-          {data.recentlyEdited.map((dataset) =>
-            card(dataset, [
-              {
-                type: "lastEdited",
-                label: t("stats.lastEdited"),
-                value: formatRelativeTime(dataset.lastEditedAt, locale),
-              },
-            ])
-          )}
-        </Section>
-      )}
-
-      {data.mostSaved.length > 0 && (
-        <Section
-          title={t("sections.mostSaved")}
-          seeAllHref={seeAllHrefs?.mostSaved}
-          seeAllLabel={t("seeAll")}
-        >
-          {data.mostSaved.map((dataset) =>
-            card(dataset, [
-              { type: "savedBy", label: t("stats.saves"), value: dataset._count.savedBy },
-            ])
-          )}
-        </Section>
-      )}
-
-      {data.mostContributors.length > 0 && (
-        <Section
-          title={t("sections.mostContributors")}
-          seeAllHref={seeAllHrefs?.mostContributors}
-          seeAllLabel={t("seeAll")}
-        >
-          {data.mostContributors.map((dataset) =>
-            card(dataset, [
-              {
-                type: "contributors",
-                label: t("stats.contributors"),
-                value: dataset.contributorsCount || 0,
-              },
-            ])
-          )}
-        </Section>
-      )}
-
-      {data.largest.length > 0 && (
-        <Section
-          title={t("sections.largest")}
-          seeAllHref={seeAllHrefs?.largest}
-          seeAllLabel={t("seeAll")}
-        >
-          {data.largest.map((dataset) =>
-            card(dataset, [
-              { type: "features", label: t("stats.features"), value: dataset.dataCount },
-            ])
-          )}
-        </Section>
-      )}
+      ))}
     </>
   );
 }
@@ -190,9 +191,7 @@ function Section({
           </Link>
         )}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {children}
-      </div>
+      {children}
     </section>
   );
 }

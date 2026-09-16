@@ -3,15 +3,14 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMap } from "react-map-gl/maplibre";
 import type { Feature } from "geojson";
+import { ageStep, type AgeCategory } from "@/lib/feature-age";
 import {
   DEFAULT_STYLE_KNOBS,
-  ageCase,
   buildLineWidth,
   buildPointRadiusForCount,
   buildPointStrokeWidth,
   buildPolygonStrokeWidth,
   type AgeCategoryColors,
-  type AgeCategoryValues,
   type MapStyleKnobs,
 } from "./layers/map-style";
 import { createSmallPolygonProxyPoints } from "./layers/polygon-proxy-points";
@@ -22,8 +21,6 @@ import {
   POINT_LAYER_ID,
   PROXY_LAYER_ID,
 } from "./layers/layer-ids";
-
-type AgeCategory = keyof AgeCategoryValues<number>;
 
 const AGE_CATEGORIES: { key: AgeCategory; label: string }[] = [
   { key: "recent", label: "Recent" },
@@ -268,7 +265,7 @@ function StyleTuningPanelInner({ features }: StyleTuningPanelProps) {
         map.setPaintProperty(layer, prop as never, value as never);
       }
     };
-    const ageColor = ageCase(knobs.colors);
+    const ageColor = ageStep(knobs.colors);
 
     setPaint("basemap-mute", "background-opacity", knobs.basemapWashOpacity);
 
@@ -278,7 +275,7 @@ function StyleTuningPanelInner({ features }: StyleTuningPanelProps) {
       buildPointRadiusForCount(pointCount, knobs)
     );
     setPaint(POINT_LAYER_ID, "circle-color", ageColor);
-    setPaint(POINT_LAYER_ID, "circle-opacity", ageCase(knobs.point.opacity));
+    setPaint(POINT_LAYER_ID, "circle-opacity", ageStep(knobs.point.opacity));
     setPaint(
       POINT_LAYER_ID,
       "circle-stroke-width",

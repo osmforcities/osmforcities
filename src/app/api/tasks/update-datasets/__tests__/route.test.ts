@@ -14,19 +14,25 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 
-vi.mock("@/lib/dataset-snapshot", () => {
-  class DatasetTooLargeError extends Error {}
-  class DatasetSizeCheckTimeoutError extends Error {}
-  return {
-    fetchDatasetSnapshot: vi.fn(),
-    DatasetTooLargeError,
-    DatasetSizeCheckTimeoutError,
-  };
-});
+vi.mock("@/lib/dataset-snapshot", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/dataset-snapshot")>()),
+  fetchDatasetSnapshot: vi.fn(),
+}));
 
 vi.mock("@/lib/umami", () => ({
   trackEvent: vi.fn().mockResolvedValue(undefined),
 }));
+
+// Tiler integration is additive and covered by its own tests — stub it here so
+// this suite's prisma call-order assertions stay about the refresh queue.
+vi.mock("@/lib/tiler/submit", () => ({
+  submitTilesForDataset: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock("@/lib/tiler/poll", () => ({
+  pollPendingTileJobs: vi.fn(),
+}));
+import { pollPendingTileJobs } from "@/lib/tiler/poll";
 
 import { Prisma } from "@prisma/client";
 import { POST } from "../route";
@@ -78,6 +84,12 @@ describe("POST /api/tasks/update-datasets", () => {
     vi.mocked(prisma.dataset.update).mockResolvedValue({} as never);
     vi.mocked(prisma.dataset.updateMany).mockResolvedValue({ count: 0 } as never);
     vi.mocked(prisma.dataset.deleteMany).mockResolvedValue({ count: 0 } as never);
+    vi.mocked(pollPendingTileJobs).mockResolvedValue({
+      checked: 0,
+      completed: 0,
+      failed: 0,
+      stillPending: 0,
+    });
   });
 
   it("claims the slot upfront (advances lastAttempted) even when the refresh fails", async () => {
@@ -205,6 +217,27 @@ describe("POST /api/tasks/update-datasets", () => {
 
     expect(prisma.dataset.deleteMany).not.toHaveBeenCalled();
     expect(body.data.cleanup.deleted).toBe(0);
+  });
+
+  it("reconciles pending tile jobs on the tick and reports the results", async () => {
+    vi.mocked(prisma.dataset.findMany).mockResolvedValue([] as never);
+    vi.mocked(pollPendingTileJobs).mockResolvedValue({
+      checked: 3,
+      completed: 2,
+      failed: 1,
+      stillPending: 0,
+    });
+
+    const res = await call();
+    const body = await res.json();
+
+    expect(pollPendingTileJobs).toHaveBeenCalledOnce();
+    expect(body.data.tiles).toEqual({
+      checked: 3,
+      completed: 2,
+      failed: 1,
+      stillPending: 0,
+    });
   });
 
   it("sweeps geojson from deactivated datasets", async () => {

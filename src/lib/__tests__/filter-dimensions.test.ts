@@ -4,10 +4,11 @@ import { describe, it, expect } from "vitest";
 import type { Feature } from "geojson";
 import {
   computeFilterDimensions,
+  resolveFilterDimensions,
   FILTERABLE_TAGS,
-  AGE_CATEGORY_ORDER,
   type FilterDimension,
 } from "../filter-dimensions";
+import { AGE_CATEGORY_ORDER } from "../feature-age";
 
 const feature = (properties: Record<string, unknown> | null): Feature =>
   ({ type: "Feature", geometry: null, properties } as unknown as Feature);
@@ -164,13 +165,16 @@ describe("computeFilterDimensions — tag dimensions", () => {
   });
 });
 
+// _ts is epoch seconds; helpers build values relative to now
+const tsDaysAgo = (days: number) => Math.floor(Date.now() / 1000) - days * 86_400;
+
 describe("computeFilterDimensions — age dimension", () => {
   it("is always present with buckets in ordinal order, omitting zero-count buckets", () => {
     const features = [
-      feature({ ageCategory: "older" }),
-      feature({ ageCategory: "recent" }),
-      feature({ ageCategory: "recent" }),
-      feature({ ageCategory: "very-old" }),
+      feature({ _ts: tsDaysAgo(60) }), // older
+      feature({ _ts: tsDaysAgo(1) }), // recent
+      feature({ _ts: tsDaysAgo(2) }), // recent
+      feature({ _ts: tsDaysAgo(400) }), // very-old
     ];
 
     const age = byKey(computeFilterDimensions(features), "age");
@@ -184,22 +188,27 @@ describe("computeFilterDimensions — age dimension", () => {
     ]);
   });
 
-  it("counts features without a valid ageCategory as missing", () => {
+  it("counts features without a valid _ts as very-old, mirroring the paint fallback", () => {
     const features = [
-      feature({ ageCategory: "recent" }),
-      feature({ ageCategory: "bogus" }),
+      feature({ _ts: tsDaysAgo(1) }),
+      feature({ _ts: "bogus" }),
       feature({}),
       feature(null),
     ];
 
     const age = byKey(computeFilterDimensions(features), "age");
 
-    expect(age!.missing).toBe(3);
-    expect(age!.values).toEqual([{ value: "recent", count: 1 }]);
+    expect(age!.missing).toBe(0);
+    expect(age!.values).toEqual([
+      { value: "recent", count: 1 },
+      { value: "very-old", count: 3 },
+    ]);
   });
 
   it("keeps age buckets in the declared ordinal order", () => {
-    const features = AGE_CATEGORY_ORDER.map((c) => feature({ ageCategory: c }));
+    const features = [1, 20, 60, 400].map((days) =>
+      feature({ _ts: tsDaysAgo(days) })
+    );
 
     const age = byKey(computeFilterDimensions(features), "age");
 
@@ -219,12 +228,114 @@ describe("computeFilterDimensions — edge cases", () => {
 
     const dims = computeFilterDimensions(features);
 
-    // no tag dimensions; age present with everything missing
+    // no tag dimensions; age present with everything bucketed very-old
     expect(dims).toHaveLength(1);
-    expect(byKey(dims, "age")!.missing).toBe(2);
+    expect(byKey(dims, "age")!.values).toEqual([
+      { value: "very-old", count: 2 },
+    ]);
   });
 
   it("exposes a non-empty default allow-list", () => {
     expect(FILTERABLE_TAGS.length).toBeGreaterThan(0);
+  });
+});
+
+describe("computeFilterDimensions — timestamp sources", () => {
+  it("buckets raw OSM meta timestamps identically to a stamped _ts", () => {
+    const iso = new Date(tsDaysAgo(20) * 1000).toISOString();
+    const stamped = computeFilterDimensions([feature({ _ts: tsDaysAgo(20) })]);
+    const raw = computeFilterDimensions([feature({ timestamp: iso })]);
+    const slim = computeFilterDimensions([feature({ "@timestamp": iso })]);
+
+    const expected = [{ value: "medium", count: 1 }];
+    expect(byKey(stamped, "age")!.values).toEqual(expected);
+    expect(byKey(raw, "age")!.values).toEqual(expected);
+    expect(byKey(slim, "age")!.values).toEqual(expected);
+  });
+});
+
+describe("resolveFilterDimensions", () => {
+  const features = [
+    feature({ surface: "asphalt", _ts: tsDaysAgo(1) }),
+    feature({ surface: "gravel", _ts: tsDaysAgo(400) }),
+  ];
+  const storedSurface: FilterDimension = {
+    key: "surface",
+    kind: "tag",
+    values: [{ value: "stored-only", count: 99 }],
+    missing: 0,
+  };
+  const storedAge: FilterDimension = {
+    key: "age",
+    kind: "age",
+    values: [{ value: "very-old", count: 99 }],
+    missing: 0,
+  };
+
+  it("uses stored tag dimensions when they cover the current filterableTags", () => {
+    const dims = resolveFilterDimensions(features, ["surface"], [
+      storedSurface,
+      storedAge,
+    ]);
+
+    expect(byKey(dims, "surface")).toEqual(storedSurface);
+  });
+
+  it("recomputes the age dimension from features, never from stored counts", () => {
+    const dims = resolveFilterDimensions(features, ["surface"], [
+      storedSurface,
+      storedAge,
+    ]);
+
+    expect(byKey(dims, "age")!.values).toEqual([
+      { value: "recent", count: 1 },
+      { value: "very-old", count: 1 },
+    ]);
+  });
+
+  it("falls back to computing when the template's tags changed since the snapshot", () => {
+    const dims = resolveFilterDimensions(features, ["material"], [
+      storedSurface,
+      storedAge,
+    ]);
+
+    expect(byKey(dims, "surface")).toBeUndefined();
+    // keepEmpty: a curated key carried by no feature still gets a dimension
+    expect(byKey(dims, "material")).toEqual({
+      key: "material",
+      kind: "tag",
+      values: [],
+      missing: 2,
+    });
+  });
+
+  it("falls back to computing when nothing is stored", () => {
+    const dims = resolveFilterDimensions(features, ["surface"], undefined);
+
+    expect(byKey(dims, "surface")!.values).toEqual([
+      { value: "asphalt", count: 1 },
+      { value: "gravel", count: 1 },
+    ]);
+  });
+
+  it("uses the stored age counts with no features — the vector-tile case", () => {
+    const dims = resolveFilterDimensions([], ["surface"], [
+      storedSurface,
+      storedAge,
+    ]);
+
+    expect(byKey(dims, "surface")).toEqual(storedSurface);
+    expect(byKey(dims, "age")).toEqual(storedAge);
+  });
+
+  it("returns an empty age dimension with neither features nor stored age", () => {
+    const dims = resolveFilterDimensions([], ["surface"], [storedSurface]);
+
+    expect(byKey(dims, "age")).toEqual({
+      key: "age",
+      kind: "age",
+      values: [],
+      missing: 0,
+    });
   });
 });

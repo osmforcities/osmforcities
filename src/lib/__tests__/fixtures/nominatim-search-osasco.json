@@ -1,0 +1,80 @@
+[
+  {
+    "place_id": 89002371,
+    "osm_type": "relation",
+    "osm_id": 43713,
+    "lat": "44.8493681",
+    "lon": "7.3432431",
+    "class": "boundary",
+    "type": "administrative",
+    "place_rank": 16,
+    "importance": 0.5923460281260938,
+    "addresstype": "village",
+    "name": "Osasco",
+    "display_name": "Osasco, Turin, Piedmont, Italy",
+    "address": {
+      "village": "Osasco",
+      "state": "Piedmont",
+      "country": "Italy",
+      "country_code": "it"
+    },
+    "extratags": {
+      "wikidata": "Q9522",
+      "population": "1163",
+      "admin_level": "8"
+    },
+    "boundingbox": ["44.8367092", "44.8627604", "7.3296310", "7.3744116"]
+  },
+  {
+    "place_id": 9029733,
+    "osm_type": "relation",
+    "osm_id": 298470,
+    "lat": "-23.5324859",
+    "lon": "-46.7916801",
+    "class": "boundary",
+    "type": "administrative",
+    "place_rank": 16,
+    "importance": 0.5894302915055311,
+    "addresstype": "city",
+    "name": "Osasco",
+    "display_name": "Osasco, São Paulo, Southeast Region, Brazil",
+    "address": {
+      "city": "Osasco",
+      "state": "São Paulo",
+      "country": "Brazil",
+      "country_code": "br"
+    },
+    "extratags": {
+      "wikidata": "Q4035",
+      "population": "728615",
+      "admin_level": "8"
+    },
+    "boundingbox": ["-23.6090912", "-23.4613543", "-46.8218270", "-46.7470450"]
+  },
+  {
+    "place_id": 9069265,
+    "osm_type": "relation",
+    "osm_id": 5684922,
+    "lat": "-23.5352768",
+    "lon": "-46.7882797",
+    "class": "boundary",
+    "type": "administrative",
+    "place_rank": 18,
+    "importance": 0.16007861829556724,
+    "addresstype": "city_district",
+    "name": "Osasco",
+    "display_name": "Osasco, São Paulo, Southeast Region, Brazil",
+    "address": {
+      "city_district": "Osasco",
+      "city": "Osasco",
+      "state": "São Paulo",
+      "country": "Brazil",
+      "country_code": "br"
+    },
+    "extratags": {
+      "IBGE:GEOCODIGO": "353440105",
+      "admin_level": "9"
+    },
+    "boundingbox": ["-23.6090912", "-23.4613543", "-46.8218270", "-46.7470450"]
+  }
+]

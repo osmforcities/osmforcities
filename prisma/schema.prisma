@@ -134,6 +134,10 @@ model Dataset {
   lastEditedAt        DateTime?
   contributorsCount   Int?
   recentlyEditedCount Int?
+  tilesJobId          String?
+  tilesState          String?
+  tilesUpdatedAt      DateTime?
+  tilesError          String?
   savedBy             DatasetSave[]
   area                Area          @relation(fields: [areaId], references: [id], onDelete: Cascade)
   template            Template      @relation(fields: [templateId], references: [id], onDelete: Cascade)

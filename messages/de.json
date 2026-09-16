@@ -58,7 +58,9 @@
     "quotaInfoTooltip": "Jeder Benutzer kann bis zu {limit, number} Datensätze speichern. Entferne einen aus deinem Dashboard, um einen Platz freizugeben.",
     "quotaInfoButtonLabel": "Was bedeutet das Speicherlimit?",
     "active": "Aktiv",
-    "inactive": "Inaktiv"
+    "inactive": "Inaktiv",
+    "tilesProcessing": "Kacheln werden erstellt",
+    "tilesFailed": "Kacheln fehlgeschlagen"
   },
   "Public": {
     "metaTitle": "Öffentliche Datensätze - OSM for Cities",
@@ -125,6 +127,16 @@
     "testEnvOnly": "Diese Seite ist nur in der Testumgebung verfügbar."
   },
   "DatasetPage": {
+    "tilesProcessingNotice": "Kartendaten werden für schnelleres Rendern aufbereitet.",
+    "tilesProcessingTitle": "Kartendaten werden vorbereitet",
+    "tilesStageQueued": "Wartet in der Warteschlange",
+    "tilesStageFetching": "Daten werden von OpenStreetMap geladen ({mb, number} MB)",
+    "tilesStageConverting": "Objekte werden konvertiert ({pct, number} %)",
+    "tilesStageBaking": "Kartenkacheln werden erstellt ({pct, number} %)",
+    "tilesFailedTitle": "Kartenverarbeitung fehlgeschlagen",
+    "tilesFailedTooLarge": "Dieser Datensatz ist derzeit zu groß für die Verarbeitung.",
+    "tilesFailedGeneric": "Bei der Verarbeitung der Kartendaten ist ein Fehler aufgetreten.",
+    "tilesFailedRetryNote": "Beim nächsten geplanten Update wird es erneut versucht.",
     "backToHome": "Zurück zur Startseite",
     "emptyTitle": "Keine Objekte für „{dataset}“ in {area} gefunden",
     "emptyDescription": "Dieser Datensatz enthält in diesem Gebiet noch keine Objekte. Möglicherweise gibt es hier keine, oder die Daten wurden in OpenStreetMap noch nicht erfasst.",
@@ -232,7 +244,6 @@
     "moreTags": "+{count} weitere",
     "dataset": "Datensatz",
     "datasets": "Datensätze",
-    "idLabel": "ID: ",
     "comingSoon": "Datensatz-Entdeckung kommt bald!",
     "comingSoonDescription": "Du wirst Datensätze für dieses Gebiet direkt von dieser Seite aus entdecken und erstellen können.",
     "areaDetails": "Gebietsdetails",
@@ -255,7 +266,7 @@
     "searching": "Suche läuft...",
     "typeMoreChars": "Gib noch {count} Zeichen{count, plural, one {} other {}} ein, um zu suchen",
     "searchHint": "Suche nach Städten, Regionen oder Ländern",
-    "idLabel": "ID: ",
+    "population": "{count, plural, one {{count, number, ::compact-short .#} Einwohner} other {{count, number, ::compact-short .#} Einwohner}}",
     "clearSearch": "Suche löschen"
   },
   "AddressTypes": {
@@ -385,7 +396,15 @@
     "failureCount": "{count, plural, =1 {# Fehlschlag in Folge} other {# Fehlschläge in Folge}}",
     "lastError": "Letzter Fehler: {message}",
     "lastAttempted": "Letzter Versuch: {value}",
-    "lastChecked": "Zuletzt geprüft: {value}"
+    "lastChecked": "Zuletzt geprüft: {value}",
+    "tilesHeading": "Vektorkacheln",
+    "statTilesPending": "Kacheln in Arbeit",
+    "statTilesDone": "Kacheln bereit",
+    "statTilesFailed": "Kacheln fehlgeschlagen",
+    "tilesFailedHeading": "Fehlgeschlagene Kachel-Erstellungen",
+    "tilesFailedEmpty": "Derzeit schlägt keine Kachel-Erstellung fehl.",
+    "tilesError": "Kachel-Fehler: {message}",
+    "tilesUpdatedAt": "Kacheln aktualisiert: {value}"
   },
   "DatasetMap": {
     "back": "Zurück",
@@ -603,21 +622,12 @@
     "metaTitle": "Über das Projekt - OSM for Cities",
     "metaDescription": "Erfahre mehr über OSM for Cities - täglich aktualisierte Datensätze aus OpenStreetMap",
     "title": "Über das Projekt",
-    "description1": "**OSM for Cities** ist eine Plattform, um Aktualisierungen aus OpenStreetMap zu entdecken und zu verfolgen — einer freien, offenen Weltkarte, die von Freiwilligen erstellt wird. Jeden Tag fügen Menschen Daten zu Straßen, Gebäuden, Schulen, Parks, Verkehr und mehr hinzu und verbessern sie. Dieses Projekt gibt dir die Möglichkeit, diese Änderungen an Orten zu verfolgen, die dir wichtig sind.",
-    "description2": "Vielleicht möchtest du Änderungen an Schulen in deiner Region im Auge behalten oder beobachten, wie Fußgängerüberwege, Bushaltestellen oder Fahrradständer in deiner Stadt hinzukommen. Vielleicht bist du einfach neugierig, wie sich der Park in deiner Nachbarschaft entwickelt. Ob für die Stadtplanung oder etwas ganz Persönliches — auf der Plattform kannst du solche Datensätze erstellen und verfolgen.",
-    "featuresTitle": "Funktionen im Überblick",
-    "features": {
-      "create": "Erstelle eigene Datensätze, indem du einen Ort und ein Thema auswählst",
-      "follow": "Folge Datensätzen und erhalte tägliche oder wöchentliche Zusammenfassungen",
-      "activity": "Sieh dir für jeden Datensatz die Aktivität der Mitwirkenden und die Bearbeitungshäufigkeit an"
-    },
-    "projectTitle": "Das Projekt",
-    "projectDescription1": "OSM for Cities wurde entwickelt von",
-    "projectDescription2": "und entstand in einem",
-    "projectDescription3": "Labs-Zyklus. Es ist ein offenes Experiment, OSM-Daten auf nützliche, zugängliche Weise aufzubereiten — für Städte konzipiert, aber flexibel genug, um als generischer OSM-Tracker zu dienen.",
-    "projectEvolution": "Seine Ausrichtung wird sich mit der Nutzung und dem Feedback der Community weiterentwickeln.",
+    "description1": "<strong>OSM for Cities</strong> ist eine Plattform, um Aktualisierungen aus OpenStreetMap zu entdecken und zu verfolgen, einer freien, offenen Weltkarte, die von Freiwilligen erstellt wird. Erstelle eigene Datensätze, indem du einen Ort und ein Thema auswählst, folge ihnen mit täglichen oder wöchentlichen Zusammenfassungen und sieh dir die Aktivität der Mitwirkenden und die Bearbeitungshäufigkeit an.",
+    "projectDescription1": "OSM for Cities wurde entwickelt und wird gepflegt von",
+    "projectDescription2": ". Es ist ein offenes Experiment, OSM-Daten auf nützliche, zugängliche Weise aufzubereiten: für Städte konzipiert, aber flexibel genug, um als generischer OSM-Tracker zu dienen.",
     "getInvolvedTitle": "Mach mit",
-    "getInvolvedDescription": "Dein Feedback hilft, dieses Projekt zu gestalten. Ob du Ideen für neue Funktionen hast, etwas gefunden hast, das nicht richtig funktioniert, oder einfach erzählen möchtest, wie du die Plattform nutzt — wir freuen uns, von dir zu hören."
+    "getInvolvedDescription": "Dein Feedback hilft, dieses Projekt zu gestalten. Ob du Ideen für neue Funktionen hast, etwas gefunden hast, das nicht richtig funktioniert, oder einfach erzählen möchtest, wie du die Plattform nutzt, wir freuen uns, von dir zu hören.",
+    "acknowledgmentsTitle": "Danksagung"
   },
   "DatasetErrors": {
     "templateNotFoundTitle": "Datensatzvorlage nicht gefunden",
@@ -696,6 +706,7 @@
     }
   },
   "TagLabel": {
+    "highway": "Straßentyp",
     "shelter": "Unterstand",
     "bench": "Sitzbank",
     "covered": "Überdacht",

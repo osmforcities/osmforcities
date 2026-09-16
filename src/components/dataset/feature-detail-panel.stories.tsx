@@ -18,7 +18,7 @@ const bicycleParkingFeature: Feature = {
     timestamp: "2024-06-15T10:30:00Z",
     version: 3,
     changeset: 456789,
-    ageCategory: "recent",
+    _ts: 1718447400,
   },
 };
 
@@ -29,7 +29,7 @@ const noNameFeature: Feature = {
     id: "node/789012",
     bicycle_parking: "wall_loops",
     capacity: "6",
-    ageCategory: "medium",
+    _ts: 1718447400,
   },
 };
 
@@ -39,7 +39,7 @@ const noOsmIdFeature: Feature = {
   properties: {
     name: "Some Feature",
     bicycle_parking: "stands",
-    ageCategory: "older",
+    _ts: 1718447400,
   },
 };
 
