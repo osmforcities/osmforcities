@@ -28,7 +28,21 @@ function makeStreamResponse(text: string, chunkSize = 8) {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
+
+function mockCountFetch(total: number) {
+  const fetchMock = vi.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () =>
+      Promise.resolve({
+        elements: [{ type: "count", tags: { total: String(total) } }],
+      }),
+  } as unknown as Response);
+  vi.stubGlobal("fetch", fetchMock);
+  return fetchMock;
+}
 
 describe("executeOverpassQueryWithByteLimit", () => {
   it("returns parsed data when the response is under the limit", async () => {
@@ -127,6 +141,24 @@ describe("countOverpassElements", () => {
     );
     const timeout = Number(body.match(/\[timeout:(\d+)\]/)?.[1]);
     expect(timeout).toBeGreaterThanOrEqual(25);
+  });
+
+  it("aborts after 30 s by default", async () => {
+    const timeoutSpy = vi.spyOn(AbortSignal, "timeout");
+    mockCountFetch(1);
+
+    await countOverpassElements("query");
+
+    expect(timeoutSpy).toHaveBeenCalledExactlyOnceWith(30_000);
+  });
+
+  it("aborts after the caller's timeoutMs when given", async () => {
+    const timeoutSpy = vi.spyOn(AbortSignal, "timeout");
+    mockCountFetch(1);
+
+    await countOverpassElements("query", 200_000);
+
+    expect(timeoutSpy).toHaveBeenCalledExactlyOnceWith(200_000);
   });
 
   it("returns 0 for a genuinely empty result", async () => {

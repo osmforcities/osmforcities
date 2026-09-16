@@ -18,7 +18,7 @@ import {
 import type { Bbox } from "@/types/geojson";
 import { prisma } from "@/lib/db";
 import { Prisma } from "@prisma/client";
-import { tilerEnabled } from "@/lib/tiler/client";
+import { LARGE_JOB_MAXSIZE_BYTES, tilerEnabled } from "@/lib/tiler/client";
 import { TILES_ENABLED } from "@/lib/dataset-tiles";
 import {
   MAX_DATASET_BYTES,
@@ -202,6 +202,24 @@ function tilesOnlySnapshot(dataCount: number): DatasetSnapshot {
   return { tilesOnly: true, geojson: null, stats: null, bbox: null, dataCount };
 }
 
+// A timed-out count probe gets one retry on raised budgets while the lane is
+// on: metro-class counts outgrow the template's default timeout and memory,
+// and the first query against an area Overpass has not evaluated yet is slow
+// even when the result is small. Measured probe costs live in
+// docs/features/large-datasets.md.
+// Overpass [timeout:N], in seconds.
+const PROBE_RETRY_TIMEOUT_SECONDS = 180;
+// Client-side abort, in milliseconds. Longer than the server budget so
+// Overpass reports its own timeout before we hang up.
+const PROBE_RETRY_CLIENT_TIMEOUT_MS = 200_000;
+
+function withRaisedProbeBudgets(query: string): string {
+  const settings = `[timeout:${PROBE_RETRY_TIMEOUT_SECONDS}][maxsize:${LARGE_JOB_MAXSIZE_BYTES}]`;
+  return /\[timeout:\d+\]/.test(query)
+    ? query.replace(/\[timeout:\d+\]/, settings)
+    : query.replace("[out:json]", `[out:json]${settings}`);
+}
+
 function extractDatasetStats(overpassData: OverpassData): DatasetStats {
   if (!overpassData.elements || !Array.isArray(overpassData.elements)) {
     return {
@@ -347,17 +365,26 @@ export async function fetchDatasetSnapshot(
   // Cheap pre-flight: reject before Overpass serializes anything if the
   // estimated payload already exceeds the cap
   let elementCount: number;
-  let estimatedBytes: number;
   try {
     elementCount = await countOverpassElements(queryString);
-    estimatedBytes = elementCount * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE;
   } catch (error) {
-    if (error instanceof OverpassTimeoutError) {
+    if (!(error instanceof OverpassTimeoutError)) throw error;
+    if (!tilesLane) {
       await recordSizeCheck(areaId, templateId, "timeout");
       throw new DatasetSizeCheckTimeoutError();
     }
-    throw error;
+    try {
+      elementCount = await countOverpassElements(
+        withRaisedProbeBudgets(queryString),
+        PROBE_RETRY_CLIENT_TIMEOUT_MS
+      );
+    } catch (retryError) {
+      if (!(retryError instanceof OverpassTimeoutError)) throw retryError;
+      await recordSizeCheck(areaId, templateId, "timeout");
+      throw new DatasetSizeCheckTimeoutError();
+    }
   }
+  const estimatedBytes = elementCount * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE;
   if (estimatedBytes > MAX_DATASET_BYTES) {
     if (tilesLane) return tilesOnlySnapshot(elementCount);
     await recordSizeCheck(areaId, templateId, "too_large", { estimatedBytes });

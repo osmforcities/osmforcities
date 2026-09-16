@@ -449,10 +449,12 @@ describe("fetchDatasetSnapshot — tiles-only lane", () => {
   });
 
   it("still honours a fresh timeout verdict", async () => {
+    // Unlike too_large, the lane does not bypass it: no probe, no retry.
     findUnique.mockResolvedValue({ ...freshTooLarge, status: "timeout" } as never);
     await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
       DatasetSizeCheckTimeoutError
     );
+    expect(vi.mocked(fetch)).not.toHaveBeenCalled();
   });
 
   it("routes a response that overflows mid-fetch with an over-cap element count", async () => {
@@ -476,6 +478,233 @@ describe("fetchDatasetSnapshot — tiles-only lane", () => {
     expect(snapshot.tilesOnly).toBeFalsy();
     expect(snapshot.geojson.type).toBe("FeatureCollection");
     expect(snapshot.dataCount).toBe(2);
+  });
+});
+
+describe("fetchDatasetSnapshot — count-probe retry", () => {
+  const timedOut = { ok: false, status: 504 } as Response;
+  const serverError = { ok: false, status: 500 } as Response;
+  const outOfMemory = {
+    elements: [],
+    remark: "runtime error: Query ran out of memory",
+  };
+  const raisedBudgetsQuery =
+    "[out:json][timeout:180][maxsize:1073741824]; rel(1); out count;";
+
+  function requestBody(call: unknown[]): string {
+    return decodeURIComponent(
+      ((call[1] as RequestInit).body as string).replace("data=", "")
+    );
+  }
+
+  function expectTimeoutVerdict() {
+    expect(upsert).toHaveBeenCalledOnce();
+    expect(upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({ status: "timeout" }),
+      })
+    );
+  }
+
+  beforeEach(() => {
+    vi.stubEnv("TILER_URL", "http://127.0.0.1:8099");
+    flags.tiles = true;
+    findUnique.mockReset();
+    findUnique.mockResolvedValue(null);
+    upsert.mockReset();
+    upsert.mockResolvedValue({} as never);
+    templateFindUnique.mockReset();
+    templateFindUnique.mockResolvedValue({ filterableTags: [] } as never);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+
+  describe("retry succeeds", () => {
+    it("routes an over-cap retry count to a tiles-only snapshot, recording no verdict", async () => {
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce(timedOut)
+        .mockReturnValueOnce(makeFetchResponse(makeCountResponse(overCapCount)));
+      vi.stubGlobal("fetch", fetchMock);
+
+      const snapshot = await fetchDatasetSnapshot(
+        1,
+        "[out:json][timeout:25]; rel(1); out;",
+        "tpl-1"
+      );
+
+      expect(snapshot).toEqual({
+        tilesOnly: true,
+        geojson: null,
+        stats: null,
+        bbox: null,
+        dataCount: overCapCount,
+      });
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(upsert).not.toHaveBeenCalled();
+    });
+
+    // An area Overpass has never evaluated is slow the first time even when
+    // small. The retry is what gets it through, and a small answer must land
+    // a regular snapshot, not a tiles-only one.
+    it("fetches a full snapshot when the retry count is under cap (cold area)", async () => {
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce(timedOut)
+        .mockReturnValueOnce(makeFetchResponse(makeCountResponse(2)))
+        .mockReturnValue(makeFetchResponse(mockOverpassData));
+      vi.stubGlobal("fetch", fetchMock);
+
+      const snapshot = await fetchFullSnapshot(1, "query", "tpl-1");
+
+      expect(snapshot.geojson.type).toBe("FeatureCollection");
+      expect(snapshot.dataCount).toBe(2);
+      // probe, retry, full fetch
+      expect(fetchMock).toHaveBeenCalledTimes(3);
+      expect(upsert).toHaveBeenCalledOnce();
+      expect(upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          create: expect.objectContaining({ status: "ok" }),
+        })
+      );
+    });
+
+    it("retries an out-of-memory probe (200 + remark), not only a 504", async () => {
+      const fetchMock = vi
+        .fn()
+        .mockReturnValueOnce(makeFetchResponse(outOfMemory))
+        .mockReturnValueOnce(makeFetchResponse(makeCountResponse(overCapCount)));
+      vi.stubGlobal("fetch", fetchMock);
+
+      const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+
+      expect(snapshot.tilesOnly).toBe(true);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(upsert).not.toHaveBeenCalled();
+    });
+
+    it("gives the retry a client timeout longer than the raised server budget", async () => {
+      const timeoutSpy = vi.spyOn(AbortSignal, "timeout");
+      vi.stubGlobal(
+        "fetch",
+        vi
+          .fn()
+          .mockResolvedValueOnce(timedOut)
+          .mockReturnValueOnce(makeFetchResponse(makeCountResponse(overCapCount)))
+      );
+
+      await fetchDatasetSnapshot(1, "query", "tpl-1");
+
+      expect(timeoutSpy.mock.calls).toEqual([[30_000], [200_000]]);
+    });
+  });
+
+  describe("retry query", () => {
+    it("replaces the template's timeout with the raised budgets", async () => {
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce(timedOut)
+        .mockReturnValueOnce(makeFetchResponse(makeCountResponse(overCapCount)));
+      vi.stubGlobal("fetch", fetchMock);
+
+      await fetchDatasetSnapshot(1, "[out:json][timeout:25]; rel(1); out;", "tpl-1");
+
+      expect(requestBody(fetchMock.mock.calls[1])).toBe(raisedBudgetsQuery);
+    });
+
+    it("inserts the raised budgets after [out:json] when the query has no timeout", async () => {
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce(timedOut)
+        .mockReturnValueOnce(makeFetchResponse(makeCountResponse(overCapCount)));
+      vi.stubGlobal("fetch", fetchMock);
+
+      await fetchDatasetSnapshot(1, "[out:json]; rel(1); out;", "tpl-1");
+
+      expect(requestBody(fetchMock.mock.calls[1])).toBe(raisedBudgetsQuery);
+    });
+
+    it("leaves the first probe on the template's own budgets", async () => {
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce(timedOut)
+        .mockReturnValueOnce(makeFetchResponse(makeCountResponse(overCapCount)));
+      vi.stubGlobal("fetch", fetchMock);
+
+      await fetchDatasetSnapshot(1, "[out:json][timeout:25]; rel(1); out;", "tpl-1");
+
+      expect(requestBody(fetchMock.mock.calls[0])).toBe(
+        "[out:json][timeout:25]; rel(1); out count;"
+      );
+    });
+  });
+
+  describe("retry fails", () => {
+    it("records a timeout verdict when the retry also times out", async () => {
+      const fetchMock = vi.fn().mockResolvedValue(timedOut);
+      vi.stubGlobal("fetch", fetchMock);
+
+      await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
+        DatasetSizeCheckTimeoutError
+      );
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expectTimeoutVerdict();
+    });
+
+    it("rethrows a non-timeout retry failure without recording a verdict", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValueOnce(timedOut).mockResolvedValueOnce(serverError)
+      );
+
+      await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
+        "Overpass API error: 500"
+      );
+      expect(upsert).not.toHaveBeenCalled();
+    });
+
+    it("does not retry a non-timeout first failure", async () => {
+      const fetchMock = vi.fn().mockResolvedValue(serverError);
+      vi.stubGlobal("fetch", fetchMock);
+
+      await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
+        "Overpass API error: 500"
+      );
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(upsert).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("lane off: no retry", () => {
+    it("records a timeout on the first failure when the tiler is disabled", async () => {
+      vi.stubEnv("TILER_URL", "");
+      const fetchMock = vi.fn().mockResolvedValue(timedOut);
+      vi.stubGlobal("fetch", fetchMock);
+
+      await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
+        DatasetSizeCheckTimeoutError
+      );
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expectTimeoutVerdict();
+    });
+
+    // The tiler alone is not enough: a tiles-only row needs the map to render
+    // tiles, so the retry must not route anything while that flag is off.
+    it("records a timeout on the first failure when the map does not render tiles", async () => {
+      flags.tiles = false;
+      const fetchMock = vi.fn().mockResolvedValue(timedOut);
+      vi.stubGlobal("fetch", fetchMock);
+
+      await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
+        DatasetSizeCheckTimeoutError
+      );
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expectTimeoutVerdict();
+    });
   });
 });
 
