@@ -244,7 +244,6 @@
     "moreTags": "+{count} más",
     "dataset": "conjunto de datos",
     "datasets": "conjuntos de datos",
-    "idLabel": "ID: ",
     "comingSoon": "¡Descubrimiento de conjuntos de datos próximamente!",
     "comingSoonDescription": "Podrás explorar y crear conjuntos de datos para esta área directamente desde esta página.",
     "areaDetails": "Detalles del Área",
@@ -267,7 +266,7 @@
     "searching": "Buscando...",
     "typeMoreChars": "Escribe {count} carácter{count, plural, one {} other {es}} más para buscar",
     "searchHint": "Prueba buscando ciudades, regiones o países",
-    "idLabel": "ID: ",
+    "population": "{count, plural, one {{count, number, ::compact-short .#} habitante} other {{count, number, ::compact-short .#} habitantes}}",
     "clearSearch": "Limpiar búsqueda"
   },
   "AddressTypes": {

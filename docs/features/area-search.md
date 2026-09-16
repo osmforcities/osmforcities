@@ -8,12 +8,14 @@ The area search functionality allows users to find geographic areas (cities, reg
 
 The implementation is split into a library file for API communication and a React hook for easy integration into components.
 
-### 1. Nominatim Library (`osmforcities/src/lib/nominatim.ts`)
+### 1. Nominatim Libraries
 
-This file contains the core logic for interacting with the Nominatim API.
-
-- `searchAreasWithNominatim(searchTerm, language)`: This function takes a search term and an optional language, queries the Nominatim API, and returns a promise that resolves to an array of validated search results. It filters for results of `osm_type === "relation"` to ensure we only get areas.
-- `getAreaDetailsById(osmRelationId, language)`: Fetches detailed information for a specific area using its OSM relation ID. Uses `fromNominatim` from `@/lib/area-conversion` to convert results.
+- `src/lib/nominatim-search.ts` (client, nav search): `searchAreasWithNominatim(searchTerm, language, signal?)` queries `/search` and resolves to validated relation results.
+  - Requests `extratags=1` and collapses results that are the same place (transitively): same `wikidata`, or same name and bounding box (Paris commune + département; a Brazilian municipality + its seat district, which has no wikidata). Keeps the higher `importance`, then the most local `admin_level` on a tie.
+  - Orders results by scale using Nominatim `place_rank`: cities and below, then states/regions, then countries, keeping Nominatim's order within each scale (a strict local-first sort would rank City of London above Greater London).
+  - Spaces searches at least 1 s apart per browser (Nominatim usage policy). A search aborted via `signal` (React Query cancels it when the term changes) rejects immediately and frees its slot.
+- `src/lib/area-search.ts`: dedupe and ranking helpers, plus `toAreaSearchResult`, which adds row context for the dropdown — parent chain (state, country, skipping the component that is the result itself) and population when tagged. A same-named boundary Nominatim demoted to "suburb" is labelled "city".
+- `src/lib/nominatim.ts` (server): `getAreaDetailsById(osmRelationId, language)` fetches a relation via `/lookup` and converts it with `fromNominatim` from `@/lib/area-conversion`. It shares `NominatimResultSchema` with search; malformed ranking hints (`importance`, `place_rank`, `extratags`) are dropped rather than failing the lookup.
 
 ### 2. React Hook (`osmforcities/src/hooks/useNominatimSearch.ts`)
 

@@ -244,7 +244,6 @@
     "moreTags": "+{count} de plus",
     "dataset": "jeu de données",
     "datasets": "jeux de données",
-    "idLabel": "ID : ",
     "comingSoon": "La découverte de jeux de données arrive bientôt !",
     "comingSoonDescription": "Vous pourrez explorer et créer des jeux de données pour cette zone directement depuis cette page.",
     "areaDetails": "Détails de la zone",
@@ -267,7 +266,7 @@
     "searching": "Recherche...",
     "typeMoreChars": "Saisissez {count} caractère{count, plural, one {} other {s}} de plus pour rechercher",
     "searchHint": "Essayez de rechercher des villes, des régions ou des pays",
-    "idLabel": "ID : ",
+    "population": "{count, plural, one {{count, number, ::compact-short .#} habitant} other {{count, number, ::compact-short .#} habitants}}",
     "clearSearch": "Effacer la recherche"
   },
   "AddressTypes": {
