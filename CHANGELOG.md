@@ -1,5 +1,23 @@
 # osmforcities
 
+## 1.19.0
+
+### Changed
+
+- Area search shows one result per place: boundaries that are the same place (e.g. Paris commune and département) are merged, results are ordered cities before regions before countries, and each row shows its parent region, country and population to tell look-alikes apart [#533]
+- Area search spaces requests at least 1 s apart per browser, following the Nominatim usage policy [#533]
+- Rewrote the About page copy in all locales and added an Acknowledgments section [#488]
+- Map legend counts are computed once on the server at refresh time instead of in the browser on every page load [#506], [#502]
+
+### Fixed
+
+- The About page no longer shows literal markdown (`**OSM for Cities**`) [#488]
+
+[#488]: https://github.com/osmforcities/osmforcities/pull/488
+[#502]: https://github.com/osmforcities/osmforcities/pull/502
+[#506]: https://github.com/osmforcities/osmforcities/pull/506
+[#533]: https://github.com/osmforcities/osmforcities/pull/533
+
 ## 1.18.0
 
 ### Added
