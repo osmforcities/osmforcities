@@ -59,6 +59,8 @@ const DOWNLOAD_TIMEOUT_MS = 10 * 60_000;
 export const LARGE_JOB_MAXSIZE_BYTES = 1024 * 1024 * 1024; // 1 GiB
 export const LARGE_JOB_TIMEOUT_SECONDS = 1800; // 30 minutes
 
+export type TileJobBudgets = { maxsize: number; timeout: number };
+
 function tilerUrl(): string | null {
   return process.env.TILER_URL || null;
 }
@@ -228,7 +230,7 @@ export async function submitTilesColumns(
   datasetId: string,
   query: string,
   filterableTags: string[],
-  budgets?: { maxsize: number; timeout: number }
+  budgets?: TileJobBudgets
 ): Promise<TilesColumns> {
   if (!tilerEnabled()) return {};
   const id = newTileJobId(datasetId);

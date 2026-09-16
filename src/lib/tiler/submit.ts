@@ -53,14 +53,14 @@ export async function submitTilesForDataset(
     // element count, the same number the creation pre-flight caps on. A row the
     // app did fetch stores a smaller feature count instead, which can only err
     // toward the default budgets.
-    const isLarge =
+    const isOverCap =
       dataset.dataCount * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE >
       MAX_DATASET_BYTES;
     const columns = await submitTilesColumns(
       datasetId,
       query,
       dataset.template.filterableTags,
-      isLarge
+      isOverCap
         ? {
             maxsize: LARGE_JOB_MAXSIZE_BYTES,
             timeout: LARGE_JOB_TIMEOUT_SECONDS,
