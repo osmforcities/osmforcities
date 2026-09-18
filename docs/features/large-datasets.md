@@ -1,14 +1,28 @@
 # Large Datasets (vector tiles + metro-scale extraction)
 
-Architecture for datasets beyond the 25 MB interactive cap (epic #322).
+Architecture for datasets beyond the 25 MB interactive cap (epic [#322]).
 Decided 2026-09-04 from live capacity probes against the Overpass backend
 (spike record: SPIKE-CHUNKING.md at repo root, uncommitted). Chunked extraction
 was designed, probed, and discarded the same day — single-query extraction wins.
 
+Words used here (tiler, bake, archive, cap, count probe, lane, reconcile) are defined in the [glossary]. The two decisions that shape everything else are [ADR 0001] and [ADR 0002].
+
+## Dataset lifecycle (decided 2026-09-18)
+
+What a signed-in person sees from first opening a dataset to using its map. One page, three moods, then the map.
+
+1. **Counting.** No dataset yet; the app asks Overpass how many elements the area has. Seconds for a warm city, about a minute for the largest in-scope city, a few minutes for an area nobody has opened before (one retry on raised budgets). After 30 s the copy admits it is taking longer.
+2. **Baking.** The dataset exists with a pending bake. Same page with the element count, a tier (about a minute / a few minutes / 10 to 15 minutes) and the tiler's live stage. From the second tier up it offers a one-time email. Flips to the map by itself when the archive lands.
+3. **Failed.** Same page. Too large is permanent and never retried; the email, if asked for, says so. Anything else says "isn't ready yet", keeps the row, and the next scheduled update retries.
+4. **Ready.** The normal sidebar-and-map page, served from the archive.
+5. **Rebuild.** A refresh bakes in the background; visitors keep the old archive and "fetched" time, and nothing on the page says so. Admin Sync is disabled while a bake is pending. Bakes show on the admin datasets page and as dashboard badges.
+
+Every first load waits for a bake, small datasets included. Cards on the area, explore and home pages do not yet show a baking dataset.
+
 ## Decision summary
 
-- Per-dataset static PMTiles baked by tippecanoe after each snapshot (#487),
-  rendered by the client instead of inline RSC geojson (#489).
+- Per-dataset static PMTiles baked by tippecanoe after each snapshot ([#487]),
+  rendered by the client instead of inline RSC geojson ([#489]).
 - Metro-scale creation: ONE Overpass query with a raised per-query
   `[maxsize:]` — no chunking, no Overpass server config changes. Runs async
   through the cron queue; UI shows "processing, check back later".
@@ -73,13 +87,7 @@ bound: count probe over a hard ceiling => refuse, don't attempt.
 
 ## Rollout posture (2026-09-04): exploration only, no migration yet
 
-Deliberately cautious. NO app code has changed; everything so far is probes,
-docs, and throwaway assets (preserved in `spikes/2026-09-04-large-datasets/`,
-locally git-ignored via .git/info/exclude — includes the render harness, probe
-scripts, streaming converter, and the baked 53 MB SP archive). The existing
-geojson path stays untouched until the tiler-service exploration below settles
-the architecture. Any future app work lands behind a flag / in a worktree /
-as a draft PR first.
+Historical; the "Implemented" paragraph below is current. At the time no app code had changed; everything was probes, docs, and throwaway assets (preserved in `spikes/2026-09-04-large-datasets/`, locally git-ignored via .git/info/exclude — includes the render harness, probe scripts, streaming converter, and the baked 53 MB SP archive). The existing geojson path stays untouched until the tiler-service exploration below settles the architecture. Any future app work lands behind a flag / in a worktree / as a draft PR first.
 
 ## overpass-pmtiler: settled design (2026-09-05)
 
@@ -94,7 +102,7 @@ Decisions (brainstorm 2026-09-05):
   to its own disk and serves them through the existing web tier. The Overpass
   side stays private; serving path identical for small and metro datasets.
 - **ALL datasets bake via the tiler.** One bake path; tippecanoe never runs on
-  the app host, which has neither the memory nor the disk for it. #487 shrinks
+  the app host, which has neither the memory nor the disk for it. [#487] shrinks
   to "download + serve". Tiler down => snapshots queue and retry via existing
   cron, same as Overpass being down.
 - **Tiler is the single Overpass data client.** Job input is the Overpass
@@ -103,8 +111,7 @@ Decisions (brainstorm 2026-09-05):
   transport shrinks to the creation-time count probe (with the over-ceiling
   refusal in front).
 
-Contract (`id` supplied by app = `{datasetId}-{snapshotVersion}`; idempotent —
-POST of an existing id returns its current state):
+Contract (`id` supplied by app = `{datasetId}-{epochSeconds}`, which doubles as the archive file name; idempotent — POST of an existing id returns its current state):
 
 ```
 POST   /pmtiler/jobs      { id, query, maxsize, timeout } -> 202 { id, state }
@@ -130,14 +137,9 @@ scheduler) -> pull outputs -> serve from app nginx. Dataset status maps from
 job state; "processing, check back later" is `state != done`. `failed`
 carries the Overpass error text through.
 
-**Implemented (#487 phases 1-2, additive):** `Dataset` carries
-`tilesJobId/tilesState/tilesUpdatedAt/tilesError`; every successful snapshot
-submits a bake job (`src/lib/tiler/submit.ts`); the update-datasets cron
-reconciles pending jobs (`src/lib/tiler/poll.ts`) — pull to `TILES_DIR`, ack,
-keep current + previous archive; `GET /api/tiles/{jobId}.pmtiles` serves with
-Range support (nginx can shadow the path later). `TILER_URL` unset = kill
-switch. Job state surfaces on the admin datasets page, dashboard cards, and
-the dataset page. The map still renders geojson until #489.
+**Implemented (as of 2026-09-18):** `Dataset` carries `tilesJobId/tilesState/tilesUpdatedAt/tilesError`; every successful snapshot submits a bake job (`src/lib/tiler/submit.ts`); the update-datasets cron reconciles pending jobs (`src/lib/tiler/poll.ts`) — pull to `TILES_DIR`, ack, keep current + previous archive; `GET /api/tiles/{jobId}.pmtiles` serves with Range support. `TILER_URL` unset = kill switch. The map renders from the archive behind `NEXT_PUBLIC_TILES_ENABLED` ([#489]). A live status route feeds the processing panel and reconciles on demand. Over-cap creations take the tiles-only lane (count, submit with raised budgets, no app-side fetch), with one probe retry for cold areas; the lane needs both the tiler and the render flag on. Stats for tiles-only rows come from the tiler's `stats.json`.
+
+**Not yet:** refresh = submit only, the tiler as the authoritative stats writer for every dataset, feature fill for under-cap rows, blue/green served archive, the wait page and ready notification from the lifecycle above, and the backfill + flag flip ([#501]).
 
 Main real work item: relation/multipolygon assembly in the convert stage —
 the spike skipped relations (15,783 in SP buildings).
@@ -152,11 +154,11 @@ bake runs (checklist item that still needs a probe).
    protocol, app's 4-band Viridis age ramp as a `step` expression on `_ts`:
    - full-city first idle **538 ms** (9 tiles); z14.5 center detail idle
      **645 ms** (30 tiles); z12 350 ms; **JS heap 76 MB** — vs 1.19 GB tab heap
-     for inline-geojson Amsterdam (10x fewer features). #407-class failures
+     for inline-geojson Amsterdam (10x fewer features). [#407]-class failures
      structurally impossible: memory is O(viewport), not O(dataset).
    - `-zg` picked maxzoom 14; individual footprints crisp at z14.5; low-zoom
      overview shows drop-densest sampling (expected, reads as density map).
-   - `_ts` must be numeric epoch (bake spec #487) — a string `_ts` silently
+   - `_ts` must be numeric epoch (bake spec [#487]) — a string `_ts` silently
      breaks the `step` expression.
    - Harness + archive preserved in `spikes/2026-09-04-large-datasets/`.
 2. ~~overpass-box tiler service exploration~~ **SETTLED (2026-09-05)** — design
@@ -164,7 +166,17 @@ bake runs (checklist item that still needs a probe).
    one SP-class job end-to-end; issues 1-8 seeded 2026-09-05).
 3. Contention probe: measure live Overpass query latency while a bake runs
    alongside it (only remaining pre-build measurement).
-4. Rewrite #490 (and touch up #487) to the settled design; service work items
+4. Rewrite [#490] (and touch up [#487]) to the settled design; service work items
    tracked in the overpass-pmtiler repo.
-5. Then: app-side work (#489 protocol + vector source) in a worktree, behind a
+5. Then: app-side work ([#489] protocol + vector source) in a worktree, behind a
    flag, landed as a draft PR first.
+
+[glossary]: ../glossary.md
+[ADR 0001]: ../adr/0001-tiler-is-the-only-overpass-data-client.md
+[ADR 0002]: ../adr/0002-large-dataset-scope-by-size-alone.md
+[#322]: https://github.com/osmforcities/osmforcities/issues/322
+[#407]: https://github.com/osmforcities/osmforcities/issues/407
+[#487]: https://github.com/osmforcities/osmforcities/issues/487
+[#489]: https://github.com/osmforcities/osmforcities/issues/489
+[#490]: https://github.com/osmforcities/osmforcities/issues/490
+[#501]: https://github.com/osmforcities/osmforcities/issues/501
