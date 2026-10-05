@@ -16,6 +16,13 @@ export const GRACE_HOURS = 6;
 export const STALE_THRESHOLD_MS =
   (REFRESH_INTERVAL_HOURS + GRACE_HOURS) * 60 * 60 * 1000;
 
+// Above this many consecutive failures a dataset has run off the short retry
+// rungs onto the daily floor; a few of those is noise, more is a pattern.
+export const STUCK_FAILURE_THRESHOLD = 3;
+export const MAX_STUCK_DATASETS = 5;
+// Longer than a blip or a deploy restart of the tiler.
+export const TILER_DOWN_ALERT_MS = 30 * 60 * 1000;
+
 /**
  * Is the dataset fleet healthy, given a reference date (the newest successful
  * check across active datasets, or a fresh-instance fallback)? A null reference

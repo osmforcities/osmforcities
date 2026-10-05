@@ -129,6 +129,37 @@ export async function getTileJob(id: string): Promise<TileJob | null> {
   return (await response.json()) as TileJob;
 }
 
+const PING_TIMEOUT_MS = 10_000;
+
+// When the first failed ping of the current outage happened; null while up.
+// On globalThis so the cron route and the health route share one clock even
+// if the bundler gives each its own copy of this module.
+// ponytail: in-process, so a restart resets the outage clock and delays the
+// health alarm; persist it if the app ever runs more than one Node process.
+const outage = globalThis as unknown as { tilerDownSince?: number | null };
+
+/** One GET /status; any error or non-2xx reads as down. Records the outage. */
+export async function pingTiler(now: number = Date.now()): Promise<boolean> {
+  let up = false;
+  try {
+    const response = await fetch(`${requireTilerUrl()}/status`, {
+      signal: AbortSignal.timeout(PING_TIMEOUT_MS),
+    });
+    up = response.ok;
+  } catch {
+    up = false;
+  }
+  if (up) outage.tilerDownSince = null;
+  else outage.tilerDownSince ??= now;
+  return up;
+}
+
+/** How long the tiler has been failing pings; 0 while up. */
+export function tilerDownForMs(now: number = Date.now()): number {
+  const since = outage.tilerDownSince;
+  return since == null ? 0 : now - since;
+}
+
 async function downloadToFile(url: string, destination: string): Promise<void> {
   // Generous ceiling (archives are tens of MB): a slow pull finishes, a
   // stalled one aborts — the signal also rejects the body stream mid-pipe,

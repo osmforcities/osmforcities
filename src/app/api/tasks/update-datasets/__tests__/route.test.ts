@@ -26,13 +26,21 @@ vi.mock("@/lib/umami", () => ({
 // Tiler integration is additive and covered by its own tests — stub it here so
 // this suite's prisma call-order assertions stay about the refresh queue.
 vi.mock("@/lib/tiler/submit", () => ({
-  submitTilesForDataset: vi.fn().mockResolvedValue(undefined),
+  submitTilesForDataset: vi.fn().mockResolvedValue({}),
 }));
 
 vi.mock("@/lib/tiler/poll", () => ({
   pollPendingTileJobs: vi.fn(),
 }));
 import { pollPendingTileJobs } from "@/lib/tiler/poll";
+
+vi.mock("@/lib/tiler/client", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/tiler/client")>()),
+  tilerEnabled: vi.fn(),
+  pingTiler: vi.fn(),
+}));
+import { pingTiler, tilerEnabled } from "@/lib/tiler/client";
+import { submitTilesForDataset } from "@/lib/tiler/submit";
 
 import { Prisma } from "@prisma/client";
 import { POST } from "../route";
@@ -89,7 +97,10 @@ describe("POST /api/tasks/update-datasets", () => {
       completed: 0,
       failed: 0,
       stillPending: 0,
+      errors: [],
     });
+    vi.mocked(tilerEnabled).mockReturnValue(false);
+    vi.mocked(pingTiler).mockResolvedValue(true);
   });
 
   it("claims the slot upfront (advances lastAttempted) even when the refresh fails", async () => {
@@ -131,6 +142,67 @@ describe("POST /api/tasks/update-datasets", () => {
           d.lastChecked instanceof Date
       )
     ).toHaveLength(1);
+  });
+
+  it("selects rows by the retry ladder, not a flat daily cutoff", async () => {
+    await call();
+
+    const refreshWhere = vi.mocked(prisma.dataset.findMany).mock.calls[0][0]
+      ?.where as { OR: Record<string, unknown>[] };
+    expect(refreshWhere.OR).toContainEqual(
+      expect.objectContaining({ consecutiveFailures: 1 })
+    );
+    expect(refreshWhere.OR).toContainEqual({ lastAttempted: null });
+  });
+
+  it("with the tiler on, leaves the counter for the bake to reset", async () => {
+    vi.mocked(tilerEnabled).mockReturnValue(true);
+    vi.mocked(fetchDatasetSnapshot).mockResolvedValueOnce(snapshot as never);
+
+    const body = await (await call()).json();
+
+    expect(body.data.successful).toBe(1);
+    expect(updateCallsMatching((d) => "consecutiveFailures" in d)).toHaveLength(0);
+  });
+
+  it("charges a failed bake submit to the counter, logged as kind submit", async () => {
+    vi.mocked(tilerEnabled).mockReturnValue(true);
+    vi.mocked(fetchDatasetSnapshot).mockResolvedValueOnce(snapshot as never);
+    vi.mocked(submitTilesForDataset).mockResolvedValueOnce({
+      tilesState: "failed",
+      tilesError: "Tiler submit failed: 503",
+    });
+
+    const body = await (await call()).json();
+
+    expect(body.data.failed).toBe(1);
+    expect(body.data.errors).toEqual([
+      { datasetId: "ds-1", kind: "submit", error: "Tiler submit failed: 503" },
+    ]);
+    expect(
+      updateCallsMatching(
+        (d) =>
+          JSON.stringify(d.consecutiveFailures) === JSON.stringify({ increment: 1 })
+      )
+    ).toHaveLength(1);
+  });
+
+  it("skips the tick without touching any counter when the tiler is down", async () => {
+    vi.mocked(tilerEnabled).mockReturnValue(true);
+    vi.mocked(pingTiler).mockResolvedValue(false);
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const res = await call();
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.data.tilerUnreachable).toBe(true);
+    expect(warn).toHaveBeenCalledOnce();
+    expect(fetchDatasetSnapshot).not.toHaveBeenCalled();
+    expect(prisma.dataset.update).not.toHaveBeenCalled();
+    // Reconcile of already-pending bakes still runs.
+    expect(pollPendingTileJobs).toHaveBeenCalledOnce();
+    warn.mockRestore();
   });
 
   it("still yields the slot when the size check times out", async () => {
@@ -226,6 +298,7 @@ describe("POST /api/tasks/update-datasets", () => {
       completed: 2,
       failed: 1,
       stillPending: 0,
+      errors: [],
     });
 
     const res = await call();
@@ -237,6 +310,7 @@ describe("POST /api/tasks/update-datasets", () => {
       completed: 2,
       failed: 1,
       stillPending: 0,
+      errors: [],
     });
   });
 
