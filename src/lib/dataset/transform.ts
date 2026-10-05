@@ -66,9 +66,8 @@ export function transformDataset(
   // consumer — dropping it here keeps it out of the RSC payload (the #407
   // failure class). hasGeojson preserves the export affordance.
   const tilesRender =
-    datasetTilesPath(
-      rawDataset as { tilesState?: string | null; tilesJobId?: string | null }
-    ) !== null;
+    datasetTilesPath(rawDataset as { tilesServedJobId?: string | null }) !==
+    null;
 
   return DatasetSchema.parse({
     ...rawDataset,

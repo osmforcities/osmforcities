@@ -191,7 +191,9 @@ export async function ackTileJob(id: string): Promise<void> {
 
 /**
  * Delete this dataset's archives beyond the two newest (current + previous,
- * the #487 retention rule). Filenames embed the submit epoch, so
+ * so a rollback target stays on disk). Runs only right after the served
+ * pointer moves to the bake that just landed, so the served archive is always
+ * the newest and never pruned. Filenames embed the submit epoch, so
  * lexicographic-by-epoch sorting is chronological.
  */
 export async function pruneTileArchives(datasetId: string): Promise<void> {

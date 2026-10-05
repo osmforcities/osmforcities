@@ -116,6 +116,8 @@ describe("pollPendingTileJobs", () => {
       tilesError: null,
     });
     expect(updateData(0).tilesUpdatedAt).toBeInstanceOf(Date);
+    // The served pointer moves only on a winning done
+    expect(updateData(0).tilesServedJobId).toBe("ds-1-100");
     // A dataset the app fetched keeps its own stats — the tiler's are ignored.
     expect(updateData(0).stats).toBeUndefined();
     expect(ackTileJob).toHaveBeenCalledWith("ds-1-100");
@@ -220,6 +222,14 @@ describe("pollPendingTileJobs", () => {
       tilesError: "too_large: runtime error: out of memory",
     });
     expect(downloadTileOutputs).not.toHaveBeenCalled();
+  });
+
+  it("a failed rebuild leaves the served archive pointer alone", async () => {
+    vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "failed" });
+
+    await pollPendingTileJobs();
+
+    expect(updateData(0)).not.toHaveProperty("tilesServedJobId");
   });
 
   it("marks a swept (404) job failed so the next snapshot resubmits", async () => {
