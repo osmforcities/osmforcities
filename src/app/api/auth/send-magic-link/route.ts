@@ -4,12 +4,13 @@ import { sendEmail } from "@/lib/email";
 import { isMagicLinkRateLimited } from "@/lib/magic-link-rate-limit";
 import { getBaseUrl } from "@/lib/utils";
 import { formatEmail, createEmailLink, type Locale } from "@/lib/email-i18n";
+import { EmailSchema } from "@/schemas/auth";
 
 export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json();
 
-    if (!email || !email.includes("@")) {
+    if (!EmailSchema.safeParse(email).success) {
       return NextResponse.json(
         { error: "Valid email is required" },
         { status: 400 }
