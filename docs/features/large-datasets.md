@@ -19,6 +19,8 @@ What a signed-in person sees from first opening a dataset to using its map. One 
 
 Every first load waits for a bake, small datasets included. Cards on the area, explore and home pages do not yet show a baking dataset.
 
+Measured 2026-10-05: a small dataset shows its map 0.3 to 3.2 s later through the tiler than with the app's own fetch ([details](#small-dataset-time-to-map-2026-10-05)).
+
 ## Decision summary
 
 - Per-dataset static PMTiles baked by tippecanoe after each snapshot ([#487]),
@@ -63,6 +65,27 @@ Implementation constraints discovered:
   areas-dispatcher protocol error, and nothing between 1 and 3 GiB was
   measured, so sizing above 1 GiB buys nothing. The app sends 1 GiB as
   `LARGE_JOB_MAXSIZE_BYTES` (`src/lib/tiler/client.ts`).
+
+## Small-dataset time to map (2026-10-05)
+
+The question: now that every new dataset waits for the tiler, how much later does a small dataset show its first map than when the app fetched the data itself?
+
+How it was measured: a local copy of the app, a local tiler, and the production Overpass server. Today's app does both things for each new dataset: it fetches the data itself, then sends the same query to the tiler. So one creation times both paths on the same data. The clock runs from creating the dataset until the map data is ready, on areas Overpass had counted just before (so its cache was warm). One run per dataset, and the bake ran on a laptop.
+
+| Datasets | Elements | App's own fetch | Through the tiler |
+| --- | --- | --- | --- |
+| Restaurants and parks in Delft, Altamira, Leuven, Coimbra and Ithaca (10 datasets) | 8 to 311 | 3.6 to 6.0 s | 5.5 to 6.5 s |
+| Altamira buildings | 2,599 | 5.4 s | 5.7 s |
+| Ithaca buildings | 6,491 | 15.3 s | 18.5 s |
+| Coimbra buildings | 25,920 | 13.5 s | 14.1 s |
+
+What it shows:
+
+- The tiler adds 0.3 to 3.2 seconds. For the smallest datasets most of that is the wait page asking for news only every 4 seconds; the bake itself takes under half a second.
+- Beyond a few seconds, the time goes to Overpass: counting, then downloading. The app's own fetch pays that too.
+- Buildings in Delft (39,665) and Leuven (42,279) looked small but went over the 25 MB cap partway through the download, so they can only be shown as tiles. They took 46.5 s and 25.9 s, mostly in Overpass; 14 s of Delft's time was the count alone.
+
+Not measured: drawing the map once the data is ready (the same for both paths), and copying the geojson back from the tiler, which does not exist yet.
 
 ## Worst-case bounds
 
