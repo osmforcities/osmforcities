@@ -19,6 +19,8 @@ What a signed-in person sees from first opening a dataset to using its map. One 
 
 Every first load waits for a bake, small datasets included. Cards on the area, explore and home pages do not yet show a baking dataset.
 
+Measured 2026-10-05 on warm small cities: the tiler route reaches the map in 5.5 to 18.5 s, 0.3 to 3.2 s behind the app's own fetch. Most of the gap is the panel's 4 s status poll.
+
 ## Decision summary
 
 - Per-dataset static PMTiles baked by tippecanoe after each snapshot ([#487]),

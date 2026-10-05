@@ -7,6 +7,7 @@ The app used to fetch every dataset itself and ship it whole to the browser, whi
 - Every first load of a new dataset waits for a bake, small ones included. The wait page exists because of this.
 - A refresh is a request, not a result: the page keeps serving the previous archive and stats until the new bake lands.
 - If the tiler is down, datasets keep serving what they have and refreshes queue up, as when Overpass is down.
+- The tiler is a required service. With `TILER_URL` unset the app can count but not create datasets; there is no in-app fallback, self-hosting included.
 
 ## Considered
 
