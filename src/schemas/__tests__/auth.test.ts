@@ -6,6 +6,10 @@ describe("EmailSchema", () => {
     expect(EmailSchema.safeParse("maria@example.com").success).toBe(true);
   });
 
+  it("lowercases so case variants map to one account and one rate-limit key", () => {
+    expect(EmailSchema.parse("Maria@Example.COM")).toBe("maria@example.com");
+  });
+
   it.each([
     ["missing", undefined],
     ["non-string", 123],

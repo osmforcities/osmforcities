@@ -210,9 +210,16 @@ export async function createUser(email: string, name?: string) {
   });
 }
 
+/**
+ * Case-insensitive so accounts created before emails were lowercased keep
+ * working. If case variants of one address already exist as separate
+ * accounts, the oldest wins.
+ */
+// ponytail: insensitive match can't use the unique index on email (seq scan); fine at current user count, lowercase the stored emails and switch back to findUnique if it grows.
 export async function findUserByEmail(email: string) {
-  return await prisma.user.findUnique({
-    where: { email },
+  return await prisma.user.findFirst({
+    where: { email: { equals: email, mode: "insensitive" } },
+    orderBy: { createdAt: "asc" },
   });
 }
 
@@ -238,9 +245,7 @@ export async function verifyToken(token: string) {
     return null;
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: verificationToken.identifier },
-  });
+  const user = await findUserByEmail(verificationToken.identifier);
 
   if (!user) {
     return null;
