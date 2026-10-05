@@ -100,7 +100,7 @@ export const BakingQueued: Story = {
       canvas.getByRole("heading", { name: "Buildings in Delft" })
     ).toBeInTheDocument();
     await expect(
-      await canvas.findByText("Waiting for server slot")
+      await canvas.findByText("Waiting for a free slot")
     ).toBeInTheDocument();
     await expect(canvas.getByText("Step 2 of 5")).toBeInTheDocument();
     await expect(canvas.getByRole("progressbar")).not.toHaveAttribute(
