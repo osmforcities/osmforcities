@@ -127,7 +127,6 @@
     "testEnvOnly": "This page is only available in test environment."
   },
   "DatasetPage": {
-    "tilesProcessingNotice": "Map data is being processed for faster rendering.",
     "tilesProcessingTitle": "Preparing map data",
     "tilesStageQueued": "Waiting in queue",
     "tilesStageFetching": "Fetching data from OpenStreetMap ({mb, number} MB)",
@@ -192,6 +191,8 @@
     "value": "Value",
     "refreshData": "Sync",
     "refreshing": "Syncing...",
+    "rebuildPending": "Updating...",
+    "rebuildQueued": "Update queued",
     "refreshTitle": "Sync with the latest OpenStreetMap data",
     "refreshInactiveTitle": "Only active datasets can be synced",
     "save": "Save",

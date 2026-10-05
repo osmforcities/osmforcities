@@ -18,6 +18,19 @@ export function datasetTilesPath(dataset: TilesFields): string | null {
 }
 
 /**
+ * What a Sync click reports. A pending bake means the refresh only queued a
+ * rebuild, so "fetched" stays put; anything else (including responses without
+ * the field) is the synced path.
+ */
+export function refreshOutcome(result: {
+  tilesState?: string | null;
+  lastChecked?: Date;
+}): { queued: true } | { queued: false; lastChecked: Date } {
+  if (result.tilesState === "pending") return { queued: true };
+  return { queued: false, lastChecked: result.lastChecked ?? new Date() };
+}
+
+/**
  * Can this payload be downloaded as geojson? hasGeojson covers tiles-render
  * payloads whose FeatureCollection was stripped (the export API reads the DB
  * row); older payload shapes without the field fall back to the inline data.

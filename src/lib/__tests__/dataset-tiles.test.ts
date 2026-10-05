@@ -41,6 +41,26 @@ describe("datasetTilesPath", () => {
   });
 });
 
+describe("refreshOutcome", () => {
+  const lastChecked = new Date("2026-10-05T10:00:00Z");
+
+  it("reports a queued update and no new fetched time when the bake is pending", async () => {
+    const { refreshOutcome } = await loadWithFlag(true);
+    expect(refreshOutcome({ tilesState: "pending", lastChecked })).toEqual({
+      queued: true,
+    });
+  });
+
+  it("keeps the synced path with the response's fetched time otherwise", async () => {
+    const { refreshOutcome } = await loadWithFlag(true);
+    expect(refreshOutcome({ tilesState: "done", lastChecked })).toEqual({
+      queued: false,
+      lastChecked,
+    });
+    expect(refreshOutcome({ lastChecked })).toEqual({ queued: false, lastChecked });
+  });
+});
+
 describe("transformDataset geojson stripping", () => {
   const geojson: FeatureCollection = { type: "FeatureCollection", features: [] };
   const raw = {

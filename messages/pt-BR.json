@@ -127,7 +127,6 @@
     "testEnvOnly": "Esta página está disponível apenas no ambiente de teste."
   },
   "DatasetPage": {
-    "tilesProcessingNotice": "Os dados do mapa estão sendo processados para renderização mais rápida.",
     "tilesProcessingTitle": "Preparando os dados do mapa",
     "tilesStageQueued": "Aguardando na fila",
     "tilesStageFetching": "Buscando dados do OpenStreetMap ({mb, number} MB)",
@@ -192,6 +191,8 @@
     "value": "Valor",
     "refreshData": "Sincronizar",
     "refreshing": "Sincronizando...",
+    "rebuildPending": "Atualizando...",
+    "rebuildQueued": "Atualização na fila",
     "refreshTitle": "Sincronize com os dados mais recentes do OpenStreetMap",
     "refreshInactiveTitle": "Apenas conjuntos de dados ativos podem ser sincronizados",
     "save": "Salvar",
