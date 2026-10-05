@@ -1,6 +1,10 @@
+"use client";
+
+import { ProgressBar as AriaProgressBar } from "react-aria-components";
+
 type ProgressBarProps = {
   /**
-   * Percent complete, 0-100. Leave it out when the work reports no progress —
+   * Percent complete, 0-100. Leave it out when the work reports no progress:
    * the bar then sweeps back and forth to show it is running.
    */
   value?: number;
@@ -18,14 +22,10 @@ export function ProgressBar({ value, label }: ProgressBarProps) {
   const percent = determinate ? Math.min(100, Math.max(0, value)) : 0;
 
   return (
-    <div
-      role="progressbar"
+    <AriaProgressBar
       aria-label={label}
-      // An indeterminate bar is a progressbar with no value — the ARIA way of
-      // saying the total is unknown.
-      aria-valuenow={determinate ? Math.round(percent) : undefined}
-      aria-valuemin={determinate ? 0 : undefined}
-      aria-valuemax={determinate ? 100 : undefined}
+      value={Math.round(percent)}
+      isIndeterminate={!determinate}
       className="h-2 w-full overflow-hidden rounded bg-gray-200"
     >
       {determinate ? (
@@ -37,6 +37,6 @@ export function ProgressBar({ value, label }: ProgressBarProps) {
       ) : (
         <div className="h-full w-1/3 rounded bg-olive-500 animate-progress-sweep motion-reduce:animate-none" />
       )}
-    </div>
+    </AriaProgressBar>
   );
 }

@@ -136,7 +136,7 @@ export function DatasetWaitPage({
             </div>
           )
         }
-        description={waiting ? undefined : t("tilesNotReadyDescription")}
+        description={waiting ? undefined : t("tilesFailedDescription")}
         action={notify}
       />
     </div>

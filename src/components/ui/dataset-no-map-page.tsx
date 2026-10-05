@@ -40,7 +40,7 @@ type DatasetNoMapPageProps = {
 
 /**
  * The dataset page when there is no map to show: no features, too large to
- * build, or still baking. The same white card the sibling error pages use,
+ * bake, or still baking. The same white card the sibling error pages use,
  * holding icon, subject, state or progress, body, then a foot with the
  * primary action and the way back in the sidebar's own arrow-and-area form.
  * The area is already in the title, so nothing above the icon repeats it.

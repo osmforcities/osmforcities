@@ -8,16 +8,20 @@ import { cn } from "@/lib/utils";
 
 type NotifyWhenReadyButtonProps = {
   /** Records the request. Omitted until the notification backend exists. */
-  onSubscribe?: () => Promise<void> | void;
+  onSave?: () => Promise<void> | void;
   /** Already asked for on an earlier visit. */
-  subscribed?: boolean;
+  saved?: boolean;
   /**
    * What the email is conditional on. "ready" is a bake in flight. The other
-   * two may never happen (a too-large dataset builds only if the data shrinks,
+   * two may never happen (a too-large dataset bakes only if the data shrinks,
    * an empty one only if someone maps it), so their offers say "if".
    */
   offer?: keyof typeof OFFER_KEY;
 };
+
+// The offers run long in German and French; on a phone the button wraps
+// inside the card instead of overflowing it.
+const WRAP = "max-w-full whitespace-normal text-center";
 
 const OFFER_KEY = {
   ready: "notifyCta",
@@ -32,12 +36,12 @@ const OFFER_KEY = {
  * safe to read over someone's shoulder.
  */
 export function NotifyWhenReadyButton({
-  onSubscribe,
-  subscribed = false,
+  onSave,
+  saved = false,
   offer = "ready",
 }: NotifyWhenReadyButtonProps) {
   const t = useTranslations("DatasetPage");
-  const [confirmed, setConfirmed] = useState(subscribed);
+  const [confirmed, setConfirmed] = useState(saved);
   const [sending, setSending] = useState(false);
 
   if (confirmed) {
@@ -48,6 +52,7 @@ export function NotifyWhenReadyButton({
         role="status"
         className={cn(
           buttonVariants({ variant: "outline", size: "sm" }),
+          WRAP,
           "pointer-events-none cursor-default border-olive-300 bg-olive-50 text-olive-700"
         )}
       >
@@ -61,11 +66,12 @@ export function NotifyWhenReadyButton({
     <Button
       variant="outline"
       size="sm"
+      className={WRAP}
       disabled={sending}
       onClick={async () => {
         setSending(true);
         try {
-          await onSubscribe?.();
+          await onSave?.();
           setConfirmed(true);
         } catch {
           // Leave the button idle so it can simply be pressed again; wording

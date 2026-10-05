@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, waitFor } from "storybook/test";
+import { useTranslations } from "next-intl";
 import { DatasetWaitPage } from "./dataset-wait-page";
 import { NotifyWhenReadyButton } from "./notify-when-ready-button";
 import { DatasetTooLargeState } from "@/components/ui/dataset-error-states";
@@ -24,6 +25,29 @@ function serveTilesStatus(status: Record<string, unknown>) {
   };
 }
 
+/** The route's empty branch with its real keys, so the locale toolbar applies. */
+function EmptyPage({
+  templateName,
+  areaName,
+  areaId,
+}: {
+  templateName: string;
+  areaName: string;
+  areaId: number;
+}) {
+  const t = useTranslations("DatasetPage");
+  return (
+    <DatasetNoMapPage
+      areaId={areaId}
+      backLabel={t("backToAreaLabel", { area: areaName })}
+      title={t("datasetInArea", { dataset: templateName, area: areaName })}
+      lead={t("stateNoData")}
+      description={t("emptyDescription")}
+      action={<NotifyWhenReadyButton offer="mapped" />}
+    />
+  );
+}
+
 const meta = {
   title: "Pages/DatasetWaitPage",
   component: DatasetWaitPage,
@@ -36,7 +60,10 @@ type Story = StoryObj<typeof meta>;
 
 const notify = <NotifyWhenReadyButton />;
 
-/** Step 1: the app's own size probe, before any tiler job. Nothing to poll. */
+/**
+ * Step 1: the app's own count probe, before any bake. Nothing to poll, and no
+ * row to save yet, so no offer.
+ */
 export const Counting: Story = {
   args: {
     datasetId: "ds-delft-buildings",
@@ -44,7 +71,6 @@ export const Counting: Story = {
     areaName: "Delft",
     areaId: 324431,
     mood: "counting",
-    notify,
   },
   play: async ({ canvas }) => {
     await expect(
@@ -174,7 +200,7 @@ export const BakingTiles: Story = {
 export const NotifyConfirmed: Story = {
   args: {
     ...BakingFetching.args,
-    notify: <NotifyWhenReadyButton subscribed />,
+    notify: <NotifyWhenReadyButton saved />,
   },
   beforeEach: BakingFetching.beforeEach,
   play: async ({ canvas }) => {
@@ -203,7 +229,7 @@ export const FailedNotReady: Story = {
     ).toBeInTheDocument();
     await expect(canvas.getByText("Build failed.")).toBeInTheDocument();
     await expect(
-      canvas.getByText(/An unexpected error occurred/)
+      canvas.getByText(/next scheduled update will try again/)
     ).toBeInTheDocument();
     await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     await expect(canvas.queryByText(/^Step /)).not.toBeInTheDocument();
@@ -219,7 +245,7 @@ export const FailedNotReady: Story = {
 /**
  * The other half of the failure split. A tiler refusal is permanent, so it
  * lands on the existing too-large screen — same dead end as a query the app
- * refuses up front, and the same route to the raw data.
+ * refuses up front.
  */
 export const FailedTooLarge: Story = {
   args: {
@@ -243,7 +269,7 @@ export const FailedTooLarge: Story = {
     ).toBeInTheDocument();
     await expect(canvas.getByText("Too large to build.")).toBeInTheDocument();
     await expect(
-      canvas.getByText(/exceeds our current server capacity/)
+      canvas.getByText(/exceeds the current server capacity/)
     ).toBeInTheDocument();
     await expect(
       canvas.getByRole("button", {
@@ -257,7 +283,7 @@ export const FailedTooLarge: Story = {
  * The fourth member of the family. It lives inline in the dataset page rather
  * than in a component, so the story renders the shared shell with the same
  * copy — here to be reviewed beside its siblings. Saving an empty dataset
- * watches it: the daily refresh picks up whatever gets mapped.
+ * keeps it on the daily refresh, which picks up whatever gets mapped.
  */
 export const Empty: Story = {
   args: {
@@ -267,16 +293,7 @@ export const Empty: Story = {
     areaId: 298470,
     mood: "failed",
   },
-  render: (args) => (
-    <DatasetNoMapPage
-      areaId={args.areaId}
-      backLabel={`Back to ${args.areaName}`}
-      title={`${args.templateName} in ${args.areaName}`}
-      lead="No data yet."
-      description="The features may not exist in OpenStreetMap, or nobody has mapped them."
-      action={<NotifyWhenReadyButton offer="mapped" />}
-    />
-  ),
+  render: (args) => <EmptyPage {...args} />,
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole("heading", { name: "Hospitals in Osasco" })

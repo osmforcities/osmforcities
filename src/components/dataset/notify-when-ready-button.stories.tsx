@@ -12,15 +12,15 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Idle: Story = {
-  args: { onSubscribe: fn() },
+  args: { onSave: fn() },
 };
 
 /** One press, no undo — and the confirmation never shows the address. */
-export const Subscribing: Story = {
-  args: { onSubscribe: fn() },
+export const Saving: Story = {
+  args: { onSave: fn() },
   play: async ({ canvas, userEvent, args }) => {
     await userEvent.click(canvas.getByRole("button"));
-    await expect(args.onSubscribe).toHaveBeenCalled();
+    await expect(args.onSave).toHaveBeenCalled();
     await expect(
       await canvas.findByText("Saved. You'll get an email when the map is ready")
     ).toBeInTheDocument();
@@ -29,8 +29,8 @@ export const Subscribing: Story = {
 };
 
 /** Asked for on an earlier visit, so the page opens already confirmed. */
-export const AlreadySubscribed: Story = {
-  args: { subscribed: true },
+export const AlreadySaved: Story = {
+  args: { saved: true },
   play: async ({ canvas }) => {
     await expect(canvas.getByRole("status")).toHaveTextContent(
       "Saved. You'll get an email when the map is ready"
@@ -38,9 +38,9 @@ export const AlreadySubscribed: Story = {
   },
 };
 
-/** A too-large dataset may never build, so the offer says "if". */
+/** A too-large dataset may never bake, so the offer says "if". */
 export const IfAvailable: Story = {
-  args: { offer: "available", onSubscribe: fn() },
+  args: { offer: "available", onSave: fn() },
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole("button", {
@@ -52,7 +52,7 @@ export const IfAvailable: Story = {
 
 /** An empty dataset may stay empty forever, so this offer says "if" too. */
 export const IfMapped: Story = {
-  args: { offer: "mapped", onSubscribe: fn() },
+  args: { offer: "mapped", onSave: fn() },
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole("button", { name: "Save and email me if it gets mapped" })
@@ -61,9 +61,9 @@ export const IfMapped: Story = {
 };
 
 /** A failed request leaves the button pressable rather than stranding it. */
-export const SubscribeFails: Story = {
+export const SaveFails: Story = {
   args: {
-    onSubscribe: fn(() => {
+    onSave: fn(() => {
       throw new Error("no backend yet");
     }),
   },
