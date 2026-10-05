@@ -9,6 +9,8 @@ import {
 } from "@/lib/dataset-snapshot";
 import { submitTilesForDataset } from "@/lib/tiler/submit";
 import { pollPendingTileJobs } from "@/lib/tiler/poll";
+import { pingTiler, tilerEnabled } from "@/lib/tiler/client";
+import { dueForRefreshWhere } from "@/lib/dataset-retry";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import {
@@ -19,6 +21,8 @@ import {
 // Uncataloged cache rows survive this long after creation so a visitor has time
 // to save; deleted rows are recreated on the next visit (#482).
 const CLEANUP_GRACE_DAYS = 30;
+
+type FailureKind = "claim" | "snapshot" | "too_large" | "submit";
 
 // Deactivated rows never serve their geojson again — drop the payload. A sweep
 // (rather than nulling at deactivation time) also heals rows deactivated
@@ -83,16 +87,22 @@ export async function POST(req: NextRequest) {
   try {
     const limit = parseInt(process.env.DATASET_UPDATE_LIMIT ?? "1");
 
-    // Find datasets that need updating (last attempted more than 1 day ago or never attempted).
+    // A tiler outage must not count against every dataset: skip the whole
+    // refresh (a snapshot without its bake would still spend the row's wait)
+    // and let the reconcile below keep trying the bakes already pending.
+    const tilerUnreachable = tilerEnabled() && !(await pingTiler());
+    if (tilerUnreachable) {
+      console.warn("Tiler unreachable, skipping dataset refresh this tick");
+    }
+
     // Scheduling is driven by lastAttempted (advanced on every attempt), not lastChecked
     // (advanced only on success) — otherwise a dataset that keeps failing keeps its old
-    // lastChecked, stays most-stale, and is re-selected every run, starving all others (#431).
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-
-    const datasetsToUpdate = await prisma.dataset.findMany({
+    // lastChecked, stays most-stale, and is re-selected every run, starving all others.
+    // The wait since lastAttempted grows with consecutive failures (dataset-retry).
+    const datasetsToUpdate = tilerUnreachable ? [] : await prisma.dataset.findMany({
       where: {
         isActive: true,
-        OR: [{ lastAttempted: null }, { lastAttempted: { lt: oneDayAgo } }],
+        ...dueForRefreshWhere(new Date()),
         // Only cataloged datasets (featured or saved) are worth refreshing —
         // uncataloged cache rows serve nobody and were ~91% of Overpass load (#482).
         ...CATALOG_FILTER,
@@ -112,7 +122,11 @@ export async function POST(req: NextRequest) {
       totalFound: datasetsToUpdate.length,
       successful: 0,
       failed: 0,
-      errors: [] as string[],
+      errors: [] as { datasetId: string; kind: FailureKind; error: string }[],
+    };
+    const fail = (datasetId: string, kind: FailureKind, error: string) => {
+      results.failed++;
+      results.errors.push({ datasetId, kind, error });
     };
 
     // Tracking runs inline (not after(), whose callbacks were dropped) but is
@@ -156,8 +170,7 @@ export async function POST(req: NextRequest) {
     for (const dataset of datasetsToUpdate) {
       // Count a failed claim so results always reconcile (successful + failed === totalFound).
       if (!(await claimAttempt(dataset.id))) {
-        results.failed++;
-        results.errors.push(`Dataset ${dataset.id}: failed to claim, skipped this run`);
+        fail(dataset.id, "claim", "failed to claim, skipped this run");
         continue;
       }
 
@@ -174,12 +187,20 @@ export async function POST(req: NextRequest) {
           data: {
             ...snapshotDatasetColumns(snapshot),
             updatedAt: new Date(),
-            consecutiveFailures: 0,
+            // With the tiler on, only a finished bake resets the counter (in
+            // reconcile), so a bake failing every day still climbs the ladder.
+            ...(tilerEnabled() ? {} : { consecutiveFailures: 0 }),
             lastError: null,
           },
         });
 
-        await submitTilesForDataset(dataset.id);
+        const tiles = await submitTilesForDataset(dataset.id);
+        if (tiles.tilesState === "failed") {
+          const message = tiles.tilesError ?? "tiler submit failed";
+          await recordFailure(dataset.id, message);
+          fail(dataset.id, "submit", message);
+          continue;
+        }
 
         analyticsEvents.push(
           trackEvent(
@@ -195,8 +216,7 @@ export async function POST(req: NextRequest) {
             `Dataset ${dataset.id} deactivated (grew past size cap): ${error.message}`
           );
           await recordFailure(dataset.id, error.message, { isActive: false });
-          results.failed++;
-          results.errors.push(`Dataset ${dataset.id}: ${error.message}`);
+          fail(dataset.id, "too_large", error.message);
           continue;
         }
         if (error instanceof DatasetSizeCheckTimeoutError) {
@@ -204,8 +224,7 @@ export async function POST(req: NextRequest) {
             `Dataset ${dataset.id} skipped (size check timed out), will retry next run`
           );
           await recordFailure(dataset.id, error.message);
-          results.failed++;
-          results.errors.push(`Dataset ${dataset.id}: ${error.message}`);
+          fail(dataset.id, "snapshot", error.message);
           continue;
         }
         const errorMessage =
@@ -215,8 +234,7 @@ export async function POST(req: NextRequest) {
           errorMessage
         );
         await recordFailure(dataset.id, errorMessage);
-        results.failed++;
-        results.errors.push(`Dataset ${dataset.id}: ${errorMessage}`);
+        fail(dataset.id, "snapshot", errorMessage);
       }
     }
 
@@ -233,6 +251,7 @@ export async function POST(req: NextRequest) {
       data: {
         task: "update-datasets",
         limit,
+        tilerUnreachable,
         ...results,
         tiles,
         cleanup: { deleted, geojsonCleared },
