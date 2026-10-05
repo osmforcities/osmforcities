@@ -50,5 +50,6 @@ How code in this repo should be written. Reviewers (human and agent) check chang
 ## Commits and PRs
 
 - Conventional commits (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`). Short, factual, no emojis.
+- Issue-closing keywords (`Closes #N`) go in the PR body, never in commit messages.
 - PRs target `develop`. `main` is release-only and deploys to production.
 - No changesets: `CHANGELOG.md` is written by hand at release time.
