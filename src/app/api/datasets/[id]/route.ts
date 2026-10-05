@@ -12,19 +12,14 @@ export async function GET(
       where: {
         id: id,
       },
+      // Public, unauthenticated read: never ship the owner record
+      omit: { userId: true },
       include: {
         template: {
           include: {
             category: {
               select: { id: true, name: true, slug: true },
             },
-          },
-        },
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
           },
         },
         area: {
