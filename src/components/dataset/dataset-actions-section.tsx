@@ -40,7 +40,7 @@ export function DatasetActionsSection({
   const [saveCount, setSaveCount] = useState(savedCount);
   const [isRefreshing, setIsRefreshing] = useState(false);
   // A pending bake keeps Sync disabled until the next page load (no polling).
-  const [isUpdating, setIsUpdating] = useState(dataset.tilesState === "pending");
+  const [isRebuildPending, setIsRebuildPending] = useState(dataset.tilesState === "pending");
   const [isFeatured, setIsFeatured] = useState(dataset.isFeatured ?? false);
   const [isFeaturingLoading, setIsFeaturingLoading] = useState(false);
   const [hasFeatureError, setHasFeatureError] = useState(false);
@@ -144,8 +144,8 @@ export function DatasetActionsSection({
       if (result.success) {
         const outcome = refreshOutcome(result);
         if (outcome.queued) {
-          setIsUpdating(true);
-          setStatusMessage(t("updateQueued"));
+          setIsRebuildPending(true);
+          setStatusMessage(t("rebuildQueued"));
         } else {
           onRefreshed?.(outcome.lastChecked);
           setStatusMessage(t("datasetSynced"));
@@ -248,7 +248,7 @@ export function DatasetActionsSection({
             {dataset.canRefresh && (
               <Button
                 onClick={handleRefresh}
-                disabled={!dataset.isActive || isRefreshing || isUpdating}
+                disabled={!dataset.isActive || isRefreshing || isRebuildPending}
                 aria-busy={isRefreshing}
                 className="h-8 flex-1 text-xs"
                 variant="outline"
@@ -263,8 +263,8 @@ export function DatasetActionsSection({
                 />
                 {isRefreshing
                   ? t("refreshing")
-                  : isUpdating
-                    ? t("updating")
+                  : isRebuildPending
+                    ? t("rebuildPending")
                     : t("refreshData")}
               </Button>
             )}
