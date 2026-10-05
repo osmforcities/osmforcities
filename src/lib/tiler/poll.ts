@@ -114,6 +114,8 @@ export async function reconcileDataset(
       won = await commitOutcome(dataset, {
         ...statsColumns,
         tilesState: "done",
+        // Blue/green swap: the previous archive served through the whole bake
+        tilesServedJobId: dataset.tilesJobId,
         tilesUpdatedAt: new Date(),
         tilesError: null,
         // A finished bake, not the snapshot before it, resets the retry ladder.
