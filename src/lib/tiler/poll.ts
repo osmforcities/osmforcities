@@ -11,7 +11,7 @@ import {
 import { readPulledStats, tilerStatsToDatasetColumns } from "./stats";
 import { isTooLarge } from "@/lib/dataset-retry";
 
-export type TileFailureKind = "job" | "too_large" | "pull";
+export type TileFailureKind = "bake" | "too_large" | "reconcile";
 
 export type TilePollResults = {
   checked: number;
@@ -189,17 +189,18 @@ export async function pollPendingTileJobs(): Promise<TilePollResults> {
         results.failed++;
         results.errors.push({
           datasetId: dataset.id,
-          kind: isTooLarge(error ?? null) ? "too_large" : "job",
-          error: error ?? "tiler job failed",
+          kind: isTooLarge(error ?? null) ? "too_large" : "bake",
+          error: error ?? "bake failed",
         });
       } else results.stillPending++;
     } catch (error) {
-      // Lookup or download hiccup: transient, so the counter is not charged.
+      // Lookup or archive download hiccup: transient, so the counter is not
+      // charged.
       console.error(`Tile job poll failed for dataset ${dataset.id}:`, error);
       results.stillPending++;
       results.errors.push({
         datasetId: dataset.id,
-        kind: "pull",
+        kind: "reconcile",
         error: error instanceof Error ? error.message : String(error),
       });
     }

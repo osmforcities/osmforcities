@@ -245,7 +245,7 @@ describe("pollPendingTileJobs", () => {
       consecutiveFailures: { increment: 1 },
     });
     expect(results.errors).toEqual([
-      { datasetId: "ds-1", kind: "job", error: "job expired before pull" },
+      { datasetId: "ds-1", kind: "bake", error: "job expired before pull" },
     ]);
   });
 
@@ -268,7 +268,7 @@ describe("pollPendingTileJobs", () => {
       completed: 0,
       failed: 0,
       stillPending: 1,
-      errors: [{ datasetId: "ds-1", kind: "pull", error: "ECONNREFUSED" }],
+      errors: [{ datasetId: "ds-1", kind: "reconcile", error: "ECONNREFUSED" }],
     });
     // Transient: the counter is not charged.
     expect(prisma.dataset.updateMany).not.toHaveBeenCalled();

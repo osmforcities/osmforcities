@@ -9,6 +9,7 @@ vi.mock("@/lib/tiler/client", () => ({ tilerDownForMs: vi.fn() }));
 import { tilerDownForMs } from "@/lib/tiler/client";
 
 import { GET } from "../route";
+import { CATALOG_FILTER } from "@/lib/dataset-catalog-filter";
 
 const hoursAgo = (h: number) => new Date(Date.now() - h * 60 * 60 * 1000);
 
@@ -41,6 +42,9 @@ describe("GET /api/health", () => {
       consecutiveFailures: { gt: 3 },
     });
     expect(JSON.stringify(where)).toContain("too_large:");
+    // Only rows the task still refreshes: an unsaved row keeps its count until
+    // cleanup and would hold health down for nothing.
+    expect(where).toMatchObject(CATALOG_FILTER);
 
     freshFleet();
     vi.mocked(prisma.dataset.count).mockResolvedValueOnce(5);

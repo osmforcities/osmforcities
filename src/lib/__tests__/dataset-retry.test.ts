@@ -51,8 +51,19 @@ describe("dueForRefreshWhere", () => {
     const rung = dueForRefreshWhere(now).OR.find(
       (c) => "consecutiveFailures" in c && c.consecutiveFailures === 1
     );
-    expect(rung).toMatchObject({
-      OR: expect.arrayContaining([{ tilesError: null }]),
-    });
+    expect(JSON.stringify(rung)).toContain('{"tilesError":null}');
+  });
+
+  it("never retries on a short rung while the last bake is still pending", () => {
+    // A metro bake can outlast the 15 min rung; resubmitting would orphan it.
+    const rungs = dueForRefreshWhere(now).OR.filter(
+      (c) => "consecutiveFailures" in c && typeof c.consecutiveFailures === "number"
+    );
+    expect(rungs).toHaveLength(3);
+    for (const rung of rungs) {
+      expect(JSON.stringify(rung)).toContain(
+        '{"OR":[{"tilesState":null},{"NOT":{"tilesState":"pending"}}]}'
+      );
+    }
   });
 });

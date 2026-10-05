@@ -7,6 +7,7 @@ import {
   TILER_DOWN_ALERT_MS,
 } from "@/lib/dataset-health";
 import { NOT_TOO_LARGE } from "@/lib/dataset-retry";
+import { CATALOG_FILTER } from "@/lib/dataset-catalog-filter";
 import { tilerDownForMs } from "@/lib/tiler/client";
 
 export async function GET() {
@@ -38,12 +39,14 @@ export async function GET() {
     }
 
     // Too-large rows retry weekly by design; counting them would hold health
-    // down for as long as the area stays over the ceiling.
+    // down for as long as the area stays over the ceiling. Uncataloged rows
+    // are never refreshed, so their counts never recover.
     const stuckCount = await prisma.dataset.count({
       where: {
         isActive: true,
         consecutiveFailures: { gt: STUCK_FAILURE_THRESHOLD },
         ...NOT_TOO_LARGE,
+        ...CATALOG_FILTER,
       },
     });
 

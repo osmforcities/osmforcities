@@ -90,7 +90,8 @@ export async function POST(req: NextRequest) {
     // A tiler outage must not count against every dataset: skip the whole
     // refresh (a snapshot without its bake would still spend the row's wait)
     // and let the reconcile below keep trying the bakes already pending.
-    const tilerUnreachable = tilerEnabled() && !(await pingTiler());
+    const tilerOn = tilerEnabled();
+    const tilerUnreachable = tilerOn && !(await pingTiler());
     if (tilerUnreachable) {
       console.warn("Tiler unreachable, skipping dataset refresh this tick");
     }
@@ -189,7 +190,7 @@ export async function POST(req: NextRequest) {
             updatedAt: new Date(),
             // With the tiler on, only a finished bake resets the counter (in
             // reconcile), so a bake failing every day still climbs the ladder.
-            ...(tilerEnabled() ? {} : { consecutiveFailures: 0 }),
+            ...(tilerOn ? {} : { consecutiveFailures: 0 }),
             lastError: null,
           },
         });

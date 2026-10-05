@@ -34,6 +34,12 @@ export const NOT_TOO_LARGE = {
   ],
 };
 
+// A metro bake can outlast the short rungs; resubmitting mid-bake swaps
+// tilesJobId and the running bake's result is discarded on arrival.
+const NOT_BAKING = {
+  OR: [{ tilesState: null }, { NOT: { tilesState: "pending" } }],
+};
+
 /**
  * Prisma filter for rows whose wait (retryWaitMs) has elapsed since
  * lastAttempted. One clause per rung, since the wait is per row.
@@ -44,7 +50,7 @@ export function dueForRefreshWhere(now: Date) {
     OR: [
       { lastAttempted: null },
       ...LADDER_MS.map((ms, i) => ({
-        ...NOT_TOO_LARGE,
+        AND: [NOT_TOO_LARGE, NOT_BAKING],
         consecutiveFailures: i + 1,
         lastAttempted: before(ms),
       })),
