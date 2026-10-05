@@ -13,7 +13,7 @@ import {
   Star,
 } from "lucide-react";
 import type { Dataset } from "@/schemas/dataset";
-import { hasDownloadableGeojson } from "@/lib/dataset-tiles";
+import { hasDownloadableGeojson, refreshOutcome } from "@/lib/dataset-tiles";
 import { useDatasetDownload } from "@/hooks/useDatasetDownload";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
 import { useEffect, useRef, useState } from "react";
@@ -39,6 +39,8 @@ export function DatasetActionsSection({
   const [isSaved, setIsSaved] = useState(dataset.isSaved || false);
   const [saveCount, setSaveCount] = useState(savedCount);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  // A pending bake keeps Sync disabled until the next page load (no polling).
+  const [isUpdating, setIsUpdating] = useState(dataset.tilesState === "pending");
   const [isFeatured, setIsFeatured] = useState(dataset.isFeatured ?? false);
   const [isFeaturingLoading, setIsFeaturingLoading] = useState(false);
   const [hasFeatureError, setHasFeatureError] = useState(false);
@@ -140,8 +142,14 @@ export function DatasetActionsSection({
     try {
       const result = await refreshDataset(dataset.id);
       if (result.success) {
-        onRefreshed?.(result.lastChecked ?? new Date());
-        setStatusMessage(t("datasetSynced"));
+        const outcome = refreshOutcome(result);
+        if (outcome.queued) {
+          setIsUpdating(true);
+          setStatusMessage(t("updateQueued"));
+        } else {
+          onRefreshed?.(outcome.lastChecked);
+          setStatusMessage(t("datasetSynced"));
+        }
       } else {
         console.error("Failed to refresh dataset:", result.error);
         setStatusMessage("");
@@ -240,7 +248,7 @@ export function DatasetActionsSection({
             {dataset.canRefresh && (
               <Button
                 onClick={handleRefresh}
-                disabled={!dataset.isActive || isRefreshing}
+                disabled={!dataset.isActive || isRefreshing || isUpdating}
                 aria-busy={isRefreshing}
                 className="h-8 flex-1 text-xs"
                 variant="outline"
@@ -253,7 +261,11 @@ export function DatasetActionsSection({
                 <RefreshCw
                   className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin motion-reduce:animate-none" : ""}`}
                 />
-                {isRefreshing ? t("refreshing") : t("refreshData")}
+                {isRefreshing
+                  ? t("refreshing")
+                  : isUpdating
+                    ? t("updating")
+                    : t("refreshData")}
               </Button>
             )}
             {dataset.canFeature && (
