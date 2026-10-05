@@ -206,7 +206,7 @@ export const NotifyConfirmed: Story = {
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole("status")
-    ).toHaveTextContent("Saved. You'll get an email when the map is ready");
+    ).toHaveTextContent("Saved. You'll get an email when the map is ready.");
     await expect(
       canvas.queryByRole("button", { name: /email me/i })
     ).not.toBeInTheDocument();

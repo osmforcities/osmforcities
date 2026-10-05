@@ -22,7 +22,7 @@ export const Saving: Story = {
     await userEvent.click(canvas.getByRole("button"));
     await expect(args.onSave).toHaveBeenCalled();
     await expect(
-      await canvas.findByText("Saved. You'll get an email when the map is ready")
+      await canvas.findByText("Saved. You'll get an email when the map is ready.")
     ).toBeInTheDocument();
     await expect(canvas.queryByRole("button")).not.toBeInTheDocument();
   },
@@ -33,7 +33,7 @@ export const AlreadySaved: Story = {
   args: { saved: true },
   play: async ({ canvas }) => {
     await expect(canvas.getByRole("status")).toHaveTextContent(
-      "Saved. You'll get an email when the map is ready"
+      "Saved. You'll get an email when the map is ready."
     );
   },
 };
