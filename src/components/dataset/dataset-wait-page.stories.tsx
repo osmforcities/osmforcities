@@ -181,7 +181,7 @@ export const BakingTiles: Story = {
   }),
   play: async ({ canvas }) => {
     await expect(
-      await canvas.findByText("Building map tiles (62%)")
+      await canvas.findByText("Baking map tiles (62%)")
     ).toBeInTheDocument();
     await expect(canvas.getByText("Step 5 of 5")).toBeInTheDocument();
     // The bar starts indeterminate and gains its value on the first poll, so
@@ -227,7 +227,7 @@ export const FailedNotReady: Story = {
     await expect(
       canvas.getByRole("heading", { name: "Buildings in Osasco" })
     ).toBeInTheDocument();
-    await expect(canvas.getByText("Build failed.")).toBeInTheDocument();
+    await expect(canvas.getByText("Bake failed.")).toBeInTheDocument();
     await expect(
       canvas.getByText(/next scheduled update will try again/)
     ).toBeInTheDocument();
@@ -267,7 +267,7 @@ export const FailedTooLarge: Story = {
     await expect(
       canvas.getByRole("heading", { name: "Buildings in Tokyo" })
     ).toBeInTheDocument();
-    await expect(canvas.getByText("Too large to build.")).toBeInTheDocument();
+    await expect(canvas.getByText("Too large to bake.")).toBeInTheDocument();
     await expect(
       canvas.getByText(/exceeds the current server capacity/)
     ).toBeInTheDocument();

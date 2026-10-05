@@ -25,7 +25,7 @@ type DatasetNoMapPageProps = {
   /** The subject only, "{dataset} in {area}". It never changes while the page waits. */
   title: string;
   /** The state that opens the body, tinted by tone, with its own full stop:
-   *  "Build failed.", "No data yet.". The waiting screens leave it out; their
+   *  "Bake failed.", "No data yet.". The waiting screens leave it out; their
    *  progress block already says it. */
   lead?: string;
   /** The progress block (stage, bar, step), between the title and the body. */

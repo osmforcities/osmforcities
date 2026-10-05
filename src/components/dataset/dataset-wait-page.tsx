@@ -119,7 +119,7 @@ export function DatasetWaitPage({
         backLabel={t("backToAreaLabel", { area: areaName })}
         tone={waiting ? "processing" : "warning"}
         title={t("datasetInArea", { dataset: templateName, area: areaName })}
-        lead={waiting ? undefined : t("stateBuildFailed")}
+        lead={waiting ? undefined : t("stateBakeFailed")}
         // The stage label and step say everything a waiting person needs;
         // a sentence under them only repeated it.
         progress={

@@ -20,7 +20,7 @@ type Story = StoryObj<typeof meta>;
 
 /** Work that reports a percentage. */
 export const Determinate: Story = {
-  args: { value: 62, label: "Building map tiles" },
+  args: { value: 62, label: "Baking map tiles" },
   play: async ({ canvas }) => {
     await expect(canvas.getByRole("progressbar")).toHaveAttribute(
       "aria-valuenow",
@@ -31,11 +31,11 @@ export const Determinate: Story = {
 
 /** At zero a sliver still shows, so the bar reads as started rather than broken. */
 export const JustStarted: Story = {
-  args: { value: 0, label: "Building map tiles" },
+  args: { value: 0, label: "Baking map tiles" },
 };
 
 export const Complete: Story = {
-  args: { value: 100, label: "Building map tiles" },
+  args: { value: 100, label: "Baking map tiles" },
 };
 
 /** No percentage to report — the fill sweeps back and forth instead. */
@@ -50,7 +50,7 @@ export const Indeterminate: Story = {
 
 /** Out-of-range input is clamped rather than overflowing the track. */
 export const OutOfRange: Story = {
-  args: { value: 140, label: "Building map tiles" },
+  args: { value: 140, label: "Baking map tiles" },
   play: async ({ canvas }) => {
     await expect(canvas.getByRole("progressbar")).toHaveAttribute(
       "aria-valuenow",

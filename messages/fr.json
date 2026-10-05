@@ -135,7 +135,7 @@
     "tilesStageCounting": "Calcul de la taille",
     "stepLine": "Étape {step} sur {total}",
     "datasetInArea": "{dataset} à {area}",
-    "stateBuildFailed": "Échec de la génération.",
+    "stateBakeFailed": "Échec de la génération.",
     "stateTooLarge": "Trop volumineux pour être généré.",
     "stateNoData": "Pas encore de données.",
     "tilesFailedTitle": "Échec du traitement de la carte",

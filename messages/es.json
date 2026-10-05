@@ -135,7 +135,7 @@
     "tilesStageCounting": "Calculando el tamaño",
     "stepLine": "Paso {step} de {total}",
     "datasetInArea": "{dataset} en {area}",
-    "stateBuildFailed": "Error al generar.",
+    "stateBakeFailed": "Error al generar.",
     "stateTooLarge": "Demasiado grande para generar.",
     "stateNoData": "Aún sin datos.",
     "tilesFailedTitle": "Falló el procesamiento del mapa",
