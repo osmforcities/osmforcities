@@ -19,6 +19,7 @@ export function FinalCTA() {
           <p className="text-base md:text-lg text-gray-600 dark:text-gray-400">
             {t("signup.description")}
           </p>
+          <p className="mt-2 text-sm">Free forever, no credit card needed.</p>
         </div>
         <div className="mx-auto mt-6 max-w-sm w-full md:mt-8">
           <div className="flex justify-center">
