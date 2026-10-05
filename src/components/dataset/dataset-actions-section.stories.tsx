@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect } from "storybook/test";
+import { expect, fn, waitFor } from "storybook/test";
 import type { Dataset } from "@/schemas/dataset";
 import { DatasetActionsSection } from "./dataset-actions-section";
 
@@ -47,6 +47,32 @@ export const SyncEnabled: Story = {
   args: { dataset },
   play: async ({ canvas }) => {
     await expect(canvas.getByRole("button", { name: /Sync/ })).toBeEnabled();
+  },
+};
+
+export const SyncQueuesRebuild: Story = {
+  args: { dataset, onRefreshed: fn() },
+  beforeEach: () => {
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = async () =>
+      Response.json({
+        success: true,
+        lastChecked: "2026-10-05T12:00:00Z",
+        tilesState: "pending",
+      });
+    return () => {
+      globalThis.fetch = realFetch;
+    };
+  },
+  play: async ({ canvas, args, userEvent }) => {
+    await userEvent.click(canvas.getByRole("button", { name: /Sync/ }));
+    await waitFor(() =>
+      expect(canvas.getByText("Update queued")).toBeInTheDocument()
+    );
+    await expect(
+      canvas.getByRole("button", { name: /Updating/ })
+    ).toBeDisabled();
+    await expect(args.onRefreshed).not.toHaveBeenCalled();
   },
 };
 
