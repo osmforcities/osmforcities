@@ -2,8 +2,8 @@
 #
 # Vendored/adapted from developmentseed/.github's reusable claude-pr-review
 # workflow so osmforcities stays self-contained. Posts ONE sticky comment per
-# PR (updated in place on each push) with correctness/security findings plus a
-# ponytail over-engineering pass.
+# PR (updated in place on each push) with correctness/security findings, a
+# CODING_STANDARDS.md pass, and a ponytail over-engineering pass.
 #
 # Requires the CLAUDE_CODE_OAUTH_TOKEN repo secret (create with
 # `claude setup-token`; billed to the Claude subscription, not the API).
@@ -88,6 +88,11 @@ jobs:
             Review this pull request's diff for correctness bugs, security
             issues, and clear best-practice problems. Skip nits and anything
             a linter or formatter already enforces.
+            Then read CODING_STANDARDS.md at the repo root and check the
+            lines this diff adds or changes against it. Open the glossary or
+            ADRs it links only when the diff touches naming or a recorded
+            decision. Each violation is a blocking finding that names the
+            rule as `CODING_STANDARDS.md § <section>` and quotes it.
             Also apply the ponytail-review skill (from the ponytail plugin) to
             the same diff, hunting over-engineering: reinvented standard
             library, unneeded dependencies, speculative abstractions, dead
@@ -114,8 +119,9 @@ jobs:
           # the action's allowlist, so CI already blocks them without an
           # explicit deny (non-allowlisted tools can't be interactively
           # approved). The guard step below catches any stub regardless.
+          # Read/Glob/Grep are read-only and let it consult CODING_STANDARDS.md.
           claude_args: |
-            --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*)"
+            --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Read,Glob,Grep"
 
       # The action has no built-in cost display, but its execution log's
       # final result record carries the run metrics — append them to the
