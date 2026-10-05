@@ -5,7 +5,7 @@ import { NotifyWhenReadyButton } from "./notify-when-ready-button";
 const meta = {
   title: "Dataset/NotifyWhenReadyButton",
   component: NotifyWhenReadyButton,
-  parameters: { layout: "centered" },
+  parameters: { layout: "centered", a11y: { test: "error" } },
 } satisfies Meta<typeof NotifyWhenReadyButton>;
 
 export default meta;

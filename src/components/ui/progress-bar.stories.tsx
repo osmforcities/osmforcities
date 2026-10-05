@@ -5,7 +5,7 @@ import { ProgressBar } from "./progress-bar";
 const meta = {
   title: "UI/ProgressBar",
   component: ProgressBar,
-  parameters: { layout: "centered" },
+  parameters: { layout: "centered", a11y: { test: "error" } },
   decorators: [
     (Story) => (
       <div className="w-80">

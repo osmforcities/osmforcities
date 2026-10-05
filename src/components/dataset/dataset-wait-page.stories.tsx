@@ -27,7 +27,7 @@ function serveTilesStatus(status: Record<string, unknown>) {
 const meta = {
   title: "Pages/DatasetWaitPage",
   component: DatasetWaitPage,
-  parameters: { layout: "fullscreen" },
+  parameters: { layout: "fullscreen", a11y: { test: "error" } },
   decorators: [withAppFrame],
 } satisfies Meta<typeof DatasetWaitPage>;
 
