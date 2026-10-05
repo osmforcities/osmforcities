@@ -1,10 +1,10 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { MapPinOff, ExternalLink } from "lucide-react";
 import { Link } from "@/components/ui/link";
-import { Link as NavLink } from "@/i18n/navigation";
-import { EmptyState } from "@/components/ui/empty-state";
+import { PageShell } from "@/components/ui/page-shell";
+import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 
 export function TemplateNotFoundError({
   templateId,
@@ -15,7 +15,7 @@ export function TemplateNotFoundError({
 }) {
   const t = useTranslations("DatasetErrors");
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <PageShell placement="center">
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 max-w-md w-full mx-4 text-center">
         <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg
@@ -64,14 +64,14 @@ export function TemplateNotFoundError({
           </Link>
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }
 
 export function AreaNotFoundError({ areaId }: { areaId: string }) {
   const t = useTranslations("DatasetErrors");
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <PageShell placement="center">
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 max-w-md w-full mx-4 text-center">
         <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg
@@ -113,7 +113,7 @@ export function AreaNotFoundError({ areaId }: { areaId: string }) {
           </Link>
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }
 
@@ -138,7 +138,7 @@ export function DatasetCreationError({
       error.toLowerCase().includes("memory"));
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center" data-testid="dataset-creation-error">
+    <PageShell placement="center" data-testid="dataset-creation-error">
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 max-w-lg w-full mx-4 text-center">
         <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg
@@ -220,7 +220,7 @@ export function DatasetCreationError({
           </div>
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }
 
@@ -228,64 +228,28 @@ export function DatasetTooLargeState({
   templateName,
   areaName,
   areaId,
-  overpassQuery,
+  notify,
 }: {
   templateName: string;
   areaName: string;
   areaId: number;
-  overpassQuery: string | null;
+  /** The save-and-email button, worded "if it becomes available". */
+  notify?: ReactNode;
 }) {
   const t = useTranslations("DatasetPage");
-  const overpassTurboUrl = overpassQuery
-    ? `https://overpass-turbo.eu/?Q=${encodeURIComponent(overpassQuery)}`
-    : null;
 
   return (
-    <div className="bg-gray-50">
-      <div
-        className="max-w-7xl mx-auto px-4 py-8 flex flex-col"
-        style={{ minHeight: "calc(100vh - var(--nav-height))" }}
-      >
-        <EmptyState
-          type="no-data"
-          icon={<MapPinOff className="w-16 h-16 text-gray-300 mb-4" />}
-          title={t("tooLargeTitle", {
-            dataset: templateName,
-            area: areaName,
-          })}
-          description={t.rich("tooLargeDescription", {
-            link: (chunks) =>
-              overpassTurboUrl ? (
-                // Plain inline anchor: the shared Link is inline-flex, which
-                // cannot wrap mid-phrase and forces the whole link to a new line
-                <a
-                  href={overpassTurboUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-link underline hover:text-link-active transition-colors"
-                >
-                  {chunks}
-                  <ExternalLink
-                    className="inline w-3 h-3 ml-1 align-[-2px]"
-                    aria-hidden="true"
-                  />
-                </a>
-              ) : (
-                chunks
-              ),
-          })}
-        />
-
-        <div className="text-center">
-          <NavLink
-            href={`/area/${areaId}`}
-            className="text-sm text-link hover:text-link-active hover:underline transition-colors"
-          >
-            {t("backToArea", { area: areaName })}
-          </NavLink>
-        </div>
-      </div>
-    </div>
+    <DatasetNoMapPage
+      areaId={areaId}
+      backLabel={t("backToAreaLabel", { area: areaName })}
+      tone="error"
+      // The lead carries the reason and the paragraph the way out. A refusal
+      // is retried only weekly, so the offer below says "if", not "when".
+      title={t("datasetInArea", { dataset: templateName, area: areaName })}
+      lead={t("stateTooLarge")}
+      description={t("tooLargeDescription")}
+      action={notify}
+    />
   );
 }
 
@@ -298,7 +262,7 @@ export function DatasetErrorBoundary({
 }) {
   const t = useTranslations("DatasetErrors");
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <PageShell placement="center">
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 max-w-md w-full mx-4 text-center">
         <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg
@@ -348,6 +312,6 @@ export function DatasetErrorBoundary({
           </details>
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }
