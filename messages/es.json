@@ -214,6 +214,7 @@
     "checkYourEmail": "Revisa tu email",
     "sentLinkTo": "Enviamos un enlace a {email}",
     "tryDifferentEmail": "Probar email diferente",
+    "tooManyRequests": "Demasiadas solicitudes de inicio de sesión para este email. Inténtalo de nuevo más tarde.",
     "emailPlaceholder": "Email",
     "sending": "Enviando...",
     "continue": "Continuar",
