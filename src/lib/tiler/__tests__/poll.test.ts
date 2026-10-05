@@ -109,11 +109,14 @@ describe("pollPendingTileJobs", () => {
       completed: 1,
       failed: 0,
       stillPending: 0,
+      errors: [],
     });
     expect(downloadTileOutputs).toHaveBeenCalledWith("ds-1-100");
+    // A finished bake is the success that resets the retry ladder.
     expect(updateData(0)).toMatchObject({
       tilesState: "done",
       tilesError: null,
+      consecutiveFailures: 0,
     });
     expect(updateData(0).tilesUpdatedAt).toBeInstanceOf(Date);
     // The served pointer moves only on a winning done
@@ -217,9 +220,17 @@ describe("pollPendingTileJobs", () => {
     const results = await pollPendingTileJobs();
 
     expect(results.failed).toBe(1);
+    expect(results.errors).toEqual([
+      {
+        datasetId: "ds-1",
+        kind: "too_large",
+        error: "too_large: runtime error: out of memory",
+      },
+    ]);
     expect(updateData(0)).toEqual({
       tilesState: "failed",
       tilesError: "too_large: runtime error: out of memory",
+      consecutiveFailures: { increment: 1 },
     });
     expect(downloadTileOutputs).not.toHaveBeenCalled();
   });
@@ -241,7 +252,11 @@ describe("pollPendingTileJobs", () => {
     expect(updateData(0)).toEqual({
       tilesState: "failed",
       tilesError: "job expired before pull",
+      consecutiveFailures: { increment: 1 },
     });
+    expect(results.errors).toEqual([
+      { datasetId: "ds-1", kind: "bake", error: "job expired before pull" },
+    ]);
   });
 
   it("leaves running jobs pending", async () => {
@@ -263,7 +278,9 @@ describe("pollPendingTileJobs", () => {
       completed: 0,
       failed: 0,
       stillPending: 1,
+      errors: [{ datasetId: "ds-1", kind: "reconcile", error: "ECONNREFUSED" }],
     });
+    // Transient: the counter is not charged.
     expect(prisma.dataset.updateMany).not.toHaveBeenCalled();
   });
 
@@ -277,6 +294,7 @@ describe("pollPendingTileJobs", () => {
       completed: 0,
       failed: 0,
       stillPending: 0,
+      errors: [],
     });
     expect(getTileJob).not.toHaveBeenCalled();
   });

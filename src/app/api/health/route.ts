@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { isFleetHealthy } from "@/lib/dataset-health";
+import {
+  isFleetHealthy,
+  MAX_STUCK_DATASETS,
+  STUCK_FAILURE_THRESHOLD,
+  TILER_DOWN_ALERT_MS,
+} from "@/lib/dataset-health";
+import { NOT_TOO_LARGE } from "@/lib/dataset-retry";
+import { CATALOG_FILTER } from "@/lib/dataset-catalog-filter";
+import { tilerDownForMs } from "@/lib/tiler/client";
 
 export async function GET() {
   try {
@@ -30,13 +38,30 @@ export async function GET() {
       reference = oldestActive?.createdAt ?? null;
     }
 
-    const isDegraded = !isFleetHealthy(reference);
+    // Too-large rows retry weekly by design; counting them would hold health
+    // down for as long as the area stays over the ceiling. Uncataloged rows
+    // are never refreshed, so their counts never recover.
+    const stuckCount = await prisma.dataset.count({
+      where: {
+        isActive: true,
+        consecutiveFailures: { gt: STUCK_FAILURE_THRESHOLD },
+        ...NOT_TOO_LARGE,
+        ...CATALOG_FILTER,
+      },
+    });
+
+    const reasons = [
+      !isFleetHealthy(reference) && "datasets not updating",
+      stuckCount > MAX_STUCK_DATASETS && "datasets failing repeatedly",
+      tilerDownForMs() > TILER_DOWN_ALERT_MS && "tiler unreachable",
+    ].filter(Boolean);
+    const isDegraded = reasons.length > 0;
 
     return NextResponse.json(
       {
         status: isDegraded ? "degraded" : "ok",
         timestamp: new Date().toISOString(),
-        ...(isDegraded && { reason: "datasets not updating" }),
+        ...(isDegraded && { reason: reasons.join("; ") }),
       },
       { status: isDegraded ? 503 : 200 }
     );
