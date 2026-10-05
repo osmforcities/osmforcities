@@ -214,6 +214,7 @@
     "checkYourEmail": "Consultez votre boîte mail",
     "sentLinkTo": "Nous avons envoyé un lien à {email}",
     "tryDifferentEmail": "Essayer une autre adresse",
+    "tooManyRequests": "Trop de demandes de connexion pour cette adresse. Réessayez plus tard.",
     "emailPlaceholder": "E-mail",
     "sending": "Envoi...",
     "continue": "Continuer",

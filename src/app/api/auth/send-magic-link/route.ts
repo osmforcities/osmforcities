@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { findUserByEmail, createUser, createVerificationToken } from "@/auth";
 import { sendEmail } from "@/lib/email";
+import { isMagicLinkRateLimited } from "@/lib/magic-link-rate-limit";
 import { getBaseUrl } from "@/lib/utils";
 import { formatEmail, createEmailLink, type Locale } from "@/lib/email-i18n";
 
@@ -12,6 +13,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Valid email is required" },
         { status: 400 }
+      );
+    }
+
+    if (await isMagicLinkRateLimited(email)) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429 }
       );
     }
 

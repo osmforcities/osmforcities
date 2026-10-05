@@ -24,6 +24,11 @@ export default function AuthForm() {
         body: JSON.stringify({ email }),
       });
 
+      if (response.status === 429) {
+        setError(t("tooManyRequests"));
+        return;
+      }
+
       const data = await response.json();
 
       if (!response.ok) {

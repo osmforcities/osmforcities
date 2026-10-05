@@ -17,6 +17,7 @@ import type { Session } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { refreshTokenClaims } from "@/lib/auth-token";
+import { MAGIC_LINK_TOKEN_TTL_MS } from "@/lib/magic-link-rate-limit";
 
 type DatabaseUser = {
   id: string;
@@ -216,7 +217,7 @@ export async function findUserByEmail(email: string) {
 
 export async function createVerificationToken(email: string) {
   const token = generateSecureToken();
-  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const expires = new Date(Date.now() + MAGIC_LINK_TOKEN_TTL_MS);
 
   return await prisma.verificationToken.create({
     data: {

@@ -214,6 +214,7 @@
     "checkYourEmail": "Prüfe dein E-Mail-Postfach",
     "sentLinkTo": "Wir haben einen Link an {email} gesendet",
     "tryDifferentEmail": "Andere E-Mail-Adresse verwenden",
+    "tooManyRequests": "Zu viele Anmeldeanfragen für diese E-Mail-Adresse. Bitte versuche es später erneut.",
     "emailPlaceholder": "E-Mail",
     "sending": "Wird gesendet...",
     "continue": "Weiter",
