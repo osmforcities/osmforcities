@@ -28,7 +28,7 @@ GitHub issues in `osmforcities/osmforcities`, blocking edges as native dependenc
 
 ### Triage labels
 
-Canonical roles, except ready-for-agent = `agent-ready`. See `docs/agents/triage-labels.md`.
+Canonical defaults (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 
