@@ -23,11 +23,11 @@ vi.mock("@/lib/email-i18n", () => ({
 
 import { POST } from "../route";
 
-const call = (email: string) =>
+const call = (email: string, remember?: unknown) =>
   POST(
     new NextRequest("http://localhost:3000/api/auth/send-magic-link", {
       method: "POST",
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, remember }),
     })
   );
 
@@ -38,7 +38,7 @@ describe("POST /api/auth/send-magic-link last-email cookie", () => {
   });
 
   it("sets a 90-day, script-readable cookie on success", async () => {
-    const res = await call("User@Example.com");
+    const res = await call("User@Example.com", true);
     expect(res.status).toBe(200);
     const cookie = res.cookies.get(LAST_EMAIL_COOKIE);
     expect(cookie?.value).toBe("user@example.com");
@@ -46,6 +46,16 @@ describe("POST /api/auth/send-magic-link last-email cookie", () => {
     expect(cookie?.httpOnly).toBeFalsy();
     expect(cookie?.sameSite).toBe("lax");
     expect(cookie?.path).toBe("/");
+  });
+
+  it("clears the cookie on success when remember is not opted in", async () => {
+    for (const remember of [false, undefined, "true"]) {
+      const res = await call("user@example.com", remember);
+      expect(res.status).toBe(200);
+      const cookie = res.cookies.get(LAST_EMAIL_COOKIE);
+      expect(cookie?.value).toBe("");
+      expect(new Date(cookie?.expires ?? NaN).getTime()).toBe(0);
+    }
   });
 
   it("does not set the cookie for an invalid email", async () => {

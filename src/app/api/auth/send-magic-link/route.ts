@@ -9,7 +9,10 @@ import { EmailSchema } from "@/schemas/auth";
 
 export async function POST(request: NextRequest) {
   try {
-    const parsed = EmailSchema.safeParse((await request.json()).email);
+    const body = await request.json();
+    const parsed = EmailSchema.safeParse(body.email);
+    // Opt-in only: a persistent convenience cookie needs the user's consent.
+    const remember = body.remember === true;
 
     if (!parsed.success) {
       return NextResponse.json(
@@ -73,12 +76,16 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       message: "Magic link sent successfully",
     });
-    response.cookies.set(LAST_EMAIL_COOKIE, email, {
-      maxAge: LAST_EMAIL_MAX_AGE,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-    });
+    if (remember) {
+      response.cookies.set(LAST_EMAIL_COOKIE, email, {
+        maxAge: LAST_EMAIL_MAX_AGE,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+      });
+    } else {
+      response.cookies.delete(LAST_EMAIL_COOKIE);
+    }
     return response;
   } catch (error) {
     console.error("Error sending magic link:", error);
