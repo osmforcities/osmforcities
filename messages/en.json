@@ -133,11 +133,13 @@
     "tilesStageConverting": "Converting features ({pct, number}%)",
     "tilesStageBaking": "Baking map tiles ({pct, number}%)",
     "tilesStageCounting": "Calculating size",
+    "tilesStageCountingCold": "Still calculating size, large area",
     "stepLine": "Step {step} of {total}",
     "datasetInArea": "{dataset} in {area}",
     "stateBakeFailed": "Bake failed.",
     "stateTooLarge": "Too large to bake.",
     "stateNoData": "No data yet.",
+    "stateCountTimedOut": "Size check timed out.",
     "tilesFailedTitle": "Map processing failed",
     "tilesFailedTooLarge": "This dataset is too large to process right now.",
     "tilesFailedGeneric": "Something went wrong while processing the map data.",
@@ -147,6 +149,7 @@
     "notifyCtaIfMapped": "Save and email me if it gets mapped",
     "notifyConfirmed": "Saved. You'll get an email when the map is ready.",
     "tilesFailedDescription": "The next scheduled update will try again.",
+    "countTimedOutDescription": "The area may be very large or the server busy. Try again in {minutes, number} minutes.",
     "backToHome": "Back to Home",
     "emptyDescription": "They may not exist here, or nobody has mapped them in OpenStreetMap yet.",
     "tooLargeDescription": "This dataset exceeds the current server capacity, which is expected over large metropolitan areas or with very detailed geometries.",
@@ -604,10 +607,6 @@
       "contact": "Contact",
       "github": "GitHub"
     }
-  },
-  "DatasetLoading": {
-    "creatingDataset": "Creating Dataset",
-    "thisUsuallyTakesLessThan30Seconds": "This usually takes less than 30 seconds"
   },
   "Email": {
     "magicLinkSubject": "Sign in to OSM for Cities",

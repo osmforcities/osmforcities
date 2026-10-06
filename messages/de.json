@@ -133,11 +133,13 @@
     "tilesStageConverting": "Objekte werden konvertiert ({pct, number} %)",
     "tilesStageBaking": "Kartenkacheln werden erstellt ({pct, number} %)",
     "tilesStageCounting": "Größe wird berechnet",
+    "tilesStageCountingCold": "Größe wird noch berechnet, großes Gebiet",
     "stepLine": "Schritt {step} von {total}",
     "datasetInArea": "{dataset} in {area}",
     "stateBakeFailed": "Erstellung fehlgeschlagen.",
     "stateTooLarge": "Zu groß zum Erstellen.",
     "stateNoData": "Noch keine Daten.",
+    "stateCountTimedOut": "Zeitüberschreitung bei der Größenprüfung.",
     "tilesFailedTitle": "Kartenverarbeitung fehlgeschlagen",
     "tilesFailedTooLarge": "Dieser Datensatz ist derzeit zu groß für die Verarbeitung.",
     "tilesFailedGeneric": "Bei der Verarbeitung der Kartendaten ist ein Fehler aufgetreten.",
@@ -147,6 +149,7 @@
     "notifyCtaIfMapped": "Speichern und mich per E-Mail benachrichtigen, falls es kartiert wird",
     "notifyConfirmed": "Gespeichert. Du erhältst eine E-Mail, sobald die Karte fertig ist.",
     "tilesFailedDescription": "Das nächste geplante Update versucht es erneut.",
+    "countTimedOutDescription": "Das Gebiet ist vielleicht sehr groß oder der Server ausgelastet. Versuche es in {minutes, number} Minuten erneut.",
     "backToHome": "Zurück zur Startseite",
     "emptyDescription": "Vielleicht gibt es sie hier nicht, oder niemand hat sie bisher in OpenStreetMap erfasst.",
     "tooLargeDescription": "Dieser Datensatz übersteigt die aktuelle Serverkapazität, was bei großen Metropolregionen oder sehr detaillierten Geometrien zu erwarten ist.",
@@ -604,10 +607,6 @@
       "contact": "Kontakt",
       "github": "GitHub"
     }
-  },
-  "DatasetLoading": {
-    "creatingDataset": "Datensatz wird erstellt",
-    "thisUsuallyTakesLessThan30Seconds": "Das dauert meist weniger als 30 Sekunden"
   },
   "Email": {
     "magicLinkSubject": "Anmeldung bei OSM for Cities",

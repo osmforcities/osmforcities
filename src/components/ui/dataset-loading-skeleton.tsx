@@ -80,67 +80,6 @@ export function DatasetLoadingSkeleton() {
   );
 }
 
-import { useTranslations } from "next-intl";
-
-export function DatasetCreationLoader({
-  stage = "preparing",
-}: {
-  stage?: string;
-}) {
-  const t = useTranslations("DatasetLoading");
-  const stages = {
-    preparing: "Preparing dataset creation...",
-    fetching_area: "Fetching area information...",
-    querying_data: "Querying OpenStreetMap data...",
-    processing: "Processing results...",
-    saving: "Saving dataset...",
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 max-w-md w-full mx-4">
-        <div className="text-center">
-          <div className="relative w-16 h-16 mx-auto mb-6">
-            <div className="absolute inset-0 border-4 border-gray-200 rounded-full"></div>
-            <div className="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
-          </div>
-
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            {t("creatingDataset")}
-          </h3>
-          <p className="text-gray-600 mb-4">
-            {stages[stage as keyof typeof stages] || "Processing..."}
-          </p>
-
-          <p className="text-sm text-gray-500">
-            {t("thisUsuallyTakesLessThan30Seconds")}
-          </p>
-
-          <div className="mt-6 w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-blue-600 h-2 rounded-full transition-all duration-1000 ease-out"
-              style={{
-                width:
-                  stage === "preparing"
-                    ? "20%"
-                    : stage === "fetching_area"
-                    ? "40%"
-                    : stage === "querying_data"
-                    ? "60%"
-                    : stage === "processing"
-                    ? "80%"
-                    : stage === "saving"
-                    ? "95%"
-                    : "20%",
-              }}
-            ></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function DatasetCardSkeleton() {
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 animate-pulse">

@@ -133,11 +133,13 @@
     "tilesStageConverting": "Conversion des objets ({pct, number} %)",
     "tilesStageBaking": "Génération des tuiles de la carte ({pct, number} %)",
     "tilesStageCounting": "Calcul de la taille",
+    "tilesStageCountingCold": "Calcul de la taille en cours, grande zone",
     "stepLine": "Étape {step} sur {total}",
     "datasetInArea": "{dataset} à {area}",
     "stateBakeFailed": "Échec de la génération.",
     "stateTooLarge": "Trop volumineux pour être généré.",
     "stateNoData": "Pas encore de données.",
+    "stateCountTimedOut": "Délai dépassé pour le calcul de la taille.",
     "tilesFailedTitle": "Échec du traitement de la carte",
     "tilesFailedTooLarge": "Ce jeu de données est trop volumineux pour être traité pour le moment.",
     "tilesFailedGeneric": "Une erreur est survenue lors du traitement des données de la carte.",
@@ -147,6 +149,7 @@
     "notifyCtaIfMapped": "Enregistrer et me prévenir par e-mail si cela finit par être cartographié",
     "notifyConfirmed": "Enregistré. Vous recevrez un e-mail quand la carte sera prête.",
     "tilesFailedDescription": "La prochaine mise à jour planifiée réessaiera.",
+    "countTimedOutDescription": "La zone est peut-être très grande ou le serveur occupé. Réessayez dans {minutes, number} minutes.",
     "backToHome": "Retour à l'accueil",
     "emptyDescription": "Ils n'existent peut-être pas ici, ou personne ne les a encore cartographiés dans OpenStreetMap.",
     "tooLargeDescription": "Ce jeu de données dépasse la capacité actuelle du serveur, ce qui est attendu pour les grandes métropoles ou les géométries très détaillées.",
@@ -604,10 +607,6 @@
       "contact": "Contact",
       "github": "GitHub"
     }
-  },
-  "DatasetLoading": {
-    "creatingDataset": "Création du jeu de données",
-    "thisUsuallyTakesLessThan30Seconds": "Cela prend généralement moins de 30 secondes"
   },
   "Email": {
     "magicLinkSubject": "Connexion à OSM for Cities",

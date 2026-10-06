@@ -61,12 +61,11 @@ type Story = StoryObj<typeof meta>;
 const notify = <NotifyWhenReadyButton />;
 
 /**
- * Step 1: the app's own count probe, before any bake. Nothing to poll, and no
- * row to save yet, so no offer.
+ * Step 1: the app's own count probe, before any bake and before any row
+ * exists. Nothing to poll, nothing to save yet, so no offer.
  */
-export const Counting: Story = {
+export const CountingWarm: Story = {
   args: {
-    datasetId: "ds-delft-buildings",
     templateName: "Buildings",
     areaName: "Delft",
     areaId: 324431,
@@ -81,6 +80,27 @@ export const Counting: Story = {
     await expect(canvas.getByRole("progressbar")).not.toHaveAttribute(
       "aria-valuenow"
     );
+  },
+};
+
+/**
+ * The first count attempt gave up and a retry is running. The label carries
+ * the honesty, since waiting screens have no sentence. The real page flips
+ * at 30 s; the story flips at once.
+ */
+export const CountingCold: Story = {
+  args: {
+    ...CountingWarm.args,
+    areaName: "São Paulo",
+    areaId: 298285,
+    coldAfterMs: 0,
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      await canvas.findByText("Still calculating size, large area")
+    ).toBeInTheDocument();
+    await expect(canvas.queryByText("Calculating size")).not.toBeInTheDocument();
+    await expect(canvas.getByText("Step 1 of 5")).toBeInTheDocument();
   },
 };
 
@@ -238,6 +258,33 @@ export const FailedNotReady: Story = {
     ).toBeInTheDocument();
     await expect(
       canvas.getByRole("link", { name: "Back to Osasco" })
+    ).toBeInTheDocument();
+  },
+};
+
+/**
+ * The count gave up before any row existed. Overpass load is usually the
+ * cause, and the verdict is cached for a short while, so the person retries
+ * later. No row, so no offer.
+ */
+export const FailedTimedOut: Story = {
+  args: {
+    templateName: "Buildings",
+    areaName: "São Paulo",
+    areaId: 298285,
+    mood: "timedOut",
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole("heading", { name: "Buildings in São Paulo" })
+    ).toBeInTheDocument();
+    await expect(canvas.getByText("Size check timed out.")).toBeInTheDocument();
+    await expect(
+      canvas.getByText(/Try again in 30 minutes/)
+    ).toBeInTheDocument();
+    await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await expect(
+      canvas.getByRole("link", { name: "Back to São Paulo" })
     ).toBeInTheDocument();
   },
 };
