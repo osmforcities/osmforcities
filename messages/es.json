@@ -225,6 +225,7 @@
     "tooManyRequests": "Demasiadas solicitudes de inicio de sesión para este email. Inténtalo de nuevo más tarde.",
     "invalidEmail": "Introduce una dirección de email válida.",
     "genericError": "Algo salió mal. Inténtalo de nuevo.",
+    "rememberEmail": "Recordar mi email en este dispositivo (usa una cookie)",
     "emailPlaceholder": "Email",
     "sending": "Enviando...",
     "continue": "Continuar",

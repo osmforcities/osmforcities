@@ -225,6 +225,7 @@
     "tooManyRequests": "Zu viele Anmeldeanfragen für diese E-Mail-Adresse. Bitte versuche es später erneut.",
     "invalidEmail": "Gib eine gültige E-Mail-Adresse ein.",
     "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "rememberEmail": "E-Mail-Adresse auf diesem Gerät merken (verwendet ein Cookie)",
     "emailPlaceholder": "E-Mail",
     "sending": "Wird gesendet...",
     "continue": "Weiter",

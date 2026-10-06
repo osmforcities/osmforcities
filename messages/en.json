@@ -225,6 +225,7 @@
     "tooManyRequests": "Too many sign-in requests for this email. Try again later.",
     "invalidEmail": "Enter a valid email address.",
     "genericError": "Something went wrong. Try again.",
+    "rememberEmail": "Remember my email on this device (uses a cookie)",
     "emailPlaceholder": "Email",
     "sending": "Sending...",
     "continue": "Continue",

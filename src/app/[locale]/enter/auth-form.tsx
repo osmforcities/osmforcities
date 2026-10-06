@@ -23,12 +23,17 @@ export default function AuthForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<"email" | "sent">("email");
   const [error, setError] = useState("");
+  // Unticked by default: remembering the email needs the user's consent.
+  const [remember, setRemember] = useState(false);
   const t = useTranslations("AuthForm");
 
   // After mount, not in useState: the page is statically rendered.
   useEffect(() => {
     const lastEmail = readLastEmail();
-    if (lastEmail) setEmail((typed) => typed || lastEmail);
+    if (lastEmail) {
+      setEmail((typed) => typed || lastEmail);
+      setRemember(true);
+    }
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,7 +47,7 @@ export default function AuthForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, remember }),
       });
 
       if (response.status === 400) {
@@ -99,6 +104,16 @@ export default function AuthForm() {
         required
         className="w-full py-3 px-4 border-2 border-black/20 dark:border-white/20 rounded-lg bg-transparent text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:border-black dark:focus:border-white outline-none"
       />
+
+      <label className="flex items-center gap-2 text-sm text-black/70 dark:text-white/70">
+        <input
+          type="checkbox"
+          name="remember"
+          checked={remember}
+          onChange={(e) => setRemember(e.target.checked)}
+        />
+        {t("rememberEmail")}
+      </label>
 
       <Button
         type="submit"

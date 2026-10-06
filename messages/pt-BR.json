@@ -225,6 +225,7 @@
     "tooManyRequests": "Muitas solicitações de login para este email. Tente novamente mais tarde.",
     "invalidEmail": "Informe um endereço de email válido.",
     "genericError": "Algo deu errado. Tente novamente.",
+    "rememberEmail": "Lembrar meu email neste dispositivo (usa um cookie)",
     "emailPlaceholder": "Email",
     "sending": "Enviando...",
     "continue": "Continuar",
