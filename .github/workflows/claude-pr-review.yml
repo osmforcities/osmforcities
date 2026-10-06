@@ -62,7 +62,7 @@ jobs:
             bc9ee949d5f439e8b9f3bb92c6d6d3d1e6ebd324
           git -C "$RUNNER_TEMP/ponytail" checkout -q FETCH_HEAD
 
-      - uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b # v1.0.183
+      - uses: anthropics/claude-code-action@86d88e619d8e6caf07b5c3944dd14f441c533718 # v1.0.243
         id: claude
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -112,6 +112,9 @@ jobs:
               citing `path:line` and, where a concrete fix exists, a fenced
               code block with the fix.
             - If nothing is blocking, say so briefly; do not pad.
+          # The action SHA fixes the Claude Code CLI version it installs, and
+          # claude-opus-5-5 needs CLI >= 2.1.280 (v1.0.243 installs 2.1.291).
+          # An older action fails the first API call: 1 turn, $0, is_error.
           # Model pinned to Opus for review quality. The pin was dropped earlier
           # to isolate the stub-comment cause; the guard step below now catches
           # any stub, so the pin is back. No --disallowedTools: the
