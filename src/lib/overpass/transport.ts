@@ -114,9 +114,11 @@ export async function countOverpassElements(
   // blocked the area+template for SIZE_CHECK_TTL_HOURS.
   const countQuery = query.replace(/\bout(\s+[^;]+)?;\s*$/, "out count;");
 
-  let response: Response;
+  // The body read sits inside the try: Overpass sends the 200 headers at once
+  // and the body only when the query ends, so the abort usually lands there.
+  let data;
   try {
-    response = await fetch(OVERPASS_API_URL, {
+    const response = await fetch(OVERPASS_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -125,19 +127,19 @@ export async function countOverpassElements(
       body: `data=${encodeURIComponent(countQuery)}`,
       signal: AbortSignal.timeout(timeoutMs),
     });
+
+    if (response.status === 504) {
+      throw new OverpassTimeoutError();
+    }
+    if (!response.ok) {
+      throw new Error(`Overpass API error: ${response.status}`);
+    }
+
+    data = await response.json();
   } catch (error) {
     if (isTimeoutError(error)) throw new OverpassTimeoutError();
     throw error;
   }
-
-  if (response.status === 504) {
-    throw new OverpassTimeoutError();
-  }
-  if (!response.ok) {
-    throw new Error(`Overpass API error: ${response.status}`);
-  }
-
-  const data = await response.json();
   const total = data?.elements?.[0]?.tags?.total;
   if (total === undefined) {
     // Overpass answers oversized/expensive count queries with HTTP 200 + a `remark`
