@@ -101,9 +101,11 @@ jobs:
             them in a final **Simplify (ponytail)** section, omitted when
             empty.
 
-            Your final message is delivered as the PR review comment
-            automatically — do NOT post any comment or review yourself. Just
-            produce the review:
+            Post the review by calling
+            `mcp__github_comment__update_claude_comment` exactly once, with
+            the full review as the body. Your final message alone is not
+            shown to anyone. Do not create any other comment or review. The
+            review:
             - Start with a single bold verdict line: `**✅ No blocking issues
               — safe to merge.**` when nothing is blocking, or `**❌ Changes
               requested — see findings below.**` when there are blocking
@@ -125,9 +127,13 @@ jobs:
           # blocks them without an explicit deny (non-allowlisted tools can't
           # be interactively approved).
           # Read/Glob/Grep are read-only and let it consult CODING_STANDARDS.md.
+          # The review reaches the PR only through update_claude_comment: the
+          # action never copies the final message into the comment. The
+          # action's own prompt says to load that tool with ToolSearch first,
+          # so ToolSearch is allowed (it only loads tool schemas).
           claude_args: |
             --model claude-opus-5-5
-            --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Read,Glob,Grep"
+            --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Read,Glob,Grep,ToolSearch"
 
       # The action has no built-in cost display, but its execution log's
       # final result record carries the run metrics — append them to the
