@@ -99,23 +99,19 @@ const {
     Credentials({
       id: "magic-link",
       name: "Magic Link",
+      // Sign-in is bound to a single-use verification token; verifyToken
+      // checks expiry and consumes it.
       credentials: {
-        userId: { label: "User ID", type: "text" },
+        token: { label: "Token", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.userId) {
+        if (typeof credentials?.token !== "string" || !credentials.token) {
           return null;
         }
 
-        const user = await prisma.user.findUnique({
-          where: { id: credentials.userId as string },
-        });
+        const result = await verifyToken(credentials.token);
 
-        if (!user) {
-          return null;
-        }
-
-        return createUserObject(user);
+        return result ? createUserObject(result.user) : null;
       },
     }),
     ...(isTestAuthEnabled()
@@ -236,7 +232,8 @@ export async function createVerificationToken(email: string) {
   });
 }
 
-export async function verifyToken(token: string) {
+/** Resolves a valid token's user without consuming the token */
+export async function findTokenUser(token: string) {
   const verificationToken = await prisma.verificationToken.findUnique({
     where: { token },
   });
@@ -251,11 +248,22 @@ export async function verifyToken(token: string) {
     return null;
   }
 
+  return { user, token: verificationToken };
+}
+
+export async function verifyToken(token: string) {
+  const result = await findTokenUser(token);
+
+  if (!result) {
+    return null;
+  }
+
+  // Throws if a concurrent request already consumed the token
   await prisma.verificationToken.delete({
     where: { token },
   });
 
-  return { user, token: verificationToken };
+  return result;
 }
 
 /**
