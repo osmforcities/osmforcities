@@ -8,12 +8,14 @@ import enMessages from '../messages/en.json';
 import esMessages from '../messages/es.json';
 import ptBRMessages from '../messages/pt-BR.json';
 import frMessages from '../messages/fr.json';
+import deMessages from '../messages/de.json';
 
 const messages: Record<string, Record<string, unknown>> = {
   en: enMessages,
   es: esMessages,
   'pt-BR': ptBRMessages,
   fr: frMessages,
+  de: deMessages,
 };
 
 const preview: Preview = {
@@ -51,6 +53,7 @@ const preview: Preview = {
           { value: 'es', title: 'Español' },
           { value: 'pt-BR', title: 'Português (BR)' },
           { value: 'fr', title: 'Français' },
+          { value: 'de', title: 'Deutsch' },
         ],
         dynamicTitle: true,
       },

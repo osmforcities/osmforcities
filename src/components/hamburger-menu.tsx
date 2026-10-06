@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 import ClientMenu from "@/components/client-menu";
 import NavActions from "@/components/nav-actions";
 
@@ -7,11 +7,11 @@ interface HamburgerMenuProps {
 }
 
 /**
- * Server component wrapper - handles desktop translations
- * Mobile translations handled by client component using useTranslations hook
+ * Desktop actions get their translations here; the mobile menu is a client
+ * component that reads its own.
  */
-export default async function HamburgerMenu({ isLoggedIn }: HamburgerMenuProps) {
-  const t = await getTranslations("Navigation");
+export default function HamburgerMenu({ isLoggedIn }: HamburgerMenuProps) {
+  const t = useTranslations("Navigation");
 
   return (
     <>

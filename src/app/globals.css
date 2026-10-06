@@ -308,6 +308,21 @@
     animation: slide-out 300ms ease-out;
   }
 
+  /* Indeterminate progress: the fill sweeps back and forth because there is
+     no percentage to report, only the fact that work is running. */
+  @keyframes progress-sweep {
+    from {
+      transform: translateX(-20%);
+    }
+
+    to {
+      transform: translateX(220%);
+    }
+  }
+
+  .animate-progress-sweep {
+    animation: progress-sweep 1.6s ease-in-out infinite alternate;
+  }
   /* Line clamp utilities for Design Atlas card patterns */
   .line-clamp-2 {
     display: -webkit-box;
