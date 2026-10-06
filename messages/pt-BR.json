@@ -215,6 +215,8 @@
     "sentLinkTo": "Enviamos um link para {email}",
     "tryDifferentEmail": "Tentar email diferente",
     "tooManyRequests": "Muitas solicitações de login para este email. Tente novamente mais tarde.",
+    "invalidEmail": "Informe um endereço de email válido.",
+    "genericError": "Algo deu errado. Tente novamente.",
     "emailPlaceholder": "Email",
     "sending": "Enviando...",
     "continue": "Continuar",

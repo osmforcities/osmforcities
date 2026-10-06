@@ -215,6 +215,8 @@
     "sentLinkTo": "We sent a link to {email}",
     "tryDifferentEmail": "Try different email",
     "tooManyRequests": "Too many sign-in requests for this email. Try again later.",
+    "invalidEmail": "Enter a valid email address.",
+    "genericError": "Something went wrong. Try again.",
     "emailPlaceholder": "Email",
     "sending": "Sending...",
     "continue": "Continue",

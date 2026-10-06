@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { findUserByEmail, createUser, createVerificationToken } from "@/auth";
 import { sendEmail } from "@/lib/email";
 import { isMagicLinkRateLimited } from "@/lib/magic-link-rate-limit";
+import { LAST_EMAIL_COOKIE } from "@/lib/last-email-cookie";
 import { getBaseUrl } from "@/lib/utils";
 import { formatEmail, createEmailLink, type Locale } from "@/lib/email-i18n";
 import { EmailSchema } from "@/schemas/auth";
@@ -69,11 +70,18 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       message: "Magic link sent successfully",
       // Include magic link in development for easier testing
       ...(process.env.NODE_ENV === "development" && { magicLink }),
     });
+    response.cookies.set(LAST_EMAIL_COOKIE, email, {
+      maxAge: 60 * 60 * 24 * 90,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+    });
+    return response;
   } catch (error) {
     console.error("Error sending magic link:", error);
     return NextResponse.json(
