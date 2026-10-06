@@ -20,7 +20,7 @@ vi.mock("@auth/prisma-adapter", () => ({ PrismaAdapter: vi.fn() }));
 
 vi.mock("@/lib/db", () => ({
   prisma: {
-    user: { findUnique: vi.fn() },
+    user: { findFirst: vi.fn() },
     verificationToken: { findUnique: vi.fn(), delete: vi.fn() },
   },
 }));
@@ -28,7 +28,7 @@ vi.mock("@/lib/db", () => ({
 import "@/auth";
 import { prisma } from "@/lib/db";
 
-const mockUserFindUnique = vi.mocked(prisma.user.findUnique);
+const mockUserFindFirst = vi.mocked(prisma.user.findFirst);
 const mockTokenFindUnique = vi.mocked(prisma.verificationToken.findUnique);
 const mockTokenDelete = vi.mocked(prisma.verificationToken.delete);
 
@@ -57,7 +57,7 @@ describe("magic-link provider", () => {
       token: "good",
       expires: new Date(Date.now() + 60_000),
     } as never);
-    mockUserFindUnique.mockResolvedValue(user as never);
+    mockUserFindFirst.mockResolvedValue(user as never);
 
     const result = await authorize({ token: "good" });
 
@@ -77,7 +77,7 @@ describe("magic-link provider", () => {
       token: "old",
       expires: new Date(Date.now() - 60_000),
     } as never);
-    mockUserFindUnique.mockResolvedValue(user as never);
+    mockUserFindFirst.mockResolvedValue(user as never);
 
     expect(await authorize({ token: "old" })).toBeNull();
     expect(mockTokenDelete).not.toHaveBeenCalled();
@@ -91,9 +91,9 @@ describe("magic-link provider", () => {
   });
 
   it("requires a token credential", async () => {
-    mockUserFindUnique.mockResolvedValue(user as never);
+    mockUserFindFirst.mockResolvedValue(user as never);
 
     expect(await authorize({ userId: "user-1" })).toBeNull();
-    expect(mockUserFindUnique).not.toHaveBeenCalled();
+    expect(mockUserFindFirst).not.toHaveBeenCalled();
   });
 });

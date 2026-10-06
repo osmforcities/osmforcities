@@ -18,6 +18,7 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { refreshTokenClaims } from "@/lib/auth-token";
 import { MAGIC_LINK_TOKEN_TTL_MS } from "@/lib/magic-link-rate-limit";
+import { isTestAuthEnabled } from "@/lib/test-auth";
 
 type DatabaseUser = {
   id: string;
@@ -113,7 +114,7 @@ const {
         return result ? createUserObject(result.user) : null;
       },
     }),
-    ...(process.env.ENABLE_TEST_AUTH === "true"
+    ...(isTestAuthEnabled()
       ? [
           Credentials({
             id: "test-password",
@@ -205,9 +206,16 @@ export async function createUser(email: string, name?: string) {
   });
 }
 
+/**
+ * Case-insensitive so accounts created before emails were lowercased keep
+ * working. If case variants of one address already exist as separate
+ * accounts, the oldest wins.
+ */
+// ponytail: insensitive match can't use the unique index on email (seq scan); fine at current user count, lowercase the stored emails and switch back to findUnique if it grows.
 export async function findUserByEmail(email: string) {
-  return await prisma.user.findUnique({
-    where: { email },
+  return await prisma.user.findFirst({
+    where: { email: { equals: email, mode: "insensitive" } },
+    orderBy: { createdAt: "asc" },
   });
 }
 
@@ -234,9 +242,7 @@ export async function findTokenUser(token: string) {
     return null;
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: verificationToken.identifier },
-  });
+  const user = await findUserByEmail(verificationToken.identifier);
 
   if (!user) {
     return null;
@@ -267,7 +273,7 @@ export async function verifyToken(token: string) {
  * Normal mode: uses NextAuth session from JWT cookie
  */
 export async function auth() {
-  if (process.env.ENABLE_TEST_AUTH === "true") {
+  if (isTestAuthEnabled()) {
     const { cookies } = await import("next/headers");
     const cookieStore = await cookies();
     const testSessionToken = cookieStore.get("test-auth-session")?.value;
