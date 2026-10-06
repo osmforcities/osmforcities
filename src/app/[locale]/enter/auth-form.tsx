@@ -28,7 +28,7 @@ export default function AuthForm() {
   // After mount, not in useState: the page is statically rendered.
   useEffect(() => {
     const lastEmail = readLastEmail();
-    if (lastEmail) setEmail(lastEmail);
+    if (lastEmail) setEmail((typed) => typed || lastEmail);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {

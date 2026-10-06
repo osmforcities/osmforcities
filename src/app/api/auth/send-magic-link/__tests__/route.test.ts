@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 import { sendEmail } from "@/lib/email";
 import { isMagicLinkRateLimited } from "@/lib/magic-link-rate-limit";
+import { LAST_EMAIL_COOKIE } from "@/lib/last-email-cookie";
 
 vi.mock("@/auth", () => ({
   findUserByEmail: vi.fn().mockResolvedValue({ id: "user-1", language: "en" }),
@@ -39,7 +40,7 @@ describe("POST /api/auth/send-magic-link last-email cookie", () => {
   it("sets a 90-day, script-readable cookie on success", async () => {
     const res = await call("User@Example.com");
     expect(res.status).toBe(200);
-    const cookie = res.cookies.get("last-email");
+    const cookie = res.cookies.get(LAST_EMAIL_COOKIE);
     expect(cookie?.value).toBe("user@example.com");
     expect(cookie?.maxAge).toBe(60 * 60 * 24 * 90);
     expect(cookie?.httpOnly).toBeFalsy();
@@ -50,14 +51,14 @@ describe("POST /api/auth/send-magic-link last-email cookie", () => {
   it("does not set the cookie for an invalid email", async () => {
     const res = await call("not-an-email");
     expect(res.status).toBe(400);
-    expect(res.cookies.get("last-email")).toBeUndefined();
+    expect(res.cookies.get(LAST_EMAIL_COOKIE)).toBeUndefined();
   });
 
   it("does not set the cookie when rate limited", async () => {
     vi.mocked(isMagicLinkRateLimited).mockResolvedValueOnce(true);
     const res = await call("user@example.com");
     expect(res.status).toBe(429);
-    expect(res.cookies.get("last-email")).toBeUndefined();
+    expect(res.cookies.get(LAST_EMAIL_COOKIE)).toBeUndefined();
   });
 
   it("does not set the cookie when sending fails", async () => {
@@ -66,6 +67,6 @@ describe("POST /api/auth/send-magic-link last-email cookie", () => {
     const res = await call("user@example.com");
     vi.unstubAllEnvs();
     expect(res.status).toBe(500);
-    expect(res.cookies.get("last-email")).toBeUndefined();
+    expect(res.cookies.get(LAST_EMAIL_COOKIE)).toBeUndefined();
   });
 });
