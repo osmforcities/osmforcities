@@ -6,6 +6,8 @@ import {
   tilerEnabled,
   newTileJobId,
   getTileJob,
+  pingTiler,
+  tilerDownForMs,
   downloadTileOutputs,
   submitTilesColumns,
   pruneTileArchives,
@@ -88,6 +90,32 @@ describe("getTileJob", () => {
       );
     }
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("pingTiler", () => {
+  it("is up on a 200 from /status and clears the outage clock", async () => {
+    const fetchMock = vi.fn().mockRejectedValue(new Error("ECONNREFUSED"));
+    vi.stubGlobal("fetch", fetchMock);
+    expect(await pingTiler(1_000)).toBe(false);
+
+    fetchMock.mockResolvedValue({ ok: true, status: 200 } as Response);
+    expect(await pingTiler(2_000)).toBe(true);
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      "http://127.0.0.1:8099/status",
+      expect.anything()
+    );
+    expect(tilerDownForMs(3_000)).toBe(0);
+  });
+
+  it("measures the outage from the first failed ping", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: false, status: 502 } as Response)
+    );
+    expect(await pingTiler(10_000)).toBe(false);
+    expect(await pingTiler(20_000)).toBe(false);
+    expect(tilerDownForMs(70_000)).toBe(60_000);
   });
 });
 

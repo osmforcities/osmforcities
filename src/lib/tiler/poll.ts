@@ -9,12 +9,16 @@ import {
   type TileJob,
 } from "./client";
 import { readPulledStats, tilerStatsToDatasetColumns } from "./stats";
+import { isTooLarge } from "@/lib/dataset-retry";
+
+export type TileFailureKind = "bake" | "too_large" | "reconcile";
 
 export type TilePollResults = {
   checked: number;
   completed: number;
   failed: number;
   stillPending: number;
+  errors: { datasetId: string; kind: TileFailureKind; error: string }[];
 };
 
 export type ReconcileOutcome = "completed" | "failed" | "pending";
@@ -74,6 +78,7 @@ export async function reconcileDataset(
     const won = await commitOutcome(dataset, {
       tilesState: "failed",
       tilesError: error,
+      consecutiveFailures: { increment: 1 },
     });
     return won ? { outcome: "failed", error } : { outcome: "pending" };
   }
@@ -109,8 +114,12 @@ export async function reconcileDataset(
       won = await commitOutcome(dataset, {
         ...statsColumns,
         tilesState: "done",
+        // Blue/green swap: the previous archive served through the whole bake
+        tilesServedJobId: dataset.tilesJobId,
         tilesUpdatedAt: new Date(),
         tilesError: null,
+        // A finished bake, not the snapshot before it, resets the retry ladder.
+        consecutiveFailures: 0,
       });
     } finally {
       inflightPulls.delete(dataset.tilesJobId);
@@ -133,6 +142,7 @@ export async function reconcileDataset(
     const won = await commitOutcome(dataset, {
       tilesState: "failed",
       tilesError: error,
+      consecutiveFailures: { increment: 1 },
     });
     return won ? { outcome: "failed", error } : { outcome: "pending" };
   }
@@ -151,6 +161,7 @@ export async function pollPendingTileJobs(): Promise<TilePollResults> {
     completed: 0,
     failed: 0,
     stillPending: 0,
+    errors: [],
   };
   if (!tilerEnabled()) return results;
 
@@ -171,16 +182,29 @@ export async function pollPendingTileJobs(): Promise<TilePollResults> {
     const jobId = dataset.tilesJobId as string;
     try {
       const job = await getTileJob(jobId);
-      const { outcome } = await reconcileDataset(
+      const { outcome, error } = await reconcileDataset(
         { id: dataset.id, tilesJobId: jobId },
         job
       );
       if (outcome === "completed") results.completed++;
-      else if (outcome === "failed") results.failed++;
-      else results.stillPending++;
+      else if (outcome === "failed") {
+        results.failed++;
+        results.errors.push({
+          datasetId: dataset.id,
+          kind: isTooLarge(error ?? null) ? "too_large" : "bake",
+          error: error ?? "bake failed",
+        });
+      } else results.stillPending++;
     } catch (error) {
+      // Lookup or archive download hiccup: transient, so the counter is not
+      // charged.
       console.error(`Tile job poll failed for dataset ${dataset.id}:`, error);
       results.stillPending++;
+      results.errors.push({
+        datasetId: dataset.id,
+        kind: "reconcile",
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 

@@ -5,16 +5,30 @@
  */
 export const TILES_ENABLED = process.env.NEXT_PUBLIC_TILES_ENABLED === "true";
 
-type TilesFields = {
-  tilesState?: string | null;
-  tilesJobId?: string | null;
-};
+/**
+ * Path to the served archive, or null when the geojson path should render.
+ * tilesServedJobId moves only when a bake lands (blue/green), so a pending or
+ * failed rebuild keeps serving the previous archive. tilesState/tilesJobId
+ * describe the bake in progress and play no part here.
+ */
+export function datasetTilesPath(dataset: {
+  tilesServedJobId?: string | null;
+}): string | null {
+  if (!TILES_ENABLED || !dataset.tilesServedJobId) return null;
+  return `/api/tiles/${dataset.tilesServedJobId}.pmtiles`;
+}
 
-/** Path to the pulled archive, or null when the geojson path should render. */
-export function datasetTilesPath(dataset: TilesFields): string | null {
-  if (!TILES_ENABLED) return null;
-  if (dataset.tilesState !== "done" || !dataset.tilesJobId) return null;
-  return `/api/tiles/${dataset.tilesJobId}.pmtiles`;
+/**
+ * What a Sync click reports. A pending bake means the refresh only queued a
+ * rebuild, so "fetched" stays put; anything else (including responses without
+ * the field) is the synced path.
+ */
+export function refreshOutcome(result: {
+  tilesState?: string | null;
+  lastChecked?: Date;
+}): { queued: true } | { queued: false; lastChecked: Date } {
+  if (result.tilesState === "pending") return { queued: true };
+  return { queued: false, lastChecked: result.lastChecked ?? new Date() };
 }
 
 /**

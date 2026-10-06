@@ -2,16 +2,78 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { prisma } from "@/lib/db";
 
 vi.mock("@/lib/db", () => ({
-  prisma: { dataset: { findFirst: vi.fn() } },
+  prisma: { dataset: { findFirst: vi.fn(), count: vi.fn() } },
 }));
 
+vi.mock("@/lib/tiler/client", () => ({ tilerDownForMs: vi.fn() }));
+import { tilerDownForMs } from "@/lib/tiler/client";
+
 import { GET } from "../route";
+import { CATALOG_FILTER } from "@/lib/dataset-catalog-filter";
 
 const hoursAgo = (h: number) => new Date(Date.now() - h * 60 * 60 * 1000);
 
 describe("GET /api/health", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(prisma.dataset.count).mockResolvedValue(0);
+    vi.mocked(tilerDownForMs).mockReturnValue(0);
+  });
+
+  const freshFleet = () =>
+    vi.mocked(prisma.dataset.findFirst).mockResolvedValueOnce({
+      lastChecked: hoursAgo(1),
+    } as never);
+
+  it("degrades when more than 5 datasets sit above three failures, and clears on recovery", async () => {
+    freshFleet();
+    vi.mocked(prisma.dataset.count).mockResolvedValueOnce(6);
+
+    const res = await GET();
+    expect(res.status).toBe(503);
+    expect(await res.json()).toMatchObject({
+      status: "degraded",
+      reason: "datasets failing repeatedly",
+    });
+    // Too-large rows retry weekly by design and must not hold health down.
+    const where = vi.mocked(prisma.dataset.count).mock.calls[0][0]?.where;
+    expect(where).toMatchObject({
+      isActive: true,
+      consecutiveFailures: { gt: 3 },
+    });
+    expect(JSON.stringify(where)).toContain("too_large:");
+    // Only rows the task still refreshes: an unsaved row keeps its count until
+    // cleanup and would hold health down for nothing.
+    expect(where).toMatchObject(CATALOG_FILTER);
+
+    freshFleet();
+    vi.mocked(prisma.dataset.count).mockResolvedValueOnce(5);
+    const recovered = await GET();
+    expect(recovered.status).toBe(200);
+  });
+
+  it("degrades when the tiler has been unreachable for over 30 minutes", async () => {
+    freshFleet();
+    vi.mocked(tilerDownForMs).mockReturnValue(31 * 60 * 1000);
+
+    const res = await GET();
+    expect(res.status).toBe(503);
+    expect(await res.json()).toMatchObject({ reason: "tiler unreachable" });
+
+    freshFleet();
+    vi.mocked(tilerDownForMs).mockReturnValue(29 * 60 * 1000);
+    expect((await GET()).status).toBe(200);
+  });
+
+  it("joins every reason that applies", async () => {
+    vi.mocked(prisma.dataset.findFirst).mockResolvedValueOnce({
+      lastChecked: hoursAgo(40),
+    } as never);
+    vi.mocked(tilerDownForMs).mockReturnValue(60 * 60 * 1000);
+
+    expect(await (await GET()).json()).toMatchObject({
+      reason: "datasets not updating; tiler unreachable",
+    });
   });
 
   it("is ok when the newest successful check is within the cadence window", async () => {

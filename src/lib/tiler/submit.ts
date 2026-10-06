@@ -21,7 +21,7 @@ import {
  *
  * Returns the columns it persisted so a caller holding a pre-submit dataset
  * object can merge them in — a freshly created dataset must render its first
- * paint with tilesState "pending" (today the processing notice; the full
+ * paint with tilesState "pending" (Sync disabled for admins; the full
  * processing panel once the tiles-only lane lands), not the stale null it was
  * created with, which needs a reload to clear.
  */

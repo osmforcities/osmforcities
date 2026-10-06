@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import AuthForm from "../auth-form";
+import AuthForm from "./auth-form";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
 import { routing } from "@/i18n/routing";

@@ -20,24 +20,53 @@ afterEach(() => {
 });
 
 describe("datasetTilesPath", () => {
-  const done = { tilesState: "done", tilesJobId: "ds-1-3" };
+  const served = { tilesState: "done", tilesServedJobId: "ds-1-3" };
 
   it("is null when the flag is off, whatever the job state", async () => {
     const { datasetTilesPath } = await loadWithFlag(false);
-    expect(datasetTilesPath(done)).toBeNull();
+    expect(datasetTilesPath(served)).toBeNull();
   });
 
-  it("points at the pulled archive when the flag is on and the bake is done", async () => {
+  it("points at the served archive when the flag is on", async () => {
     const { datasetTilesPath } = await loadWithFlag(true);
-    expect(datasetTilesPath(done)).toBe("/api/tiles/ds-1-3.pmtiles");
+    expect(datasetTilesPath(served)).toBe("/api/tiles/ds-1-3.pmtiles");
   });
 
-  it("is null while a bake is pending, failed, or missing its job id", async () => {
+  it("keeps serving the previous archive while a rebuild is pending or failed", async () => {
     const { datasetTilesPath } = await loadWithFlag(true);
-    expect(datasetTilesPath({ tilesState: "pending", tilesJobId: "j" })).toBeNull();
-    expect(datasetTilesPath({ tilesState: "failed", tilesJobId: "j" })).toBeNull();
-    expect(datasetTilesPath({ tilesState: "done", tilesJobId: null })).toBeNull();
+    for (const tilesState of ["pending", "failed"]) {
+      const rebuilding = { tilesState, tilesJobId: "ds-1-9", tilesServedJobId: "ds-1-3" };
+      expect(datasetTilesPath(rebuilding)).toBe("/api/tiles/ds-1-3.pmtiles");
+    }
+  });
+
+  it("is null until a first archive is served", async () => {
+    const { datasetTilesPath } = await loadWithFlag(true);
+    const firstBake = { tilesState: "pending", tilesJobId: "j", tilesServedJobId: null };
+    const doneNotServed = { tilesState: "done", tilesJobId: "j", tilesServedJobId: null };
+    expect(datasetTilesPath(firstBake)).toBeNull();
+    expect(datasetTilesPath(doneNotServed)).toBeNull();
     expect(datasetTilesPath({})).toBeNull();
+  });
+});
+
+describe("refreshOutcome", () => {
+  const lastChecked = new Date("2026-10-05T10:00:00Z");
+
+  it("reports a queued update and no new fetched time when the bake is pending", async () => {
+    const { refreshOutcome } = await loadWithFlag(true);
+    expect(refreshOutcome({ tilesState: "pending", lastChecked })).toEqual({
+      queued: true,
+    });
+  });
+
+  it("keeps the synced path with the response's fetched time otherwise", async () => {
+    const { refreshOutcome } = await loadWithFlag(true);
+    expect(refreshOutcome({ tilesState: "done", lastChecked })).toEqual({
+      queued: false,
+      lastChecked,
+    });
+    expect(refreshOutcome({ lastChecked })).toEqual({ queued: false, lastChecked });
   });
 });
 
@@ -56,6 +85,7 @@ describe("transformDataset geojson stripping", () => {
     bbox: null,
     tilesState: "done",
     tilesJobId: "ds-1-3",
+    tilesServedJobId: "ds-1-3",
     template: {
       id: "tpl-1",
       name: "Schools",
@@ -87,10 +117,20 @@ describe("transformDataset geojson stripping", () => {
     expect(dataset.hasGeojson).toBe(true);
   });
 
-  it("keeps geojson while the bake is still pending, even with the flag on", async () => {
+  it("keeps stripping while a rebuild is pending over a served archive", async () => {
     const { transformDataset } = await loadWithFlag(true);
     const dataset = transformDataset(
-      { ...raw, tilesState: "pending" },
+      { ...raw, tilesState: "pending", tilesJobId: "ds-1-9" },
+      null,
+      "en"
+    );
+    expect(dataset.geojson).toBeNull();
+  });
+
+  it("keeps geojson while the first bake is still pending, even with the flag on", async () => {
+    const { transformDataset } = await loadWithFlag(true);
+    const dataset = transformDataset(
+      { ...raw, tilesState: "pending", tilesServedJobId: null },
       null,
       "en"
     );

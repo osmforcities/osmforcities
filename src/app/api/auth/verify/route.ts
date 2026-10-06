@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken, signIn } from "@/auth";
+import { findTokenUser, signIn } from "@/auth";
 import { getBaseUrl } from "@/lib/utils";
 import { prisma } from "@/lib/db";
 import { trackEvent, getClientInfo } from "@/lib/umami";
@@ -15,7 +15,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL("/?error=invalid-token", baseUrl));
     }
 
-    const verificationResult = await verifyToken(token);
+    // Not consumed here: signIn consumes it in the provider
+    const verificationResult = await findTokenUser(token);
 
     if (!verificationResult || !verificationResult.user) {
       return NextResponse.redirect(
@@ -34,10 +35,7 @@ export async function GET(request: NextRequest) {
       data: { emailVerified: new Date() },
     });
 
-    await signIn("magic-link", {
-      userId: verificationResult.user.id,
-      redirect: false,
-    });
+    await signIn("magic-link", { token, redirect: false });
 
     const redirectUrl = new URL("/", baseUrl);
     return NextResponse.redirect(redirectUrl);

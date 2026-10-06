@@ -2,8 +2,8 @@
 #
 # Vendored/adapted from developmentseed/.github's reusable claude-pr-review
 # workflow so osmforcities stays self-contained. Posts ONE sticky comment per
-# PR (updated in place on each push) with correctness/security findings plus a
-# ponytail over-engineering pass.
+# PR (updated in place on each push) with correctness/security findings, a
+# CODING_STANDARDS.md pass, and a ponytail over-engineering pass.
 #
 # Requires the CLAUDE_CODE_OAUTH_TOKEN repo secret (create with
 # `claude setup-token`; billed to the Claude subscription, not the API).
@@ -62,7 +62,7 @@ jobs:
             bc9ee949d5f439e8b9f3bb92c6d6d3d1e6ebd324
           git -C "$RUNNER_TEMP/ponytail" checkout -q FETCH_HEAD
 
-      - uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b # v1.0.183
+      - uses: anthropics/claude-code-action@86d88e619d8e6caf07b5c3944dd14f441c533718 # v1.0.243
         id: claude
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -88,6 +88,11 @@ jobs:
             Review this pull request's diff for correctness bugs, security
             issues, and clear best-practice problems. Skip nits and anything
             a linter or formatter already enforces.
+            Then read CODING_STANDARDS.md at the repo root and check the
+            lines this diff adds or changes against it. Open the glossary or
+            ADRs it links only when the diff touches naming or a recorded
+            decision. Each violation is a blocking finding that names the
+            rule as `CODING_STANDARDS.md § <section>` and quotes it.
             Also apply the ponytail-review skill (from the ponytail plugin) to
             the same diff, hunting over-engineering: reinvented standard
             library, unneeded dependencies, speculative abstractions, dead
@@ -96,9 +101,11 @@ jobs:
             them in a final **Simplify (ponytail)** section, omitted when
             empty.
 
-            Your final message is delivered as the PR review comment
-            automatically — do NOT post any comment or review yourself. Just
-            produce the review:
+            Post the review by calling
+            `mcp__github_comment__update_claude_comment` exactly once, with
+            the full review as the body. Your final message alone is not
+            shown to anyone. Do not create any other comment or review. The
+            review:
             - Start with a single bold verdict line: `**✅ No blocking issues
               — safe to merge.**` when nothing is blocking, or `**❌ Changes
               requested — see findings below.**` when there are blocking
@@ -107,15 +114,26 @@ jobs:
               citing `path:line` and, where a concrete fix exists, a fenced
               code block with the fix.
             - If nothing is blocking, say so briefly; do not pad.
-          # Reverted to the developmentseed baseline args to isolate the stub
-          # cause: no --model pin (uses the Claude Code default) and no
-          # --disallowedTools. Both were additions the original workflow lacked.
-          # Dropping the tool blocks is safe: the file-mutation tools aren't in
-          # the action's allowlist, so CI already blocks them without an
-          # explicit deny (non-allowlisted tools can't be interactively
-          # approved). The guard step below catches any stub regardless.
+          # The action SHA fixes the Claude Code CLI version it installs, and
+          # claude-opus-5-5 needs CLI >= 2.1.280 (v1.0.243 installs 2.1.291).
+          # An older action fails the first API call: 1 turn, $0, is_error.
+          # v1.0.243 skips any PR whose copy of this file
+          # differs from the default branch, so workflow changes land in their
+          # own PR first; other PRs pick them up after merging develop.
+          # Model pinned to Opus for review quality. The pin was dropped earlier
+          # to isolate the stub-comment cause; the guard step below now catches
+          # any stub, so the pin is back. No --disallowedTools: the
+          # file-mutation tools aren't in the action's allowlist, so CI already
+          # blocks them without an explicit deny (non-allowlisted tools can't
+          # be interactively approved).
+          # Read/Glob/Grep are read-only and let it consult CODING_STANDARDS.md.
+          # The review reaches the PR only through update_claude_comment: the
+          # action never copies the final message into the comment. The
+          # action's own prompt says to load that tool with ToolSearch first,
+          # so ToolSearch is allowed (it only loads tool schemas).
           claude_args: |
-            --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*)"
+            --model claude-opus-5-5
+            --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Read,Glob,Grep,ToolSearch"
 
       # The action has no built-in cost display, but its execution log's
       # final result record carries the run metrics — append them to the
