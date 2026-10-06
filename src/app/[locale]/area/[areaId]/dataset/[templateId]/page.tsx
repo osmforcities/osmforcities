@@ -105,7 +105,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
           url={`/area/${areaId}/dataset/${encodeURIComponent(templateId)}/upsell`}
         />
         <DatasetUpsellPage
-          datasetName={template.name}
+          datasetName={templateName}
           areaName={areaName}
           areaId={areaId}
         />

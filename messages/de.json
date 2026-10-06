@@ -139,7 +139,7 @@
     "stateBakeFailed": "Erstellung fehlgeschlagen.",
     "stateTooLarge": "Zu groß zum Erstellen.",
     "stateNoData": "Noch keine Daten.",
-    "stateCountTimedOut": "Zeitüberschreitung bei der Größenprüfung.",
+    "stateCountTimedOut": "Die Zählung hat zu lange gedauert.",
     "tilesFailedTitle": "Kartenverarbeitung fehlgeschlagen",
     "tilesFailedTooLarge": "Dieser Datensatz ist derzeit zu groß für die Verarbeitung.",
     "tilesFailedGeneric": "Bei der Verarbeitung der Kartendaten ist ein Fehler aufgetreten.",

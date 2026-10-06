@@ -139,7 +139,7 @@
     "stateBakeFailed": "Bake failed.",
     "stateTooLarge": "Too large to bake.",
     "stateNoData": "No data yet.",
-    "stateCountTimedOut": "Size check timed out.",
+    "stateCountTimedOut": "Counting took too long.",
     "tilesFailedTitle": "Map processing failed",
     "tilesFailedTooLarge": "This dataset is too large to process right now.",
     "tilesFailedGeneric": "Something went wrong while processing the map data.",

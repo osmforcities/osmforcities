@@ -7,12 +7,12 @@ import {
 } from "@/types/overpass";
 import { OSMElementSchema } from "@/types/osm";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
+import { COUNT_REQUEST_TIMEOUT_MS } from "@/lib/constants";
 
 const OVERPASS_API_URL =
   process.env.OVERPASS_API_URL ||
   "https://maps.mail.ru/osm/tools/overpass/api/interpreter";
 
-const COUNT_REQUEST_TIMEOUT_MS = 30_000;
 const FETCH_REQUEST_TIMEOUT_MS = 180_000;
 
 /** Overpass request aborted because it exceeded the allowed time */

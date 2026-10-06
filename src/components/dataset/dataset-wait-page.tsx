@@ -7,7 +7,10 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { ProgressBar } from "@/components/ui/progress-bar";
-import { SIZE_CHECK_TIMEOUT_TTL_MINUTES } from "@/lib/constants";
+import {
+  COUNT_REQUEST_TIMEOUT_MS,
+  SIZE_CHECK_TIMEOUT_TTL_MINUTES,
+} from "@/lib/constants";
 
 type TilesStatus = {
   state: "pending" | "done" | "failed" | "none";
@@ -35,12 +38,6 @@ function isStage(value: unknown): value is Stage {
   return typeof value === "string" && value in STEPS;
 }
 
-/**
- * When the first count attempt gives up and the large-area retry starts. Kept
- * in step with the count request timeout in the Overpass transport.
- */
-const COUNT_COLD_AFTER_MS = 30_000;
-
 type DatasetWaitPageProps = {
   /** Absent while counting: the row does not exist until the count passes. */
   datasetId?: string;
@@ -48,7 +45,7 @@ type DatasetWaitPageProps = {
   areaName: string;
   areaId: number;
   /**
-   * Counting is the probe before any tiler job; baking polls the tiler.
+   * Counting is the probe before any bake; baking polls the tiler.
    * Failed will be retried by the next scheduled update; timedOut is a count
    * that gave up before any row existed.
    */
@@ -60,7 +57,7 @@ type DatasetWaitPageProps = {
 };
 
 /**
- * The whole page while a dataset has no map to show: the size probe is
+ * The whole page while a dataset has no map to show: the count probe is
  * running, the bake is running, or one of them failed in a way that can
  * still succeed later. A permanent refusal is a different screen
  * (DatasetTooLargeState) picked on the server, because only the server reads
@@ -72,13 +69,12 @@ export function DatasetWaitPage({
   areaName,
   areaId,
   mood,
-  coldAfterMs = COUNT_COLD_AFTER_MS,
+  coldAfterMs = COUNT_REQUEST_TIMEOUT_MS,
   notify,
 }: DatasetWaitPageProps) {
   const t = useTranslations("DatasetPage");
   const router = useRouter();
   const baking = mood === "baking";
-  const waiting = mood === "counting" || baking;
   const [cold, setCold] = useState(false);
 
   useEffect(() => {
@@ -134,22 +130,30 @@ export function DatasetWaitPage({
             ? t("tilesStageBaking", { pct: Math.round(pct ?? 0) })
             : t("tilesStageQueued");
 
+  const failure =
+    mood === "timedOut"
+      ? {
+          lead: t("stateCountTimedOut"),
+          description: t("countTimedOutDescription", {
+            minutes: SIZE_CHECK_TIMEOUT_TTL_MINUTES,
+          }),
+        }
+      : mood === "failed"
+        ? { lead: t("stateBakeFailed"), description: t("tilesFailedDescription") }
+        : null;
+
   return (
     <div data-testid={`dataset-${mood}-page`}>
       <DatasetNoMapPage
         areaId={areaId}
         backLabel={t("backToAreaLabel", { area: areaName })}
-        tone={waiting ? "processing" : "warning"}
+        tone={failure ? "warning" : "processing"}
         title={t("datasetInArea", { dataset: templateName, area: areaName })}
-        lead={
-          waiting
-            ? undefined
-            : t(mood === "timedOut" ? "stateCountTimedOut" : "stateBakeFailed")
-        }
+        lead={failure?.lead}
         // The stage label and step say everything a waiting person needs;
         // a sentence under them only repeated it.
         progress={
-          waiting && (
+          !failure && (
             <div className="space-y-2" aria-live="polite">
               <p className="text-sm text-gray-900">{stageLabel}</p>
               <ProgressBar value={pct} label={stageLabel} />
@@ -162,15 +166,7 @@ export function DatasetWaitPage({
             </div>
           )
         }
-        description={
-          waiting
-            ? undefined
-            : mood === "timedOut"
-              ? t("countTimedOutDescription", {
-                  minutes: SIZE_CHECK_TIMEOUT_TTL_MINUTES,
-                })
-              : t("tilesFailedDescription")
-        }
+        description={failure?.description}
         action={notify}
       />
     </div>

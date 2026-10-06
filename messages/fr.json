@@ -139,7 +139,7 @@
     "stateBakeFailed": "Échec de la génération.",
     "stateTooLarge": "Trop volumineux pour être généré.",
     "stateNoData": "Pas encore de données.",
-    "stateCountTimedOut": "Délai dépassé pour le calcul de la taille.",
+    "stateCountTimedOut": "Le comptage a pris trop de temps.",
     "tilesFailedTitle": "Échec du traitement de la carte",
     "tilesFailedTooLarge": "Ce jeu de données est trop volumineux pour être traité pour le moment.",
     "tilesFailedGeneric": "Une erreur est survenue lors du traitement des données de la carte.",

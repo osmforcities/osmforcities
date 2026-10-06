@@ -28,6 +28,12 @@ export const SIZE_CHECK_TTL_HOURS = 24;
  */
 export const SIZE_CHECK_TIMEOUT_TTL_MINUTES = 30;
 
+/**
+ * Milliseconds the first count probe waits for Overpass. The wait page
+ * switches to its large-area label at the same moment, when the retry starts.
+ */
+export const COUNT_REQUEST_TIMEOUT_MS = 30_000;
+
 /** Consecutive failed refresh attempts before a dataset is flagged for admin review */
 export const DATASET_FAILURE_FLAG_THRESHOLD = 3;
 

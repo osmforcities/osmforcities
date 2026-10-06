@@ -263,9 +263,9 @@ export const FailedNotReady: Story = {
 };
 
 /**
- * The count gave up before any row existed. Overpass load is usually the
- * cause, and the verdict is cached for a short while, so the person retries
- * later. No row, so no offer.
+ * The count probe gave up before any row existed. Overpass load is usually
+ * the cause, and the timed-out verdict is remembered for a short while, so the
+ * person retries later. No row, so no offer.
  */
 export const FailedTimedOut: Story = {
   args: {
@@ -278,7 +278,7 @@ export const FailedTimedOut: Story = {
     await expect(
       canvas.getByRole("heading", { name: "Buildings in São Paulo" })
     ).toBeInTheDocument();
-    await expect(canvas.getByText("Size check timed out.")).toBeInTheDocument();
+    await expect(canvas.getByText("Counting took too long.")).toBeInTheDocument();
     await expect(
       canvas.getByText(/Try again in 30 minutes/)
     ).toBeInTheDocument();
@@ -322,6 +322,38 @@ export const FailedTooLarge: Story = {
       canvas.getByRole("button", {
         name: /Save and email me if it becomes available/,
       })
+    ).toBeInTheDocument();
+  },
+};
+
+/**
+ * The count probe refused the area with the tiles-only lane off. Same screen
+ * as the tiler refusal, but no row exists yet, so no offer.
+ */
+export const FailedTooLargeAtCount: Story = {
+  args: {
+    templateName: "Buildings",
+    areaName: "Tokyo",
+    areaId: 1543125,
+    mood: "failed",
+  },
+  render: (args) => (
+    <DatasetTooLargeState
+      templateName={args.templateName}
+      areaName={args.areaName}
+      areaId={args.areaId}
+    />
+  ),
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole("heading", { name: "Buildings in Tokyo" })
+    ).toBeInTheDocument();
+    await expect(canvas.getByText("Too large to bake.")).toBeInTheDocument();
+    await expect(
+      canvas.queryByRole("button", { name: /email me/i })
+    ).not.toBeInTheDocument();
+    await expect(
+      canvas.getByRole("link", { name: "Back to Tokyo" })
     ).toBeInTheDocument();
   },
 };

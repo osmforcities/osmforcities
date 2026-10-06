@@ -139,7 +139,7 @@
     "stateBakeFailed": "Falha na geração.",
     "stateTooLarge": "Grande demais para gerar.",
     "stateNoData": "Ainda sem dados.",
-    "stateCountTimedOut": "Tempo esgotado ao calcular o tamanho.",
+    "stateCountTimedOut": "A contagem demorou demais.",
     "tilesFailedTitle": "Falha no processamento do mapa",
     "tilesFailedTooLarge": "Este conjunto de dados é grande demais para processar agora.",
     "tilesFailedGeneric": "Algo deu errado ao processar os dados do mapa.",
