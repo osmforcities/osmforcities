@@ -5,6 +5,7 @@ import { transformDataset } from "@/lib/dataset/transform";
 import { DatasetInteractiveSection } from "@/components/dataset/dataset-interactive-section";
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { SaveAndNotifyButton } from "@/components/dataset/save-and-notify-button";
+import { tilerEnabled } from "@/lib/tiler/client";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import { DatasetTooLargeError } from "@/lib/dataset-snapshot";
 import { getAreaDetailsById } from "@/lib/nominatim";
@@ -183,7 +184,8 @@ async function AreaTemplateDatasetView({
             lead={datasetT("stateNoData")}
             description={datasetT("emptyDescription")}
             action={
-              session?.user && (
+              // The mail is sent only by a bake, so no tiler means no offer.
+              session?.user && tilerEnabled() && (
                 <SaveAndNotifyButton
                   datasetId={result.dataset.id}
                   saved={notifyRequested}

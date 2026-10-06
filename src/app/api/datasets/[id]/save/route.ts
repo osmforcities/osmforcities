@@ -23,7 +23,7 @@ export async function POST(
     // The body is optional: a plain save sends none.
     const body = await request.json().catch(() => ({}));
     const validatedData = SaveDatasetSchema.parse({ ...body, datasetId });
-    const notifyWhenReady = validatedData.notifyWhenReady ?? false;
+    const { notifyWhenReady } = validatedData;
 
     const dataset = await prisma.dataset.findUnique({
       where: { id: datasetId },
