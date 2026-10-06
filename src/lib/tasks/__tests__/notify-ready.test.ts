@@ -55,11 +55,11 @@ describe("notifyDatasetReady", () => {
     expect(sendEmail).toHaveBeenCalledTimes(2);
     const [en, pt] = vi.mocked(sendEmail).mock.calls.map(([o]) => o);
     expect(en.to).toBe("a@x.test");
-    expect(en.subject).toBe("The map of Schools in Amsterdam is ready.");
+    expect(en.subject).toBe("The map of Schools in Amsterdam is ready");
     expect(en.html).toContain(
       'href="https://osmforcities.test/en/area/271110/dataset/schools"'
     );
-    expect(pt.subject).toBe("O mapa de Escolas em Amesterdão está pronto.");
+    expect(pt.subject).toBe("O mapa de Escolas em Amesterdão está pronto");
     expect(pt.html).toContain("/pt-BR/area/271110/dataset/schools");
     expect(updateMany.mock.calls.map(([a]) => a.where)).toEqual([
       { id: "s1", notifyWhenReady: true },

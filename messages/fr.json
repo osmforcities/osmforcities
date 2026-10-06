@@ -627,7 +627,7 @@
     "templateDeprecated": "Ce modèle a été retiré du catalogue.",
     "templateDeprecatedDaysRemaining": "Il vous reste {days} jour{days, plural, one {} other {s}} avant la suppression de ce jeu de données.",
     "greeting": "Bonjour !",
-    "mapReady": "La carte « {template} » à {area} est prête."
+    "mapReady": "La carte « {template} » à {area} est prête"
   },
   "AboutPage": {
     "metaTitle": "À propos - OSM for Cities",

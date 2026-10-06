@@ -1,15 +1,17 @@
 import { htmlToText } from "html-to-text";
 import { prisma } from "@/lib/db";
 import { sendEmail } from "@/lib/email";
-import { createEmailLink, getEmailT, isRTL, type Locale } from "@/lib/email-i18n";
+import {
+  createEmailLink,
+  escapeHtml,
+  getEmailBaseUrl,
+  getEmailT,
+  isRTL,
+  type Locale,
+} from "@/lib/email-i18n";
 import { resolveDatasetAreaName } from "@/lib/area-name";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getDatasetUrl } from "@/lib/urls";
-import { getBaseUrl } from "./user-report";
-
-// Area names come from OSM, so they are untrusted in an HTML body.
-const escapeHtml = (s: string) =>
-  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 /**
  * Mail everyone who asked to hear when this dataset's map is ready, once.
@@ -51,25 +53,25 @@ export async function notifyDatasetReady(
       try {
         const locale = (save.user.language || "en") as Locale;
         const { dataset } = save;
-        const values = {
+        const names = {
           template: resolveTemplateForLocale(dataset.template, locale).name,
           area: resolveDatasetAreaName(dataset, locale),
         };
         const t = await getEmailT(locale);
-        const url = getDatasetUrl(getBaseUrl(), {
+        const url = getDatasetUrl(getEmailBaseUrl(), {
           locale,
           areaId: dataset.areaId,
           templateId: dataset.templateId,
         });
         const sentence = t("mapReady", {
-          template: escapeHtml(values.template),
-          area: escapeHtml(values.area),
+          template: escapeHtml(names.template),
+          area: escapeHtml(names.area),
         });
         const html = `<div lang="${locale}" dir="${isRTL(locale) ? "rtl" : "ltr"}"><p>${createEmailLink(url, sentence)}</p></div>`;
 
         await sendEmail({
           to: save.user.email,
-          subject: t("mapReady", values),
+          subject: t("mapReady", names),
           html,
           text: htmlToText(html),
         });

@@ -131,13 +131,13 @@ export async function reconcileDataset(
       inflightPulls.delete(dataset.tilesJobId);
     }
     if (!won) return { outcome: "pending" }; // the winner acks, prunes and mails
-    await notifyDatasetReady(dataset.id, dataCount);
     // Best-effort housekeeping: a failed ack just leaves the job for the
     // tiler's own sweep. Prune never rejects (it logs internally).
     await ackTileJob(dataset.tilesJobId).catch((error) => {
       console.error(`Tile job ack failed for ${dataset.tilesJobId}:`, error);
     });
     await pruneTileArchives(dataset.id);
+    await notifyDatasetReady(dataset.id, dataCount);
     return { outcome: "completed" };
   }
   if (job.state === "failed") {
