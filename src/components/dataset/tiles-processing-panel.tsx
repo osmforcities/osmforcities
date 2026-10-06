@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { ProgressBar } from "@/components/ui/progress-bar";
 
 type TilesStatus = {
   state: "pending" | "done" | "failed" | "none";
@@ -96,16 +97,7 @@ export function TilesProcessingPanel({ datasetId }: { datasetId: string }) {
           {t("tilesProcessingTitle")}
         </h3>
         <p className="text-sm text-gray-600">{stageLabel}</p>
-        <div className="h-2 w-full overflow-hidden rounded bg-gray-100">
-          {typeof pct === "number" ? (
-            <div
-              className="h-full bg-olive-500 transition-all duration-500"
-              style={{ width: `${Math.min(100, Math.max(2, pct))}%` }}
-            />
-          ) : (
-            <div className="h-full w-1/3 animate-pulse rounded bg-olive-500" />
-          )}
-        </div>
+        <ProgressBar value={pct} label={stageLabel} />
       </div>
     </div>
   );

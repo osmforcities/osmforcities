@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import LoginForm from "./login-form";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Locale } from "next-intl";
+import { isTestAuthEnabled } from "@/lib/test-auth";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -19,7 +20,7 @@ export default async function LoginPage({
   setRequestLocale(locale);
   const t = await getTranslations("EnterPage");
 
-  if (process.env.ENABLE_TEST_AUTH !== "true") {
+  if (!isTestAuthEnabled()) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

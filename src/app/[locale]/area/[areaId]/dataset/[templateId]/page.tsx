@@ -3,8 +3,7 @@ import { notFound } from "next/navigation";
 import { getTranslations, getLocale } from "next-intl/server";
 import { transformDataset } from "@/lib/dataset/transform";
 import { DatasetInteractiveSection } from "@/components/dataset/dataset-interactive-section";
-import { EmptyState } from "@/components/ui/empty-state";
-import { Link } from "@/i18n/navigation";
+import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import { DatasetTooLargeError } from "@/lib/dataset-snapshot";
 import { getAreaDetailsById } from "@/lib/nominatim";
@@ -169,31 +168,19 @@ async function AreaTemplateDatasetView({
     if (result.dataset.dataCount === 0) {
       const datasetT = await getTranslations("DatasetPage");
       return (
-        <div className="bg-gray-50">
+        <>
           {trackDetailView}
-          <div
-            className="max-w-7xl mx-auto px-4 py-8 flex flex-col"
-            style={{ minHeight: "calc(100vh - var(--nav-height))" }}
-          >
-            <EmptyState
-              type="no-data"
-              title={datasetT("emptyTitle", {
-                dataset: dataset.template.name,
-                area: areaName,
-              })}
-              description={datasetT("emptyDescription")}
-            />
-
-            <div className="text-center">
-              <Link
-                href={`/area/${areaId}`}
-                className="text-sm text-link hover:text-link-active hover:underline transition-colors"
-              >
-                {datasetT("backToArea", { area: areaName })}
-              </Link>
-            </div>
-          </div>
-        </div>
+          <DatasetNoMapPage
+            areaId={areaId}
+            backLabel={datasetT("backToAreaLabel", { area: areaName })}
+            title={datasetT("datasetInArea", {
+              dataset: dataset.template.name,
+              area: areaName,
+            })}
+            lead={datasetT("stateNoData")}
+            description={datasetT("emptyDescription")}
+          />
+        </>
       );
     }
 
@@ -216,12 +203,6 @@ async function AreaTemplateDatasetView({
           templateName={template?.name ?? templateId}
           areaName={areaInfo ? resolveAreaName(areaInfo, locale) : String(areaId)}
           areaId={areaId}
-          overpassQuery={
-            template?.overpassQuery.replace(
-              /\{OSM_RELATION_ID\}/g,
-              String(areaId)
-            ) ?? null
-          }
         />
       );
     }

@@ -1,20 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { findUserByEmail, createUser } from "@/auth";
+import { isTestAuthEnabled } from "@/lib/test-auth";
+import { EmailSchema } from "@/schemas/auth";
 
 export async function POST(request: NextRequest) {
-  if (process.env.ENABLE_TEST_AUTH !== "true") {
+  if (!isTestAuthEnabled()) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
   try {
-    const { email } = await request.json();
+    const parsed = EmailSchema.safeParse((await request.json()).email);
 
-    if (!email || !email.includes("@")) {
+    if (!parsed.success) {
       return NextResponse.json(
         { error: "Valid email is required" },
         { status: 400 }
       );
     }
+
+    const email = parsed.data;
 
     let user = await findUserByEmail(email);
     if (!user) {
