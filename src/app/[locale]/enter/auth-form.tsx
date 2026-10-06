@@ -1,14 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { LAST_EMAIL_COOKIE } from "@/lib/last-email-cookie";
+
+function readLastEmail(): string {
+  try {
+    const match = document.cookie
+      .split("; ")
+      .find((c) => c.startsWith(`${LAST_EMAIL_COOKIE}=`));
+    return match
+      ? decodeURIComponent(match.slice(LAST_EMAIL_COOKIE.length + 1))
+      : "";
+  } catch {
+    return "";
+  }
+}
 
 export default function AuthForm() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<"email" | "sent">("email");
   const [error, setError] = useState("");
+  // Unticked by default: remembering the email needs the user's consent.
+  const [remember, setRemember] = useState(false);
   const t = useTranslations("AuthForm");
+
+  // After mount, not in useState: the page is statically rendered.
+  useEffect(() => {
+    const lastEmail = readLastEmail();
+    if (lastEmail) {
+      setEmail((typed) => typed || lastEmail);
+      setRemember(true);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,28 +47,20 @@ export default function AuthForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, remember }),
       });
 
-      if (response.status === 429) {
+      if (response.status === 400) {
+        setError(t("invalidEmail"));
+      } else if (response.status === 429) {
         setError(t("tooManyRequests"));
-        return;
+      } else if (!response.ok) {
+        setError(t("genericError"));
+      } else {
+        setStep("sent");
       }
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to send magic link");
-      }
-
-      // In development, log the magic link to console
-      if (data.magicLink) {
-        console.log("🔗 Magic link:", data.magicLink);
-      }
-
-      setStep("sent");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+    } catch {
+      setError(t("genericError"));
     } finally {
       setIsLoading(false);
     }
@@ -51,8 +69,7 @@ export default function AuthForm() {
   if (step === "sent") {
     return (
       <div className="text-center space-y-4">
-        {/* eslint-disable-next-line react/jsx-no-literals */}
-        <div className="text-2xl">📧</div>
+        <div className="text-2xl">{t("emailIcon")}</div>
         <div>
           <h3 className="font-medium text-black dark:text-white">
             {t("checkYourEmail")}
@@ -62,12 +79,9 @@ export default function AuthForm() {
           </p>
         </div>
 
-        <button
-          onClick={() => setStep("email")}
-          className="text-sm text-black/70 hover:text-black dark:text-white/70 dark:hover:text-white"
-        >
+        <Button variant="ghost" size="sm" onClick={() => setStep("email")}>
           {t("tryDifferentEmail")}
-        </button>
+        </Button>
       </div>
     );
   }
@@ -91,13 +105,25 @@ export default function AuthForm() {
         className="w-full py-3 px-4 border-2 border-black/20 dark:border-white/20 rounded-lg bg-transparent text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:border-black dark:focus:border-white outline-none"
       />
 
-      <button
+      <label className="flex items-center gap-2 text-sm text-black/70 dark:text-white/70">
+        <input
+          type="checkbox"
+          name="remember"
+          checked={remember}
+          onChange={(e) => setRemember(e.target.checked)}
+        />
+        {t("rememberEmail")}
+      </label>
+
+      <Button
         type="submit"
+        variant="primary"
+        size="lg"
+        className="w-full"
         disabled={!email || isLoading}
-        className="w-full py-3 bg-black dark:bg-white text-white dark:text-black rounded-lg font-medium disabled:opacity-50 hover:opacity-90 transition-opacity"
       >
         {isLoading ? t("sending") : t("continue")}
-      </button>
+      </Button>
     </form>
   );
 }
