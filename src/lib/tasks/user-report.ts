@@ -37,7 +37,7 @@ interface UserReportData {
   }>;
 }
 
-function getBaseUrl(): string {
+export function getBaseUrl(): string {
   return process.env.AUTH_URL || "https://osmforcities.com";
 }
 

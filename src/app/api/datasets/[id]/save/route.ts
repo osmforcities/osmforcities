@@ -20,7 +20,10 @@ export async function POST(
 
     const { id: datasetId } = await params;
 
-    const validatedData = SaveDatasetSchema.parse({ datasetId });
+    // The body is optional: a plain save sends none.
+    const body = await request.json().catch(() => ({}));
+    const validatedData = SaveDatasetSchema.parse({ ...body, datasetId });
+    const notifyWhenReady = validatedData.notifyWhenReady ?? false;
 
     const dataset = await prisma.dataset.findUnique({
       where: { id: datasetId },
@@ -39,6 +42,15 @@ export async function POST(
       },
     });
 
+    // Asking for the email on a dataset already saved: no new save, no quota.
+    if (existingSave && notifyWhenReady) {
+      const save = await prisma.datasetSave.update({
+        where: { id: existingSave.id },
+        data: { notifyWhenReady: true },
+      });
+      return NextResponse.json({ success: true, save });
+    }
+
     if (existingSave) {
       return NextResponse.json(
         { error: "Already saved this dataset" },
@@ -55,6 +67,7 @@ export async function POST(
         data: {
           userId: user.id,
           datasetId: validatedData.datasetId,
+          notifyWhenReady,
         },
       });
     });

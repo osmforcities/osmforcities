@@ -626,7 +626,8 @@
     "datasetsOther": "datasets",
     "templateDeprecated": "This template was removed from the catalog.",
     "templateDeprecatedDaysRemaining": "You have {days} day{days, plural, =1 {} other {s}} remaining before this dataset is deleted.",
-    "greeting": "Hi!"
+    "greeting": "Hi!",
+    "mapReady": "The map of {template} in {area} is ready."
   },
   "AboutPage": {
     "metaTitle": "About - OSM for Cities",

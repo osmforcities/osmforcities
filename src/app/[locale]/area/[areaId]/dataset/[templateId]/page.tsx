@@ -4,6 +4,7 @@ import { getTranslations, getLocale } from "next-intl/server";
 import { transformDataset } from "@/lib/dataset/transform";
 import { DatasetInteractiveSection } from "@/components/dataset/dataset-interactive-section";
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
+import { SaveAndNotifyButton } from "@/components/dataset/save-and-notify-button";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import { DatasetTooLargeError } from "@/lib/dataset-snapshot";
 import { getAreaDetailsById } from "@/lib/nominatim";
@@ -134,6 +135,7 @@ async function AreaTemplateDatasetView({
 
     // Check if current user has saved this dataset, and total save count for quota UI
     let isSaved = false;
+    let notifyRequested = false;
     let savedCount = 0;
     if (session?.user?.id) {
       const [saveRecord, count] = await Promise.all([
@@ -148,6 +150,7 @@ async function AreaTemplateDatasetView({
         prisma.datasetSave.count({ where: { userId: session.user.id } }),
       ]);
       isSaved = !!saveRecord;
+      notifyRequested = !!saveRecord?.notifyWhenReady;
       savedCount = count;
     }
 
@@ -179,6 +182,15 @@ async function AreaTemplateDatasetView({
             })}
             lead={datasetT("stateNoData")}
             description={datasetT("emptyDescription")}
+            action={
+              session?.user && (
+                <SaveAndNotifyButton
+                  datasetId={result.dataset.id}
+                  saved={notifyRequested}
+                  offer="mapped"
+                />
+              )
+            }
           />
         </>
       );

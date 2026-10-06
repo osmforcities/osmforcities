@@ -35,11 +35,15 @@ export function useDatasetActions() {
   };
 
   const saveDataset = async (
-    datasetId: string
+    datasetId: string,
+    notifyWhenReady?: boolean
   ): Promise<{ success: boolean; error?: string }> => {
     setIsLoading(true);
     try {
-      const validatedData = SaveDatasetSchema.parse({ datasetId });
+      const validatedData = SaveDatasetSchema.parse({
+        datasetId,
+        notifyWhenReady,
+      });
       const result: SaveResponse = await apiClient.post(
         `/api/datasets/${datasetId}/save`,
         SaveResponseSchema,

@@ -8,6 +8,7 @@ import {
 } from "@/lib/tiler/client";
 import { readPulledStats } from "@/lib/tiler/stats";
 import { pollPendingTileJobs, reconcileDataset } from "@/lib/tiler/poll";
+import { notifyDatasetReady } from "@/lib/tasks/notify-ready";
 
 vi.mock("@/lib/db", () => ({
   prisma: {
@@ -31,6 +32,10 @@ vi.mock("@/lib/tiler/client", async (importOriginal) => ({
 vi.mock("@/lib/tiler/stats", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/tiler/stats")>()),
   readPulledStats: vi.fn(),
+}));
+
+vi.mock("@/lib/tasks/notify-ready", () => ({
+  notifyDatasetReady: vi.fn(),
 }));
 
 const pendingRow = { id: "ds-1", tilesJobId: "ds-1-100" };
@@ -81,6 +86,7 @@ beforeEach(() => {
   // Non-null stored stats: the done branch skips the tiler stats fill.
   vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
     stats: {},
+    dataCount: 7,
   } as never);
   vi.mocked(downloadTileOutputs).mockResolvedValue(undefined);
   vi.mocked(ackTileJob).mockResolvedValue(undefined);
@@ -125,6 +131,9 @@ describe("pollPendingTileJobs", () => {
     expect(updateData(0).stats).toBeUndefined();
     expect(ackTileJob).toHaveBeenCalledWith("ds-1-100");
     expect(pruneTileArchives).toHaveBeenCalledWith("ds-1");
+    // The winner sends the map-ready mail once, with the stored count.
+    expect(notifyDatasetReady).toHaveBeenCalledTimes(1);
+    expect(notifyDatasetReady).toHaveBeenCalledWith("ds-1", 7);
   });
 
   it("fills stats from the tiler's stats.json for tiles-only datasets", async () => {
@@ -143,6 +152,8 @@ describe("pollPendingTileJobs", () => {
     expect(data.contributorsCount).toBe(3);
     expect(data.recentlyEditedCount).toBe(5);
     expect(data.bbox).toEqual([1, 2, 3, 4]);
+    // Tiles-only: the count the bake just wrote, not the stale row.
+    expect(notifyDatasetReady).toHaveBeenCalledWith("ds-1", 42);
     expect(data.lastEditedAt).toEqual(new Date("2026-01-01T00:00:00Z"));
 
     const stats = data.stats as Record<string, unknown>;
@@ -220,6 +231,7 @@ describe("pollPendingTileJobs", () => {
     const results = await pollPendingTileJobs();
 
     expect(results.failed).toBe(1);
+    expect(notifyDatasetReady).not.toHaveBeenCalled();
     expect(results.errors).toEqual([
       {
         datasetId: "ds-1",
@@ -332,9 +344,10 @@ describe("pollPendingTileJobs", () => {
     expect(
       await reconcileDataset(pendingRow, { id: "ds-1-100", state: "done" })
     ).toEqual({ outcome: "pending" });
-    // The loser of the done-race must not ack or prune — the winner does.
+    // The loser of the done-race must not ack, prune or mail — the winner does.
     expect(ackTileJob).not.toHaveBeenCalled();
     expect(pruneTileArchives).not.toHaveBeenCalled();
+    expect(notifyDatasetReady).not.toHaveBeenCalled();
     // Every write went through the conditional guard.
     for (const call of vi.mocked(prisma.dataset.updateMany).mock.calls) {
       expect(call[0].where).toEqual({
