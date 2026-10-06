@@ -86,6 +86,13 @@ describe("POST /api/datasets/[id]/save", () => {
     expect(prisma.datasetSave.update).not.toHaveBeenCalled();
   });
 
+  it("a malformed flag is a 400, not a 500", async () => {
+    const res = await post({ notifyWhenReady: "yes" });
+
+    expect(res.status).toBe(400);
+    expect(tx.datasetSave.create).not.toHaveBeenCalled();
+  });
+
   it("the quota applies unchanged", async () => {
     tx.datasetSave.count.mockResolvedValue(MAX_SAVES_PER_USER);
 
