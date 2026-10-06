@@ -112,15 +112,15 @@ jobs:
               citing `path:line` and, where a concrete fix exists, a fenced
               code block with the fix.
             - If nothing is blocking, say so briefly; do not pad.
-          # Reverted to the developmentseed baseline args to isolate the stub
-          # cause: no --model pin (uses the Claude Code default) and no
-          # --disallowedTools. Both were additions the original workflow lacked.
-          # Dropping the tool blocks is safe: the file-mutation tools aren't in
-          # the action's allowlist, so CI already blocks them without an
-          # explicit deny (non-allowlisted tools can't be interactively
-          # approved). The guard step below catches any stub regardless.
+          # Model pinned to Opus for review quality. The pin was dropped earlier
+          # to isolate the stub-comment cause; the guard step below now catches
+          # any stub, so the pin is back. No --disallowedTools: the
+          # file-mutation tools aren't in the action's allowlist, so CI already
+          # blocks them without an explicit deny (non-allowlisted tools can't
+          # be interactively approved).
           # Read/Glob/Grep are read-only and let it consult CODING_STANDARDS.md.
           claude_args: |
+            --model claude-opus-5-5
             --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Read,Glob,Grep"
 
       # The action has no built-in cost display, but its execution log's
