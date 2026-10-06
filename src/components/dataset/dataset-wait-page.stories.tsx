@@ -263,9 +263,10 @@ export const FailedNotReady: Story = {
 };
 
 /**
- * The count probe gave up before any row existed. Overpass load is usually
- * the cause, and the timed-out verdict is remembered for a short while, so the
- * person retries later. No row, so no offer.
+ * Overpass gave up before any row existed, on the count probe or on the
+ * feature fetch after it. Load is usually the cause, and the timed-out verdict
+ * is remembered for a short while, so the person retries later. No row, so no
+ * offer.
  */
 export const FailedTimedOut: Story = {
   args: {
@@ -278,9 +279,11 @@ export const FailedTimedOut: Story = {
     await expect(
       canvas.getByRole("heading", { name: "Buildings in São Paulo" })
     ).toBeInTheDocument();
-    await expect(canvas.getByText("Counting took too long.")).toBeInTheDocument();
     await expect(
-      canvas.getByText(/Try again in 30 minutes/)
+      canvas.getByText("The data took too long to load.")
+    ).toBeInTheDocument();
+    await expect(
+      canvas.getByText(/Try again in at most 30 minutes/)
     ).toBeInTheDocument();
     await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     await expect(
