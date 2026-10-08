@@ -98,6 +98,7 @@ export default function AuthForm() {
         type="email"
         name="email"
         autoComplete="email"
+        aria-describedby="sign-in-notice"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder={t("emailPlaceholder")}
@@ -124,6 +125,13 @@ export default function AuthForm() {
       >
         {isLoading ? t("sending") : t("continue")}
       </Button>
+
+      <p
+        id="sign-in-notice"
+        className="text-xs text-center text-black/70 dark:text-white/70"
+      >
+        {t("signInNotice")}
+      </p>
     </form>
   );
 }

@@ -118,7 +118,6 @@
     "metaTitle": "Connexion - OSM for Cities",
     "metaDescription": "Connectez-vous pour suivre les jeux de données OpenStreetMap",
     "signIn": "Se connecter",
-    "enterEmailToStart": "Saisissez votre e-mail pour commencer",
     "notFound": "Introuvable",
     "testAuthNotEnabled": "L'authentification de test n'est pas activée.",
     "signInWithEmailPassword": "Connectez-vous avec votre e-mail et votre mot de passe",
@@ -229,7 +228,8 @@
     "emailPlaceholder": "E-mail",
     "sending": "Envoi...",
     "continue": "Continuer",
-    "emailIcon": "📧"
+    "emailIcon": "📧",
+    "signInNotice": "Ce site n'utilise pas de mots de passe. Nous vous enverrons un lien magique par e-mail pour vous connecter. En dehors de cela, nous ne vous écrivons qu'au sujet des jeux de données que vous enregistrez, et vous pouvez le désactiver dans les Préférences."
   },
   "AreaPage": {
     "backToHome": "← Retour à l'accueil",
