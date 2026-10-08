@@ -247,6 +247,26 @@ describe("countOverpassElements", () => {
     );
   });
 
+  it("throws OverpassTimeoutError when the timeout fires while reading the body", async () => {
+    // Overpass sends the 200 headers at once and the body only when the query
+    // ends, so the abort usually lands in json(), not in fetch()
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: () =>
+          Promise.reject(
+            new DOMException("The operation was aborted due to timeout", "TimeoutError")
+          ),
+      } as unknown as Response)
+    );
+
+    await expect(countOverpassElements("query")).rejects.toThrow(
+      OverpassTimeoutError
+    );
+  });
+
   it("treats a 200 + remark (timed out / out of memory) as a timeout", async () => {
     vi.stubGlobal(
       "fetch",

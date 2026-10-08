@@ -7,14 +7,20 @@ import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { SaveAndNotifyButton } from "@/components/dataset/save-and-notify-button";
 import { tilerEnabled } from "@/lib/tiler/client";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
-import { DatasetTooLargeError } from "@/lib/dataset-snapshot";
+import {
+  DatasetSizeCheckTimeoutError,
+  DatasetTooLargeError,
+} from "@/lib/dataset-snapshot";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { resolveAreaName } from "@/lib/area-name";
 import {
   isValidTemplateIdentifier,
   resolveTemplate,
 } from "@/lib/template-resolver";
+import { resolveTemplateForLocale } from "@/lib/template-locale";
+import type { Area } from "@/types/area";
 import { DatasetLoadingSkeleton } from "@/components/ui/dataset-loading-skeleton";
+import { DatasetWaitPage } from "@/components/dataset/dataset-wait-page";
 import {
   TemplateNotFoundError,
   AreaNotFoundError,
@@ -51,42 +57,48 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
   }
 
   const locale = await getLocale();
-  const session = await auth();
-  if (!session?.user) {
-    const [template, areaInfo] = await Promise.all([
-      resolveTemplate(templateId),
-      getAreaDetailsById(osmRelationId, locale),
-    ]);
+  const [session, template, areaInfo] = await Promise.all([
+    auth(),
+    resolveTemplate(templateId),
+    getAreaDetailsById(osmRelationId, locale),
+  ]);
 
-    if (!template) {
-      return <TemplateNotFoundError templateId={templateId} />;
-    }
+  if (!template) {
+    return <TemplateNotFoundError templateId={templateId} />;
+  }
+
+  // Known before the dataset exists, so the wait screens can name it
+  const templateName = resolveTemplateForLocale(template, locale).name;
+  const areaName = areaInfo
+    ? resolveAreaName(areaInfo, locale)
+    : String(osmRelationId);
+
+  const existing = await prisma.dataset.findFirst({
+    where: { areaId: osmRelationId, templateId: template.id, isActive: true },
+    select: { isFeatured: true },
+  });
+
+  const view = (
+    <AreaTemplateDatasetView
+      areaId={osmRelationId}
+      templateId={templateId}
+      templateName={templateName}
+      areaInfo={areaInfo}
+      areaName={areaName}
+      locale={locale}
+      session={session}
+    />
+  );
+
+  if (!session?.user) {
     if (!areaInfo) {
       return <AreaNotFoundError areaId={areaId} />;
     }
 
     // Featured datasets are public: render the full view without a session.
-    // Direct lookup only — anonymous visits must not create datasets.
-    const featuredDataset = await prisma.dataset.findFirst({
-      where: {
-        areaId: osmRelationId,
-        templateId: template.id,
-        isActive: true,
-        isFeatured: true,
-      },
-      select: { id: true },
-    });
-
-    if (featuredDataset) {
-      return (
-        <Suspense fallback={<DatasetLoadingSkeleton />}>
-          <AreaTemplateDatasetView
-            areaId={osmRelationId}
-            templateId={templateId}
-            session={null}
-          />
-        </Suspense>
-      );
+    // Anonymous visits must not create datasets.
+    if (existing?.isFeatured) {
+      return <Suspense fallback={<DatasetLoadingSkeleton />}>{view}</Suspense>;
     }
 
     return (
@@ -96,21 +108,32 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
           url={`/area/${areaId}/dataset/${encodeURIComponent(templateId)}/upsell`}
         />
         <DatasetUpsellPage
-          datasetName={template.name}
-          areaName={resolveAreaName(areaInfo, locale)}
+          datasetName={templateName}
+          areaName={areaName}
           areaId={areaId}
         />
       </>
     );
   }
 
+  // A missing row means the view counts elements before creating it, which
+  // can take a while: show the counting screen instead of a skeleton.
   return (
-    <Suspense fallback={<DatasetLoadingSkeleton />}>
-      <AreaTemplateDatasetView
-        areaId={osmRelationId}
-        templateId={templateId}
-        session={session}
-      />
+    <Suspense
+      fallback={
+        existing ? (
+          <DatasetLoadingSkeleton />
+        ) : (
+          <DatasetWaitPage
+            mood="counting"
+            templateName={templateName}
+            areaName={areaName}
+            areaId={osmRelationId}
+          />
+        )
+      }
+    >
+      {view}
     </Suspense>
   );
 }
@@ -118,21 +141,25 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
 async function AreaTemplateDatasetView({
   areaId,
   templateId,
+  templateName,
+  areaInfo,
+  areaName: fallbackAreaName,
+  locale,
   session,
 }: {
   areaId: number;
   templateId: string;
+  templateName: string;
+  areaInfo: Area | null;
+  /** Shown on failure screens, before any dataset row can name the area */
+  areaName: string;
+  locale: string;
   session: Awaited<ReturnType<typeof auth>> | null;
 }) {
-  const locale = await getLocale();
-
   try {
-    const [result, areaInfo] = await Promise.all([
-      getOrCreateDataset(areaId, templateId, locale, {
-        allowCreate: !!session?.user,
-      }),
-      getAreaDetailsById(areaId, locale),
-    ]);
+    const result = await getOrCreateDataset(areaId, templateId, locale, {
+      allowCreate: !!session?.user,
+    });
 
     // Check if current user has saved this dataset, and total save count for quota UI
     let isSaved = false;
@@ -208,14 +235,21 @@ async function AreaTemplateDatasetView({
     );
   } catch (error) {
     if (error instanceof DatasetTooLargeError) {
-      const [template, areaInfo] = await Promise.all([
-        resolveTemplate(templateId),
-        getAreaDetailsById(areaId, locale),
-      ]);
       return (
         <DatasetTooLargeState
-          templateName={template?.name ?? templateId}
-          areaName={areaInfo ? resolveAreaName(areaInfo, locale) : String(areaId)}
+          templateName={templateName}
+          areaName={fallbackAreaName}
+          areaId={areaId}
+        />
+      );
+    }
+
+    if (error instanceof DatasetSizeCheckTimeoutError) {
+      return (
+        <DatasetWaitPage
+          mood="timedOut"
+          templateName={templateName}
+          areaName={fallbackAreaName}
           areaId={areaId}
         />
       );

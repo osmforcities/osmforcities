@@ -132,11 +132,13 @@
     "tilesStageConverting": "Convertendo elementos ({pct, number}%)",
     "tilesStageBaking": "Gerando tiles do mapa ({pct, number}%)",
     "tilesStageCounting": "Calculando o tamanho",
+    "tilesStageCountingCold": "Ainda calculando o tamanho, área grande",
     "stepLine": "Etapa {step} de {total}",
     "datasetInArea": "{dataset} em {area}",
     "stateBakeFailed": "Falha na geração.",
     "stateTooLarge": "Grande demais para gerar.",
     "stateNoData": "Ainda sem dados.",
+    "stateCountTimedOut": "Os dados demoraram demais para carregar.",
     "tilesFailedTitle": "Falha no processamento do mapa",
     "tilesFailedTooLarge": "Este conjunto de dados é grande demais para processar agora.",
     "tilesFailedGeneric": "Algo deu errado ao processar os dados do mapa.",
@@ -146,6 +148,7 @@
     "notifyCtaIfMapped": "Salvar e me avisar por e-mail se for mapeado",
     "notifyConfirmed": "Salvo. Você receberá um e-mail quando o mapa estiver pronto.",
     "tilesFailedDescription": "A próxima atualização programada tentará novamente.",
+    "countTimedOutDescription": "A área pode ser muito grande ou o servidor estar ocupado. Tente novamente em até {minutes, plural, one {# minuto} other {# minutos}}.",
     "backToHome": "Voltar ao Início",
     "emptyDescription": "Podem não existir aqui, ou ninguém os mapeou ainda no OpenStreetMap.",
     "tooLargeDescription": "Este conjunto de dados excede a capacidade atual do servidor, o que é esperado em grandes regiões metropolitanas ou com geometrias muito detalhadas.",
@@ -618,10 +621,6 @@
       "contact": "Contato",
       "github": "GitHub"
     }
-  },
-  "DatasetLoading": {
-    "creatingDataset": "Criando Conjunto de Dados",
-    "thisUsuallyTakesLessThan30Seconds": "Isso geralmente leva menos de 30 segundos"
   },
   "Email": {
     "magicLinkSubject": "Entrar no OSM for Cities",

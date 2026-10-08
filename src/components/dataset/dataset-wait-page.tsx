@@ -1,12 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { ProgressBar } from "@/components/ui/progress-bar";
+import {
+  COUNT_REQUEST_TIMEOUT_MS,
+  SIZE_CHECK_TIMEOUT_TTL_MINUTES,
+} from "@/lib/constants";
 
 type TilesStatus = {
   state: "pending" | "done" | "failed" | "none";
@@ -35,20 +39,27 @@ function isStage(value: unknown): value is Stage {
 }
 
 type DatasetWaitPageProps = {
-  datasetId: string;
+  /** Absent while counting: the row does not exist until the count passes. */
+  datasetId?: string;
   templateName: string;
   areaName: string;
   areaId: number;
-  /** Counting is the probe before any tiler job; baking polls the tiler. */
-  mood: "counting" | "baking" | "failed";
+  /**
+   * Counting is the probe before any bake; baking polls the tiler.
+   * Failed will be retried by the next scheduled update; timedOut is Overpass
+   * giving up (count or feature fetch) before any row existed.
+   */
+  mood: "counting" | "baking" | "failed" | "timedOut";
+  /** Overrides when counting switches to the large-area label. */
+  coldAfterMs?: number;
   /** The save-and-email button. Nothing renders in its place without it. */
   notify?: ReactNode;
 };
 
 /**
- * The whole page while a dataset has no map to show: the size probe is
- * running, the bake is running, or it failed in a way the next scheduled
- * update will retry. A permanent refusal is a different screen
+ * The whole page while a dataset has no map to show: the count probe is
+ * running, the bake is running, or one of them failed in a way that can
+ * still succeed later. A permanent refusal is a different screen
  * (DatasetTooLargeState) picked on the server, because only the server reads
  * the tiler's error.
  */
@@ -58,12 +69,19 @@ export function DatasetWaitPage({
   areaName,
   areaId,
   mood,
+  coldAfterMs = COUNT_REQUEST_TIMEOUT_MS,
   notify,
 }: DatasetWaitPageProps) {
   const t = useTranslations("DatasetPage");
   const router = useRouter();
   const baking = mood === "baking";
-  const waiting = mood !== "failed";
+  const [cold, setCold] = useState(false);
+
+  useEffect(() => {
+    if (mood !== "counting") return;
+    const timer = setTimeout(() => setCold(true), coldAfterMs);
+    return () => clearTimeout(timer);
+  }, [mood, coldAfterMs]);
 
   // Only the bake has anything to poll. A fetch error leaves data unset, so
   // the interval keeps firing through transient blips and stops only on a
@@ -103,7 +121,7 @@ export function DatasetWaitPage({
 
   const stageLabel =
     stage === "counting"
-      ? t("tilesStageCounting")
+      ? t(cold ? "tilesStageCountingCold" : "tilesStageCounting")
       : stage === "fetching"
         ? t("tilesStageFetching", { mb: mb ?? 0 })
         : stage === "converting"
@@ -112,18 +130,30 @@ export function DatasetWaitPage({
             ? t("tilesStageBaking", { pct: Math.round(pct ?? 0) })
             : t("tilesStageQueued");
 
+  const failure =
+    mood === "timedOut"
+      ? {
+          lead: t("stateCountTimedOut"),
+          description: t("countTimedOutDescription", {
+            minutes: SIZE_CHECK_TIMEOUT_TTL_MINUTES,
+          }),
+        }
+      : mood === "failed"
+        ? { lead: t("stateBakeFailed"), description: t("tilesFailedDescription") }
+        : null;
+
   return (
     <div data-testid={`dataset-${mood}-page`}>
       <DatasetNoMapPage
         areaId={areaId}
         backLabel={t("backToAreaLabel", { area: areaName })}
-        tone={waiting ? "processing" : "warning"}
+        tone={failure ? "warning" : "processing"}
         title={t("datasetInArea", { dataset: templateName, area: areaName })}
-        lead={waiting ? undefined : t("stateBakeFailed")}
+        lead={failure?.lead}
         // The stage label and step say everything a waiting person needs;
         // a sentence under them only repeated it.
         progress={
-          waiting && (
+          !failure && (
             <div className="space-y-2" aria-live="polite">
               <p className="text-sm text-gray-900">{stageLabel}</p>
               <ProgressBar value={pct} label={stageLabel} />
@@ -136,7 +166,7 @@ export function DatasetWaitPage({
             </div>
           )
         }
-        description={waiting ? undefined : t("tilesFailedDescription")}
+        description={failure?.description}
         action={notify}
       />
     </div>

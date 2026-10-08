@@ -61,12 +61,11 @@ type Story = StoryObj<typeof meta>;
 const notify = <NotifyWhenReadyButton />;
 
 /**
- * Step 1: the app's own count probe, before any bake. Nothing to poll, and no
- * row to save yet, so no offer.
+ * Step 1: the app's own count probe, before any bake and before any row
+ * exists. Nothing to poll, nothing to save yet, so no offer.
  */
-export const Counting: Story = {
+export const CountingWarm: Story = {
   args: {
-    datasetId: "ds-delft-buildings",
     templateName: "Buildings",
     areaName: "Delft",
     areaId: 324431,
@@ -81,6 +80,27 @@ export const Counting: Story = {
     await expect(canvas.getByRole("progressbar")).not.toHaveAttribute(
       "aria-valuenow"
     );
+  },
+};
+
+/**
+ * The first count attempt gave up and a retry is running. The label carries
+ * the honesty, since waiting screens have no sentence. The real page flips
+ * at 30 s; the story flips at once.
+ */
+export const CountingCold: Story = {
+  args: {
+    ...CountingWarm.args,
+    areaName: "São Paulo",
+    areaId: 298285,
+    coldAfterMs: 0,
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      await canvas.findByText("Still calculating size, large area")
+    ).toBeInTheDocument();
+    await expect(canvas.queryByText("Calculating size")).not.toBeInTheDocument();
+    await expect(canvas.getByText("Step 1 of 5")).toBeInTheDocument();
   },
 };
 
@@ -243,6 +263,36 @@ export const FailedNotReady: Story = {
 };
 
 /**
+ * Overpass gave up before any row existed, on the count probe or on the
+ * feature fetch after it. Load is usually the cause, and the timed-out verdict
+ * is remembered for a short while, so the person retries later. No row, so no
+ * offer.
+ */
+export const FailedTimedOut: Story = {
+  args: {
+    templateName: "Buildings",
+    areaName: "São Paulo",
+    areaId: 298285,
+    mood: "timedOut",
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole("heading", { name: "Buildings in São Paulo" })
+    ).toBeInTheDocument();
+    await expect(
+      canvas.getByText("The data took too long to load.")
+    ).toBeInTheDocument();
+    await expect(
+      canvas.getByText(/Try again in at most 30 minutes/)
+    ).toBeInTheDocument();
+    await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await expect(
+      canvas.getByRole("link", { name: "Back to São Paulo" })
+    ).toBeInTheDocument();
+  },
+};
+
+/**
  * The other half of the failure split. A tiler refusal is permanent, so it
  * lands on the existing too-large screen — same dead end as a query the app
  * refuses up front.
@@ -275,6 +325,38 @@ export const FailedTooLarge: Story = {
       canvas.getByRole("button", {
         name: /Save and email me if it becomes available/,
       })
+    ).toBeInTheDocument();
+  },
+};
+
+/**
+ * The count probe refused the area with the tiles-only lane off. Same screen
+ * as the tiler refusal, but no row exists yet, so no offer.
+ */
+export const FailedTooLargeAtCount: Story = {
+  args: {
+    templateName: "Buildings",
+    areaName: "Tokyo",
+    areaId: 1543125,
+    mood: "failed",
+  },
+  render: (args) => (
+    <DatasetTooLargeState
+      templateName={args.templateName}
+      areaName={args.areaName}
+      areaId={args.areaId}
+    />
+  ),
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole("heading", { name: "Buildings in Tokyo" })
+    ).toBeInTheDocument();
+    await expect(canvas.getByText("Too large to bake.")).toBeInTheDocument();
+    await expect(
+      canvas.queryByRole("button", { name: /email me/i })
+    ).not.toBeInTheDocument();
+    await expect(
+      canvas.getByRole("link", { name: "Back to Tokyo" })
     ).toBeInTheDocument();
   },
 };
