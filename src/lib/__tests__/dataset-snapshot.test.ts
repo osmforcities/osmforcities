@@ -371,6 +371,26 @@ describe("fetchDatasetSnapshot", () => {
     );
     expect(fetchSpy).not.toHaveBeenCalled();
   });
+
+  // A provider timeout must not be stored as an area that has none of the feature.
+  it("records a timeout verdict when Overpass answers the data query with a remark", async () => {
+    vi.stubGlobal(
+      "fetch",
+      mockFetchImplementation({
+        elements: [],
+        remark: "runtime error: Query timed out",
+      })
+    );
+
+    await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
+      DatasetSizeCheckTimeoutError
+    );
+    expect(upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({ status: "timeout" }),
+      })
+    );
+  });
 });
 
 describe("fetchDatasetSnapshot — tiles-only lane", () => {
