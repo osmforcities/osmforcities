@@ -126,7 +126,7 @@ export default function AuthForm() {
       </Button>
 
       <p className="text-xs text-center text-black/50 dark:text-white/50">
-        {t("newAccountNotice")}
+        {t("signInNotice")}
       </p>
     </form>
   );

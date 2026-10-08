@@ -118,7 +118,6 @@
     "metaTitle": "Entrar - OSM for Cities",
     "metaDescription": "Entre para monitorar conjuntos de dados do OpenStreetMap",
     "signIn": "Entrar",
-    "signInLinkNotice": "Sem senha: enviamos um link novo por email cada vez que você entra.",
     "notFound": "Não Encontrado",
     "testAuthNotEnabled": "A autenticação de teste não está habilitada.",
     "signInWithEmailPassword": "Entre com seu e-mail e senha",
@@ -230,7 +229,7 @@
     "sending": "Enviando...",
     "continue": "Continuar",
     "emailIcon": "📧",
-    "newAccountNotice": "Email novo? Criamos uma conta. Ela recebe um email diário quando seus conjuntos de dados salvos mudam; dá para desativar em Preferências."
+    "signInNotice": "Este site não usa senhas. Vamos enviar um link mágico para o seu email para você entrar. Contas novas recebem um email diário quando conjuntos de dados salvos mudam; dá para desativar em Preferências."
   },
   "AreaPage": {
     "backToHome": "← Voltar ao Início",

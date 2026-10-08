@@ -118,7 +118,6 @@
     "metaTitle": "Sign In - OSM for Cities",
     "metaDescription": "Sign in to monitor OpenStreetMap datasets",
     "signIn": "Sign In",
-    "signInLinkNotice": "No password: we email you a new sign-in link each time.",
     "notFound": "Not Found",
     "testAuthNotEnabled": "Test authentication is not enabled.",
     "signInWithEmailPassword": "Sign in with your email and password",
@@ -230,7 +229,7 @@
     "sending": "Sending...",
     "continue": "Continue",
     "emailIcon": "📧",
-    "newAccountNotice": "New email address? We'll create an account. It gets a daily email when your saved datasets change, which you can turn off in Preferences."
+    "signInNotice": "This site doesn't use passwords. We'll email you a magic link to sign in. New accounts get a daily email when saved datasets change; turn it off in Preferences."
   },
   "AreaPage": {
     "backToHome": "← Back to Home",

@@ -118,7 +118,6 @@
     "metaTitle": "Anmelden - OSM for Cities",
     "metaDescription": "Melde dich an, um OpenStreetMap-Datensätze zu beobachten",
     "signIn": "Anmelden",
-    "signInLinkNotice": "Kein Passwort: Wir schicken dir bei jeder Anmeldung einen neuen Link per E-Mail.",
     "notFound": "Nicht gefunden",
     "testAuthNotEnabled": "Die Test-Authentifizierung ist nicht aktiviert.",
     "signInWithEmailPassword": "Melde dich mit E-Mail-Adresse und Passwort an",
@@ -230,7 +229,7 @@
     "sending": "Wird gesendet...",
     "continue": "Weiter",
     "emailIcon": "📧",
-    "newAccountNotice": "Neue E-Mail-Adresse? Dann erstellen wir ein Konto. Es bekommt eine tägliche E-Mail, wenn sich deine gespeicherten Datensätze ändern; das kannst du in den Einstellungen deaktivieren."
+    "signInNotice": "Diese Website verwendet keine Passwörter. Wir schicken dir einen Anmeldelink per E-Mail. Neue Konten bekommen eine tägliche E-Mail, wenn sich gespeicherte Datensätze ändern; das kannst du in den Einstellungen deaktivieren."
   },
   "AreaPage": {
     "backToHome": "← Zurück zur Startseite",
