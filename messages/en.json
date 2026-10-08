@@ -365,8 +365,10 @@
     "searchPlaceholder": "Search templates..."
   },
   "PreferencesPage": {
-    "emailPreferences": "Email Preferences",
-    "reports": "Reports",
+    "title": "Preferences",
+    "language": "Language",
+    "languageDescription": "Used across the site and in the emails you receive.",
+    "reports": "Email reports",
     "reportsDescription": "Receive email updates when your saved datasets have changes."
   },
   "PreferencesForm": {

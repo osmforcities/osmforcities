@@ -365,8 +365,10 @@
     "searchPlaceholder": "Rechercher des modèles..."
   },
   "PreferencesPage": {
-    "emailPreferences": "Préférences d'e-mail",
-    "reports": "Rapports",
+    "title": "Préférences",
+    "language": "Langue",
+    "languageDescription": "Utilisée sur tout le site et dans les e-mails que vous recevez.",
+    "reports": "Rapports par e-mail",
     "reportsDescription": "Recevez des e-mails lorsque vos jeux de données enregistrés changent."
   },
   "PreferencesForm": {
