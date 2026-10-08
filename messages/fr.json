@@ -229,7 +229,7 @@
     "sending": "Envoi...",
     "continue": "Continuer",
     "emailIcon": "📧",
-    "signInNotice": "Ce site n'utilise pas de mots de passe. Nous vous enverrons un lien magique par e-mail pour vous connecter. Les nouveaux comptes reçoivent un e-mail quotidien quand les jeux de données enregistrés changent. Vous pouvez le désactiver dans les Préférences."
+    "signInNotice": "Ce site n'utilise pas de mots de passe. Nous vous enverrons un lien magique par e-mail pour vous connecter. En dehors de cela, nous ne vous écrivons qu'au sujet des jeux de données que vous enregistrez, et vous pouvez le désactiver dans les Préférences."
   },
   "AreaPage": {
     "backToHome": "← Retour à l'accueil",

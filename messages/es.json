@@ -229,7 +229,7 @@
     "sending": "Enviando...",
     "continue": "Continuar",
     "emailIcon": "📧",
-    "signInNotice": "Este sitio no usa contraseñas. Te enviaremos un enlace mágico por email para iniciar sesión. Las cuentas nuevas reciben un email diario cuando cambian los conjuntos de datos guardados. Puedes desactivarlo en Preferencias."
+    "signInNotice": "Este sitio no usa contraseñas. Te enviaremos un enlace mágico por email para iniciar sesión. Aparte de eso, solo te escribimos sobre los conjuntos de datos que guardes, y puedes desactivarlo en Preferencias."
   },
   "AreaPage": {
     "backToHome": "← Volver al Inicio",

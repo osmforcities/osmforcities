@@ -229,7 +229,7 @@
     "sending": "Wird gesendet...",
     "continue": "Weiter",
     "emailIcon": "📧",
-    "signInNotice": "Diese Website verwendet keine Passwörter. Wir schicken dir einen Anmeldelink per E-Mail. Neue Konten bekommen eine tägliche E-Mail, wenn sich gespeicherte Datensätze ändern. Du kannst sie in den Einstellungen deaktivieren."
+    "signInNotice": "Diese Website verwendet keine Passwörter. Wir schicken dir einen Anmeldelink per E-Mail. Ansonsten schreiben wir dir nur zu Datensätzen, die du speicherst, und das kannst du in den Einstellungen deaktivieren."
   },
   "AreaPage": {
     "backToHome": "← Zurück zur Startseite",

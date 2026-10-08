@@ -229,7 +229,7 @@
     "sending": "Sending...",
     "continue": "Continue",
     "emailIcon": "📧",
-    "signInNotice": "This site doesn't use passwords. We'll email you a magic link to sign in. New accounts get a daily email when saved datasets change. You can turn it off in Preferences."
+    "signInNotice": "This site doesn't use passwords. We'll email you a magic link to sign in. Beyond that, we only email you about datasets you save, and you can turn that off in Preferences."
   },
   "AreaPage": {
     "backToHome": "← Back to Home",
