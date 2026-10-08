@@ -55,7 +55,7 @@ export function Select<T extends string>({
         <SelectValue />
         <ChevronDown size={16} aria-hidden className="text-gray-500" />
       </Button>
-      <Popover className="min-w-[--trigger-width] rounded border border-gray-200 bg-white shadow-xl">
+      <Popover className="min-w-(--trigger-width) rounded border border-gray-200 bg-white shadow-xl">
         <ListBox className="py-1 outline-none">
           {options.map((option) => (
             <ListBoxItem
