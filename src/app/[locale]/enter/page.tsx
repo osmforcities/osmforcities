@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import AuthForm from "../auth-form";
+import AuthForm from "./auth-form";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
 import { routing } from "@/i18n/routing";
@@ -40,9 +40,6 @@ export default async function EnterPage({
             <h1 className="text-2xl font-semibold text-black dark:text-white">
               {t("signIn")}
             </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-              {t("enterEmailToStart")}
-            </p>
           </div>
 
           <AuthForm />

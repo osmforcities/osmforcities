@@ -118,7 +118,6 @@
     "metaTitle": "Entrar - OSM for Cities",
     "metaDescription": "Entre para monitorar conjuntos de dados do OpenStreetMap",
     "signIn": "Entrar",
-    "enterEmailToStart": "Digite seu email para começar",
     "notFound": "Não Encontrado",
     "testAuthNotEnabled": "A autenticação de teste não está habilitada.",
     "signInWithEmailPassword": "Entre com seu e-mail e senha",
@@ -226,10 +225,14 @@
     "sentLinkTo": "Enviamos um link para {email}",
     "tryDifferentEmail": "Tentar email diferente",
     "tooManyRequests": "Muitas solicitações de login para este email. Tente novamente mais tarde.",
+    "invalidEmail": "Informe um endereço de email válido.",
+    "genericError": "Algo deu errado. Tente novamente.",
+    "rememberEmail": "Lembrar meu email neste dispositivo (usa um cookie)",
     "emailPlaceholder": "Email",
     "sending": "Enviando...",
     "continue": "Continuar",
-    "emailIcon": "📧"
+    "emailIcon": "📧",
+    "signInNotice": "Este site não usa senhas. Vamos enviar um link mágico para o seu email para você entrar. Fora isso, só enviamos emails sobre os conjuntos de dados que você salvar, e você pode desativar isso em Preferências."
   },
   "AreaPage": {
     "backToHome": "← Voltar ao Início",
@@ -365,8 +368,10 @@
     "searchPlaceholder": "Pesquisar modelos..."
   },
   "PreferencesPage": {
-    "emailPreferences": "Preferências de Email",
-    "reports": "Relatórios",
+    "title": "Preferências",
+    "language": "Idioma",
+    "languageDescription": "Usado em todo o site e nos e-mails que você recebe.",
+    "reports": "Relatórios por e-mail",
     "reportsDescription": "Receba atualizações por e-mail quando seus conjuntos de dados salvos tiverem alterações."
   },
   "PreferencesForm": {

@@ -15,10 +15,13 @@ const OVERPASS_API_URL =
 
 const FETCH_REQUEST_TIMEOUT_MS = 180_000;
 
-/** Overpass request aborted because it exceeded the allowed time */
+/**
+ * Overpass request aborted because it exceeded the allowed time, or Overpass
+ * gave up on the query itself (HTTP 200 + remark: timeout, out of memory)
+ */
 export class OverpassTimeoutError extends Error {
-  constructor() {
-    super("Overpass request timed out");
+  constructor(message = "Overpass request timed out") {
+    super(message);
     this.name = "OverpassTimeoutError";
   }
 }
@@ -90,13 +93,36 @@ export async function executeOverpassQuery(
     throw new Error(`Overpass API error: ${response.status}`);
   }
 
-  const data = await response.json();
+  return parseOverpassBody(await response.text());
+}
+
+/**
+ * Overpass reports failures inside HTTP 200 bodies. A remark means the query
+ * was cut short (timeout, out of memory): returning its elements would store
+ * a provider failure as an area that has none of the feature.
+ */
+function parseOverpassBody(text: string): OverpassResponse {
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error("Overpass API returned non-JSON response");
+  }
 
   const errorValidation = OverpassErrorSchema.safeParse(data);
   if (errorValidation.success) {
     throw new Error(
       `Overpass API error: ${errorValidation.data.error.message}`
     );
+  }
+
+  if (data?.remark) {
+    throw new OverpassTimeoutError(`Overpass API error: ${data.remark}`);
+  }
+
+  // Envelope only: convertOverpassToGeoJSON drops malformed elements one by one
+  if (!Array.isArray(data?.elements)) {
+    throw new Error("Overpass API returned an unexpected response shape");
   }
 
   return data as OverpassResponse;
@@ -231,16 +257,7 @@ export async function executeOverpassQueryWithByteLimit(
     }
   }
 
-  const data = JSON.parse(text);
-
-  const errorValidation = OverpassErrorSchema.safeParse(data);
-  if (errorValidation.success) {
-    throw new Error(
-      `Overpass API error: ${errorValidation.data.error.message}`
-    );
-  }
-
-  return data as OverpassResponse;
+  return parseOverpassBody(text);
 }
 
 export function convertOverpassToGeoJSON(

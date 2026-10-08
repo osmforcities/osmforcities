@@ -118,7 +118,6 @@
     "metaTitle": "Connexion - OSM for Cities",
     "metaDescription": "Connectez-vous pour suivre les jeux de données OpenStreetMap",
     "signIn": "Se connecter",
-    "enterEmailToStart": "Saisissez votre e-mail pour commencer",
     "notFound": "Introuvable",
     "testAuthNotEnabled": "L'authentification de test n'est pas activée.",
     "signInWithEmailPassword": "Connectez-vous avec votre e-mail et votre mot de passe",
@@ -226,10 +225,14 @@
     "sentLinkTo": "Nous avons envoyé un lien à {email}",
     "tryDifferentEmail": "Essayer une autre adresse",
     "tooManyRequests": "Trop de demandes de connexion pour cette adresse. Réessayez plus tard.",
+    "invalidEmail": "Saisissez une adresse e-mail valide.",
+    "genericError": "Une erreur s'est produite. Réessayez.",
+    "rememberEmail": "Se souvenir de mon adresse sur cet appareil (utilise un cookie)",
     "emailPlaceholder": "E-mail",
     "sending": "Envoi...",
     "continue": "Continuer",
-    "emailIcon": "📧"
+    "emailIcon": "📧",
+    "signInNotice": "Ce site n'utilise pas de mots de passe. Nous vous enverrons un lien magique par e-mail pour vous connecter. En dehors de cela, nous ne vous écrivons qu'au sujet des jeux de données que vous enregistrez, et vous pouvez le désactiver dans les Préférences."
   },
   "AreaPage": {
     "backToHome": "← Retour à l'accueil",
@@ -365,8 +368,10 @@
     "searchPlaceholder": "Rechercher des modèles..."
   },
   "PreferencesPage": {
-    "emailPreferences": "Préférences d'e-mail",
-    "reports": "Rapports",
+    "title": "Préférences",
+    "language": "Langue",
+    "languageDescription": "Utilisée sur tout le site et dans les e-mails que vous recevez.",
+    "reports": "Rapports par e-mail",
     "reportsDescription": "Recevez des e-mails lorsque vos jeux de données enregistrés changent."
   },
   "PreferencesForm": {
