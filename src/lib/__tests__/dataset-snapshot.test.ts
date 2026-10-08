@@ -373,7 +373,7 @@ describe("fetchDatasetSnapshot", () => {
   });
 
   // A provider timeout must not be stored as an area that has none of the feature.
-  it("records a timeout verdict when the data fetch returns a remark", async () => {
+  it("records a timeout verdict when Overpass answers the data query with a remark", async () => {
     vi.stubGlobal(
       "fetch",
       mockFetchImplementation({
