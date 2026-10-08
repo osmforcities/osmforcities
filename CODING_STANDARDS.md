@@ -21,7 +21,7 @@ How code in this repo should be written. Reviewers (human and agent) check chang
 - Use ICU placeholders and plurals (`{count, plural, ...}`), never concatenated fragments.
 - Plain, accurate copy: no pipeline jargon, no promises the app does not keep, no description repeating its heading.
 - Group controls under a heading that names what they affect.
-- When the English CTA is first person ("Email me"), translations are too ("Me avise", "Benachrichtige mich").
+- When the English CTA is first person ("email me"), translations are too ("me avisar", "mich benachrichtigen").
 
 ## Navigation
 
