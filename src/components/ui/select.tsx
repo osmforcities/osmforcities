@@ -53,9 +53,9 @@ export function Select<T extends string>({
       </Label>
       <Button className="inline-flex w-fit min-w-40 items-center justify-between gap-2 rounded border border-border bg-white px-3 py-2 text-start outline-none data-[focus-visible]:ring-2 data-[focus-visible]:ring-olive-500 data-[disabled]:opacity-50">
         <SelectValue />
-        <ChevronDown size={16} aria-hidden className="text-gray-500" />
+        <ChevronDown size={16} aria-hidden className="text-muted-foreground" />
       </Button>
-      <Popover className="min-w-(--trigger-width) rounded border border-gray-200 bg-white shadow-xl">
+      <Popover className="min-w-(--trigger-width) rounded border border-border bg-popover shadow-xl">
         <ListBox className="py-1 outline-none">
           {options.map((option) => (
             <ListBoxItem

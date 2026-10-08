@@ -100,6 +100,7 @@ export function LanguageForm({ initialLanguage }: { initialLanguage: string }) {
   const [saving, setSaving] = useState(false);
 
   const updateLanguage = async (lang: string) => {
+    if (lang === language) return;
     setSaving(true);
     try {
       const response = await savePreferences({ language: lang });
@@ -120,7 +121,7 @@ export function LanguageForm({ initialLanguage }: { initialLanguage: string }) {
       hideLabel
       options={AVAILABLE_LOCALES.map((locale) => ({
         id: locale,
-        label: LOCALE_DISPLAY_NAMES[locale as keyof typeof LOCALE_DISPLAY_NAMES],
+        label: LOCALE_DISPLAY_NAMES[locale],
       }))}
       value={language}
       onChange={updateLanguage}
