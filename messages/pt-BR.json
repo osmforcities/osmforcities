@@ -365,8 +365,10 @@
     "searchPlaceholder": "Pesquisar modelos..."
   },
   "PreferencesPage": {
-    "emailPreferences": "Preferências de Email",
-    "reports": "Relatórios",
+    "title": "Preferências",
+    "language": "Idioma",
+    "languageDescription": "Usado em todo o site e nos e-mails que você recebe.",
+    "reports": "Relatórios por e-mail",
     "reportsDescription": "Receba atualizações por e-mail quando seus conjuntos de dados salvos tiverem alterações."
   },
   "PreferencesForm": {

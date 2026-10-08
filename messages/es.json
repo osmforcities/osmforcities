@@ -365,8 +365,10 @@
     "searchPlaceholder": "Buscar plantillas..."
   },
   "PreferencesPage": {
-    "emailPreferences": "Preferencias de Email",
-    "reports": "Reportes",
+    "title": "Preferencias",
+    "language": "Idioma",
+    "languageDescription": "Se usa en todo el sitio y en los correos electrónicos que recibes.",
+    "reports": "Reportes por correo electrónico",
     "reportsDescription": "Recibe actualizaciones por correo electrónico cuando tus conjuntos de datos guardados tengan cambios."
   },
   "PreferencesForm": {
