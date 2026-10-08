@@ -125,7 +125,7 @@ export default function AuthForm() {
         {isLoading ? t("sending") : t("continue")}
       </Button>
 
-      <p className="text-xs text-center text-black/50 dark:text-white/50">
+      <p className="text-xs text-center text-black/70 dark:text-white/70">
         {t("signInNotice")}
       </p>
     </form>
