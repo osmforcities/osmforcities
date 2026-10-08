@@ -25,8 +25,7 @@ export async function POST(
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
-    const validatedData = parsed.data;
-    const { notifyWhenReady } = validatedData;
+    const { notifyWhenReady } = parsed.data;
 
     const dataset = await prisma.dataset.findUnique({
       where: { id: datasetId },
@@ -40,7 +39,7 @@ export async function POST(
       where: {
         userId_datasetId: {
           userId: user.id,
-          datasetId: validatedData.datasetId,
+          datasetId,
         },
       },
     });
@@ -68,7 +67,7 @@ export async function POST(
       return tx.datasetSave.create({
         data: {
           userId: user.id,
-          datasetId: validatedData.datasetId,
+          datasetId,
           notifyWhenReady,
         },
       });

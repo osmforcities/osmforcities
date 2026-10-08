@@ -6,6 +6,7 @@ import { notifyDatasetReady } from "../notify-ready";
 vi.mock("@/lib/db", () => ({
   prisma: {
     datasetSave: { findMany: vi.fn(), updateMany: vi.fn() },
+    dataset: { findUniqueOrThrow: vi.fn() },
   },
 }));
 
@@ -18,21 +19,23 @@ vi.mock("@/lib/email", async (importOriginal) => {
 const save = (id: string, email: string, language: string) => ({
   id,
   user: { email, language },
-  dataset: {
-    areaId: 271110,
-    templateId: "schools",
-    cityName: "Amsterdam",
-    area: { name: "Amsterdam", names: { pt: "Amesterdão" } },
-    template: {
-      name: "Schools",
-      description: null,
-      translations: [{ locale: "pt-BR", name: "Escolas", description: null }],
-    },
+});
+
+const dataset = () => ({
+  areaId: 271110,
+  templateId: "schools",
+  cityName: "Amsterdam",
+  area: { name: "Amsterdam", names: { pt: "Amesterdão" } },
+  template: {
+    name: "Schools",
+    description: null,
+    translations: [{ locale: "pt-BR", name: "Escolas", description: null }],
   },
 });
 
 const findMany = vi.mocked(prisma.datasetSave.findMany);
 const updateMany = vi.mocked(prisma.datasetSave.updateMany);
+const findDataset = vi.mocked(prisma.dataset.findUniqueOrThrow);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -42,6 +45,7 @@ beforeEach(() => {
     save("s2", "b@x.test", "pt-BR"),
   ] as never);
   updateMany.mockResolvedValue({ count: 1 } as never);
+  findDataset.mockResolvedValue(dataset() as never);
 });
 
 describe("notifyDatasetReady", () => {
@@ -52,6 +56,7 @@ describe("notifyDatasetReady", () => {
       datasetId: "ds-1",
       notifyWhenReady: true,
     });
+    expect(findDataset).toHaveBeenCalledTimes(1);
     expect(sendEmail).toHaveBeenCalledTimes(2);
     const [en, pt] = vi.mocked(sendEmail).mock.calls.map(([o]) => o);
     expect(en.to).toBe("a@x.test");
@@ -98,6 +103,7 @@ describe("notifyDatasetReady", () => {
 
     await notifyDatasetReady("ds-1", 42);
 
+    expect(findDataset).not.toHaveBeenCalled();
     expect(sendEmail).not.toHaveBeenCalled();
   });
 
@@ -107,9 +113,11 @@ describe("notifyDatasetReady", () => {
   });
 
   it("escapes OSM-sourced names in the HTML body", async () => {
-    const hostile = save("s1", "a@x.test", "en");
-    hostile.dataset.area = { name: "<b>Town</b>", names: {} as never };
-    findMany.mockResolvedValue([hostile] as never);
+    findMany.mockResolvedValue([save("s1", "a@x.test", "en")] as never);
+    findDataset.mockResolvedValue({
+      ...dataset(),
+      area: { name: "<b>Town</b>", names: {} },
+    } as never);
 
     await notifyDatasetReady("ds-1", 42);
 

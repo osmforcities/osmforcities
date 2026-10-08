@@ -25,23 +25,23 @@ export async function notifyDatasetReady(
   try {
     const saves = await prisma.datasetSave.findMany({
       where: { datasetId, notifyWhenReady: true },
+      select: { id: true, user: { select: { email: true, language: true } } },
+    });
+    if (saves.length === 0) return;
+
+    const dataset = await prisma.dataset.findUniqueOrThrow({
+      where: { id: datasetId },
       select: {
-        id: true,
-        user: { select: { email: true, language: true } },
-        dataset: {
+        areaId: true,
+        templateId: true,
+        cityName: true,
+        area: { select: { name: true, names: true } },
+        template: {
           select: {
-            areaId: true,
-            templateId: true,
-            cityName: true,
-            area: { select: { name: true, names: true } },
-            template: {
-              select: {
-                name: true,
-                description: true,
-                translations: {
-                  select: { locale: true, name: true, description: true },
-                },
-              },
+            name: true,
+            description: true,
+            translations: {
+              select: { locale: true, name: true, description: true },
             },
           },
         },
@@ -51,7 +51,6 @@ export async function notifyDatasetReady(
     for (const save of saves) {
       try {
         const locale = (save.user.language || "en") as Locale;
-        const { dataset } = save;
         const names = {
           template: resolveTemplateForLocale(dataset.template, locale).name,
           area: resolveDatasetAreaName(dataset, locale),
