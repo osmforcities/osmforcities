@@ -14,10 +14,8 @@ import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getDatasetUrl } from "@/lib/urls";
 
 /**
- * Mail everyone who asked to hear when this dataset's map is ready, once.
- * Called by the reconcile that won the `done` commit. An empty bake keeps the
- * flags for a later one; a failed send keeps that save's flag, so it is
- * retried on the next winning bake (the next scheduled refresh). Never throws.
+ * Only the reconcile that won the `done` commit calls this. A failed send
+ * keeps its flag for the next bake. Never throws.
  */
 export async function notifyDatasetReady(
   datasetId: string,

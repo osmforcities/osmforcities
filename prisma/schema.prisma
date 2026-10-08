@@ -158,7 +158,6 @@ model DatasetSave {
   userId    String
   datasetId String
   createdAt DateTime @default(now())
-  /// One-shot email when the next bake with features lands; cleared once sent.
   notifyWhenReady Boolean @default(false)
   dataset   Dataset  @relation(fields: [datasetId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

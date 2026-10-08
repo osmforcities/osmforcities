@@ -131,7 +131,6 @@ describe("pollPendingTileJobs", () => {
     expect(updateData(0).stats).toBeUndefined();
     expect(ackTileJob).toHaveBeenCalledWith("ds-1-100");
     expect(pruneTileArchives).toHaveBeenCalledWith("ds-1");
-    // The winner sends the map-ready mail once, with the stored count.
     expect(notifyDatasetReady).toHaveBeenCalledTimes(1);
     expect(notifyDatasetReady).toHaveBeenCalledWith("ds-1", 7);
   });

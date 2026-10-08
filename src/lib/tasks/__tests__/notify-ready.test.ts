@@ -102,7 +102,6 @@ describe("notifyDatasetReady", () => {
   });
 
   it("disabled email is a no-op that does not throw", async () => {
-    // sendEmail is the real one here: it returns without sending.
     await expect(notifyDatasetReady("ds-1", 42)).resolves.toBeUndefined();
     expect(sendEmail).toHaveBeenCalledTimes(2);
   });

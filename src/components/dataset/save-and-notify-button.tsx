@@ -4,7 +4,6 @@ import type { ComponentProps } from "react";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
 import { NotifyWhenReadyButton } from "./notify-when-ready-button";
 
-/** The wait-page button wired to the save route, for server-rendered pages. */
 export function SaveAndNotifyButton({
   datasetId,
   saved,

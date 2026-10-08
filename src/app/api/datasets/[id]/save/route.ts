@@ -20,7 +20,6 @@ export async function POST(
 
     const { id: datasetId } = await params;
 
-    // The body is optional: a plain save sends none.
     const body = await request.json().catch(() => ({}));
     const parsed = SaveDatasetSchema.safeParse({ ...body, datasetId });
     if (!parsed.success) {
@@ -46,7 +45,6 @@ export async function POST(
       },
     });
 
-    // Asking for the email on a dataset already saved: no new save, no quota.
     if (existingSave && notifyWhenReady) {
       const save = await prisma.datasetSave.update({
         where: { id: existingSave.id },
