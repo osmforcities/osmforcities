@@ -82,6 +82,7 @@ export const CreateDatasetSchema = z.object({
 
 export const SaveDatasetSchema = z.object({
   datasetId: z.string(),
+  notifyWhenReady: z.boolean().default(false),
 });
 
 export const UnsaveDatasetSchema = z.object({

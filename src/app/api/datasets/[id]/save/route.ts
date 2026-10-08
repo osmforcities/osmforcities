@@ -20,7 +20,12 @@ export async function POST(
 
     const { id: datasetId } = await params;
 
-    const validatedData = SaveDatasetSchema.parse({ datasetId });
+    const body = await request.json().catch(() => ({}));
+    const parsed = SaveDatasetSchema.safeParse({ ...body, datasetId });
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
+    const { notifyWhenReady } = parsed.data;
 
     const dataset = await prisma.dataset.findUnique({
       where: { id: datasetId },
@@ -34,10 +39,18 @@ export async function POST(
       where: {
         userId_datasetId: {
           userId: user.id,
-          datasetId: validatedData.datasetId,
+          datasetId,
         },
       },
     });
+
+    if (existingSave && notifyWhenReady) {
+      const save = await prisma.datasetSave.update({
+        where: { id: existingSave.id },
+        data: { notifyWhenReady: true },
+      });
+      return NextResponse.json({ success: true, save });
+    }
 
     if (existingSave) {
       return NextResponse.json(
@@ -54,7 +67,8 @@ export async function POST(
       return tx.datasetSave.create({
         data: {
           userId: user.id,
-          datasetId: validatedData.datasetId,
+          datasetId,
+          notifyWhenReady,
         },
       });
     });

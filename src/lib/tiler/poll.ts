@@ -10,6 +10,7 @@ import {
 } from "./client";
 import { readPulledStats, tilerStatsToDatasetColumns } from "./stats";
 import { isTooLarge } from "@/lib/dataset-retry";
+import { notifyDatasetReady } from "@/lib/tasks/notify-ready";
 
 export type TileFailureKind = "bake" | "too_large" | "reconcile";
 
@@ -86,6 +87,7 @@ export async function reconcileDataset(
     if (inflightPulls.has(dataset.tilesJobId)) return { outcome: "pending" };
     inflightPulls.add(dataset.tilesJobId);
     let won: boolean;
+    let dataCount: number;
     try {
       await downloadTileOutputs(dataset.tilesJobId);
 
@@ -94,14 +96,18 @@ export async function reconcileDataset(
       let statsColumns: Prisma.DatasetUpdateManyMutationInput = {};
       const row = await prisma.dataset.findUnique({
         where: { id: dataset.id },
-        select: { stats: true },
+        select: { stats: true, dataCount: true },
       });
+      dataCount = row?.dataCount ?? 0;
       if (row && row.stats === null) {
         try {
           const mapped = tilerStatsToDatasetColumns(
             await readPulledStats(dataset.tilesJobId)
           );
-          if (mapped) statsColumns = mapped;
+          if (mapped) {
+            statsColumns = mapped;
+            dataCount = mapped.dataCount;
+          }
         } catch (error) {
           // Losing the stats must not also lose the archive.
           console.error(
@@ -124,13 +130,14 @@ export async function reconcileDataset(
     } finally {
       inflightPulls.delete(dataset.tilesJobId);
     }
-    if (!won) return { outcome: "pending" }; // the winner acks and prunes
+    if (!won) return { outcome: "pending" }; // the winner acks, prunes and mails
     // Best-effort housekeeping: a failed ack just leaves the job for the
     // tiler's own sweep. Prune never rejects (it logs internally).
     await ackTileJob(dataset.tilesJobId).catch((error) => {
       console.error(`Tile job ack failed for ${dataset.tilesJobId}:`, error);
     });
     await pruneTileArchives(dataset.id);
+    await notifyDatasetReady(dataset.id, dataCount);
     return { outcome: "completed" };
   }
   if (job.state === "failed") {

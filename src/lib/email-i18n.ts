@@ -14,6 +14,18 @@ export type Locale = AvailableLocale;
 /** Shared HTML style for email links. */
 export const EMAIL_LINK_STYLE = 'style="color: #007bff; text-decoration: none;"';
 
+export function getEmailBaseUrl(): string {
+  return process.env.AUTH_URL || "https://osmforcities.com";
+}
+
+export function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 /** Creates an HTML link with consistent styling. */
 export function createEmailLink(url: string, text: string): string {
   return `<a href="${url}" ${EMAIL_LINK_STYLE}>${text}</a>`;

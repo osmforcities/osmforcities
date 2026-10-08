@@ -13,6 +13,7 @@ vi.mock("@/lib/email-i18n", () => ({
   EMAIL_LINK_STYLE: 'style="color: #007bff; text-decoration: none;"',
   createEmailLink: vi.fn((url: string, text: string) => `<a href="${url}" style="color: #007bff; text-decoration: none;">${text}</a>`),
   isRTL: vi.fn(() => false),
+  getEmailBaseUrl: () => process.env.AUTH_URL || "https://osmforcities.com",
   getEmailT: vi.fn(),
   clearMessageCache: vi.fn(),
   formatEmail: vi.fn((locale: string, key: string, values?: Record<string, string | number>) => {

@@ -56,4 +56,4 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 **Tier**: The expected-wait bucket the wait page shows, from the count probe's answer: about a minute, a few minutes, ten to fifteen minutes. _Avoid:_ estimate, ETA, size class.
 
-**Ready notification**: A one-time email asked for on the wait page, sent when the first bake lands or fails for good. _Avoid:_ alert, subscription, report (reports are the recurring saved-dataset emails).
+**Ready notification**: A one-time email asked for on a dataset with no map yet, sent once when a bake with features lands, never for a failure. Asking is saving with the flag set; unsaving cancels it. _Avoid:_ alert, subscription, report (reports are the recurring saved-dataset emails).

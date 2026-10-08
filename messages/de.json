@@ -631,7 +631,8 @@
     "datasetsOther": "Datensätze",
     "templateDeprecated": "Diese Vorlage wurde aus dem Katalog entfernt.",
     "templateDeprecatedDaysRemaining": "Du hast noch {days} Tag{days, plural, =1 {} other {e}}, bevor dieser Datensatz gelöscht wird.",
-    "greeting": "Hallo!"
+    "greeting": "Hallo!",
+    "mapReady": "Die Karte „{template}“ in {area} ist fertig"
   },
   "AboutPage": {
     "metaTitle": "Über das Projekt - OSM for Cities",

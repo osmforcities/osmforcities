@@ -640,7 +640,8 @@
     "datasetsOther": "conjuntos de datos",
     "templateDeprecated": "Esta plantilla fue eliminada del catálogo.",
     "templateDeprecatedDaysRemaining": "Tienes {days} día{days, plural, =1 {} other {s}} restantes antes de que este conjunto de datos sea eliminado.",
-    "greeting": "¡Hola!"
+    "greeting": "¡Hola!",
+    "mapReady": "El mapa de {template} en {area} está listo"
   },
   "AboutPage": {
     "metaTitle": "Acerca de - OSM for Cities",

@@ -6,6 +6,7 @@ import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getDatasetUrl } from "@/lib/urls";
 import {
   createEmailLink,
+  getEmailBaseUrl,
   getEmailT,
   isRTL,
   formatEmail,
@@ -35,10 +36,6 @@ interface UserReportData {
     lastChanged: Date | null;
     daysRemaining?: number;
   }>;
-}
-
-function getBaseUrl(): string {
-  return process.env.AUTH_URL || "https://osmforcities.com";
 }
 
 function formatUTCDate(date: Date | null): string {
@@ -105,7 +102,7 @@ function generateEmailBodyWithChanges(
         .map(
           (ds) =>
             `${createEmailLink(
-              getDatasetUrl(getBaseUrl(), {
+              getDatasetUrl(getEmailBaseUrl(), {
                 locale: userLocale,
                 areaId: ds.areaId,
                 templateId: ds.templateId,
@@ -167,7 +164,7 @@ async function generateEmailContent(
   }
 
   const reportChangedText = t("reportChanged", { lastPeriod });
-  const savedDatasetsLink = createEmailLink(`${getBaseUrl()}/`, t("reportSaved"));
+  const savedDatasetsLink = createEmailLink(`${getEmailBaseUrl()}/`, t("reportSaved"));
   const emailBody =
     count > 0
       ? generateEmailBodyWithChanges(
@@ -185,7 +182,7 @@ async function generateEmailContent(
   // Generate footer
   const timestamp = new Date().toISOString().split(".")[0];
   const generatedAtText = t("generatedAt", { timestamp });
-  const preferencesLink = createEmailLink(`${getBaseUrl()}/preferences`, t("preferencesPage"));
+  const preferencesLink = createEmailLink(`${getEmailBaseUrl()}/preferences`, t("preferencesPage"));
   const unsubscribeText = await formatEmail(userLocale, "unsubscribe", {
     preferencesLink,
   });
