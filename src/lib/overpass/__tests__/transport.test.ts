@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import {
+  executeOverpassQuery,
   executeOverpassQueryWithByteLimit,
   countOverpassElements,
   OverpassResponseTooLargeError,
@@ -44,18 +45,20 @@ function mockCountFetch(total: number) {
   return fetchMock;
 }
 
+function mockStreamFetch(text: string) {
+  vi.stubGlobal("fetch", vi.fn().mockReturnValue(makeStreamResponse(text)));
+}
+
 describe("executeOverpassQueryWithByteLimit", () => {
   it("returns parsed data when the response is under the limit", async () => {
-    const payload = JSON.stringify({ elements: [] });
-    vi.stubGlobal("fetch", vi.fn().mockReturnValue(makeStreamResponse(payload)));
+    mockStreamFetch(JSON.stringify({ elements: [] }));
 
     const data = await executeOverpassQueryWithByteLimit("query", 1024);
     expect(data.elements).toEqual([]);
   });
 
   it("throws OverpassResponseTooLargeError once the stream exceeds the limit", async () => {
-    const payload = JSON.stringify({ elements: [], padding: "x".repeat(500) });
-    vi.stubGlobal("fetch", vi.fn().mockReturnValue(makeStreamResponse(payload)));
+    mockStreamFetch(JSON.stringify({ elements: [], padding: "x".repeat(500) }));
 
     await expect(
       executeOverpassQueryWithByteLimit("query", 100)
@@ -73,16 +76,72 @@ describe("executeOverpassQueryWithByteLimit", () => {
     ).rejects.toThrow(OverpassTimeoutError);
   });
 
-  it("surfaces Overpass error remarks from the payload", async () => {
-    const payload = JSON.stringify({
-      remark: "runtime error",
-      error: { code: "timeout", message: "query timed out" },
-    });
-    vi.stubGlobal("fetch", vi.fn().mockReturnValue(makeStreamResponse(payload)));
+  // Overpass reports failures inside HTTP 200 bodies.
+  it.each([
+    {
+      name: "structured error",
+      body: JSON.stringify({
+        remark: "runtime error",
+        error: { code: "timeout", message: "query timed out" },
+      }),
+      message: "Overpass API error: query timed out",
+    },
+    {
+      name: "non-JSON body",
+      body: "<html>503</html>",
+      message: "Overpass API returned non-JSON response",
+    },
+    {
+      name: "missing elements array",
+      body: JSON.stringify({ generator: "Overpass API" }),
+      message: "Overpass API returned an unexpected response shape",
+    },
+  ])("rejects a $name", async ({ body, message }) => {
+    mockStreamFetch(body);
 
     await expect(
       executeOverpassQueryWithByteLimit("query", 1024)
-    ).rejects.toThrow("Overpass API error: query timed out");
+    ).rejects.toThrow(message);
+  });
+
+  // A live timeout comes with empty elements; returning them would store the
+  // dataset as genuinely empty.
+  it.each([
+    { name: "with empty elements", body: { elements: [] } },
+    { name: "without elements", body: {} },
+  ])("throws OverpassTimeoutError with the remark text, $name", async ({ body }) => {
+    const remark = 'runtime error: Query timed out in "query" at line 6 after 22 seconds.';
+    mockStreamFetch(JSON.stringify({ ...body, remark }));
+
+    const result = executeOverpassQueryWithByteLimit("query", 1024);
+    await expect(result).rejects.toThrow(OverpassTimeoutError);
+    await expect(result).rejects.toThrow(remark);
+  });
+});
+
+// Same body parser as the byte-limited fetch; these only prove the wiring.
+describe("executeOverpassQuery", () => {
+  function mockTextFetch(text: string) {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        text: () => Promise.resolve(text),
+      } as unknown as Response)
+    );
+  }
+
+  it("returns parsed data", async () => {
+    mockTextFetch(JSON.stringify({ elements: [] }));
+    await expect(executeOverpassQuery("query")).resolves.toEqual({ elements: [] });
+  });
+
+  it("rejects a non-JSON body", async () => {
+    mockTextFetch("<html>503</html>");
+    await expect(executeOverpassQuery("query")).rejects.toThrow(
+      "Overpass API returned non-JSON response"
+    );
   });
 });
 

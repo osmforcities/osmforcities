@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "@/i18n/navigation";
-import { PreferencesForm } from "./preferences-form";
+import { LanguageForm, ReportsForm } from "./preferences-form";
 import { getTranslations, getLocale } from "next-intl/server";
 import { prisma } from "@/lib/db";
 
@@ -30,19 +30,25 @@ export default async function PreferencesPage() {
 
   return (
     <div className="container mx-auto p-6 max-w-2xl">
-      <h1 className="text-2xl font-bold mb-6">{t("emailPreferences")}</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("title")}</h1>
 
       <div className="space-y-6">
-        <div className="border rounded-lg p-6">
+        <section className="border rounded-lg p-6">
+          <h2 className="text-lg font-semibold mb-4">{t("language")}</h2>
+          <p className="text-gray-600 mb-4">{t("languageDescription")}</p>
+
+          <LanguageForm initialLanguage={userPreferences.language} />
+        </section>
+
+        <section className="border rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">{t("reports")}</h2>
           <p className="text-gray-600 mb-4">{t("reportsDescription")}</p>
 
-          <PreferencesForm
+          <ReportsForm
             initialReportsEnabled={userPreferences.reportsEnabled}
             initialReportsFrequency={userPreferences.reportsFrequency}
-            initialLanguage={userPreferences.language}
           />
-        </div>
+        </section>
       </div>
     </div>
   );

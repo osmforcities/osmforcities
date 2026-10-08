@@ -118,7 +118,6 @@
     "metaTitle": "Anmelden - OSM for Cities",
     "metaDescription": "Melde dich an, um OpenStreetMap-Datensätze zu beobachten",
     "signIn": "Anmelden",
-    "enterEmailToStart": "Gib deine E-Mail-Adresse ein, um loszulegen",
     "notFound": "Nicht gefunden",
     "testAuthNotEnabled": "Die Test-Authentifizierung ist nicht aktiviert.",
     "signInWithEmailPassword": "Melde dich mit E-Mail-Adresse und Passwort an",
@@ -223,10 +222,14 @@
     "sentLinkTo": "Wir haben einen Link an {email} gesendet",
     "tryDifferentEmail": "Andere E-Mail-Adresse verwenden",
     "tooManyRequests": "Zu viele Anmeldeanfragen für diese E-Mail-Adresse. Bitte versuche es später erneut.",
+    "invalidEmail": "Gib eine gültige E-Mail-Adresse ein.",
+    "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "rememberEmail": "E-Mail-Adresse auf diesem Gerät merken (verwendet ein Cookie)",
     "emailPlaceholder": "E-Mail",
     "sending": "Wird gesendet...",
     "continue": "Weiter",
-    "emailIcon": "📧"
+    "emailIcon": "📧",
+    "signInNotice": "Diese Website verwendet keine Passwörter. Wir schicken dir einen Anmeldelink per E-Mail. Ansonsten schreiben wir dir nur zu Datensätzen, die du speicherst, und das kannst du in den Einstellungen deaktivieren."
   },
   "AreaPage": {
     "backToHome": "← Zurück zur Startseite",
@@ -362,8 +365,10 @@
     "searchPlaceholder": "Vorlagen suchen..."
   },
   "PreferencesPage": {
-    "emailPreferences": "E-Mail-Einstellungen",
-    "reports": "Berichte",
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "languageDescription": "Gilt für die gesamte Website und für die E-Mails, die du erhältst.",
+    "reports": "E-Mail-Berichte",
     "reportsDescription": "Erhalte E-Mail-Benachrichtigungen, wenn sich deine gespeicherten Datensätze ändern."
   },
   "PreferencesForm": {

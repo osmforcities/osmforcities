@@ -118,7 +118,6 @@
     "metaTitle": "Iniciar Sesión - OSM for Cities",
     "metaDescription": "Inicia sesión para monitorear conjuntos de datos de OpenStreetMap",
     "signIn": "Iniciar Sesión",
-    "enterEmailToStart": "Ingresa tu email para comenzar",
     "notFound": "No Encontrado",
     "testAuthNotEnabled": "La autenticación de prueba no está habilitada.",
     "signInWithEmailPassword": "Inicia sesión con tu correo electrónico y contraseña",
@@ -223,10 +222,14 @@
     "sentLinkTo": "Enviamos un enlace a {email}",
     "tryDifferentEmail": "Probar email diferente",
     "tooManyRequests": "Demasiadas solicitudes de inicio de sesión para este email. Inténtalo de nuevo más tarde.",
+    "invalidEmail": "Introduce una dirección de email válida.",
+    "genericError": "Algo salió mal. Inténtalo de nuevo.",
+    "rememberEmail": "Recordar mi email en este dispositivo (usa una cookie)",
     "emailPlaceholder": "Email",
     "sending": "Enviando...",
     "continue": "Continuar",
-    "emailIcon": "📧"
+    "emailIcon": "📧",
+    "signInNotice": "Este sitio no usa contraseñas. Te enviaremos un enlace mágico por email para iniciar sesión. Aparte de eso, solo te escribimos sobre los conjuntos de datos que guardes, y puedes desactivarlo en Preferencias."
   },
   "AreaPage": {
     "backToHome": "← Volver al Inicio",
@@ -362,8 +365,10 @@
     "searchPlaceholder": "Buscar plantillas..."
   },
   "PreferencesPage": {
-    "emailPreferences": "Preferencias de Email",
-    "reports": "Reportes",
+    "title": "Preferencias",
+    "language": "Idioma",
+    "languageDescription": "Se usa en todo el sitio y en los correos electrónicos que recibes.",
+    "reports": "Reportes por correo electrónico",
     "reportsDescription": "Recibe actualizaciones por correo electrónico cuando tus conjuntos de datos guardados tengan cambios."
   },
   "PreferencesForm": {

@@ -118,7 +118,6 @@
     "metaTitle": "Sign In - OSM for Cities",
     "metaDescription": "Sign in to monitor OpenStreetMap datasets",
     "signIn": "Sign In",
-    "enterEmailToStart": "Enter your email to get started",
     "notFound": "Not Found",
     "testAuthNotEnabled": "Test authentication is not enabled.",
     "signInWithEmailPassword": "Sign in with your email and password",
@@ -223,10 +222,14 @@
     "sentLinkTo": "We sent a link to {email}",
     "tryDifferentEmail": "Try different email",
     "tooManyRequests": "Too many sign-in requests for this email. Try again later.",
+    "invalidEmail": "Enter a valid email address.",
+    "genericError": "Something went wrong. Try again.",
+    "rememberEmail": "Remember my email on this device (uses a cookie)",
     "emailPlaceholder": "Email",
     "sending": "Sending...",
     "continue": "Continue",
-    "emailIcon": "📧"
+    "emailIcon": "📧",
+    "signInNotice": "This site doesn't use passwords. We'll email you a magic link to sign in. Beyond that, we only email you about datasets you save, and you can turn that off in Preferences."
   },
   "AreaPage": {
     "backToHome": "← Back to Home",
@@ -362,8 +365,10 @@
     "searchPlaceholder": "Search templates..."
   },
   "PreferencesPage": {
-    "emailPreferences": "Email Preferences",
-    "reports": "Reports",
+    "title": "Preferences",
+    "language": "Language",
+    "languageDescription": "Used across the site and in the emails you receive.",
+    "reports": "Email reports",
     "reportsDescription": "Receive email updates when your saved datasets have changes."
   },
   "PreferencesForm": {

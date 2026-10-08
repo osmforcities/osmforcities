@@ -1,5 +1,35 @@
 # osmforcities
 
+## 1.20.0
+
+### Added
+
+- The sign-in page can remember your email on this device (opt-in checkbox, stored in a cookie) and prefills it next time [#571]
+
+### Changed
+
+- Rebuilding a large dataset's map tiles keeps serving the current tiles until the new ones are ready, so the map never goes blank during a rebuild [#558]
+- Failed tile bakes are retried automatically on a backoff schedule, and the app checks the tile service is reachable before submitting [#556]
+- While a dataset's tiles are rebuilding, the admin Sync button is disabled and reads "Updating...", and the "map data is being processed" notice is gone [#554]
+- Refreshed the empty-dataset page, the tile processing panel and the mobile menu as part of a design pass [#565]
+
+### Security
+
+- Sign-in links are validated inside the sign-in provider itself: a session is only created from a valid, unexpired link, and each link works once [#568]
+- Sign-in emails are rate-limited per address (3 per 15 minutes, 10 per day) [#564]
+- Test sign-in can no longer be enabled in production, and sign-in emails are validated and lower-cased so differently-cased addresses are the same account [#566]
+- The public dataset API no longer returns the dataset's owner record [#563]
+
+[#554]: https://github.com/osmforcities/osmforcities/pull/554
+[#556]: https://github.com/osmforcities/osmforcities/pull/556
+[#558]: https://github.com/osmforcities/osmforcities/pull/558
+[#563]: https://github.com/osmforcities/osmforcities/pull/563
+[#564]: https://github.com/osmforcities/osmforcities/pull/564
+[#565]: https://github.com/osmforcities/osmforcities/pull/565
+[#566]: https://github.com/osmforcities/osmforcities/pull/566
+[#568]: https://github.com/osmforcities/osmforcities/pull/568
+[#571]: https://github.com/osmforcities/osmforcities/pull/571
+
 ## 1.19.0
 
 ### Changed
