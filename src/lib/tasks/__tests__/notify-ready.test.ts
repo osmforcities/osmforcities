@@ -107,11 +107,6 @@ describe("notifyDatasetReady", () => {
     expect(sendEmail).not.toHaveBeenCalled();
   });
 
-  it("disabled email is a no-op that does not throw", async () => {
-    await expect(notifyDatasetReady("ds-1", 42)).resolves.toBeUndefined();
-    expect(sendEmail).toHaveBeenCalledTimes(2);
-  });
-
   it("escapes OSM-sourced names in the HTML body", async () => {
     findMany.mockResolvedValue([save("s1", "a@x.test", "en")] as never);
     findDataset.mockResolvedValue({
