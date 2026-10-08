@@ -5,8 +5,23 @@ How code in this repo should be written. Reviewers (human and agent) check chang
 ## i18n
 
 - All user-visible text goes through `useTranslations()` / `getTranslations()`. No string literals in JSX, including bare expressions like `{"some text"}` or template literals.
-- Every new key exists in `messages/en.json`. Other locales may lag; English is the source.
+- Every new key exists in `messages/en.json`. Other locales may lag on new keys; English is the source.
 - If `pnpm type-check` fails with `NamespacedMessageKeys` errors after adding keys, delete the stale generated `messages/en.d.json.ts`.
+
+### Copy
+
+- Changing an existing English string updates every locale in the same PR. A stale translation is worse than a missing one.
+- Accessible names (`aria-label`, alt text) and plain-text email parts go through i18n like visible text.
+- One term per glossary concept, per locale. Dataset: es _conjunto de datos_, pt-BR _conjunto de dados_, fr _jeu de données_, de _Datensatz_. Template: _plantilla_, _modelo_, _modèle_, _Vorlage_. Area: _área_, _área_, _zone_, _Gebiet_. Save: _guardar_, _salvar_, _enregistrer_, _speichern_.
+- One address form per locale: es _tú_, pt-BR _você_, fr _vous_, de _du_.
+- Spanish is Latin American neutral, Portuguese is Brazilian. No regional slang, no English left untranslated. Run `pnpm i18n:review` after changing translations.
+- English headings, buttons and labels use sentence case. Other locales never copy English title case.
+- Full sentences end with a period; headings, labels and buttons do not.
+- No punctuation or symbols as keys or baked into labels (`✕`, `(`, `:`, trailing colons, `→`). Components render icons and separators.
+- Use ICU placeholders and plurals (`{count, plural, ...}`), never concatenated fragments.
+- Plain, accurate copy: no pipeline jargon, no promises the app does not keep, no description repeating its heading.
+- Group controls under a heading that names what they affect.
+- When the English CTA is first person ("Email me"), translations are too ("Me avise", "Benachrichtige mich").
 
 ## Navigation
 
