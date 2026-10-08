@@ -148,7 +148,7 @@
     "notifyCtaIfMapped": "Guardar y avisarme por correo si se llega a mapear",
     "notifyConfirmed": "Guardado. Recibirás un correo cuando el mapa esté listo.",
     "tilesFailedDescription": "La próxima actualización programada lo intentará de nuevo.",
-    "countTimedOutDescription": "Puede que el área sea muy grande o que el servidor esté ocupado. Inténtalo de nuevo en un máximo de {minutes, number} minutos.",
+    "countTimedOutDescription": "Puede que el área sea muy grande o que el servidor esté ocupado. Inténtalo de nuevo en un máximo de {minutes, plural, one {# minuto} other {# minutos}}.",
     "backToHome": "Volver al Inicio",
     "emptyDescription": "Puede que no existan aquí, o que nadie los haya mapeado aún en OpenStreetMap.",
     "tooLargeDescription": "Este conjunto de datos supera la capacidad actual del servidor, algo esperado en grandes áreas metropolitanas o con geometrías muy detalladas.",

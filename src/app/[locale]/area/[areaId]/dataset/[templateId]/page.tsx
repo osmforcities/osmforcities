@@ -83,6 +83,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
       templateName={templateName}
       areaInfo={areaInfo}
       areaName={areaName}
+      locale={locale}
       session={session}
     />
   );
@@ -141,6 +142,7 @@ async function AreaTemplateDatasetView({
   templateName,
   areaInfo,
   areaName: fallbackAreaName,
+  locale,
   session,
 }: {
   areaId: number;
@@ -149,10 +151,9 @@ async function AreaTemplateDatasetView({
   areaInfo: Area | null;
   /** Shown on failure screens, before any dataset row can name the area */
   areaName: string;
+  locale: string;
   session: Awaited<ReturnType<typeof auth>> | null;
 }) {
-  const locale = await getLocale();
-
   try {
     const result = await getOrCreateDataset(areaId, templateId, locale, {
       allowCreate: !!session?.user,
