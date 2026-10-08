@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "@/i18n/navigation";
 import { Locale } from "@/i18n/routing";
 import { AVAILABLE_LOCALES, LOCALE_DISPLAY_NAMES } from "@/i18n/constants";
 import type { ReportFrequency } from "@prisma/client";
+import { Select } from "@/components/ui/select";
 
 // Sends only the fields the caller owns; the API leaves the rest untouched.
 const savePreferences = (
@@ -75,24 +76,16 @@ export function ReportsForm({
 
       {reportsEnabled && (
         <div className="ml-6">
-          <label
-            htmlFor="reports-frequency-select"
-            className="block text-sm font-medium mb-2"
-          >
-            {t("frequency")}
-          </label>
-          <select
-            id="reports-frequency-select"
+          <Select
+            label={t("frequency")}
+            options={[
+              { id: "DAILY", label: t("daily") },
+              { id: "WEEKLY", label: t("weekly") },
+            ]}
             value={reportsFrequency}
-            onChange={(e) => {
-              updateReports(true, e.target.value as ReportFrequency);
-            }}
-            className="border rounded px-3 py-2"
-            disabled={saving}
-          >
-            <option value="DAILY">{t("daily")}</option>
-            <option value="WEEKLY">{t("weekly")}</option>
-          </select>
+            onChange={(frequency) => updateReports(true, frequency)}
+            isDisabled={saving}
+          />
         </div>
       )}
     </div>
@@ -122,25 +115,16 @@ export function LanguageForm({ initialLanguage }: { initialLanguage: string }) {
   };
 
   return (
-    <div>
-      <label htmlFor="language-select" className="sr-only">
-        {t("language")}
-      </label>
-      <select
-        id="language-select"
-        value={language}
-        onChange={(e) => {
-          updateLanguage(e.target.value);
-        }}
-        className="border rounded px-3 py-2"
-        disabled={saving}
-      >
-        {AVAILABLE_LOCALES.map((locale) => (
-          <option key={locale} value={locale}>
-            {LOCALE_DISPLAY_NAMES[locale as keyof typeof LOCALE_DISPLAY_NAMES]}
-          </option>
-        ))}
-      </select>
-    </div>
+    <Select
+      label={t("language")}
+      hideLabel
+      options={AVAILABLE_LOCALES.map((locale) => ({
+        id: locale,
+        label: LOCALE_DISPLAY_NAMES[locale as keyof typeof LOCALE_DISPLAY_NAMES],
+      }))}
+      value={language}
+      onChange={updateLanguage}
+      isDisabled={saving}
+    />
   );
 }
