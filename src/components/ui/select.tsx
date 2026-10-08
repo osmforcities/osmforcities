@@ -51,7 +51,7 @@ export function Select<T extends string>({
       <Label className={hideLabel ? "sr-only" : "text-sm font-medium"}>
         {label}
       </Label>
-      <Button className="inline-flex w-fit min-w-40 items-center justify-between gap-2 rounded border border-border bg-white px-3 py-2 text-start outline-none data-[focus-visible]:ring-2 data-[focus-visible]:ring-olive-500 data-[disabled]:opacity-50">
+      <Button className="inline-flex w-fit min-w-40 items-center justify-between gap-2 rounded border border-border bg-background px-3 py-2 text-start outline-none data-[focus-visible]:ring-2 data-[focus-visible]:ring-olive-500 data-[disabled]:opacity-50">
         <SelectValue />
         <ChevronDown size={16} aria-hidden className="text-muted-foreground" />
       </Button>
