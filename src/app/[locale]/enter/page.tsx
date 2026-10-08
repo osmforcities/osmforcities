@@ -40,10 +40,9 @@ export default async function EnterPage({
             <h1 className="text-2xl font-semibold text-black dark:text-white">
               {t("signIn")}
             </h1>
-            <div className="text-sm text-gray-600 dark:text-gray-400 mt-2 space-y-2">
-              <p>{t("signInLinkNotice")}</p>
-              <p>{t("newAccountNotice")}</p>
-            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+              {t("signInLinkNotice")}
+            </p>
           </div>
 
           <AuthForm />

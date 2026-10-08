@@ -124,6 +124,10 @@ export default function AuthForm() {
       >
         {isLoading ? t("sending") : t("continue")}
       </Button>
+
+      <p className="text-xs text-center text-black/50 dark:text-white/50">
+        {t("newAccountNotice")}
+      </p>
     </form>
   );
 }

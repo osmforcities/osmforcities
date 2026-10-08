@@ -118,8 +118,7 @@
     "metaTitle": "Iniciar Sesión - OSM for Cities",
     "metaDescription": "Inicia sesión para monitorear conjuntos de datos de OpenStreetMap",
     "signIn": "Iniciar Sesión",
-    "signInLinkNotice": "Te enviaremos un enlace de acceso por email. No hay contraseña: recibes un enlace nuevo cada vez que inicias sesión.",
-    "newAccountNotice": "Una dirección de email nueva crea una cuenta, que recibe un email diario cuando cambian tus conjuntos de datos guardados; puedes desactivarlo en Preferencias.",
+    "signInLinkNotice": "Sin contraseña: te enviamos un enlace nuevo por email cada vez que inicias sesión.",
     "notFound": "No Encontrado",
     "testAuthNotEnabled": "La autenticación de prueba no está habilitada.",
     "signInWithEmailPassword": "Inicia sesión con tu correo electrónico y contraseña",
@@ -230,7 +229,8 @@
     "emailPlaceholder": "Email",
     "sending": "Enviando...",
     "continue": "Continuar",
-    "emailIcon": "📧"
+    "emailIcon": "📧",
+    "newAccountNotice": "¿Email nuevo? Creamos una cuenta. Recibe un email diario cuando cambian tus conjuntos de datos guardados; puedes desactivarlo en Preferencias."
   },
   "AreaPage": {
     "backToHome": "← Volver al Inicio",
