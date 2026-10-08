@@ -68,6 +68,7 @@ export function ReportsForm({
             updateReports(e.target.checked, reportsFrequency);
           }}
           className="mr-2"
+          disabled={saving}
         />
         {t("enableReports")}
       </label>
