@@ -119,7 +119,7 @@
     "metaDescription": "Inicia sesión para monitorear conjuntos de datos de OpenStreetMap",
     "signIn": "Iniciar Sesión",
     "signInLinkNotice": "Te enviaremos un enlace de acceso por email. No hay contraseña: recibes un enlace nuevo cada vez que inicias sesión.",
-    "newAccountNotice": "Un email nuevo crea una cuenta. Recibirás un email diario cuando cambien tus conjuntos de datos guardados; puedes desactivarlo en Preferencias.",
+    "newAccountNotice": "Una dirección de email nueva crea una cuenta, que recibe un email diario cuando cambian tus conjuntos de datos guardados; puedes desactivarlo en Preferencias.",
     "notFound": "No Encontrado",
     "testAuthNotEnabled": "La autenticación de prueba no está habilitada.",
     "signInWithEmailPassword": "Inicia sesión con tu correo electrónico y contraseña",

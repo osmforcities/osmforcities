@@ -119,7 +119,7 @@
     "metaDescription": "Connectez-vous pour suivre les jeux de données OpenStreetMap",
     "signIn": "Se connecter",
     "signInLinkNotice": "Nous vous enverrons un lien de connexion par e-mail. Il n'y a pas de mot de passe : vous recevez un nouveau lien à chaque connexion.",
-    "newAccountNotice": "Une nouvelle adresse e-mail crée un compte. Vous recevrez un e-mail quotidien quand vos jeux de données enregistrés changent ; vous pouvez le désactiver dans les Préférences.",
+    "newAccountNotice": "Une nouvelle adresse e-mail crée un compte, qui reçoit un e-mail quotidien quand vos jeux de données enregistrés changent ; vous pouvez le désactiver dans les Préférences.",
     "notFound": "Introuvable",
     "testAuthNotEnabled": "L'authentification de test n'est pas activée.",
     "signInWithEmailPassword": "Connectez-vous avec votre e-mail et votre mot de passe",

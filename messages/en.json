@@ -119,7 +119,7 @@
     "metaDescription": "Sign in to monitor OpenStreetMap datasets",
     "signIn": "Sign In",
     "signInLinkNotice": "We'll email you a sign-in link. There's no password: you get a new link each time you sign in.",
-    "newAccountNotice": "A new email creates an account. You'll get a daily email when your saved datasets change; turn it off in Preferences.",
+    "newAccountNotice": "A new email address creates an account, which gets a daily email when your saved datasets change; turn it off in Preferences.",
     "notFound": "Not Found",
     "testAuthNotEnabled": "Test authentication is not enabled.",
     "signInWithEmailPassword": "Sign in with your email and password",
