@@ -1,21 +1,17 @@
 import type { Page } from "@playwright/test";
 import { test, expect } from "../test-setup";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, type Dataset } from "@prisma/client";
 import {
   cleanupTestUser,
   createTestUser,
   setupAuthenticationWithLogin,
   TestUser,
 } from "../utils/auth";
+import { AMSTERDAM, mockTilerControl, OVER_CAP_COUNT } from "../utils/tiler";
 import fixtureStats from "../../src/lib/mocks/tiler/stats.json";
 
-// Amsterdam, with a template no other spec creates there
-const AREA_ID = 271110;
-const TEMPLATE_ID = "clocks";
-const PAGE = `/en/area/${AREA_ID}/dataset/${TEMPLATE_ID}`;
-// Over the 25 MB cap at 500 B per element: the tiles-only lane
-const OVER_CAP_COUNT = 60_000;
-const CRON_SECRET = "test-cron-secret"; // .env.test
+const TEMPLATE_ID = "luggage-lockers";
+const PAGE = `/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`;
 // Past the daily refresh cadence, so the next tick refreshes the dataset
 const MORE_THAN_A_DAY_MS = 25 * 60 * 60 * 1000;
 
@@ -47,18 +43,14 @@ const AGE_LABELS = [
   "> 90 days ago",
 ];
 
-const control = (page: Page, data: object) =>
-  page.request.post("/api/mock-tiler/control", { data });
-
 const tick = async (page: Page) => {
   const response = await page.request.post("/api/tasks/update-datasets", {
-    headers: { Authorization: `Bearer ${CRON_SECRET}` },
+    headers: { Authorization: `Bearer ${process.env.CRON_ROUTE_SECRET}` },
   });
   expect(response.ok()).toBe(true);
 };
 
-async function expectRowHolds(prisma: PrismaClient, id: string, bake: Bake) {
-  const row = await prisma.dataset.findUniqueOrThrow({ where: { id } });
+function expectRowHolds(row: Dataset, bake: Bake) {
   expect(row.stats).toMatchObject({ editorsCount: bake.editorsCount });
   expect(row.dataCount).toBe(bake.features);
   expect(row.contributorsCount).toBe(bake.editorsCount);
@@ -92,7 +84,7 @@ test.describe("Tiles-only stats across bake cycles", () => {
     prisma.dataset.findUniqueOrThrow({ where: { id: datasetId } });
 
   const bake = (page: Page, jobId: string, stats: Bake) =>
-    control(page, {
+    mockTilerControl(page, {
       jobId,
       state: "done",
       stats: { ...fixtureStats, ...stats },
@@ -103,17 +95,18 @@ test.describe("Tiles-only stats across bake cycles", () => {
     if (user) await setupAuthenticationWithLogin(page, user);
   });
 
-  test.afterAll(async () => {
+  test.afterAll(async ({ page }) => {
+    await mockTilerControl(page, { reset: true });
     await prisma.areaSizeCheck.deleteMany({
-      where: { areaId: AREA_ID, templateId: TEMPLATE_ID },
+      where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
     });
     if (user) await cleanupTestUser(user.id);
     await prisma.$disconnect();
   });
 
   test("first bake fills the stats", async ({ page }) => {
-    expect((await control(page, { reset: true })).ok()).toBe(true);
-    await control(page, { overpassCount: OVER_CAP_COUNT });
+    expect((await mockTilerControl(page, { reset: true })).ok()).toBe(true);
+    await mockTilerControl(page, { overpassCount: OVER_CAP_COUNT });
 
     user = await createTestUser(prisma);
     await setupAuthenticationWithLogin(page, user);
@@ -121,7 +114,7 @@ test.describe("Tiles-only stats across bake cycles", () => {
     await expect(page.getByTestId("tiles-processing-panel")).toBeVisible();
 
     const created = await prisma.dataset.findFirstOrThrow({
-      where: { areaId: AREA_ID, templateId: TEMPLATE_ID },
+      where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
     });
     datasetId = created.id;
     jobA = created.tilesJobId!;
@@ -143,13 +136,19 @@ test.describe("Tiles-only stats across bake cycles", () => {
       .poll(async () => (await row()).tilesServedJobId)
       .toBe(jobA);
 
-    await expectRowHolds(prisma, datasetId, A);
-    lastCheckedA = (await row()).lastChecked;
+    const filled = await row();
+    expectRowHolds(filled, A);
+    lastCheckedA = filled.lastChecked;
 
     await expectPageShows(page, A);
   });
 
   test("refresh submits the next bake", async ({ page }) => {
+    // Job ids end in the Unix second: a refresh in the same second reuses the id
+    const bakedSecond = Number(jobA.split("-").pop());
+    await expect
+      .poll(() => Math.floor(Date.now() / 1000))
+      .toBeGreaterThan(bakedSecond);
     await prisma.dataset.update({
       where: { id: datasetId },
       data: { lastAttempted: new Date(Date.now() - MORE_THAN_A_DAY_MS) },
@@ -190,7 +189,7 @@ test.describe("Tiles-only stats across bake cycles", () => {
     // the row has none, so B's never land. Fixed by the reconcile-authority
     // change, https://github.com/osmforcities/osmforcities/issues/606
     test.fail();
-    await expectRowHolds(prisma, datasetId, B);
+    expectRowHolds(await row(), B);
     await expectPageShows(page, B);
   });
 });
