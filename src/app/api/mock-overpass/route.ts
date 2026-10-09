@@ -31,6 +31,9 @@ export async function POST(req: NextRequest) {
   const body = await req.text();
   // Size pre-flight queries end in "out count;" and expect a count payload
   if (decodeURIComponent(body).includes("out count;")) {
+    const state = mockTilerState();
+    state.countQueries++;
+    if (state.countTimesOut) return new NextResponse(null, { status: 504 });
     return countResponse();
   }
   return jsonResponse(mockOverpassResponse);
