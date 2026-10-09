@@ -98,10 +98,10 @@ function TimestampPill({
   const description = relative
     ? t("timestampDescription", { label, relative })
     : label;
-  // Server and browser render a second or more apart, so relative times differ
   const content = (
     <>
       <Icon className="size-3 flex-shrink-0 text-gray-400" aria-hidden />
+      {/* Server and browser render a second or more apart, so relative times differ */}
       <span className="sr-only" suppressHydrationWarning>
         {description}
       </span>
