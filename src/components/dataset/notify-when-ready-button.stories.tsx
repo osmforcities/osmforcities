@@ -38,6 +38,44 @@ export const AlreadySaved: Story = {
   },
 };
 
+/** Saved without the email (from the dataset page), so no email is promised. */
+export const SavedWithoutEmail: Story = {
+  args: { saved: true, notify: false },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("status")).toHaveTextContent(/^Saved\.$/);
+  },
+};
+
+/** Unsaving frees the save slot and cancels the email, so the offer returns. */
+export const SavedThenUnsave: Story = {
+  args: { saved: true, onSave: fn(), onUnsave: fn() },
+  play: async ({ canvas, userEvent, args }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Unsave" }));
+    await expect(args.onUnsave).toHaveBeenCalled();
+    await expect(
+      await canvas.findByRole("button", {
+        name: "Save and email me when it's ready",
+      })
+    ).toBeInTheDocument();
+    await expect(canvas.queryByRole("status")).not.toBeInTheDocument();
+  },
+};
+
+/** A failed unsave keeps the confirmation so Unsave can be pressed again. */
+export const UnsaveFails: Story = {
+  args: {
+    saved: true,
+    onUnsave: fn(() => {
+      throw new Error("network");
+    }),
+  },
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Unsave" }));
+    await expect(canvas.getByRole("status")).toBeInTheDocument();
+    await expect(canvas.getByRole("button", { name: "Unsave" })).toBeEnabled();
+  },
+};
+
 /** A too-large dataset may never bake, so the offer says "if". */
 export const IfAvailable: Story = {
   args: { offer: "available", onSave: fn() },

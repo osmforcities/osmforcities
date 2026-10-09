@@ -9,8 +9,12 @@ import { cn } from "@/lib/utils";
 type NotifyWhenReadyButtonProps = {
   /** Records the request. Omitted until the notification backend exists. */
   onSave?: () => Promise<void> | void;
-  /** Already asked for on an earlier visit. */
+  /** Deletes the save, which also cancels the email. No control without it. */
+  onUnsave?: () => Promise<void> | void;
+  /** Already saved on an earlier visit. */
   saved?: boolean;
+  /** Whether that earlier save asked for the email. */
+  notify?: boolean;
   /**
    * What the email is conditional on. "ready" is a bake in flight. The other
    * two may never happen (a too-large dataset bakes only if the data shrinks,
@@ -31,23 +35,46 @@ const OFFER_KEY = {
 
 /**
  * Saving a dataset is what keeps it on the retry schedule and what carries the
- * one-shot email, so the button does both in one press. There is no undo here
- * (unsaving is the undo) and the address is never shown, so the page stays
- * safe to read over someone's shoulder.
+ * one-shot email, so the button does both in one press. Unsaving is the undo:
+ * where no other save control exists (the no-map screens), pass `onUnsave`.
+ * The address is never shown, so the page stays safe to read over someone's
+ * shoulder.
  */
 export function NotifyWhenReadyButton({
   onSave,
+  onUnsave,
   saved = false,
+  notify = true,
   offer = "ready",
 }: NotifyWhenReadyButtonProps) {
   const t = useTranslations("DatasetPage");
   const [confirmed, setConfirmed] = useState(saved);
+  // Any press from here on asks for the email.
+  const [notifying, setNotifying] = useState(notify);
   const [sending, setSending] = useState(false);
+
+  const submit = async (
+    request: (() => Promise<void> | void) | undefined,
+    confirmedAfter: boolean
+  ) => {
+    setSending(true);
+    try {
+      await request?.();
+      setConfirmed(confirmedAfter);
+      setNotifying(true);
+    } catch {
+      // Keep the current state so the same control can simply be pressed
+      // again; wording for a failed request belongs with the backend that
+      // can explain it.
+    } finally {
+      setSending(false);
+    }
+  };
 
   if (confirmed) {
     // Same box as the button it replaces, so the panel keeps its height and
     // the confirmation lands exactly where the press happened.
-    return (
+    const status = (
       <p
         role="status"
         className={cn(
@@ -57,8 +84,22 @@ export function NotifyWhenReadyButton({
         )}
       >
         <Check aria-hidden />
-        {t("notifyConfirmed")}
+        {t(notifying ? "notifyConfirmed" : "savedConfirmed")}
       </p>
+    );
+    if (!onUnsave) return status;
+    return (
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        {status}
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={sending}
+          onClick={() => submit(onUnsave, false)}
+        >
+          {t("unsave")}
+        </Button>
+      </div>
     );
   }
 
@@ -68,18 +109,7 @@ export function NotifyWhenReadyButton({
       size="sm"
       className={WRAP}
       disabled={sending}
-      onClick={async () => {
-        setSending(true);
-        try {
-          await onSave?.();
-          setConfirmed(true);
-        } catch {
-          // Leave the button idle so it can simply be pressed again; wording
-          // for a failed request belongs with the backend that can explain it.
-        } finally {
-          setSending(false);
-        }
-      }}
+      onClick={() => submit(onSave, true)}
     >
       <Mail aria-hidden />
       {t(OFFER_KEY[offer])}
