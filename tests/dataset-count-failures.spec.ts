@@ -30,17 +30,22 @@ test.describe("Count failures on the dataset page", () => {
   const prisma = new PrismaClient();
   let user: TestUser;
 
+  // Also before each test: a run killed mid-test leaves its verdict behind
+  const clearVerdicts = () =>
+    prisma.areaSizeCheck.deleteMany({
+      where: { areaId: AMSTERDAM, templateId: { in: TEMPLATE_IDS } },
+    });
+
   test.beforeEach(async ({ page }) => {
     expect((await mockTilerControl(page, { reset: true })).ok()).toBe(true);
+    await clearVerdicts();
     user = await createTestUser(prisma);
     await setupAuthenticationWithLogin(page, user);
   });
 
   test.afterEach(async ({ page }) => {
     await mockTilerControl(page, { reset: true });
-    await prisma.areaSizeCheck.deleteMany({
-      where: { areaId: AMSTERDAM, templateId: { in: TEMPLATE_IDS } },
-    });
+    await clearVerdicts();
     if (user) await cleanupTestUser(user.id);
   });
 
