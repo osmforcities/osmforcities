@@ -6,8 +6,8 @@ import { mockTilerState, resetMockTiler } from "@/lib/mocks/tiler";
 import type { TileJob } from "@/lib/tiler/client";
 
 /**
- * Fake overpass-pmtiler for Playwright: the calls src/lib/tiler/client.ts
- * makes, plus POST control so a spec sets job state. Every job serves the
+ * Fake tiler for Playwright: the calls src/lib/tiler/client.ts makes, plus
+ * POST control so a spec moves a bake between stages. Every bake serves the
  * same committed fixture archive and stats.
  */
 

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { NextRequest } from "next/server";
 import { DELETE, GET, POST } from "../route";
-import { resetMockTiler } from "@/lib/mocks/tiler";
+import { mockTilerState, resetMockTiler } from "@/lib/mocks/tiler";
 import { tilerStatsToDatasetColumns } from "@/lib/tiler/stats";
 
 const req = (path: string[], body?: unknown) => [
@@ -25,7 +25,7 @@ describe("/api/mock-tiler", () => {
     expect((await POST(...req(["jobs"], { id: "j1" }))).status).toBe(404);
   });
 
-  it("walks a job from submit to a pulled, acked archive", async () => {
+  it("takes a bake from submit through reconcile downloads to ack", async () => {
     vi.stubEnv("ENABLE_TEST_AUTH", "true");
     expect((await GET(...req(["status"]))).status).toBe(200);
     expect((await GET(...req(["jobs", "j1"]))).status).toBe(404);
@@ -47,21 +47,20 @@ describe("/api/mock-tiler", () => {
     expect(archive.status).toBe(200);
     expect(Buffer.from(await archive.arrayBuffer()).subarray(0, 7).toString()).toBe("PMTiles");
     const stats = await GET(...req(["jobs", "j1", "stats.json"]));
-    // Fixture stays valid for the reconcile that pulls it
+    // Fixture stays valid for the reconcile that reads it
     expect(tilerStatsToDatasetColumns(await stats.json())).not.toBeNull();
 
     expect((await DELETE(...req(["jobs", "j1"]))).status).toBe(204);
     expect((await GET(...req(["jobs", "j1"]))).status).toBe(404);
   });
 
-  it("forgets a job on control missing, and sets the Overpass count", async () => {
+  it("forgets a bake on control missing, and sets the Overpass count", async () => {
     vi.stubEnv("ENABLE_TEST_AUTH", "true");
     await POST(...req(["jobs"], { id: "j2" }));
     await POST(...req(["control"], { jobId: "j2", missing: true }));
     expect((await GET(...req(["jobs", "j2"]))).status).toBe(404);
 
     await POST(...req(["control"], { overpassCount: 60000 }));
-    const { mockTilerState } = await import("@/lib/mocks/tiler");
     expect(mockTilerState().overpassCount).toBe(60000);
   });
 });

@@ -9,7 +9,7 @@ import type { TileJob } from "@/lib/tiler/client";
  */
 type MockTilerState = {
   jobs: Map<string, TileJob>;
-  /** Count answered to size probes; null keeps the fixture's own count. */
+  /** Count answered to count probes; null keeps the fixture's own count. */
   overpassCount: number | null;
 };
 

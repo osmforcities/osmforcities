@@ -66,7 +66,7 @@ export default defineConfig({
         OVERPASS_API_URL: "http://localhost:3100/api/mock-overpass",
         TILER_URL: "http://localhost:3100/api/mock-tiler",
         NEXT_PUBLIC_TILES_ENABLED: "true",
-        TILES_DIR: "./data/tiles-test",
+        TILES_DIR: "./data/tiles-test", // data/ is gitignored
       },
     },
   ],
