@@ -11,7 +11,7 @@ import {
   AMSTERDAM,
   archiveRequest,
   mockTilerControl,
-  TILES_ONLY_COUNT,
+  OVER_CAP_COUNT,
 } from "../utils/tiler";
 
 const TEMPLATE_ID = "clocks";
@@ -45,7 +45,7 @@ test.describe("Admin Sync on a served tiles dataset", () => {
   // Ends on the in-place page flip, before any reload
   const bakeFirstArchive = async (page: Page) => {
     expect((await mockTilerControl(page, { reset: true })).ok()).toBe(true);
-    await mockTilerControl(page, { overpassCount: TILES_ONLY_COUNT });
+    await mockTilerControl(page, { overpassCount: OVER_CAP_COUNT });
 
     user = await createAdminTestUser(prisma);
     await setupAuthenticationWithLogin(page, user);

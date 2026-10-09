@@ -7,14 +7,10 @@ import {
   setupAuthenticationWithLogin,
   TestUser,
 } from "./utils/auth";
-import { AMSTERDAM, mockTilerControl } from "./utils/tiler";
+import { AMSTERDAM, mockTilerControl, OVER_CAP_COUNT } from "./utils/tiler";
 
-// Each test takes its own template, so no verdict carries over from one test
-// to the next
-const TEMPLATE_IDS = ["benches", "playgrounds", "libraries", "post-boxes"];
-// Over the 25 MB cap at 500 B per element. The tiles lane is off here, so the
-// count refuses the dataset
-const OVER_CAP_COUNT = 60_000;
+// One template per test, so a failure points at one verdict kind
+const TEMPLATE_IDS = ["benches", "playgrounds"];
 
 const openDataset = (page: Page, templateId: string) =>
   page.goto(`/en/area/${AMSTERDAM}/dataset/${templateId}`);
@@ -53,50 +49,33 @@ test.describe("Count failures on the dataset page", () => {
     await prisma.$disconnect();
   });
 
-  test("a timed-out count shows the timed-out wait page", async ({ page }) => {
-    await mockTilerControl(page, { countTimesOut: true });
-    await openDataset(page, "benches");
-
-    const waitPage = page.getByTestId("dataset-timedOut-page");
-    await expect(waitPage).toContainText("The data took too long to load.");
-    await expect(waitPage).toContainText("Try again in at most 30 minutes.");
-    await expect(heading(page, "Benches")).toBeVisible();
-    // Probed now, not answered by a verdict an earlier run left behind
-    expect(await countProbes(page)).toBe(1);
-  });
-
-  test("an over-cap count shows the too-large screen", async ({ page }) => {
-    await mockTilerControl(page, { overpassCount: OVER_CAP_COUNT });
-    await openDataset(page, "playgrounds");
-
-    await expect(heading(page, "Playgrounds")).toBeVisible();
-    await expect(page.getByText("Too large to bake.")).toBeVisible();
-    expect(await countProbes(page)).toBe(1);
-  });
-
-  test("a timed-out verdict is reused without a new count probe", async ({
+  test("a timed-out count shows the timed-out wait page, then reuses its verdict", async ({
     page,
   }) => {
     await mockTilerControl(page, { countTimesOut: true });
-    await openDataset(page, "libraries");
-    await expect(page.getByTestId("dataset-timedOut-page")).toBeVisible();
-    expect(await countProbes(page)).toBe(1);
 
-    await openDataset(page, "libraries");
-    await expect(page.getByTestId("dataset-timedOut-page")).toBeVisible();
-    expect(await countProbes(page)).toBe(1);
+    for (const visit of [1, 2]) {
+      await openDataset(page, "benches");
+      const waitPage = page.getByTestId("dataset-timedOut-page");
+      await expect(waitPage).toContainText("The data took too long to load.");
+      await expect(waitPage).toContainText("Try again in at most 30 minutes.");
+      await expect(heading(page, "Benches")).toBeVisible();
+      // One probe on the first visit, none on the second
+      expect(await countProbes(page), `visit ${visit}`).toBe(1);
+    }
   });
 
-  test("a too-large verdict is reused without a new count probe", async ({
+  test("an over-cap count shows the too-large screen, then reuses its verdict", async ({
     page,
   }) => {
+    // The tiles lane is off in this project, so over the cap is a refusal
     await mockTilerControl(page, { overpassCount: OVER_CAP_COUNT });
-    await openDataset(page, "post-boxes");
-    await expect(page.getByText("Too large to bake.")).toBeVisible();
-    expect(await countProbes(page)).toBe(1);
 
-    await openDataset(page, "post-boxes");
-    await expect(page.getByText("Too large to bake.")).toBeVisible();
-    expect(await countProbes(page)).toBe(1);
+    for (const visit of [1, 2]) {
+      await openDataset(page, "playgrounds");
+      await expect(heading(page, "Playgrounds")).toBeVisible();
+      await expect(page.getByText("Too large to bake.")).toBeVisible();
+      expect(await countProbes(page), `visit ${visit}`).toBe(1);
+    }
   });
 });

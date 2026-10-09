@@ -10,7 +10,7 @@ import {
 import {
   AMSTERDAM,
   mockTilerControl,
-  TILES_ONLY_COUNT,
+  OVER_CAP_COUNT,
 } from "../utils/tiler";
 
 // Same template as create.spec: tests run one at a time and each cleans up
@@ -54,7 +54,7 @@ test.describe("Tiler failure handling", () => {
    */
   async function createSavedDataset(page: Page) {
     expect((await mockTilerControl(page, { reset: true })).ok()).toBe(true);
-    await mockTilerControl(page, { overpassCount: TILES_ONLY_COUNT });
+    await mockTilerControl(page, { overpassCount: OVER_CAP_COUNT });
 
     user = await createTestUser(prisma);
     await setupAuthenticationWithLogin(page, user);
