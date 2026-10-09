@@ -68,6 +68,7 @@ test.describe("Tiler failure handling", () => {
       where: { areaId: AREA_ID, templateId: TEMPLATE_ID },
       select: { id: true, tilesJobId: true },
     });
+    expect(tilesJobId).toBeTruthy();
     expect((await page.request.post(`/api/datasets/${id}/save`)).ok()).toBe(true);
     await page.goto("about:blank");
     return { id, tilesJobId: tilesJobId as string };
@@ -129,6 +130,7 @@ test.describe("Tiler failure handling", () => {
       error: "Overpass returned 504",
     });
 
+    await setLastAttempted(dataset.id, new Date(Date.now() - 14 * MINUTE_MS));
     await runCycle(page);
     expect(await readDataset(dataset.id)).toMatchObject({
       tilesState: "failed",
@@ -148,7 +150,7 @@ test.describe("Tiler failure handling", () => {
     expect(resubmitted.tilesJobId).not.toBe(dataset.tilesJobId);
   });
 
-  test("a too-large refusal waits a week, not the 6 hour rung", async ({
+  test("a too-large refusal is not retried on the hourly rungs", async ({
     page,
   }) => {
     const dataset = await createSavedDataset(page);
@@ -166,7 +168,7 @@ test.describe("Tiler failure handling", () => {
     );
     await page.goto("about:blank");
 
-    await setLastAttempted(dataset.id, new Date(Date.now() - 6 * 60 * MINUTE_MS - MINUTE_MS));
+    await setLastAttempted(dataset.id, new Date(Date.now() - (6 * 60 + 1) * MINUTE_MS));
     await runCycle(page);
     expect(await readDataset(dataset.id)).toMatchObject({
       tilesState: "failed",
