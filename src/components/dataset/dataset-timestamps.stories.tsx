@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect } from "storybook/test";
 import { act } from "react";
-import { hydrateRoot } from "react-dom/client";
+import { hydrateRoot, type Root } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import { NextIntlClientProvider } from "next-intl";
 import type { Dataset } from "@/schemas/dataset";
@@ -22,8 +22,11 @@ const meta: Meta<typeof DatasetTimestamps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const aSecondAgo = () => new Date(Date.now() - 1000);
+
 export const JustFetched: Story = {
-  args: { dataset, lastChecked: new Date(Date.now() - 1000) },
+  args: { dataset },
+  render: (args) => <DatasetTimestamps {...args} lastChecked={aSecondAgo()} />,
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole("button", { name: /^Fetched \d+ seconds? ago$/ })
@@ -32,11 +35,12 @@ export const JustFetched: Story = {
 };
 
 export const HydratesAfterTheClockMoves: Story = {
-  args: JustFetched.args,
+  args: { dataset },
+  render: () => <></>,
   play: async ({ args, canvasElement }) => {
     const tree = (
       <NextIntlClientProvider locale="en" messages={messages} timeZone="UTC">
-        <DatasetTimestamps {...args} />
+        <DatasetTimestamps {...args} lastChecked={aSecondAgo()} />
       </NextIntlClientProvider>
     );
     const container = document.createElement("div");
@@ -49,14 +53,16 @@ export const HydratesAfterTheClockMoves: Story = {
     const actEnv = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean };
     actEnv.IS_REACT_ACT_ENVIRONMENT = true;
     const errors: string[] = [];
+    let root: Root | undefined;
     try {
       await act(async () => {
-        hydrateRoot(container, tree, {
+        root = hydrateRoot(container, tree, {
           onRecoverableError: (error) => errors.push(String(error)),
         });
       });
     } finally {
       Date.now = realNow;
+      await act(async () => root?.unmount());
       actEnv.IS_REACT_ACT_ENVIRONMENT = false;
     }
 
