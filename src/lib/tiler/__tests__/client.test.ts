@@ -46,17 +46,27 @@ describe("newTileJobId", () => {
 
 describe("fetchTileNdjson", () => {
   it("returns the bake's data.ndjson as text", async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      text: async () => "{}\n",
-    } as unknown as Response);
+    const fetchMock = vi.fn().mockResolvedValue(new Response("{}\n"));
     vi.stubGlobal("fetch", fetchMock);
 
-    expect(await fetchTileNdjson("d1-1")).toBe("{}\n");
+    expect(await fetchTileNdjson("d1-1", 100)).toBe("{}\n");
     expect(fetchMock.mock.calls[0][0]).toBe(
       "http://127.0.0.1:8099/jobs/d1-1/data.ndjson"
     );
+  });
+
+  it("returns null once the body passes the cap, without buffering the rest", async () => {
+    let pulled = 0;
+    const endless = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        pulled++;
+        controller.enqueue(new Uint8Array(64));
+      },
+    });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(endless)));
+
+    expect(await fetchTileNdjson("d1-1", 100)).toBeNull();
+    expect(pulled).toBeLessThan(5);
   });
 
   it("throws on a non-2xx", async () => {
@@ -64,7 +74,7 @@ describe("fetchTileNdjson", () => {
       "fetch",
       vi.fn().mockResolvedValue({ ok: false, status: 404 } as Response)
     );
-    await expect(fetchTileNdjson("d1-1")).rejects.toThrow(/404/);
+    await expect(fetchTileNdjson("d1-1", 100)).rejects.toThrow(/404/);
   });
 });
 

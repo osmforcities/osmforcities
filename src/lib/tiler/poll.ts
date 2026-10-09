@@ -113,11 +113,9 @@ async function featureFill(
     return { geojson: Prisma.JsonNull };
   }
   try {
-    const ndjson = await fetchTileNdjson(jobId);
     // The estimate is per element; the bytes are the real cap
-    if (Buffer.byteLength(ndjson) > MAX_DATASET_BYTES) {
-      return { geojson: Prisma.JsonNull };
-    }
+    const ndjson = await fetchTileNdjson(jobId, MAX_DATASET_BYTES);
+    if (ndjson === null) return { geojson: Prisma.JsonNull };
     return {
       // Parsed JSON, so already JSON-safe (no Dates to serialize)
       geojson: ndjsonToFeatureCollection(

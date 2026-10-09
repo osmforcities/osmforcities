@@ -217,15 +217,33 @@ export async function downloadTileOutputs(id: string): Promise<void> {
  * TILES_DIR: callers only fetch it under the storage cap and store it as
  * geojson, so no file would ever be served or pruned.
  */
-export async function fetchTileNdjson(id: string): Promise<string> {
+export async function fetchTileNdjson(
+  id: string,
+  maxBytes: number
+): Promise<string | null> {
   const response = await fetch(
     `${requireTilerUrl()}/jobs/${requireValidJobId(id)}/data.ndjson`,
     { signal: AbortSignal.timeout(DOWNLOAD_TIMEOUT_MS) }
   );
-  if (!response.ok) {
+  if (!response.ok || !response.body) {
     throw new Error(`Tiler ndjson download failed: ${response.status}`);
   }
-  return response.text();
+  // Streamed with a hard stop: the caller's cap check is a per-feature
+  // estimate, and geometry-heavy bakes can pass it at hundreds of MB.
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let bytes = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    bytes += value.byteLength;
+    if (bytes > maxBytes) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks).toString("utf8");
 }
 
 /** Ack a pulled job so the tiler frees its spool. 404 (already swept) is fine. */

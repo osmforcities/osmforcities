@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { MAX_DATASET_BYTES } from "@/lib/constants";
 import {
   getTileJob,
   downloadTileOutputs,
@@ -574,7 +575,7 @@ describe("reconcile with the tiles flag on", () => {
   it("fills features from the bake's ndjson under the cap", async () => {
     await reconcileDataset(pendingRow, done);
 
-    expect(fetchTileNdjson).toHaveBeenCalledWith("ds-1-100");
+    expect(fetchTileNdjson).toHaveBeenCalledWith("ds-1-100", MAX_DATASET_BYTES);
     // Same flat shape the app's own fetch stores: unprefixed meta, no _ts
     expect(updateData(0).geojson).toEqual({
       type: "FeatureCollection",
@@ -614,7 +615,7 @@ describe("reconcile with the tiles flag on", () => {
   });
 
   it("stores JsonNull when the ndjson is larger than the cap", async () => {
-    vi.mocked(fetchTileNdjson).mockResolvedValue("x".repeat(26 * 1024 * 1024));
+    vi.mocked(fetchTileNdjson).mockResolvedValue(null);
 
     await reconcileDataset(pendingRow, done);
 
