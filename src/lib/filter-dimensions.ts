@@ -123,9 +123,19 @@ function computeAgeDimension(features: Feature[]): FilterDimension {
     counts.set(category, (counts.get(category) ?? 0) + 1);
   }
 
-  const values: FilterDimensionValue[] = AGE_CATEGORY_ORDER.filter((c) =>
-    counts.has(c)
-  ).map((c) => ({ value: c, count: counts.get(c)! }));
+  return ageDimensionFromCounts(AGE_CATEGORY_ORDER.map((c) => counts.get(c) ?? 0));
+}
+
+/**
+ * The age dimension from per-bucket counts in AGE_CATEGORY_ORDER, empty
+ * buckets dropped. Shared with the tiler stats mapping, whose baked counts
+ * arrive in that order.
+ */
+export function ageDimensionFromCounts(counts: readonly number[]): FilterDimension {
+  const values: FilterDimensionValue[] = AGE_CATEGORY_ORDER.map((value, i) => ({
+    value,
+    count: counts[i],
+  })).filter((v) => v.count > 0);
 
   return { key: "age", kind: "age", values, missing: 0 };
 }
