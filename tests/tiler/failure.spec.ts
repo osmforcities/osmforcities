@@ -154,7 +154,8 @@ test.describe("Tiler failure handling", () => {
     });
 
     await setLastAttempted(dataset.id, new Date(Date.now() - 14 * MINUTE_MS));
-    await runCycle(page);
+    // Nothing due at all, so a stray due row cannot hide a resubmit
+    expect(await runCycle(page)).toMatchObject({ totalFound: 0 });
     expect(await readDataset(dataset.id)).toMatchObject({
       tilesState: "failed",
       tilesJobId: dataset.tilesJobId,
@@ -187,7 +188,7 @@ test.describe("Tiler failure handling", () => {
     await page.goto("about:blank");
 
     await setLastAttempted(dataset.id, new Date(Date.now() - (6 * 60 + 1) * MINUTE_MS));
-    await runCycle(page);
+    expect(await runCycle(page)).toMatchObject({ totalFound: 0 });
     expect(await readDataset(dataset.id)).toMatchObject({
       tilesState: "failed",
       tilesJobId: dataset.tilesJobId,
