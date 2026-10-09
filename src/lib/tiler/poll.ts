@@ -3,14 +3,24 @@ import { prisma } from "@/lib/db";
 import {
   ackTileJob,
   downloadTileOutputs,
+  fetchTileNdjson,
   getTileJob,
   pruneTileArchives,
   tilerEnabled,
   type TileJob,
 } from "./client";
-import { readPulledStats, tilerStatsToDatasetColumns } from "./stats";
+import {
+  ndjsonToFeatureCollection,
+  readPulledStats,
+  tilerStatsToDatasetColumns,
+} from "./stats";
 import { isTooLarge } from "@/lib/dataset-retry";
 import { notifyDatasetReady } from "@/lib/tasks/notify-ready";
+import { TILES_ENABLED } from "@/lib/dataset-tiles";
+import {
+  MAX_DATASET_BYTES,
+  OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
+} from "@/lib/constants";
 
 export type TileFailureKind = "bake" | "too_large" | "reconcile";
 
@@ -57,18 +67,61 @@ async function commitOutcome(
   return count > 0;
 }
 
+// With the tiles lane on, every finished bake is the dataset's refresh: its
+// stats replace the stored ones. Off, the tiler only fills empty stats.
+function tilesLane(): boolean {
+  return tilerEnabled() && TILES_ENABLED;
+}
+
+// A failed bake is a failed refresh, counted like the cron counts one
+function failureCounters(error: string) {
+  return {
+    consecutiveFailures: { increment: 1 },
+    ...(tilesLane() && { lastError: error }),
+  };
+}
+
 /**
- * Never-filled rows, plus tiles-only rows filled before bakes carried age
- * counts. App snapshots always store an age dimension, and older ones store no
- * filterDimensions at all, so neither matches.
+ * Flag-off fill gate: never-filled rows, plus tiles-only rows filled before
+ * bakes carried age counts. App snapshots always store an age dimension, and
+ * older ones store no filterDimensions at all, so neither matches.
  */
 function needsTilerStatsFill(stats: Prisma.JsonValue): boolean {
-  // ponytail: stats freeze after the first fill; making reconcile the
-  // authoritative stats writer drops this gate.
   if (stats === null) return true;
   const dimensions = (stats as { filterDimensions?: { kind: string }[] })
     .filterDimensions;
   return Array.isArray(dimensions) && !dimensions.some((d) => d.kind === "age");
+}
+
+/**
+ * The bake's features as stored geojson, so export and the geojson fallback
+ * keep working once creation stops fetching it. Over the storage cap the
+ * column is JsonNull, as the app stores over-cap rows. A failed pull returns
+ * nothing to write: the stored geojson stays until the next bake.
+ */
+async function backfillGeojson(
+  jobId: string,
+  features: number
+): Promise<Pick<Prisma.DatasetUpdateManyMutationInput, "geojson">> {
+  if (features * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE > MAX_DATASET_BYTES) {
+    return { geojson: Prisma.JsonNull };
+  }
+  try {
+    const ndjson = await fetchTileNdjson(jobId);
+    // The estimate is per element; the bytes are the real cap
+    if (Buffer.byteLength(ndjson) > MAX_DATASET_BYTES) {
+      return { geojson: Prisma.JsonNull };
+    }
+    return {
+      // Parsed JSON, so already JSON-safe (no Dates to serialize)
+      geojson: ndjsonToFeatureCollection(
+        ndjson
+      ) as unknown as Prisma.InputJsonValue,
+    };
+  } catch (error) {
+    console.error(`GeoJSON backfill failed for job ${jobId}:`, error);
+    return {};
+  }
 }
 
 /**
@@ -93,7 +146,7 @@ export async function reconcileDataset(
     const won = await commitOutcome(dataset, {
       tilesState: "failed",
       tilesError: error,
-      consecutiveFailures: { increment: 1 },
+      ...failureCounters(error),
     });
     return won ? { outcome: "failed", error } : { outcome: "pending" };
   }
@@ -105,21 +158,32 @@ export async function reconcileDataset(
     try {
       await downloadTileOutputs(dataset.tilesJobId);
 
-      // Only tiles-only datasets take the tiler's stats. Ones the app fetched
-      // keep its own, so drift between the two pipelines stays visible.
+      // Unusable stats (read error, unknown schema) leave every data column
+      // as it was: the archive still lands, but the refresh did not happen.
       let statsColumns: Prisma.DatasetUpdateManyMutationInput = {};
       const row = await prisma.dataset.findUnique({
         where: { id: dataset.id },
         select: { stats: true, dataCount: true },
       });
       dataCount = row?.dataCount ?? 0;
-      if (row && needsTilerStatsFill(row.stats)) {
+      const authoritative = tilesLane();
+      if (row && (authoritative || needsTilerStatsFill(row.stats))) {
         try {
           const mapped = tilerStatsToDatasetColumns(
             await readPulledStats(dataset.tilesJobId)
           );
           if (mapped) {
-            statsColumns = mapped;
+            statsColumns = authoritative
+              ? {
+                  ...mapped,
+                  ...(await backfillGeojson(
+                    dataset.tilesJobId,
+                    mapped.dataCount
+                  )),
+                  lastChecked: new Date(),
+                  lastError: null,
+                }
+              : mapped;
             dataCount = mapped.dataCount;
           }
         } catch (error) {
@@ -163,7 +227,7 @@ export async function reconcileDataset(
     const won = await commitOutcome(dataset, {
       tilesState: "failed",
       tilesError: error,
-      consecutiveFailures: { increment: 1 },
+      ...failureCounters(error),
     });
     return won ? { outcome: "failed", error } : { outcome: "pending" };
   }

@@ -41,7 +41,9 @@ export async function GET(_request: NextRequest, { params }: Context) {
   if (!file) return NextResponse.json(job);
   const stats = state.stats.get(id);
   if (file === "stats.json" && stats) return NextResponse.json(stats);
-  if (file !== "output.pmtiles" && file !== "stats.json") return notFound();
+  if (!["output.pmtiles", "stats.json", "data.ndjson"].includes(file)) {
+    return notFound();
+  }
   return new NextResponse(await readFile(path.join(FIXTURES, file)));
 }
 

@@ -3,7 +3,10 @@ import { NextRequest } from "next/server";
 import { DELETE, GET, POST } from "../route";
 import { POST as overpass } from "@/app/api/mock-overpass/route";
 import { resetMockTiler } from "@/lib/mocks/tiler";
-import { tilerStatsToDatasetColumns } from "@/lib/tiler/stats";
+import {
+  ndjsonToFeatureCollection,
+  tilerStatsToDatasetColumns,
+} from "@/lib/tiler/stats";
 
 const req = (path: string[], body?: unknown) => [
   new NextRequest(`http://localhost/api/mock-tiler/${path.join("/")}`, {
@@ -50,6 +53,8 @@ describe("/api/mock-tiler", () => {
     const stats = await GET(...req(["jobs", "j1", "stats.json"]));
     // Fixture stays valid for the reconcile that reads it
     expect(tilerStatsToDatasetColumns(await stats.json())).not.toBeNull();
+    const ndjson = await GET(...req(["jobs", "j1", "data.ndjson"]));
+    expect(ndjsonToFeatureCollection(await ndjson.text()).features).toHaveLength(1);
 
     expect((await DELETE(...req(["jobs", "j1"]))).status).toBe(204);
     expect((await GET(...req(["jobs", "j1"]))).status).toBe(404);

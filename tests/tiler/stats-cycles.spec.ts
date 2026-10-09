@@ -161,7 +161,7 @@ test.describe("Tiles-only stats across bake cycles", () => {
   }) => {
     // Known bug: the refresh writes the count probe's element count to
     // dataCount, so Features shows 60k until the bake lands. Marker removal
-    // tracked in https://github.com/osmforcities/osmforcities/issues/623
+    // tracked in https://github.com/osmforcities/osmforcities/issues/624
     test.fail();
     await expectPageShows(page, A);
   });
@@ -178,10 +178,6 @@ test.describe("Tiles-only stats across bake cycles", () => {
   });
 
   test("stats follow the latest bake", async ({ page }) => {
-    // Known bug (stats freeze): reconcile copies the tiler's stats only while
-    // the row has none, so B's never land. Fixed by
-    // https://github.com/osmforcities/osmforcities/issues/623
-    test.fail();
     expectRowHolds(await row(), B);
     await expectPageShows(page, B);
   });

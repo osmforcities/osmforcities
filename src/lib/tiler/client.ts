@@ -103,6 +103,7 @@ export async function submitTileJob(input: {
   query: string;
   filterableTags?: string[];
   ageBandsDays?: readonly number[];
+  keepMeta?: boolean;
   maxsize?: number;
   timeout?: number;
 }): Promise<void> {
@@ -211,6 +212,22 @@ export async function downloadTileOutputs(id: string): Promise<void> {
   );
 }
 
+/**
+ * The nd-geojson a done job was baked from. Held in memory, not written to
+ * TILES_DIR: callers only fetch it under the storage cap and store it as
+ * geojson, so no file would ever be served or pruned.
+ */
+export async function fetchTileNdjson(id: string): Promise<string> {
+  const response = await fetch(
+    `${requireTilerUrl()}/jobs/${requireValidJobId(id)}/data.ndjson`,
+    { signal: AbortSignal.timeout(DOWNLOAD_TIMEOUT_MS) }
+  );
+  if (!response.ok) {
+    throw new Error(`Tiler ndjson download failed: ${response.status}`);
+  }
+  return response.text();
+}
+
 /** Ack a pulled job so the tiler frees its spool. 404 (already swept) is fine. */
 export async function ackTileJob(id: string): Promise<void> {
   const response = await fetch(`${requireTilerUrl()}/jobs/${requireValidJobId(id)}`, {
@@ -276,6 +293,9 @@ export async function submitTilesColumns(
       filterableTags,
       // Stats then carry the legend's age counts (tiles-only rows hold no features)
       ageBandsDays: AGE_BUCKET_DAYS,
+      // data.ndjson then carries user/timestamp, which the geojson backfill
+      // in reconcile stores like the app's own fetch
+      keepMeta: true,
       ...budgets,
     });
     return { tilesJobId: id, tilesState: "pending", tilesError: null };
