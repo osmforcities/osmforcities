@@ -7,21 +7,12 @@ import {
   setupAuthenticationWithLogin,
   TestUser,
 } from "../utils/auth";
+import { archiveRequest, mockTilerControl } from "../utils/tiler";
 
 const AMSTERDAM = 271110;
 const TEMPLATE_ID = "clocks";
 const TILES_ONLY_COUNT = 60_000;
 const PAGE = `/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`;
-const CRON_ROUTE_SECRET = "test-cron-secret";
-
-const control = (page: Page, data: object) =>
-  page.request.post("/api/mock-tiler/control", { data });
-
-const archiveRequest = (page: Page, jobId: string) =>
-  page.waitForResponse((response) =>
-    response.url().includes(`/api/tiles/${jobId}.pmtiles`)
-  );
-
 const syncButton = (page: Page) =>
   page.getByTitle("Sync with the latest OpenStreetMap data");
 
@@ -49,8 +40,13 @@ test.describe("Admin Sync on a served tiles dataset", () => {
   };
 
   test.beforeEach(async ({ page }) => {
-    expect((await control(page, { reset: true })).ok()).toBe(true);
-    await control(page, { overpassCount: TILES_ONLY_COUNT });
+    // TEMP diagnostic: which client error opens the dev overlay in CI
+    page.on("pageerror", (e) => console.log(`[pageerror] ${e.stack}`));
+    page.on("console", (m) => {
+      if (m.type() === "error") console.log(`[console.error] ${m.text()}`);
+    });
+    expect((await mockTilerControl(page, { reset: true })).ok()).toBe(true);
+    await mockTilerControl(page, { overpassCount: TILES_ONLY_COUNT });
 
     user = await createAdminTestUser(prisma);
     await setupAuthenticationWithLogin(page, user);
@@ -64,7 +60,7 @@ test.describe("Admin Sync on a served tiles dataset", () => {
     servedJobId = await tilesJobId();
 
     const archive = archiveRequest(page, servedJobId);
-    await control(page, { jobId: servedJobId, state: "done" });
+    await mockTilerControl(page, { jobId: servedJobId, state: "done" });
     expect((await archive).ok()).toBe(true);
 
     // Sync stays disabled after the in-place flip until a full load
@@ -73,7 +69,7 @@ test.describe("Admin Sync on a served tiles dataset", () => {
   });
 
   test.afterEach(async ({ page }) => {
-    await control(page, { reset: true });
+    await mockTilerControl(page, { reset: true });
     // The size verdict outlives the dataset and would steer later specs
     await prisma.areaSizeCheck.deleteMany({
       where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
@@ -102,7 +98,7 @@ test.describe("Admin Sync on a served tiles dataset", () => {
     await clickSync(page);
     const newJobId = await tilesJobId();
     expect(newJobId).not.toBe(servedJobId);
-    await control(page, {
+    await mockTilerControl(page, {
       jobId: newJobId,
       state: "baking",
       progress: { stage: "baking", pct: 40 },
@@ -113,9 +109,11 @@ test.describe("Admin Sync on a served tiles dataset", () => {
     expect((await oldArchive).ok()).toBe(true);
     await expect(syncButton(page)).toBeDisabled();
 
-    await control(page, { jobId: newJobId, state: "done" });
+    await mockTilerControl(page, { jobId: newJobId, state: "done" });
+    // The tick also refreshes a due cataloged dataset: give it the real count
+    await mockTilerControl(page, { overpassCount: null });
     const tick = await page.request.post("/api/tasks/update-datasets", {
-      headers: { Authorization: `Bearer ${CRON_ROUTE_SECRET}` },
+      headers: { Authorization: `Bearer ${process.env.CRON_ROUTE_SECRET}` },
     });
     expect(tick.ok()).toBe(true);
     expect((await tick.json()).data.tiles.completed).toBeGreaterThanOrEqual(1);

@@ -18,7 +18,7 @@ const notFound = () => new NextResponse(null, { status: 404 });
 
 type ControlBody =
   | { reset: true }
-  | { overpassCount: number }
+  | { overpassCount: number | null }
   | ({ jobId: string } & Omit<TileJob, "id">);
 
 export async function GET(_request: NextRequest, { params }: Context) {
