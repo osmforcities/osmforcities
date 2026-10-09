@@ -59,8 +59,20 @@ How code in this repo should be written. Reviewers (human and agent) check chang
 
 ## Tests
 
-- Prefer unit (`pnpm test:unit`) and Storybook interaction tests (`pnpm test-storybook`).
-- Playwright is expensive: add an end-to-end test only for a flow nothing cheaper can cover, and run it targeted (`--grep`), never the full suite during development.
+The kind of change decides the test. Commands for each layer are in [AGENTS.md](AGENTS.md).
+
+| Change | Required test |
+| --- | --- |
+| Pure logic: lib functions, parsers, state transitions, formatting | Unit test (`*.test.ts`) in a `__tests__/` folder |
+| API route handler behavior | Unit test of the handler, Prisma and `fetch` mocked |
+| Component states and interaction in isolation | Storybook story with an interaction (`play`) test |
+| A user flow that crosses client, server, DB or an async lifecycle (dataset create, save, refresh, tiler bake) | Playwright spec in `tests/` |
+| Bug fix | Regression test at the lowest layer that reproduces the bug |
+
+- A change can need more than one row: a new tiler state needs a unit test for the transition and a Playwright spec for the flow.
+- A known bug the PR does not fix is written as the correct behavior and marked `test.fail()` / `it.fails`, with a comment describing the bug (full issue URL, not a bare ref). The fixing PR removes the marker.
+- No test needed for copy-only, styling-only, docs, or config with no behavior.
+- Playwright is the most expensive layer: use it only when no cheaper row covers the change, and run it targeted (`--grep`), never the full suite during development.
 
 ## Commits and PRs
 
