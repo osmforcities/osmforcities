@@ -42,7 +42,8 @@ test.describe("Admin Sync on a served tiles dataset", () => {
     expect((await refresh).ok()).toBe(true);
   };
 
-  test.beforeEach(async ({ page }) => {
+  // Ends on the in-place page flip, before any reload
+  const bakeFirstArchive = async (page: Page) => {
     expect((await mockTilerControl(page, { reset: true })).ok()).toBe(true);
     await mockTilerControl(page, { overpassCount: TILES_ONLY_COUNT });
 
@@ -60,17 +61,7 @@ test.describe("Admin Sync on a served tiles dataset", () => {
     const archive = archiveRequest(page, servedJobId);
     await mockTilerControl(page, { jobId: servedJobId, state: "done" });
     expect((await archive).ok()).toBe(true);
-
-    // Sync stays disabled after the in-place flip until a full load
-    await page.reload();
-    await expect(syncButton(page)).toBeEnabled();
-
-    // Job ids end in the Unix second: a rebuild in the same second reuses the id
-    const servedSecond = Number(servedJobId.split("-").pop());
-    await expect
-      .poll(() => Math.floor(Date.now() / 1000))
-      .toBeGreaterThan(servedSecond);
-  });
+  };
 
   test.afterEach(async ({ page }) => {
     await mockTilerControl(page, { reset: true });
@@ -85,46 +76,70 @@ test.describe("Admin Sync on a served tiles dataset", () => {
     await prisma.$disconnect();
   });
 
-  test("announces the queued rebuild without a reload", async ({ page }) => {
-    // Bug: the refresh route returns no tilesState, so Sync claims success.
-    // https://github.com/osmforcities/osmforcities/issues/583
-    test.fail();
-    await clickSync(page);
-    await expect(syncButton(page)).toBeDisabled({ timeout: 5_000 });
-    await expect(page.getByText("Update queued")).toBeAttached({
-      timeout: 5_000,
-    });
-  });
-
-  test("keeps the old archive while baking, swaps on reconcile", async ({
+  test("re-enables Sync when the first bake lands, without a reload", async ({
     page,
   }) => {
-    await clickSync(page);
-    const newJobId = await tilesJobId();
-    expect(newJobId).not.toBe(servedJobId);
-    await mockTilerControl(page, {
-      jobId: newJobId,
-      state: "baking",
-      progress: { stage: "baking", pct: 40 },
+    await bakeFirstArchive(page);
+    // Bug: Sync keeps its pending state from the first paint after the flip.
+    // https://github.com/osmforcities/osmforcities/issues/622
+    test.fail();
+    await expect(syncButton(page)).toBeEnabled({ timeout: 5_000 });
+  });
+
+  test.describe("once the archive is served", () => {
+    test.beforeEach(async ({ page }) => {
+      await bakeFirstArchive(page);
+      await page.reload();
+      await expect(syncButton(page)).toBeEnabled();
+
+      // Job ids end in the Unix second: a rebuild in the same second reuses the id
+      const servedSecond = Number(servedJobId.split("-").pop());
+      await expect
+        .poll(() => Math.floor(Date.now() / 1000))
+        .toBeGreaterThan(servedSecond);
     });
 
-    const oldArchive = archiveRequest(page, servedJobId);
-    await page.reload();
-    expect((await oldArchive).ok()).toBe(true);
-    await expect(syncButton(page)).toBeDisabled();
-
-    await mockTilerControl(page, { jobId: newJobId, state: "done" });
-    // The tick also refreshes a due cataloged dataset: give it the real count
-    await mockTilerControl(page, { overpassCount: null });
-    const tick = await page.request.post("/api/tasks/update-datasets", {
-      headers: { Authorization: `Bearer ${process.env.CRON_ROUTE_SECRET}` },
+    test("announces the queued rebuild without a reload", async ({ page }) => {
+      // Bug: the refresh route returns no tilesState, so Sync claims success.
+      // https://github.com/osmforcities/osmforcities/issues/583
+      test.fail();
+      await clickSync(page);
+      await expect(syncButton(page)).toBeDisabled({ timeout: 5_000 });
+      await expect(page.getByText("Update queued")).toBeAttached({
+        timeout: 5_000,
+      });
     });
-    expect(tick.ok()).toBe(true);
-    expect((await tick.json()).data.tiles.completed).toBeGreaterThanOrEqual(1);
 
-    const newArchive = archiveRequest(page, newJobId);
-    await page.reload();
-    expect((await newArchive).ok()).toBe(true);
-    await expect(syncButton(page)).toBeEnabled();
+    test("keeps the old archive while baking, swaps on reconcile", async ({
+      page,
+    }) => {
+      await clickSync(page);
+      const newJobId = await tilesJobId();
+      expect(newJobId).not.toBe(servedJobId);
+      await mockTilerControl(page, {
+        jobId: newJobId,
+        state: "baking",
+        progress: { stage: "baking", pct: 40 },
+      });
+
+      const oldArchive = archiveRequest(page, servedJobId);
+      await page.reload();
+      expect((await oldArchive).ok()).toBe(true);
+      await expect(syncButton(page)).toBeDisabled();
+
+      await mockTilerControl(page, { jobId: newJobId, state: "done" });
+      // The tick also refreshes a due cataloged dataset: give it the real count
+      await mockTilerControl(page, { overpassCount: null });
+      const tick = await page.request.post("/api/tasks/update-datasets", {
+        headers: { Authorization: `Bearer ${process.env.CRON_ROUTE_SECRET}` },
+      });
+      expect(tick.ok()).toBe(true);
+      expect((await tick.json()).data.tiles.completed).toBeGreaterThanOrEqual(1);
+
+      const newArchive = archiveRequest(page, newJobId);
+      await page.reload();
+      expect((await newArchive).ok()).toBe(true);
+      await expect(syncButton(page)).toBeEnabled();
+    });
   });
 });
