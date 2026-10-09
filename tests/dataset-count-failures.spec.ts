@@ -7,18 +7,17 @@ import {
   setupAuthenticationWithLogin,
   TestUser,
 } from "./utils/auth";
-import { controlMockTiler as control } from "./utils/mock-tiler";
+import { AMSTERDAM, mockTilerControl } from "./utils/tiler";
 
 // Each test takes its own template, so no verdict carries over from one test
 // to the next
-const AMSTERDAM_AREA_ID = 271110;
 const TEMPLATE_IDS = ["benches", "playgrounds", "libraries", "post-boxes"];
 // Over the 25 MB cap at 500 B per element. The tiles lane is off here, so the
 // count refuses the dataset
 const OVER_CAP_COUNT = 60_000;
 
 const openDataset = (page: Page, templateId: string) =>
-  page.goto(`/en/area/${AMSTERDAM_AREA_ID}/dataset/${templateId}`);
+  page.goto(`/en/area/${AMSTERDAM}/dataset/${templateId}`);
 
 const countProbes = async (page: Page): Promise<number> =>
   (await (await page.request.get("/api/mock-tiler/control")).json())
@@ -32,15 +31,15 @@ test.describe("Count failures on the dataset page", () => {
   let user: TestUser;
 
   test.beforeEach(async ({ page }) => {
-    expect((await control(page, { reset: true })).ok()).toBe(true);
+    expect((await mockTilerControl(page, { reset: true })).ok()).toBe(true);
     user = await createTestUser(prisma);
     await setupAuthenticationWithLogin(page, user);
   });
 
   test.afterEach(async ({ page }) => {
-    await control(page, { reset: true });
+    await mockTilerControl(page, { reset: true });
     await prisma.areaSizeCheck.deleteMany({
-      where: { areaId: AMSTERDAM_AREA_ID, templateId: { in: TEMPLATE_IDS } },
+      where: { areaId: AMSTERDAM, templateId: { in: TEMPLATE_IDS } },
     });
     if (user) await cleanupTestUser(user.id);
   });
@@ -50,7 +49,7 @@ test.describe("Count failures on the dataset page", () => {
   });
 
   test("a timed-out count shows the timed-out wait page", async ({ page }) => {
-    await control(page, { countTimesOut: true });
+    await mockTilerControl(page, { countTimesOut: true });
     await openDataset(page, "benches");
 
     const waitPage = page.getByTestId("dataset-timedOut-page");
@@ -62,7 +61,7 @@ test.describe("Count failures on the dataset page", () => {
   });
 
   test("an over-cap count shows the too-large screen", async ({ page }) => {
-    await control(page, { overpassCount: OVER_CAP_COUNT });
+    await mockTilerControl(page, { overpassCount: OVER_CAP_COUNT });
     await openDataset(page, "playgrounds");
 
     await expect(heading(page, "Playgrounds")).toBeVisible();
@@ -73,7 +72,7 @@ test.describe("Count failures on the dataset page", () => {
   test("a timed-out verdict is reused without a new count probe", async ({
     page,
   }) => {
-    await control(page, { countTimesOut: true });
+    await mockTilerControl(page, { countTimesOut: true });
     await openDataset(page, "libraries");
     await expect(page.getByTestId("dataset-timedOut-page")).toBeVisible();
     expect(await countProbes(page)).toBe(1);
@@ -86,7 +85,7 @@ test.describe("Count failures on the dataset page", () => {
   test("a too-large verdict is reused without a new count probe", async ({
     page,
   }) => {
-    await control(page, { overpassCount: OVER_CAP_COUNT });
+    await mockTilerControl(page, { overpassCount: OVER_CAP_COUNT });
     await openDataset(page, "post-boxes");
     await expect(page.getByText("Too large to bake.")).toBeVisible();
     expect(await countProbes(page)).toBe(1);
