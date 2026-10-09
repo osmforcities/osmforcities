@@ -21,6 +21,7 @@ type ControlBody =
   | { reset: true }
   | { overpassCount: number | null }
   | { countTimesOut: boolean }
+  | { realOverpassData: boolean }
   | { submitFails: boolean }
   | { tilerDown: boolean }
   | ({ jobId: string; stats?: unknown } & Omit<TileJob, "id">);
@@ -63,6 +64,8 @@ export async function POST(request: NextRequest, { params }: Context) {
   if ("reset" in body) resetMockTiler();
   else if ("overpassCount" in body) state.overpassCount = body.overpassCount;
   else if ("countTimesOut" in body) state.countTimesOut = body.countTimesOut;
+  else if ("realOverpassData" in body)
+    state.realOverpassData = body.realOverpassData;
   else if ("submitFails" in body) state.submitFails = body.submitFails;
   else if ("tilerDown" in body) state.tilerDown = body.tilerDown;
   else {

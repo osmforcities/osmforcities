@@ -84,6 +84,20 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to view the application.
 
+## Testing
+
+### Real tiler smoke test
+
+The `tiler` Playwright project runs against a mock tiler. `tests/tiler/smoke.spec.ts` swaps in a real overpass-pmtiler to catch contract drift (job JSON, `stats.json`, archive format). Run it by hand before a release and before changing the tiler contract. CI skips it.
+
+Needs Python 3, `tippecanoe` on `PATH`, an overpass-pmtiler checkout, and the test database on port 5433. The tiler fetches from the app's mock Overpass, so no tunnel is needed.
+
+```bash
+PMTILER_SMOKE=1 PMTILER_DIR=../overpass-pmtiler pnpm test:playwright tests/tiler/smoke.spec.ts
+```
+
+`PMTILER_DIR` is resolved from the app folder. The tiler listens on port 8199, and ports 3000 and 3100 must be free.
+
 ## Tasks API
 
 The application includes a task-based API accessible at `/api/tasks`. Each task has its own dedicated endpoint for executing automated operations.

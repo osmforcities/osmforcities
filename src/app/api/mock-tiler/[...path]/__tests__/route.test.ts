@@ -116,4 +116,28 @@ describe("/api/mock-tiler", () => {
     await POST(...req(["control"], { reset: true }));
     expect((await countProbe()).status).toBe(200);
   });
+
+  it("answers full queries with real Overpass data on the switch", async () => {
+    vi.stubEnv("ENABLE_TEST_AUTH", "true");
+    const fullQuery = () =>
+      overpass(
+        new NextRequest("http://localhost/api/mock-overpass", {
+          method: "POST",
+          body: `data=${encodeURIComponent("way[leisure=park];out geom;")}`,
+        })
+      ).then((res) => res.json());
+
+    expect((await fullQuery()).elements).toHaveLength(1);
+    await POST(...req(["control"], { realOverpassData: true }));
+    expect((await fullQuery()).elements.length).toBeGreaterThan(1);
+    // Count probes keep the count, so the dataset stays over the cap
+    await POST(...req(["control"], { overpassCount: 60000 }));
+    const count = await overpass(
+      new NextRequest("http://localhost/api/mock-overpass", {
+        method: "POST",
+        body: `data=${encodeURIComponent("node(1);out count;")}`,
+      })
+    ).then((res) => res.json());
+    expect(count.elements[0].tags.total).toBe("60000");
+  });
 });
