@@ -8,13 +8,10 @@ import {
   TestUser,
 } from "../utils/auth";
 
-// Amsterdam, with a template no other spec creates there
-const AREA_ID = 271110;
+const AMSTERDAM = 271110;
 const TEMPLATE_ID = "clocks";
-// Over the 25 MB cap at 500 B per element: the tiles-only lane
-const OVER_CAP_COUNT = 60_000;
-const PAGE = `/en/area/${AREA_ID}/dataset/${TEMPLATE_ID}`;
-// From .env.test, which the tiler server loads under NODE_ENV=test
+const TILES_ONLY_COUNT = 60_000;
+const PAGE = `/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`;
 const CRON_ROUTE_SECRET = "test-cron-secret";
 
 const control = (page: Page, data: object) =>
@@ -51,10 +48,9 @@ test.describe("Admin Sync on a served tiles dataset", () => {
     expect((await refresh).ok()).toBe(true);
   };
 
-  // Every test starts from a first bake already served
   test.beforeEach(async ({ page }) => {
     expect((await control(page, { reset: true })).ok()).toBe(true);
-    await control(page, { overpassCount: OVER_CAP_COUNT });
+    await control(page, { overpassCount: TILES_ONLY_COUNT });
 
     user = await createAdminTestUser(prisma);
     await setupAuthenticationWithLogin(page, user);
@@ -62,7 +58,7 @@ test.describe("Admin Sync on a served tiles dataset", () => {
     await page.goto(PAGE);
     await expect(page.getByTestId("tiles-processing-panel")).toBeVisible();
     ({ id: datasetId } = await prisma.dataset.findFirstOrThrow({
-      where: { areaId: AREA_ID, templateId: TEMPLATE_ID },
+      where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
       select: { id: true },
     }));
     servedJobId = await tilesJobId();
@@ -71,18 +67,16 @@ test.describe("Admin Sync on a served tiles dataset", () => {
     await control(page, { jobId: servedJobId, state: "done" });
     expect((await archive).ok()).toBe(true);
 
-    // The in-place page flip keeps Sync disabled from the pending first paint
-    // (useState seeded once); a fresh load is the served state under test
+    // Sync stays disabled after the in-place flip until a full load
     await page.reload();
     await expect(syncButton(page)).toBeEnabled();
   });
 
-  // The verdict outlives the dataset and would steer a later spec on the same
-  // area and template
   test.afterEach(async ({ page }) => {
     await control(page, { reset: true });
+    // The size verdict outlives the dataset and would steer later specs
     await prisma.areaSizeCheck.deleteMany({
-      where: { areaId: AREA_ID, templateId: TEMPLATE_ID },
+      where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
     });
     if (user) await cleanupTestUser(user.id);
   });
@@ -92,9 +86,7 @@ test.describe("Admin Sync on a served tiles dataset", () => {
   });
 
   test("announces the queued rebuild without a reload", async ({ page }) => {
-    // Known bug: the refresh route discards submitTilesForDataset's result and
-    // returns no tilesState, so refreshOutcome never sees "pending" and the
-    // button re-enables claiming "Dataset synced".
+    // Bug: the refresh route returns no tilesState, so Sync claims success.
     // https://github.com/osmforcities/osmforcities/issues/583
     test.fail();
     await clickSync(page);
@@ -116,7 +108,6 @@ test.describe("Admin Sync on a served tiles dataset", () => {
       progress: { stage: "baking", pct: 40 },
     });
 
-    // Blue/green: the pending rebuild leaves the served archive in place
     const oldArchive = archiveRequest(page, servedJobId);
     await page.reload();
     expect((await oldArchive).ok()).toBe(true);
