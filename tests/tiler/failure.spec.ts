@@ -7,6 +7,7 @@ import {
   setupAuthenticationWithLogin,
   TestUser,
 } from "../utils/auth";
+import { controlMockTiler as control } from "../utils/mock-tiler";
 
 // Same area and template as create.spec: tests run one at a time and each
 // cleans up its dataset
@@ -17,9 +18,6 @@ const OVER_CAP_COUNT = 60_000;
 // From .env.test, which the :3100 server loads
 const CRON_ROUTE_SECRET = "test-cron-secret";
 const MINUTE_MS = 60 * 1000;
-
-const control = (page: Page, data: object) =>
-  page.request.post("/api/mock-tiler/control", { data });
 
 /** One update-datasets cycle: refresh due rows, then reconcile pending bakes. */
 async function runCycle(page: Page) {
@@ -75,9 +73,10 @@ test.describe("Tiler failure handling", () => {
   }
 
   /**
-   * A new row has never been attempted, so it is due at once and the cycle
-   * would resubmit it before reconciling. Marking it attempted leaves the
-   * cycle only the reconcile.
+   * Works around https://github.com/osmforcities/osmforcities/issues/616: a
+   * never-attempted row mid-first-bake is due at once, so the cycle would
+   * resubmit it before reconciling. Marking it attempted leaves the cycle only
+   * the reconcile.
    */
   async function failFirstBake(
     page: Page,
@@ -87,6 +86,17 @@ test.describe("Tiler failure handling", () => {
     await setLastAttempted(dataset.id, new Date());
     await control(page, { jobId: dataset.tilesJobId, state: "failed", ...job });
     await runCycle(page);
+  }
+
+  /**
+   * Job ids carry the submit time in seconds: a resubmit within the same
+   * second would reuse the id and read as no resubmit at all.
+   */
+  async function waitPastSubmitSecond(tilesJobId: string) {
+    const submittedAt = Number(tilesJobId.split("-").pop());
+    await expect
+      .poll(() => Math.floor(Date.now() / 1000))
+      .toBeGreaterThan(submittedAt);
   }
 
   // The over-cap verdict outlives the dataset and would steer a later spec on
@@ -121,6 +131,19 @@ test.describe("Tiler failure handling", () => {
     );
   });
 
+  // A saved row mid-first-bake is resubmitted on the first cycle:
+  // https://github.com/osmforcities/osmforcities/issues/616
+  test.fail("a first bake still running is not resubmitted", async ({ page }) => {
+    const dataset = await createSavedDataset(page);
+    await waitPastSubmitSecond(dataset.tilesJobId);
+
+    await runCycle(page);
+    expect(await readDataset(dataset.id)).toMatchObject({
+      tilesState: "pending",
+      tilesJobId: dataset.tilesJobId,
+    });
+  });
+
   test("a failed bake is resubmitted only after its 15 minute wait", async ({
     page,
   }) => {
@@ -137,12 +160,7 @@ test.describe("Tiler failure handling", () => {
       tilesJobId: dataset.tilesJobId,
     });
 
-    // Job ids carry the submit time in seconds: a resubmit within the same
-    // second would reuse the failed job's id
-    const submittedAt = Number(dataset.tilesJobId.split("-").pop());
-    await expect
-      .poll(() => Math.floor(Date.now() / 1000))
-      .toBeGreaterThan(submittedAt);
+    await waitPastSubmitSecond(dataset.tilesJobId);
     await setLastAttempted(dataset.id, new Date(Date.now() - 16 * MINUTE_MS));
     await runCycle(page);
     const resubmitted = await readDataset(dataset.id);

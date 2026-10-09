@@ -1,4 +1,3 @@
-import type { Page } from "@playwright/test";
 import { test, expect } from "../test-setup";
 import { PrismaClient } from "@prisma/client";
 import {
@@ -7,15 +6,13 @@ import {
   setupAuthenticationWithLogin,
   TestUser,
 } from "../utils/auth";
+import { controlMockTiler as control } from "../utils/mock-tiler";
 
 // Amsterdam, with a template no chromium spec creates there
 const AREA_ID = 271110;
 const TEMPLATE_ID = "fountains";
 // Over the 25 MB cap at 500 B per element: the tiles-only lane
 const OVER_CAP_COUNT = 60_000;
-
-const control = (page: Page, data: object) =>
-  page.request.post("/api/mock-tiler/control", { data });
 
 test.describe("Tiles-only dataset creation", () => {
   const prisma = new PrismaClient();
