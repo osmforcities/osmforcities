@@ -63,7 +63,7 @@ The kind of change decides the test. Commands for each layer are in [AGENTS.md](
 
 | Change | Required test |
 | --- | --- |
-| Pure logic: lib functions, parsers, state transitions, formatting | Unit test in `src/**/__tests__/` |
+| Pure logic: lib functions, parsers, state transitions, formatting | Unit test (`*.test.ts`) in a `__tests__/` folder |
 | API route handler behavior | Unit test of the handler, Prisma and `fetch` mocked |
 | Component states and interaction in isolation | Storybook story with an interaction (`play`) test |
 | A user flow that crosses client, server, DB or an async lifecycle (dataset create, save, refresh, tiler bake) | Playwright spec in `tests/` |
