@@ -55,7 +55,7 @@ describe("dueForRefreshWhere", () => {
   });
 
   it("never retries on a short rung while the last bake is still pending", () => {
-    // A metro bake can outlast the 15 min rung; resubmitting would orphan it.
+    // An over-cap bake can outlast the 15 min rung; resubmitting would orphan it.
     const rungs = dueForRefreshWhere(now).OR.filter(
       (c) => "consecutiveFailures" in c && typeof c.consecutiveFailures === "number"
     );

@@ -93,15 +93,19 @@ export async function POST(
       },
     });
 
-    await submitTilesForDataset(datasetId);
+    // Empty when the tiler is off, so the stored tilesState stands. A
+    // "pending" here tells the client a rebuild was queued, not completed.
+    const tilesColumns = await submitTilesForDataset(datasetId);
+    const refreshedDataset = { ...updatedDataset, ...tilesColumns };
 
     await trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
 
     return NextResponse.json({
       success: true,
-      dataset: updatedDataset,
+      dataset: refreshedDataset,
       dataCount: snapshot.dataCount,
-      lastChecked: updatedDataset.lastChecked,
+      lastChecked: refreshedDataset.lastChecked,
+      tilesState: refreshedDataset.tilesState,
     });
   } catch (error) {
     if (error instanceof DatasetTooLargeError) {

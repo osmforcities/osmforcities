@@ -34,7 +34,7 @@ export const NOT_TOO_LARGE = {
   ],
 };
 
-// A metro bake can outlast the short rungs; resubmitting mid-bake swaps
+// An over-cap bake can outlast the short rungs; resubmitting mid-bake swaps
 // tilesJobId and the running bake's result is discarded on arrival.
 const NOT_BAKING = {
   OR: [{ tilesState: null }, { NOT: { tilesState: "pending" } }],
