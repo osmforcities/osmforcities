@@ -147,6 +147,7 @@
     "notifyCtaIfAvailable": "Save and email me if it becomes available",
     "notifyCtaIfMapped": "Save and email me if it gets mapped",
     "notifyConfirmed": "Saved. You'll get an email when the map is ready.",
+    "savedConfirmed": "Saved.",
     "tilesFailedDescription": "The next scheduled update will try again.",
     "countTimedOutDescription": "The area may be very large or the server busy. Try again in at most {minutes, plural, one {# minute} other {# minutes}}.",
     "backToHome": "Back to Home",

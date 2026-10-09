@@ -215,7 +215,8 @@ async function AreaTemplateDatasetView({
               session?.user && tilerEnabled() && (
                 <SaveAndNotifyButton
                   datasetId={result.dataset.id}
-                  saved={notifyRequested}
+                  saved={isSaved}
+                  notify={notifyRequested}
                   offer="mapped"
                 />
               )
