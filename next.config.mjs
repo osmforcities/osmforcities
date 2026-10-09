@@ -15,8 +15,6 @@ const nextConfig = {
   outputFileTracingRoot: __dirname,
   // The Playwright tiler server runs a second `next dev`, which cannot share .next
   distDir: process.env.NEXT_DIST_DIR || ".next",
-  // The badge covers bottom-left controls (sidebar Sync) and blocks Playwright clicks
-  ...(process.env.NODE_ENV === "test" && { devIndicators: false }),
   env: {
     COMMIT_HASH: commitHash,
   },

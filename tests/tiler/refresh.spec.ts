@@ -40,11 +40,6 @@ test.describe("Admin Sync on a served tiles dataset", () => {
   };
 
   test.beforeEach(async ({ page }) => {
-    // TEMP diagnostic: which client error opens the dev overlay in CI
-    page.on("pageerror", (e) => console.log(`[pageerror] ${e.stack}`));
-    page.on("console", (m) => {
-      if (m.type() === "error") console.log(`[console.error] ${m.text()}`);
-    });
     expect((await mockTilerControl(page, { reset: true })).ok()).toBe(true);
     await mockTilerControl(page, { overpassCount: TILES_ONLY_COUNT });
 
@@ -66,6 +61,12 @@ test.describe("Admin Sync on a served tiles dataset", () => {
     // Sync stays disabled after the in-place flip until a full load
     await page.reload();
     await expect(syncButton(page)).toBeEnabled();
+
+    // Job ids end in the Unix second: a rebuild in the same second reuses the id
+    const servedSecond = Number(servedJobId.split("-").pop());
+    await expect
+      .poll(() => Math.floor(Date.now() / 1000))
+      .toBeGreaterThan(servedSecond);
   });
 
   test.afterEach(async ({ page }) => {
