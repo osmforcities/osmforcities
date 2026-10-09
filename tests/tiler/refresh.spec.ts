@@ -100,10 +100,10 @@ test.describe("Admin Sync on a served tiles dataset", () => {
     });
 
     test("announces the queued rebuild without a reload", async ({ page }) => {
+      await clickSync(page);
       // Bug: the refresh route returns no tilesState, so Sync claims success.
       // https://github.com/osmforcities/osmforcities/issues/583
       test.fail();
-      await clickSync(page);
       await expect(syncButton(page)).toBeDisabled({ timeout: 5_000 });
       await expect(page.getByText("Update queued")).toBeAttached({
         timeout: 5_000,
