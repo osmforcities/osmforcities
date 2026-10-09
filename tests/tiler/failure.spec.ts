@@ -11,21 +11,14 @@ import {
   AMSTERDAM,
   mockTilerControl,
   OVER_CAP_COUNT,
+  runCronCycle,
+  waitPastJobSecond,
 } from "../utils/tiler";
 
 // Same template as create.spec: tests run one at a time and each cleans up
 // its dataset
 const TEMPLATE_ID = "fountains";
 const MINUTE_MS = 60 * 1000;
-
-/** One update-datasets cycle: refresh due rows, then reconcile pending bakes. */
-async function runCycle(page: Page) {
-  const response = await page.request.post("/api/tasks/update-datasets", {
-    headers: { Authorization: `Bearer ${process.env.CRON_ROUTE_SECRET}` },
-  });
-  expect(response.ok()).toBe(true);
-  return (await response.json()).data;
-}
 
 test.describe("Tiler failure handling", () => {
   const prisma = new PrismaClient();
@@ -84,20 +77,13 @@ test.describe("Tiler failure handling", () => {
   ) {
     await setLastAttempted(dataset.id, new Date());
     await mockTilerControl(page, { jobId: dataset.tilesJobId, state: "failed", ...job });
-    await runCycle(page);
+    await runCronCycle(page);
   }
 
   /**
    * Job ids carry the submit time in seconds: a resubmit within the same
    * second would reuse the id and read as no resubmit at all.
    */
-  async function waitPastSubmitSecond(tilesJobId: string) {
-    const submittedAt = Number(tilesJobId.split("-").pop());
-    await expect
-      .poll(() => Math.floor(Date.now() / 1000))
-      .toBeGreaterThan(submittedAt);
-  }
-
   // The over-cap verdict outlives the dataset and would steer a later spec on
   // the same area and template
   test.afterEach(async ({ page }) => {
@@ -134,9 +120,9 @@ test.describe("Tiler failure handling", () => {
   // https://github.com/osmforcities/osmforcities/issues/616
   test.fail("a first bake still running is not resubmitted", async ({ page }) => {
     const dataset = await createSavedDataset(page);
-    await waitPastSubmitSecond(dataset.tilesJobId);
+    await waitPastJobSecond(dataset.tilesJobId);
 
-    await runCycle(page);
+    await runCronCycle(page);
     expect(await readDataset(dataset.id)).toMatchObject({
       tilesState: "pending",
       tilesJobId: dataset.tilesJobId,
@@ -154,15 +140,15 @@ test.describe("Tiler failure handling", () => {
 
     await setLastAttempted(dataset.id, new Date(Date.now() - 14 * MINUTE_MS));
     // Nothing due at all, so a stray due row cannot hide a resubmit
-    expect(await runCycle(page)).toMatchObject({ totalFound: 0 });
+    expect(await runCronCycle(page)).toMatchObject({ totalFound: 0 });
     expect(await readDataset(dataset.id)).toMatchObject({
       tilesState: "failed",
       tilesJobId: dataset.tilesJobId,
     });
 
-    await waitPastSubmitSecond(dataset.tilesJobId);
+    await waitPastJobSecond(dataset.tilesJobId);
     await setLastAttempted(dataset.id, new Date(Date.now() - 16 * MINUTE_MS));
-    await runCycle(page);
+    await runCronCycle(page);
     const resubmitted = await readDataset(dataset.id);
     expect(resubmitted.tilesState).toBe("pending");
     expect(resubmitted.tilesJobId).not.toBe(dataset.tilesJobId);
@@ -187,7 +173,7 @@ test.describe("Tiler failure handling", () => {
     await page.goto("about:blank");
 
     await setLastAttempted(dataset.id, new Date(Date.now() - (6 * 60 + 1) * MINUTE_MS));
-    expect(await runCycle(page)).toMatchObject({ totalFound: 0 });
+    expect(await runCronCycle(page)).toMatchObject({ totalFound: 0 });
     expect(await readDataset(dataset.id)).toMatchObject({
       tilesState: "failed",
       tilesJobId: dataset.tilesJobId,
@@ -198,7 +184,7 @@ test.describe("Tiler failure handling", () => {
     const dataset = await createSavedDataset(page);
     await mockTilerControl(page, { submitFails: true });
 
-    await runCycle(page);
+    await runCronCycle(page);
     const row = await readDataset(dataset.id);
     expect(row).toMatchObject({ tilesState: "failed", consecutiveFailures: 1 });
     expect(row.lastError).toContain("Tiler submit failed: 500");
@@ -210,7 +196,7 @@ test.describe("Tiler failure handling", () => {
     const dataset = await createSavedDataset(page);
     await mockTilerControl(page, { tilerDown: true });
 
-    expect(await runCycle(page)).toMatchObject({ tilerUnreachable: true });
+    expect(await runCronCycle(page)).toMatchObject({ tilerUnreachable: true });
     expect(await readDataset(dataset.id)).toMatchObject({
       tilesJobId: dataset.tilesJobId,
       consecutiveFailures: 0,

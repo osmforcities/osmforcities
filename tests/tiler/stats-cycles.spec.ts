@@ -7,7 +7,13 @@ import {
   setupAuthenticationWithLogin,
   TestUser,
 } from "../utils/auth";
-import { AMSTERDAM, mockTilerControl, OVER_CAP_COUNT } from "../utils/tiler";
+import {
+  AMSTERDAM,
+  mockTilerControl,
+  OVER_CAP_COUNT,
+  runCronCycle,
+  waitPastJobSecond,
+} from "../utils/tiler";
 import fixtureStats from "../../src/lib/mocks/tiler/stats.json";
 
 const TEMPLATE_ID = "luggage-lockers";
@@ -42,13 +48,6 @@ const AGE_LABELS = [
   "31-90 days ago",
   "> 90 days ago",
 ];
-
-const tick = async (page: Page) => {
-  const response = await page.request.post("/api/tasks/update-datasets", {
-    headers: { Authorization: `Bearer ${process.env.CRON_ROUTE_SECRET}` },
-  });
-  expect(response.ok()).toBe(true);
-};
 
 function expectRowHolds(row: Dataset, bake: Bake) {
   expect(row.stats).toMatchObject({ editorsCount: bake.editorsCount });
@@ -129,7 +128,7 @@ test.describe("Tiles-only stats across bake cycles", () => {
     });
 
     await bake(page, jobA, A);
-    await tick(page);
+    await runCronCycle(page);
     // The open wait page reconciles this bake too, and the tick returns
     // early while that reconcile is still running
     await expect
@@ -144,16 +143,12 @@ test.describe("Tiles-only stats across bake cycles", () => {
   });
 
   test("refresh submits the next bake", async ({ page }) => {
-    // Job ids end in the Unix second: a refresh in the same second reuses the id
-    const bakedSecond = Number(jobA.split("-").pop());
-    await expect
-      .poll(() => Math.floor(Date.now() / 1000))
-      .toBeGreaterThan(bakedSecond);
+    await waitPastJobSecond(jobA);
     await prisma.dataset.update({
       where: { id: datasetId },
       data: { lastAttempted: new Date(Date.now() - MORE_THAN_A_DAY_MS) },
     });
-    await tick(page);
+    await runCronCycle(page);
 
     const refreshed = await row();
     jobB = refreshed.tilesJobId!;
@@ -166,16 +161,15 @@ test.describe("Tiles-only stats across bake cycles", () => {
     page,
   }) => {
     // Known bug: the refresh writes the count probe's element count to
-    // dataCount, so Features shows 60k until a bake corrects it. The stats
-    // freeze keeps the rest on A. Fixed by the reconcile-authority change,
-    // https://github.com/osmforcities/osmforcities/issues/606
+    // dataCount, so Features shows 60k until the bake lands. Marker removal
+    // tracked in https://github.com/osmforcities/osmforcities/issues/623
     test.fail();
     await expectPageShows(page, A);
   });
 
   test("second bake swaps the archive", async ({ page }) => {
     await bake(page, jobB, B);
-    await tick(page);
+    await runCronCycle(page);
 
     const baked = await row();
     expect(baked.tilesServedJobId).toBe(jobB);
@@ -186,8 +180,8 @@ test.describe("Tiles-only stats across bake cycles", () => {
 
   test("stats follow the latest bake", async ({ page }) => {
     // Known bug (stats freeze): reconcile copies the tiler's stats only while
-    // the row has none, so B's never land. Fixed by the reconcile-authority
-    // change, https://github.com/osmforcities/osmforcities/issues/606
+    // the row has none, so B's never land. Fixed by
+    // https://github.com/osmforcities/osmforcities/issues/623
     test.fail();
     expectRowHolds(await row(), B);
     await expectPageShows(page, B);
