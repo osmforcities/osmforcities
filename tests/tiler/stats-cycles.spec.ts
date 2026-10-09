@@ -16,6 +16,8 @@ const PAGE = `/en/area/${AREA_ID}/dataset/${TEMPLATE_ID}`;
 // Over the 25 MB cap at 500 B per element: the tiles-only lane
 const OVER_CAP_COUNT = 60_000;
 const CRON_SECRET = "test-cron-secret"; // .env.test
+// Past the daily refresh cadence, so the next tick refreshes the dataset
+const MORE_THAN_A_DAY_MS = 25 * 60 * 60 * 1000;
 
 type Bake = {
   features: number;
@@ -54,6 +56,14 @@ const tick = async (page: Page) => {
   });
   expect(response.ok()).toBe(true);
 };
+
+async function expectRowHolds(prisma: PrismaClient, id: string, bake: Bake) {
+  const row = await prisma.dataset.findUniqueOrThrow({ where: { id } });
+  expect(row.stats).toMatchObject({ editorsCount: bake.editorsCount });
+  expect(row.dataCount).toBe(bake.features);
+  expect(row.contributorsCount).toBe(bake.editorsCount);
+  expect(row.lastEditedAt?.toISOString()).toBe(bake.mostRecentElement);
+}
 
 async function expectPageShows(page: Page, bake: Bake) {
   await page.goto(PAGE);
@@ -127,33 +137,22 @@ test.describe("Tiles-only stats across bake cycles", () => {
 
     await bake(page, jobA, A);
     await tick(page);
-    // The open panel's status poll races the tick for this bake, and the
-    // tick returns early while the panel's pull is still running
+    // The open wait page reconciles this bake too, and the tick returns
+    // early while that reconcile is still running
     await expect
       .poll(async () => (await row()).tilesServedJobId)
       .toBe(jobA);
 
-    const filled = await row();
-    expect(filled.stats).toMatchObject({ editorsCount: A.editorsCount });
-    expect(filled.dataCount).toBe(A.features);
-    expect(filled.contributorsCount).toBe(A.editorsCount);
-    expect(filled.lastEditedAt?.toISOString()).toBe(A.mostRecentElement);
-    lastCheckedA = filled.lastChecked;
+    await expectRowHolds(prisma, datasetId, A);
+    lastCheckedA = (await row()).lastChecked;
 
     await expectPageShows(page, A);
   });
 
-  test("refresh keeps the last bake's numbers on the page", async ({
-    page,
-  }) => {
-    // Known bug: the refresh writes the probe's element count to dataCount,
-    // so Features shows 60K until a bake corrects it. Stats freeze keeps the
-    // rest on A by accident. The PR D reconcile-authority slice un-fails this.
-    test.fail();
-
+  test("refresh submits the next bake", async ({ page }) => {
     await prisma.dataset.update({
       where: { id: datasetId },
-      data: { lastAttempted: new Date(Date.now() - 25 * 60 * 60 * 1000) },
+      data: { lastAttempted: new Date(Date.now() - MORE_THAN_A_DAY_MS) },
     });
     await tick(page);
 
@@ -161,7 +160,17 @@ test.describe("Tiles-only stats across bake cycles", () => {
     jobB = refreshed.tilesJobId!;
     expect(jobB).not.toBe(jobA);
     expect(refreshed.tilesState).toBe("pending");
+    expect(refreshed.tilesServedJobId).toBe(jobA);
+  });
 
+  test("page keeps the last bake's numbers until the next lands", async ({
+    page,
+  }) => {
+    // Known bug: the refresh writes the count probe's element count to
+    // dataCount, so Features shows 60k until a bake corrects it. The stats
+    // freeze keeps the rest on A. Fixed by the reconcile-authority change,
+    // https://github.com/osmforcities/osmforcities/issues/606
+    test.fail();
     await expectPageShows(page, A);
   });
 
@@ -178,16 +187,10 @@ test.describe("Tiles-only stats across bake cycles", () => {
 
   test("stats follow the latest bake", async ({ page }) => {
     // Known bug (stats freeze): reconcile copies the tiler's stats only while
-    // the row has none, so B's never land. The PR D reconcile-authority slice
-    // un-fails this.
+    // the row has none, so B's never land. Fixed by the reconcile-authority
+    // change, https://github.com/osmforcities/osmforcities/issues/606
     test.fail();
-
-    const baked = await row();
-    expect(baked.stats).toMatchObject({ editorsCount: B.editorsCount });
-    expect(baked.dataCount).toBe(B.features);
-    expect(baked.contributorsCount).toBe(B.editorsCount);
-    expect(baked.lastEditedAt?.toISOString()).toBe(B.mostRecentElement);
-
+    await expectRowHolds(prisma, datasetId, B);
     await expectPageShows(page, B);
   });
 });

@@ -20,16 +20,17 @@ const notFound = () => new NextResponse(null, { status: 404 });
 type ControlBody =
   | { reset: true }
   | { overpassCount: number }
-  | ({ jobId: string; stats?: object } & Omit<TileJob, "id">);
+  | ({ jobId: string; stats?: unknown } & Omit<TileJob, "id">);
 
 export async function GET(_request: NextRequest, { params }: Context) {
   if (!isTestAuthEnabled()) return notFound();
   const [head, id, file] = (await params).path;
   if (head === "status" && !id) return NextResponse.json({ ok: true });
-  const job = head === "jobs" && id ? mockTilerState().jobs.get(id) : undefined;
+  const state = mockTilerState();
+  const job = head === "jobs" && id ? state.jobs.get(id) : undefined;
   if (!job) return notFound();
   if (!file) return NextResponse.json(job);
-  const stats = mockTilerState().stats.get(id);
+  const stats = state.stats.get(id);
   if (file === "stats.json" && stats) return NextResponse.json(stats);
   if (file !== "output.pmtiles" && file !== "stats.json") return notFound();
   return new NextResponse(await readFile(path.join(FIXTURES, file)));
