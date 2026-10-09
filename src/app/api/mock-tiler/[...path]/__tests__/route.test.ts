@@ -54,12 +54,8 @@ describe("/api/mock-tiler", () => {
     expect((await GET(...req(["jobs", "j1"]))).status).toBe(404);
   });
 
-  it("forgets a bake on control missing, and sets the Overpass count", async () => {
+  it("sets the Overpass count", async () => {
     vi.stubEnv("ENABLE_TEST_AUTH", "true");
-    await POST(...req(["jobs"], { id: "j2" }));
-    await POST(...req(["control"], { jobId: "j2", missing: true }));
-    expect((await GET(...req(["jobs", "j2"]))).status).toBe(404);
-
     await POST(...req(["control"], { overpassCount: 60000 }));
     expect(mockTilerState().overpassCount).toBe(60000);
   });

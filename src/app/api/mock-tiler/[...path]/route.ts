@@ -19,7 +19,6 @@ const notFound = () => new NextResponse(null, { status: 404 });
 type ControlBody =
   | { reset: true }
   | { overpassCount: number }
-  | { jobId: string; missing: true }
   | ({ jobId: string } & Omit<TileJob, "id">);
 
 export async function GET(_request: NextRequest, { params }: Context) {
@@ -49,7 +48,6 @@ export async function POST(request: NextRequest, { params }: Context) {
   const body = (await request.json()) as ControlBody;
   if ("reset" in body) resetMockTiler();
   else if ("overpassCount" in body) state.overpassCount = body.overpassCount;
-  else if ("missing" in body) state.jobs.delete(body.jobId);
   else {
     const { jobId, ...job } = body;
     state.jobs.set(jobId, { id: jobId, ...job });
