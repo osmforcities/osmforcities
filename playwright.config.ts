@@ -5,11 +5,11 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  // 1 worker in CI: cleanupTestUser (tests/utils/auth.ts) deletes ALL unsaved
-  // datasets, not just the caller's, so concurrent workers can delete each
-  // other's freshly-created test data. Parallelism comes from the 2-shard
-  // matrix in .github/workflows/tests.yml instead (2 runners, each serial).
-  workers: process.env.CI ? 1 : 2,
+  // 1 worker everywhere: cleanupTestUser (tests/utils/auth.ts) deletes ALL
+  // unsaved datasets (datasets have no creator to scope by), so concurrent
+  // workers delete each other's freshly-created test data. CI parallelism
+  // comes from the 2-shard matrix in .github/workflows/tests.yml instead.
+  workers: 1,
   timeout: 60 * 1000,
   expect: {
     timeout: 30 * 1000,

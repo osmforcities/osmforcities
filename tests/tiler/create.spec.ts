@@ -18,18 +18,27 @@ const control = (page: Page, data: object) =>
   page.request.post("/api/mock-tiler/control", { data });
 
 test.describe("Tiles-only dataset creation", () => {
+  const prisma = new PrismaClient();
   let user: TestUser;
 
+  // The over-cap verdict outlives the dataset and would steer a later spec on
+  // the same area and template
   test.afterEach(async ({ page }) => {
     await control(page, { reset: true });
+    await prisma.areaSizeCheck.deleteMany({
+      where: { areaId: AREA_ID, templateId: TEMPLATE_ID },
+    });
     if (user) await cleanupTestUser(user.id);
+  });
+
+  test.afterAll(async () => {
+    await prisma.$disconnect();
   });
 
   test("goes from bake to a map read from the archive", async ({ page }) => {
     expect((await control(page, { reset: true })).ok()).toBe(true);
     await control(page, { overpassCount: OVER_CAP_COUNT });
 
-    const prisma = new PrismaClient();
     user = await createTestUser(prisma);
     await setupAuthenticationWithLogin(page, user);
 
@@ -41,7 +50,6 @@ test.describe("Tiles-only dataset creation", () => {
       where: { areaId: AREA_ID, templateId: TEMPLATE_ID },
       select: { tilesJobId: true },
     });
-    await prisma.$disconnect();
     expect(tilesJobId).toBeTruthy();
 
     await control(page, {

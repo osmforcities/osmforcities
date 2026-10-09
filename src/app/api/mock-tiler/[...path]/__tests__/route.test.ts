@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { NextRequest } from "next/server";
 import { DELETE, GET, POST } from "../route";
-import { mockTilerState, resetMockTiler } from "@/lib/mocks/tiler";
+import { POST as overpass } from "@/app/api/mock-overpass/route";
+import { resetMockTiler } from "@/lib/mocks/tiler";
 import { tilerStatsToDatasetColumns } from "@/lib/tiler/stats";
 
 const req = (path: string[], body?: unknown) => [
@@ -54,9 +55,18 @@ describe("/api/mock-tiler", () => {
     expect((await GET(...req(["jobs", "j1"]))).status).toBe(404);
   });
 
-  it("sets the Overpass count", async () => {
+  it("sets the count mock-overpass answers to count probes", async () => {
     vi.stubEnv("ENABLE_TEST_AUTH", "true");
+    const countProbe = () =>
+      overpass(
+        new NextRequest("http://localhost/api/mock-overpass", {
+          method: "POST",
+          body: `data=${encodeURIComponent("node(1);out count;")}`,
+        })
+      ).then((res) => res.json());
+
+    expect((await countProbe()).elements[0].tags.total).toBe("1");
     await POST(...req(["control"], { overpassCount: 60000 }));
-    expect(mockTilerState().overpassCount).toBe(60000);
+    expect((await countProbe()).elements[0].tags.total).toBe("60000");
   });
 });
