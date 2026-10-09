@@ -488,7 +488,7 @@ describe("pollPendingTileJobs", () => {
   });
 });
 
-describe("reconcile with the tiles lane on", () => {
+describe("reconcile with the tiles flag on", () => {
   const done = { id: "ds-1-100", state: "done" as const };
   const ndjson = [
     JSON.stringify({
@@ -571,7 +571,7 @@ describe("reconcile with the tiles lane on", () => {
     expect(updateData(0)).not.toHaveProperty("lastChecked");
   });
 
-  it("backfills geojson from the bake's ndjson under the cap", async () => {
+  it("fills features from the bake's ndjson under the cap", async () => {
     await reconcileDataset(pendingRow, done);
 
     expect(fetchTileNdjson).toHaveBeenCalledWith("ds-1-100");
@@ -621,7 +621,7 @@ describe("reconcile with the tiles lane on", () => {
     expect(updateData(0).geojson).toBe(Prisma.JsonNull);
   });
 
-  it("a failed backfill keeps the stored geojson and still writes the stats", async () => {
+  it("a failed feature fill keeps the stored geojson and still writes the stats", async () => {
     vi.mocked(fetchTileNdjson).mockRejectedValue(new Error("404"));
 
     expect(await reconcileDataset(pendingRow, done)).toEqual({

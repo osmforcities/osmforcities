@@ -67,18 +67,24 @@ async function commitOutcome(
   return count > 0;
 }
 
-// With the tiles lane on, every finished bake is the dataset's refresh: its
+// With the tiles flag on, every finished bake is the dataset's refresh: its
 // stats replace the stored ones. Off, the tiler only fills empty stats.
-function tilesLane(): boolean {
+function reconcileOwnsData(): boolean {
   return tilerEnabled() && TILES_ENABLED;
 }
 
 // A failed bake is a failed refresh, counted like the cron counts one
-function failureCounters(error: string) {
-  return {
+async function failBake(
+  dataset: { id: string; tilesJobId: string },
+  error: string
+): Promise<ReconcileResult> {
+  const won = await commitOutcome(dataset, {
+    tilesState: "failed",
+    tilesError: error,
     consecutiveFailures: { increment: 1 },
-    ...(tilesLane() && { lastError: error }),
-  };
+    ...(reconcileOwnsData() && { lastError: error }),
+  });
+  return won ? { outcome: "failed", error } : { outcome: "pending" };
 }
 
 /**
@@ -99,7 +105,7 @@ function needsTilerStatsFill(stats: Prisma.JsonValue): boolean {
  * column is JsonNull, as the app stores over-cap rows. A failed pull returns
  * nothing to write: the stored geojson stays until the next bake.
  */
-async function backfillGeojson(
+async function featureFill(
   jobId: string,
   features: number
 ): Promise<Pick<Prisma.DatasetUpdateManyMutationInput, "geojson">> {
@@ -119,7 +125,7 @@ async function backfillGeojson(
       ) as unknown as Prisma.InputJsonValue,
     };
   } catch (error) {
-    console.error(`GeoJSON backfill failed for job ${jobId}:`, error);
+    console.error(`Feature fill failed for bake ${jobId}:`, error);
     return {};
   }
 }
@@ -142,13 +148,7 @@ export async function reconcileDataset(
     // Swept by the tiler before we pulled (PMTILER_MAX_AGE_DAYS) — or already
     // pulled and acked by a concurrent reconcile, which the conditional write
     // detects. A genuinely swept job resubmits on the next daily snapshot.
-    const error = "job expired before pull";
-    const won = await commitOutcome(dataset, {
-      tilesState: "failed",
-      tilesError: error,
-      ...failureCounters(error),
-    });
-    return won ? { outcome: "failed", error } : { outcome: "pending" };
+    return failBake(dataset, "job expired before pull");
   }
   if (job.state === "done") {
     if (inflightPulls.has(dataset.tilesJobId)) return { outcome: "pending" };
@@ -166,7 +166,7 @@ export async function reconcileDataset(
         select: { stats: true, dataCount: true },
       });
       dataCount = row?.dataCount ?? 0;
-      const authoritative = tilesLane();
+      const authoritative = reconcileOwnsData();
       if (row && (authoritative || needsTilerStatsFill(row.stats))) {
         try {
           const mapped = tilerStatsToDatasetColumns(
@@ -176,7 +176,7 @@ export async function reconcileDataset(
             statsColumns = authoritative
               ? {
                   ...mapped,
-                  ...(await backfillGeojson(
+                  ...(await featureFill(
                     dataset.tilesJobId,
                     mapped.dataCount
                   )),
@@ -221,15 +221,11 @@ export async function reconcileDataset(
   if (job.state === "failed") {
     // errorKind "too_large" is a permanent refusal for this query —
     // prefixed so nothing downstream blind-retries it.
-    const error =
+    return failBake(
+      dataset,
       (job.errorKind ? `${job.errorKind}: ` : "") +
-      (job.error ?? "tiler job failed");
-    const won = await commitOutcome(dataset, {
-      tilesState: "failed",
-      tilesError: error,
-      ...failureCounters(error),
-    });
-    return won ? { outcome: "failed", error } : { outcome: "pending" };
+        (job.error ?? "tiler job failed")
+    );
   }
   return { outcome: "pending" };
 }

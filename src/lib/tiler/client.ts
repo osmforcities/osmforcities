@@ -213,7 +213,7 @@ export async function downloadTileOutputs(id: string): Promise<void> {
 }
 
 /**
- * The nd-geojson a done job was baked from. Held in memory, not written to
+ * The nd-geojson a done bake was baked from. Held in memory, not written to
  * TILES_DIR: callers only fetch it under the storage cap and store it as
  * geojson, so no file would ever be served or pruned.
  */
@@ -293,7 +293,7 @@ export async function submitTilesColumns(
       filterableTags,
       // Stats then carry the legend's age counts (tiles-only rows hold no features)
       ageBandsDays: AGE_BUCKET_DAYS,
-      // data.ndjson then carries user/timestamp, which the geojson backfill
+      // data.ndjson then carries user/timestamp, which the feature fill
       // in reconcile stores like the app's own fetch
       keepMeta: true,
       ...budgets,

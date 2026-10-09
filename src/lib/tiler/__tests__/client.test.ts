@@ -45,7 +45,7 @@ describe("newTileJobId", () => {
 });
 
 describe("fetchTileNdjson", () => {
-  it("returns the job's data.ndjson as text", async () => {
+  it("returns the bake's data.ndjson as text", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
@@ -162,7 +162,7 @@ describe("submitTilesColumns", () => {
     expect(body.filterableTags).toEqual(["name"]);
     // The legend's age buckets, so tiles-only stats carry them too.
     expect(body.ageBandsDays).toEqual([7, 30, 90]);
-    // Meta in data.ndjson, so the reconcile geojson backfill carries it
+    // Meta in data.ndjson, so the reconcile feature fill carries it
     expect(body.keepMeta).toBe(true);
     expect(body.maxsize).toBeUndefined();
     expect(body.timeout).toBeUndefined();

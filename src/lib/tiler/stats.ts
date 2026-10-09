@@ -42,7 +42,7 @@ const META_KEYS: Record<string, string> = {
   "@changeset": "changeset",
 };
 
-/** Rebuild the stored geojson shape from a keepMeta job's data.ndjson. */
+// Needs a keepMeta bake: without it features carry no user or timestamp
 export function ndjsonToFeatureCollection(ndjson: string): FeatureCollection {
   const features = ndjson
     .split("\n")
