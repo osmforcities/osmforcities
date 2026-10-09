@@ -11,12 +11,21 @@ type MockTilerState = {
   jobs: Map<string, TileJob>;
   /** Count answered to count probes; null keeps the fixture's own count. */
   overpassCount: number | null;
+  /** POST /jobs answers 500. */
+  submitFails: boolean;
+  /** GET /status answers 503. */
+  tilerDown: boolean;
 };
 
 const store = globalThis as unknown as { mockTiler?: MockTilerState };
 
 export function mockTilerState(): MockTilerState {
-  store.mockTiler ??= { jobs: new Map(), overpassCount: null };
+  store.mockTiler ??= {
+    jobs: new Map(),
+    overpassCount: null,
+    submitFails: false,
+    tilerDown: false,
+  };
   return store.mockTiler;
 }
 
