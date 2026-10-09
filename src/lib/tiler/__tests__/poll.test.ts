@@ -127,7 +127,9 @@ describe("pollPendingTileJobs", () => {
     expect(updateData(0).tilesUpdatedAt).toBeInstanceOf(Date);
     // The served pointer moves only on a winning done
     expect(updateData(0).tilesServedJobId).toBe("ds-1-100");
-    // A dataset the app fetched keeps its own stats — the tiler's are ignored.
+    // A dataset the app fetched keeps its own stats — the tiler's are ignored,
+    // even app stats older than filterDimensions.
+    expect(readPulledStats).not.toHaveBeenCalled();
     expect(updateData(0).stats).toBeUndefined();
     expect(ackTileJob).toHaveBeenCalledWith("ds-1-100");
     expect(pruneTileArchives).toHaveBeenCalledWith("ds-1");

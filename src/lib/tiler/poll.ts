@@ -62,7 +62,7 @@ async function commitOutcome(
  * counts. App snapshots always store an age dimension, and older ones store no
  * filterDimensions at all, so neither matches.
  */
-function takesTilerStats(stats: Prisma.JsonValue): boolean {
+function needsTilerStatsFill(stats: Prisma.JsonValue): boolean {
   // ponytail: stats freeze after the first fill; making reconcile the
   // authoritative stats writer drops this gate.
   if (stats === null) return true;
@@ -113,7 +113,7 @@ export async function reconcileDataset(
         select: { stats: true, dataCount: true },
       });
       dataCount = row?.dataCount ?? 0;
-      if (row && takesTilerStats(row.stats)) {
+      if (row && needsTilerStatsFill(row.stats)) {
         try {
           const mapped = tilerStatsToDatasetColumns(
             await readPulledStats(dataset.tilesJobId)
