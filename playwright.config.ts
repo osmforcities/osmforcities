@@ -21,22 +21,55 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
+      testIgnore: "tiler/**",
       use: {
         ...devices["Desktop Chrome"],
       },
     },
-  ],
-  webServer: {
-    command: "NODE_ENV=test ENABLE_TEST_AUTH=true pnpm dev",
-    url: "http://localhost:3000",
-    reuseExistingServer: true,
-    timeout: 120 * 1000,
-    stdout: "pipe",
-    stderr: "pipe",
-    env: {
-      OVERPASS_API_URL: "http://localhost:3000/api/mock-overpass",
+    {
+      // Specs that need the tiles lane, against the :3100 server below. Same
+      // test DB as chromium, so this relies on the 1 CI worker too.
+      name: "tiler",
+      testDir: "./tests/tiler",
+      use: {
+        ...devices["Desktop Chrome"],
+        baseURL: "http://localhost:3100",
+        // Headless Chromium has no GPU: without software WebGL the map never
+        // starts, so it never requests tiles
+        launchOptions: { args: ["--enable-unsafe-swiftshader"] },
+      },
     },
-  },
+  ],
+  webServer: [
+    {
+      command: "NODE_ENV=test ENABLE_TEST_AUTH=true pnpm dev",
+      url: "http://localhost:3000",
+      reuseExistingServer: true,
+      timeout: 120 * 1000,
+      stdout: "pipe",
+      stderr: "pipe",
+      env: {
+        OVERPASS_API_URL: "http://localhost:3000/api/mock-overpass",
+      },
+    },
+    {
+      // Tiles lane on, pointed at its own mock tiler and mock Overpass: mock
+      // state lives in this process's memory.
+      command: "NODE_ENV=test ENABLE_TEST_AUTH=true pnpm dev -p 3100",
+      url: "http://localhost:3100",
+      reuseExistingServer: true,
+      timeout: 120 * 1000,
+      stdout: "pipe",
+      stderr: "pipe",
+      env: {
+        NEXT_DIST_DIR: ".next-tiler",
+        OVERPASS_API_URL: "http://localhost:3100/api/mock-overpass",
+        TILER_URL: "http://localhost:3100/api/mock-tiler",
+        NEXT_PUBLIC_TILES_ENABLED: "true",
+        TILES_DIR: "./data/tiles-test",
+      },
+    },
+  ],
   globalSetup: require.resolve("./tests/global-setup.ts"),
   testMatch: "**/*.spec.ts",
 });

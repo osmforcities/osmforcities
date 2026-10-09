@@ -28,7 +28,8 @@
     "global.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".next-tiler/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }
