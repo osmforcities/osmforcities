@@ -45,6 +45,9 @@ jobs:
       - name: Type check
         run: pnpm type-check
 
+      - name: Unit tests
+        run: pnpm vitest run --project=unit
+
       - name: i18n check
         run: pnpm i18n:check
 
