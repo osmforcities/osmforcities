@@ -74,6 +74,8 @@ test.describe("Real tiler smoke", () => {
     const row = await prisma.dataset.findUniqueOrThrow({ where: { id } });
     expect(row.tilesServedJobId).toBe(tilesJobId);
     expect(row.dataCount).toBeGreaterThan(0);
+    // The count probe's number, if stats.json never landed
+    expect(row.dataCount).not.toBe(OVER_CAP_COUNT);
     DatasetStatsSchema.parse(row.stats); // throws with the failing fields
   });
 });

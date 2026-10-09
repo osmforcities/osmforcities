@@ -4,8 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { mockOverpassResponse } from "@/lib/mocks/overpass";
 import { mockTilerState } from "@/lib/mocks/tiler";
 
-// Real Overpass output (parks in Delft), copied from overpass-pmtiler's fixtures
-const REAL_DATA = path.join(process.cwd(), "tests/fixtures/delft-parks.json");
+// Copied from overpass-pmtiler's fixtures
+const DELFT_PARKS =path.join(process.cwd(), "tests/fixtures/delft-parks.json");
 
 const jsonResponse = (data: unknown) =>
   NextResponse.json(data, {
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     return countResponse();
   }
   if (mockTilerState().realOverpassData) {
-    return new NextResponse(await readFile(REAL_DATA), {
+    return new NextResponse(await readFile(DELFT_PARKS), {
       headers: { "Content-Type": "application/json" },
     });
   }

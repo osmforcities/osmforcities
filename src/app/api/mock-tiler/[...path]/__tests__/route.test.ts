@@ -13,6 +13,15 @@ const req = (path: string[], body?: unknown) => [
   { params: Promise.resolve({ path }) },
 ] as const;
 
+const overpassQuery = (query: string) =>
+  overpass(
+    new NextRequest("http://localhost/api/mock-overpass", {
+      method: "POST",
+      body: `data=${encodeURIComponent(query)}`,
+    })
+  );
+const countProbe = () => overpassQuery("node(1);out count;");
+
 afterEach(() => {
   vi.unstubAllEnvs();
   resetMockTiler();
@@ -83,29 +92,16 @@ describe("/api/mock-tiler", () => {
 
   it("sets the count mock-overpass answers to count probes", async () => {
     vi.stubEnv("ENABLE_TEST_AUTH", "true");
-    const countProbe = () =>
-      overpass(
-        new NextRequest("http://localhost/api/mock-overpass", {
-          method: "POST",
-          body: `data=${encodeURIComponent("node(1);out count;")}`,
-        })
-      ).then((res) => res.json());
+    const total = async () =>
+      (await (await countProbe()).json()).elements[0].tags.total;
 
-    expect((await countProbe()).elements[0].tags.total).toBe("1");
+    expect(await total()).toBe("1");
     await POST(...req(["control"], { overpassCount: 60000 }));
-    expect((await countProbe()).elements[0].tags.total).toBe("60000");
+    expect(await total()).toBe("60000");
   });
 
   it("times out count probes on the switch and counts every probe", async () => {
     vi.stubEnv("ENABLE_TEST_AUTH", "true");
-    const countProbe = () =>
-      overpass(
-        new NextRequest("http://localhost/api/mock-overpass", {
-          method: "POST",
-          body: `data=${encodeURIComponent("node(1);out count;")}`,
-        })
-      );
-
     await POST(...req(["control"], { countTimesOut: true }));
     expect((await countProbe()).status).toBe(504);
     expect((await countProbe()).status).toBe(504);
@@ -119,25 +115,17 @@ describe("/api/mock-tiler", () => {
 
   it("answers full queries with real Overpass data on the switch", async () => {
     vi.stubEnv("ENABLE_TEST_AUTH", "true");
-    const fullQuery = () =>
-      overpass(
-        new NextRequest("http://localhost/api/mock-overpass", {
-          method: "POST",
-          body: `data=${encodeURIComponent("way[leisure=park];out geom;")}`,
-        })
-      ).then((res) => res.json());
+    const elements = async () =>
+      (await (await overpassQuery("way[leisure=park];out geom;")).json())
+        .elements;
 
-    expect((await fullQuery()).elements).toHaveLength(1);
+    expect(await elements()).toHaveLength(1);
     await POST(...req(["control"], { realOverpassData: true }));
-    expect((await fullQuery()).elements.length).toBeGreaterThan(1);
+    expect((await elements()).length).toBeGreaterThan(1);
     // Count probes keep the count, so the dataset stays over the cap
     await POST(...req(["control"], { overpassCount: 60000 }));
-    const count = await overpass(
-      new NextRequest("http://localhost/api/mock-overpass", {
-        method: "POST",
-        body: `data=${encodeURIComponent("node(1);out count;")}`,
-      })
-    ).then((res) => res.json());
-    expect(count.elements[0].tags.total).toBe("60000");
+    expect((await (await countProbe()).json()).elements[0].tags.total).toBe(
+      "60000"
+    );
   });
 });
