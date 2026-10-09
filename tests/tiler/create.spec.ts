@@ -10,7 +10,7 @@ import {
   AMSTERDAM,
   archiveRequest,
   mockTilerControl,
-  TILES_ONLY_COUNT,
+  OVER_CAP_COUNT,
 } from "../utils/tiler";
 
 const TEMPLATE_ID = "fountains";
@@ -35,7 +35,7 @@ test.describe("Tiles-only dataset creation", () => {
 
   test("goes from bake to a map read from the archive", async ({ page }) => {
     expect((await mockTilerControl(page, { reset: true })).ok()).toBe(true);
-    await mockTilerControl(page, { overpassCount: TILES_ONLY_COUNT });
+    await mockTilerControl(page, { overpassCount: OVER_CAP_COUNT });
 
     user = await createTestUser(prisma);
     await setupAuthenticationWithLogin(page, user);

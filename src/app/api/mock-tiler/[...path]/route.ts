@@ -19,6 +19,7 @@ const notFound = () => new NextResponse(null, { status: 404 });
 type ControlBody =
   | { reset: true }
   | { overpassCount: number | null }
+  | { countTimesOut: boolean }
   | { submitFails: boolean }
   | { tilerDown: boolean }
   | ({ jobId: string } & Omit<TileJob, "id">);
@@ -29,6 +30,9 @@ export async function GET(_request: NextRequest, { params }: Context) {
   if (head === "status" && !id) {
     if (mockTilerState().tilerDown) return new NextResponse(null, { status: 503 });
     return NextResponse.json({ ok: true });
+  }
+  if (head === "control" && !id) {
+    return NextResponse.json({ countProbes: mockTilerState().countProbes });
   }
   const job = head === "jobs" && id ? mockTilerState().jobs.get(id) : undefined;
   if (!job) return notFound();
@@ -54,6 +58,7 @@ export async function POST(request: NextRequest, { params }: Context) {
   const body = (await request.json()) as ControlBody;
   if ("reset" in body) resetMockTiler();
   else if ("overpassCount" in body) state.overpassCount = body.overpassCount;
+  else if ("countTimesOut" in body) state.countTimesOut = body.countTimesOut;
   else if ("submitFails" in body) state.submitFails = body.submitFails;
   else if ("tilerDown" in body) state.tilerDown = body.tilerDown;
   else {

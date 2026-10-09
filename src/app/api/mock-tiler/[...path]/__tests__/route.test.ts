@@ -83,4 +83,25 @@ describe("/api/mock-tiler", () => {
     await POST(...req(["control"], { overpassCount: 60000 }));
     expect((await countProbe()).elements[0].tags.total).toBe("60000");
   });
+
+  it("times out count probes on the switch and counts every probe", async () => {
+    vi.stubEnv("ENABLE_TEST_AUTH", "true");
+    const countProbe = () =>
+      overpass(
+        new NextRequest("http://localhost/api/mock-overpass", {
+          method: "POST",
+          body: `data=${encodeURIComponent("node(1);out count;")}`,
+        })
+      );
+
+    await POST(...req(["control"], { countTimesOut: true }));
+    expect((await countProbe()).status).toBe(504);
+    expect((await countProbe()).status).toBe(504);
+    expect(await (await GET(...req(["control"]))).json()).toEqual({
+      countProbes: 2,
+    });
+
+    await POST(...req(["control"], { reset: true }));
+    expect((await countProbe()).status).toBe(200);
+  });
 });

@@ -11,6 +11,10 @@ type MockTilerState = {
   jobs: Map<string, TileJob>;
   /** Count answered to count probes; null keeps the fixture's own count. */
   overpassCount: number | null;
+  /** Count probes answer 504, as Overpass does when one runs out of time. */
+  countTimesOut: boolean;
+  /** Count probes received, so a spec can tell a stored verdict was reused. */
+  countProbes: number;
   /** POST /jobs answers 500. */
   submitFails: boolean;
   /** GET /status answers 503. */
@@ -23,6 +27,8 @@ export function mockTilerState(): MockTilerState {
   store.mockTiler ??= {
     jobs: new Map(),
     overpassCount: null,
+    countTimesOut: false,
+    countProbes: 0,
     submitFails: false,
     tilerDown: false,
   };
