@@ -9,20 +9,20 @@ import {
 } from "./utils/auth";
 import { controlMockTiler as control } from "./utils/mock-tiler";
 
-// Amsterdam. Each test takes its own template, so no count verdict carries
-// over from one test to the next
-const AREA_ID = 271110;
+// Each test takes its own template, so no verdict carries over from one test
+// to the next
+const AMSTERDAM_AREA_ID = 271110;
 const TEMPLATE_IDS = ["benches", "playgrounds", "libraries", "post-boxes"];
 // Over the 25 MB cap at 500 B per element. The tiles lane is off here, so the
 // count refuses the dataset
 const OVER_CAP_COUNT = 60_000;
 
 const openDataset = (page: Page, templateId: string) =>
-  page.goto(`/en/area/${AREA_ID}/dataset/${templateId}`);
+  page.goto(`/en/area/${AMSTERDAM_AREA_ID}/dataset/${templateId}`);
 
-const countQueries = async (page: Page): Promise<number> =>
+const countProbes = async (page: Page): Promise<number> =>
   (await (await page.request.get("/api/mock-tiler/control")).json())
-    .countQueries;
+    .countProbes;
 
 const heading = (page: Page, templateName: string) =>
   page.getByRole("heading", { name: `${templateName} in Amsterdam` });
@@ -40,7 +40,7 @@ test.describe("Count failures on the dataset page", () => {
   test.afterEach(async ({ page }) => {
     await control(page, { reset: true });
     await prisma.areaSizeCheck.deleteMany({
-      where: { areaId: AREA_ID, templateId: { in: TEMPLATE_IDS } },
+      where: { areaId: AMSTERDAM_AREA_ID, templateId: { in: TEMPLATE_IDS } },
     });
     if (user) await cleanupTestUser(user.id);
   });
@@ -57,6 +57,8 @@ test.describe("Count failures on the dataset page", () => {
     await expect(waitPage).toContainText("The data took too long to load.");
     await expect(waitPage).toContainText("Try again in at most 30 minutes.");
     await expect(heading(page, "Benches")).toBeVisible();
+    // Probed now, not answered by a verdict an earlier run left behind
+    expect(await countProbes(page)).toBe(1);
   });
 
   test("an over-cap count shows the too-large screen", async ({ page }) => {
@@ -65,31 +67,32 @@ test.describe("Count failures on the dataset page", () => {
 
     await expect(heading(page, "Playgrounds")).toBeVisible();
     await expect(page.getByText("Too large to bake.")).toBeVisible();
+    expect(await countProbes(page)).toBe(1);
   });
 
-  test("a cached timeout is shown again without a new count", async ({
+  test("a timed-out verdict is reused without a new count probe", async ({
     page,
   }) => {
     await control(page, { countTimesOut: true });
     await openDataset(page, "libraries");
     await expect(page.getByTestId("dataset-timedOut-page")).toBeVisible();
-    const counted = await countQueries(page);
+    expect(await countProbes(page)).toBe(1);
 
     await openDataset(page, "libraries");
     await expect(page.getByTestId("dataset-timedOut-page")).toBeVisible();
-    expect(await countQueries(page)).toBe(counted);
+    expect(await countProbes(page)).toBe(1);
   });
 
-  test("a cached too-large verdict is shown again without a new count", async ({
+  test("a too-large verdict is reused without a new count probe", async ({
     page,
   }) => {
     await control(page, { overpassCount: OVER_CAP_COUNT });
     await openDataset(page, "post-boxes");
     await expect(page.getByText("Too large to bake.")).toBeVisible();
-    const counted = await countQueries(page);
+    expect(await countProbes(page)).toBe(1);
 
     await openDataset(page, "post-boxes");
     await expect(page.getByText("Too large to bake.")).toBeVisible();
-    expect(await countQueries(page)).toBe(counted);
+    expect(await countProbes(page)).toBe(1);
   });
 });

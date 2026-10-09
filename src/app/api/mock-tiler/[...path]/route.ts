@@ -27,7 +27,7 @@ export async function GET(_request: NextRequest, { params }: Context) {
   const [head, id, file] = (await params).path;
   if (head === "status" && !id) return NextResponse.json({ ok: true });
   if (head === "control" && !id) {
-    return NextResponse.json({ countQueries: mockTilerState().countQueries });
+    return NextResponse.json({ countProbes: mockTilerState().countProbes });
   }
   const job = head === "jobs" && id ? mockTilerState().jobs.get(id) : undefined;
   if (!job) return notFound();

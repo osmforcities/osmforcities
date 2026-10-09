@@ -84,7 +84,7 @@ describe("/api/mock-tiler", () => {
     expect((await countProbe()).status).toBe(504);
     expect((await countProbe()).status).toBe(504);
     expect(await (await GET(...req(["control"]))).json()).toEqual({
-      countQueries: 2,
+      countProbes: 2,
     });
 
     await POST(...req(["control"], { reset: true }));
