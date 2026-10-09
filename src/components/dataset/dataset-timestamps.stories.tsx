@@ -51,6 +51,7 @@ export const HydratesAfterTheClockMoves: Story = {
     const later = realNow() + 5000;
     Date.now = () => later;
     const actEnv = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean };
+    const priorActEnv = actEnv.IS_REACT_ACT_ENVIRONMENT;
     actEnv.IS_REACT_ACT_ENVIRONMENT = true;
     const errors: string[] = [];
     let root: Root | undefined;
@@ -63,7 +64,8 @@ export const HydratesAfterTheClockMoves: Story = {
     } finally {
       Date.now = realNow;
       await act(async () => root?.unmount());
-      actEnv.IS_REACT_ACT_ENVIRONMENT = false;
+      container.remove();
+      actEnv.IS_REACT_ACT_ENVIRONMENT = priorActEnv;
     }
 
     await expect(errors).toEqual([]);
