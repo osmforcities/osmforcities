@@ -8,7 +8,8 @@ import type { TileJob } from "@/lib/tiler/client";
 /**
  * Fake tiler for Playwright: the calls src/lib/tiler/client.ts makes, plus
  * POST control so a spec moves a bake between stages. Every bake serves the
- * same committed fixture archive and stats.
+ * same committed fixture archive, and the fixture stats unless control set
+ * the job's own.
  */
 
 type Context = { params: Promise<{ path: string[] }> };
@@ -19,7 +20,7 @@ const notFound = () => new NextResponse(null, { status: 404 });
 type ControlBody =
   | { reset: true }
   | { overpassCount: number }
-  | ({ jobId: string } & Omit<TileJob, "id">);
+  | ({ jobId: string; stats?: object } & Omit<TileJob, "id">);
 
 export async function GET(_request: NextRequest, { params }: Context) {
   if (!isTestAuthEnabled()) return notFound();
@@ -28,6 +29,8 @@ export async function GET(_request: NextRequest, { params }: Context) {
   const job = head === "jobs" && id ? mockTilerState().jobs.get(id) : undefined;
   if (!job) return notFound();
   if (!file) return NextResponse.json(job);
+  const stats = mockTilerState().stats.get(id);
+  if (file === "stats.json" && stats) return NextResponse.json(stats);
   if (file !== "output.pmtiles" && file !== "stats.json") return notFound();
   return new NextResponse(await readFile(path.join(FIXTURES, file)));
 }
@@ -49,8 +52,9 @@ export async function POST(request: NextRequest, { params }: Context) {
   if ("reset" in body) resetMockTiler();
   else if ("overpassCount" in body) state.overpassCount = body.overpassCount;
   else {
-    const { jobId, ...job } = body;
+    const { jobId, stats, ...job } = body;
     state.jobs.set(jobId, { id: jobId, ...job });
+    if (stats) state.stats.set(jobId, stats);
   }
   return new NextResponse(null, { status: 204 });
 }

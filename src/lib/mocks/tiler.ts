@@ -9,6 +9,8 @@ import type { TileJob } from "@/lib/tiler/client";
  */
 type MockTilerState = {
   jobs: Map<string, TileJob>;
+  /** stats.json per job; a job without one serves the fixture. */
+  stats: Map<string, unknown>;
   /** Count answered to count probes; null keeps the fixture's own count. */
   overpassCount: number | null;
 };
@@ -16,7 +18,7 @@ type MockTilerState = {
 const store = globalThis as unknown as { mockTiler?: MockTilerState };
 
 export function mockTilerState(): MockTilerState {
-  store.mockTiler ??= { jobs: new Map(), overpassCount: null };
+  store.mockTiler ??= { jobs: new Map(), stats: new Map(), overpassCount: null };
   return store.mockTiler;
 }
 

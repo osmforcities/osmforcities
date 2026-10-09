@@ -55,6 +55,18 @@ describe("/api/mock-tiler", () => {
     expect((await GET(...req(["jobs", "j1"]))).status).toBe(404);
   });
 
+  it("serves a job's own stats when control sets them", async () => {
+    vi.stubEnv("ENABLE_TEST_AUTH", "true");
+    const stats = { schemaVersion: 1, features: 150 };
+    await POST(...req(["control"], { jobId: "j1", state: "done", stats }));
+    await POST(...req(["control"], { jobId: "j2", state: "done" }));
+
+    expect(await (await GET(...req(["jobs", "j1", "stats.json"]))).json()).toEqual(stats);
+    expect(await (await GET(...req(["jobs", "j1"]))).json()).toEqual({ id: "j1", state: "done" });
+    // Jobs without their own keep the fixture
+    expect((await (await GET(...req(["jobs", "j2", "stats.json"]))).json()).features).toBe(2);
+  });
+
   it("sets the count mock-overpass answers to count probes", async () => {
     vi.stubEnv("ENABLE_TEST_AUTH", "true");
     const countProbe = () =>
