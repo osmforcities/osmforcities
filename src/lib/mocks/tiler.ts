@@ -15,6 +15,10 @@ type MockTilerState = {
   countTimesOut: boolean;
   /** Count probes received, so a spec can tell a stored verdict was reused. */
   countProbes: number;
+  /** POST /jobs answers 500. */
+  submitFails: boolean;
+  /** GET /status answers 503. */
+  tilerDown: boolean;
 };
 
 const store = globalThis as unknown as { mockTiler?: MockTilerState };
@@ -25,6 +29,8 @@ export function mockTilerState(): MockTilerState {
     overpassCount: null,
     countTimesOut: false,
     countProbes: 0,
+    submitFails: false,
+    tilerDown: false,
   };
   return store.mockTiler;
 }

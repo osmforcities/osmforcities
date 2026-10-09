@@ -20,12 +20,17 @@ type ControlBody =
   | { reset: true }
   | { overpassCount: number | null }
   | { countTimesOut: boolean }
+  | { submitFails: boolean }
+  | { tilerDown: boolean }
   | ({ jobId: string } & Omit<TileJob, "id">);
 
 export async function GET(_request: NextRequest, { params }: Context) {
   if (!isTestAuthEnabled()) return notFound();
   const [head, id, file] = (await params).path;
-  if (head === "status" && !id) return NextResponse.json({ ok: true });
+  if (head === "status" && !id) {
+    if (mockTilerState().tilerDown) return new NextResponse(null, { status: 503 });
+    return NextResponse.json({ ok: true });
+  }
   if (head === "control" && !id) {
     return NextResponse.json({ countProbes: mockTilerState().countProbes });
   }
@@ -43,6 +48,7 @@ export async function POST(request: NextRequest, { params }: Context) {
   const state = mockTilerState();
 
   if (head === "jobs") {
+    if (state.submitFails) return new NextResponse(null, { status: 500 });
     const { id } = (await request.json()) as { id: string };
     if (!state.jobs.has(id)) state.jobs.set(id, { id, state: "queued" });
     return new NextResponse(null, { status: 202 });
@@ -53,6 +59,8 @@ export async function POST(request: NextRequest, { params }: Context) {
   if ("reset" in body) resetMockTiler();
   else if ("overpassCount" in body) state.overpassCount = body.overpassCount;
   else if ("countTimesOut" in body) state.countTimesOut = body.countTimesOut;
+  else if ("submitFails" in body) state.submitFails = body.submitFails;
+  else if ("tilerDown" in body) state.tilerDown = body.tilerDown;
   else {
     const { jobId, ...job } = body;
     state.jobs.set(jobId, { id: jobId, ...job });

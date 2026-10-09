@@ -55,6 +55,20 @@ describe("/api/mock-tiler", () => {
     expect((await GET(...req(["jobs", "j1"]))).status).toBe(404);
   });
 
+  it("fails submits and pings on the outage switches until reset", async () => {
+    vi.stubEnv("ENABLE_TEST_AUTH", "true");
+    await POST(...req(["control"], { submitFails: true }));
+    expect((await POST(...req(["jobs"], { id: "j1", query: "q" }))).status).toBe(500);
+    expect((await GET(...req(["jobs", "j1"]))).status).toBe(404);
+
+    await POST(...req(["control"], { tilerDown: true }));
+    expect((await GET(...req(["status"]))).status).toBe(503);
+
+    await POST(...req(["control"], { reset: true }));
+    expect((await GET(...req(["status"]))).status).toBe(200);
+    expect((await POST(...req(["jobs"], { id: "j1", query: "q" }))).status).toBe(202);
+  });
+
   it("sets the count mock-overpass answers to count probes", async () => {
     vi.stubEnv("ENABLE_TEST_AUTH", "true");
     const countProbe = () =>
