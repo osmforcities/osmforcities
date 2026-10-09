@@ -94,8 +94,7 @@ test.describe("Tiles-only stats across bake cycles", () => {
     if (user) await setupAuthenticationWithLogin(page, user);
   });
 
-  test.afterAll(async ({ page }) => {
-    await mockTilerControl(page, { reset: true });
+  test.afterAll(async () => {
     await prisma.areaSizeCheck.deleteMany({
       where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
     });
