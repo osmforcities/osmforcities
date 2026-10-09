@@ -6,13 +6,14 @@ import {
   setupAuthenticationWithLogin,
   TestUser,
 } from "../utils/auth";
-import { archiveRequest, mockTilerControl } from "../utils/tiler";
+import {
+  AMSTERDAM,
+  archiveRequest,
+  mockTilerControl,
+  TILES_ONLY_COUNT,
+} from "../utils/tiler";
 
-// Amsterdam, with a template no chromium spec creates there
-const AREA_ID = 271110;
 const TEMPLATE_ID = "fountains";
-// Over the 25 MB cap at 500 B per element: the tiles-only lane
-const OVER_CAP_COUNT = 60_000;
 
 test.describe("Tiles-only dataset creation", () => {
   const prisma = new PrismaClient();
@@ -23,7 +24,7 @@ test.describe("Tiles-only dataset creation", () => {
   test.afterEach(async ({ page }) => {
     await mockTilerControl(page, { reset: true });
     await prisma.areaSizeCheck.deleteMany({
-      where: { areaId: AREA_ID, templateId: TEMPLATE_ID },
+      where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
     });
     if (user) await cleanupTestUser(user.id);
   });
@@ -34,17 +35,17 @@ test.describe("Tiles-only dataset creation", () => {
 
   test("goes from bake to a map read from the archive", async ({ page }) => {
     expect((await mockTilerControl(page, { reset: true })).ok()).toBe(true);
-    await mockTilerControl(page, { overpassCount: OVER_CAP_COUNT });
+    await mockTilerControl(page, { overpassCount: TILES_ONLY_COUNT });
 
     user = await createTestUser(prisma);
     await setupAuthenticationWithLogin(page, user);
 
-    await page.goto(`/en/area/${AREA_ID}/dataset/${TEMPLATE_ID}`);
+    await page.goto(`/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`);
     const panel = page.getByTestId("tiles-processing-panel");
     await expect(panel).toBeVisible();
 
     const { tilesJobId } = await prisma.dataset.findFirstOrThrow({
-      where: { areaId: AREA_ID, templateId: TEMPLATE_ID },
+      where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
       select: { tilesJobId: true },
     });
     expect(tilesJobId).toBeTruthy();

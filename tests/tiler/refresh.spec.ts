@@ -7,11 +7,14 @@ import {
   setupAuthenticationWithLogin,
   TestUser,
 } from "../utils/auth";
-import { archiveRequest, mockTilerControl } from "../utils/tiler";
+import {
+  AMSTERDAM,
+  archiveRequest,
+  mockTilerControl,
+  TILES_ONLY_COUNT,
+} from "../utils/tiler";
 
-const AMSTERDAM = 271110;
 const TEMPLATE_ID = "clocks";
-const TILES_ONLY_COUNT = 60_000;
 const PAGE = `/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`;
 const syncButton = (page: Page) =>
   page.getByTitle("Sync with the latest OpenStreetMap data");
