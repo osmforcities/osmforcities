@@ -19,14 +19,23 @@ const notFound = () => new NextResponse(null, { status: 404 });
 
 type ControlBody =
   | { reset: true }
-  | { overpassCount: number }
+  | { overpassCount: number | null }
+  | { countTimesOut: boolean }
+  | { submitFails: boolean }
+  | { tilerDown: boolean }
   | ({ jobId: string; stats?: unknown } & Omit<TileJob, "id">);
 
 export async function GET(_request: NextRequest, { params }: Context) {
   if (!isTestAuthEnabled()) return notFound();
   const [head, id, file] = (await params).path;
-  if (head === "status" && !id) return NextResponse.json({ ok: true });
   const state = mockTilerState();
+  if (head === "status" && !id) {
+    if (state.tilerDown) return new NextResponse(null, { status: 503 });
+    return NextResponse.json({ ok: true });
+  }
+  if (head === "control" && !id) {
+    return NextResponse.json({ countProbes: state.countProbes });
+  }
   const job = head === "jobs" && id ? state.jobs.get(id) : undefined;
   if (!job) return notFound();
   if (!file) return NextResponse.json(job);
@@ -43,6 +52,7 @@ export async function POST(request: NextRequest, { params }: Context) {
   const state = mockTilerState();
 
   if (head === "jobs") {
+    if (state.submitFails) return new NextResponse(null, { status: 500 });
     const { id } = (await request.json()) as { id: string };
     if (!state.jobs.has(id)) state.jobs.set(id, { id, state: "queued" });
     return new NextResponse(null, { status: 202 });
@@ -52,6 +62,9 @@ export async function POST(request: NextRequest, { params }: Context) {
   const body = (await request.json()) as ControlBody;
   if ("reset" in body) resetMockTiler();
   else if ("overpassCount" in body) state.overpassCount = body.overpassCount;
+  else if ("countTimesOut" in body) state.countTimesOut = body.countTimesOut;
+  else if ("submitFails" in body) state.submitFails = body.submitFails;
+  else if ("tilerDown" in body) state.tilerDown = body.tilerDown;
   else {
     const { jobId, stats, ...job } = body;
     state.jobs.set(jobId, { id: jobId, ...job });

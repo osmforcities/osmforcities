@@ -1,4 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
+import { loadEnvConfig } from "@next/env";
+
+// Same .env.test the servers load, so specs read secrets instead of copying them
+loadEnvConfig(process.cwd());
 
 export default defineConfig({
   testDir: "./tests",
