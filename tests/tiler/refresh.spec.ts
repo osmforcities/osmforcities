@@ -12,6 +12,8 @@ import {
   archiveRequest,
   mockTilerControl,
   OVER_CAP_COUNT,
+  runCronCycle,
+  waitPastJobSecond,
 } from "../utils/tiler";
 
 const TEMPLATE_ID = "clocks";
@@ -92,11 +94,7 @@ test.describe("Admin Sync on a served tiles dataset", () => {
       await page.reload();
       await expect(syncButton(page)).toBeEnabled();
 
-      // Job ids end in the Unix second: a rebuild in the same second reuses the id
-      const servedSecond = Number(servedJobId.split("-").pop());
-      await expect
-        .poll(() => Math.floor(Date.now() / 1000))
-        .toBeGreaterThan(servedSecond);
+      await waitPastJobSecond(servedJobId);
     });
 
     test("announces the queued rebuild without a reload", async ({ page }) => {
@@ -130,11 +128,8 @@ test.describe("Admin Sync on a served tiles dataset", () => {
       await mockTilerControl(page, { jobId: newJobId, state: "done" });
       // The tick also refreshes a due cataloged dataset: give it the real count
       await mockTilerControl(page, { overpassCount: null });
-      const tick = await page.request.post("/api/tasks/update-datasets", {
-        headers: { Authorization: `Bearer ${process.env.CRON_ROUTE_SECRET}` },
-      });
-      expect(tick.ok()).toBe(true);
-      expect((await tick.json()).data.tiles.completed).toBeGreaterThanOrEqual(1);
+      const cycle = await runCronCycle(page);
+      expect(cycle.tiles.completed).toBeGreaterThanOrEqual(1);
 
       const newArchive = archiveRequest(page, newJobId);
       await page.reload();

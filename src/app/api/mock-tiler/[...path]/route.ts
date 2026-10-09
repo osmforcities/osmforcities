@@ -8,7 +8,8 @@ import type { TileJob } from "@/lib/tiler/client";
 /**
  * Fake tiler for Playwright: the calls src/lib/tiler/client.ts makes, plus
  * POST control so a spec moves a bake between stages. Every bake serves the
- * same committed fixture archive and stats.
+ * same committed fixture archive, and the fixture stats unless control set
+ * the job's own.
  */
 
 type Context = { params: Promise<{ path: string[] }> };
@@ -22,21 +23,24 @@ type ControlBody =
   | { countTimesOut: boolean }
   | { submitFails: boolean }
   | { tilerDown: boolean }
-  | ({ jobId: string } & Omit<TileJob, "id">);
+  | ({ jobId: string; stats?: unknown } & Omit<TileJob, "id">);
 
 export async function GET(_request: NextRequest, { params }: Context) {
   if (!isTestAuthEnabled()) return notFound();
   const [head, id, file] = (await params).path;
+  const state = mockTilerState();
   if (head === "status" && !id) {
-    if (mockTilerState().tilerDown) return new NextResponse(null, { status: 503 });
+    if (state.tilerDown) return new NextResponse(null, { status: 503 });
     return NextResponse.json({ ok: true });
   }
   if (head === "control" && !id) {
-    return NextResponse.json({ countProbes: mockTilerState().countProbes });
+    return NextResponse.json({ countProbes: state.countProbes });
   }
-  const job = head === "jobs" && id ? mockTilerState().jobs.get(id) : undefined;
+  const job = head === "jobs" && id ? state.jobs.get(id) : undefined;
   if (!job) return notFound();
   if (!file) return NextResponse.json(job);
+  const stats = state.stats.get(id);
+  if (file === "stats.json" && stats) return NextResponse.json(stats);
   if (file !== "output.pmtiles" && file !== "stats.json") return notFound();
   return new NextResponse(await readFile(path.join(FIXTURES, file)));
 }
@@ -62,8 +66,9 @@ export async function POST(request: NextRequest, { params }: Context) {
   else if ("submitFails" in body) state.submitFails = body.submitFails;
   else if ("tilerDown" in body) state.tilerDown = body.tilerDown;
   else {
-    const { jobId, ...job } = body;
+    const { jobId, stats, ...job } = body;
     state.jobs.set(jobId, { id: jobId, ...job });
+    if (stats) state.stats.set(jobId, stats);
   }
   return new NextResponse(null, { status: 204 });
 }
