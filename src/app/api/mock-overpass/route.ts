@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { mockOverpassResponse } from "@/lib/mocks/overpass";
+import { mockTilerState } from "@/lib/mocks/tiler";
 
 const jsonResponse = (data: unknown) =>
   NextResponse.json(data, {
@@ -16,7 +17,12 @@ const countResponse = () =>
       {
         type: "count",
         id: 0,
-        tags: { total: String(mockOverpassResponse.elements.length) },
+        tags: {
+          total: String(
+            mockTilerState().overpassCount ??
+              mockOverpassResponse.elements.length
+          ),
+        },
       },
     ],
   });

@@ -18,6 +18,7 @@
 
 # next.js
 /.next/
+/.next-tiler/
 /out/
 
 # production
