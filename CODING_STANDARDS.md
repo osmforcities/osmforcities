@@ -55,7 +55,9 @@ How code in this repo should be written. Reviewers (human and agent) check chang
 
 ## Comments
 
-- Comments explain why, not what. No bare issue or PR refs (`#512`, `see #490`): they don't resolve where code is read. State the reason; use a full URL only if the ticket adds something the comment can't.
+- Names first. A comment that says what a value, function or block is means the name is wrong: rename and delete the comment.
+- Comment only what code can't say: a non-obvious reason, a bug workaround, an outside constraint (API limit, browser quirk). One line by default.
+- No bare issue or PR refs (`#512`, `see #490`): they don't resolve where code is read. State the reason; use a full URL only if the ticket adds something the comment can't.
 
 ## Tests
 

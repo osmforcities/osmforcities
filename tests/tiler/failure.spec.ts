@@ -7,22 +7,21 @@ import {
   setupAuthenticationWithLogin,
   TestUser,
 } from "../utils/auth";
-import { controlMockTiler as control } from "../utils/mock-tiler";
+import {
+  AMSTERDAM,
+  mockTilerControl,
+  TILES_ONLY_COUNT,
+} from "../utils/tiler";
 
-// Same area and template as create.spec: tests run one at a time and each
-// cleans up its dataset
-const AREA_ID = 271110;
+// Same template as create.spec: tests run one at a time and each cleans up
+// its dataset
 const TEMPLATE_ID = "fountains";
-// Over-cap rows have no geojson, so the page shows the bake's state
-const OVER_CAP_COUNT = 60_000;
-// From .env.test, which the :3100 server loads
-const CRON_ROUTE_SECRET = "test-cron-secret";
 const MINUTE_MS = 60 * 1000;
 
 /** One update-datasets cycle: refresh due rows, then reconcile pending bakes. */
 async function runCycle(page: Page) {
   const response = await page.request.post("/api/tasks/update-datasets", {
-    headers: { Authorization: `Bearer ${CRON_ROUTE_SECRET}` },
+    headers: { Authorization: `Bearer ${process.env.CRON_ROUTE_SECRET}` },
   });
   expect(response.ok()).toBe(true);
   return (await response.json()).data;
@@ -54,16 +53,16 @@ test.describe("Tiler failure handling", () => {
    * reconcile ahead of the cycle under test.
    */
   async function createSavedDataset(page: Page) {
-    expect((await control(page, { reset: true })).ok()).toBe(true);
-    await control(page, { overpassCount: OVER_CAP_COUNT });
+    expect((await mockTilerControl(page, { reset: true })).ok()).toBe(true);
+    await mockTilerControl(page, { overpassCount: TILES_ONLY_COUNT });
 
     user = await createTestUser(prisma);
     await setupAuthenticationWithLogin(page, user);
-    await page.goto(`/en/area/${AREA_ID}/dataset/${TEMPLATE_ID}`);
+    await page.goto(`/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`);
     await expect(page.getByTestId("tiles-processing-panel")).toBeVisible();
 
     const { id, tilesJobId } = await prisma.dataset.findFirstOrThrow({
-      where: { areaId: AREA_ID, templateId: TEMPLATE_ID },
+      where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
       select: { id: true, tilesJobId: true },
     });
     expect(tilesJobId).toBeTruthy();
@@ -84,7 +83,7 @@ test.describe("Tiler failure handling", () => {
     job: { errorKind: string; error: string }
   ) {
     await setLastAttempted(dataset.id, new Date());
-    await control(page, { jobId: dataset.tilesJobId, state: "failed", ...job });
+    await mockTilerControl(page, { jobId: dataset.tilesJobId, state: "failed", ...job });
     await runCycle(page);
   }
 
@@ -102,9 +101,9 @@ test.describe("Tiler failure handling", () => {
   // The over-cap verdict outlives the dataset and would steer a later spec on
   // the same area and template
   test.afterEach(async ({ page }) => {
-    await control(page, { reset: true });
+    await mockTilerControl(page, { reset: true });
     await prisma.areaSizeCheck.deleteMany({
-      where: { areaId: AREA_ID, templateId: TEMPLATE_ID },
+      where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
     });
     if (user) await cleanupTestUser(user.id);
   });
@@ -125,7 +124,7 @@ test.describe("Tiler failure handling", () => {
       consecutiveFailures: 1,
     });
 
-    await page.goto(`/en/area/${AREA_ID}/dataset/${TEMPLATE_ID}`);
+    await page.goto(`/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`);
     await expect(page.getByTestId("tiles-failed-panel")).toContainText(
       "Something went wrong while processing the map data."
     );
@@ -181,7 +180,7 @@ test.describe("Tiler failure handling", () => {
     const failed = await readDataset(dataset.id);
     expect(failed.tilesError).toMatch(/^too_large:/);
 
-    await page.goto(`/en/area/${AREA_ID}/dataset/${TEMPLATE_ID}`);
+    await page.goto(`/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`);
     await expect(page.getByTestId("tiles-failed-panel")).toContainText(
       "This dataset is too large to process right now."
     );
@@ -197,7 +196,7 @@ test.describe("Tiler failure handling", () => {
 
   test("a failed submit counts as a failure", async ({ page }) => {
     const dataset = await createSavedDataset(page);
-    await control(page, { submitFails: true });
+    await mockTilerControl(page, { submitFails: true });
 
     await runCycle(page);
     const row = await readDataset(dataset.id);
@@ -209,7 +208,7 @@ test.describe("Tiler failure handling", () => {
     page,
   }) => {
     const dataset = await createSavedDataset(page);
-    await control(page, { tilerDown: true });
+    await mockTilerControl(page, { tilerDown: true });
 
     expect(await runCycle(page)).toMatchObject({ tilerUnreachable: true });
     expect(await readDataset(dataset.id)).toMatchObject({
