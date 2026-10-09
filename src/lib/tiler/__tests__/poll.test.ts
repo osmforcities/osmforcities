@@ -165,6 +165,111 @@ describe("pollPendingTileJobs", () => {
     expect(stats.peakRssMB).toBeUndefined();
   });
 
+  it("maps the tiler's ageBands onto the legend's age dimension", async () => {
+    vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "done" });
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+      stats: null,
+    } as never);
+    vi.mocked(readPulledStats).mockResolvedValue({
+      ...tilerStats,
+      filterDimensions: [
+        { key: "roof:shape", kind: "tag", values: [], missing: 42 },
+      ],
+      ageBands: [1, 0, 3, 38],
+    });
+
+    await pollPendingTileJobs();
+
+    const stats = updateData(0).stats as { filterDimensions: unknown[] };
+    // Same ids and order as computeAgeDimension; empty buckets dropped.
+    expect(stats.filterDimensions).toEqual([
+      { key: "roof:shape", kind: "tag", values: [], missing: 42 },
+      {
+        key: "age",
+        kind: "age",
+        values: [
+          { value: "recent", count: 1 },
+          { value: "older", count: 3 },
+          { value: "very-old", count: 38 },
+        ],
+        missing: 0,
+      },
+    ]);
+    expect(stats).not.toHaveProperty("ageBands");
+  });
+
+  it("adds no age dimension when the bake carries no ageBands", async () => {
+    vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "done" });
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+      stats: null,
+    } as never);
+    vi.mocked(readPulledStats).mockResolvedValue(tilerStats);
+
+    await pollPendingTileJobs();
+
+    const stats = updateData(0).stats as { filterDimensions: unknown[] };
+    expect(stats.filterDimensions).toEqual([]);
+  });
+
+  it("skips the stats fill on ageBands of the wrong length", async () => {
+    vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "done" });
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+      stats: null,
+    } as never);
+    vi.mocked(readPulledStats).mockResolvedValue({
+      ...tilerStats,
+      ageBands: [1, 2],
+    });
+
+    await pollPendingTileJobs();
+
+    expect(updateData(0).tilesState).toBe("done");
+    expect(updateData(0).stats).toBeUndefined();
+  });
+
+  it("refills tiles-only stats that predate the age dimension", async () => {
+    vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "done" });
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+      stats: {
+        filterDimensions: [
+          { key: "roof:shape", kind: "tag", values: [], missing: 7 },
+        ],
+      },
+      dataCount: 7,
+    } as never);
+    vi.mocked(readPulledStats).mockResolvedValue({
+      ...tilerStats,
+      ageBands: [0, 0, 0, 42],
+    });
+
+    await pollPendingTileJobs();
+
+    expect(updateData(0).dataCount).toBe(42);
+    const stats = updateData(0).stats as { filterDimensions: unknown[] };
+    expect(stats.filterDimensions).toContainEqual({
+      key: "age",
+      kind: "age",
+      values: [{ value: "very-old", count: 42 }],
+      missing: 0,
+    });
+  });
+
+  it("leaves app-fetched stats with an age dimension alone", async () => {
+    vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "done" });
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+      stats: {
+        filterDimensions: [{ key: "age", kind: "age", values: [], missing: 0 }],
+      },
+      dataCount: 7,
+    } as never);
+    vi.mocked(readPulledStats).mockResolvedValue(tilerStats);
+
+    await pollPendingTileJobs();
+
+    expect(readPulledStats).not.toHaveBeenCalled();
+    expect(updateData(0).stats).toBeUndefined();
+  });
+
   it("skips the stats fill on an unknown schemaVersion", async () => {
     vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "done" });
     vi.mocked(prisma.dataset.findUnique).mockResolvedValue({

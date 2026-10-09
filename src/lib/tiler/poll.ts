@@ -58,6 +58,20 @@ async function commitOutcome(
 }
 
 /**
+ * Never-filled rows, plus tiles-only rows filled before bakes carried age
+ * counts. App snapshots always store an age dimension, and older ones store no
+ * filterDimensions at all, so neither matches.
+ */
+function takesTilerStats(stats: Prisma.JsonValue): boolean {
+  // ponytail: stats freeze after the first fill; making reconcile the
+  // authoritative stats writer drops this gate.
+  if (stats === null) return true;
+  const dimensions = (stats as { filterDimensions?: { kind: string }[] })
+    .filterDimensions;
+  return Array.isArray(dimensions) && !dimensions.some((d) => d.kind === "age");
+}
+
+/**
  * Apply one tiler job's current state to its dataset row: pull + ack + prune
  * on done, record failures, leave running jobs pending. Callers fetch the job
  * themselves (the cron loop and the tiles-status endpoint share this; the
@@ -99,7 +113,7 @@ export async function reconcileDataset(
         select: { stats: true, dataCount: true },
       });
       dataCount = row?.dataCount ?? 0;
-      if (row && row.stats === null) {
+      if (row && takesTilerStats(row.stats)) {
         try {
           const mapped = tilerStatsToDatasetColumns(
             await readPulledStats(dataset.tilesJobId)

@@ -135,6 +135,8 @@ describe("submitTilesColumns", () => {
     expect(body.id).toBe(columns.tilesJobId);
     expect(body.query).toBe("[out:json];...");
     expect(body.filterableTags).toEqual(["name"]);
+    // The legend's age buckets, so tiles-only stats carry them too.
+    expect(body.ageBandsDays).toEqual([7, 30, 90]);
     expect(body.maxsize).toBeUndefined();
     expect(body.timeout).toBeUndefined();
   });

@@ -5,6 +5,7 @@ import path from "node:path";
 import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import type { Dataset } from "@prisma/client";
+import { AGE_BUCKET_DAYS } from "@/lib/feature-age";
 
 /**
  * Client for the overpass-pmtiler service (see overpass-pmtiler/API.md).
@@ -101,6 +102,7 @@ export async function submitTileJob(input: {
   id: string;
   query: string;
   filterableTags?: string[];
+  ageBandsDays?: readonly number[];
   maxsize?: number;
   timeout?: number;
 }): Promise<void> {
@@ -268,7 +270,14 @@ export async function submitTilesColumns(
   if (!tilerEnabled()) return {};
   const id = newTileJobId(datasetId);
   try {
-    await submitTileJob({ id, query, filterableTags, ...budgets });
+    await submitTileJob({
+      id,
+      query,
+      filterableTags,
+      // Stats then carry the legend's age counts (tiles-only rows hold no features)
+      ageBandsDays: AGE_BUCKET_DAYS,
+      ...budgets,
+    });
     return { tilesJobId: id, tilesState: "pending", tilesError: null };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

@@ -23,7 +23,10 @@ export const AGE_CATEGORY_ORDER = [
   "very-old",
 ] as const;
 
-export type AgeCategory = (typeof AGE_CATEGORY_ORDER)[number];
+/** Day cutoffs between the buckets above; the tiler bakes counts for them. */
+export const AGE_BUCKET_DAYS = [7, 30, 90] as const;
+
+export type AgeCategory =(typeof AGE_CATEGORY_ORDER)[number];
 export type AgeCategoryValues<T> = Record<AgeCategory, T>;
 
 const DAY_S = 86_400;
