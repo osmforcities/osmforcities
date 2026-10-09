@@ -95,28 +95,33 @@ function TimestampPill({
   note?: string | null;
 }) {
   const t = useTranslations("DatasetPage");
+  const description = relative
+    ? t("timestampDescription", { label, relative })
+    : label;
+  // Server and browser render a second or more apart, so relative times differ
   const content = (
     <>
       <Icon className="size-3 flex-shrink-0 text-gray-400" aria-hidden />
-      <span className="font-medium text-gray-700">{value}</span>
+      <span className="sr-only" suppressHydrationWarning>
+        {description}
+      </span>
+      <span
+        className="font-medium text-gray-700"
+        aria-hidden
+        suppressHydrationWarning
+      >
+        {value}
+      </span>
     </>
   );
 
   if (!relative) {
-    return (
-      <span className={PILL_CLASS}>
-        <span className="sr-only">{label}</span>
-        {content}
-      </span>
-    );
+    return <span className={PILL_CLASS}>{content}</span>;
   }
-
-  const description = t("timestampDescription", { label, relative });
 
   return (
     <DialogTrigger>
       <Button
-        aria-label={description}
         className={`${PILL_CLASS} cursor-pointer hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive-500`}
       >
         {content}
