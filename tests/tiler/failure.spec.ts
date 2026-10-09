@@ -80,10 +80,6 @@ test.describe("Tiler failure handling", () => {
     await runCronCycle(page);
   }
 
-  /**
-   * Job ids carry the submit time in seconds: a resubmit within the same
-   * second would reuse the id and read as no resubmit at all.
-   */
   // The over-cap verdict outlives the dataset and would steer a later spec on
   // the same area and template
   test.afterEach(async ({ page }) => {
