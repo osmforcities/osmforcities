@@ -12,6 +12,9 @@ if (pmtilerSmoke && !process.env.PMTILER_DIR) {
   throw new Error("PMTILER_SMOKE=1 needs PMTILER_DIR (an overpass-pmtiler checkout)");
 }
 
+// CI runs one project per job: skip the dev server the other project needs
+const e2eProject = process.env.E2E_PROJECT;
+
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
@@ -20,7 +23,7 @@ export default defineConfig({
   // 1 worker everywhere: cleanupTestUser (tests/utils/auth.ts) deletes ALL
   // unsaved datasets (datasets have no creator to scope by), so concurrent
   // workers delete each other's freshly-created test data. CI parallelism
-  // comes from the 2-shard matrix in .github/workflows/tests.yml instead.
+  // comes from the shard matrix in .github/workflows/tests.yml instead.
   workers: 1,
   timeout: 60 * 1000,
   expect: {
@@ -28,6 +31,7 @@ export default defineConfig({
   },
   use: {
     trace: "on-first-retry",
+    screenshot: "only-on-failure",
     baseURL: "http://localhost:3000",
   },
   projects: [
@@ -53,18 +57,18 @@ export default defineConfig({
     },
   ],
   webServer: [
-    {
+    ...(e2eProject === "tiler" ? [] : [{
       command: "NODE_ENV=test ENABLE_TEST_AUTH=true pnpm dev",
       url: "http://localhost:3000",
       reuseExistingServer: true,
       timeout: 120 * 1000,
-      stdout: "pipe",
-      stderr: "pipe",
+      stdout: "pipe" as const,
+      stderr: "pipe" as const,
       env: {
         OVERPASS_API_URL: "http://localhost:3000/api/mock-overpass",
       },
-    },
-    {
+    }]),
+    ...(e2eProject === "chromium" ? [] : [{
       // Tiles lane on, pointed at its own mock tiler and mock Overpass: mock
       // state lives in this process's memory.
       command: "NODE_ENV=test ENABLE_TEST_AUTH=true pnpm dev -p 3100",
@@ -72,8 +76,8 @@ export default defineConfig({
       // A running :3100 points at the mock tiler
       reuseExistingServer: !pmtilerSmoke,
       timeout: 120 * 1000,
-      stdout: "pipe",
-      stderr: "pipe",
+      stdout: "pipe" as const,
+      stderr: "pipe" as const,
       env: {
         NEXT_DIST_DIR: ".next-tiler",
         OVERPASS_API_URL: "http://localhost:3100/api/mock-overpass",
@@ -89,7 +93,7 @@ export default defineConfig({
           MOCK_OVERPASS_DATA_FILE: `${process.env.PMTILER_DIR}/fixtures/delft-parks.json`,
         }),
       },
-    },
+    }]),
     ...(pmtilerSmoke
       ? [
           {

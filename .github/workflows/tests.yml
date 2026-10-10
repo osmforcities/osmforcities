@@ -17,32 +17,35 @@ jobs:
     uses: ./.github/workflows/checks.yml
 
   playwright:
+    # No `needs: checks`: e2e is the long pole, so it starts right away
+    # instead of waiting ~1.5 min for lint/types/build
     if: github.event.pull_request.draft == false
-    needs: checks
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    # Pinned: the Start PostgreSQL step relies on this image's bundled server
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        # 2-shard matrix: each shard runs on its own runner with its own
-        # Postgres service, halving wall-clock CI time.
-        shard: [1/2, 2/2]
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: osmforcities-test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5433:5432
+        # Each job runs on its own runner with its own Postgres.
+        # Shards split by test count, not duration, so the slow tiler specs
+        # get a job of their own instead of piling onto the last shard.
+        include:
+          - { project: chromium, shard: 1/3 }
+          - { project: chromium, shard: 2/3 }
+          - { project: chromium, shard: 3/3 }
+          - { project: tiler, shard: 1/1 }
     steps:
       - uses: actions/checkout@v4
+
+      # The runner image ships PostgreSQL (disabled by default): starting it
+      # skips the Docker Hub pull a service container needs. global-setup
+      # creates the database.
+      - name: Start PostgreSQL
+        run: |
+          sudo sed -i 's/^port = .*/port = 5433/' /etc/postgresql/*/main/postgresql.conf
+          sudo systemctl start postgresql.service
+          until pg_isready -h localhost -p 5433; do sleep 1; done
+          sudo -u postgres psql -p 5433 -c "ALTER USER postgres PASSWORD 'postgres'"
 
       - name: Read .nvmrc
         id: node-version
@@ -67,8 +70,9 @@ jobs:
         run: pnpm playwright install chromium --with-deps
 
       - name: Run Playwright tests
-        run: pnpm exec playwright test --shard=${{ matrix.shard }}
+        run: pnpm exec playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }}
         env:
+          E2E_PROJECT: ${{ matrix.project }}
           NODE_ENV: test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5433/osmforcities-test
           AUTH_SECRET: test-secret-for-ci-only
@@ -76,6 +80,16 @@ jobs:
           CRON_ROUTE_SECRET: test-cron-secret
           ENABLE_TEST_AUTH: true
           NEXT_TELEMETRY_DISABLED: 1
+
+      # Screenshots and traces of failed attempts, flaky ones included
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.project }}-${{ strategy.job-index }}
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
 
   storybook-tests:
     if: github.event.pull_request.draft == false
