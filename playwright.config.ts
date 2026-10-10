@@ -82,6 +82,9 @@ export default defineConfig({
           : "http://localhost:3100/api/mock-tiler",
         NEXT_PUBLIC_TILES_ENABLED: "true",
         TILES_DIR: "./data/tiles-test", // data/ is gitignored
+        ...(pmtilerSmoke && {
+          MOCK_OVERPASS_DATA_FILE: `${process.env.PMTILER_DIR}/fixtures/delft-parks.json`,
+        }),
       },
     },
     ...(pmtilerSmoke

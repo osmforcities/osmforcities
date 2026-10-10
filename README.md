@@ -90,7 +90,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to view th
 
 The `tiler` Playwright project runs against a mock tiler. `tests/tiler/smoke.spec.ts` swaps in a real overpass-pmtiler to catch contract drift (job JSON, `stats.json`, archive format). Run it by hand before a release and before changing the tiler contract. CI skips it.
 
-Needs Python 3, `tippecanoe` on `PATH`, an overpass-pmtiler checkout, and the test database on port 5433. The tiler fetches from the app's mock Overpass, so no tunnel is needed.
+Needs Python 3, `tippecanoe` on `PATH`, an overpass-pmtiler checkout, and the test database on port 5433. The tiler fetches from the app's mock Overpass, which serves the checkout's `fixtures/delft-parks.json`, so no tunnel is needed.
 
 ```bash
 PMTILER_SMOKE=1 PMTILER_DIR=../overpass-pmtiler pnpm test:playwright tests/tiler/smoke.spec.ts

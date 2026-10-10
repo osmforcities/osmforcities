@@ -43,7 +43,6 @@ test.describe("Real tiler smoke", () => {
   }) => {
     expect((await mockTilerControl(page, { reset: true })).ok()).toBe(true);
     await mockTilerControl(page, { overpassCount: OVER_CAP_COUNT });
-    await mockTilerControl(page, { realOverpassData: true });
 
     user = await createTestUser(prisma);
     await setupAuthenticationWithLogin(page, user);

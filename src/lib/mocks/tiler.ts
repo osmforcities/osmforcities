@@ -17,8 +17,6 @@ type MockTilerState = {
   countTimesOut: boolean;
   /** Count probes received, so a spec can tell a stored verdict was reused. */
   countProbes: number;
-  /** Full queries answer with a real Overpass result, for a real tiler to bake. */
-  realOverpassData: boolean;
   /** POST /jobs answers 500. */
   submitFails: boolean;
   /** GET /status answers 503. */
@@ -34,7 +32,6 @@ export function mockTilerState(): MockTilerState {
     overpassCount: null,
     countTimesOut: false,
     countProbes: 0,
-    realOverpassData: false,
     submitFails: false,
     tilerDown: false,
   };

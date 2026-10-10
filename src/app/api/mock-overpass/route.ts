@@ -1,11 +1,7 @@
 import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { NextRequest, NextResponse } from "next/server";
 import { mockOverpassResponse } from "@/lib/mocks/overpass";
 import { mockTilerState } from "@/lib/mocks/tiler";
-
-// Copied from overpass-pmtiler's fixtures
-const DELFT_PARKS =path.join(process.cwd(), "tests/fixtures/delft-parks.json");
 
 const jsonResponse = (data: unknown) =>
   NextResponse.json(data, {
@@ -41,8 +37,10 @@ export async function POST(req: NextRequest) {
     if (state.countTimesOut) return new NextResponse(null, { status: 504 });
     return countResponse();
   }
-  if (mockTilerState().realOverpassData) {
-    return new NextResponse(await readFile(DELFT_PARKS), {
+  // A real Overpass result file, for a real tiler to bake (smoke runs only)
+  const realData = process.env.MOCK_OVERPASS_DATA_FILE;
+  if (realData) {
+    return new NextResponse(await readFile(realData), {
       headers: { "Content-Type": "application/json" },
     });
   }
