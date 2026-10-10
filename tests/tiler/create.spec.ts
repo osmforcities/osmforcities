@@ -41,8 +41,8 @@ test.describe("Tiles-only dataset creation", () => {
     await setupAuthenticationWithLogin(page, user);
 
     await page.goto(`/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`);
-    const panel = page.getByTestId("tiles-processing-panel");
-    await expect(panel).toBeVisible();
+    const waitPage = page.getByTestId("dataset-baking-page");
+    await expect(waitPage).toBeVisible();
 
     const { tilesJobId } = await prisma.dataset.findFirstOrThrow({
       where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
@@ -55,14 +55,20 @@ test.describe("Tiles-only dataset creation", () => {
       state: "baking",
       progress: { stage: "baking", pct: 40 },
     });
-    await expect(panel).toContainText("Baking map tiles (40%)");
+    await expect(waitPage).toContainText("Baking map tiles (40%)");
 
-    // The panel's tiles-status request reconciles the finished bake, then the
-    // page refreshes and the map reads the archive
+    // The wait page's tiles-status request reconciles the finished bake, then
+    // the page swaps to the map in place: a reload would fire "load" again
+    let reloaded = false;
+    page.on("load", () => (reloaded = true));
     const archive = archiveRequest(page, String(tilesJobId));
     await mockTilerControl(page, { jobId: tilesJobId, state: "done" });
     expect((await archive).ok()).toBe(true);
-    await expect(panel).toBeHidden();
+    await expect(waitPage).toBeHidden();
+    await expect(
+      page.getByRole("region", { name: "Dataset statistics" })
+    ).toBeVisible();
+    expect(reloaded).toBe(false);
   });
 
   test("an under-cap dataset stores no geojson and maps once its bake lands", async ({
@@ -75,8 +81,8 @@ test.describe("Tiles-only dataset creation", () => {
     await setupAuthenticationWithLogin(page, user);
 
     await page.goto(`/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`);
-    const panel = page.getByTestId("tiles-processing-panel");
-    await expect(panel).toBeVisible();
+    const waitPage = page.getByTestId("dataset-baking-page");
+    await expect(waitPage).toBeVisible();
 
     const created = await prisma.dataset.findFirstOrThrow({
       where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
@@ -87,7 +93,7 @@ test.describe("Tiles-only dataset creation", () => {
     const archive = archiveRequest(page, String(created.tilesJobId));
     await mockTilerControl(page, { jobId: created.tilesJobId, state: "done" });
     expect((await archive).ok()).toBe(true);
-    await expect(panel).toBeHidden();
+    await expect(waitPage).toBeHidden();
 
     // The feature fill stores the bake's features for export
     const baked = await prisma.dataset.findUniqueOrThrow({

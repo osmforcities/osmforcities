@@ -52,7 +52,7 @@ test.describe("Tiler failure handling", () => {
     user = await createTestUser(prisma);
     await setupAuthenticationWithLogin(page, user);
     await page.goto(`/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`);
-    await expect(page.getByTestId("tiles-processing-panel")).toBeVisible();
+    await expect(page.getByTestId("dataset-baking-page")).toBeVisible();
 
     const { id, tilesJobId } = await prisma.dataset.findFirstOrThrow({
       where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
@@ -107,8 +107,8 @@ test.describe("Tiler failure handling", () => {
     });
 
     await page.goto(`/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`);
-    await expect(page.getByTestId("tiles-failed-panel")).toContainText(
-      "Something went wrong while processing the map data."
+    await expect(page.getByTestId("dataset-failed-page")).toContainText(
+      "Bake failed."
     );
   });
 
@@ -163,9 +163,8 @@ test.describe("Tiler failure handling", () => {
     expect(failed.tilesError).toMatch(/^too_large:/);
 
     await page.goto(`/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`);
-    await expect(page.getByTestId("tiles-failed-panel")).toContainText(
-      "This dataset is too large to process right now."
-    );
+    await expect(page.getByText("Too large to bake.")).toBeVisible();
+    await expect(page.getByTestId("dataset-failed-page")).toBeHidden();
     await page.goto("about:blank");
 
     await setLastAttempted(dataset.id, new Date(Date.now() - (6 * 60 + 1) * MINUTE_MS));

@@ -16,9 +16,14 @@ vi.mock("@/lib/email", async (importOriginal) => {
   return { sendEmail: vi.fn(real.sendEmail) };
 });
 
-const save = (id: string, email: string, language: string) => ({
+const save = (
+  id: string,
+  email: string,
+  language: string,
+  reportsEnabled = true
+) => ({
   id,
-  user: { email, language },
+  user: { email, language, reportsEnabled },
 });
 
 const dataset = () => ({
@@ -66,6 +71,23 @@ describe("notifyDatasetReady", () => {
     );
     expect(pt.subject).toBe("O mapa de Escolas em Amesterdão está pronto");
     expect(pt.html).toContain("/pt-BR/area/271110/dataset/schools");
+    expect(updateMany.mock.calls.map(([a]) => a.where)).toEqual([
+      { id: "s1", notifyWhenReady: true },
+      { id: "s2", notifyWhenReady: true },
+    ]);
+  });
+
+  it("email off in Preferences sends nothing but still clears the flag", async () => {
+    findMany.mockResolvedValue([
+      save("s1", "a@x.test", "en", false),
+      save("s2", "b@x.test", "en"),
+    ] as never);
+
+    await notifyDatasetReady("ds-1", 42);
+
+    expect(vi.mocked(sendEmail).mock.calls.map(([o]) => o.to)).toEqual([
+      "b@x.test",
+    ]);
     expect(updateMany.mock.calls.map(([a]) => a.where)).toEqual([
       { id: "s1", notifyWhenReady: true },
       { id: "s2", notifyWhenReady: true },

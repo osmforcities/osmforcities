@@ -54,6 +54,4 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 **Wait page**: The full page between opening a Dataset for the first time and seeing its map. Four moods: counting, baking, failed, timed out (Overpass gave up before any row existed). _Avoid:_ loading state, skeleton, processing panel.
 
-**Tier**: The expected-wait bucket the wait page shows, from the count probe's answer: about a minute, a few minutes, ten to fifteen minutes. _Avoid:_ estimate, ETA, size class.
-
 **Ready notification**: A one-time email asked for on a dataset with no map yet, sent once when a bake with features lands, never for a failure. Asking is saving with the flag set; unsaving cancels it. _Avoid:_ alert, subscription, report (reports are the recurring saved-dataset emails).

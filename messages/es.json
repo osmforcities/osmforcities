@@ -126,7 +126,6 @@
     "testEnvOnly": "Esta página solo está disponible en el entorno de prueba."
   },
   "DatasetPage": {
-    "tilesProcessingTitle": "Preparando los datos del mapa",
     "tilesStageQueued": "Esperando turno en el servidor",
     "tilesStageFetching": "Obteniendo datos ({mb, number} MB)",
     "tilesStageConverting": "Convirtiendo elementos ({pct, number} %)",
@@ -139,10 +138,6 @@
     "stateTooLarge": "Demasiado grande para generar.",
     "stateNoData": "Aún sin datos.",
     "stateCountTimedOut": "Los datos tardaron demasiado en cargar.",
-    "tilesFailedTitle": "Falló el procesamiento del mapa",
-    "tilesFailedTooLarge": "Este conjunto de datos es demasiado grande para procesarlo ahora.",
-    "tilesFailedGeneric": "Algo salió mal al procesar los datos del mapa.",
-    "tilesFailedRetryNote": "Se reintentará en la próxima actualización programada.",
     "notifyCta": "Guardar y avisarme por correo cuando esté listo",
     "notifyCtaIfAvailable": "Guardar y avisarme por correo si llega a estar disponible",
     "notifyCtaIfMapped": "Guardar y avisarme por correo si se llega a mapear",

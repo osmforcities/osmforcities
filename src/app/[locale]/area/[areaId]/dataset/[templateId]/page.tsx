@@ -6,6 +6,9 @@ import { DatasetInteractiveSection } from "@/components/dataset/dataset-interact
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { SaveAndNotifyButton } from "@/components/dataset/save-and-notify-button";
 import { tilerEnabled } from "@/lib/tiler/client";
+import { tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
+import { isTooLarge } from "@/lib/dataset-retry";
+import { awaitsFirstMap } from "@/lib/dataset-tiles";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import {
   DatasetSizeCheckTimeoutError,
@@ -180,6 +183,42 @@ async function AreaTemplateDatasetView({
       isSaved = !!saveRecord;
       notifyRequested = !!saveRecord?.notifyWhenReady;
       savedCount = count;
+    }
+
+    // No detail-view tracker: the flip to the map remounts the page and would
+    // count the view twice
+    const row = result.dataset;
+    if (tilesOnlyLaneEnabled() && awaitsFirstMap(row)) {
+      // Saving needs a session; anonymous visitors reach here on featured pages
+      const notify = (offer: "ready" | "available") =>
+        session?.user && (
+          <SaveAndNotifyButton
+            datasetId={row.id}
+            saved={isSaved}
+            notify={notifyRequested}
+            offer={offer}
+          />
+        );
+      if (row.tilesState === "failed" && isTooLarge(row.tilesError)) {
+        return (
+          <DatasetTooLargeState
+            templateName={templateName}
+            areaName={fallbackAreaName}
+            areaId={areaId}
+            notify={notify("available")}
+          />
+        );
+      }
+      return (
+        <DatasetWaitPage
+          datasetId={row.id}
+          mood={row.tilesState === "pending" ? "baking" : "failed"}
+          templateName={templateName}
+          areaName={fallbackAreaName}
+          areaId={areaId}
+          notify={notify("ready")}
+        />
+      );
     }
 
     const dataset = transformDataset(result.dataset, session?.user || null, locale, { isSaved, skipTemplateResolution: true });
