@@ -96,7 +96,7 @@ Needs Python 3, `tippecanoe` on `PATH`, an overpass-pmtiler checkout, and the te
 PMTILER_SMOKE=1 PMTILER_DIR=../overpass-pmtiler pnpm test:playwright tests/tiler/smoke.spec.ts
 ```
 
-`PMTILER_DIR` is resolved from the app folder. The tiler listens on port 8199, and ports 3000 and 3100 must be free.
+`PMTILER_DIR` is resolved from the app folder. The tiler listens on port 8199, and ports 3000 and 3100 must be free. Run only this spec: with `PMTILER_SMOKE=1` the other tiler specs would talk to the real tiler and fail.
 
 ## Tasks API
 
