@@ -86,6 +86,15 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to view th
 
 ## Testing
 
+### Where e2e specs go
+
+Playwright has two projects, each with its own dev server:
+
+- `tests/tiler/`: the `tiler` project, against `:3100` with tiles on, a mock tiler and a mock Overpass. Put specs here when they need the tiles lane.
+- everything else under `tests/`: the `chromium` project, against `:3000`.
+
+Locally both servers start. In CI each job runs one project and starts only its server (`E2E_PROJECT`), so a spec that reaches the other project's server passes locally and fails in CI. The tiler specs run as one CI job, so a slow new tiler spec makes every PR wait longer.
+
 ### Real tiler smoke test
 
 The `tiler` Playwright project runs against a mock tiler. `tests/tiler/smoke.spec.ts` swaps in a real overpass-pmtiler to catch contract drift (job JSON, `stats.json`, archive format). Run it by hand before a release and before changing the tiler contract. CI skips it.
