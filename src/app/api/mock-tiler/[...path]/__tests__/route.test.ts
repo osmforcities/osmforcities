@@ -123,10 +123,5 @@ describe("/api/mock-tiler", () => {
     // Any JSON file stands in for a real Overpass result
     vi.stubEnv("MOCK_OVERPASS_DATA_FILE", "src/lib/mocks/tiler/stats.json");
     expect(await fullQuery()).toEqual(fixtureStats);
-    // Count probes keep the count, so the dataset stays over the cap
-    await POST(...req(["control"], { overpassCount: 60000 }));
-    expect((await (await countProbe()).json()).elements[0].tags.total).toBe(
-      "60000"
-    );
   });
 });

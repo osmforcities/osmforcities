@@ -11,7 +11,7 @@ import { AMSTERDAM, mockTilerControl, OVER_CAP_COUNT } from "../utils/tiler";
 
 const TEMPLATE_ID = "parks";
 // PMTiles v3 header: magic "PMTiles", then the spec version byte
-const PMTILES_V3 = Buffer.from([...Buffer.from("PMTiles"), 3]);
+const PMTILES_V3 = Buffer.from("PMTiles\x03");
 
 // Contract check against a real overpass-pmtiler: job JSON, stats.json and
 // archive format. The tiler bakes Delft parks whatever the area, so the map

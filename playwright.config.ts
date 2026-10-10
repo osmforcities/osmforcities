@@ -91,7 +91,7 @@ export default defineConfig({
       ? [
           {
             // Fetches from the :3100 mock Overpass: no tunnel, no live OSM
-            command: `python3 ${process.env.PMTILER_DIR}/pmtiler.py`,
+            command: `python3 "${process.env.PMTILER_DIR}/pmtiler.py"`,
             url: `http://127.0.0.1:${PMTILER_SMOKE_PORT}/status`,
             reuseExistingServer: false,
             stdout: "pipe" as const,
