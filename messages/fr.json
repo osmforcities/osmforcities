@@ -126,7 +126,6 @@
     "testEnvOnly": "Cette page n'est disponible qu'en environnement de test."
   },
   "DatasetPage": {
-    "tilesProcessingTitle": "Préparation des données de la carte",
     "tilesStageQueued": "En attente d'un créneau sur le serveur",
     "tilesStageFetching": "Récupération des données ({mb, number} Mo)",
     "tilesStageConverting": "Conversion des objets ({pct, number} %)",
@@ -139,10 +138,6 @@
     "stateTooLarge": "Trop volumineux pour être généré.",
     "stateNoData": "Pas encore de données.",
     "stateCountTimedOut": "Le chargement des données a pris trop de temps.",
-    "tilesFailedTitle": "Échec du traitement de la carte",
-    "tilesFailedTooLarge": "Ce jeu de données est trop volumineux pour être traité pour le moment.",
-    "tilesFailedGeneric": "Une erreur est survenue lors du traitement des données de la carte.",
-    "tilesFailedRetryNote": "Une nouvelle tentative aura lieu à la prochaine mise à jour planifiée.",
     "notifyCta": "Enregistrer et me prévenir par e-mail quand ce sera prêt",
     "notifyCtaIfAvailable": "Enregistrer et me prévenir par e-mail s'il devient disponible",
     "notifyCtaIfMapped": "Enregistrer et me prévenir par e-mail si cela finit par être cartographié",

@@ -6,6 +6,8 @@ import { DatasetInteractiveSection } from "@/components/dataset/dataset-interact
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { SaveAndNotifyButton } from "@/components/dataset/save-and-notify-button";
 import { tilerEnabled } from "@/lib/tiler/client";
+import { tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
+import { isTooLarge } from "@/lib/dataset-retry";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import {
   DatasetSizeCheckTimeoutError,
@@ -180,6 +182,48 @@ async function AreaTemplateDatasetView({
       isSaved = !!saveRecord;
       notifyRequested = !!saveRecord?.notifyWhenReady;
       savedCount = count;
+    }
+
+    // A dataset that never had a map waits for its first bake on a full page.
+    // A rebuild keeps serving the old archive, so it never lands here. An
+    // empty count keeps the empty screen below. No detail-view tracker: the
+    // flip to the map remounts the page and would count the view twice.
+    const row = result.dataset;
+    if (
+      tilesOnlyLaneEnabled() &&
+      row.dataCount !== 0 &&
+      !row.geojson &&
+      !row.tilesServedJobId &&
+      (row.tilesState === "pending" || row.tilesState === "failed")
+    ) {
+      const notify = (offer: "ready" | "available") => (
+        <SaveAndNotifyButton
+          datasetId={row.id}
+          saved={isSaved}
+          notify={notifyRequested}
+          offer={offer}
+        />
+      );
+      if (row.tilesState === "failed" && isTooLarge(row.tilesError)) {
+        return (
+          <DatasetTooLargeState
+            templateName={templateName}
+            areaName={fallbackAreaName}
+            areaId={areaId}
+            notify={notify("available")}
+          />
+        );
+      }
+      return (
+        <DatasetWaitPage
+          datasetId={row.id}
+          mood={row.tilesState === "pending" ? "baking" : "failed"}
+          templateName={templateName}
+          areaName={fallbackAreaName}
+          areaId={areaId}
+          notify={notify("ready")}
+        />
+      );
     }
 
     const dataset = transformDataset(result.dataset, session?.user || null, locale, { isSaved, skipTemplateResolution: true });

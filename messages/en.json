@@ -126,7 +126,6 @@
     "testEnvOnly": "This page is only available in test environment."
   },
   "DatasetPage": {
-    "tilesProcessingTitle": "Preparing map data",
     "tilesStageQueued": "Waiting for a free slot",
     "tilesStageFetching": "Fetching data ({mb, number} MB)",
     "tilesStageConverting": "Converting features ({pct, number}%)",
@@ -139,10 +138,6 @@
     "stateTooLarge": "Too large to bake.",
     "stateNoData": "No data yet.",
     "stateCountTimedOut": "The data took too long to load.",
-    "tilesFailedTitle": "Map processing failed",
-    "tilesFailedTooLarge": "This dataset is too large to process right now.",
-    "tilesFailedGeneric": "Something went wrong while processing the map data.",
-    "tilesFailedRetryNote": "It will be retried on the next scheduled update.",
     "notifyCta": "Save and email me when it's ready",
     "notifyCtaIfAvailable": "Save and email me if it becomes available",
     "notifyCtaIfMapped": "Save and email me if it gets mapped",

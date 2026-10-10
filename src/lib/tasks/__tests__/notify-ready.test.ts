@@ -52,9 +52,11 @@ describe("notifyDatasetReady", () => {
   it("sends one mail per flagged save in the user's language, then clears each flag", async () => {
     await notifyDatasetReady("ds-1", 42);
 
+    // Email turned off in Preferences covers this mail too
     expect(findMany.mock.calls[0][0]?.where).toEqual({
       datasetId: "ds-1",
       notifyWhenReady: true,
+      user: { reportsEnabled: true },
     });
     expect(findDataset).toHaveBeenCalledTimes(1);
     expect(sendEmail).toHaveBeenCalledTimes(2);

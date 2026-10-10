@@ -9,13 +9,15 @@ Words used here (tiler, bake, archive, cap, count probe, lane, reconcile) are de
 
 ## Dataset lifecycle (decided 2026-09-18)
 
-What a signed-in person sees from first opening a dataset to using its map. One page, three moods, then the map.
+What a signed-in person sees from first opening a dataset to using its map. One page, three moods, then the map. The page takes over only while a dataset has never had a map: no stored features, no served archive, bake pending or failed.
 
 1. **Counting.** No dataset yet; the app asks Overpass how many elements the area has. Seconds for a warm city, about a minute for the largest in-scope city, a few minutes for an area nobody has opened before (one retry on raised budgets). After 30 s the copy admits it is taking longer.
-2. **Baking.** The dataset exists with a pending bake. Same page with the element count, a tier (about a minute / a few minutes / 10 to 15 minutes) and the tiler's live stage. From the second tier up it offers a one-time email. Flips to the map by itself when the archive lands.
-3. **Failed.** Same page. Too large waits a week before the next try (a reverted bad import can bring the area back under the ceiling); the email, if asked for, says so. Anything else says "isn't ready yet", keeps the row, and retries on a growing wait: 15 minutes after the first failure, 1 hour after the second, 6 hours after the third, then daily for good. A failed Overpass fetch, a failed submit and a failed bake all count; only a finished bake resets the count. A dataset whose bake is still pending is not retried on the short waits. If the tiler does not answer when a scheduled refresh starts, that refresh is skipped for every dataset and charges none of them; pending bakes are still checked. Health reports degraded when more than five datasets are past their third failure or the tiler has been unreachable for over 30 minutes.
+2. **Baking.** The dataset exists with a pending bake. Same page with the tiler's live stage and a five-step progress block. No wait estimate: the tiler has none to give. Polls the bake and flips to the map in place when the archive lands, no reload.
+3. **Failed.** Same page, no polling. Too large is its own screen and waits a week before the next try (a reverted bad import can bring the area back under the ceiling). Anything else retries on a growing wait: 15 minutes after the first failure, 1 hour after the second, 6 hours after the third, then daily for good. A failed Overpass fetch, a failed submit and a failed bake all count; only a finished bake resets the count. A dataset whose bake is still pending is not retried on the short waits. If the tiler does not answer when a scheduled refresh starts, that refresh is skipped for every dataset and charges none of them; pending bakes are still checked. Health reports degraded when more than five datasets are past their third failure or the tiler has been unreachable for over 30 minutes.
 4. **Ready.** The normal sidebar-and-map page, served from the archive.
 5. **Rebuild.** A refresh bakes in the background; visitors keep the old archive and "fetched" time, and nothing on the page says so. Admin Sync is disabled while a bake is pending. Bakes show on the admin datasets page and as dashboard badges.
+
+Baking, failed and too large all carry one button: save the dataset and email me when the map is ready. Saving is the notification: only saved datasets are retried, and the one mail goes out when a bake with features lands, never on a failure. Unsaving cancels it, and turning email off in Preferences covers it too.
 
 Every first load waits for a bake, small datasets included. Cards on the area, explore and home pages do not yet show a baking dataset.
 

@@ -24,7 +24,12 @@ export async function notifyDatasetReady(
   if (dataCount <= 0) return;
   try {
     const saves = await prisma.datasetSave.findMany({
-      where: { datasetId, notifyWhenReady: true },
+      // The sign-in notice promises Preferences turns every email off
+      where: {
+        datasetId,
+        notifyWhenReady: true,
+        user: { reportsEnabled: true },
+      },
       select: { id: true, user: { select: { email: true, language: true } } },
     });
     if (saves.length === 0) return;

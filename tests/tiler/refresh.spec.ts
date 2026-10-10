@@ -56,7 +56,7 @@ test.describe("Admin Sync on a served tiles dataset", () => {
     await setupAuthenticationWithLogin(page, user);
 
     await page.goto(PAGE);
-    await expect(page.getByTestId("tiles-processing-panel")).toBeVisible();
+    await expect(page.getByTestId("dataset-baking-page")).toBeVisible();
     ({ id: datasetId } = await prisma.dataset.findFirstOrThrow({
       where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
       select: { id: true },

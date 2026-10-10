@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getTileJob, tilerEnabled } from "@/lib/tiler/client";
 import { reconcileDataset } from "@/lib/tiler/poll";
+import { isTooLarge } from "@/lib/dataset-retry";
 
 /**
- * Live tile-bake status for one dataset — the processing panel polls this
+ * Live tile-bake status for one dataset — the wait page polls this
  * (browsers cannot reach the tiler, so the app proxies). When the tiler
  * reports done, the single-dataset reconcile runs right here so the watcher
  * gets tiles immediately instead of on the next cron tick (safe to race with
@@ -29,7 +30,7 @@ export async function GET(
   const failedBody = (error: string | null) => ({
     state: "failed" as const,
     error,
-    tooLarge: error?.startsWith("too_large") ?? false,
+    tooLarge: isTooLarge(error),
   });
 
   if (dataset.tilesState === "done") return NextResponse.json({ state: "done" });
@@ -61,7 +62,7 @@ export async function GET(
       progress: job?.progress ?? null,
     });
   } catch (error) {
-    // Tiler unreachable or pull hiccup: stay pending, the panel keeps polling
+    // Tiler unreachable or pull hiccup: stay pending, the wait page keeps polling
     console.error(`tiles-status failed for dataset ${id}:`, error);
     return NextResponse.json({ state: "pending" });
   }

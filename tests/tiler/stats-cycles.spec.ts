@@ -109,7 +109,7 @@ test.describe("Tiles-only stats across bake cycles", () => {
     user = await createTestUser(prisma);
     await setupAuthenticationWithLogin(page, user);
     await page.goto(PAGE);
-    await expect(page.getByTestId("tiles-processing-panel")).toBeVisible();
+    await expect(page.getByTestId("dataset-baking-page")).toBeVisible();
 
     const created = await prisma.dataset.findFirstOrThrow({
       where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
