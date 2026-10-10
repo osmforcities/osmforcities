@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 import { mockOverpassResponse } from "@/lib/mocks/overpass";
 import { mockTilerState } from "@/lib/mocks/tiler";
@@ -35,6 +36,13 @@ export async function POST(req: NextRequest) {
     state.countProbes++;
     if (state.countTimesOut) return new NextResponse(null, { status: 504 });
     return countResponse();
+  }
+  // A real Overpass result file, for a real tiler to bake (smoke runs only)
+  const realData = process.env.MOCK_OVERPASS_DATA_FILE;
+  if (realData) {
+    return new NextResponse(await readFile(realData), {
+      headers: { "Content-Type": "application/json" },
+    });
   }
   return jsonResponse(mockOverpassResponse);
 }

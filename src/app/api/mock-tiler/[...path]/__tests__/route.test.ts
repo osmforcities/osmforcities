@@ -4,6 +4,7 @@ import { DELETE, GET, POST } from "../route";
 import { POST as overpass } from "@/app/api/mock-overpass/route";
 import { resetMockTiler } from "@/lib/mocks/tiler";
 import { tilerStatsToDatasetColumns } from "@/lib/tiler/stats";
+import fixtureStats from "@/lib/mocks/tiler/stats.json";
 import { ndjsonToFeatureCollection } from "@/lib/tiler/features";
 
 const req = (path: string[], body?: unknown) => [
@@ -13,6 +14,15 @@ const req = (path: string[], body?: unknown) => [
   }),
   { params: Promise.resolve({ path }) },
 ] as const;
+
+const overpassQuery = (query: string) =>
+  overpass(
+    new NextRequest("http://localhost/api/mock-overpass", {
+      method: "POST",
+      body: `data=${encodeURIComponent(query)}`,
+    })
+  );
+const countProbe = () => overpassQuery("node(1);out count;");
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -86,29 +96,16 @@ describe("/api/mock-tiler", () => {
 
   it("sets the count mock-overpass answers to count probes", async () => {
     vi.stubEnv("ENABLE_TEST_AUTH", "true");
-    const countProbe = () =>
-      overpass(
-        new NextRequest("http://localhost/api/mock-overpass", {
-          method: "POST",
-          body: `data=${encodeURIComponent("node(1);out count;")}`,
-        })
-      ).then((res) => res.json());
+    const total = async () =>
+      (await (await countProbe()).json()).elements[0].tags.total;
 
-    expect((await countProbe()).elements[0].tags.total).toBe("1");
+    expect(await total()).toBe("1");
     await POST(...req(["control"], { overpassCount: 60000 }));
-    expect((await countProbe()).elements[0].tags.total).toBe("60000");
+    expect(await total()).toBe("60000");
   });
 
   it("times out count probes on the switch and counts every probe", async () => {
     vi.stubEnv("ENABLE_TEST_AUTH", "true");
-    const countProbe = () =>
-      overpass(
-        new NextRequest("http://localhost/api/mock-overpass", {
-          method: "POST",
-          body: `data=${encodeURIComponent("node(1);out count;")}`,
-        })
-      );
-
     await POST(...req(["control"], { countTimesOut: true }));
     expect((await countProbe()).status).toBe(504);
     expect((await countProbe()).status).toBe(504);
@@ -118,5 +115,15 @@ describe("/api/mock-tiler", () => {
 
     await POST(...req(["control"], { reset: true }));
     expect((await countProbe()).status).toBe(200);
+  });
+
+  it("answers full queries from the real data file when one is set", async () => {
+    const fullQuery = async () =>
+      (await overpassQuery("way[leisure=park];out geom;")).json();
+
+    expect((await fullQuery()).elements).toHaveLength(1);
+    // Any JSON file stands in for a real Overpass result
+    vi.stubEnv("MOCK_OVERPASS_DATA_FILE", "src/lib/mocks/tiler/stats.json");
+    expect(await fullQuery()).toEqual(fixtureStats);
   });
 });
