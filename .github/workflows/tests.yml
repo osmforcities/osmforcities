@@ -21,7 +21,8 @@ jobs:
     # instead of waiting ~1.5 min for lint/types/build
     if: github.event.pull_request.draft == false
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    # Pinned: the Start PostgreSQL step relies on this image's bundled server
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
