@@ -24,13 +24,13 @@ export async function notifyDatasetReady(
   if (dataCount <= 0) return;
   try {
     const saves = await prisma.datasetSave.findMany({
-      // The sign-in notice promises Preferences turns every email off
-      where: {
-        datasetId,
-        notifyWhenReady: true,
-        user: { reportsEnabled: true },
+      where: { datasetId, notifyWhenReady: true },
+      select: {
+        id: true,
+        user: {
+          select: { email: true, language: true, reportsEnabled: true },
+        },
       },
-      select: { id: true, user: { select: { email: true, language: true } } },
     });
     if (saves.length === 0) return;
 
@@ -55,29 +55,33 @@ export async function notifyDatasetReady(
 
     for (const save of saves) {
       try {
-        const locale = (save.user.language || "en") as Locale;
-        const names = {
-          template: resolveTemplateForLocale(dataset.template, locale).name,
-          area: resolveDatasetAreaName(dataset, locale),
-        };
-        const t = await getEmailT(locale);
-        const url = getDatasetUrl(getEmailBaseUrl(), {
-          locale,
-          areaId: dataset.areaId,
-          templateId: dataset.templateId,
-        });
-        const sentence = t("mapReady", {
-          template: escapeHtml(names.template),
-          area: escapeHtml(names.area),
-        });
-        const html = `<div lang="${locale}" dir="${isRTL(locale) ? "rtl" : "ltr"}"><p>${createEmailLink(url, sentence)}</p></div>`;
+        // The sign-in notice promises Preferences turns every email off. The
+        // flag still clears, so turning email back on sends no stale mail.
+        if (save.user.reportsEnabled) {
+          const locale = (save.user.language || "en") as Locale;
+          const names = {
+            template: resolveTemplateForLocale(dataset.template, locale).name,
+            area: resolveDatasetAreaName(dataset, locale),
+          };
+          const t = await getEmailT(locale);
+          const url = getDatasetUrl(getEmailBaseUrl(), {
+            locale,
+            areaId: dataset.areaId,
+            templateId: dataset.templateId,
+          });
+          const sentence = t("mapReady", {
+            template: escapeHtml(names.template),
+            area: escapeHtml(names.area),
+          });
+          const html = `<div lang="${locale}" dir="${isRTL(locale) ? "rtl" : "ltr"}"><p>${createEmailLink(url, sentence)}</p></div>`;
 
-        await sendEmail({
-          to: save.user.email,
-          subject: t("mapReady", names),
-          html,
-          text: htmlToText(html),
-        });
+          await sendEmail({
+            to: save.user.email,
+            subject: t("mapReady", names),
+            html,
+            text: htmlToText(html),
+          });
+        }
         // Conditional so an unsave mid-send is a no-op, not a throw.
         await prisma.datasetSave.updateMany({
           where: { id: save.id, notifyWhenReady: true },

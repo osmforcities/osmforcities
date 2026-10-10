@@ -66,7 +66,7 @@ test.describe("Tiles-only dataset creation", () => {
     expect((await archive).ok()).toBe(true);
     await expect(waitPage).toBeHidden();
     await expect(
-      page.getByLabel("Full screen interactive map showing dataset")
+      page.getByRole("region", { name: "Dataset statistics" })
     ).toBeVisible();
     expect(reloaded).toBe(false);
   });

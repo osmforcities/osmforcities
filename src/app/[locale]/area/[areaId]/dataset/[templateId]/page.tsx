@@ -8,6 +8,7 @@ import { SaveAndNotifyButton } from "@/components/dataset/save-and-notify-button
 import { tilerEnabled } from "@/lib/tiler/client";
 import { tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
 import { isTooLarge } from "@/lib/dataset-retry";
+import { awaitsFirstMap } from "@/lib/dataset-tiles";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import {
   DatasetSizeCheckTimeoutError,
@@ -184,18 +185,10 @@ async function AreaTemplateDatasetView({
       savedCount = count;
     }
 
-    // A dataset that never had a map waits for its first bake on a full page.
-    // A rebuild keeps serving the old archive, so it never lands here. An
-    // empty count keeps the empty screen below. No detail-view tracker: the
-    // flip to the map remounts the page and would count the view twice.
+    // No detail-view tracker: the flip to the map remounts the page and would
+    // count the view twice
     const row = result.dataset;
-    if (
-      tilesOnlyLaneEnabled() &&
-      row.dataCount !== 0 &&
-      !row.geojson &&
-      !row.tilesServedJobId &&
-      (row.tilesState === "pending" || row.tilesState === "failed")
-    ) {
+    if (tilesOnlyLaneEnabled() && awaitsFirstMap(row)) {
       const notify = (offer: "ready" | "available") => (
         <SaveAndNotifyButton
           datasetId={row.id}

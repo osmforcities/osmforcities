@@ -5,10 +5,10 @@ import { reconcileDataset } from "@/lib/tiler/poll";
 import { isTooLarge } from "@/lib/dataset-retry";
 
 /**
- * Live tile-bake status for one dataset — the wait page polls this
+ * The live stage of one dataset's bake — the wait page polls this
  * (browsers cannot reach the tiler, so the app proxies). When the tiler
- * reports done, the single-dataset reconcile runs right here so the watcher
- * gets tiles immediately instead of on the next cron tick (safe to race with
+ * reports done, the single-dataset reconcile runs right here so the open page
+ * gets its map immediately instead of on the next cron tick (safe to race with
  * the cron: see reconcileDataset).
  *
  * Response: { state: "pending"|"done"|"failed"|"none",

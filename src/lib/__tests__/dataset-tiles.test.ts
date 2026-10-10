@@ -50,6 +50,33 @@ describe("datasetTilesPath", () => {
   });
 });
 
+describe("awaitsFirstMap", () => {
+  const firstBake = {
+    dataCount: 100,
+    geojson: null,
+    tilesServedJobId: null,
+    tilesState: "pending",
+  };
+
+  it("holds while a dataset that never had a map bakes or has failed", async () => {
+    const { awaitsFirstMap } = await loadWithFlag(true);
+    expect(awaitsFirstMap(firstBake)).toBe(true);
+    expect(awaitsFirstMap({ ...firstBake, tilesState: "failed" })).toBe(true);
+  });
+
+  it("lets a rebuild keep its served archive", async () => {
+    const { awaitsFirstMap } = await loadWithFlag(true);
+    expect(awaitsFirstMap({ ...firstBake, tilesServedJobId: "ds-1-3" })).toBe(false);
+  });
+
+  it("lets stored features, an empty count or no bake render as before", async () => {
+    const { awaitsFirstMap } = await loadWithFlag(true);
+    expect(awaitsFirstMap({ ...firstBake, geojson: { type: "FeatureCollection" } })).toBe(false);
+    expect(awaitsFirstMap({ ...firstBake, dataCount: 0 })).toBe(false);
+    expect(awaitsFirstMap({ ...firstBake, tilesState: null })).toBe(false);
+  });
+});
+
 describe("refreshOutcome", () => {
   const lastChecked = new Date("2026-10-05T10:00:00Z");
 
