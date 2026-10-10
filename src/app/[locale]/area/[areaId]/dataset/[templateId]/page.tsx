@@ -189,14 +189,16 @@ async function AreaTemplateDatasetView({
     // count the view twice
     const row = result.dataset;
     if (tilesOnlyLaneEnabled() && awaitsFirstMap(row)) {
-      const notify = (offer: "ready" | "available") => (
-        <SaveAndNotifyButton
-          datasetId={row.id}
-          saved={isSaved}
-          notify={notifyRequested}
-          offer={offer}
-        />
-      );
+      // Saving needs a session; anonymous visitors reach here on featured pages
+      const notify = (offer: "ready" | "available") =>
+        session?.user && (
+          <SaveAndNotifyButton
+            datasetId={row.id}
+            saved={isSaved}
+            notify={notifyRequested}
+            offer={offer}
+          />
+        );
       if (row.tilesState === "failed" && isTooLarge(row.tilesError)) {
         return (
           <DatasetTooLargeState
