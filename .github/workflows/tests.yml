@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Each job runs on its own runner with its own Postgres service.
+        # Each job runs on its own runner with its own Postgres.
         # Shards split by test count, not duration, so the slow tiler specs
         # get a job of their own instead of piling onto the last shard.
         include:
@@ -33,22 +33,18 @@ jobs:
           - { project: chromium, shard: 2/3 }
           - { project: chromium, shard: 3/3 }
           - { project: tiler, shard: 1/1 }
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: osmforcities-test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5433:5432
     steps:
       - uses: actions/checkout@v4
+
+      # The runner image ships PostgreSQL (disabled by default): starting it
+      # skips the Docker Hub pull a service container needs. global-setup
+      # creates the database.
+      - name: Start PostgreSQL
+        run: |
+          sudo sed -i 's/^port = .*/port = 5433/' /etc/postgresql/*/main/postgresql.conf
+          sudo systemctl start postgresql.service
+          until pg_isready -h localhost -p 5433; do sleep 1; done
+          sudo -u postgres psql -p 5433 -c "ALTER USER postgres PASSWORD 'postgres'"
 
       - name: Read .nvmrc
         id: node-version
