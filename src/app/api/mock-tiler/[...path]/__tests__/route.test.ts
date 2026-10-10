@@ -3,10 +3,8 @@ import { NextRequest } from "next/server";
 import { DELETE, GET, POST } from "../route";
 import { POST as overpass } from "@/app/api/mock-overpass/route";
 import { resetMockTiler } from "@/lib/mocks/tiler";
-import {
-  ndjsonToFeatureCollection,
-  tilerStatsToDatasetColumns,
-} from "@/lib/tiler/stats";
+import { tilerStatsToDatasetColumns } from "@/lib/tiler/stats";
+import { ndjsonToFeatureCollection } from "@/lib/tiler/features";
 
 const req = (path: string[], body?: unknown) => [
   new NextRequest(`http://localhost/api/mock-tiler/${path.join("/")}`, {

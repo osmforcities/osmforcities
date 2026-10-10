@@ -9,11 +9,8 @@ import {
   tilerEnabled,
   type TileJob,
 } from "./client";
-import {
-  ndjsonToFeatureCollection,
-  readPulledStats,
-  tilerStatsToDatasetColumns,
-} from "./stats";
+import { readPulledStats, tilerStatsToDatasetColumns } from "./stats";
+import { ndjsonToFeatureCollection } from "./features";
 import { isTooLarge } from "@/lib/dataset-retry";
 import { notifyDatasetReady } from "@/lib/tasks/notify-ready";
 import { TILES_ENABLED } from "@/lib/dataset-tiles";
@@ -171,18 +168,15 @@ export async function reconcileDataset(
             await readPulledStats(dataset.tilesJobId)
           );
           if (mapped) {
-            statsColumns = authoritative
-              ? {
-                  ...mapped,
-                  ...(await featureFill(
-                    dataset.tilesJobId,
-                    mapped.dataCount
-                  )),
-                  lastChecked: new Date(),
-                  lastError: null,
-                }
-              : mapped;
+            statsColumns = mapped;
             dataCount = mapped.dataCount;
+            if (authoritative) {
+              Object.assign(
+                statsColumns,
+                await featureFill(dataset.tilesJobId, mapped.dataCount),
+                { lastChecked: new Date(), lastError: null }
+              );
+            }
           }
         } catch (error) {
           // Losing the stats must not also lose the archive.

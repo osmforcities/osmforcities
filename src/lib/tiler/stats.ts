@@ -1,7 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { Prisma } from "@prisma/client";
-import type { Feature, FeatureCollection } from "geojson";
 import { z } from "zod";
 import { DatasetStatsSchema } from "@/schemas/dataset";
 import { AGE_CATEGORY_ORDER } from "@/lib/feature-age";
@@ -29,35 +28,6 @@ export async function readPulledStats(jobId: string): Promise<unknown> {
     "utf8"
   );
   return JSON.parse(raw);
-}
-
-// The tiler's @-prefixed meta keys, onto the flat keys osmtogeojson's
-// flatProperties gives the app's own fetch
-const META_KEYS: Record<string, string> = {
-  "@id": "id",
-  "@user": "user",
-  "@uid": "uid",
-  "@timestamp": "timestamp",
-  "@version": "version",
-  "@changeset": "changeset",
-};
-
-// Needs a keepMeta bake: without it features carry no user or timestamp
-export function ndjsonToFeatureCollection(ndjson: string): FeatureCollection {
-  const features = ndjson
-    .split("\n")
-    .filter(Boolean)
-    .map((line) => {
-      const feature = JSON.parse(line) as Feature;
-      const properties: Record<string, unknown> = {};
-      for (const [key, value] of Object.entries(feature.properties ?? {})) {
-        // The map stamps its own _ts at render time
-        if (key !== "_ts") properties[META_KEYS[key] ?? key] = value;
-      }
-      // App features carry the id at both levels
-      return { ...feature, id: properties.id as string, properties };
-    });
-  return { type: "FeatureCollection", features };
 }
 
 /** Map the tiler's stats.json onto Dataset columns, or null when unusable. */
