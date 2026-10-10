@@ -10,6 +10,7 @@ import {
 import {
   AMSTERDAM,
   archiveRequest,
+  countProbes,
   mockTilerControl,
   OVER_CAP_COUNT,
   runCronCycle,
@@ -18,6 +19,8 @@ import {
 
 const TEMPLATE_ID = "clocks";
 const PAGE = `/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`;
+// Past the daily refresh cadence, so the next tick refreshes the dataset
+const MORE_THAN_A_DAY_MS = 25 * 60 * 60 * 1000;
 const syncButton = (page: Page) =>
   page.getByTitle("Sync with the latest OpenStreetMap data");
 
@@ -102,6 +105,32 @@ test.describe("Admin Sync on a served tiles dataset", () => {
       });
     });
 
+    test("the cron refresh submits a bake without calling Overpass", async ({
+      page,
+    }) => {
+      // Saved, so the cron refreshes it, and due
+      await prisma.dataset.update({
+        where: { id: datasetId },
+        data: {
+          lastAttempted: new Date(Date.now() - MORE_THAN_A_DAY_MS),
+          savedBy: { create: { userId: user.id } },
+        },
+      });
+      const probesBefore = await countProbes(page);
+
+      await runCronCycle(page);
+
+      const row = await prisma.dataset.findUniqueOrThrow({
+        where: { id: datasetId },
+        select: { tilesJobId: true, tilesState: true, tilesServedJobId: true },
+      });
+      expect(row.tilesJobId).not.toBe(servedJobId);
+      expect(row.tilesState).toBe("pending");
+      expect(row.tilesServedJobId).toBe(servedJobId);
+      // Every app-side fetch starts with a count probe
+      expect(await countProbes(page)).toBe(probesBefore);
+    });
+
     test("keeps the old archive while baking, swaps on reconcile", async ({
       page,
     }) => {
@@ -120,8 +149,6 @@ test.describe("Admin Sync on a served tiles dataset", () => {
       await expect(syncButton(page)).toBeDisabled();
 
       await mockTilerControl(page, { jobId: newJobId, state: "done" });
-      // The tick also refreshes a due cataloged dataset: give it the real count
-      await mockTilerControl(page, { overpassCount: null });
       const cycle = await runCronCycle(page);
       expect(cycle.tiles.completed).toBeGreaterThanOrEqual(1);
 

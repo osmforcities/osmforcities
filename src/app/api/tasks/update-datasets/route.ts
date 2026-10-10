@@ -7,7 +7,7 @@ import {
   DatasetTooLargeError,
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
-import { submitTilesForDataset } from "@/lib/tiler/submit";
+import { submitTilesForDataset, tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
 import { pollPendingTileJobs } from "@/lib/tiler/poll";
 import { pingTiler, tilerEnabled } from "@/lib/tiler/client";
 import { dueForRefreshWhere } from "@/lib/dataset-retry";
@@ -91,6 +91,7 @@ export async function POST(req: NextRequest) {
     // refresh (a snapshot without its bake would still spend the row's wait)
     // and let the reconcile below keep trying the bakes already pending.
     const tilerOn = tilerEnabled();
+    const tilesLane = tilesOnlyLaneEnabled();
     const tilerUnreachable = tilerOn && !(await pingTiler());
     if (tilerUnreachable) {
       console.warn("Tiler unreachable, skipping dataset refresh this tick");
@@ -176,24 +177,27 @@ export async function POST(req: NextRequest) {
       }
 
       try {
+        // On the tiles-only lane the bake is the refresh: the row keeps serving
+        // its data until the reconcile writes the bake's.
+        if (!tilesLane) {
+          const snapshot = await fetchDatasetSnapshot(
+            dataset.areaId,
+            dataset.template.overpassQuery,
+            dataset.templateId
+          );
 
-        const snapshot = await fetchDatasetSnapshot(
-          dataset.areaId,
-          dataset.template.overpassQuery,
-          dataset.templateId
-        );
-
-        await prisma.dataset.update({
-          where: { id: dataset.id },
-          data: {
-            ...snapshotDatasetColumns(snapshot),
-            updatedAt: new Date(),
-            // With the tiler on, only a finished bake resets the counter (in
-            // reconcile), so a bake failing every day still climbs the ladder.
-            ...(tilerOn ? {} : { consecutiveFailures: 0 }),
-            lastError: null,
-          },
-        });
+          await prisma.dataset.update({
+            where: { id: dataset.id },
+            data: {
+              ...snapshotDatasetColumns(snapshot),
+              updatedAt: new Date(),
+              // With the tiler on, only a finished bake resets the counter (in
+              // reconcile), so a bake failing every day still climbs the ladder.
+              ...(tilerOn ? {} : { consecutiveFailures: 0 }),
+              lastError: null,
+            },
+          });
+        }
 
         const tiles = await submitTilesForDataset(dataset.id);
         if (tiles.tilesState === "failed") {

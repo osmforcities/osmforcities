@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { NextRequest } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { submitTilesForDataset } from "@/lib/tiler/submit";
+import { submitTilesForDataset, tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
+import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 
 vi.mock("@/auth", () => ({
   auth: vi.fn(),
@@ -18,7 +19,10 @@ vi.mock("@/lib/dataset-snapshot", async (importOriginal) => ({
   snapshotDatasetColumns: vi.fn().mockReturnValue({}),
 }));
 
-vi.mock("@/lib/tiler/submit", () => ({ submitTilesForDataset: vi.fn() }));
+vi.mock("@/lib/tiler/submit", () => ({
+  submitTilesForDataset: vi.fn(),
+  tilesOnlyLaneEnabled: vi.fn().mockReturnValue(false),
+}));
 
 vi.mock("@/lib/umami", () => ({
   trackEvent: vi.fn(),
@@ -105,6 +109,42 @@ describe("POST /api/datasets/[id]/refresh", () => {
       vi.mocked(submitTilesForDataset).mockResolvedValueOnce({});
       const body = await (await call()).json();
       expect(body.tilesState).toBe("done");
+    });
+
+    describe("on the tiles-only lane", () => {
+      beforeEach(() => {
+        vi.mocked(tilesOnlyLaneEnabled).mockReturnValue(true);
+        vi.mocked(fetchDatasetSnapshot).mockClear();
+        vi.mocked(prisma.dataset.update).mockClear();
+      });
+
+      afterEach(() => {
+        vi.mocked(tilesOnlyLaneEnabled).mockReturnValue(false);
+      });
+
+      it("submits a bake without fetching and reports it queued", async () => {
+        vi.mocked(submitTilesForDataset).mockResolvedValueOnce({
+          tilesJobId: "job-2",
+          tilesState: "pending",
+          tilesError: null,
+        });
+        const res = await call();
+        expect(res.status).toBe(200);
+        expect(await res.json()).toEqual({ success: true, tilesState: "pending" });
+        expect(fetchDatasetSnapshot).not.toHaveBeenCalled();
+        expect(prisma.dataset.update).not.toHaveBeenCalled();
+      });
+
+      it("fails when the bake could not be queued", async () => {
+        vi.mocked(submitTilesForDataset).mockResolvedValueOnce({
+          tilesState: "failed",
+          tilesError: "Tiler submit failed: 503",
+        });
+        const res = await call();
+        expect(res.status).toBe(502);
+        // The raw tiler message is operator-only
+        expect(JSON.stringify(await res.json())).not.toContain("503");
+      });
     });
   });
 });

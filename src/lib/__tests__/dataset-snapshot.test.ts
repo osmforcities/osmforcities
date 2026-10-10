@@ -7,12 +7,7 @@ import {
   type DatasetSnapshot,
 } from "@/lib/dataset-snapshot";
 import { prisma } from "@/lib/db";
-import { Prisma } from "@prisma/client";
 import { MAX_DATASET_BYTES, OVERPASS_BYTES_PER_ELEMENT_ESTIMATE } from "@/lib/constants";
-import {
-  executeOverpassQueryWithByteLimit,
-  OverpassResponseTooLargeError,
-} from "@/lib/overpass/transport";
 
 // TILES_ENABLED is a module-load constant; a getter lets each test flip it.
 const flags = vi.hoisted(() => ({ tiles: false }));
@@ -21,16 +16,6 @@ vi.mock("@/lib/dataset-tiles", () => ({
     return flags.tiles;
   },
 }));
-
-// Real transport; the byte-limited fetch is wrapped so a test can make it
-// overflow without streaming 25 MB through the fetch mock.
-vi.mock("@/lib/overpass/transport", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/lib/overpass/transport")>();
-  return {
-    ...actual,
-    executeOverpassQueryWithByteLimit: vi.fn(actual.executeOverpassQueryWithByteLimit),
-  };
-});
 
 vi.mock("@/lib/db", () => ({
   prisma: {
@@ -477,27 +462,18 @@ describe("fetchDatasetSnapshot — tiles-only lane", () => {
     expect(vi.mocked(fetch)).not.toHaveBeenCalled();
   });
 
-  it("routes a response that overflows mid-fetch with an over-cap element count", async () => {
-    // Probe says under cap; the byte limit says otherwise.
-    vi.stubGlobal("fetch", mockFetchImplementation(mockOverpassData, 7));
-    vi.mocked(executeOverpassQueryWithByteLimit).mockRejectedValueOnce(
-      new OverpassResponseTooLargeError(MAX_DATASET_BYTES + 1, MAX_DATASET_BYTES)
-    );
+  it("stores only the probe count for an under-cap dataset too", async () => {
     const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
-    expect(snapshot.tilesOnly).toBe(true);
-    // Stored dataCount must read as over-cap to the tiler submit, or the bake
-    // goes out on default budgets.
-    expect(snapshot.dataCount * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE).toBeGreaterThan(
-      MAX_DATASET_BYTES
-    );
+    expect(snapshot).toEqual({
+      tilesOnly: true,
+      geojson: null,
+      stats: null,
+      bbox: null,
+      dataCount: 2,
+    });
+    // Count probe only: the bake fetches the features
+    expect(vi.mocked(fetch)).toHaveBeenCalledTimes(1);
     expect(upsert).not.toHaveBeenCalled();
-  });
-
-  it("leaves under-cap datasets on the full-snapshot path", async () => {
-    const snapshot = await fetchFullSnapshot(1, "query", "tpl-1");
-    expect(snapshot.tilesOnly).toBeFalsy();
-    expect(snapshot.geojson.type).toBe("FeatureCollection");
-    expect(snapshot.dataCount).toBe(2);
   });
 });
 
@@ -569,28 +545,19 @@ describe("fetchDatasetSnapshot — count-probe retry", () => {
     });
 
     // An area Overpass has never evaluated is slow the first time even when
-    // small. The retry is what gets it through, and a small answer must land
-    // a regular snapshot, not a tiles-only one.
-    it("fetches a full snapshot when the retry count is under cap (cold area)", async () => {
+    // small. The retry is what gets it through.
+    it("stores the retry's count when it is under cap (cold area)", async () => {
       const fetchMock = vi
         .fn()
         .mockResolvedValueOnce(timedOut)
-        .mockReturnValueOnce(makeFetchResponse(makeCountResponse(2)))
-        .mockReturnValue(makeFetchResponse(mockOverpassData));
+        .mockReturnValueOnce(makeFetchResponse(makeCountResponse(2)));
       vi.stubGlobal("fetch", fetchMock);
 
-      const snapshot = await fetchFullSnapshot(1, "query", "tpl-1");
+      const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
 
-      expect(snapshot.geojson.type).toBe("FeatureCollection");
-      expect(snapshot.dataCount).toBe(2);
-      // probe, retry, full fetch
-      expect(fetchMock).toHaveBeenCalledTimes(3);
-      expect(upsert).toHaveBeenCalledOnce();
-      expect(upsert).toHaveBeenCalledWith(
-        expect.objectContaining({
-          create: expect.objectContaining({ status: "ok" }),
-        })
-      );
+      expect(snapshot).toMatchObject({ tilesOnly: true, dataCount: 2 });
+      // probe, retry, no feature fetch
+      expect(fetchMock).toHaveBeenCalledTimes(2);
     });
 
     it("retries an out-of-memory probe (200 + remark), not only a 504", async () => {
@@ -782,7 +749,7 @@ describe("snapshotDatasetColumns", () => {
     expect(cols.bbox).toEqual(snapshot.bbox);
   });
 
-  it("writes only geojson, dataCount and lastChecked for a tiles-only snapshot", () => {
+  it("writes only dataCount and lastChecked for a tiles-only snapshot", () => {
     const cols = snapshotDatasetColumns({
       tilesOnly: true,
       geojson: null,
@@ -790,10 +757,9 @@ describe("snapshotDatasetColumns", () => {
       bbox: null,
       dataCount: overCapCount,
     });
-    // No stats/bbox/denormalized keys: a refresh must not wipe what the tiler
-    // filled. lastChecked is the only freshness write a tiles-only row gets.
-    expect(Object.keys(cols).sort()).toEqual(["dataCount", "geojson", "lastChecked"]);
-    expect(cols.geojson).toBe(Prisma.JsonNull);
+    // No geojson/stats/bbox/denormalized keys: the reconcile owns them.
+    // lastChecked is the only freshness write a tiles-only row gets.
+    expect(Object.keys(cols).sort()).toEqual(["dataCount", "lastChecked"]);
     expect(cols.dataCount).toBe(overCapCount);
     expect(cols.lastChecked).toBeInstanceOf(Date);
   });

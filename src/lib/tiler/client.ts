@@ -10,10 +10,10 @@ import { AGE_BUCKET_DAYS } from "@/lib/feature-age";
 /**
  * Client for the overpass-pmtiler service (see overpass-pmtiler/API.md).
  *
- * The integration is additive: the app's own Overpass fetch stays the source
- * of truth for geojson/stats, so every helper here degrades gracefully when
- * the tiler is unreachable. TILER_URL unset disables the whole integration
- * (the kill switch).
+ * With the tiles flag on the tiler is the data source (the tiles-only lane, see
+ * tilesOnlyLaneEnabled); off, it only adds archives to the app's own fetch.
+ * Every helper here degrades gracefully when the tiler is unreachable.
+ * TILER_URL unset disables the whole integration (the kill switch).
  */
 
 export type TileJobState =
@@ -102,15 +102,20 @@ export async function submitTileJob(input: {
   id: string;
   query: string;
   filterableTags?: string[];
-  ageBandsDays?: readonly number[];
-  keepMeta?: boolean;
   maxsize?: number;
   timeout?: number;
 }): Promise<void> {
   const response = await fetch(`${requireTilerUrl()}/jobs`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
+    body: JSON.stringify({
+      ...input,
+      // Stats then carry the legend's age counts (tiles-only rows hold no features)
+      ageBandsDays: AGE_BUCKET_DAYS,
+      // data.ndjson then carries user/timestamp, which the feature fill
+      // in reconcile stores like the app's snapshot
+      keepMeta: true,
+    }),
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
   // 202 = accepted, 200 = idempotent resubmit of a known id; both fine.
@@ -305,17 +310,7 @@ export async function submitTilesColumns(
   if (!tilerEnabled()) return {};
   const id = newTileJobId(datasetId);
   try {
-    await submitTileJob({
-      id,
-      query,
-      filterableTags,
-      // Stats then carry the legend's age counts (tiles-only rows hold no features)
-      ageBandsDays: AGE_BUCKET_DAYS,
-      // data.ndjson then carries user/timestamp, which the feature fill
-      // in reconcile stores like the app's snapshot
-      keepMeta: true,
-      ...budgets,
-    });
+    await submitTileJob({ id, query, filterableTags, ...budgets });
     return { tilesJobId: id, tilesState: "pending", tilesError: null };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

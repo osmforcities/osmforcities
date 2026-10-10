@@ -7,7 +7,7 @@ import {
   DatasetTooLargeError,
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
-import { submitTilesForDataset } from "@/lib/tiler/submit";
+import { submitTilesForDataset, tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
@@ -56,6 +56,19 @@ export async function POST(
         { error: "Cannot refresh inactive dataset" },
         { status: 400 }
       );
+    }
+
+    // On the tiles-only lane Sync queues a bake; the reconcile writes its data
+    if (tilesOnlyLaneEnabled()) {
+      const { tilesState } = await submitTilesForDataset(datasetId);
+      if (tilesState !== "pending") {
+        return NextResponse.json(
+          { error: "Failed to queue the map rebuild" },
+          { status: 502 }
+        );
+      }
+      await trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
+      return NextResponse.json({ success: true, tilesState });
     }
 
     const snapshot = await fetchDatasetSnapshot(

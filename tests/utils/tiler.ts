@@ -8,6 +8,11 @@ export const OVER_CAP_COUNT = 60_000;
 export const mockTilerControl = (page: Page, data: object) =>
   page.request.post("/api/mock-tiler/control", { data });
 
+/** Count probes the mock Overpass answered since the last reset. */
+export const countProbes = async (page: Page): Promise<number> =>
+  (await (await page.request.get("/api/mock-tiler/control")).json())
+    .countProbes;
+
 export const archiveRequest = (page: Page, jobId: string) =>
   page.waitForResponse((response) =>
     response.url().includes(`/api/tiles/${jobId}.pmtiles`)
