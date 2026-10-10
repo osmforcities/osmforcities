@@ -13,6 +13,8 @@ type MockTilerState = {
   stats: Map<string, unknown>;
   /** Count answered to count probes; null keeps the fixture's own count. */
   overpassCount: number | null;
+  /** Count probes and full queries both find no elements. */
+  overpassEmpty: boolean;
   /** Count probes answer 504, as Overpass does when one runs out of time. */
   countTimesOut: boolean;
   /** Count probes received, so a spec can tell a stored verdict was reused. */
@@ -30,6 +32,7 @@ export function mockTilerState(): MockTilerState {
     jobs: new Map(),
     stats: new Map(),
     overpassCount: null,
+    overpassEmpty: false,
     countTimesOut: false,
     countProbes: 0,
     submitFails: false,

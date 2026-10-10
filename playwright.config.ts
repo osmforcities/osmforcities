@@ -71,6 +71,9 @@ export default defineConfig({
         TILER_URL: "http://localhost:3100/api/mock-tiler",
         NEXT_PUBLIC_TILES_ENABLED: "true",
         TILES_DIR: "./data/tiles-test", // data/ is gitignored
+        // next dev runs as development whatever NODE_ENV says, so sendEmail's
+        // test no-op never applies: without this a map-ready mail throws
+        EMAIL_DISABLE: "true",
       },
     },
   ],
