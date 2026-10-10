@@ -177,15 +177,16 @@ export async function POST(req: NextRequest) {
       }
 
       try {
-        // On the tiles-only lane the bake is the refresh: the row keeps serving
-        // its data until the reconcile writes the bake's.
-        if (!tilesLane) {
-          const snapshot = await fetchDatasetSnapshot(
-            dataset.areaId,
-            dataset.template.overpassQuery,
-            dataset.templateId
-          );
+        const snapshot = await fetchDatasetSnapshot(
+          dataset.areaId,
+          dataset.template.overpassQuery,
+          dataset.templateId
+        );
 
+        // On the tiles-only lane the snapshot is the count probe alone and
+        // the bake is the refresh: the row keeps serving its data until the
+        // reconcile writes the bake's.
+        if (!tilesLane) {
           await prisma.dataset.update({
             where: { id: dataset.id },
             data: {
@@ -199,7 +200,10 @@ export async function POST(req: NextRequest) {
           });
         }
 
-        const tiles = await submitTilesForDataset(dataset.id);
+        const tiles = await submitTilesForDataset(
+          dataset.id,
+          snapshot.dataCount
+        );
         if (tiles.tilesState === "failed") {
           const message = tiles.tilesError ?? "tiler submit failed";
           await recordFailure(dataset.id, message);

@@ -341,15 +341,23 @@ describe("POST /api/tasks/update-datasets", () => {
         tilesState: "pending",
         tilesError: null,
       });
+      // The lane's snapshot is the count probe alone
+      vi.mocked(fetchDatasetSnapshot).mockResolvedValue({
+        tilesOnly: true,
+        geojson: null,
+        stats: null,
+        bbox: null,
+        dataCount: 60_000,
+      });
     });
 
-    it("submits a bake instead of fetching, writing nothing but the claim", async () => {
+    it("submits a bake sized by the probe, writing nothing but the claim", async () => {
       const body = await (await call()).json();
 
       expect(body.data.successful).toBe(1);
-      expect(fetchDatasetSnapshot).not.toHaveBeenCalled();
-      expect(submitTilesForDataset).toHaveBeenCalledWith("ds-1");
-      // The served data stays until the reconcile writes the bake's
+      expect(submitTilesForDataset).toHaveBeenCalledWith("ds-1", 60_000);
+      // The served data, dataCount included, stays until the reconcile
+      // writes the bake's
       expect(prisma.dataset.update).toHaveBeenCalledOnce();
       expect(
         updateCallsMatching((d) => d.lastAttempted instanceof Date)
@@ -367,18 +375,17 @@ describe("POST /api/tasks/update-datasets", () => {
       expect(body.data.errors).toEqual([
         { datasetId: "ds-1", kind: "submit", error: "Tiler submit failed: 503" },
       ]);
-      expect(fetchDatasetSnapshot).not.toHaveBeenCalled();
     });
   });
 
-  it("fetches as before when the tiler is on but the map does not render tiles", async () => {
+  it("stores the snapshot as before when the tiler is on but the map does not render tiles", async () => {
     vi.mocked(tilerEnabled).mockReturnValue(true);
     vi.mocked(fetchDatasetSnapshot).mockResolvedValueOnce(snapshot as never);
 
     await call();
 
-    expect(fetchDatasetSnapshot).toHaveBeenCalledOnce();
-    expect(submitTilesForDataset).toHaveBeenCalledWith("ds-1");
+    expect(updateCallsMatching((d) => "geojson" in d)).toHaveLength(1);
+    expect(submitTilesForDataset).toHaveBeenCalledOnce();
   });
 
   it("returns 401 without the cron secret", async () => {

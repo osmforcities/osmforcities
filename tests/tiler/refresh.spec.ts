@@ -10,7 +10,7 @@ import {
 import {
   AMSTERDAM,
   archiveRequest,
-  countProbes,
+  featureFetches,
   mockTilerControl,
   OVER_CAP_COUNT,
   runCronCycle,
@@ -105,7 +105,7 @@ test.describe("Admin Sync on a served tiles dataset", () => {
       });
     });
 
-    test("the cron refresh submits a bake without calling Overpass", async ({
+    test("the cron refresh submits a bake without fetching features", async ({
       page,
     }) => {
       // Saved, so the cron refreshes it, and due
@@ -116,7 +116,7 @@ test.describe("Admin Sync on a served tiles dataset", () => {
           savedBy: { create: { userId: user.id } },
         },
       });
-      const probesBefore = await countProbes(page);
+      const fetchesBefore = await featureFetches(page);
 
       await runCronCycle(page);
 
@@ -127,8 +127,8 @@ test.describe("Admin Sync on a served tiles dataset", () => {
       expect(row.tilesJobId).not.toBe(servedJobId);
       expect(row.tilesState).toBe("pending");
       expect(row.tilesServedJobId).toBe(servedJobId);
-      // Every app-side fetch starts with a count probe
-      expect(await countProbes(page)).toBe(probesBefore);
+      // The count probe only: the bake fetches the features
+      expect(await featureFetches(page)).toBe(fetchesBefore);
     });
 
     test("keeps the old archive while baking, swaps on reconcile", async ({

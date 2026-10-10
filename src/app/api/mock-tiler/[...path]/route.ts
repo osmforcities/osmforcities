@@ -34,7 +34,10 @@ export async function GET(_request: NextRequest, { params }: Context) {
     return NextResponse.json({ ok: true });
   }
   if (head === "control" && !id) {
-    return NextResponse.json({ countProbes: state.countProbes });
+    return NextResponse.json({
+      countProbes: state.countProbes,
+      featureFetches: state.featureFetches,
+    });
   }
   const job = head === "jobs" && id ? state.jobs.get(id) : undefined;
   if (!job) return notFound();

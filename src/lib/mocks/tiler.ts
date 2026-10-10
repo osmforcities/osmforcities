@@ -17,6 +17,8 @@ type MockTilerState = {
   countTimesOut: boolean;
   /** Count probes received, so a spec can tell a stored verdict was reused. */
   countProbes: number;
+  /** Feature queries received, so a spec can tell the app fetched none. */
+  featureFetches: number;
   /** POST /jobs answers 500. */
   submitFails: boolean;
   /** GET /status answers 503. */
@@ -32,6 +34,7 @@ export function mockTilerState(): MockTilerState {
     overpassCount: null,
     countTimesOut: false,
     countProbes: 0,
+    featureFetches: 0,
     submitFails: false,
     tilerDown: false,
   };

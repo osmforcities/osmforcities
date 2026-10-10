@@ -35,9 +35,14 @@ export function tilesOnlyLaneEnabled(): boolean {
  * paint with tilesState "pending" (Sync disabled for admins; the full
  * processing panel once the tiles-only lane lands), not the stale null it was
  * created with, which needs a reload to clear.
+ *
+ * elementCount is a fresh count probe's answer. A refresh on the tiles-only
+ * lane passes it rather than storing it, so the row keeps the served bake's
+ * count.
  */
 export async function submitTilesForDataset(
-  datasetId: string
+  datasetId: string,
+  elementCount?: number
 ): Promise<TilesColumns> {
   if (!tilerEnabled()) return {};
   try {
@@ -57,12 +62,12 @@ export async function submitTilesForDataset(
       /\{OSM_RELATION_ID\}/g,
       dataset.areaId.toString()
     );
-    // Over-cap jobs need budgets the default per-query settings refuse. The
-    // stored count is the signal: the count probe's element count at
-    // creation, the last bake's feature count after that. A feature count is
-    // the smaller of the two, which can only err toward the default budgets.
+    // Over-cap bakes need budgets the default per-query settings refuse. The
+    // count probe's element count is the signal, the same number creation
+    // caps on. Without a fresh one the stored count stands in.
     const isOverCap =
-      dataset.dataCount * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE >
+      (elementCount ?? dataset.dataCount) *
+        OVERPASS_BYTES_PER_ELEMENT_ESTIMATE >
       MAX_DATASET_BYTES;
     const columns = await submitTilesColumns(
       datasetId,

@@ -58,9 +58,25 @@ export async function POST(
       );
     }
 
-    // On the tiles-only lane Sync queues a bake; the reconcile writes its data
+    const snapshot = await fetchDatasetSnapshot(
+      dataset.areaId,
+      dataset.template.overpassQuery,
+      dataset.templateId
+    );
+
+    // On the tiles-only lane the snapshot is the count probe alone: the Sync
+    // button queues a bake sized by it, and the reconcile writes the data.
     if (tilesOnlyLaneEnabled()) {
-      const { tilesState } = await submitTilesForDataset(datasetId);
+      // Claims the slot like the cron does, so its next tick does not
+      // resubmit over this bake
+      await prisma.dataset.update({
+        where: { id: datasetId },
+        data: { lastAttempted: new Date() },
+      });
+      const { tilesState } = await submitTilesForDataset(
+        datasetId,
+        snapshot.dataCount
+      );
       if (tilesState !== "pending") {
         return NextResponse.json(
           { error: "Failed to queue the map rebuild" },
@@ -70,12 +86,6 @@ export async function POST(
       await trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
       return NextResponse.json({ success: true, tilesState });
     }
-
-    const snapshot = await fetchDatasetSnapshot(
-      dataset.areaId,
-      dataset.template.overpassQuery,
-      dataset.templateId
-    );
 
     const updatedDataset = await prisma.dataset.update({
       where: {

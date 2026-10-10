@@ -160,7 +160,7 @@ export type DatasetSnapshot =
       stats: null;
       bbox: null;
       // The probe's element count, never a feature count: the tiler submit
-      // derives raised budgets from it on the scale the pre-flight caps on.
+      // derives raised budgets from it on the scale the count probe caps on.
       dataCount: number;
     };
 

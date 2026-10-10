@@ -8,10 +8,17 @@ export const OVER_CAP_COUNT = 60_000;
 export const mockTilerControl = (page: Page, data: object) =>
   page.request.post("/api/mock-tiler/control", { data });
 
-/** Count probes the mock Overpass answered since the last reset. */
-export const countProbes = async (page: Page): Promise<number> =>
-  (await (await page.request.get("/api/mock-tiler/control")).json())
-    .countProbes;
+/** Queries the mock Overpass answered since the last reset. */
+const overpassCalls = async (
+  page: Page
+): Promise<{ countProbes: number; featureFetches: number }> =>
+  (await page.request.get("/api/mock-tiler/control")).json();
+
+export const countProbes = async (page: Page) =>
+  (await overpassCalls(page)).countProbes;
+
+export const featureFetches = async (page: Page) =>
+  (await overpassCalls(page)).featureFetches;
 
 export const archiveRequest = (page: Page, jobId: string) =>
   page.waitForResponse((response) =>

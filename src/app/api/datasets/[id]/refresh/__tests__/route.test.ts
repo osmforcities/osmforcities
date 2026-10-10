@@ -3,7 +3,6 @@ import { NextRequest } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { submitTilesForDataset, tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
-import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 
 vi.mock("@/auth", () => ({
   auth: vi.fn(),
@@ -114,7 +113,7 @@ describe("POST /api/datasets/[id]/refresh", () => {
     describe("on the tiles-only lane", () => {
       beforeEach(() => {
         vi.mocked(tilesOnlyLaneEnabled).mockReturnValue(true);
-        vi.mocked(fetchDatasetSnapshot).mockClear();
+        vi.mocked(submitTilesForDataset).mockClear();
         vi.mocked(prisma.dataset.update).mockClear();
       });
 
@@ -122,7 +121,7 @@ describe("POST /api/datasets/[id]/refresh", () => {
         vi.mocked(tilesOnlyLaneEnabled).mockReturnValue(false);
       });
 
-      it("submits a bake without fetching and reports it queued", async () => {
+      it("submits a bake sized by the probe and reports it queued", async () => {
         vi.mocked(submitTilesForDataset).mockResolvedValueOnce({
           tilesJobId: "job-2",
           tilesState: "pending",
@@ -131,8 +130,14 @@ describe("POST /api/datasets/[id]/refresh", () => {
         const res = await call();
         expect(res.status).toBe(200);
         expect(await res.json()).toEqual({ success: true, tilesState: "pending" });
-        expect(fetchDatasetSnapshot).not.toHaveBeenCalled();
-        expect(prisma.dataset.update).not.toHaveBeenCalled();
+        // The probe count sizes the bake but is not stored
+        expect(submitTilesForDataset).toHaveBeenCalledWith("does-not-exist", 3);
+        // Only the attempt is recorded, so the cron does not resubmit over it
+        expect(prisma.dataset.update).toHaveBeenCalledOnce();
+        expect(prisma.dataset.update).toHaveBeenCalledWith({
+          where: { id: "does-not-exist" },
+          data: { lastAttempted: expect.any(Date) },
+        });
       });
 
       it("fails when the bake could not be queued", async () => {
