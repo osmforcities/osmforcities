@@ -17,16 +17,17 @@ jobs:
     uses: ./.github/workflows/checks.yml
 
   playwright:
+    # No `needs: checks`: e2e is the long pole, so it starts right away
+    # instead of waiting ~1.5 min for lint/types/build
     if: github.event.pull_request.draft == false
-    needs: checks
     timeout-minutes: 60
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # 2-shard matrix: each shard runs on its own runner with its own
-        # Postgres service, halving wall-clock CI time.
-        shard: [1/2, 2/2]
+        # Each shard runs on its own runner with its own Postgres service.
+        # Specs are ~60% of a shard, so more shards still pay off.
+        shard: [1/4, 2/4, 3/4, 4/4]
     services:
       postgres:
         image: postgres:15

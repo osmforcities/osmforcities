@@ -20,7 +20,7 @@ export default defineConfig({
   // 1 worker everywhere: cleanupTestUser (tests/utils/auth.ts) deletes ALL
   // unsaved datasets (datasets have no creator to scope by), so concurrent
   // workers delete each other's freshly-created test data. CI parallelism
-  // comes from the 2-shard matrix in .github/workflows/tests.yml instead.
+  // comes from the shard matrix in .github/workflows/tests.yml instead.
   workers: 1,
   timeout: 60 * 1000,
   expect: {
