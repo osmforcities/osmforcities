@@ -39,8 +39,9 @@ export function DatasetActionsSection({
   const [isSaved, setIsSaved] = useState(dataset.isSaved || false);
   const [saveCount, setSaveCount] = useState(savedCount);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  // A pending bake keeps Sync disabled until the next page load (no polling).
-  const [isRebuildPending, setIsRebuildPending] = useState(dataset.tilesState === "pending");
+  // Derived from the prop: router.refresh() keeps client state, so a seeded flag would miss the bake landing.
+  const [isRebuildQueued, setIsRebuildQueued] = useState(false);
+  const isRebuildPending = isRebuildQueued || dataset.tilesState === "pending";
   const [isFeatured, setIsFeatured] = useState(dataset.isFeatured ?? false);
   const [isFeaturingLoading, setIsFeaturingLoading] = useState(false);
   const [hasFeatureError, setHasFeatureError] = useState(false);
@@ -144,7 +145,7 @@ export function DatasetActionsSection({
       if (result.success) {
         const outcome = refreshOutcome(result);
         if (outcome.queued) {
-          setIsRebuildPending(true);
+          setIsRebuildQueued(true);
           setStatusMessage(t("rebuildQueued"));
         } else {
           onRefreshed?.(outcome.lastChecked);
