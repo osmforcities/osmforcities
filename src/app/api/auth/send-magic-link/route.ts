@@ -10,9 +10,9 @@ import { EmailSchema } from "@/schemas/auth";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const parsed = EmailSchema.safeParse(body.email);
+    const parsed = EmailSchema.safeParse(body?.email);
     // Opt-in only: a persistent convenience cookie needs the user's consent.
-    const remember = body.remember === true;
+    const remember = body?.remember === true;
 
     if (!parsed.success) {
       return NextResponse.json(
