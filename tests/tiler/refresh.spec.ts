@@ -82,9 +82,6 @@ test.describe("Admin Sync on a served tiles dataset", () => {
     page,
   }) => {
     await bakeFirstArchive(page);
-    // Bug: Sync keeps its pending state from the first paint after the flip.
-    // https://github.com/osmforcities/osmforcities/issues/622
-    test.fail();
     await expect(syncButton(page)).toBeEnabled({ timeout: 5_000 });
   });
 
