@@ -146,8 +146,7 @@ test.describe("Ready notification from the empty state", () => {
   test("a bake that is still empty keeps the flag", async ({ page }) => {
     const datasetId = await optInOnEmptyDataset(page);
 
-    // Overpass stays empty too, as it would: the row's own count is 0, so
-    // the tiler's zero only backs it up
+    // Reconcile counts features from the bake's stats.json
     await landBake(page, datasetId, { ...fixtureStats, features: 0 });
 
     expect(await readSave(datasetId)).toEqual({ notifyWhenReady: true });

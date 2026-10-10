@@ -3,14 +3,21 @@ import { prisma } from "@/lib/db";
 import {
   ackTileJob,
   downloadTileOutputs,
+  fetchTileNdjson,
   getTileJob,
   pruneTileArchives,
   tilerEnabled,
   type TileJob,
 } from "./client";
 import { readPulledStats, tilerStatsToDatasetColumns } from "./stats";
+import { ndjsonToFeatureCollection } from "./features";
 import { isTooLarge } from "@/lib/dataset-retry";
 import { notifyDatasetReady } from "@/lib/tasks/notify-ready";
+import { TILES_ENABLED } from "@/lib/dataset-tiles";
+import {
+  MAX_DATASET_BYTES,
+  OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
+} from "@/lib/constants";
 
 export type TileFailureKind = "bake" | "too_large" | "reconcile";
 
@@ -57,18 +64,65 @@ async function commitOutcome(
   return count > 0;
 }
 
+// With the tiles flag on, every finished bake is the dataset's refresh: its
+// stats replace the stored ones. Off, the tiler only fills empty stats.
+function reconcileOwnsData(): boolean {
+  return tilerEnabled() && TILES_ENABLED;
+}
+
+// A failed bake is a failed refresh, counted like the cron counts one
+async function failBake(
+  dataset: { id: string; tilesJobId: string },
+  error: string
+): Promise<ReconcileResult> {
+  const won = await commitOutcome(dataset, {
+    tilesState: "failed",
+    tilesError: error,
+    consecutiveFailures: { increment: 1 },
+    ...(reconcileOwnsData() && { lastError: error }),
+  });
+  return won ? { outcome: "failed", error } : { outcome: "pending" };
+}
+
 /**
- * Never-filled rows, plus tiles-only rows filled before bakes carried age
- * counts. App snapshots always store an age dimension, and older ones store no
- * filterDimensions at all, so neither matches.
+ * Flag-off fill gate: never-filled rows, plus tiles-only rows filled before
+ * bakes carried age counts. App snapshots always store an age dimension, and
+ * older ones store no filterDimensions at all, so neither matches.
  */
 function needsTilerStatsFill(stats: Prisma.JsonValue): boolean {
-  // ponytail: stats freeze after the first fill; making reconcile the
-  // authoritative stats writer drops this gate.
   if (stats === null) return true;
   const dimensions = (stats as { filterDimensions?: { kind: string }[] })
     .filterDimensions;
   return Array.isArray(dimensions) && !dimensions.some((d) => d.kind === "age");
+}
+
+/**
+ * The bake's features as stored geojson, so export and the geojson fallback
+ * keep working once creation stops fetching it. Over the storage cap the
+ * column is JsonNull, as the app stores over-cap rows. A failed pull returns
+ * nothing to write: the stored geojson stays until the next bake.
+ */
+async function featureFill(
+  jobId: string,
+  features: number
+): Promise<Pick<Prisma.DatasetUpdateManyMutationInput, "geojson">> {
+  if (features * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE > MAX_DATASET_BYTES) {
+    return { geojson: Prisma.JsonNull };
+  }
+  try {
+    // The estimate is per element; the bytes are the real cap
+    const ndjson = await fetchTileNdjson(jobId, MAX_DATASET_BYTES);
+    if (ndjson === null) return { geojson: Prisma.JsonNull };
+    return {
+      // Parsed JSON, so already JSON-safe (no Dates to serialize)
+      geojson: ndjsonToFeatureCollection(
+        ndjson
+      ) as unknown as Prisma.InputJsonValue,
+    };
+  } catch (error) {
+    console.error(`Feature fill failed for bake ${jobId}:`, error);
+    return {};
+  }
 }
 
 /**
@@ -89,13 +143,7 @@ export async function reconcileDataset(
     // Swept by the tiler before we pulled (PMTILER_MAX_AGE_DAYS) — or already
     // pulled and acked by a concurrent reconcile, which the conditional write
     // detects. A genuinely swept job resubmits on the next daily snapshot.
-    const error = "job expired before pull";
-    const won = await commitOutcome(dataset, {
-      tilesState: "failed",
-      tilesError: error,
-      consecutiveFailures: { increment: 1 },
-    });
-    return won ? { outcome: "failed", error } : { outcome: "pending" };
+    return failBake(dataset, "job expired before pull");
   }
   if (job.state === "done") {
     if (inflightPulls.has(dataset.tilesJobId)) return { outcome: "pending" };
@@ -105,15 +153,16 @@ export async function reconcileDataset(
     try {
       await downloadTileOutputs(dataset.tilesJobId);
 
-      // Only tiles-only datasets take the tiler's stats. Ones the app fetched
-      // keep its own, so drift between the two pipelines stays visible.
+      // Unusable stats (read error, unknown schema) leave every data column
+      // as it was: the archive still lands, but the refresh did not happen.
       let statsColumns: Prisma.DatasetUpdateManyMutationInput = {};
       const row = await prisma.dataset.findUnique({
         where: { id: dataset.id },
         select: { stats: true, dataCount: true },
       });
       dataCount = row?.dataCount ?? 0;
-      if (row && needsTilerStatsFill(row.stats)) {
+      const authoritative = reconcileOwnsData();
+      if (row && (authoritative || needsTilerStatsFill(row.stats))) {
         try {
           const mapped = tilerStatsToDatasetColumns(
             await readPulledStats(dataset.tilesJobId)
@@ -121,6 +170,13 @@ export async function reconcileDataset(
           if (mapped) {
             statsColumns = mapped;
             dataCount = mapped.dataCount;
+            if (authoritative) {
+              Object.assign(
+                statsColumns,
+                await featureFill(dataset.tilesJobId, mapped.dataCount),
+                { lastChecked: new Date(), lastError: null }
+              );
+            }
           }
         } catch (error) {
           // Losing the stats must not also lose the archive.
@@ -157,15 +213,11 @@ export async function reconcileDataset(
   if (job.state === "failed") {
     // errorKind "too_large" is a permanent refusal for this query —
     // prefixed so nothing downstream blind-retries it.
-    const error =
+    return failBake(
+      dataset,
       (job.errorKind ? `${job.errorKind}: ` : "") +
-      (job.error ?? "tiler job failed");
-    const won = await commitOutcome(dataset, {
-      tilesState: "failed",
-      tilesError: error,
-      consecutiveFailures: { increment: 1 },
-    });
-    return won ? { outcome: "failed", error } : { outcome: "pending" };
+        (job.error ?? "tiler job failed")
+    );
   }
   return { outcome: "pending" };
 }
