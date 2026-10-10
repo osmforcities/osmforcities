@@ -80,6 +80,16 @@ jobs:
           ENABLE_TEST_AUTH: true
           NEXT_TELEMETRY_DISABLED: 1
 
+      # Screenshots and traces of failed attempts, flaky ones included
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.project }}-${{ strategy.job-index }}
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
   storybook-tests:
     if: github.event.pull_request.draft == false
     needs: checks
