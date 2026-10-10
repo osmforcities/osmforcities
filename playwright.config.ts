@@ -57,7 +57,7 @@ export default defineConfig({
   ],
   webServer: [
     ...(e2eProject === "tiler" ? [] : [{
-      command: "NODE_ENV=test ENABLE_TEST_AUTH=true pnpm dev",
+      command: "NODE_ENV=test ENABLE_TEST_AUTH=true pnpm dev --turbopack",
       url: "http://localhost:3000",
       reuseExistingServer: true,
       timeout: 120 * 1000,
@@ -70,7 +70,7 @@ export default defineConfig({
     ...(e2eProject === "chromium" ? [] : [{
       // Tiles lane on, pointed at its own mock tiler and mock Overpass: mock
       // state lives in this process's memory.
-      command: "NODE_ENV=test ENABLE_TEST_AUTH=true pnpm dev -p 3100",
+      command: "NODE_ENV=test ENABLE_TEST_AUTH=true pnpm dev --turbopack -p 3100",
       url: "http://localhost:3100",
       // A running :3100 points at the mock tiler
       reuseExistingServer: !pmtilerSmoke,
