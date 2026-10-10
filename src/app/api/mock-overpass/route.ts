@@ -10,23 +10,24 @@ const jsonResponse = (data: unknown) =>
     },
   });
 
-const countResponse = () =>
-  jsonResponse({
+const elementsResponse = () =>
+  jsonResponse(
+    mockTilerState().overpassEmpty
+      ? { ...mockOverpassResponse, elements: [] }
+      : mockOverpassResponse
+  );
+
+const countResponse = () => {
+  const state = mockTilerState();
+  const total = state.overpassEmpty
+    ? 0
+    : (state.overpassCount ?? mockOverpassResponse.elements.length);
+  return jsonResponse({
     version: 0.6,
     generator: "Overpass API",
-    elements: [
-      {
-        type: "count",
-        id: 0,
-        tags: {
-          total: String(
-            mockTilerState().overpassCount ??
-              mockOverpassResponse.elements.length
-          ),
-        },
-      },
-    ],
+    elements: [{ type: "count", id: 0, tags: { total: String(total) } }],
   });
+};
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -44,9 +45,9 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "application/json" },
     });
   }
-  return jsonResponse(mockOverpassResponse);
+  return elementsResponse();
 }
 
 export async function GET() {
-  return jsonResponse(mockOverpassResponse);
+  return elementsResponse();
 }
