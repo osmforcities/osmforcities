@@ -58,6 +58,16 @@ export async function POST(
       );
     }
 
+    const tilesLane = tilesOnlyLaneEnabled();
+    if (tilesLane) {
+      // Claims the slot before the probe, like the cron does, so a tick
+      // meanwhile does not submit a second bake
+      await prisma.dataset.update({
+        where: { id: datasetId },
+        data: { lastAttempted: new Date() },
+      });
+    }
+
     const snapshot = await fetchDatasetSnapshot(
       dataset.areaId,
       dataset.template.overpassQuery,
@@ -66,13 +76,7 @@ export async function POST(
 
     // On the tiles-only lane the snapshot is the count probe alone: the Sync
     // button queues a bake sized by it, and the reconcile writes the data.
-    if (tilesOnlyLaneEnabled()) {
-      // Claims the slot like the cron does, so its next tick does not
-      // resubmit over this bake
-      await prisma.dataset.update({
-        where: { id: datasetId },
-        data: { lastAttempted: new Date() },
-      });
+    if (tilesLane) {
       const { tilesState } = await submitTilesForDataset(
         datasetId,
         snapshot.dataCount

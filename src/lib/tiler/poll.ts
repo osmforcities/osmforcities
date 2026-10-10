@@ -64,9 +64,6 @@ async function commitOutcome(
   return count > 0;
 }
 
-// On the tiles-only lane every finished bake is the dataset's refresh: its
-// stats replace the stored ones. Off, the tiler only fills empty stats.
-const reconcileOwnsData = tilesOnlyLaneEnabled;
 
 // A failed bake is a failed refresh, counted like the cron counts one
 async function failBake(
@@ -77,7 +74,7 @@ async function failBake(
     tilesState: "failed",
     tilesError: error,
     consecutiveFailures: { increment: 1 },
-    ...(reconcileOwnsData() && { lastError: error }),
+    ...(tilesOnlyLaneEnabled() && { lastError: error }),
   });
   return won ? { outcome: "failed", error } : { outcome: "pending" };
 }
@@ -159,7 +156,10 @@ export async function reconcileDataset(
         select: { stats: true, dataCount: true },
       });
       dataCount = row?.dataCount ?? 0;
-      const authoritative = reconcileOwnsData();
+      // On the tiles-only lane every finished bake is the dataset's refresh:
+      // its stats replace the stored ones. Off, the tiler only fills empty
+      // stats.
+      const authoritative = tilesOnlyLaneEnabled();
       if (row && (authoritative || needsTilerStatsFill(row.stats))) {
         try {
           const mapped = tilerStatsToDatasetColumns(

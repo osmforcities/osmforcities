@@ -32,9 +32,9 @@ export function tilesOnlyLaneEnabled(): boolean {
  *
  * Returns the columns it persisted so a caller holding a pre-submit dataset
  * object can merge them in — a freshly created dataset must render its first
- * paint with tilesState "pending" (Sync disabled for admins; the full
- * processing panel once the tiles-only lane lands), not the stale null it was
- * created with, which needs a reload to clear.
+ * paint with tilesState "pending" (Sync disabled for admins, the processing
+ * panel for rows with no map yet), not the stale null it was created with,
+ * which needs a reload to clear.
  *
  * elementCount is a fresh count probe's answer. A refresh on the tiles-only
  * lane passes it rather than storing it, so the row keeps the served bake's
