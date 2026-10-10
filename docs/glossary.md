@@ -28,7 +28,7 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 **Over-cap dataset**: A Dataset above the cap. The app stores none of its features; map and stats come from the archive. _Avoid:_ large, heavy, big, metro (metro describes an Area, not a Dataset).
 
-**Tiles-only lane**: The creation path an over-cap dataset takes: count, then bake, never fetch. _Avoid:_ async lane, slow lane, large-dataset path.
+**Tiles-only lane**: The path every Dataset takes once the map renders archives: creation counts, then bakes, and every refresh bakes. The app never fetches the features itself. _Avoid:_ async lane, slow lane, large-dataset path.
 
 ## Map building
 

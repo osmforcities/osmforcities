@@ -95,6 +95,20 @@ describe("submitTilesForDataset", () => {
     );
   });
 
+  it("sizes budgets from a fresh count probe over the stored count", async () => {
+    // Stored count from an under-cap bake; the area has since grown past the cap
+    vi.mocked(submitTilesColumns).mockResolvedValue({});
+
+    await submitTilesForDataset("ds-1", 10_000_000);
+
+    expect(submitTilesColumns).toHaveBeenCalledWith(
+      "ds-1",
+      "[out:json];rel(47798);out geom meta;",
+      ["surface"],
+      { maxsize: LARGE_JOB_MAXSIZE_BYTES, timeout: LARGE_JOB_TIMEOUT_SECONDS }
+    );
+  });
+
   it("writes nothing for an unknown dataset or an empty column set", async () => {
     vi.mocked(prisma.dataset.findUnique).mockResolvedValue(null as never);
     await submitTilesForDataset("gone");

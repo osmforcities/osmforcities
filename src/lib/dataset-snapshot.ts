@@ -17,9 +17,8 @@ import {
 } from "@/lib/filter-dimensions";
 import type { Bbox } from "@/types/geojson";
 import { prisma } from "@/lib/db";
-import { Prisma } from "@prisma/client";
-import { LARGE_JOB_MAXSIZE_BYTES, tilerEnabled } from "@/lib/tiler/client";
-import { TILES_ENABLED } from "@/lib/dataset-tiles";
+import { LARGE_JOB_MAXSIZE_BYTES } from "@/lib/tiler/client";
+import { tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
 import {
   MAX_DATASET_BYTES,
   OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
@@ -154,16 +153,14 @@ export type DatasetSnapshot =
       dataCount: number;
     }
   | {
-      // Over-cap dataset routed to the tiler (the tiles-only lane): the app
-      // never fetches the features; stats/bbox arrive when the archive is
-      // pulled (reconcileDataset), geojson never does.
+      // The tiles-only lane: the app never fetches the features. Stats, bbox and
+      // (under the storage cap) geojson arrive when the bake is reconciled.
       tilesOnly: true;
       geojson: null;
       stats: null;
       bbox: null;
-      // An element count (the probe's, or the one a mid-fetch overflow
-      // implies), never a feature count: the tiler submit derives raised
-      // budgets from it on the scale the pre-flight caps on.
+      // The probe's element count, never a feature count: the tiler submit
+      // derives raised budgets from it on the scale the count probe caps on.
       dataCount: number;
     };
 
@@ -175,13 +172,11 @@ export type DatasetSnapshot =
  */
 export function snapshotDatasetColumns(snapshot: DatasetSnapshot) {
   if (snapshot.tilesOnly) {
-    // Only what this snapshot knows. stats/bbox and their denormalized
-    // columns belong to the bake's reconcile — nulling them here would wipe
-    // them on every refresh until the next bake lands. lastChecked is written
-    // here too: a null lastChecked drops the row out of health freshness
-    // checks while the first bake runs.
+    // Only what this snapshot knows. geojson, stats, bbox and their
+    // denormalized columns belong to the bake's reconcile. lastChecked is
+    // written here too: a null lastChecked drops the row out of health
+    // freshness checks while the first bake runs.
     return {
-      geojson: Prisma.JsonNull,
       dataCount: snapshot.dataCount,
       lastChecked: new Date(),
     };
@@ -349,12 +344,9 @@ export async function fetchDatasetSnapshot(
     areaId.toString()
   );
 
-  // With the lane on, over-cap is a routing decision (tiles-only), not a
-  // refusal — so a cached too_large verdict must not block the count probe,
-  // and no too_large verdict is recorded when the lane takes over. Both flags:
-  // the tiler bakes the archive, but a row without geojson is only viewable
-  // when the map renders tiles.
-  const tilesLane = tilerEnabled() && TILES_ENABLED;
+  // With the lane on, size is no refusal: every dataset is baked, so a
+  // cached too_large verdict must not block the count probe.
+  const tilesLane = tilesOnlyLaneEnabled();
 
   try {
     await assertNoFreshNegativeVerdict(areaId, templateId);
@@ -384,9 +376,11 @@ export async function fetchDatasetSnapshot(
       throw new DatasetSizeCheckTimeoutError();
     }
   }
+  // The tiler fetches the features, whatever the size
+  if (tilesLane) return tilesOnlySnapshot(elementCount);
+
   const estimatedBytes = elementCount * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE;
   if (estimatedBytes > MAX_DATASET_BYTES) {
-    if (tilesLane) return tilesOnlySnapshot(elementCount);
     await recordSizeCheck(areaId, templateId, "too_large", { estimatedBytes });
     throw new DatasetTooLargeError(estimatedBytes, true);
   }
@@ -399,17 +393,6 @@ export async function fetchDatasetSnapshot(
     );
   } catch (error) {
     if (error instanceof OverpassResponseTooLargeError) {
-      // Estimate said under, actual said over: same routing decision. The
-      // probe count alone would read as under-cap and send the bake out on
-      // default budgets, so lift it to the element count the bytes imply.
-      if (tilesLane) {
-        return tilesOnlySnapshot(
-          Math.max(
-            elementCount,
-            Math.ceil(error.bytesRead / OVERPASS_BYTES_PER_ELEMENT_ESTIMATE)
-          )
-        );
-      }
       await recordSizeCheck(areaId, templateId, "too_large", {
         estimatedBytes,
         actualBytes: error.bytesRead,

@@ -13,7 +13,7 @@ import { readPulledStats, tilerStatsToDatasetColumns } from "./stats";
 import { ndjsonToFeatureCollection } from "./features";
 import { isTooLarge } from "@/lib/dataset-retry";
 import { notifyDatasetReady } from "@/lib/tasks/notify-ready";
-import { TILES_ENABLED } from "@/lib/dataset-tiles";
+import { tilesOnlyLaneEnabled } from "./submit";
 import {
   MAX_DATASET_BYTES,
   OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
@@ -64,11 +64,6 @@ async function commitOutcome(
   return count > 0;
 }
 
-// With the tiles flag on, every finished bake is the dataset's refresh: its
-// stats replace the stored ones. Off, the tiler only fills empty stats.
-function reconcileOwnsData(): boolean {
-  return tilerEnabled() && TILES_ENABLED;
-}
 
 // A failed bake is a failed refresh, counted like the cron counts one
 async function failBake(
@@ -79,7 +74,7 @@ async function failBake(
     tilesState: "failed",
     tilesError: error,
     consecutiveFailures: { increment: 1 },
-    ...(reconcileOwnsData() && { lastError: error }),
+    ...(tilesOnlyLaneEnabled() && { lastError: error }),
   });
   return won ? { outcome: "failed", error } : { outcome: "pending" };
 }
@@ -161,7 +156,10 @@ export async function reconcileDataset(
         select: { stats: true, dataCount: true },
       });
       dataCount = row?.dataCount ?? 0;
-      const authoritative = reconcileOwnsData();
+      // On the tiles-only lane every finished bake is the dataset's refresh:
+      // its stats replace the stored ones. Off, the tiler only fills empty
+      // stats.
+      const authoritative = tilesOnlyLaneEnabled();
       if (row && (authoritative || needsTilerStatsFill(row.stats))) {
         try {
           const mapped = tilerStatsToDatasetColumns(

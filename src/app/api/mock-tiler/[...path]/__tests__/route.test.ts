@@ -109,8 +109,10 @@ describe("/api/mock-tiler", () => {
     await POST(...req(["control"], { countTimesOut: true }));
     expect((await countProbe()).status).toBe(504);
     expect((await countProbe()).status).toBe(504);
+    await overpassQuery("node(1);out geom;");
     expect(await (await GET(...req(["control"]))).json()).toEqual({
       countProbes: 2,
+      featureFetches: 1,
     });
 
     await POST(...req(["control"], { reset: true }));

@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
-import { Prisma } from "@prisma/client";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
@@ -68,7 +67,7 @@ describe("POST /api/datasets", () => {
     }) => ({
       id: "ds-1",
       ...data,
-      geojson: data.geojson === Prisma.JsonNull ? null : data.geojson,
+      geojson: data.geojson ?? null,
       tilesState: null,
       tilesJobId: null,
     })) as never);
@@ -79,7 +78,7 @@ describe("POST /api/datasets", () => {
     });
   });
 
-  it("creates an over-cap dataset on the tiles-only lane: 201, pending, no geojson", async () => {
+  it("creates a dataset on the tiles-only lane: 201, pending, no geojson", async () => {
     vi.mocked(fetchDatasetSnapshot).mockResolvedValue({
       tilesOnly: true,
       geojson: null,
@@ -92,7 +91,8 @@ describe("POST /api/datasets", () => {
 
     expect(res.status).toBe(201);
     const { data } = vi.mocked(prisma.dataset.create).mock.calls[0][0];
-    expect(data.geojson).toBe(Prisma.JsonNull);
+    // The reconcile's feature fill writes it
+    expect(data).not.toHaveProperty("geojson");
     expect(data.dataCount).toBe(probeCount);
     const body = await res.json();
     expect(body.geojson).toBeNull();
