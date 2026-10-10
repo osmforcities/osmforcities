@@ -7,17 +7,18 @@ import {
   setupAuthenticationWithLogin,
   TestUser,
 } from "./utils/auth";
-import { AMSTERDAM, mockTilerControl, OVER_CAP_COUNT } from "./utils/tiler";
+import {
+  AMSTERDAM,
+  countProbes,
+  mockTilerControl,
+  OVER_CAP_COUNT,
+} from "./utils/tiler";
 
 // One template per test, so a failure points at one verdict kind
 const TEMPLATE_IDS = ["benches", "playgrounds"];
 
 const openDataset = (page: Page, templateId: string) =>
   page.goto(`/en/area/${AMSTERDAM}/dataset/${templateId}`);
-
-const countProbes = async (page: Page): Promise<number> =>
-  (await (await page.request.get("/api/mock-tiler/control")).json())
-    .countProbes;
 
 const heading = (page: Page, templateName: string) =>
   page.getByRole("heading", { name: `${templateName} in Amsterdam` });

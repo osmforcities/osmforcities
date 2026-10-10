@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
     if (state.countTimesOut) return new NextResponse(null, { status: 504 });
     return countResponse();
   }
+  mockTilerState().featureFetches++;
   // A real Overpass result file, for a real tiler to bake (smoke runs only)
   const realData = process.env.MOCK_OVERPASS_DATA_FILE;
   if (realData) {

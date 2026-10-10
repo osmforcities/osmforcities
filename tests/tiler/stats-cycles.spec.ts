@@ -159,10 +159,6 @@ test.describe("Tiles-only stats across bake cycles", () => {
   test("page keeps the last bake's numbers until the next lands", async ({
     page,
   }) => {
-    // Known bug: the refresh writes the count probe's element count to
-    // dataCount, so Features shows 60k until the bake lands. Marker removal
-    // tracked in https://github.com/osmforcities/osmforcities/issues/624
-    test.fail();
     await expectPageShows(page, A);
   });
 

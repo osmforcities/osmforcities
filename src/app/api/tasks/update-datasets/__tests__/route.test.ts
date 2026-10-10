@@ -27,6 +27,7 @@ vi.mock("@/lib/umami", () => ({
 // this suite's prisma call-order assertions stay about the refresh queue.
 vi.mock("@/lib/tiler/submit", () => ({
   submitTilesForDataset: vi.fn().mockResolvedValue({}),
+  tilesOnlyLaneEnabled: vi.fn(),
 }));
 
 vi.mock("@/lib/tiler/poll", () => ({
@@ -40,7 +41,7 @@ vi.mock("@/lib/tiler/client", async (importOriginal) => ({
   pingTiler: vi.fn(),
 }));
 import { pingTiler, tilerEnabled } from "@/lib/tiler/client";
-import { submitTilesForDataset } from "@/lib/tiler/submit";
+import { submitTilesForDataset, tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
 
 import { Prisma } from "@prisma/client";
 import { POST } from "../route";
@@ -100,6 +101,7 @@ describe("POST /api/tasks/update-datasets", () => {
       errors: [],
     });
     vi.mocked(tilerEnabled).mockReturnValue(false);
+    vi.mocked(tilesOnlyLaneEnabled).mockReturnValue(false);
     vi.mocked(pingTiler).mockResolvedValue(true);
   });
 
@@ -328,6 +330,62 @@ describe("POST /api/tasks/update-datasets", () => {
       data: { geojson: Prisma.JsonNull },
     });
     expect(body.data.cleanup.geojsonCleared).toBe(2);
+  });
+
+  describe("on the tiles-only lane", () => {
+    beforeEach(() => {
+      vi.mocked(tilerEnabled).mockReturnValue(true);
+      vi.mocked(tilesOnlyLaneEnabled).mockReturnValue(true);
+      vi.mocked(submitTilesForDataset).mockResolvedValue({
+        tilesJobId: "ds-1-100",
+        tilesState: "pending",
+        tilesError: null,
+      });
+      // The lane's snapshot is the count probe alone
+      vi.mocked(fetchDatasetSnapshot).mockResolvedValue({
+        tilesOnly: true,
+        geojson: null,
+        stats: null,
+        bbox: null,
+        dataCount: 60_000,
+      });
+    });
+
+    it("submits a bake sized by the probe, writing nothing but the claim", async () => {
+      const body = await (await call()).json();
+
+      expect(body.data.successful).toBe(1);
+      expect(submitTilesForDataset).toHaveBeenCalledWith("ds-1", 60_000);
+      // The served data, dataCount included, stays until the reconcile
+      // writes the bake's
+      expect(prisma.dataset.update).toHaveBeenCalledOnce();
+      expect(
+        updateCallsMatching((d) => d.lastAttempted instanceof Date)
+      ).toHaveLength(1);
+    });
+
+    it("charges a failed submit to the counter", async () => {
+      vi.mocked(submitTilesForDataset).mockResolvedValueOnce({
+        tilesState: "failed",
+        tilesError: "Tiler submit failed: 503",
+      });
+
+      const body = await (await call()).json();
+
+      expect(body.data.errors).toEqual([
+        { datasetId: "ds-1", kind: "submit", error: "Tiler submit failed: 503" },
+      ]);
+    });
+  });
+
+  it("stores the snapshot as before when the tiler is on but the map does not render tiles", async () => {
+    vi.mocked(tilerEnabled).mockReturnValue(true);
+    vi.mocked(fetchDatasetSnapshot).mockResolvedValueOnce(snapshot as never);
+
+    await call();
+
+    expect(updateCallsMatching((d) => "geojson" in d)).toHaveLength(1);
+    expect(submitTilesForDataset).toHaveBeenCalledOnce();
   });
 
   it("returns 401 without the cron secret", async () => {
