@@ -115,7 +115,6 @@ describe("/api/mock-tiler", () => {
   });
 
   it("answers full queries from the real data file when one is set", async () => {
-    vi.stubEnv("ENABLE_TEST_AUTH", "true");
     const fullQuery = async () =>
       (await overpassQuery("way[leisure=park];out geom;")).json();
 
