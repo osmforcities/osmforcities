@@ -1,8 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { MAX_DATASET_BYTES } from "@/lib/constants";
 import {
   getTileJob,
   downloadTileOutputs,
+  fetchTileNdjson,
   ackTileJob,
   pruneTileArchives,
 } from "@/lib/tiler/client";
@@ -24,8 +27,17 @@ vi.mock("@/lib/tiler/client", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/tiler/client")>()),
   getTileJob: vi.fn(),
   downloadTileOutputs: vi.fn(),
+  fetchTileNdjson: vi.fn(),
   ackTileJob: vi.fn(),
   pruneTileArchives: vi.fn(),
+}));
+
+// TILES_ENABLED is a module-load constant; a getter lets each test flip it.
+const flags = vi.hoisted(() => ({ tilesEnabled: false }));
+vi.mock("@/lib/dataset-tiles", () => ({
+  get TILES_ENABLED() {
+    return flags.tilesEnabled;
+  },
 }));
 
 // Keep the mapper real; only the file read is stubbed.
@@ -80,6 +92,7 @@ const updateData = (call: number) =>
 
 beforeEach(() => {
   vi.clearAllMocks();
+  flags.tilesEnabled = false;
   vi.stubEnv("TILER_URL", "http://127.0.0.1:8099");
   vi.mocked(prisma.dataset.findMany).mockResolvedValue([pendingRow] as never);
   vi.mocked(prisma.dataset.updateMany).mockResolvedValue({ count: 1 } as never);
@@ -473,5 +486,176 @@ describe("pollPendingTileJobs", () => {
     expect(results.stillPending).toBe(1);
     expect(prisma.dataset.updateMany).not.toHaveBeenCalled();
     expect(ackTileJob).not.toHaveBeenCalled();
+  });
+});
+
+describe("reconcile with the tiles flag on", () => {
+  const done = { id: "ds-1-100", state: "done" as const };
+  const ndjson = [
+    JSON.stringify({
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [1, 2] },
+      properties: {
+        "@id": "node/1",
+        "@user": "alice",
+        "@timestamp": "2026-01-01T00:00:00Z",
+        _ts: 1767225600,
+        amenity: "bench",
+      },
+    }),
+    JSON.stringify({
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [3, 4] },
+      properties: { "@id": "node/2", _ts: 0 },
+    }),
+    "",
+  ].join("\n");
+
+  beforeEach(() => {
+    flags.tilesEnabled = true;
+    // App-fetched stats with an age dimension: the flag-off gate would skip it
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+      stats: {
+        filterDimensions: [{ key: "age", kind: "age", values: [], missing: 0 }],
+      },
+      dataCount: 7,
+    } as never);
+    vi.mocked(readPulledStats).mockResolvedValue(tilerStats);
+    vi.mocked(fetchTileNdjson).mockResolvedValue(ndjson);
+  });
+
+  it("overwrites the stats on every bake", async () => {
+    expect(await reconcileDataset(pendingRow, done)).toEqual({
+      outcome: "completed",
+    });
+
+    const data = updateData(0);
+    expect(data.tilesState).toBe("done");
+    expect(data.dataCount).toBe(42);
+    expect(data.contributorsCount).toBe(3);
+    expect(data.lastEditedAt).toEqual(new Date("2026-01-01T00:00:00Z"));
+    expect(data.stats).toMatchObject({ editorsCount: 3 });
+    expect(data.lastChecked).toBeInstanceOf(Date);
+    expect(data.consecutiveFailures).toBe(0);
+    expect(data.lastError).toBeNull();
+    expect(notifyDatasetReady).toHaveBeenCalledWith("ds-1", 42);
+  });
+
+  it("keeps the previous columns when the stats are unusable", async () => {
+    vi.mocked(readPulledStats).mockResolvedValue({
+      ...tilerStats,
+      schemaVersion: 2,
+    });
+
+    expect(await reconcileDataset(pendingRow, done)).toEqual({
+      outcome: "completed",
+    });
+
+    const data = updateData(0);
+    expect(data.tilesState).toBe("done");
+    expect(data.tilesServedJobId).toBe("ds-1-100");
+    expect(data).not.toHaveProperty("stats");
+    expect(data).not.toHaveProperty("dataCount");
+    expect(data).not.toHaveProperty("geojson");
+    // Not a completed refresh
+    expect(data).not.toHaveProperty("lastChecked");
+    expect(notifyDatasetReady).toHaveBeenCalledWith("ds-1", 7);
+  });
+
+  it("keeps the previous columns when the stats cannot be read", async () => {
+    vi.mocked(readPulledStats).mockRejectedValue(new Error("ENOENT"));
+
+    await reconcileDataset(pendingRow, done);
+
+    expect(updateData(0).tilesState).toBe("done");
+    expect(updateData(0)).not.toHaveProperty("stats");
+    expect(updateData(0)).not.toHaveProperty("lastChecked");
+  });
+
+  it("fills features from the bake's ndjson under the cap", async () => {
+    await reconcileDataset(pendingRow, done);
+
+    expect(fetchTileNdjson).toHaveBeenCalledWith("ds-1-100", MAX_DATASET_BYTES);
+    // Same flat shape the app's snapshot stores: unprefixed meta, no _ts
+    expect(updateData(0).geojson).toEqual({
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          id: "node/1",
+          geometry: { type: "Point", coordinates: [1, 2] },
+          properties: {
+            id: "node/1",
+            user: "alice",
+            timestamp: "2026-01-01T00:00:00Z",
+            amenity: "bench",
+          },
+        },
+        {
+          type: "Feature",
+          id: "node/2",
+          geometry: { type: "Point", coordinates: [3, 4] },
+          properties: { id: "node/2" },
+        },
+      ],
+    });
+  });
+
+  it("stores JsonNull over the cap without pulling the ndjson", async () => {
+    vi.mocked(readPulledStats).mockResolvedValue({
+      ...tilerStats,
+      features: 200_000,
+    });
+
+    await reconcileDataset(pendingRow, done);
+
+    expect(fetchTileNdjson).not.toHaveBeenCalled();
+    expect(updateData(0).geojson).toBe(Prisma.JsonNull);
+    expect(updateData(0).dataCount).toBe(200_000);
+  });
+
+  it("stores JsonNull when the ndjson is larger than the cap", async () => {
+    vi.mocked(fetchTileNdjson).mockResolvedValue(null);
+
+    await reconcileDataset(pendingRow, done);
+
+    expect(updateData(0).geojson).toBe(Prisma.JsonNull);
+  });
+
+  it("a failed feature fill keeps the stored geojson and still writes the stats", async () => {
+    vi.mocked(fetchTileNdjson).mockRejectedValue(new Error("404"));
+
+    expect(await reconcileDataset(pendingRow, done)).toEqual({
+      outcome: "completed",
+    });
+
+    expect(updateData(0)).not.toHaveProperty("geojson");
+    expect(updateData(0).dataCount).toBe(42);
+  });
+
+  it("a failed bake sets lastError next to the counter", async () => {
+    await reconcileDataset(pendingRow, {
+      id: "ds-1-100",
+      state: "failed",
+      error: "boom",
+    });
+
+    expect(updateData(0)).toEqual({
+      tilesState: "failed",
+      tilesError: "boom",
+      consecutiveFailures: { increment: 1 },
+      lastError: "boom",
+    });
+  });
+
+  it("an expired job sets lastError next to the counter", async () => {
+    await reconcileDataset(pendingRow, null);
+
+    expect(updateData(0)).toEqual({
+      tilesState: "failed",
+      tilesError: "job expired before pull",
+      consecutiveFailures: { increment: 1 },
+      lastError: "job expired before pull",
+    });
   });
 });

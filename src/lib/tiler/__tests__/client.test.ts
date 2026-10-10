@@ -9,6 +9,7 @@ import {
   pingTiler,
   tilerDownForMs,
   downloadTileOutputs,
+  fetchTileNdjson,
   submitTilesColumns,
   pruneTileArchives,
   LARGE_JOB_MAXSIZE_BYTES,
@@ -40,6 +41,40 @@ describe("newTileJobId", () => {
     const id = newTileJobId("cmabc123");
     expect(id).toMatch(/^cmabc123-\d{10}$/);
     expect(id).toMatch(/^[A-Za-z0-9._-]{1,128}$/);
+  });
+});
+
+describe("fetchTileNdjson", () => {
+  it("returns the bake's data.ndjson as text", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response("{}\n"));
+    vi.stubGlobal("fetch", fetchMock);
+
+    expect(await fetchTileNdjson("d1-1", 100)).toBe("{}\n");
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      "http://127.0.0.1:8099/jobs/d1-1/data.ndjson"
+    );
+  });
+
+  it("returns null once the body passes the cap, without buffering the rest", async () => {
+    let pulled = 0;
+    const endless = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        pulled++;
+        controller.enqueue(new Uint8Array(64));
+      },
+    });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(endless)));
+
+    expect(await fetchTileNdjson("d1-1", 100)).toBeNull();
+    expect(pulled).toBeLessThan(5);
+  });
+
+  it("throws on a non-2xx", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: false, status: 404 } as Response)
+    );
+    await expect(fetchTileNdjson("d1-1", 100)).rejects.toThrow(/404/);
   });
 });
 
@@ -137,6 +172,8 @@ describe("submitTilesColumns", () => {
     expect(body.filterableTags).toEqual(["name"]);
     // The legend's age buckets, so tiles-only stats carry them too.
     expect(body.ageBandsDays).toEqual([7, 30, 90]);
+    // Meta in data.ndjson, so the reconcile feature fill carries it
+    expect(body.keepMeta).toBe(true);
     expect(body.maxsize).toBeUndefined();
     expect(body.timeout).toBeUndefined();
   });

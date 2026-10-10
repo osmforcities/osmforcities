@@ -176,10 +176,10 @@ export type DatasetSnapshot =
 export function snapshotDatasetColumns(snapshot: DatasetSnapshot) {
   if (snapshot.tilesOnly) {
     // Only what this snapshot knows. stats/bbox and their denormalized
-    // columns belong to the tiler fill, which writes them only while null —
-    // nulling them here would wipe them on every refresh until the next bake.
-    // lastChecked must be written here: the tiler fill does not set it, and a
-    // null lastChecked drops the row out of health freshness checks.
+    // columns belong to the bake's reconcile — nulling them here would wipe
+    // them on every refresh until the next bake lands. lastChecked is written
+    // here too: a null lastChecked drops the row out of health freshness
+    // checks while the first bake runs.
     return {
       geojson: Prisma.JsonNull,
       dataCount: snapshot.dataCount,
