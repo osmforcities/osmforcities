@@ -25,9 +25,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Each shard runs on its own runner with its own Postgres service.
-        # Specs are ~60% of a shard, so more shards still pay off.
-        shard: [1/4, 2/4, 3/4, 4/4]
+        # Each job runs on its own runner with its own Postgres service.
+        # Shards split by test count, not duration, so the slow tiler specs
+        # get a job of their own instead of piling onto the last shard.
+        include:
+          - { project: chromium, shard: 1/3 }
+          - { project: chromium, shard: 2/3 }
+          - { project: chromium, shard: 3/3 }
+          - { project: tiler, shard: 1/1 }
     services:
       postgres:
         image: postgres:15
@@ -68,8 +73,9 @@ jobs:
         run: pnpm playwright install chromium --with-deps
 
       - name: Run Playwright tests
-        run: pnpm exec playwright test --shard=${{ matrix.shard }}
+        run: pnpm exec playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }}
         env:
+          E2E_PROJECT: ${{ matrix.project }}
           NODE_ENV: test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5433/osmforcities-test
           AUTH_SECRET: test-secret-for-ci-only
