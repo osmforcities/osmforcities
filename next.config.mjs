@@ -15,9 +15,6 @@ const nextConfig = {
   outputFileTracingRoot: __dirname,
   // The Playwright tiler server runs a second `next dev`, which cannot share .next
   distDir: process.env.NEXT_DIST_DIR || ".next",
-  // The Playwright servers hide the dev indicator: under Turbopack it
-  // intercepted clicks on buttons near the bottom-left corner
-  ...(process.env.E2E_DEV_SERVER === "1" && { devIndicators: false }),
   env: {
     COMMIT_HASH: commitHash,
   },
