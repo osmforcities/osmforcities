@@ -312,7 +312,7 @@ export async function submitTilesColumns(
       // Stats then carry the legend's age counts (tiles-only rows hold no features)
       ageBandsDays: AGE_BUCKET_DAYS,
       // data.ndjson then carries user/timestamp, which the feature fill
-      // in reconcile stores like the app's own fetch
+      // in reconcile stores like the app's snapshot
       keepMeta: true,
       ...budgets,
     });

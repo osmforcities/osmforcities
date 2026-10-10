@@ -576,7 +576,7 @@ describe("reconcile with the tiles flag on", () => {
     await reconcileDataset(pendingRow, done);
 
     expect(fetchTileNdjson).toHaveBeenCalledWith("ds-1-100", MAX_DATASET_BYTES);
-    // Same flat shape the app's own fetch stores: unprefixed meta, no _ts
+    // Same flat shape the app's snapshot stores: unprefixed meta, no _ts
     expect(updateData(0).geojson).toEqual({
       type: "FeatureCollection",
       features: [
