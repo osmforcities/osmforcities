@@ -80,8 +80,13 @@ export async function submitTilesForDataset(
           }
         : undefined
     );
+    // The submit is an attempt: left null, a first bake that lands or fails
+    // is due again at once (dataset-retry)
     if (Object.keys(columns).length > 0) {
-      await prisma.dataset.update({ where: { id: datasetId }, data: columns });
+      await prisma.dataset.update({
+        where: { id: datasetId },
+        data: { ...columns, lastAttempted: new Date() },
+      });
     }
     return columns;
   } catch (error) {

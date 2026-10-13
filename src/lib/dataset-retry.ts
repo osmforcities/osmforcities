@@ -34,10 +34,16 @@ export const NOT_TOO_LARGE = {
   ],
 };
 
-// An over-cap bake can outlast the short rungs; resubmitting mid-bake swaps
-// tilesJobId and the running bake's result is discarded on arrival.
+// A first bake (never attempted, so due at once) or an over-cap bake on a
+// short rung can still be running; resubmitting mid-bake swaps tilesJobId and
+// the running bake's result is discarded on arrival. A pending row with no job
+// never reaches reconcile, so it stays due or it would be stuck.
 const NOT_BAKING = {
-  OR: [{ tilesState: null }, { NOT: { tilesState: "pending" } }],
+  OR: [
+    { tilesState: null },
+    { NOT: { tilesState: "pending" } },
+    { tilesJobId: null },
+  ],
 };
 
 /**
@@ -48,18 +54,19 @@ export function dueForRefreshWhere(now: Date) {
   const before = (ms: number) => ({ lt: new Date(now.getTime() - ms) });
   return {
     OR: [
-      { lastAttempted: null },
+      { AND: [NOT_BAKING], lastAttempted: null },
       ...LADDER_MS.map((ms, i) => ({
         AND: [NOT_TOO_LARGE, NOT_BAKING],
         consecutiveFailures: i + 1,
         lastAttempted: before(ms),
       })),
       {
-        ...NOT_TOO_LARGE,
+        AND: [NOT_TOO_LARGE, NOT_BAKING],
         NOT: { consecutiveFailures: { gte: 1, lte: LADDER_MS.length } },
         lastAttempted: before(DAILY_MS),
       },
       {
+        AND: [NOT_BAKING],
         tilesError: { startsWith: TOO_LARGE_PREFIX },
         lastAttempted: before(TOO_LARGE_WAIT_MS),
       },
