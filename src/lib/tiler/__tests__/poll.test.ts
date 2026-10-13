@@ -633,7 +633,7 @@ describe("reconcile with the tiles flag on", () => {
     expect(updateData(0).dataCount).toBe(42);
   });
 
-  it("a failed bake sets lastError next to the counter", async () => {
+  it("a failed bake sets lastError next to the counter and starts the retry wait", async () => {
     await reconcileDataset(pendingRow, {
       id: "ds-1-100",
       state: "failed",
@@ -645,6 +645,7 @@ describe("reconcile with the tiles flag on", () => {
       tilesError: "boom",
       consecutiveFailures: { increment: 1 },
       lastError: "boom",
+      lastAttempted: expect.any(Date),
     });
   });
 
@@ -656,6 +657,7 @@ describe("reconcile with the tiles flag on", () => {
       tilesError: "job expired before pull",
       consecutiveFailures: { increment: 1 },
       lastError: "job expired before pull",
+      lastAttempted: expect.any(Date),
     });
   });
 });

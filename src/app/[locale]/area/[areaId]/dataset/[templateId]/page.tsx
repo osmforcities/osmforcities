@@ -6,7 +6,7 @@ import { DatasetInteractiveSection } from "@/components/dataset/dataset-interact
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { SaveAndNotifyButton } from "@/components/dataset/save-and-notify-button";
 import { tilerEnabled } from "@/lib/tiler/client";
-import { tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
+import { retryFailedBake, tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
 import { isTooLarge } from "@/lib/dataset-retry";
 import { awaitsFirstMap } from "@/lib/dataset-tiles";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
@@ -187,8 +187,12 @@ async function AreaTemplateDatasetView({
 
     // No detail-view tracker: the flip to the map remounts the page and would
     // count the view twice
-    const row = result.dataset;
+    let row = result.dataset;
     if (tilesOnlyLaneEnabled() && awaitsFirstMap(row)) {
+      // A failed bake is retried by a later visit, not the creating one
+      if (!result.wasCreated) {
+        row = { ...row, ...(await retryFailedBake(row)) };
+      }
       // Saving needs a session; anonymous visitors reach here on featured pages
       const notify = (offer: "ready" | "available") =>
         session?.user && (

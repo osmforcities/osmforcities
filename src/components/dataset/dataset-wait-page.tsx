@@ -46,7 +46,7 @@ type DatasetWaitPageProps = {
   areaId: number;
   /**
    * Counting is the probe before any bake; baking polls the tiler.
-   * Failed will be retried by the next scheduled update; timedOut is Overpass
+   * Failed is retried by a later visit (or tick, once saved); timedOut is Overpass
    * giving up (count or feature fetch) before any row existed.
    */
   mood: "counting" | "baking" | "failed" | "timedOut";

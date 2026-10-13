@@ -5,13 +5,15 @@ import {
   LARGE_JOB_TIMEOUT_SECONDS,
   submitTilesColumns,
 } from "@/lib/tiler/client";
-import { submitTilesForDataset } from "@/lib/tiler/submit";
+import { retryFailedBake, submitTilesForDataset } from "@/lib/tiler/submit";
+import { UNCATALOGED_FILTER } from "@/lib/dataset-catalog-filter";
 
 vi.mock("@/lib/db", () => ({
   prisma: {
     dataset: {
       findUnique: vi.fn(),
       update: vi.fn(),
+      updateMany: vi.fn(),
     },
   },
 }));
@@ -137,5 +139,84 @@ describe("submitTilesForDataset", () => {
       tilesState: "pending",
       tilesError: null,
     });
+  });
+});
+
+describe("retryFailedBake", () => {
+  const failed = {
+    id: "ds-1",
+    tilesState: "failed",
+    lastAttempted: null,
+    consecutiveFailures: 1,
+    tilesError: "Tiler submit failed: 500",
+  };
+
+  beforeEach(() => {
+    vi.mocked(prisma.dataset.updateMany).mockResolvedValue({ count: 1 });
+  });
+
+  it("leaves a bake that has not failed alone", async () => {
+    await expect(
+      retryFailedBake({ ...failed, tilesState: "pending" })
+    ).resolves.toEqual({});
+    expect(prisma.dataset.updateMany).not.toHaveBeenCalled();
+  });
+
+  it("does nothing inside the retry wait", async () => {
+    await expect(
+      retryFailedBake({ ...failed, lastAttempted: new Date() })
+    ).resolves.toEqual({});
+    expect(prisma.dataset.updateMany).not.toHaveBeenCalled();
+    expect(submitTilesColumns).not.toHaveBeenCalled();
+  });
+
+  it("claims lastAttempted against the value it read, then submits", async () => {
+    vi.mocked(submitTilesColumns).mockResolvedValue({
+      tilesJobId: "ds-1-200",
+      tilesState: "pending",
+      tilesError: null,
+    });
+
+    await expect(retryFailedBake(failed)).resolves.toMatchObject({
+      tilesState: "pending",
+    });
+    expect(prisma.dataset.updateMany).toHaveBeenCalledWith({
+      where: {
+        id: "ds-1",
+        tilesState: "failed",
+        lastAttempted: null,
+        ...UNCATALOGED_FILTER,
+      },
+      data: { lastAttempted: expect.any(Date) },
+    });
+    expect(submitTilesColumns).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not submit when another visit claimed first, or the row is cataloged", async () => {
+    vi.mocked(prisma.dataset.updateMany).mockResolvedValue({ count: 0 });
+    await expect(retryFailedBake(failed)).resolves.toEqual({});
+    expect(submitTilesColumns).not.toHaveBeenCalled();
+  });
+
+  it("counts a failed submit like the cron does", async () => {
+    vi.mocked(submitTilesColumns).mockResolvedValue({
+      tilesState: "failed",
+      tilesError: "Tiler submit failed: 503",
+    });
+
+    await retryFailedBake(failed);
+    expect(prisma.dataset.update).toHaveBeenCalledWith({
+      where: { id: "ds-1" },
+      data: {
+        lastAttempted: expect.any(Date),
+        consecutiveFailures: { increment: 1 },
+        lastError: "Tiler submit failed: 503",
+      },
+    });
+  });
+
+  it("never throws: a failed claim leaves the failed screen", async () => {
+    vi.mocked(prisma.dataset.updateMany).mockRejectedValue(new Error("db down"));
+    await expect(retryFailedBake(failed)).resolves.toEqual({});
   });
 });

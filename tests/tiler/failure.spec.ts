@@ -9,6 +9,7 @@ import {
 } from "../utils/auth";
 import {
   AMSTERDAM,
+  archiveRequest,
   mockTilerControl,
   OVER_CAP_COUNT,
   runCronCycle,
@@ -173,6 +174,98 @@ test.describe("Tiler failure handling", () => {
       tilesState: "failed",
       tilesJobId: dataset.tilesJobId,
     });
+  });
+
+  test("a reload right after a failed first bake does not resubmit it", async ({
+    page,
+  }) => {
+    expect((await mockTilerControl(page, { reset: true })).ok()).toBe(true);
+    await mockTilerControl(page, { overpassCount: OVER_CAP_COUNT });
+
+    user = await createTestUser(prisma);
+    await setupAuthenticationWithLogin(page, user);
+    const url = `/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`;
+    await page.goto(url);
+    await expect(page.getByTestId("dataset-baking-page")).toBeVisible();
+    const { id, tilesJobId } = await prisma.dataset.findFirstOrThrow({
+      where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
+      select: { id: true, tilesJobId: true },
+    });
+
+    // The wait page's status poll reconciles the failure and swaps screens
+    await mockTilerControl(page, {
+      jobId: tilesJobId,
+      state: "failed",
+      errorKind: "overpass",
+      error: "Overpass returned 504",
+    });
+    await expect(page.getByTestId("dataset-failed-page")).toBeVisible();
+    await waitPastJobSecond(String(tilesJobId));
+
+    await page.goto(url);
+    await expect(page.getByTestId("dataset-failed-page")).toBeVisible();
+    expect(await readDataset(id)).toMatchObject({
+      tilesState: "failed",
+      tilesJobId,
+      consecutiveFailures: 1,
+    });
+  });
+
+  test("an unsaved dataset whose first submit failed is retried by a later visit", async ({
+    page,
+  }) => {
+    expect((await mockTilerControl(page, { reset: true })).ok()).toBe(true);
+    await mockTilerControl(page, { overpassCount: OVER_CAP_COUNT });
+    await mockTilerControl(page, { submitFails: true });
+
+    user = await createTestUser(prisma);
+    await setupAuthenticationWithLogin(page, user);
+    const url = `/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`;
+    await page.goto(url);
+    await expect(page.getByTestId("dataset-failed-page")).toContainText(
+      "Open this page later to try again."
+    );
+    const { id } = await prisma.dataset.findFirstOrThrow({
+      where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
+      select: { id: true },
+    });
+
+    // The failed submit starts the 15 minute wait: a reload submits nothing
+    const created = await readDataset(id);
+    expect(created).toMatchObject({ tilesState: "failed", consecutiveFailures: 1 });
+    expect(created.lastAttempted).not.toBeNull();
+    await page.goto(url);
+    await expect(page.getByTestId("dataset-failed-page")).toBeVisible();
+    expect(await readDataset(id)).toMatchObject({
+      consecutiveFailures: 1,
+      lastAttempted: created.lastAttempted,
+    });
+
+    // Past it the visit retries. Still failing, the row climbs to the 1 hour rung.
+    await setLastAttempted(id, new Date(Date.now() - 16 * MINUTE_MS));
+    await page.goto(url);
+    await expect(page.getByTestId("dataset-failed-page")).toBeVisible();
+    expect(await readDataset(id)).toMatchObject({
+      tilesState: "failed",
+      tilesJobId: null,
+      consecutiveFailures: 2,
+    });
+
+    await mockTilerControl(page, { submitFails: false });
+    await setLastAttempted(id, new Date(Date.now() - 61 * MINUTE_MS));
+    await page.goto(url);
+    const waitPage = page.getByTestId("dataset-baking-page");
+    await expect(waitPage).toBeVisible();
+    const { tilesJobId } = await readDataset(id);
+    expect(tilesJobId).toBeTruthy();
+
+    const archive = archiveRequest(page, String(tilesJobId));
+    await mockTilerControl(page, { jobId: tilesJobId, state: "done" });
+    expect((await archive).ok()).toBe(true);
+    await expect(waitPage).toBeHidden();
+    await expect(
+      page.getByRole("region", { name: "Dataset statistics" })
+    ).toBeVisible();
   });
 
   test("a failed submit counts as a failure", async ({ page }) => {

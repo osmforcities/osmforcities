@@ -65,7 +65,9 @@ async function commitOutcome(
 }
 
 
-// A failed bake is a failed refresh, counted like the cron counts one
+// A failed bake is a failed refresh, counted like the cron counts one. On the
+// tiles-only lane it also starts the retry wait: a first bake was never
+// claimed, so without it a visit would resubmit at once.
 async function failBake(
   dataset: { id: string; tilesJobId: string },
   error: string
@@ -74,7 +76,7 @@ async function failBake(
     tilesState: "failed",
     tilesError: error,
     consecutiveFailures: { increment: 1 },
-    ...(tilesOnlyLaneEnabled() && { lastError: error }),
+    ...(tilesOnlyLaneEnabled() && { lastError: error, lastAttempted: new Date() }),
   });
   return won ? { outcome: "failed", error } : { outcome: "pending" };
 }

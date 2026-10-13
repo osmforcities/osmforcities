@@ -1,9 +1,34 @@
 import { describe, it, expect } from "vitest";
-import { dueForRefreshWhere, retryWaitMs } from "../dataset-retry";
+import { dueForRefreshWhere, isRetryDue, retryWaitMs } from "../dataset-retry";
 
 const MIN = 60 * 1000;
 const HOUR = 60 * MIN;
 const DAY = 24 * HOUR;
+
+describe("isRetryDue", () => {
+  const now = new Date("2026-10-05T12:00:00Z");
+  const row = (agoMs: number | null, consecutiveFailures: number, tilesError: string | null = null) => ({
+    lastAttempted: agoMs === null ? null : new Date(now.getTime() - agoMs),
+    consecutiveFailures,
+    tilesError,
+  });
+
+  it("is due when the row was never attempted", () => {
+    expect(isRetryDue(row(null, 0), now)).toBe(true);
+  });
+
+  it("follows the ladder from lastAttempted", () => {
+    expect(isRetryDue(row(14 * MIN, 1), now)).toBe(false);
+    expect(isRetryDue(row(16 * MIN, 1), now)).toBe(true);
+    expect(isRetryDue(row(59 * MIN, 2), now)).toBe(false);
+    expect(isRetryDue(row(61 * MIN, 2), now)).toBe(true);
+  });
+
+  it("keeps the weekly wait after a too-large refusal", () => {
+    expect(isRetryDue(row(6 * DAY, 1, "too_large: out of memory"), now)).toBe(false);
+    expect(isRetryDue(row(8 * DAY, 1, "too_large: out of memory"), now)).toBe(true);
+  });
+});
 
 describe("retryWaitMs", () => {
   it("keeps the daily cadence for a healthy row", () => {

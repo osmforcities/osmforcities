@@ -11,6 +11,8 @@ import {
   OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
 } from "@/lib/constants";
 import { TILES_ENABLED } from "@/lib/dataset-tiles";
+import { isRetryDue } from "@/lib/dataset-retry";
+import { UNCATALOGED_FILTER } from "@/lib/dataset-catalog-filter";
 
 /**
  * The tiles-only lane: the tiler is the data source. Creation stores only the
@@ -86,6 +88,68 @@ export async function submitTilesForDataset(
     return columns;
   } catch (error) {
     console.error(`Tiles submit for dataset ${datasetId} failed:`, error);
+    return {};
+  }
+}
+
+/**
+ * A failed submit is a failed attempt: it climbs the ladder from now. Never
+ * throws, the failed screen renders either way.
+ */
+export async function recordFailedSubmit(
+  datasetId: string,
+  tilesError: string | null | undefined
+): Promise<void> {
+  try {
+    await prisma.dataset.update({
+      where: { id: datasetId },
+      data: {
+        lastAttempted: new Date(),
+        consecutiveFailures: { increment: 1 },
+        lastError: tilesError ?? "tiler submit failed",
+      },
+    });
+  } catch (error) {
+    console.error(`Recording failed submit for dataset ${datasetId} failed:`, error);
+  }
+}
+
+/**
+ * Resubmit a failed bake when its page is opened: the cron refreshes only
+ * cataloged rows, so an unsaved dataset whose first bake failed is otherwise
+ * never retried. Cataloged rows stay the cron's, so a tick never races this.
+ *
+ * The claim only lands if lastAttempted still holds the value read, so of two
+ * visits only one submits.
+ */
+export async function retryFailedBake(row: {
+  id: string;
+  tilesState: string | null;
+  lastAttempted: Date | null;
+  consecutiveFailures: number;
+  tilesError: string | null;
+}): Promise<TilesColumns> {
+  if (row.tilesState !== "failed" || !isRetryDue(row, new Date())) return {};
+  // Any error leaves the failed screen as it was
+  try {
+    const { count } = await prisma.dataset.updateMany({
+      where: {
+        id: row.id,
+        tilesState: "failed",
+        lastAttempted: row.lastAttempted,
+        ...UNCATALOGED_FILTER,
+      },
+      data: { lastAttempted: new Date() },
+    });
+    if (count === 0) return {};
+
+    const columns = await submitTilesForDataset(row.id);
+    if (columns.tilesState === "failed") {
+      await recordFailedSubmit(row.id, columns.tilesError);
+    }
+    return columns;
+  } catch (error) {
+    console.error(`Bake retry for dataset ${row.id} failed:`, error);
     return {};
   }
 }
