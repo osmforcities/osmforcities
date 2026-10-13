@@ -26,6 +26,22 @@ export function retryWaitMs(
   return LADDER_MS[consecutiveFailures - 1] ?? DAILY_MS;
 }
 
+/** In-memory twin of dueForRefreshWhere's wait. */
+export function isRetryDue(
+  row: {
+    lastAttempted: Date | null;
+    consecutiveFailures: number;
+    tilesError: string | null;
+  },
+  now: Date
+): boolean {
+  if (!row.lastAttempted) return true;
+  return (
+    now.getTime() - row.lastAttempted.getTime() >
+    retryWaitMs(row.consecutiveFailures, row.tilesError)
+  );
+}
+
 // A bare NOT on the nullable column would also drop rows with no tilesError.
 export const NOT_TOO_LARGE = {
   OR: [

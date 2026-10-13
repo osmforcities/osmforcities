@@ -143,7 +143,7 @@
     "notifyCtaIfMapped": "Save and email me if it gets mapped",
     "notifyConfirmed": "Saved. You'll get an email when the map is ready.",
     "savedConfirmed": "Saved.",
-    "tilesFailedDescription": "The next scheduled update will try again.",
+    "tilesFailedDescription": "Open this page later to try again.",
     "countTimedOutDescription": "The area may be very large or the server busy. Try again in at most {minutes, plural, one {# minute} other {# minutes}}.",
     "backToHome": "Back to Home",
     "emptyDescription": "They may not exist here, or nobody has mapped them in OpenStreetMap yet.",

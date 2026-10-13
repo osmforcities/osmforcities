@@ -143,7 +143,7 @@
     "notifyCtaIfMapped": "Speichern und mich per E-Mail benachrichtigen, falls es kartiert wird",
     "notifyConfirmed": "Gespeichert. Du erhältst eine E-Mail, sobald die Karte fertig ist.",
     "savedConfirmed": "Gespeichert.",
-    "tilesFailedDescription": "Das nächste geplante Update versucht es erneut.",
+    "tilesFailedDescription": "Öffne diese Seite später, um es erneut zu versuchen.",
     "countTimedOutDescription": "Das Gebiet ist vielleicht sehr groß oder der Server ausgelastet. Versuche es in spätestens {minutes, plural, one {# Minute} other {# Minuten}} erneut.",
     "backToHome": "Zurück zur Startseite",
     "emptyDescription": "Vielleicht gibt es sie hier nicht, oder niemand hat sie bisher in OpenStreetMap erfasst.",

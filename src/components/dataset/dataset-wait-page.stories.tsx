@@ -233,7 +233,7 @@ export const NotifyConfirmed: Story = {
   },
 };
 
-/** Any failure the next scheduled update will retry. No steps, no poll. */
+/** Any failure a later visit will retry. No steps, no poll. */
 export const FailedNotReady: Story = {
   args: {
     datasetId: "ds-osasco-buildings",
@@ -249,7 +249,7 @@ export const FailedNotReady: Story = {
     ).toBeInTheDocument();
     await expect(canvas.getByText("Bake failed.")).toBeInTheDocument();
     await expect(
-      canvas.getByText(/next scheduled update will try again/)
+      canvas.getByText("Open this page later to try again.")
     ).toBeInTheDocument();
     await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     await expect(canvas.queryByText(/^Step /)).not.toBeInTheDocument();

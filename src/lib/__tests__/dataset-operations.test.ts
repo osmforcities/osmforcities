@@ -48,6 +48,7 @@ vi.mock("@/lib/area-boundary", () => ({
 
 vi.mock("@/lib/tiler/submit", () => ({
   submitTilesForDataset: vi.fn().mockResolvedValue({}),
+  recordFailedSubmit: vi.fn(),
 }));
 
 vi.mock("@/lib/umami", () => ({
@@ -73,7 +74,7 @@ vi.mock("@/lib/area-refresh", async (importOriginal) => {
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 import { refreshAreaInfoIfStale } from "@/lib/area-refresh";
-import { submitTilesForDataset } from "@/lib/tiler/submit";
+import { recordFailedSubmit, submitTilesForDataset } from "@/lib/tiler/submit";
 import { prisma } from "@/lib/db";
 
 const mockFetchDatasetSnapshot = vi.mocked(fetchDatasetSnapshot);
@@ -237,5 +238,9 @@ describe("getOrCreateDataset — tiles columns on create", () => {
       tilesState: "failed",
       tilesError: "Tiler submit failed: 500",
     });
+    expect(recordFailedSubmit).toHaveBeenCalledWith(
+      dataset.id,
+      "Tiler submit failed: 500"
+    );
   });
 });
