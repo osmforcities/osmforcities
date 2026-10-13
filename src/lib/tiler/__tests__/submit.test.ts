@@ -75,8 +75,8 @@ describe("submitTilesForDataset", () => {
     });
   });
 
-  it("counts the submit as an attempt, so a first bake starts the retry wait", async () => {
-    // Left null, a first bake that lands or fails is due again at once
+  it("leaves a refused submit unattempted, so the next tick retries it", async () => {
+    // Stamped with no failure counted, the row would sit on the daily wait
     vi.mocked(submitTilesColumns).mockResolvedValue({
       tilesState: "failed",
       tilesError: "Tiler submit failed: 500",
@@ -86,7 +86,7 @@ describe("submitTilesForDataset", () => {
 
     expect(prisma.dataset.update).toHaveBeenCalledWith({
       where: { id: "ds-1" },
-      data: expect.objectContaining({ lastAttempted: expect.any(Date) }),
+      data: { tilesState: "failed", tilesError: "Tiler submit failed: 500" },
     });
   });
 

@@ -55,9 +55,6 @@ describe("dueForRefreshWhere", () => {
   });
 
   it("never refreshes a row whose bake is still pending, on any clause", () => {
-    // A first bake (lastAttempted null) or an over-cap bake on a short rung
-    // can still be running; resubmitting would orphan it. A pending row with
-    // no job never reaches reconcile, so it stays due.
     const { OR } = dueForRefreshWhere(now);
     expect(OR).toHaveLength(6);
     for (const clause of OR) {
