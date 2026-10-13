@@ -15,6 +15,7 @@ import {
   POINT_LAYER_ID,
 } from "./layer-ids";
 import type { CuratedTheme } from "@/lib/curated-themes";
+import type { Dataset } from "@/schemas/dataset";
 import { buildCuratedColorExpression } from "@/lib/curated-themes";
 
 const TILES_SOURCE_ID = "dataset-tiles";
@@ -34,11 +35,21 @@ function geometryFilter(
   ) as FilterSpecification;
 }
 
+// Tiles mode holds no features client-side, so the point count comes from
+// stored stats, matching the geojson path's point-only count. Falls back to
+// the whole-dataset count when stats predate geometryMix.
+export function tilesPointCount(dataset: {
+  dataCount: number;
+  stats: Pick<NonNullable<Dataset["stats"]>, "geometryMix"> | null;
+}): number {
+  return dataset.stats?.geometryMix?.points ?? dataset.dataCount;
+}
+
 type TilesLayerGroupProps = {
   /** pmtiles:// URL of the archive. */
   tilesUrl: string;
-  /** Stored feature count — sizes the default point radius. */
-  dataCount: number;
+  /** Stored point count (see tilesPointCount) — sizes the default point radius. */
+  pointCount: number;
   curatedTheme: CuratedTheme | null;
   visibilityFilter?: FilterSpecification;
 };
@@ -51,7 +62,7 @@ type TilesLayerGroupProps = {
  */
 export function TilesLayerGroup({
   tilesUrl,
-  dataCount,
+  pointCount,
   curatedTheme,
   visibilityFilter,
 }: TilesLayerGroupProps) {
@@ -68,7 +79,7 @@ export function TilesLayerGroup({
   const linePaint: Record<string, unknown> = buildThemeLinePaint(themeColor);
   const pointPaint: Record<string, unknown> = buildThemePointPaint(
     themeColor,
-    dataCount
+    pointCount
   );
   const lineLayout: Record<string, unknown> | undefined = themeColor
     ? undefined
