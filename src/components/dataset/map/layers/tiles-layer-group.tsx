@@ -35,9 +35,7 @@ function geometryFilter(
   ) as FilterSpecification;
 }
 
-// Tiles mode holds no features client-side, so the point count comes from
-// stored stats, matching the geojson path's point-only count. Falls back to
-// the whole-dataset count when stats predate geometryMix.
+// No client-side features here; stats without geometryMix fall back to dataCount.
 export function tilesPointCount(dataset: {
   dataCount: number;
   stats: Pick<NonNullable<Dataset["stats"]>, "geometryMix"> | null;
@@ -48,7 +46,7 @@ export function tilesPointCount(dataset: {
 type TilesLayerGroupProps = {
   /** pmtiles:// URL of the archive. */
   tilesUrl: string;
-  /** Stored point count (see tilesPointCount) — sizes the default point radius. */
+  /** Sizes the default point radius. */
   pointCount: number;
   curatedTheme: CuratedTheme | null;
   visibilityFilter?: FilterSpecification;
