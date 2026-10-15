@@ -17,7 +17,7 @@ import type { Session } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { refreshTokenClaims } from "@/lib/auth-token";
-import { MAGIC_LINK_TOKEN_TTL_MS } from "@/lib/magic-link-rate-limit";
+import { MAGIC_LINK_TOKEN_TTL_MS } from "@/lib/magic-link-ttl";
 import { isTestAuthEnabled } from "@/lib/test-auth";
 
 type DatabaseUser = {

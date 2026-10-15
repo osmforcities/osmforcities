@@ -6,7 +6,7 @@ import {
   isRTL,
   type Locale,
 } from "@/lib/email-i18n";
-import { MAGIC_LINK_TOKEN_TTL_HOURS } from "@/lib/magic-link-rate-limit";
+import { MAGIC_LINK_TOKEN_TTL_HOURS } from "@/lib/magic-link-ttl";
 
 export async function buildMagicLinkEmail(locale: Locale, magicLink: string) {
   const t = await getEmailT(locale);

@@ -1,7 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { buildMagicLinkEmail } from "../magic-link-email";
-
-vi.mock("@/lib/db", () => ({ prisma: {} }));
 
 const url = "https://osmforcities.org/api/auth/verify?token=abc&x=1";
 
@@ -13,7 +11,7 @@ describe("buildMagicLinkEmail", () => {
     expect(html).toContain("<h1");
     expect(html).toContain(`href="${url.replace("&", "&amp;")}"`);
     expect(html).toMatch(/>Sign in<\/a>/);
-    expect(html).toContain("Or copy this link into your browser:");
+    expect(html).toContain("Or copy this link into your browser.");
     expect(html).toContain("expires in 24 hours");
     expect(html).toContain("you can ignore this email");
 
@@ -30,7 +28,7 @@ describe("buildMagicLinkEmail", () => {
     expect(html).toContain('lang="pt-BR"');
     expect(html).toMatch(/>Entrar<\/a>/);
     expect(html).toContain("24 horas");
-    expect(html).toContain("Ou copie e cole este link no seu navegador:");
+    expect(html).toContain("Ou copie e cole este link no seu navegador.");
     expect(text).toContain(url);
     expect(text).toContain("24 horas");
     for (const english of ["Sign in", "link to sign", "Visit", "expires", "ignore"]) {
