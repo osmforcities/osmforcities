@@ -16,9 +16,10 @@ vi.mock("@/lib/magic-link-rate-limit", () => ({
   isMagicLinkRateLimited: vi.fn(),
 }));
 
-vi.mock("@/lib/email-i18n", () => ({
-  formatEmail: vi.fn().mockResolvedValue("body"),
-  createEmailLink: vi.fn().mockReturnValue("link"),
+vi.mock("@/lib/magic-link-email", () => ({
+  buildMagicLinkEmail: vi
+    .fn()
+    .mockResolvedValue({ subject: "s", html: "h", text: "t" }),
 }));
 
 import { POST } from "../route";
