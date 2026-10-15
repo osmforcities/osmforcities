@@ -154,7 +154,9 @@ describe("POST /api/tasks/update-datasets", () => {
     expect(refreshWhere.OR).toContainEqual(
       expect.objectContaining({ consecutiveFailures: 1 })
     );
-    expect(refreshWhere.OR).toContainEqual({ lastAttempted: null });
+    expect(refreshWhere.OR).toContainEqual(
+      expect.objectContaining({ lastAttempted: null })
+    );
   });
 
   it("with the tiler on, leaves the counter for the bake to reset", async () => {

@@ -68,7 +68,7 @@ describe("dueForRefreshWhere", () => {
         (d) => d.getTime()
       )
     );
-    expect(OR).toContainEqual({ lastAttempted: null });
+    expect(OR.some((c) => c.lastAttempted === null)).toBe(true);
   });
 
   it("keeps rows with a null tilesError in the ladder clauses", () => {
@@ -79,15 +79,12 @@ describe("dueForRefreshWhere", () => {
     expect(JSON.stringify(rung)).toContain('{"tilesError":null}');
   });
 
-  it("never retries on a short rung while the last bake is still pending", () => {
-    // An over-cap bake can outlast the 15 min rung; resubmitting would orphan it.
-    const rungs = dueForRefreshWhere(now).OR.filter(
-      (c) => "consecutiveFailures" in c && typeof c.consecutiveFailures === "number"
-    );
-    expect(rungs).toHaveLength(3);
-    for (const rung of rungs) {
-      expect(JSON.stringify(rung)).toContain(
-        '{"OR":[{"tilesState":null},{"NOT":{"tilesState":"pending"}}]}'
+  it("never refreshes a row whose bake is still pending, on any clause", () => {
+    const { OR } = dueForRefreshWhere(now);
+    expect(OR).toHaveLength(6);
+    for (const clause of OR) {
+      expect(JSON.stringify(clause)).toContain(
+        '{"OR":[{"tilesState":null},{"NOT":{"tilesState":"pending"}},{"tilesJobId":null}]}'
       );
     }
   });

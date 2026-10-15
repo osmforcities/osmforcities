@@ -72,7 +72,23 @@ describe("submitTilesForDataset", () => {
         tilesJobId: "ds-1-100",
         tilesState: "pending",
         tilesError: null,
+        lastAttempted: expect.any(Date),
       },
+    });
+  });
+
+  it("leaves a refused submit unattempted, so the next tick retries it", async () => {
+    // Stamped with no failure counted, the row would sit on the daily wait
+    vi.mocked(submitTilesColumns).mockResolvedValue({
+      tilesState: "failed",
+      tilesError: "Tiler submit failed: 500",
+    });
+
+    await submitTilesForDataset("ds-1");
+
+    expect(prisma.dataset.update).toHaveBeenCalledWith({
+      where: { id: "ds-1" },
+      data: { tilesState: "failed", tilesError: "Tiler submit failed: 500" },
     });
   });
 

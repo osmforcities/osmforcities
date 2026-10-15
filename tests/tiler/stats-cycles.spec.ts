@@ -116,14 +116,11 @@ test.describe("Tiles-only stats across bake cycles", () => {
     });
     datasetId = created.id;
     jobA = created.tilesJobId!;
-    // Saved, so the cron refreshes it; attempted now, so this tick only
-    // reconciles
+    // Saved, so the cron refreshes it; its first bake is pending, so this
+    // tick only reconciles
     await prisma.dataset.update({
       where: { id: datasetId },
-      data: {
-        lastAttempted: new Date(),
-        savedBy: { create: { userId: user.id } },
-      },
+      data: { savedBy: { create: { userId: user.id } } },
     });
 
     await bake(page, jobA, A);

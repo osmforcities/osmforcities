@@ -111,10 +111,19 @@ test.describe("Ready notification from the empty state", () => {
   test("a bake with features clears the flag", async ({ page }) => {
     const datasetId = await optInOnEmptyDataset(page);
 
-    // The saved row is cataloged, so the cron itself refreshes and submits
-    await mockTilerControl(page, { overpassEmpty: false });
+    // A pending first bake is never refreshed, so it lands empty first
     await page.goto("about:blank");
     const before = await tilesJobId(datasetId);
+    await mockTilerControl(page, {
+      jobId: before,
+      state: "done",
+      stats: { ...fixtureStats, features: 0 },
+    });
+    await runCronCycle(page);
+    expect(await readSave(datasetId)).toEqual({ notifyWhenReady: true });
+
+    // The saved row is cataloged, so the cron itself refreshes and submits
+    await mockTilerControl(page, { overpassEmpty: false });
     await waitPastJobSecond(before);
     await prisma.dataset.update({
       where: { id: datasetId },

@@ -50,10 +50,16 @@ export const NOT_TOO_LARGE = {
   ],
 };
 
-// An over-cap bake can outlast the short rungs; resubmitting mid-bake swaps
-// tilesJobId and the running bake's result is discarded on arrival.
-const NOT_BAKING = {
-  OR: [{ tilesState: null }, { NOT: { tilesState: "pending" } }],
+// Resubmitting mid-bake swaps tilesJobId and the running bake's result is
+// discarded on arrival. A pending row with no tilesJobId never reaches
+// reconcile, so it stays due or it would be stuck. Guarded per clause: the
+// cron spreads this filter next to CATALOG_FILTER's own AND.
+const NO_BAKE_IN_FLIGHT = {
+  OR: [
+    { tilesState: null },
+    { NOT: { tilesState: "pending" } },
+    { tilesJobId: null },
+  ],
 };
 
 /**
@@ -64,18 +70,19 @@ export function dueForRefreshWhere(now: Date) {
   const before = (ms: number) => ({ lt: new Date(now.getTime() - ms) });
   return {
     OR: [
-      { lastAttempted: null },
+      { AND: [NO_BAKE_IN_FLIGHT], lastAttempted: null },
       ...LADDER_MS.map((ms, i) => ({
-        AND: [NOT_TOO_LARGE, NOT_BAKING],
+        AND: [NOT_TOO_LARGE, NO_BAKE_IN_FLIGHT],
         consecutiveFailures: i + 1,
         lastAttempted: before(ms),
       })),
       {
-        ...NOT_TOO_LARGE,
+        AND: [NOT_TOO_LARGE, NO_BAKE_IN_FLIGHT],
         NOT: { consecutiveFailures: { gte: 1, lte: LADDER_MS.length } },
         lastAttempted: before(DAILY_MS),
       },
       {
+        AND: [NO_BAKE_IN_FLIGHT],
         tilesError: { startsWith: TOO_LARGE_PREFIX },
         lastAttempted: before(TOO_LARGE_WAIT_MS),
       },

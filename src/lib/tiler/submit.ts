@@ -82,8 +82,17 @@ export async function submitTilesForDataset(
           }
         : undefined
     );
+    // Creation has no cron claim, so a started bake records the attempt and
+    // its outcome waits out the retry ladder. A refused submit counts no
+    // failure, so it stays unattempted and the next tick retries it.
     if (Object.keys(columns).length > 0) {
-      await prisma.dataset.update({ where: { id: datasetId }, data: columns });
+      await prisma.dataset.update({
+        where: { id: datasetId },
+        data: {
+          ...columns,
+          ...(columns.tilesState === "pending" && { lastAttempted: new Date() }),
+        },
+      });
     }
     return columns;
   } catch (error) {

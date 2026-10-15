@@ -65,18 +65,12 @@ test.describe("Tiler failure handling", () => {
     return { id, tilesJobId: tilesJobId as string };
   }
 
-  /**
-   * Works around https://github.com/osmforcities/osmforcities/issues/616: a
-   * never-attempted row mid-first-bake is due at once, so the cycle would
-   * resubmit it before reconciling. Marking it attempted leaves the cycle only
-   * the reconcile.
-   */
+  // A pending first bake is never due, so the cycle only reconciles it
   async function failFirstBake(
     page: Page,
     dataset: { id: string; tilesJobId: string },
     job: { errorKind: string; error: string }
   ) {
-    await setLastAttempted(dataset.id, new Date());
     await mockTilerControl(page, { jobId: dataset.tilesJobId, state: "failed", ...job });
     await runCronCycle(page);
   }
@@ -113,9 +107,7 @@ test.describe("Tiler failure handling", () => {
     );
   });
 
-  // A saved row mid-first-bake is resubmitted on the first cycle:
-  // https://github.com/osmforcities/osmforcities/issues/616
-  test.fail("a first bake still running is not resubmitted", async ({ page }) => {
+  test("a first bake still running is not resubmitted", async ({ page }) => {
     const dataset = await createSavedDataset(page);
     await waitPastJobSecond(dataset.tilesJobId);
 
@@ -270,11 +262,16 @@ test.describe("Tiler failure handling", () => {
 
   test("a failed submit counts as a failure", async ({ page }) => {
     const dataset = await createSavedDataset(page);
+    await failFirstBake(page, dataset, {
+      errorKind: "overpass",
+      error: "Overpass returned 504",
+    });
+    await setLastAttempted(dataset.id, new Date(Date.now() - 16 * MINUTE_MS));
     await mockTilerControl(page, { submitFails: true });
 
     await runCronCycle(page);
     const row = await readDataset(dataset.id);
-    expect(row).toMatchObject({ tilesState: "failed", consecutiveFailures: 1 });
+    expect(row).toMatchObject({ tilesState: "failed", consecutiveFailures: 2 });
     expect(row.lastError).toContain("Tiler submit failed: 500");
   });
 
@@ -282,13 +279,14 @@ test.describe("Tiler failure handling", () => {
     page,
   }) => {
     const dataset = await createSavedDataset(page);
+    const { lastAttempted } = await readDataset(dataset.id);
     await mockTilerControl(page, { tilerDown: true });
 
     expect(await runCronCycle(page)).toMatchObject({ tilerUnreachable: true });
     expect(await readDataset(dataset.id)).toMatchObject({
       tilesJobId: dataset.tilesJobId,
       consecutiveFailures: 0,
-      lastAttempted: null,
+      lastAttempted,
     });
   });
 });
