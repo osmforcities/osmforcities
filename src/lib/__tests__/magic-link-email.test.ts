@@ -18,7 +18,7 @@ describe("buildMagicLinkEmail", () => {
     expect(html).toContain("you can ignore this email");
 
     expect(text).toContain("Sign in to OSM for Cities");
-    expect(text).toContain(url);
+    expect(text.split(url)).toHaveLength(2);
     expect(text).toContain("expires in 24 hours");
     expect(text).toContain("you can ignore this email");
   });
@@ -30,6 +30,7 @@ describe("buildMagicLinkEmail", () => {
     expect(html).toContain('lang="pt-BR"');
     expect(html).toMatch(/>Entrar<\/a>/);
     expect(html).toContain("24 horas");
+    expect(html).toContain("Ou copie e cole este link no seu navegador:");
     expect(text).toContain(url);
     expect(text).toContain("24 horas");
     for (const english of ["Sign in", "link to sign", "Visit", "expires", "ignore"]) {
