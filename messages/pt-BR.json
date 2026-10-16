@@ -636,9 +636,8 @@
     "reportOpen": "Abrir",
     "reportMore": "{count, plural, one {Mais # conjunto de dados mudou.} other {Mais # conjuntos de dados mudaram.}}",
     "reportGoToDashboard": "Ir para o seu painel",
-    "reportRetiredTitle": "Modelo descontinuado",
-    "reportRetiredBody": "{template} foi removido do catálogo, por isso a página não está mais disponível. Este conjunto de dados será excluído após {date}.",
-    "reportRetiredBodySoon": "{template} foi removido do catálogo, por isso a página não está mais disponível. Este conjunto de dados será excluído em breve."
+    "reportRetiredTitle": "Removido do catálogo",
+    "reportRetiredBody": "{template} não faz mais parte do catálogo e a página não está mais disponível. {date, select, soon {Este conjunto de dados será excluído em breve.} other {Este conjunto de dados será excluído após {date}.}}"
   },
   "AboutPage": {
     "metaTitle": "Sobre - OSM for Cities",

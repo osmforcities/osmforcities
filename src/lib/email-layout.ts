@@ -55,17 +55,13 @@ function emailWarning({ iconUrl, title, body }: EmailWarning): string {
   return `<div style="margin: 12px 0 0; padding: 10px 12px; border-left: 4px solid ${COLOR.yellow500}; border-radius: 4px; background-color: ${COLOR.yellow100}; color: ${COLOR.yellow700}; font-size: 14px; line-height: 150%;"><img src="${iconUrl}" width="16" height="16" alt="" style="vertical-align: -3px; margin: 0 6px 0 0; border: 0;"><strong>${title}</strong><br>${body}</div>`;
 }
 
-/**
- * Each stat stays on one line; whole stats wrap to the next line on narrow
- * screens. The plain space between them is the wrap point and the text-part gap.
- */
 function emailStats(stats: EmailStat[]): string {
   return stats
     .map(
       ({ iconUrl, text }) =>
-        `<span style="display: inline-block; white-space: nowrap; margin: 0 12px 0 0;"><img src="${iconUrl}" width="14" height="14" alt="" style="vertical-align: -2px; margin: 0 4px 0 0; border: 0;">${text}</span>`
+        `<div style="white-space: nowrap;"><img src="${iconUrl}" width="14" height="14" alt="" style="vertical-align: -2px; margin: 0 6px 0 0; border: 0;">${text}</div>`
     )
-    .join(" ");
+    .join("");
 }
 
 export function emailList(rows: string[]): string {
@@ -108,7 +104,7 @@ export function emailListItem({
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
   <tr>
     <td class="${SKIP_IN_PLAIN_TEXT}" valign="top" width="40" style="padding: 0 12px 0 0;">${linked(tile)}</td>
-    <td valign="top" style="font-size: 16px; line-height: 150%; color: ${COLOR.text};">${linked(`<strong>${title}</strong>`, ` color: ${COLOR.text};`)}<br><span style="color: ${COLOR.muted};">${subtitle}</span><br><span style="color: ${COLOR.muted}; font-size: 14px;">${emailStats(stats)}</span></td>
+    <td valign="top" style="font-size: 16px; line-height: 150%; color: ${COLOR.text};">${linked(`<strong>${title}</strong>`, ` color: ${COLOR.text};`)}<br><span style="color: ${COLOR.muted};">${subtitle}</span><div style="margin: 4px 0 0; color: ${COLOR.muted}; font-size: 14px; line-height: 160%;">${emailStats(stats)}</div></td>
     ${actionCell}
   </tr>
 </table>${warning ? emailWarning(warning) : ""}`;

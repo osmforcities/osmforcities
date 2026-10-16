@@ -86,10 +86,11 @@ async function generateEmailContent(
         warning: ds.retiresAt && {
           iconUrl: glyph("alert"),
           title: t("reportRetiredTitle"),
-          body:
-            ds.retiresAt > now
-              ? t("reportRetiredBody", { template: title, date: formatLongDate.format(ds.retiresAt) })
-              : t("reportRetiredBodySoon", { template: title }),
+          // "soon" is the message's select branch for a date already past.
+          body: t("reportRetiredBody", {
+            template: title,
+            date: ds.retiresAt > now ? formatLongDate.format(ds.retiresAt) : "soon",
+          }),
         },
       });
     });
@@ -245,7 +246,8 @@ export async function generateNextUserReport(): Promise<{
     user.reportsFrequency,
     userLocale
   );
-  const latestChangeDate = reportDatasets[0]?.lastChanged.toLocaleDateString() ?? null;
+  const latestChange = Math.max(...reportDatasets.map((ds) => ds.lastChanged.getTime()));
+  const latestChangeDate = new Date(latestChange).toLocaleDateString();
 
   return {
     userId: user.id,

@@ -91,7 +91,7 @@ describe("user-report email generation", () => {
     expect(result?.emailContent.text).toContain(`Schools [${datasetUrl("en")}]`);
     expect(result?.emailContent.text).toContain("Sao Paulo");
     expect(result?.emailContent.text).toContain(
-      "Last edit Oct 16 1,284 features 7 mappers"
+      "Last edit Oct 16\n1,284 features\n7 mappers"
     );
   });
 
@@ -153,7 +153,7 @@ describe("user-report email generation", () => {
 
     const { html, text } = (await generateNextUserReport())!.emailContent;
 
-    expect(text.indexOf("Template retired")).toBeLessThan(text.indexOf("dataset/t-11"));
+    expect(text.indexOf("Removed from the catalog")).toBeLessThan(text.indexOf("dataset/t-11"));
     expect(html).toContain("This dataset will be deleted after October 20, 2026.");
   });
 
@@ -177,7 +177,7 @@ describe("user-report email generation", () => {
     expect(result?.emailContent.subject).toBe("1 conjunto de dados mudou na última semana");
     expect(result?.emailContent.text).toContain(`Escolas [${datasetUrl("pt-BR")}]`);
     expect(result?.emailContent.text).toContain("Última edição em 16 de out.");
-    expect(result?.emailContent.text).toContain("1.284 feições 7 mapeadores");
+    expect(result?.emailContent.text).toContain("1.284 feições\n7 mapeadores");
   });
 
   it("uses the localized area name", async () => {
@@ -230,7 +230,7 @@ describe("user-report email generation", () => {
     expect(html).not.toContain(datasetUrl("en"));
     expect(html).not.toMatch(/>Open<\/a>/);
     expect(html).toContain(
-      "Schools was removed from the catalog, so its page is no longer available. This dataset will be deleted after October 21, 2026."
+      "Schools is no longer in the catalog and its page is unavailable. This dataset will be deleted after October 21, 2026."
     );
   });
 
@@ -240,7 +240,7 @@ describe("user-report email generation", () => {
 
     const { html } = (await generateNextUserReport())!.emailContent;
 
-    const stats = [...html.matchAll(/<span style="display: inline-block; white-space: nowrap;[^"]*">(.*?)<\/span>/g)];
+    const stats = [...html.matchAll(/<div style="white-space: nowrap;">(.*?)<\/div>/g)];
     expect(stats.map((m) => m[1].replace(/<[^>]+>/g, "").trim())).toEqual([
       "Last edit Oct 16",
       "1,284 features",
@@ -325,12 +325,12 @@ describe("user-report email generation", () => {
     const { text } = result!.emailContent;
 
     const schools = text.indexOf("Schools");
-    const notice = text.indexOf("Template retired");
+    const notice = text.indexOf("Removed from the catalog");
     const parks = text.indexOf("Parks [");
     expect(schools).toBeGreaterThan(-1);
     expect(notice).toBeGreaterThan(schools);
     expect(parks).toBeGreaterThan(notice);
-    expect(text.match(/Template retired/g)).toHaveLength(1);
+    expect(text.match(/Removed from the catalog/g)).toHaveLength(1);
   });
 
   it("returns null when no user due for report", async () => {

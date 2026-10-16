@@ -627,9 +627,8 @@
     "reportOpen": "Ouvrir",
     "reportMore": "{count, plural, one {# autre jeu de données a changé.} other {# autres jeux de données ont changé.}}",
     "reportGoToDashboard": "Aller à votre tableau de bord",
-    "reportRetiredTitle": "Modèle retiré",
-    "reportRetiredBody": "{template} a été retiré du catalogue, sa page n'est donc plus disponible. Ce jeu de données sera supprimé après le {date}.",
-    "reportRetiredBodySoon": "{template} a été retiré du catalogue, sa page n'est donc plus disponible. Ce jeu de données sera bientôt supprimé."
+    "reportRetiredTitle": "Retiré du catalogue",
+    "reportRetiredBody": "{template} ne fait plus partie du catalogue et sa page n’est plus disponible. {date, select, soon {Ce jeu de données sera bientôt supprimé.} other {Ce jeu de données sera supprimé après le {date}.}}"
   },
   "AboutPage": {
     "metaTitle": "À propos - OSM for Cities",

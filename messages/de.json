@@ -627,9 +627,8 @@
     "reportOpen": "Öffnen",
     "reportMore": "{count, plural, one {# weiterer Datensatz wurde geändert.} other {# weitere Datensätze wurden geändert.}}",
     "reportGoToDashboard": "Zu deinem Dashboard",
-    "reportRetiredTitle": "Vorlage eingestellt",
-    "reportRetiredBody": "{template} wurde aus dem Katalog entfernt, daher ist die Seite nicht mehr verfügbar. Dieser Datensatz wird nach dem {date} gelöscht.",
-    "reportRetiredBodySoon": "{template} wurde aus dem Katalog entfernt, daher ist die Seite nicht mehr verfügbar. Dieser Datensatz wird bald gelöscht."
+    "reportRetiredTitle": "Aus dem Katalog entfernt",
+    "reportRetiredBody": "{template} ist nicht mehr im Katalog, die Seite ist nicht mehr verfügbar. {date, select, soon {Dieser Datensatz wird bald gelöscht.} other {Dieser Datensatz wird nach dem {date} gelöscht.}}"
   },
   "AboutPage": {
     "metaTitle": "Über das Projekt - OSM for Cities",
