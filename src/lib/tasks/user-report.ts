@@ -33,7 +33,7 @@ interface ReportDataset {
   retiresAt?: Date;
 }
 
-const MAX_REPORT_ROWS = 10;
+const MAX_REPORT_ROWS = 5;
 
 async function generateEmailContent(
   changedDatasets: ReportDataset[],

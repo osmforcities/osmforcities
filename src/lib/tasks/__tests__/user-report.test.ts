@@ -133,8 +133,8 @@ describe("user-report email generation", () => {
     const { text } = result!.emailContent;
 
     const shown = [...text.matchAll(/dataset\/(t-\d+)/g)].map((m) => m[1]);
-    expect(shown).toEqual(["t-11", "t-10", "t-9", "t-8", "t-7", "t-6", "t-5", "t-4", "t-3", "t-2"]);
-    expect(text).toContain("2 more datasets changed.");
+    expect(shown).toEqual(["t-11", "t-10", "t-9", "t-8", "t-7"]);
+    expect(text).toContain("7 more datasets changed.");
   });
 
   it("keeps a dataset with a pending deletion in the capped list", async () => {
