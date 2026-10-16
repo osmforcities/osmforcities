@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { isRTL, getEmailT, clearMessageCache, type Locale } from "../email-i18n";
-import { createEmailLink } from "../email-layout";
 
 // Mock the file system
 vi.mock("fs", () => ({
@@ -43,7 +42,7 @@ describe("getEmailT", () => {
     const url = "http://localhost:3000/preferences";
     const t = await getEmailT("pt-BR" as Locale);
     const result = t("unsubscribe", {
-      preferencesLink: createEmailLink(url, "página de preferências"),
+      preferencesLink: `<a href="${url}">página de preferências</a>`,
     });
     expect(result).toContain(`<a href="${url}"`);
     expect(result).toContain(">página de preferências</a>");

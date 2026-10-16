@@ -23,7 +23,6 @@ export interface EmailContent {
 interface ReportDataset {
   areaId: number;
   templateId: string;
-  categorySlug: string;
   areaName: string;
   templateName: string;
   lastChanged: Date;
@@ -70,7 +69,7 @@ async function generateEmailContent(
           : []),
         ...(ds.mappers ? [{ iconUrl: glyph("mappers"), text: t("reportMappers", { count: ds.mappers }) }] : []),
       ];
-      const icon = new URLSearchParams({ template: ds.templateId, category: ds.categorySlug });
+      const icon = new URLSearchParams({ template: ds.templateId });
       return emailListItem({
         // A retired template's dataset page already shows "not found".
         link: ds.retiresAt
@@ -198,7 +197,6 @@ export async function generateNextUserReport(): Promise<{
           name: true,
           description: true,
           deprecatesAt: true,
-          category: { select: { slug: true } },
           translations: {
             select: {
               locale: true,
@@ -220,7 +218,6 @@ export async function generateNextUserReport(): Promise<{
       {
         areaId: dataset.areaId,
         templateId: dataset.templateId,
-        categorySlug: dataset.template.category.slug,
         areaName: resolveDatasetAreaName(dataset, userLocale),
         templateName: resolveTemplateForLocale(dataset.template, userLocale).name,
         lastChanged,

@@ -64,7 +64,6 @@ describe("user-report email generation", () => {
     },
     template: {
       name: "schools",
-      category: { slug: "education" },
       description: "Schools and education",
       deprecatesAt: null as Date | null,
       translations: [
@@ -113,7 +112,7 @@ describe("user-report email generation", () => {
     const { html, text } = (await generateNextUserReport())!.emailContent;
 
     expect(html).toContain(
-      'src="https://osmforcities.com/api/email-icon?template=template-schools&amp;category=education"'
+      'src="https://osmforcities.com/api/email-icon?template=template-schools"'
     );
     expect(text).not.toContain("email-icon");
   });
@@ -394,7 +393,6 @@ describe("deadlock scenario", () => {
     },
     template: {
       name: "schools",
-      category: { slug: "education" },
       description: "Schools and education",
       deprecatesAt: null,
       translations: [{ locale: "en", name: "Schools", description: "Schools" }],
@@ -545,7 +543,6 @@ describe("report status tracking helpers", () => {
         stats: { mostRecentElement: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString() },
         template: {
           name: "schools",
-          category: { slug: "education" },
           description: "Schools and education",
           deprecatesAt: null,
           translations: [{ locale: "en", name: "Schools", description: "Schools" }],

@@ -2,6 +2,7 @@ import { cloneElement, type ReactElement } from "react";
 import { ImageResponse } from "next/og";
 import { CalendarDays, Shapes, TriangleAlert, Users, type LucideProps } from "lucide-react";
 import { getTemplateIcon } from "@/lib/category-icons";
+import { prisma } from "@/lib/db";
 import { COLOR } from "@/lib/email-layout";
 
 export const dynamic = "force-dynamic";
@@ -34,9 +35,10 @@ function toHostElement(element: ReactElement): ReactElement {
 
 /**
  * Email icons as PNGs, since email clients strip SVG. `?glyph=` returns a
- * small transparent UI glyph; otherwise the template's icon on an olive tile.
+ * small transparent UI glyph; `?template=` the catalog template's icon on an
+ * olive tile. Anything else is a 404, so made-up URLs cannot force renders.
  */
-export function GET(request: Request) {
+export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
   const glyphName = params.get("glyph");
 
@@ -49,10 +51,16 @@ export function GET(request: Request) {
     );
   }
 
-  const icon = getTemplateIcon(
-    params.get("template") ?? "",
-    params.get("category") ?? ""
-  ) as ReactElement<LucideProps>;
+  const templateId = params.get("template");
+  const template = templateId
+    ? await prisma.template.findUnique({
+        where: { id: templateId },
+        select: { category: { select: { slug: true } } },
+      })
+    : null;
+  if (!templateId || !template) return new Response("Unknown template", { status: 404 });
+
+  const icon = getTemplateIcon(templateId, template.category.slug) as ReactElement<LucideProps>;
 
   return new ImageResponse(
     (

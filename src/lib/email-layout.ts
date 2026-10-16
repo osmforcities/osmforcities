@@ -24,7 +24,7 @@ const MUTED = `margin: 0 0 12px; color: ${COLOR.muted}; font-size: 14px; line-he
 
 const SKIP_IN_PLAIN_TEXT = "html-only";
 
-export function createEmailLink(url: string, text: string): string {
+function createEmailLink(url: string, text: string): string {
   return `<a href="${url}" style="color: ${COLOR.olive600}; text-decoration: underline;">${text}</a>`;
 }
 
