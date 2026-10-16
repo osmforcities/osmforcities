@@ -44,9 +44,9 @@ export async function POST(request: NextRequest) {
     // Get user's language preference, default to 'en'
     const userLocale = (user.language || "en") as Locale;
 
-    try {
-      const content = await buildMagicLinkEmail(userLocale, magicLink);
+    const content = await buildMagicLinkEmail(userLocale, magicLink);
 
+    try {
       // Try to send email via Postmark (if configured)
       await sendEmail({ to: email, ...content });
     } catch (error) {

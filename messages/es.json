@@ -620,6 +620,7 @@
   },
   "Email": {
     "magicLinkSubject": "Iniciar sesión en OSM for Cities",
+    "magicLinkHeading": "Tu enlace para iniciar sesión",
     "magicLinkAction": "Iniciar sesión",
     "magicLinkFallback": "O copia y pega este enlace en tu navegador.",
     "magicLinkExpiry": "Este enlace expira en {hours, plural, one {# hora} other {# horas}} y solo se puede usar una vez. Si no lo solicitaste, puedes ignorar este correo.",

@@ -1,9 +1,24 @@
 import { describe, it, expect } from "vitest";
+import { AVAILABLE_LOCALES } from "@/i18n/constants";
 import { buildMagicLinkEmail } from "../magic-link-email";
 
 const url = "https://osmforcities.org/api/auth/verify?token=abc&x=1";
 
 describe("buildMagicLinkEmail", () => {
+  it.each(AVAILABLE_LOCALES)("renders %s with expiry and the URL once in text", async (locale) => {
+    const { html, text } = await buildMagicLinkEmail(locale, url);
+
+    expect(html).toContain("24");
+    expect(text).toContain("24");
+    expect(text.split(url)).toHaveLength(2);
+  });
+
+  it("leaves the button out of the plain text", async () => {
+    const { text } = await buildMagicLinkEmail("en", url);
+
+    expect(text.split("\n")).not.toContain("Sign in");
+  });
+
   it("renders the English email with link, fallback URL and expiry", async () => {
     const { subject, html, text } = await buildMagicLinkEmail("en", url);
 
@@ -15,7 +30,7 @@ describe("buildMagicLinkEmail", () => {
     expect(html).toContain("expires in 24 hours");
     expect(html).toContain("you can ignore this email");
 
-    expect(text).toContain("Sign in to OSM for Cities");
+    expect(text).toContain("Your sign-in link");
     expect(text.split(url)).toHaveLength(2);
     expect(text).toContain("expires in 24 hours");
     expect(text).toContain("you can ignore this email");
