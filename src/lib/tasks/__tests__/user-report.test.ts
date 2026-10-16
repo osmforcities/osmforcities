@@ -114,6 +114,8 @@ describe("user-report email generation", () => {
     expect(html).toContain(
       'src="https://osmforcities.com/email-icons/template-schools.png"'
     );
+    // The title already links the row; a link around an alt-less image is an empty link.
+    expect(html).not.toMatch(/<a [^>]*>\s*<div[^>]*>\s*<img/);
     expect(text).not.toContain("email-icon");
   });
 

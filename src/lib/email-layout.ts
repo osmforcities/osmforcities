@@ -46,9 +46,8 @@ export const EMAIL_ICON_DIR = "email-icons";
  */
 export const EMAIL_REMOVED_TEMPLATE_ICON = "_removed";
 
-/** `name` is a template id, `EMAIL_REMOVED_TEMPLATE_ICON` or `glyph-<glyph>`. */
-export function emailIconUrl(name: string): string {
-  return `${getEmailBaseUrl()}/${EMAIL_ICON_DIR}/${encodeURIComponent(name)}.png`;
+export function emailIconUrl(iconName: string): string {
+  return `${getEmailBaseUrl()}/${EMAIL_ICON_DIR}/${encodeURIComponent(iconName)}.png`;
 }
 
 function createEmailLink(url: string, text: string): string {
@@ -103,9 +102,10 @@ export function emailList(rows: string[]): string {
 
 /**
  * One list row: icon tile, dark title, stats and an outlined action button.
- * With a `link`, title, tile and action all open it; tile and action are
- * HTML-only so plain text prints the URL once, after the title. Without one
- * (a page that no longer exists) the row is plain text with no action.
+ * With a `link`, the title and action open it. The tile stays unlinked: a link
+ * around an alt-less image is an empty link to screen readers. The action is
+ * HTML-only so plain text prints the URL once, after the title. Without a
+ * `link` (a page that no longer exists) the row is plain text with no action.
  */
 export function emailListItem({
   link,
@@ -131,7 +131,7 @@ export function emailListItem({
     : "";
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
   <tr>
-    <td class="${SKIP_IN_PLAIN_TEXT}" valign="top" width="40" style="padding: 0 12px 0 0;">${linked(tile)}</td>
+    <td class="${SKIP_IN_PLAIN_TEXT}" valign="top" width="40" style="padding: 0 12px 0 0;">${tile}</td>
     <td valign="top" style="font-size: 16px; line-height: 150%; color: ${COLOR.text};">${linked(`<strong>${title}</strong>`, ` color: ${COLOR.text};`)}<br><span style="color: ${COLOR.muted};">${subtitle}</span><div style="margin: 4px 0 0; color: ${COLOR.muted}; font-size: 14px; line-height: 160%;">${emailStats(stats)}</div></td>
     ${actionCell}
   </tr>
