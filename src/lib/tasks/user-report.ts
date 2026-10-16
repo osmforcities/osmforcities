@@ -4,17 +4,12 @@ import type { StoredDatasetStats } from "@/lib/dataset-snapshot";
 import { resolveDatasetAreaName } from "@/lib/area-name";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getDatasetUrl } from "@/lib/urls";
-import {
-  escapeHtml,
-  getEmailBaseUrl,
-  getEmailT,
-  getPreferencesUrl,
-  type Locale,
-} from "@/lib/email-i18n";
+import { escapeHtml, getEmailBaseUrl, getEmailT, type Locale } from "@/lib/email-i18n";
 import {
   createEmailLink,
   emailNotice,
   emailParagraph,
+  emailPreferencesLine,
   renderEmail,
 } from "@/lib/email-layout";
 
@@ -34,13 +29,6 @@ interface ReportDataset {
   daysRemaining?: number;
 }
 
-interface UserReportData {
-  user: {
-    reportsFrequency: "DAILY" | "WEEKLY";
-  };
-  recentDatasets: ReportDataset[];
-}
-
 function getLatestChangeDate(datasets: Array<{ stats?: StoredDatasetStats }>): string | null {
   const stats = datasets[0]?.stats;
   return stats?.mostRecentElement
@@ -49,14 +37,13 @@ function getLatestChangeDate(datasets: Array<{ stats?: StoredDatasetStats }>): s
 }
 
 async function generateEmailContent(
-  data: UserReportData,
+  recentDatasets: ReportDataset[],
+  frequency: "DAILY" | "WEEKLY",
   locale: Locale
 ): Promise<EmailContent> {
-  const { user, recentDatasets } = data;
   const t = await getEmailT(locale);
 
-  const lastPeriod =
-    user.reportsFrequency === "DAILY" ? t("lastPeriodDay") : t("lastPeriodWeek");
+  const lastPeriod = frequency === "DAILY" ? t("lastPeriodDay") : t("lastPeriodWeek");
   const subject = t("reportSubjectChanged", { count: recentDatasets.length, lastPeriod });
 
   const formatDay = new Intl.DateTimeFormat(locale, { dateStyle: "long", timeZone: "UTC" });
@@ -100,12 +87,7 @@ async function generateEmailContent(
     locale,
     heading: subject,
     body,
-    footer: [
-      t("generatedAt", { timestamp }),
-      t("unsubscribe", {
-        preferencesLink: createEmailLink(getPreferencesUrl(locale), t("preferencesPage")),
-      }),
-    ],
+    footer: [t("generatedAt", { timestamp }), emailPreferencesLine(t, locale)],
   });
 
   return { subject, html, text };
@@ -222,30 +204,31 @@ export async function generateNextUserReport(): Promise<{
     return null;
   }
 
-  const datasetStats: UserReportData = {
-    user: { reportsFrequency: user.reportsFrequency },
-    recentDatasets: datasetsWithRecentChanges.map((dataset) => {
-      // Calculate days remaining if template is deprecated
-      let daysRemaining: number | undefined;
-      if (dataset.template.deprecatesAt) {
-        daysRemaining = Math.ceil(
-          (new Date(dataset.template.deprecatesAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000)
-        );
-        if (daysRemaining < 0) daysRemaining = 0;
-      }
+  const reportDatasets: ReportDataset[] = datasetsWithRecentChanges.map((dataset) => {
+    // Calculate days remaining if template is deprecated
+    let daysRemaining: number | undefined;
+    if (dataset.template.deprecatesAt) {
+      daysRemaining = Math.ceil(
+        (new Date(dataset.template.deprecatesAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000)
+      );
+      if (daysRemaining < 0) daysRemaining = 0;
+    }
 
-      return {
-        areaId: dataset.areaId,
-        templateId: dataset.templateId,
-        areaName: resolveDatasetAreaName(dataset, userLocale),
-        templateName: resolveTemplateForLocale(dataset.template, userLocale).name,
-        lastChanged: dataset.lastChanged,
-        daysRemaining,
-      };
-    }),
-  };
+    return {
+      areaId: dataset.areaId,
+      templateId: dataset.templateId,
+      areaName: resolveDatasetAreaName(dataset, userLocale),
+      templateName: resolveTemplateForLocale(dataset.template, userLocale).name,
+      lastChanged: dataset.lastChanged,
+      daysRemaining,
+    };
+  });
 
-  const emailContent = await generateEmailContent(datasetStats, userLocale);
+  const emailContent = await generateEmailContent(
+    reportDatasets,
+    user.reportsFrequency,
+    userLocale
+  );
   const latestChangeDate = getLatestChangeDate(datasetsWithRecentChanges);
 
   return {
@@ -255,8 +238,8 @@ export async function generateNextUserReport(): Promise<{
     emailContent,
     reportData: {
       reportsFrequency: user.reportsFrequency,
-      totalDatasets: datasetStats.recentDatasets.length,
-      publicDatasetsCount: datasetStats.recentDatasets.length,
+      totalDatasets: reportDatasets.length,
+      publicDatasetsCount: reportDatasets.length,
       latestChangeDate,
     },
   };

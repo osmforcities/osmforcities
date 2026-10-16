@@ -1,13 +1,7 @@
 import { prisma } from "@/lib/db";
 import { sendEmail } from "@/lib/email";
-import {
-  escapeHtml,
-  getEmailBaseUrl,
-  getEmailT,
-  getPreferencesUrl,
-  type Locale,
-} from "@/lib/email-i18n";
-import { createEmailLink, emailButton, renderEmail } from "@/lib/email-layout";
+import { escapeHtml, getEmailBaseUrl, getEmailT, type Locale } from "@/lib/email-i18n";
+import { emailButton, emailPreferencesLine, renderEmail } from "@/lib/email-layout";
 import { resolveDatasetAreaName } from "@/lib/area-name";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getDatasetUrl } from "@/lib/urls";
@@ -75,11 +69,7 @@ export async function notifyDatasetReady(
               area: escapeHtml(names.area),
             }),
             body: emailButton(url, t("mapReadyAction")),
-            footer: [
-              t("unsubscribe", {
-                preferencesLink: createEmailLink(getPreferencesUrl(locale), t("preferencesPage")),
-              }),
-            ],
+            footer: [emailPreferencesLine(t, locale)],
           });
 
           await sendEmail({

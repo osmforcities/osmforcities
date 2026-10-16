@@ -31,11 +31,11 @@ describe("renderEmail", () => {
     expect(text).not.toContain("HEADING");
   });
 
-  it("leaves html-only paragraphs out of plain text", () => {
+  it("leaves skipInPlainText paragraphs out of plain text", () => {
     const { html, text } = renderEmail({
       locale: "en",
       heading: "Heading",
-      body: emailParagraph("Only in HTML.", { htmlOnly: true }),
+      body: emailParagraph("Only in HTML.", { skipInPlainText: true }),
     });
 
     expect(html).toContain("Only in HTML.");

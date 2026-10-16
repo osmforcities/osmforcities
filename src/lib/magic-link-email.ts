@@ -15,7 +15,7 @@ export async function buildMagicLinkEmail(locale: Locale, magicLink: string) {
       // Plain text already prints the URL next to the button.
       emailParagraph(`${t("magicLinkFallback")}<br>${emailUrl(href)}`, {
         muted: true,
-        htmlOnly: true,
+        skipInPlainText: true,
       }),
     ].join(""),
   });

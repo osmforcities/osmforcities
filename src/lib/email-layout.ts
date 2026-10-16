@@ -1,5 +1,7 @@
 import { htmlToText } from "html-to-text";
-import { isRTL, type Locale } from "@/lib/email-i18n";
+import { getPreferencesUrl, isRTL, type getEmailT, type Locale } from "@/lib/email-i18n";
+
+type EmailTranslator = Awaited<ReturnType<typeof getEmailT>>;
 
 // Email clients ignore stylesheets, CSS variables and web fonts, so the app
 // tokens are copied here as hex and every style is inline.
@@ -11,33 +13,39 @@ const COLOR = {
   yellow700: "#745b08",
   text: "#222222",
   muted: "#666666",
+  white: "#ffffff",
 };
 const FONT =
   "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 const PARAGRAPH = `margin: 0 0 24px; color: ${COLOR.text}; font-size: 16px; line-height: 150%;`;
 const MUTED = `margin: 0 0 12px; color: ${COLOR.muted}; font-size: 14px; line-height: 150%;`;
 
-/** Parts marked with this class are left out of the plain-text email. */
-const HTML_ONLY = "html-only";
+const SKIP_IN_PLAIN_TEXT = "html-only";
 
 export function createEmailLink(url: string, text: string): string {
   return `<a href="${url}" style="color: ${COLOR.blue500}; text-decoration: none;">${text}</a>`;
 }
 
 export function emailButton(url: string, label: string): string {
-  return `<p style="${PARAGRAPH}"><a href="${url}" style="display: inline-block; background-color: ${COLOR.olive500}; color: #ffffff; padding: 12px 48px; border-radius: 8px; font-weight: 600; text-decoration: none;">${label}</a></p>`;
+  return `<p style="${PARAGRAPH}"><a href="${url}" style="display: inline-block; background-color: ${COLOR.olive500}; color: ${COLOR.white}; padding: 12px 48px; border-radius: 8px; font-weight: 600; text-decoration: none;">${label}</a></p>`;
 }
 
 export function emailParagraph(
   html: string,
-  options: { muted?: boolean; htmlOnly?: boolean } = {}
+  options: { muted?: boolean; skipInPlainText?: boolean } = {}
 ): string {
-  const htmlOnly = options.htmlOnly ? ` class="${HTML_ONLY}"` : "";
-  return `<p${htmlOnly} style="${options.muted ? MUTED : PARAGRAPH}">${html}</p>`;
+  const skipClass = options.skipInPlainText ? ` class="${SKIP_IN_PLAIN_TEXT}"` : "";
+  return `<p${skipClass} style="${options.muted ? MUTED : PARAGRAPH}">${html}</p>`;
 }
 
 export function emailNotice(html: string): string {
   return `<p style="margin: 0 0 16px; padding: 8px 12px; border-radius: 8px; background-color: ${COLOR.yellow100}; color: ${COLOR.yellow700}; font-size: 14px; line-height: 150%;">${html}</p>`;
+}
+
+export function emailPreferencesLine(t: EmailTranslator, locale: Locale): string {
+  return t("unsubscribe", {
+    preferencesLink: createEmailLink(getPreferencesUrl(locale), t("preferencesPage")),
+  });
 }
 
 /** URLs break anywhere so a long link never widens the card on phones. */
@@ -70,7 +78,7 @@ export function renderEmail({
     <td align="center" style="padding: 32px 16px 64px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; max-width: 600px;">
         <tr>
-          <td lang="${locale}" dir="${dir}" style="padding: 32px; background-color: #ffffff; border-radius: 8px; font-family: ${FONT}; text-align: ${align};">
+          <td lang="${locale}" dir="${dir}" style="padding: 32px; background-color: ${COLOR.white}; border-radius: 8px; font-family: ${FONT}; text-align: ${align};">
             <h1 style="margin: 0 0 24px; color: ${COLOR.text}; font-size: 22px; line-height: 130%;">${heading}</h1>
             ${body}
             ${footerHtml}
@@ -84,7 +92,7 @@ export function renderEmail({
   const text = htmlToText(html, {
     selectors: [
       { selector: "h1", options: { uppercase: false } },
-      { selector: `.${HTML_ONLY}`, format: "skip" },
+      { selector: `.${SKIP_IN_PLAIN_TEXT}`, format: "skip" },
       { selector: "a", options: { hideLinkHrefIfSameAsText: true } },
     ],
   });
