@@ -228,6 +228,8 @@ describe("user-report email generation", () => {
 
     expect(html).not.toContain(datasetUrl("en"));
     expect(html).not.toMatch(/>Open<\/a>/);
+    expect(html).toContain('src="https://osmforcities.com/email-icons/_removed.png"');
+    expect(html).not.toContain("email-icons/template-schools.png");
     expect(html).toContain(
       "Schools is no longer in the catalog and its page is unavailable. This dataset will be deleted after October 21, 2026."
     );

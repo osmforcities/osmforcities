@@ -20,7 +20,7 @@ import {
 import { mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
 import * as lucide from "lucide-react";
-import { EMAIL_GLYPHS, EMAIL_ICON_DIR } from "../src/lib/email-layout";
+import { EMAIL_GLYPHS, EMAIL_ICON_DIR, EMAIL_REMOVED_TEMPLATE_ICON } from "../src/lib/email-layout";
 import { renderGlyph, renderTemplateTile } from "./lib/email-icon-render";
 
 const FALLBACK_ICON = "MapPin";
@@ -137,14 +137,13 @@ function writeIconsFile(content: string): void {
 }
 
 /**
- * Write the email PNGs: one tile per template (its icon, else its category's)
- * and the UI glyphs. Never deletes: a removed template's datasets still get
- * report emails until the sync deletes them, so its tile must keep loading.
+ * Write the email PNGs: one tile per template (its icon, else its category's),
+ * the UI glyphs, and the neutral tile report rows use for removed templates.
  */
 async function writeEmailIcons(
   categoryIcons: Map<string, string>,
   templateIcons: Map<string, string>,
-): Promise<number> {
+): Promise<void> {
   const outDir = join(__dirname, "../public", EMAIL_ICON_DIR);
   mkdirSync(outDir, { recursive: true });
   const { templates } = loadTemplatesYaml();
@@ -156,7 +155,11 @@ async function writeEmailIcons(
   for (const [name, { icon, color }] of Object.entries(EMAIL_GLYPHS)) {
     writeFileSync(join(outDir, `glyph-${name}.png`), await renderGlyph(icon, color));
   }
-  return Object.keys(templates).length;
+  writeFileSync(
+    join(outDir, `${EMAIL_REMOVED_TEMPLATE_ICON}.png`),
+    await renderTemplateTile(FALLBACK_ICON),
+  );
+  console.log(`Generated public/${EMAIL_ICON_DIR} with ${Object.keys(templates).length} template tiles`);
 }
 
 /**
@@ -170,8 +173,7 @@ async function generateIcons(): Promise<void> {
     console.log(
       `Generated src/lib/category-icons.tsx with ${categoryIcons.size} category and ${templateIcons.size} template mappings`,
     );
-    const tiles = await writeEmailIcons(categoryIcons, templateIcons);
-    console.log(`Generated public/${EMAIL_ICON_DIR} with ${tiles} template tiles`);
+    await writeEmailIcons(categoryIcons, templateIcons);
   } catch (error) {
     console.error("Failed to generate icons:", error);
     process.exit(1);

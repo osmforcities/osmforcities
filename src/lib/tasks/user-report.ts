@@ -11,6 +11,7 @@ import {
   emailListItem,
   emailParagraph,
   emailPreferencesLine,
+  emailRemovedTemplateIconUrl,
   emailTemplateIconUrl,
   renderEmail,
 } from "@/lib/email-layout";
@@ -78,7 +79,7 @@ async function generateEmailContent(
               url: getDatasetUrl(baseUrl, { locale, areaId: ds.areaId, templateId: ds.templateId }),
               action: t("reportOpen"),
             },
-        iconUrl: emailTemplateIconUrl(ds.templateId),
+        iconUrl: ds.retiresAt ? emailRemovedTemplateIconUrl() : emailTemplateIconUrl(ds.templateId),
         title,
         subtitle: escapeHtml(ds.areaName),
         stats,

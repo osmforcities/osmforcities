@@ -43,6 +43,17 @@ export function emailTemplateIconUrl(templateId: string): string {
   return `${getEmailBaseUrl()}/${EMAIL_ICON_DIR}/${encodeURIComponent(templateId)}.png`;
 }
 
+/**
+ * A neutral tile for templates removed from the catalog: their own PNG may
+ * predate the generator, and the row's warning already names the template.
+ * The underscore keeps it clear of kebab-case template ids.
+ */
+export const EMAIL_REMOVED_TEMPLATE_ICON = "_removed";
+
+export function emailRemovedTemplateIconUrl(): string {
+  return `${getEmailBaseUrl()}/${EMAIL_ICON_DIR}/${EMAIL_REMOVED_TEMPLATE_ICON}.png`;
+}
+
 export function emailGlyphUrl(glyph: keyof typeof EMAIL_GLYPHS): string {
   return `${getEmailBaseUrl()}/${EMAIL_ICON_DIR}/glyph-${glyph}.png`;
 }
