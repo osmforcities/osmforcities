@@ -12,7 +12,7 @@ import type { AvailableLocale } from "@/i18n/constants";
 export type Locale = AvailableLocale;
 
 export function getEmailBaseUrl(): string {
-  return process.env.AUTH_URL || "https://osmforcities.com";
+  return (process.env.AUTH_URL || "https://osmforcities.com").replace(/\/+$/, "");
 }
 
 export function escapeHtml(s: string): string {

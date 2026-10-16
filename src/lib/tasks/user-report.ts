@@ -41,13 +41,18 @@ async function generateEmailContent(
   locale: Locale
 ): Promise<EmailContent> {
   const t = await getEmailT(locale);
-  const baseUrl = getEmailBaseUrl().replace(/\/+$/, "");
+  const baseUrl = getEmailBaseUrl();
 
   const subject = t("reportSubjectChanged", { count: changedDatasets.length, frequency });
 
   const formatDate = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" });
   const rows = changedDatasets
-    .toSorted((a, b) => b.lastChanged.getTime() - a.lastChanged.getTime())
+    // Pending deletions first, so the cap never hides a deletion warning.
+    .toSorted(
+      (a, b) =>
+        Number(b.daysRemaining !== undefined) - Number(a.daysRemaining !== undefined) ||
+        b.lastChanged.getTime() - a.lastChanged.getTime()
+    )
     .slice(0, MAX_REPORT_ROWS)
     .map((ds) => {
       const meta = [

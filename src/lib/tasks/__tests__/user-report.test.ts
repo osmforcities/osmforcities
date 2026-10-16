@@ -128,6 +128,26 @@ describe("user-report email generation", () => {
     expect(text).toContain("2 more datasets changed.");
   });
 
+  it("keeps a dataset with a pending deletion in the capped list", async () => {
+    mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+    const datasets = Array.from({ length: 12 }, (_, i) => ({
+      ...mockDataset,
+      id: `ds-${i}`,
+      templateId: `t-${i}`,
+      stats: { mostRecentElement: `2026-10-16T${String(i).padStart(2, "0")}:00:00Z` },
+      template: {
+        ...mockDataset.template,
+        deprecatesAt: i === 0 ? new Date("2026-10-20T12:00:00Z") : null,
+      },
+    }));
+    mockPrisma.dataset.findMany.mockResolvedValue(datasets);
+
+    const { text } = (await generateNextUserReport())!.emailContent;
+
+    expect(text).toContain("dataset/t-0");
+    expect(text).toContain("You have 4 days left before this dataset is deleted.");
+  });
+
   it("uses app olive links, never the old blue", async () => {
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);

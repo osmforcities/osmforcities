@@ -39,11 +39,10 @@ export function emailParagraph(
   return `<p${skipClass} style="${options.muted ? MUTED : PARAGRAPH}">${html}</p>`;
 }
 
-export function emailNotice(html: string): string {
+function emailNotice(html: string): string {
   return `<p style="margin: 12px 0 0; padding: 8px 12px; border-radius: 8px; background-color: ${COLOR.yellow100}; color: ${COLOR.yellow700}; font-size: 14px; line-height: 150%;">${html}</p>`;
 }
 
-/** Bordered list of rows, one cell per row, divided by hairlines. */
 export function emailList(rows: string[]): string {
   const cells = rows
     .map((row, i) => {
@@ -84,7 +83,7 @@ export function emailListItem({
 }
 
 export function emailPreferencesLine(t: EmailTranslator, locale: Locale): string {
-  const url = `${getEmailBaseUrl().replace(/\/+$/, "")}/${locale}/preferences`;
+  const url = `${getEmailBaseUrl()}/${locale}/preferences`;
   return t("unsubscribe", { preferencesLink: createEmailLink(url, t("preferencesPage")) });
 }
 
