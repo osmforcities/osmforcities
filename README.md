@@ -54,7 +54,7 @@ Install dependencies:
 pnpm install
 ```
 
-New dependency versions must be at least 7 days old (`minimumReleaseAge` in `pnpm-workspace.yaml`). For an urgent security fix, skip the cooldown for that one install:
+New dependency versions must be older than the cooldown set by `minimumReleaseAge` in `pnpm-workspace.yaml`. For an urgent security fix, skip the cooldown for that one install:
 
 ```bash
 pnpm add <pkg> --config.minimum-release-age=0

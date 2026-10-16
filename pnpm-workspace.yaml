@@ -1,3 +1,2 @@
-# Cooldown: resolve only versions published at least 7 days ago (minutes),
-# so a poisoned release is usually yanked before it can land here.
+# 7 days in minutes: poisoned releases usually get yanked before they can land here.
 minimumReleaseAge: 10080
