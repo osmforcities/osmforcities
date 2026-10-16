@@ -6,10 +6,12 @@ import { getDatasetUrl } from "@/lib/urls";
 import { escapeHtml, getEmailBaseUrl, getEmailT, type Locale } from "@/lib/email-i18n";
 import {
   emailButton,
+  emailGlyphUrl,
   emailList,
   emailListItem,
   emailParagraph,
   emailPreferencesLine,
+  emailTemplateIconUrl,
   renderEmail,
 } from "@/lib/email-layout";
 
@@ -45,7 +47,6 @@ async function generateEmailContent(
   const subject = t("reportSubjectChanged", { count: changedDatasets.length, frequency });
 
   const now = new Date();
-  const glyph = (name: string) => `${baseUrl}/api/email-icon?glyph=${name}`;
   const thisYear = new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", timeZone: "UTC" });
   const otherYear = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" });
   const formatShortDate = (date: Date) =>
@@ -63,13 +64,12 @@ async function generateEmailContent(
     .map((ds) => {
       const title = escapeHtml(ds.templateName);
       const stats = [
-        { iconUrl: glyph("calendar"), text: t("reportLastEdit", { date: formatShortDate(ds.lastChanged) }) },
+        { iconUrl: emailGlyphUrl("calendar"), text: t("reportLastEdit", { date: formatShortDate(ds.lastChanged) }) },
         ...(ds.features > 0
-          ? [{ iconUrl: glyph("features"), text: t("reportFeatures", { count: ds.features }) }]
+          ? [{ iconUrl: emailGlyphUrl("features"), text: t("reportFeatures", { count: ds.features }) }]
           : []),
-        ...(ds.mappers ? [{ iconUrl: glyph("mappers"), text: t("reportMappers", { count: ds.mappers }) }] : []),
+        ...(ds.mappers ? [{ iconUrl: emailGlyphUrl("mappers"), text: t("reportMappers", { count: ds.mappers }) }] : []),
       ];
-      const icon = new URLSearchParams({ template: ds.templateId });
       return emailListItem({
         // A retired template's dataset page already shows "not found".
         link: ds.retiresAt
@@ -78,12 +78,12 @@ async function generateEmailContent(
               url: getDatasetUrl(baseUrl, { locale, areaId: ds.areaId, templateId: ds.templateId }),
               action: t("reportOpen"),
             },
-        iconUrl: escapeHtml(`${baseUrl}/api/email-icon?${icon}`),
+        iconUrl: emailTemplateIconUrl(ds.templateId),
         title,
         subtitle: escapeHtml(ds.areaName),
         stats,
         warning: ds.retiresAt && {
-          iconUrl: glyph("alert"),
+          iconUrl: emailGlyphUrl("alert"),
           title: t("reportRetiredTitle"),
           // "soon" is the message's select branch for a date already past.
           body: t("reportRetiredBody", {

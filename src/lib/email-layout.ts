@@ -24,6 +24,29 @@ const MUTED = `margin: 0 0 12px; color: ${COLOR.muted}; font-size: 14px; line-he
 
 const SKIP_IN_PLAIN_TEXT = "html-only";
 
+/** Small UI glyphs: lucide icon name and color, drawn by `pnpm generate-icons`. */
+export const EMAIL_GLYPHS = {
+  calendar: { icon: "CalendarDays", color: COLOR.muted },
+  features: { icon: "Shapes", color: COLOR.muted },
+  mappers: { icon: "Users", color: COLOR.muted },
+  alert: { icon: "TriangleAlert", color: COLOR.yellow700 },
+} as const;
+
+/**
+ * Static PNGs in public/email-icons, committed and written by
+ * `pnpm generate-icons`. Email clients strip SVG, and static files cache on
+ * the CDN by extension.
+ */
+export const EMAIL_ICON_DIR = "email-icons";
+
+export function emailTemplateIconUrl(templateId: string): string {
+  return `${getEmailBaseUrl()}/${EMAIL_ICON_DIR}/${encodeURIComponent(templateId)}.png`;
+}
+
+export function emailGlyphUrl(glyph: keyof typeof EMAIL_GLYPHS): string {
+  return `${getEmailBaseUrl()}/${EMAIL_ICON_DIR}/glyph-${glyph}.png`;
+}
+
 function createEmailLink(url: string, text: string): string {
   return `<a href="${url}" style="color: ${COLOR.olive600}; text-decoration: underline;">${text}</a>`;
 }
@@ -97,7 +120,8 @@ export function emailListItem({
 }): string {
   const linked = (html: string, style = "") =>
     link ? `<a href="${link.url}" style="text-decoration: none;${style}">${html}</a>` : html;
-  const tile = `<img src="${iconUrl}" width="40" height="40" alt="" style="display: block; border: 0; border-radius: 8px;">`;
+  // The olive square shows where images are blocked (Outlook, many work clients).
+  const tile = `<div style="width: 40px; height: 40px; background-color: ${COLOR.olive100}; border-radius: 8px;"><img src="${iconUrl}" width="40" height="40" alt="" style="display: block; border: 0; border-radius: 8px;"></div>`;
   const actionCell = link
     ? `<td class="${SKIP_IN_PLAIN_TEXT}" valign="top" width="1" style="padding: 0 0 0 12px; white-space: nowrap;"><a href="${link.url}" style="display: inline-block; padding: 6px 14px; border: 1px solid ${COLOR.olive500}; border-radius: 6px; color: ${COLOR.olive600}; font-size: 14px; font-weight: 600; line-height: 150%; text-decoration: none;">${link.action}</a></td>`
     : "";

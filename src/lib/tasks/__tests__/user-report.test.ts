@@ -112,7 +112,7 @@ describe("user-report email generation", () => {
     const { html, text } = (await generateNextUserReport())!.emailContent;
 
     expect(html).toContain(
-      'src="https://osmforcities.com/api/email-icon?template=template-schools"'
+      'src="https://osmforcities.com/email-icons/template-schools.png"'
     );
     expect(text).not.toContain("email-icon");
   });
