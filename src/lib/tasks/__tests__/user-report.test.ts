@@ -63,7 +63,7 @@ describe("user-report email generation", () => {
     template: {
       name: "schools",
       description: "Schools and education",
-      deprecatesAt: null as string | null,
+      deprecatesAt: null as Date | null,
       translations: [
         { locale: "en", name: "Schools", description: "Schools" },
         { locale: "pt-BR", name: "Escolas", description: "Escolas" },
@@ -118,7 +118,7 @@ describe("user-report email generation", () => {
     mockPrisma.dataset.findMany.mockResolvedValue([
       {
         ...mockDataset,
-        template: { ...mockDataset.template, deprecatesAt: "2026-10-21T12:00:00Z" },
+        template: { ...mockDataset.template, deprecatesAt: new Date("2026-10-21T12:00:00Z") },
       },
     ]);
 
@@ -183,7 +183,7 @@ describe("user-report email generation", () => {
 
     const expiredDataset = {
       ...mockDataset,
-      template: { ...mockDataset.template, deprecatesAt: "2026-10-15T12:00:00Z" },
+      template: { ...mockDataset.template, deprecatesAt: new Date("2026-10-15T12:00:00Z") },
     };
     mockPrisma.dataset.findMany.mockResolvedValue([expiredDataset]);
 
@@ -201,7 +201,7 @@ describe("user-report email generation", () => {
     mockPrisma.dataset.findMany.mockResolvedValue([
       {
         ...mockDataset,
-        template: { ...mockDataset.template, deprecatesAt: "2026-10-17T12:00:00Z" },
+        template: { ...mockDataset.template, deprecatesAt: new Date("2026-10-17T12:00:00Z") },
       },
       { ...mockDataset, id: "ds-2", templateId: "parks" },
     ]);

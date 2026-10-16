@@ -45,7 +45,8 @@ async function generateEmailContent(
 
   const body = days
     .map((day) => {
-      const datasets = datasetsByDay.get(day)!.map((ds) => {
+      const group = datasetsByDay.get(day)!;
+      const datasets = group.map((ds) => {
         const name = t("reportDataset", {
           template: escapeHtml(ds.templateName),
           area: escapeHtml(ds.areaName),
@@ -63,7 +64,7 @@ async function generateEmailContent(
             : t("templateDeprecatedDaysRemaining", { days: ds.daysRemaining });
         return link + emailNotice(notice);
       });
-      const dayLabel = formatDay.format(new Date(`${day}T00:00:00Z`));
+      const dayLabel = formatDay.format(group[0].lastChanged);
       return emailParagraph(`<strong>${dayLabel}</strong>`) + datasets.join("");
     })
     .join("");
@@ -190,7 +191,7 @@ export async function generateNextUserReport(): Promise<{
         daysRemaining: deprecatesAt
           ? Math.max(
               0,
-              Math.ceil((new Date(deprecatesAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000))
+              Math.ceil((deprecatesAt.getTime() - Date.now()) / (24 * 60 * 60 * 1000))
             )
           : undefined,
       },
