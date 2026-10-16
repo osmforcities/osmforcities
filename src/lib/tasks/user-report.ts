@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/db";
 import { readStats } from "@/lib/dataset-stats";
-import type { StoredDatasetStats } from "@/lib/dataset-snapshot";
 import { resolveDatasetAreaName } from "@/lib/area-name";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getDatasetUrl } from "@/lib/urls";
@@ -29,13 +28,6 @@ interface ReportDataset {
   daysRemaining?: number;
 }
 
-function getLatestChangeDate(datasets: Array<{ stats?: StoredDatasetStats }>): string | null {
-  const stats = datasets[0]?.stats;
-  return stats?.mostRecentElement
-    ? new Date(stats.mostRecentElement).toLocaleDateString()
-    : null;
-}
-
 async function generateEmailContent(
   recentDatasets: ReportDataset[],
   frequency: "DAILY" | "WEEKLY",
@@ -43,8 +35,7 @@ async function generateEmailContent(
 ): Promise<EmailContent> {
   const t = await getEmailT(locale);
 
-  const lastPeriod = frequency === "DAILY" ? t("lastPeriodDay") : t("lastPeriodWeek");
-  const subject = t("reportSubjectChanged", { count: recentDatasets.length, lastPeriod });
+  const subject = t("reportSubjectChanged", { count: recentDatasets.length, frequency });
 
   const formatDay = new Intl.DateTimeFormat(locale, { dateStyle: "long", timeZone: "UTC" });
   const datasetsByDay = Map.groupBy(recentDatasets, (ds) =>
@@ -185,14 +176,12 @@ export async function generateNextUserReport(): Promise<{
     orderBy: { updatedAt: "desc" },
   });
 
-  const datasetsWithRecentChanges = recentDatasets
-    .map((d) => ({ ...d, stats: readStats(d) ?? {} }))
-    .flatMap((d) => {
-      const mostRecentElement = d.stats.mostRecentElement;
-      return mostRecentElement && new Date(mostRecentElement) >= since
-        ? [{ ...d, lastChanged: new Date(mostRecentElement) }]
-        : [];
-    });
+  const datasetsWithRecentChanges = recentDatasets.flatMap((d) => {
+    const mostRecentElement = readStats(d)?.mostRecentElement;
+    return mostRecentElement && new Date(mostRecentElement) >= since
+      ? [{ ...d, lastChanged: new Date(mostRecentElement) }]
+      : [];
+  });
 
   // Don't send email if no recent updates, but DO update lastReportSent
   // Note: Users with no watched datasets are excluded by the query filter
@@ -204,32 +193,30 @@ export async function generateNextUserReport(): Promise<{
     return null;
   }
 
-  const reportDatasets: ReportDataset[] = datasetsWithRecentChanges.map((dataset) => {
-    // Calculate days remaining if template is deprecated
-    let daysRemaining: number | undefined;
-    if (dataset.template.deprecatesAt) {
-      daysRemaining = Math.ceil(
-        (new Date(dataset.template.deprecatesAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000)
-      );
-      if (daysRemaining < 0) daysRemaining = 0;
-    }
-
-    return {
-      areaId: dataset.areaId,
-      templateId: dataset.templateId,
-      areaName: resolveDatasetAreaName(dataset, userLocale),
-      templateName: resolveTemplateForLocale(dataset.template, userLocale).name,
-      lastChanged: dataset.lastChanged,
-      daysRemaining,
-    };
-  });
+  const reportDatasets: ReportDataset[] = datasetsWithRecentChanges.map((dataset) => ({
+    areaId: dataset.areaId,
+    templateId: dataset.templateId,
+    areaName: resolveDatasetAreaName(dataset, userLocale),
+    templateName: resolveTemplateForLocale(dataset.template, userLocale).name,
+    lastChanged: dataset.lastChanged,
+    daysRemaining: dataset.template.deprecatesAt
+      ? Math.max(
+          0,
+          Math.ceil(
+            (new Date(dataset.template.deprecatesAt).getTime() - Date.now()) /
+              (24 * 60 * 60 * 1000)
+          )
+        )
+      : undefined,
+  }));
 
   const emailContent = await generateEmailContent(
     reportDatasets,
     user.reportsFrequency,
     userLocale
   );
-  const latestChangeDate = getLatestChangeDate(datasetsWithRecentChanges);
+  const latestChangeDate =
+    datasetsWithRecentChanges[0]?.lastChanged.toLocaleDateString() ?? null;
 
   return {
     userId: user.id,
