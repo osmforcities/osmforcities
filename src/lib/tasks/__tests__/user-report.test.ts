@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { AVAILABLE_LOCALES } from "@/i18n/constants";
 import { clearMessageCache } from "@/lib/email-i18n";
 
 // Mock all dependencies before imports
@@ -9,30 +10,8 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 
-vi.mock("@/lib/email-i18n", () => ({
-  EMAIL_LINK_STYLE: 'style="color: #007bff; text-decoration: none;"',
-  createEmailLink: vi.fn((url: string, text: string) => `<a href="${url}" style="color: #007bff; text-decoration: none;">${text}</a>`),
-  isRTL: vi.fn(() => false),
-  getEmailBaseUrl: () => process.env.AUTH_URL || "https://osmforcities.com",
-  getEmailT: vi.fn(),
-  clearMessageCache: vi.fn(),
-  formatEmail: vi.fn((locale: string, key: string, values?: Record<string, string | number>) => {
-    let result = key;
-    if (values) {
-      for (const [k, v] of Object.entries(values)) {
-        result = result.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
-      }
-    }
-    return result;
-  }),
-}));
-
 vi.mock("@/lib/template-locale", () => ({
   resolveTemplateForLocale: vi.fn(() => ({ name: "Schools", description: "Schools" })),
-}));
-
-vi.mock("html-to-text", () => ({
-  htmlToText: vi.fn((html: string) => html.replace(/<[^>]*>/g, "")),
 }));
 
 import {
@@ -42,7 +21,6 @@ import {
 } from "../user-report";
 import { prisma } from "@/lib/db";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
-import { getEmailT } from "@/lib/email-i18n";
 
 const mockPrisma = prisma as unknown as {
   user: {
@@ -53,48 +31,17 @@ const mockPrisma = prisma as unknown as {
   dataset: { findMany: ReturnType<typeof vi.fn> };
 };
 
-/** Builds a simple ICU-like translator from a messages lookup. */
-function createMockT(messages: Record<string, string>) {
-  const fn = (key: string, values?: Record<string, string | number>) => {
-    let result = messages[key] ?? key;
-    if (values) {
-      for (const [k, v] of Object.entries(values)) {
-        result = result.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
-      }
-    }
-    return result;
-  };
-  return Object.assign(vi.fn(fn), {
-    rich: vi.fn(),
-    markup: vi.fn(),
-    raw: vi.fn(),
-    has: vi.fn(() => true),
-  }) as unknown as Awaited<ReturnType<typeof getEmailT>>;
-}
-
-const enMessages = {
-  lastPeriodDay: "in the last day",
-  lastPeriodWeek: "in the last week",
-  datasetsOne: "dataset",
-  datasetsOther: "datasets",
-  reportSubjectChanged: "{count} {datasets} changed {lastPeriod}",
-  reportSubjectNoChanges: "No changes",
-  reportChanged: "Datasets updated:",
-  reportNoChanges: "No changes to {watchedDatasetsLink} {lastPeriod}",
-  reportSaved: "saved datasets",
-  preferencesPage: "preferences page",
-  generatedAt: "Generated at {timestamp}Z. All dates shown are in UTC.",
-  unsubscribe: "Unsubscribe: {preferencesLink}",
-  templateDeprecatedDaysRemaining: "You have {days} days remaining.",
-  templateDeprecated: "This template was removed from the catalog.",
-  greeting: "Hi!",
-};
-
 describe("user-report email generation", () => {
   beforeEach(() => {
     clearMessageCache();
     vi.clearAllMocks();
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-10-16T12:00:00Z"));
     process.env.AUTH_URL = "https://osmforcities.com";
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   const mockUser = {
@@ -109,13 +56,14 @@ describe("user-report email generation", () => {
     areaId: 12345,
     templateId: "template-schools",
     cityName: "Sao Paulo",
+    area: { name: "Sao Paulo", names: {} },
     stats: {
-      mostRecentElement: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+      mostRecentElement: "2026-10-16T00:00:00Z",
     },
     template: {
       name: "schools",
       description: "Schools and education",
-      deprecatesAt: null,
+      deprecatesAt: null as string | null,
       translations: [
         { locale: "en", name: "Schools", description: "Schools" },
         { locale: "pt-BR", name: "Escolas", description: "Escolas" },
@@ -124,8 +72,10 @@ describe("user-report email generation", () => {
     },
   };
 
+  const datasetUrl = (locale: string) =>
+    `https://osmforcities.com/${locale}/area/${mockDataset.areaId}/dataset/${mockDataset.templateId}`;
+
   it("English user gets English template names", async () => {
-    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
     vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
@@ -134,85 +84,85 @@ describe("user-report email generation", () => {
 
     expect(result).not.toBeNull();
     expect(result?.userLanguage).toBe("en");
-    expect(result?.emailContent.html).toContain("Schools - Sao Paulo");
+    expect(result?.emailContent.subject).toBe("1 dataset changed in the last week");
+    expect(result?.emailContent.html).toContain("Schools in Sao Paulo");
+    expect(result?.emailContent.html).toContain("October 16, 2026");
   });
 
-  it("Portuguese user gets Portuguese template names", async () => {
-    const ptUser = { ...mockUser, language: "pt-BR" };
-    const ptMessages = {
-      ...enMessages,
-      lastPeriodDay: "no último dia",
-      lastPeriodWeek: "na última semana",
-      datasetsOne: "conjunto de dados",
-      datasetsOther: "conjuntos de dados",
-      reportSubjectChanged: "{count} {datasets} mudaram {lastPeriod}",
-    };
-    vi.mocked(getEmailT).mockResolvedValue(createMockT(ptMessages));
+  it("Portuguese user gets Portuguese template names and dates", async () => {
     vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Escolas", description: "Escolas" });
-    mockPrisma.user.findFirst.mockResolvedValue(ptUser);
+    mockPrisma.user.findFirst.mockResolvedValue({ ...mockUser, language: "pt-BR" });
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
     const result = await generateNextUserReport();
 
-    expect(result).not.toBeNull();
     expect(result?.userLanguage).toBe("pt-BR");
-    expect(result?.emailContent.html).toContain("Escolas - Sao Paulo");
-    expect(result?.emailContent.subject).toContain("conjunto de dados");
+    expect(result?.emailContent.subject).toBe("1 conjunto de dados mudou na última semana");
+    expect(result?.emailContent.html).toContain("Escolas em Sao Paulo");
+    expect(result?.emailContent.html).toContain("16 de outubro de 2026");
   });
 
-  it("Spanish user gets Spanish template names", async () => {
-    const esUser = { ...mockUser, language: "es" };
-    const esMessages = {
-      ...enMessages,
-      lastPeriodDay: "en el último día",
-      lastPeriodWeek: "en la última semana",
-      datasetsOne: "conjunto de datos",
-      datasetsOther: "conjuntos de datos",
-      reportSubjectChanged: "{count} {datasets} cambiaron {lastPeriod}",
-    };
-    vi.mocked(getEmailT).mockResolvedValue(createMockT(esMessages));
-    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Escuelas", description: "Escuelas" });
-    mockPrisma.user.findFirst.mockResolvedValue(esUser);
-    mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
+  it("uses the localized area name", async () => {
+    mockPrisma.user.findFirst.mockResolvedValue({ ...mockUser, language: "pt-BR" });
+    mockPrisma.dataset.findMany.mockResolvedValue([
+      { ...mockDataset, area: { name: "Amsterdam", names: { pt: "Amesterdão" } } },
+    ]);
 
     const result = await generateNextUserReport();
 
-    expect(result).not.toBeNull();
-    expect(result?.userLanguage).toBe("es");
-    expect(result?.emailContent.html).toContain("Escuelas - Sao Paulo");
-    expect(result?.emailContent.subject).toContain("conjunto de datos");
+    expect(result?.emailContent.html).toContain("em Amesterdão");
   });
 
-  it("falls back to English when translation missing", async () => {
-    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
-    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
+  it.each(AVAILABLE_LOCALES)("renders %s with card, footer and each URL once in text", async (locale) => {
+    mockPrisma.user.findFirst.mockResolvedValue({ ...mockUser, language: locale });
+    mockPrisma.dataset.findMany.mockResolvedValue([
+      {
+        ...mockDataset,
+        template: { ...mockDataset.template, deprecatesAt: "2026-10-21T12:00:00Z" },
+      },
+    ]);
+
+    const result = await generateNextUserReport();
+    const { html, text } = result!.emailContent;
+
+    expect(html).toContain(`lang="${locale}"`);
+    expect(html).toMatch(/<h1[^>]*>[^<]*\S[^<]*<\/h1>/);
+    expect(html).toContain("2026");
+    expect(html).not.toMatch(/\{\w+\}/);
+    expect(text.split(datasetUrl(locale))).toHaveLength(2);
+    expect(text.split(`https://osmforcities.com/${locale}/preferences`)).toHaveLength(2);
+    expect(text).toMatch(/\b5\b/);
+  });
+
+  it("escapes OSM-sourced names in the HTML body", async () => {
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "A & B", description: "" });
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
-    mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
+    mockPrisma.dataset.findMany.mockResolvedValue([
+      { ...mockDataset, area: { name: "<b>Town</b>", names: {} } },
+    ]);
 
     const result = await generateNextUserReport();
 
-    expect(result?.emailContent.html).toContain("Schools - Sao Paulo");
+    expect(result?.emailContent.html).toContain("A &amp; B in &lt;b&gt;Town&lt;/b&gt;");
   });
 
   it("pluralizes correctly for 1 vs multiple datasets", async () => {
-    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
     vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
 
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
     const singleResult = await generateNextUserReport();
-    expect(singleResult?.emailContent.subject).toContain("1 dataset");
+    expect(singleResult?.emailContent.subject).toContain("1 dataset changed");
 
     mockPrisma.dataset.findMany.mockResolvedValue([
       mockDataset,
       { ...mockDataset, id: "ds-2", cityName: "Rio" },
     ]);
     const multipleResult = await generateNextUserReport();
-    expect(multipleResult?.emailContent.subject).toContain("2 datasets");
+    expect(multipleResult?.emailContent.subject).toContain("2 datasets changed");
   });
 
   it("uses correct frequency term for daily vs weekly", async () => {
-    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
     vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
@@ -228,50 +178,44 @@ describe("user-report email generation", () => {
   });
 
   it("uses templateDeprecated (not daysRemaining) when deprecatesAt is in the past", async () => {
-    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
     vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
 
     const expiredDataset = {
       ...mockDataset,
-      template: {
-        ...mockDataset.template,
-        deprecatesAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // yesterday
-      },
+      template: { ...mockDataset.template, deprecatesAt: "2026-10-15T12:00:00Z" },
     };
     mockPrisma.dataset.findMany.mockResolvedValue([expiredDataset]);
 
     const result = await generateNextUserReport();
 
-    expect(result).not.toBeNull();
     expect(result?.emailContent.html).toContain("This template was removed from the catalog.");
-    expect(result?.emailContent.html).not.toContain("0 days remaining");
+    expect(result?.emailContent.html).not.toContain("0 days left");
   });
 
-  it("shows deprecation notices for all deprecated datasets", async () => {
-    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
-    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
+  it("puts each deprecation notice right after its own dataset", async () => {
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
-
-    const futureDate = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
-    const deprecatedDataset1 = {
-      ...mockDataset,
-      id: "ds-1",
-      template: { ...mockDataset.template, deprecatesAt: futureDate },
-    };
-    const deprecatedDataset2 = {
-      ...mockDataset,
-      id: "ds-2",
-      cityName: "Rio",
-      template: { ...mockDataset.template, deprecatesAt: futureDate },
-    };
-    mockPrisma.dataset.findMany.mockResolvedValue([deprecatedDataset1, deprecatedDataset2]);
+    vi.mocked(resolveTemplateForLocale)
+      .mockReturnValueOnce({ name: "Schools", description: "" })
+      .mockReturnValueOnce({ name: "Parks", description: "" });
+    mockPrisma.dataset.findMany.mockResolvedValue([
+      {
+        ...mockDataset,
+        template: { ...mockDataset.template, deprecatesAt: "2026-10-17T12:00:00Z" },
+      },
+      { ...mockDataset, id: "ds-2", templateId: "parks" },
+    ]);
 
     const result = await generateNextUserReport();
+    const { text } = result!.emailContent;
 
-    expect(result).not.toBeNull();
-    const occurrences = (result?.emailContent.html.match(/days remaining/g) ?? []).length;
-    expect(occurrences).toBe(2);
+    const schools = text.indexOf("Schools in Sao Paulo");
+    const notice = text.indexOf("You have 1 day left before this dataset is deleted.");
+    const parks = text.indexOf("Parks in Sao Paulo");
+    expect(schools).toBeGreaterThan(-1);
+    expect(notice).toBeGreaterThan(schools);
+    expect(parks).toBeGreaterThan(notice);
+    expect(text.match(/day left/g)).toHaveLength(1);
   });
 
   it("returns null when no user due for report", async () => {
@@ -288,16 +232,13 @@ describe("user-report email generation", () => {
   });
 
   it("links to the area/template dataset route, not the bare dataset id", async () => {
-    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
     vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
     mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
     const result = await generateNextUserReport();
 
-    expect(result?.emailContent.html).toContain(
-      `https://osmforcities.com/en/area/${mockDataset.areaId}/dataset/${mockDataset.templateId}`
-    );
+    expect(result?.emailContent.html).toContain(datasetUrl("en"));
     expect(result?.emailContent.html).not.toContain(`/dataset/${mockDataset.id}`);
   });
 });
@@ -322,6 +263,7 @@ describe("deadlock scenario", () => {
     areaId: 12345,
     templateId: "template-schools",
     cityName: "Sao Paulo",
+    area: { name: "Sao Paulo", names: {} },
     stats: {
       mostRecentElement: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
     },
@@ -334,7 +276,6 @@ describe("deadlock scenario", () => {
   };
 
   it("updates lastReportSent when user has watches but datasets have no recent changes", async () => {
-    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
     vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
 
     mockPrisma.user.findFirst.mockResolvedValue(userWithWatches);
@@ -356,7 +297,6 @@ describe("deadlock scenario", () => {
   });
 
   it("processes multiple users correctly in sequence", async () => {
-    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
     vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
 
     // First call: user with watches but no recent changes
@@ -387,7 +327,6 @@ describe("deadlock scenario", () => {
   });
 
   it("correctly filters by DAILY frequency timing", async () => {
-    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
     vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
 
     const user23hAgo = {
@@ -403,7 +342,6 @@ describe("deadlock scenario", () => {
   });
 
   it("correctly filters by WEEKLY frequency timing", async () => {
-    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
     vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
 
     const weeklyUser = {
@@ -463,7 +401,6 @@ describe("report status tracking helpers", () => {
   });
 
   it("does not update lastReportSent when generating report with recent changes", async () => {
-    vi.mocked(getEmailT).mockResolvedValue(createMockT(enMessages));
     vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
 
     mockPrisma.user.findFirst.mockResolvedValue({
@@ -478,6 +415,7 @@ describe("report status tracking helpers", () => {
         areaId: 12345,
         templateId: "template-schools",
         cityName: "Sao Paulo",
+        area: { name: "Sao Paulo", names: {} },
         stats: { mostRecentElement: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString() },
         template: {
           name: "schools",

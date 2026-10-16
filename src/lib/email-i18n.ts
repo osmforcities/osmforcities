@@ -11,11 +11,12 @@ import type { AvailableLocale } from "@/i18n/constants";
 /** Supported locales for emails. */
 export type Locale = AvailableLocale;
 
-/** Shared HTML style for email links. */
-export const EMAIL_LINK_STYLE = 'style="color: #007bff; text-decoration: none;"';
-
 export function getEmailBaseUrl(): string {
   return process.env.AUTH_URL || "https://osmforcities.com";
+}
+
+export function getPreferencesUrl(locale: Locale): string {
+  return `${getEmailBaseUrl().replace(/\/+$/, "")}/${locale}/preferences`;
 }
 
 export function escapeHtml(s: string): string {
@@ -24,11 +25,6 @@ export function escapeHtml(s: string): string {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
-}
-
-/** Creates an HTML link with consistent styling. */
-export function createEmailLink(url: string, text: string): string {
-  return `<a href="${url}" ${EMAIL_LINK_STYLE}>${text}</a>`;
 }
 
 const RTL_LOCALES = ["ar", "he", "fa", "ur"];

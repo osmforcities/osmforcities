@@ -1,17 +1,22 @@
 import { prisma } from "@/lib/db";
-import { htmlToText } from "html-to-text";
 import { readStats } from "@/lib/dataset-stats";
 import type { StoredDatasetStats } from "@/lib/dataset-snapshot";
+import { resolveDatasetAreaName } from "@/lib/area-name";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getDatasetUrl } from "@/lib/urls";
 import {
-  createEmailLink,
+  escapeHtml,
   getEmailBaseUrl,
   getEmailT,
-  isRTL,
-  formatEmail,
+  getPreferencesUrl,
   type Locale,
 } from "@/lib/email-i18n";
+import {
+  createEmailLink,
+  emailNotice,
+  emailParagraph,
+  renderEmail,
+} from "@/lib/email-layout";
 
 /** Email with subject line, HTML body, and plain text fallback. */
 export interface EmailContent {
@@ -20,27 +25,20 @@ export interface EmailContent {
   text: string;
 }
 
-interface UserReportData {
-  user: {
-    id: string;
-    email: string;
-    reportsFrequency: "DAILY" | "WEEKLY";
-    language: string | null;
-  };
-  recentDatasets: Array<{
-    id: string;
-    areaId: number;
-    templateId: string;
-    name: string;
-    templateName: string;
-    lastChanged: Date | null;
-    daysRemaining?: number;
-  }>;
+interface ReportDataset {
+  areaId: number;
+  templateId: string;
+  areaName: string;
+  templateName: string;
+  lastChanged: Date;
+  daysRemaining?: number;
 }
 
-function formatUTCDate(date: Date | null): string {
-  if (!date) return "Unknown";
-  return date.toISOString().split("T")[0];
+interface UserReportData {
+  user: {
+    reportsFrequency: "DAILY" | "WEEKLY";
+  };
+  recentDatasets: ReportDataset[];
 }
 
 function getLatestChangeDate(datasets: Array<{ stats?: StoredDatasetStats }>): string | null {
@@ -50,164 +48,67 @@ function getLatestChangeDate(datasets: Array<{ stats?: StoredDatasetStats }>): s
     : null;
 }
 
-function generateEmailBodyWithChanges(
-  recentDatasets: Array<{
-    id: string;
-    areaId: number;
-    templateId: string;
-    name: string;
-    templateName: string;
-    lastChanged: Date | null;
-    daysRemaining?: number;
-  }>,
-  frequency: "DAILY" | "WEEKLY",
-  changedText: string,
-  deprecationText: string | undefined,
-  userLocale: Locale
-): string {
-  const datasetsByDay = new Map<
-    string,
-    Array<{
-      id: string;
-      areaId: number;
-      templateId: string;
-      name: string;
-      templateName: string;
-    }>
-  >();
-
-  recentDatasets.forEach((ds) => {
-    const dayKey = ds.lastChanged
-      ? ds.lastChanged.toISOString().split("T")[0]
-      : "Unknown";
-    if (!datasetsByDay.has(dayKey)) {
-      datasetsByDay.set(dayKey, []);
-    }
-    datasetsByDay.get(dayKey)!.push({
-      id: ds.id,
-      areaId: ds.areaId,
-      templateId: ds.templateId,
-      name: ds.name,
-      templateName: ds.templateName,
-    });
-  });
-
-  const sortedDays = Array.from(datasetsByDay.keys()).sort().reverse();
-
-  const datasetsList = sortedDays
-    .map((day) => {
-      const datasets = datasetsByDay.get(day)!;
-      const dayFormatted = formatUTCDate(new Date(day + "T00:00:00Z"));
-      const datasetsList = datasets
-        .map(
-          (ds) =>
-            `${createEmailLink(
-              getDatasetUrl(getEmailBaseUrl(), {
-                locale: userLocale,
-                areaId: ds.areaId,
-                templateId: ds.templateId,
-              }),
-              `${ds.templateName} - ${ds.name}`
-            )}`
-        )
-        .join("<br>");
-
-      return `<strong>${dayFormatted}</strong><br>${datasetsList}`;
-    })
-    .join("<br><br>");
-
-  let deprecationNotice = "";
-  if (deprecationText) {
-    deprecationNotice = `<div style="background: #fff3cd; padding: 15px; border-radius: 5px; border: 1px solid #ffc107; margin-bottom: 20px;">${deprecationText}</div>`;
-  }
-
-  return `
-    <p>${changedText}</p>
-
-    ${deprecationNotice}
-    <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">${datasetsList}</div>`;
-}
-
 async function generateEmailContent(
   data: UserReportData,
-  userLocale: Locale
+  locale: Locale
 ): Promise<EmailContent> {
   const { user, recentDatasets } = data;
-  const frequency = user.reportsFrequency;
-  const count = recentDatasets.length;
+  const t = await getEmailT(locale);
 
-  const t = await getEmailT(userLocale);
-  const dir = isRTL(userLocale) ? "rtl" : "ltr";
+  const lastPeriod =
+    user.reportsFrequency === "DAILY" ? t("lastPeriodDay") : t("lastPeriodWeek");
+  const subject = t("reportSubjectChanged", { count: recentDatasets.length, lastPeriod });
 
-  const lastPeriod = frequency === "DAILY" ? t("lastPeriodDay") : t("lastPeriodWeek");
+  const formatDay = new Intl.DateTimeFormat(locale, { dateStyle: "long", timeZone: "UTC" });
+  const datasetsByDay = Map.groupBy(recentDatasets, (ds) =>
+    ds.lastChanged.toISOString().slice(0, 10)
+  );
+  const days = [...datasetsByDay.keys()].sort().reverse();
 
-  // Pre-resolves plural form. Safe for current supported locales (en, pt-BR, es) which
-  // all use binary one/other forms. If a language with more plural categories is added
-  // (e.g. Arabic has 6 forms), this must switch to ICU plural syntax in the message string.
-  // See GitHub issue for tracking: epic #80.
-  const datasets = count === 1 ? t("datasetsOne") : t("datasetsOther");
-  const subject =
-    count === 0
-      ? t("reportSubjectNoChanges", { lastPeriod })
-      : t("reportSubjectChanged", { count, datasets, lastPeriod });
-
-  // Check if any datasets use deprecated templates
-  const deprecatedDatasets = recentDatasets.filter((ds) => ds.daysRemaining !== undefined);
-  let deprecationNotice: string | undefined;
-  if (deprecatedDatasets.length > 0) {
-    const notices = deprecatedDatasets.map((ds) =>
-      ds.daysRemaining === 0
-        ? t("templateDeprecated")
-        : t("templateDeprecatedDaysRemaining", { days: ds.daysRemaining! })
-    );
-    deprecationNotice = notices.join("<br>");
-  }
-
-  const reportChangedText = t("reportChanged", { lastPeriod });
-  const savedDatasetsLink = createEmailLink(`${getEmailBaseUrl()}/`, t("reportSaved"));
-  const emailBody =
-    count > 0
-      ? generateEmailBodyWithChanges(
-          recentDatasets,
-          frequency,
-          reportChangedText,
-          deprecationNotice,
-          userLocale
-        )
-      : await formatEmail(userLocale, "reportNoChanges", {
-          savedDatasetsLink,
-          lastPeriod,
+  const body = days
+    .map((day) => {
+      const datasets = datasetsByDay.get(day)!.map((ds) => {
+        const name = t("reportDataset", {
+          template: escapeHtml(ds.templateName),
+          area: escapeHtml(ds.areaName),
         });
+        const url = getDatasetUrl(getEmailBaseUrl(), {
+          locale,
+          areaId: ds.areaId,
+          templateId: ds.templateId,
+        });
+        const link = emailParagraph(createEmailLink(url, name));
+        if (ds.daysRemaining === undefined) return link;
+        const notice =
+          ds.daysRemaining === 0
+            ? t("templateDeprecated")
+            : t("templateDeprecatedDaysRemaining", { days: ds.daysRemaining });
+        return link + emailNotice(notice);
+      });
+      const dayLabel = formatDay.format(new Date(`${day}T00:00:00Z`));
+      return emailParagraph(`<strong>${dayLabel}</strong>`) + datasets.join("");
+    })
+    .join("");
 
-  // Generate footer
-  const timestamp = new Date().toISOString().split(".")[0];
-  const generatedAtText = t("generatedAt", { timestamp });
-  const preferencesLink = createEmailLink(`${getEmailBaseUrl()}/preferences`, t("preferencesPage"));
-  const unsubscribeText = await formatEmail(userLocale, "unsubscribe", {
-    preferencesLink,
+  const timestamp = new Intl.DateTimeFormat(locale, {
+    dateStyle: "long",
+    timeStyle: "short",
+    timeZone: "UTC",
+  }).format(new Date());
+
+  const { html, text } = renderEmail({
+    locale,
+    heading: subject,
+    body,
+    footer: [
+      t("generatedAt", { timestamp }),
+      t("unsubscribe", {
+        preferencesLink: createEmailLink(getPreferencesUrl(locale), t("preferencesPage")),
+      }),
+    ],
   });
 
-  const htmlContent = `
-    <div lang="${userLocale}" dir="${dir}">
-      <p>${t("greeting")}</p>
-
-      ${emailBody}
-
-      <p style="color: #999; font-size: 12px;">
-        ${generatedAtText}
-      </p>
-      <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0;">
-      <p style="color: #666; font-size: 14px;">
-        ${unsubscribeText}
-      </p>
-    </div>
-  `;
-
-  return {
-    subject,
-    html: htmlContent,
-    text: htmlToText(htmlContent),
-  };
+  return { subject, html, text };
 }
 
 /** Generates next due user report email. Returns null if no user is due. */
@@ -283,6 +184,7 @@ export async function generateNextUserReport(): Promise<{
       templateId: true,
       cityName: true,
       stats: true,
+      area: { select: { name: true, names: true } },
       template: {
         select: {
           name: true,
@@ -303,11 +205,12 @@ export async function generateNextUserReport(): Promise<{
 
   const datasetsWithRecentChanges = recentDatasets
     .map((d) => ({ ...d, stats: readStats(d) ?? {} }))
-    .filter(
-      (d) =>
-        d.stats.mostRecentElement &&
-        new Date(d.stats.mostRecentElement) >= since
-    );
+    .flatMap((d) => {
+      const mostRecentElement = d.stats.mostRecentElement;
+      return mostRecentElement && new Date(mostRecentElement) >= since
+        ? [{ ...d, lastChanged: new Date(mostRecentElement) }]
+        : [];
+    });
 
   // Don't send email if no recent updates, but DO update lastReportSent
   // Note: Users with no watched datasets are excluded by the query filter
@@ -320,21 +223,8 @@ export async function generateNextUserReport(): Promise<{
   }
 
   const datasetStats: UserReportData = {
-    user: {
-      id: user.id,
-      email: user.email,
-      reportsFrequency: user.reportsFrequency,
-      language: user.language,
-    },
+    user: { reportsFrequency: user.reportsFrequency },
     recentDatasets: datasetsWithRecentChanges.map((dataset) => {
-      const mostRecentElement = dataset.stats.mostRecentElement;
-
-      // Resolve template name for user's locale
-      const resolvedTemplate = resolveTemplateForLocale(
-        dataset.template,
-        userLocale
-      );
-
       // Calculate days remaining if template is deprecated
       let daysRemaining: number | undefined;
       if (dataset.template.deprecatesAt) {
@@ -345,12 +235,11 @@ export async function generateNextUserReport(): Promise<{
       }
 
       return {
-        id: dataset.id,
         areaId: dataset.areaId,
         templateId: dataset.templateId,
-        name: dataset.cityName,
-        templateName: resolvedTemplate.name,
-        lastChanged: mostRecentElement ? new Date(mostRecentElement) : null,
+        areaName: resolveDatasetAreaName(dataset, userLocale),
+        templateName: resolveTemplateForLocale(dataset.template, userLocale).name,
+        lastChanged: dataset.lastChanged,
         daysRemaining,
       };
     }),

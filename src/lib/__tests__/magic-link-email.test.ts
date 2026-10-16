@@ -13,10 +13,11 @@ describe("buildMagicLinkEmail", () => {
     expect(text.split(url)).toHaveLength(2);
   });
 
-  it("leaves the button out of the plain text", async () => {
+  it("prints the URL next to the button in plain text and skips the fallback line", async () => {
     const { text } = await buildMagicLinkEmail("en", url);
 
-    expect(text.split("\n")).not.toContain("Sign in");
+    expect(text).toContain(`Sign in [${url}]`);
+    expect(text).not.toContain("Or copy this link");
   });
 
   it("renders the English email with link, fallback URL and expiry", async () => {
