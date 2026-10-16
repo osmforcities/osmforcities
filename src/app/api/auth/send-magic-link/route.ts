@@ -4,7 +4,8 @@ import { sendEmail } from "@/lib/email";
 import { isMagicLinkRateLimited } from "@/lib/magic-link-rate-limit";
 import { LAST_EMAIL_COOKIE, LAST_EMAIL_MAX_AGE } from "@/lib/last-email-cookie";
 import { getBaseUrl } from "@/lib/utils";
-import { formatEmail, createEmailLink, type Locale } from "@/lib/email-i18n";
+import { type Locale } from "@/lib/email-i18n";
+import { buildMagicLinkEmail } from "@/lib/magic-link-email";
 import { EmailSchema } from "@/schemas/auth";
 
 export async function POST(request: NextRequest) {
@@ -43,20 +44,11 @@ export async function POST(request: NextRequest) {
     // Get user's language preference, default to 'en'
     const userLocale = (user.language || "en") as Locale;
 
-    try {
-      // Get translated email content with magic link
-      const htmlBody = await formatEmail(userLocale, "magicLinkBody", {
-        magicLink: createEmailLink(magicLink, "link"),
-      });
-      const subject = await formatEmail(userLocale, "magicLinkSubject", {});
+    const content = await buildMagicLinkEmail(userLocale, magicLink);
 
+    try {
       // Try to send email via Postmark (if configured)
-      await sendEmail({
-        to: email,
-        subject,
-        html: `<p>${htmlBody}</p>`,
-        text: `Visit this link to sign in: ${magicLink}`,
-      });
+      await sendEmail({ to: email, ...content });
     } catch (error) {
       // If email sending fails (e.g., Postmark not configured), print magic link to console
       if (process.env.NODE_ENV === "development") {

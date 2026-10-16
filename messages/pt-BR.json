@@ -620,7 +620,10 @@
   },
   "Email": {
     "magicLinkSubject": "Entrar no OSM for Cities",
-    "magicLinkBody": "Clique {magicLink} para entrar.",
+    "magicLinkHeading": "Seu link de acesso",
+    "magicLinkAction": "Entrar",
+    "magicLinkFallback": "Ou copie e cole este link no seu navegador.",
+    "magicLinkExpiry": "Este link expira em {hours, plural, one {# hora} other {# horas}} e só pode ser usado uma vez. Se você não o solicitou, pode ignorar este e-mail.",
     "reportSubjectChanged": "{count} {datasets} mudaram {lastPeriod}",
     "reportSubjectNoChanges": "Sem mudanças {lastPeriod}",
     "reportChanged": "Os seguintes conjuntos de dados foram atualizados {lastPeriod}:",

@@ -611,7 +611,10 @@
   },
   "Email": {
     "magicLinkSubject": "Anmeldung bei OSM for Cities",
-    "magicLinkBody": "Klicke auf {magicLink}, um dich anzumelden.",
+    "magicLinkHeading": "Dein Anmeldelink",
+    "magicLinkAction": "Anmelden",
+    "magicLinkFallback": "Oder kopiere diesen Link in deinen Browser.",
+    "magicLinkExpiry": "Dieser Link läuft in {hours, plural, one {# Stunde} other {# Stunden}} ab und kann nur einmal verwendet werden. Wenn du ihn nicht angefordert hast, kannst du diese E-Mail ignorieren.",
     "reportSubjectChanged": "{count} {datasets} {lastPeriod} geändert",
     "reportSubjectNoChanges": "Keine Änderungen {lastPeriod}",
     "reportChanged": "Die folgenden Datensätze wurden {lastPeriod} aktualisiert:",

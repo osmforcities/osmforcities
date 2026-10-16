@@ -611,7 +611,10 @@
   },
   "Email": {
     "magicLinkSubject": "Sign in to OSM for Cities",
-    "magicLinkBody": "Click {magicLink} to sign in.",
+    "magicLinkHeading": "Your sign-in link",
+    "magicLinkAction": "Sign in",
+    "magicLinkFallback": "Or copy this link into your browser.",
+    "magicLinkExpiry": "This link expires in {hours, plural, one {# hour} other {# hours}} and can be used once. If you didn't request it, you can ignore this email.",
     "reportSubjectChanged": "{count} {datasets} changed {lastPeriod}",
     "reportSubjectNoChanges": "No changes {lastPeriod}",
     "reportChanged": "The following datasets were updated {lastPeriod}:",

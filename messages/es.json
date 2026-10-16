@@ -620,7 +620,10 @@
   },
   "Email": {
     "magicLinkSubject": "Iniciar sesión en OSM for Cities",
-    "magicLinkBody": "Haz clic {magicLink} para iniciar sesión.",
+    "magicLinkHeading": "Tu enlace para iniciar sesión",
+    "magicLinkAction": "Iniciar sesión",
+    "magicLinkFallback": "O copia y pega este enlace en tu navegador.",
+    "magicLinkExpiry": "Este enlace expira en {hours, plural, one {# hora} other {# horas}} y solo se puede usar una vez. Si no lo solicitaste, puedes ignorar este correo.",
     "reportSubjectChanged": "{count} {datasets} cambiaron {lastPeriod}",
     "reportSubjectNoChanges": "Sin cambios {lastPeriod}",
     "reportChanged": "Los siguientes conjuntos de datos se actualizaron {lastPeriod}:",

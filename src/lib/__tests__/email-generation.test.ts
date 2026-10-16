@@ -20,7 +20,6 @@ import { promises as fs } from "fs";
 const enMessages = {
   Email: {
     magicLinkSubject: "Sign in to OSM for Cities",
-    magicLinkBody: "Click {magicLink} to sign in.",
     reportSubjectChanged: "{count} {datasets} changed {lastPeriod}",
     reportSubjectNoChanges: "No changes {lastPeriod}",
     reportChanged: "The following datasets were updated {lastPeriod}:",
@@ -43,7 +42,6 @@ const enMessages = {
 const ptMessages = {
   Email: {
     magicLinkSubject: "Entrar no OSM for Cities",
-    magicLinkBody: "Clique {magicLink} para entrar.",
     reportSubjectChanged:
       "{count} {datasets} mudaram {lastPeriod}",
     reportSubjectNoChanges: "Sem mudanças {lastPeriod}",
@@ -67,7 +65,6 @@ const ptMessages = {
 const esMessages = {
   Email: {
     magicLinkSubject: "Iniciar sesión en OSM for Cities",
-    magicLinkBody: "Haz clic {magicLink} para iniciar sesión.",
     reportSubjectChanged:
       "{count} {datasets} cambiaron {lastPeriod}",
     reportSubjectNoChanges: "Sin cambios {lastPeriod}",
@@ -223,34 +220,14 @@ describe("formatEmail", () => {
     vi.resetAllMocks();
   });
 
-  it("magic link email in English passes HTML link through", async () => {
-    vi.mocked(fs.readFile).mockResolvedValueOnce(JSON.stringify(enMessages));
-    const magicLink = "http://localhost:3000/api/auth/verify?token=test123";
-    const result = await formatEmail("en", "magicLinkBody", {
-      magicLink: createEmailLink(magicLink, "link"),
-    });
-    expect(result).toContain(`<a href="${magicLink}"`);
-    expect(result).toContain(">link</a>");
-    expect(result).not.toContain("{magicLink}");
-  });
-
-  it("magic link email in Portuguese", async () => {
+  it("passes HTML link values through unescaped", async () => {
     vi.mocked(fs.readFile).mockResolvedValueOnce(JSON.stringify(ptMessages));
-    const magicLink = "http://localhost:3000/api/auth/verify?token=test123";
-    const result = await formatEmail("pt-BR" as Locale, "magicLinkBody", {
-      magicLink: createEmailLink(magicLink, "link"),
+    const url = "http://localhost:3000/preferences";
+    const result = await formatEmail("pt-BR" as Locale, "unsubscribe", {
+      preferencesLink: createEmailLink(url, "página de preferências"),
     });
-    expect(result).toContain(`<a href="${magicLink}"`);
-    expect(result).toContain(">link</a>");
-  });
-
-  it("magic link email in Spanish", async () => {
-    vi.mocked(fs.readFile).mockResolvedValueOnce(JSON.stringify(esMessages));
-    const magicLink = "http://localhost:3000/api/auth/verify?token=test123";
-    const result = await formatEmail("es" as Locale, "magicLinkBody", {
-      magicLink: createEmailLink(magicLink, "link"),
-    });
-    expect(result).toContain(`<a href="${magicLink}"`);
-    expect(result).toContain(">link</a>");
+    expect(result).toContain(`<a href="${url}"`);
+    expect(result).toContain(">página de preferências</a>");
+    expect(result).not.toContain("{preferencesLink}");
   });
 });
