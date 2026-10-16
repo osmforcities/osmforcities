@@ -24,6 +24,19 @@ describe("GET /api/email-icon", () => {
     expect(schools.equals(parks)).toBe(false);
   });
 
+  it("returns a small PNG for each UI glyph", async () => {
+    for (const glyph of ["calendar", "features", "mappers", "alert"]) {
+      const response = GET(new Request(`https://x.test/api/email-icon?glyph=${glyph}`));
+      expect(response.status).toBe(200);
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      expect([...bytes.slice(0, 4)]).toEqual(PNG_SIGNATURE);
+    }
+  });
+
+  it("rejects an unknown glyph", () => {
+    expect(GET(new Request("https://x.test/api/email-icon?glyph=nope")).status).toBe(404);
+  });
+
   it("falls back to a generic icon for unknown or missing params", async () => {
     const response = GET(new Request("https://x.test/api/email-icon"));
 

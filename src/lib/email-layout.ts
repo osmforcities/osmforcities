@@ -11,6 +11,7 @@ export const COLOR = {
   olive500: "#57814c",
   olive600: "#3f5c39",
   yellow100: "#fdf3d2",
+  yellow500: "#ffbf0f",
   yellow700: "#745b08",
   text: "#222222",
   muted: "#666666",
@@ -39,8 +40,32 @@ export function emailParagraph(
   return `<p${skipClass} style="${options.muted ? MUTED : PARAGRAPH}">${html}</p>`;
 }
 
-function emailNotice(html: string): string {
-  return `<p style="margin: 12px 0 0; padding: 8px 12px; border-radius: 8px; background-color: ${COLOR.yellow100}; color: ${COLOR.yellow700}; font-size: 14px; line-height: 150%;">${html}</p>`;
+export interface EmailStat {
+  iconUrl: string;
+  text: string;
+}
+
+export interface EmailWarning {
+  iconUrl: string;
+  title: string;
+  body: string;
+}
+
+function emailWarning({ iconUrl, title, body }: EmailWarning): string {
+  return `<div style="margin: 12px 0 0; padding: 10px 12px; border-left: 4px solid ${COLOR.yellow500}; border-radius: 4px; background-color: ${COLOR.yellow100}; color: ${COLOR.yellow700}; font-size: 14px; line-height: 150%;"><img src="${iconUrl}" width="16" height="16" alt="" style="vertical-align: -3px; margin: 0 6px 0 0; border: 0;"><strong>${title}</strong><br>${body}</div>`;
+}
+
+/**
+ * Each stat stays on one line; whole stats wrap to the next line on narrow
+ * screens. The plain space between them is the wrap point and the text-part gap.
+ */
+function emailStats(stats: EmailStat[]): string {
+  return stats
+    .map(
+      ({ iconUrl, text }) =>
+        `<span style="display: inline-block; white-space: nowrap; margin: 0 12px 0 0;"><img src="${iconUrl}" width="14" height="14" alt="" style="vertical-align: -2px; margin: 0 4px 0 0; border: 0;">${text}</span>`
+    )
+    .join(" ");
 }
 
 export function emailList(rows: string[]): string {
@@ -54,36 +79,39 @@ export function emailList(rows: string[]): string {
 }
 
 /**
- * One list row: icon tile, dark title and an outlined action button, all
- * opening `url`. Icon and action are HTML-only so plain text prints the URL
- * once, after the title.
+ * One list row: icon tile, dark title, stats and an outlined action button.
+ * With a `link`, title, tile and action all open it; tile and action are
+ * HTML-only so plain text prints the URL once, after the title. Without one
+ * (a page that no longer exists) the row is plain text with no action.
  */
 export function emailListItem({
-  url,
+  link,
   iconUrl,
   title,
   subtitle,
-  meta,
-  action,
-  notice,
+  stats,
+  warning,
 }: {
-  url: string;
+  link?: { url: string; action: string };
   iconUrl: string;
   title: string;
   subtitle: string;
-  meta: string;
-  action: string;
-  notice?: string;
+  stats: EmailStat[];
+  warning?: EmailWarning;
 }): string {
-  const titleLink = `<a href="${url}" style="color: ${COLOR.text}; text-decoration: none;"><strong>${title}</strong></a>`;
-  const actionButton = `<a href="${url}" style="display: inline-block; padding: 6px 14px; border: 1px solid ${COLOR.olive500}; border-radius: 6px; color: ${COLOR.olive600}; font-size: 14px; font-weight: 600; line-height: 150%; text-decoration: none;">${action}</a>`;
+  const linked = (html: string, style = "") =>
+    link ? `<a href="${link.url}" style="text-decoration: none;${style}">${html}</a>` : html;
+  const tile = `<img src="${iconUrl}" width="40" height="40" alt="" style="display: block; border: 0; border-radius: 8px;">`;
+  const actionCell = link
+    ? `<td class="${SKIP_IN_PLAIN_TEXT}" valign="top" width="1" style="padding: 0 0 0 12px; white-space: nowrap;"><a href="${link.url}" style="display: inline-block; padding: 6px 14px; border: 1px solid ${COLOR.olive500}; border-radius: 6px; color: ${COLOR.olive600}; font-size: 14px; font-weight: 600; line-height: 150%; text-decoration: none;">${link.action}</a></td>`
+    : "";
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
   <tr>
-    <td class="${SKIP_IN_PLAIN_TEXT}" valign="top" width="40" style="padding: 0 12px 0 0;"><a href="${url}"><img src="${iconUrl}" width="40" height="40" alt="" style="display: block; border: 0; border-radius: 8px;"></a></td>
-    <td valign="top" style="font-size: 16px; line-height: 150%;">${titleLink}<br><span style="color: ${COLOR.muted};">${subtitle}</span><br><span style="color: ${COLOR.muted}; font-size: 14px;">${meta}</span></td>
-    <td class="${SKIP_IN_PLAIN_TEXT}" valign="top" width="1" style="padding: 0 0 0 12px; white-space: nowrap;">${actionButton}</td>
+    <td class="${SKIP_IN_PLAIN_TEXT}" valign="top" width="40" style="padding: 0 12px 0 0;">${linked(tile)}</td>
+    <td valign="top" style="font-size: 16px; line-height: 150%; color: ${COLOR.text};">${linked(`<strong>${title}</strong>`, ` color: ${COLOR.text};`)}<br><span style="color: ${COLOR.muted};">${subtitle}</span><br><span style="color: ${COLOR.muted}; font-size: 14px;">${emailStats(stats)}</span></td>
+    ${actionCell}
   </tr>
-</table>${notice ? emailNotice(notice) : ""}`;
+</table>${warning ? emailWarning(warning) : ""}`;
 }
 
 export function emailPreferencesLine(t: EmailTranslator, locale: Locale): string {
@@ -136,6 +164,7 @@ export function renderEmail({
     selectors: [
       { selector: "h1", options: { uppercase: false } },
       { selector: `.${SKIP_IN_PLAIN_TEXT}`, format: "skip" },
+      { selector: "img", format: "skip" },
       { selector: "a", options: { hideLinkHrefIfSameAsText: true } },
     ],
   });

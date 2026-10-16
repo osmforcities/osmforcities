@@ -91,7 +91,7 @@ describe("user-report email generation", () => {
     expect(result?.emailContent.text).toContain(`Schools [${datasetUrl("en")}]`);
     expect(result?.emailContent.text).toContain("Sao Paulo");
     expect(result?.emailContent.text).toContain(
-      "Last edit Oct 16, 2026 · 1,284 features · 7 mappers"
+      "Last edit Oct 16 1,284 features 7 mappers"
     );
   });
 
@@ -151,10 +151,10 @@ describe("user-report email generation", () => {
     }));
     mockPrisma.dataset.findMany.mockResolvedValue(datasets);
 
-    const { text } = (await generateNextUserReport())!.emailContent;
+    const { html, text } = (await generateNextUserReport())!.emailContent;
 
-    expect(text).toContain("dataset/t-0");
-    expect(text).toContain("You have 4 days left before this dataset is deleted.");
+    expect(text.indexOf("Template retired")).toBeLessThan(text.indexOf("dataset/t-11"));
+    expect(html).toContain("This dataset will be deleted after October 20, 2026.");
   });
 
   it("uses app olive links, never the old blue", async () => {
@@ -177,7 +177,7 @@ describe("user-report email generation", () => {
     expect(result?.emailContent.subject).toBe("1 conjunto de dados mudou na última semana");
     expect(result?.emailContent.text).toContain(`Escolas [${datasetUrl("pt-BR")}]`);
     expect(result?.emailContent.text).toContain("Última edição em 16 de out.");
-    expect(result?.emailContent.text).toContain("1.284 feições · 7 mapeadores");
+    expect(result?.emailContent.text).toContain("1.284 feições 7 mapeadores");
   });
 
   it("uses the localized area name", async () => {
@@ -194,8 +194,11 @@ describe("user-report email generation", () => {
   it.each(AVAILABLE_LOCALES)("renders %s with card, footer and each URL once in text", async (locale) => {
     mockPrisma.user.findFirst.mockResolvedValue({ ...mockUser, language: locale });
     mockPrisma.dataset.findMany.mockResolvedValue([
+      mockDataset,
       {
         ...mockDataset,
+        id: "ds-retired",
+        templateId: "retired",
         template: { ...mockDataset.template, deprecatesAt: new Date("2026-10-21T12:00:00Z") },
       },
     ]);
@@ -209,7 +212,40 @@ describe("user-report email generation", () => {
     expect(html).not.toMatch(/\{\w+\}/);
     expect(text.split(datasetUrl(locale))).toHaveLength(2);
     expect(text.split(`https://osmforcities.com/${locale}/preferences`)).toHaveLength(2);
-    expect(text).toMatch(/\b5\b/);
+    expect(text).not.toContain("dataset/retired");
+  });
+
+  it("drops the link and Open button from a retired dataset", async () => {
+    vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "" });
+    mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+    mockPrisma.dataset.findMany.mockResolvedValue([
+      {
+        ...mockDataset,
+        template: { ...mockDataset.template, deprecatesAt: new Date("2026-10-21T12:00:00Z") },
+      },
+    ]);
+
+    const { html } = (await generateNextUserReport())!.emailContent;
+
+    expect(html).not.toContain(datasetUrl("en"));
+    expect(html).not.toMatch(/>Open<\/a>/);
+    expect(html).toContain(
+      "Schools was removed from the catalog, so its page is no longer available. This dataset will be deleted after October 21, 2026."
+    );
+  });
+
+  it("never splits a stat across lines", async () => {
+    mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+    mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
+
+    const { html } = (await generateNextUserReport())!.emailContent;
+
+    const stats = [...html.matchAll(/<span style="display: inline-block; white-space: nowrap;[^"]*">(.*?)<\/span>/g)];
+    expect(stats.map((m) => m[1].replace(/<[^>]+>/g, "").trim())).toEqual([
+      "Last edit Oct 16",
+      "1,284 features",
+      "7 mappers",
+    ]);
   });
 
   it("escapes OSM-sourced names in the HTML body", async () => {
@@ -256,7 +292,7 @@ describe("user-report email generation", () => {
     expect(dailyResult?.emailContent.subject).toContain("in the last day");
   });
 
-  it("uses templateDeprecated (not daysRemaining) when deprecatesAt is in the past", async () => {
+  it("says deletion is soon when the retirement date has passed", async () => {
     vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
 
@@ -268,11 +304,11 @@ describe("user-report email generation", () => {
 
     const result = await generateNextUserReport();
 
-    expect(result?.emailContent.html).toContain("This template was removed from the catalog.");
-    expect(result?.emailContent.html).not.toContain("0 days left");
+    expect(result?.emailContent.html).toContain("This dataset will be deleted soon.");
+    expect(result?.emailContent.html).not.toContain("deleted after");
   });
 
-  it("puts each deprecation notice right after its own dataset", async () => {
+  it("puts each retirement warning right after its own dataset", async () => {
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
     vi.mocked(resolveTemplateForLocale)
       .mockReturnValueOnce({ name: "Schools", description: "" })
@@ -288,13 +324,13 @@ describe("user-report email generation", () => {
     const result = await generateNextUserReport();
     const { text } = result!.emailContent;
 
-    const schools = text.indexOf("Schools [");
-    const notice = text.indexOf("You have 1 day left before this dataset is deleted.");
+    const schools = text.indexOf("Schools");
+    const notice = text.indexOf("Template retired");
     const parks = text.indexOf("Parks [");
     expect(schools).toBeGreaterThan(-1);
     expect(notice).toBeGreaterThan(schools);
     expect(parks).toBeGreaterThan(notice);
-    expect(text.match(/day left/g)).toHaveLength(1);
+    expect(text.match(/Template retired/g)).toHaveLength(1);
   });
 
   it("returns null when no user due for report", async () => {

@@ -619,8 +619,6 @@
     "preferencesPage": "Einstellungsseite",
     "generatedAt": "Dieser Bericht wurde am {timestamp} erstellt. Alle Zeiten sind in UTC.",
     "unsubscribe": "Um diese E-Mails abzubestellen, öffne die {preferencesLink}.",
-    "templateDeprecated": "Diese Vorlage wurde aus dem Katalog entfernt.",
-    "templateDeprecatedDaysRemaining": "{days, plural, one {Du hast noch # Tag, bevor dieser Datensatz gelöscht wird.} other {Du hast noch # Tage, bevor dieser Datensatz gelöscht wird.}}",
     "mapReady": "Die Karte „{template}“ in {area} ist fertig",
     "mapReadyAction": "Karte öffnen",
     "reportLastEdit": "Zuletzt bearbeitet am {date}",
@@ -628,7 +626,10 @@
     "reportMappers": "{count, plural, one {# Mapper} other {# Mapper}}",
     "reportOpen": "Öffnen",
     "reportMore": "{count, plural, one {# weiterer Datensatz wurde geändert.} other {# weitere Datensätze wurden geändert.}}",
-    "reportGoToDashboard": "Zu deinem Dashboard"
+    "reportGoToDashboard": "Zu deinem Dashboard",
+    "reportRetiredTitle": "Vorlage eingestellt",
+    "reportRetiredBody": "{template} wurde aus dem Katalog entfernt, daher ist die Seite nicht mehr verfügbar. Dieser Datensatz wird nach dem {date} gelöscht.",
+    "reportRetiredBodySoon": "{template} wurde aus dem Katalog entfernt, daher ist die Seite nicht mehr verfügbar. Dieser Datensatz wird bald gelöscht."
   },
   "AboutPage": {
     "metaTitle": "Über das Projekt - OSM for Cities",

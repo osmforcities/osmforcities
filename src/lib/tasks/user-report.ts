@@ -29,11 +29,11 @@ interface ReportDataset {
   lastChanged: Date;
   features: number;
   mappers?: number;
-  daysRemaining?: number;
+  /** Set once the template left the catalog; the dataset is deleted after it. */
+  retiresAt?: Date;
 }
 
 const MAX_REPORT_ROWS = 10;
-const META_SEPARATOR = " · ";
 
 async function generateEmailContent(
   changedDatasets: ReportDataset[],
@@ -45,35 +45,53 @@ async function generateEmailContent(
 
   const subject = t("reportSubjectChanged", { count: changedDatasets.length, frequency });
 
-  const formatDate = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" });
+  const now = new Date();
+  const glyph = (name: string) => `${baseUrl}/api/email-icon?glyph=${name}`;
+  const formatShortDate = (date: Date) =>
+    new Intl.DateTimeFormat(locale, {
+      month: "short",
+      day: "numeric",
+      year: date.getUTCFullYear() === now.getUTCFullYear() ? undefined : "numeric",
+      timeZone: "UTC",
+    }).format(date);
+  const formatLongDate = new Intl.DateTimeFormat(locale, { dateStyle: "long", timeZone: "UTC" });
+
   const rows = changedDatasets
-    // Pending deletions first, so the cap never hides a deletion warning.
+    // Retiring datasets first, so the cap never hides a deletion warning.
     .toSorted(
       (a, b) =>
-        Number(b.daysRemaining !== undefined) - Number(a.daysRemaining !== undefined) ||
+        Number(b.retiresAt !== undefined) - Number(a.retiresAt !== undefined) ||
         b.lastChanged.getTime() - a.lastChanged.getTime()
     )
     .slice(0, MAX_REPORT_ROWS)
     .map((ds) => {
-      const meta = [
-        t("reportLastEdit", { date: formatDate.format(ds.lastChanged) }),
-        ds.features > 0 && t("reportFeatures", { count: ds.features }),
-        ds.mappers && t("reportMappers", { count: ds.mappers }),
-      ].filter(Boolean);
+      const title = escapeHtml(ds.templateName);
+      const stats = [
+        { iconUrl: glyph("calendar"), text: t("reportLastEdit", { date: formatShortDate(ds.lastChanged) }) },
+        ds.features > 0 && { iconUrl: glyph("features"), text: t("reportFeatures", { count: ds.features }) },
+        ds.mappers && { iconUrl: glyph("mappers"), text: t("reportMappers", { count: ds.mappers }) },
+      ].filter((stat) => typeof stat === "object");
       const icon = new URLSearchParams({ template: ds.templateId, category: ds.categorySlug });
       return emailListItem({
-        url: getDatasetUrl(baseUrl, { locale, areaId: ds.areaId, templateId: ds.templateId }),
+        // A retired template's dataset page already shows "not found".
+        link: ds.retiresAt
+          ? undefined
+          : {
+              url: getDatasetUrl(baseUrl, { locale, areaId: ds.areaId, templateId: ds.templateId }),
+              action: t("reportOpen"),
+            },
         iconUrl: escapeHtml(`${baseUrl}/api/email-icon?${icon}`),
-        title: escapeHtml(ds.templateName),
+        title,
         subtitle: escapeHtml(ds.areaName),
-        meta: meta.join(META_SEPARATOR),
-        action: t("reportOpen"),
-        notice:
-          ds.daysRemaining === undefined
-            ? undefined
-            : ds.daysRemaining === 0
-              ? t("templateDeprecated")
-              : t("templateDeprecatedDaysRemaining", { days: ds.daysRemaining }),
+        stats,
+        warning: ds.retiresAt && {
+          iconUrl: glyph("alert"),
+          title: t("reportRetiredTitle"),
+          body:
+            ds.retiresAt > now
+              ? t("reportRetiredBody", { template: title, date: formatLongDate.format(ds.retiresAt) })
+              : t("reportRetiredBodySoon", { template: title }),
+        },
       });
     });
 
@@ -198,7 +216,6 @@ export async function generateNextUserReport(): Promise<{
     const stats = readStats(dataset);
     const lastChanged = new Date(stats?.mostRecentElement ?? NaN);
     if (Number.isNaN(lastChanged.getTime()) || lastChanged < since) return [];
-    const { deprecatesAt } = dataset.template;
     return [
       {
         areaId: dataset.areaId,
@@ -209,12 +226,7 @@ export async function generateNextUserReport(): Promise<{
         lastChanged,
         features: dataset.dataCount,
         mappers: stats?.editorsCount,
-        daysRemaining: deprecatesAt
-          ? Math.max(
-              0,
-              Math.ceil((deprecatesAt.getTime() - Date.now()) / (24 * 60 * 60 * 1000))
-            )
-          : undefined,
+        retiresAt: dataset.template.deprecatesAt ?? undefined,
       },
     ];
   });

@@ -619,8 +619,6 @@
     "preferencesPage": "preferences page",
     "generatedAt": "This report was generated on {timestamp}. All dates are in UTC.",
     "unsubscribe": "To stop these emails, go to the {preferencesLink}.",
-    "templateDeprecated": "This template was removed from the catalog.",
-    "templateDeprecatedDaysRemaining": "{days, plural, one {You have # day left before this dataset is deleted.} other {You have # days left before this dataset is deleted.}}",
     "mapReady": "The map of {template} in {area} is ready",
     "mapReadyAction": "Open the map",
     "reportLastEdit": "Last edit {date}",
@@ -628,7 +626,10 @@
     "reportMappers": "{count, plural, one {# mapper} other {# mappers}}",
     "reportOpen": "Open",
     "reportMore": "{count, plural, one {# more dataset changed.} other {# more datasets changed.}}",
-    "reportGoToDashboard": "Go to your dashboard"
+    "reportGoToDashboard": "Go to your dashboard",
+    "reportRetiredTitle": "Template retired",
+    "reportRetiredBody": "{template} was removed from the catalog, so its page is no longer available. This dataset will be deleted after {date}.",
+    "reportRetiredBodySoon": "{template} was removed from the catalog, so its page is no longer available. This dataset will be deleted soon."
   },
   "AboutPage": {
     "metaTitle": "About - OSM for Cities",

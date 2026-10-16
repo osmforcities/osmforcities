@@ -628,8 +628,6 @@
     "preferencesPage": "página de preferencias",
     "generatedAt": "Este reporte se generó el {timestamp}. Todas las fechas están en UTC.",
     "unsubscribe": "Para dejar de recibir estos correos, ve a la {preferencesLink}.",
-    "templateDeprecated": "Esta plantilla fue eliminada del catálogo.",
-    "templateDeprecatedDaysRemaining": "{days, plural, one {Te queda # día antes de que este conjunto de datos sea eliminado.} other {Te quedan # días antes de que este conjunto de datos sea eliminado.}}",
     "mapReady": "El mapa de {template} en {area} está listo",
     "mapReadyAction": "Abrir el mapa",
     "reportLastEdit": "Última edición el {date}",
@@ -637,7 +635,10 @@
     "reportMappers": "{count, plural, one {# mapeador} other {# mapeadores}}",
     "reportOpen": "Abrir",
     "reportMore": "{count, plural, one {Cambió # conjunto de datos más.} other {Cambiaron # conjuntos de datos más.}}",
-    "reportGoToDashboard": "Ir a tu panel"
+    "reportGoToDashboard": "Ir a tu panel",
+    "reportRetiredTitle": "Plantilla retirada",
+    "reportRetiredBody": "{template} se eliminó del catálogo, por lo que su página ya no está disponible. Este conjunto de datos se eliminará después del {date}.",
+    "reportRetiredBodySoon": "{template} se eliminó del catálogo, por lo que su página ya no está disponible. Este conjunto de datos se eliminará pronto."
   },
   "AboutPage": {
     "metaTitle": "Acerca de - OSM for Cities",
