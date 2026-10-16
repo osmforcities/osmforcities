@@ -15,10 +15,6 @@ export function getEmailBaseUrl(): string {
   return process.env.AUTH_URL || "https://osmforcities.com";
 }
 
-export function getPreferencesUrl(locale: Locale): string {
-  return `${getEmailBaseUrl().replace(/\/+$/, "")}/${locale}/preferences`;
-}
-
 export function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")

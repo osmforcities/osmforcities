@@ -177,8 +177,8 @@ export async function generateNextUserReport(): Promise<{
   });
 
   const reportDatasets = recentDatasets.flatMap((dataset): ReportDataset[] => {
-    const mostRecentElement = readStats(dataset)?.mostRecentElement;
-    if (!mostRecentElement || new Date(mostRecentElement) < since) return [];
+    const lastChanged = new Date(readStats(dataset)?.mostRecentElement ?? NaN);
+    if (Number.isNaN(lastChanged.getTime()) || lastChanged < since) return [];
     const { deprecatesAt } = dataset.template;
     return [
       {
@@ -186,7 +186,7 @@ export async function generateNextUserReport(): Promise<{
         templateId: dataset.templateId,
         areaName: resolveDatasetAreaName(dataset, userLocale),
         templateName: resolveTemplateForLocale(dataset.template, userLocale).name,
-        lastChanged: new Date(mostRecentElement),
+        lastChanged,
         daysRemaining: deprecatesAt
           ? Math.max(
               0,

@@ -224,6 +224,16 @@ describe("user-report email generation", () => {
     expect(result).toBeNull();
   });
 
+  it("skips a dataset whose last change date is unparseable", async () => {
+    mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+    mockPrisma.dataset.findMany.mockResolvedValue([
+      { ...mockDataset, stats: { mostRecentElement: "not a date" } },
+    ]);
+
+    await expect(generateNextUserReport()).resolves.toBeNull();
+    expect(mockPrisma.user.update).toHaveBeenCalledTimes(1);
+  });
+
   it("returns null when no datasets with recent changes", async () => {
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
     mockPrisma.dataset.findMany.mockResolvedValue([]);

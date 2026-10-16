@@ -1,5 +1,5 @@
 import { htmlToText } from "html-to-text";
-import { getPreferencesUrl, isRTL, type getEmailT, type Locale } from "@/lib/email-i18n";
+import { getEmailBaseUrl, isRTL, type getEmailT, type Locale } from "@/lib/email-i18n";
 
 type EmailTranslator = Awaited<ReturnType<typeof getEmailT>>;
 
@@ -43,9 +43,8 @@ export function emailNotice(html: string): string {
 }
 
 export function emailPreferencesLine(t: EmailTranslator, locale: Locale): string {
-  return t("unsubscribe", {
-    preferencesLink: createEmailLink(getPreferencesUrl(locale), t("preferencesPage")),
-  });
+  const url = `${getEmailBaseUrl().replace(/\/+$/, "")}/${locale}/preferences`;
+  return t("unsubscribe", { preferencesLink: createEmailLink(url, t("preferencesPage")) });
 }
 
 /** URLs break anywhere so a long link never widens the card on phones. */
