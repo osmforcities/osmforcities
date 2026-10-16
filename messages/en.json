@@ -628,7 +628,7 @@
     "reportMappers": "{count, plural, one {# mapper} other {# mappers}}",
     "reportOpen": "Open",
     "reportMore": "{count, plural, one {# more dataset changed.} other {# more datasets changed.}}",
-    "reportOpenDashboard": "{count, plural, one {Open your saved dataset} other {Open your # saved datasets}}"
+    "reportGoToDashboard": "Go to your dashboard"
   },
   "AboutPage": {
     "metaTitle": "About - OSM for Cities",

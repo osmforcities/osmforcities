@@ -64,6 +64,7 @@ describe("user-report email generation", () => {
     },
     template: {
       name: "schools",
+      category: { slug: "education" },
       description: "Schools and education",
       deprecatesAt: null as Date | null,
       translations: [
@@ -94,19 +95,27 @@ describe("user-report email generation", () => {
     );
   });
 
-  it("links the report to the dashboard with the saved dataset count", async () => {
+  it("ends with a button to the dashboard", async () => {
     mockPrisma.user.findFirst.mockResolvedValue(mockUser);
-    mockPrisma.dataset.findMany.mockResolvedValue([
-      mockDataset,
-      { ...mockDataset, id: "ds-2", stats: { mostRecentElement: "2026-01-01T00:00:00Z" } },
-    ]);
+    mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
 
     const result = await generateNextUserReport();
 
-    expect(result?.emailContent.subject).toBe("1 dataset changed in the last week");
     expect(result?.emailContent.text).toContain(
-      "Open your 2 saved datasets [https://osmforcities.com/en/dashboard]"
+      "Go to your dashboard [https://osmforcities.com/en/dashboard]"
     );
+  });
+
+  it("shows the template icon tile in HTML only", async () => {
+    mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+    mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
+
+    const { html, text } = (await generateNextUserReport())!.emailContent;
+
+    expect(html).toContain(
+      'src="https://osmforcities.com/api/email-icon?template=template-schools&amp;category=education"'
+    );
+    expect(text).not.toContain("email-icon");
   });
 
   it("lists the most recent change first and caps the list", async () => {
@@ -349,6 +358,7 @@ describe("deadlock scenario", () => {
     },
     template: {
       name: "schools",
+      category: { slug: "education" },
       description: "Schools and education",
       deprecatesAt: null,
       translations: [{ locale: "en", name: "Schools", description: "Schools" }],
@@ -499,6 +509,7 @@ describe("report status tracking helpers", () => {
         stats: { mostRecentElement: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString() },
         template: {
           name: "schools",
+          category: { slug: "education" },
           description: "Schools and education",
           deprecatesAt: null,
           translations: [{ locale: "en", name: "Schools", description: "Schools" }],

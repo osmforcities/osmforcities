@@ -23,6 +23,7 @@ export interface EmailContent {
 interface ReportDataset {
   areaId: number;
   templateId: string;
+  categorySlug: string;
   areaName: string;
   templateName: string;
   lastChanged: Date;
@@ -36,7 +37,6 @@ const META_SEPARATOR = " · ";
 
 async function generateEmailContent(
   changedDatasets: ReportDataset[],
-  savedCount: number,
   frequency: "DAILY" | "WEEKLY",
   locale: Locale
 ): Promise<EmailContent> {
@@ -60,8 +60,10 @@ async function generateEmailContent(
         ds.features > 0 && t("reportFeatures", { count: ds.features }),
         ds.mappers && t("reportMappers", { count: ds.mappers }),
       ].filter(Boolean);
+      const icon = new URLSearchParams({ template: ds.templateId, category: ds.categorySlug });
       return emailListItem({
         url: getDatasetUrl(baseUrl, { locale, areaId: ds.areaId, templateId: ds.templateId }),
+        iconUrl: escapeHtml(`${baseUrl}/api/email-icon?${icon}`),
         title: escapeHtml(ds.templateName),
         subtitle: escapeHtml(ds.areaName),
         meta: meta.join(META_SEPARATOR),
@@ -79,7 +81,7 @@ async function generateEmailContent(
   const body = [
     emailList(rows),
     hidden > 0 ? emailParagraph(t("reportMore", { count: hidden }), { muted: true }) : "",
-    emailButton(`${baseUrl}/${locale}/dashboard`, t("reportOpenDashboard", { count: savedCount })),
+    emailButton(`${baseUrl}/${locale}/dashboard`, t("reportGoToDashboard")),
   ].join("");
 
   const timestamp = new Intl.DateTimeFormat(locale, {
@@ -178,6 +180,7 @@ export async function generateNextUserReport(): Promise<{
           name: true,
           description: true,
           deprecatesAt: true,
+          category: { select: { slug: true } },
           translations: {
             select: {
               locale: true,
@@ -200,6 +203,7 @@ export async function generateNextUserReport(): Promise<{
       {
         areaId: dataset.areaId,
         templateId: dataset.templateId,
+        categorySlug: dataset.template.category.slug,
         areaName: resolveDatasetAreaName(dataset, userLocale),
         templateName: resolveTemplateForLocale(dataset.template, userLocale).name,
         lastChanged,
@@ -227,7 +231,6 @@ export async function generateNextUserReport(): Promise<{
 
   const emailContent = await generateEmailContent(
     reportDatasets,
-    recentDatasets.length,
     user.reportsFrequency,
     userLocale
   );

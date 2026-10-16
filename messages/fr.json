@@ -628,7 +628,7 @@
     "reportMappers": "{count, plural, one {# cartographe} other {# cartographes}}",
     "reportOpen": "Ouvrir",
     "reportMore": "{count, plural, one {# autre jeu de données a changé.} other {# autres jeux de données ont changé.}}",
-    "reportOpenDashboard": "{count, plural, one {Ouvrir votre jeu de données enregistré} other {Ouvrir vos # jeux de données enregistrés}}"
+    "reportGoToDashboard": "Aller à votre tableau de bord"
   },
   "AboutPage": {
     "metaTitle": "À propos - OSM for Cities",

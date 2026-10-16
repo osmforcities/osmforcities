@@ -46,6 +46,8 @@ export default defineConfig({
             '@': path.join(dirname, 'src'),
           },
         },
+        // Route handlers that render JSX (next/og) import .tsx modules.
+        esbuild: { jsx: 'automatic' },
         test: {
           name: 'unit',
           environment: 'node',

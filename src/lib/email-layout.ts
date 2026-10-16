@@ -54,11 +54,13 @@ export function emailList(rows: string[]): string {
 }
 
 /**
- * One list row: dark title and olive action both open `url`. The action is
- * HTML-only so plain text prints the URL once, after the title.
+ * One list row: icon tile, dark title and an outlined action button, all
+ * opening `url`. Icon and action are HTML-only so plain text prints the URL
+ * once, after the title.
  */
 export function emailListItem({
   url,
+  iconUrl,
   title,
   subtitle,
   meta,
@@ -66,18 +68,20 @@ export function emailListItem({
   notice,
 }: {
   url: string;
+  iconUrl: string;
   title: string;
   subtitle: string;
   meta: string;
   action: string;
   notice?: string;
 }): string {
-  const link = (text: string, color: string) =>
-    `<a href="${url}" style="color: ${color}; text-decoration: none;">${text}</a>`;
+  const titleLink = `<a href="${url}" style="color: ${COLOR.text}; text-decoration: none;"><strong>${title}</strong></a>`;
+  const actionButton = `<a href="${url}" style="display: inline-block; padding: 6px 14px; border: 1px solid ${COLOR.olive500}; border-radius: 6px; color: ${COLOR.olive600}; font-size: 14px; font-weight: 600; line-height: 150%; text-decoration: none;">${action}</a>`;
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
   <tr>
-    <td valign="top" style="font-size: 16px; line-height: 150%;">${link(`<strong>${title}</strong>`, COLOR.text)}<br><span style="color: ${COLOR.muted};">${subtitle}</span><br><span style="color: ${COLOR.muted}; font-size: 14px;">${meta}</span></td>
-    <td class="${SKIP_IN_PLAIN_TEXT}" valign="top" width="1" style="padding: 0 0 0 16px; white-space: nowrap; font-size: 14px; font-weight: 600; line-height: 150%;">${link(action, COLOR.olive600)}</td>
+    <td class="${SKIP_IN_PLAIN_TEXT}" valign="top" width="40" style="padding: 0 12px 0 0;"><a href="${url}"><img src="${iconUrl}" width="40" height="40" alt="" style="display: block; border: 0; border-radius: 8px;"></a></td>
+    <td valign="top" style="font-size: 16px; line-height: 150%;">${titleLink}<br><span style="color: ${COLOR.muted};">${subtitle}</span><br><span style="color: ${COLOR.muted}; font-size: 14px;">${meta}</span></td>
+    <td class="${SKIP_IN_PLAIN_TEXT}" valign="top" width="1" style="padding: 0 0 0 12px; white-space: nowrap;">${actionButton}</td>
   </tr>
 </table>${notice ? emailNotice(notice) : ""}`;
 }
