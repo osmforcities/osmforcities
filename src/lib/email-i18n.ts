@@ -51,40 +51,14 @@ async function loadMessages(locale: Locale): Promise<Record<string, unknown>> {
   return messages;
 }
 
-/** Returns a translator scoped to the Email namespace for a locale. */
+/**
+ * Returns a translator scoped to the Email namespace for a locale.
+ * use-intl/core does not HTML-escape values in string mode, so callers escape
+ * data themselves and can pass links as values (tested).
+ */
 export async function getEmailT(locale: Locale) {
   const allMessages = await loadMessages(locale);
   const messages = (allMessages as Record<string, unknown>).Email as Record<string, string>;
   return createTranslator({ locale, messages });
 }
 
-/**
- * Loads translation and interpolates values for a locale.
- * HTML strings (e.g. anchor tags) can be passed as values — use-intl/core does not
- * HTML-escape values in string mode. This is intentional and verified by tests.
- * t.markup() was evaluated and reverted (commit 5e643e2) due to tag-vs-placeholder
- * syntax incompatibility. If this breaks on a library upgrade, switch to t.markup()
- * with <tag>inner</tag> syntax in the message strings.
- */
-export async function formatEmail(
-  locale: Locale,
-  key: string,
-  values: Record<string, string | number | Date> = {}
-): Promise<string> {
-  const t = await getEmailT(locale);
-  return t(key as Parameters<typeof t>[0], values);
-}
-
-/**
- * Formats translation with HTML markup support.
- * Pass transform functions for HTML placeholders, primitive values for text.
- * Example: formatEmailMarkup('en', 'key', { link: (c) => `<a>${c}</a>`, count: 5 })
- */
-export async function formatEmailMarkup(
-  locale: Locale,
-  key: string,
-  values: Record<string, ((chunks: string) => string) | string | number | Date>
-): Promise<string> {
-  const t = await getEmailT(locale);
-  return t.markup(key as Parameters<typeof t.markup>[0], values);
-}

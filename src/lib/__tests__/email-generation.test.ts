@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { isRTL, formatEmail, clearMessageCache, type Locale } from "../email-i18n";
+import { isRTL, getEmailT, clearMessageCache, type Locale } from "../email-i18n";
 import { createEmailLink } from "../email-layout";
 
 // Mock the file system
@@ -32,7 +32,7 @@ describe("isRTL", () => {
   });
 });
 
-describe("formatEmail", () => {
+describe("getEmailT", () => {
   beforeEach(() => {
     clearMessageCache();
     vi.resetAllMocks();
@@ -41,7 +41,8 @@ describe("formatEmail", () => {
   it("passes HTML link values through unescaped", async () => {
     vi.mocked(fs.readFile).mockResolvedValueOnce(JSON.stringify(ptMessages));
     const url = "http://localhost:3000/preferences";
-    const result = await formatEmail("pt-BR" as Locale, "unsubscribe", {
+    const t = await getEmailT("pt-BR" as Locale);
+    const result = t("unsubscribe", {
       preferencesLink: createEmailLink(url, "página de preferências"),
     });
     expect(result).toContain(`<a href="${url}"`);
