@@ -53,6 +53,7 @@ export async function submitTilesForDataset(
       select: {
         areaId: true,
         dataCount: true,
+        tilesServedJobId: true,
         template: { select: { overpassQuery: true, filterableTags: true } },
       },
     });
@@ -62,7 +63,9 @@ export async function submitTilesForDataset(
 
     // Nothing to bake: the tiler refuses a query that matches nothing. The
     // row is a plain empty dataset, and one stuck failing on that refusal
-    // clears here. lastChecked too, since no reconcile will write it.
+    // clears here. lastChecked too, since no reconcile will write it. A row
+    // with no map stores the zero (the lane's refresh does not), or it would
+    // try to render a map it never had.
     // ponytail: a served row whose features all vanish keeps its last archive
     // and count, clear tilesServedJobId and stats here if that shows up.
     if (count === 0) {
@@ -71,6 +74,7 @@ export async function submitTilesForDataset(
         where: { id: datasetId },
         data: {
           ...columns,
+          ...(!dataset.tilesServedJobId && { dataCount: 0 }),
           lastChecked: new Date(),
           consecutiveFailures: 0,
           lastError: null,

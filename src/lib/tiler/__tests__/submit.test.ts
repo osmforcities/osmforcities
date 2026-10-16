@@ -128,6 +128,7 @@ describe("submitTilesForDataset", () => {
   });
 
   it("never submits an empty dataset and clears a stuck failed bake", async () => {
+    // Stored count from creation; the lane's refresh never stored the zero
     await submitTilesForDataset("ds-1", 0);
 
     expect(submitTilesColumns).not.toHaveBeenCalled();
@@ -137,11 +138,26 @@ describe("submitTilesForDataset", () => {
         tilesJobId: null,
         tilesState: null,
         tilesError: null,
+        dataCount: 0,
         lastChecked: expect.any(Date),
         consecutiveFailures: 0,
         lastError: null,
       },
     });
+  });
+
+  it("keeps a served dataset's count when its features vanish", async () => {
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+      ...row,
+      tilesServedJobId: "ds-1-90",
+    } as never);
+
+    await submitTilesForDataset("ds-1", 0);
+
+    expect(submitTilesColumns).not.toHaveBeenCalled();
+    expect(vi.mocked(prisma.dataset.update).mock.calls[0][0].data).not.toHaveProperty(
+      "dataCount"
+    );
   });
 
   it("reads an empty dataset from the stored count without a fresh probe", async () => {
