@@ -127,6 +127,55 @@ describe("submitTilesForDataset", () => {
     );
   });
 
+  it("never submits an empty dataset and clears a stuck failed bake", async () => {
+    await submitTilesForDataset("ds-1", 0);
+
+    expect(submitTilesColumns).not.toHaveBeenCalled();
+    expect(prisma.dataset.update).toHaveBeenCalledWith({
+      where: { id: "ds-1" },
+      data: {
+        tilesJobId: null,
+        tilesState: null,
+        tilesError: null,
+        lastChecked: expect.any(Date),
+        consecutiveFailures: 0,
+        lastError: null,
+      },
+    });
+  });
+
+  it("reads an empty dataset from the stored count without a fresh probe", async () => {
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+      ...row,
+      dataCount: 0,
+    } as never);
+
+    const columns = await submitTilesForDataset("ds-1");
+
+    expect(submitTilesColumns).not.toHaveBeenCalled();
+    expect(columns).toEqual({
+      tilesJobId: null,
+      tilesState: null,
+      tilesError: null,
+    });
+  });
+
+  it("submits a dataset that gained features since it was stored empty", async () => {
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+      ...row,
+      dataCount: 0,
+    } as never);
+    vi.mocked(submitTilesColumns).mockResolvedValue({
+      tilesJobId: "ds-1-100",
+      tilesState: "pending",
+      tilesError: null,
+    });
+
+    await submitTilesForDataset("ds-1", 3);
+
+    expect(submitTilesColumns).toHaveBeenCalled();
+  });
+
   it("writes nothing for an unknown dataset or an empty column set", async () => {
     vi.mocked(prisma.dataset.findUnique).mockResolvedValue(null as never);
     await submitTilesForDataset("gone");

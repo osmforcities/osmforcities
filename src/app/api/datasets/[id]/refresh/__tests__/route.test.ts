@@ -140,6 +140,23 @@ describe("POST /api/datasets/[id]/refresh", () => {
         });
       });
 
+      it("reports an empty dataset synced, with no bake to queue", async () => {
+        vi.mocked(submitTilesForDataset).mockResolvedValueOnce({
+          tilesJobId: null,
+          tilesState: null,
+          tilesError: null,
+        });
+        const res = await call();
+        expect(res.status).toBe(200);
+        expect(await res.json()).toEqual({ success: true, tilesState: null });
+      });
+
+      it("fails when the submit threw before recording anything", async () => {
+        vi.mocked(submitTilesForDataset).mockResolvedValueOnce({});
+        const res = await call();
+        expect(res.status).toBe(502);
+      });
+
       it("fails when the bake could not be queued", async () => {
         vi.mocked(submitTilesForDataset).mockResolvedValueOnce({
           tilesState: "failed",

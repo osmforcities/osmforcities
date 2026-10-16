@@ -58,6 +58,25 @@ export async function submitTilesForDataset(
     });
     if (!dataset) return {};
 
+    // Nothing to bake: the tiler refuses a query that matches nothing. The
+    // row is a plain empty dataset, and one stuck failing on that refusal
+    // clears here. lastChecked too, since no reconcile will write it.
+    // ponytail: a served row whose features all vanish keeps its last archive
+    // and count, clear tilesServedJobId and stats here if that shows up.
+    if ((elementCount ?? dataset.dataCount) === 0) {
+      const columns = { tilesJobId: null, tilesState: null, tilesError: null };
+      await prisma.dataset.update({
+        where: { id: datasetId },
+        data: {
+          ...columns,
+          lastChecked: new Date(),
+          consecutiveFailures: 0,
+          lastError: null,
+        },
+      });
+      return columns;
+    }
+
     // Same area interpolation fetchDatasetSnapshot applies — the tiler runs
     // the exact query the app just ran.
     const query = dataset.template.overpassQuery.replace(

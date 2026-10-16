@@ -38,13 +38,18 @@ test.describe("Ready notification from the empty state", () => {
       select: { notifyWhenReady: true },
     });
 
+  const storedJobId = async (datasetId: string) =>
+    (
+      await prisma.dataset.findUniqueOrThrow({
+        where: { id: datasetId },
+        select: { tilesJobId: true },
+      })
+    ).tilesJobId;
+
   const tilesJobId = async (datasetId: string) => {
-    const { tilesJobId } = await prisma.dataset.findUniqueOrThrow({
-      where: { id: datasetId },
-      select: { tilesJobId: true },
-    });
-    if (!tilesJobId) throw new Error("dataset has no tiles job");
-    return tilesJobId;
+    const jobId = await storedJobId(datasetId);
+    if (!jobId) throw new Error("dataset has no tiles job");
+    return jobId;
   };
 
   // Admin, because Sync is how landBake submits a bake
@@ -72,8 +77,9 @@ test.describe("Ready notification from the empty state", () => {
     datasetId: string,
     stats?: Partial<typeof fixtureStats>
   ) {
-    const before = await tilesJobId(datasetId);
-    await waitPastJobSecond(before);
+    // An empty dataset was never submitted, so there may be no bake to follow
+    const before = await storedJobId(datasetId);
+    if (before) await waitPastJobSecond(before);
     const sync = await page.request.post(`/api/datasets/${datasetId}/refresh`);
     expect(sync.ok()).toBe(true);
     await page.goto("about:blank");
@@ -108,30 +114,44 @@ test.describe("Ready notification from the empty state", () => {
     await expect(page.getByRole("status")).toHaveText(CONFIRMED);
   });
 
+  test("an empty dataset is never baked, and no daily refresh fails it", async ({
+    page,
+  }) => {
+    const datasetId = await optInOnEmptyDataset(page);
+    const notBaked = { tilesJobId: null, tilesState: null, consecutiveFailures: 0 };
+    const readTiles = () =>
+      prisma.dataset.findUniqueOrThrow({
+        where: { id: datasetId },
+        select: { tilesJobId: true, tilesState: true, consecutiveFailures: true },
+      });
+    expect(await readTiles()).toEqual(notBaked);
+
+    await page.goto("about:blank");
+    await prisma.dataset.update({
+      where: { id: datasetId },
+      data: { lastAttempted: new Date(Date.now() - MORE_THAN_A_DAY_MS) },
+    });
+    expect(await runCronCycle(page)).toMatchObject({ successful: 1 });
+    expect(await readTiles()).toEqual(notBaked);
+
+    await page.goto("/en/dashboard");
+    await expect(page.getByText("1 save")).toBeVisible();
+    await expect(page.getByText("Tiles failed")).toHaveCount(0);
+  });
+
   test("a bake with features clears the flag", async ({ page }) => {
     const datasetId = await optInOnEmptyDataset(page);
-
-    // A pending first bake is never refreshed, so it lands empty first
     await page.goto("about:blank");
-    const before = await tilesJobId(datasetId);
-    await mockTilerControl(page, {
-      jobId: before,
-      state: "done",
-      stats: { ...fixtureStats, features: 0 },
-    });
-    await runCronCycle(page);
-    expect(await readSave(datasetId)).toEqual({ notifyWhenReady: true });
 
     // The saved row is cataloged, so the cron itself refreshes and submits
+    // once the area gains features
     await mockTilerControl(page, { overpassEmpty: false });
-    await waitPastJobSecond(before);
     await prisma.dataset.update({
       where: { id: datasetId },
       data: { lastAttempted: new Date(Date.now() - MORE_THAN_A_DAY_MS) },
     });
     expect(await runCronCycle(page)).toMatchObject({ successful: 1 });
     const jobId = await tilesJobId(datasetId);
-    expect(jobId).not.toBe(before);
 
     await mockTilerControl(page, { jobId, state: "done" });
     const cycle = await runCronCycle(page);
@@ -154,6 +174,9 @@ test.describe("Ready notification from the empty state", () => {
 
   test("a bake that is still empty keeps the flag", async ({ page }) => {
     const datasetId = await optInOnEmptyDataset(page);
+    // The probe counts elements the bake can still drop (a relation it
+    // cannot assemble), so a submitted bake can land with no features
+    await mockTilerControl(page, { overpassEmpty: false });
 
     // Reconcile counts features from the bake's stats.json
     await landBake(page, datasetId, { ...fixtureStats, features: 0 });
