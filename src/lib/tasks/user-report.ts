@@ -1,17 +1,19 @@
 import { prisma } from "@/lib/db";
-import { htmlToText } from "html-to-text";
 import { readStats } from "@/lib/dataset-stats";
-import type { StoredDatasetStats } from "@/lib/dataset-snapshot";
+import { resolveDatasetAreaName } from "@/lib/area-name";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getDatasetUrl } from "@/lib/urls";
+import { escapeHtml, getEmailBaseUrl, getEmailT, type Locale } from "@/lib/email-i18n";
 import {
-  createEmailLink,
-  getEmailBaseUrl,
-  getEmailT,
-  isRTL,
-  formatEmail,
-  type Locale,
-} from "@/lib/email-i18n";
+  emailButton,
+  emailList,
+  emailListItem,
+  emailParagraph,
+  emailPreferencesLine,
+  emailIconUrl,
+  EMAIL_REMOVED_TEMPLATE_ICON,
+  renderEmail,
+} from "@/lib/email-layout";
 
 /** Email with subject line, HTML body, and plain text fallback. */
 export interface EmailContent {
@@ -20,194 +22,99 @@ export interface EmailContent {
   text: string;
 }
 
-interface UserReportData {
-  user: {
-    id: string;
-    email: string;
-    reportsFrequency: "DAILY" | "WEEKLY";
-    language: string | null;
-  };
-  recentDatasets: Array<{
-    id: string;
-    areaId: number;
-    templateId: string;
-    name: string;
-    templateName: string;
-    lastChanged: Date | null;
-    daysRemaining?: number;
-  }>;
+interface ReportDataset {
+  areaId: number;
+  templateId: string;
+  areaName: string;
+  templateName: string;
+  lastChanged: Date;
+  features: number;
+  mappers?: number;
+  /** Set once the template left the catalog; the dataset is deleted after it. */
+  retiresAt?: Date;
 }
 
-function formatUTCDate(date: Date | null): string {
-  if (!date) return "Unknown";
-  return date.toISOString().split("T")[0];
-}
-
-function getLatestChangeDate(datasets: Array<{ stats?: StoredDatasetStats }>): string | null {
-  const stats = datasets[0]?.stats;
-  return stats?.mostRecentElement
-    ? new Date(stats.mostRecentElement).toLocaleDateString()
-    : null;
-}
-
-function generateEmailBodyWithChanges(
-  recentDatasets: Array<{
-    id: string;
-    areaId: number;
-    templateId: string;
-    name: string;
-    templateName: string;
-    lastChanged: Date | null;
-    daysRemaining?: number;
-  }>,
-  frequency: "DAILY" | "WEEKLY",
-  changedText: string,
-  deprecationText: string | undefined,
-  userLocale: Locale
-): string {
-  const datasetsByDay = new Map<
-    string,
-    Array<{
-      id: string;
-      areaId: number;
-      templateId: string;
-      name: string;
-      templateName: string;
-    }>
-  >();
-
-  recentDatasets.forEach((ds) => {
-    const dayKey = ds.lastChanged
-      ? ds.lastChanged.toISOString().split("T")[0]
-      : "Unknown";
-    if (!datasetsByDay.has(dayKey)) {
-      datasetsByDay.set(dayKey, []);
-    }
-    datasetsByDay.get(dayKey)!.push({
-      id: ds.id,
-      areaId: ds.areaId,
-      templateId: ds.templateId,
-      name: ds.name,
-      templateName: ds.templateName,
-    });
-  });
-
-  const sortedDays = Array.from(datasetsByDay.keys()).sort().reverse();
-
-  const datasetsList = sortedDays
-    .map((day) => {
-      const datasets = datasetsByDay.get(day)!;
-      const dayFormatted = formatUTCDate(new Date(day + "T00:00:00Z"));
-      const datasetsList = datasets
-        .map(
-          (ds) =>
-            `${createEmailLink(
-              getDatasetUrl(getEmailBaseUrl(), {
-                locale: userLocale,
-                areaId: ds.areaId,
-                templateId: ds.templateId,
-              }),
-              `${ds.templateName} - ${ds.name}`
-            )}`
-        )
-        .join("<br>");
-
-      return `<strong>${dayFormatted}</strong><br>${datasetsList}`;
-    })
-    .join("<br><br>");
-
-  let deprecationNotice = "";
-  if (deprecationText) {
-    deprecationNotice = `<div style="background: #fff3cd; padding: 15px; border-radius: 5px; border: 1px solid #ffc107; margin-bottom: 20px;">${deprecationText}</div>`;
-  }
-
-  return `
-    <p>${changedText}</p>
-
-    ${deprecationNotice}
-    <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">${datasetsList}</div>`;
-}
+const MAX_REPORT_ROWS = 5;
 
 async function generateEmailContent(
-  data: UserReportData,
-  userLocale: Locale
+  changedDatasets: ReportDataset[],
+  frequency: "DAILY" | "WEEKLY",
+  locale: Locale
 ): Promise<EmailContent> {
-  const { user, recentDatasets } = data;
-  const frequency = user.reportsFrequency;
-  const count = recentDatasets.length;
+  const t = await getEmailT(locale);
+  const baseUrl = getEmailBaseUrl();
 
-  const t = await getEmailT(userLocale);
-  const dir = isRTL(userLocale) ? "rtl" : "ltr";
+  const subject = t("reportSubjectChanged", { count: changedDatasets.length, frequency });
 
-  const lastPeriod = frequency === "DAILY" ? t("lastPeriodDay") : t("lastPeriodWeek");
+  const now = new Date();
+  const thisYear = new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", timeZone: "UTC" });
+  const otherYear = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" });
+  const formatShortDate = (date: Date) =>
+    (date.getUTCFullYear() === now.getUTCFullYear() ? thisYear : otherYear).format(date);
+  const formatLongDate = new Intl.DateTimeFormat(locale, { dateStyle: "long", timeZone: "UTC" });
 
-  // Pre-resolves plural form. Safe for current supported locales (en, pt-BR, es) which
-  // all use binary one/other forms. If a language with more plural categories is added
-  // (e.g. Arabic has 6 forms), this must switch to ICU plural syntax in the message string.
-  // See GitHub issue for tracking: epic #80.
-  const datasets = count === 1 ? t("datasetsOne") : t("datasetsOther");
-  const subject =
-    count === 0
-      ? t("reportSubjectNoChanges", { lastPeriod })
-      : t("reportSubjectChanged", { count, datasets, lastPeriod });
+  const rows = changedDatasets
+    // Retiring datasets first, so the cap never hides a deletion warning.
+    .toSorted(
+      (a, b) =>
+        Number(b.retiresAt !== undefined) - Number(a.retiresAt !== undefined) ||
+        b.lastChanged.getTime() - a.lastChanged.getTime()
+    )
+    .slice(0, MAX_REPORT_ROWS)
+    .map((ds) => {
+      const title = escapeHtml(ds.templateName);
+      const stats = [
+        { iconUrl: emailIconUrl("glyph-calendar"), text: t("reportLastEdit", { date: formatShortDate(ds.lastChanged) }) },
+        ...(ds.features > 0
+          ? [{ iconUrl: emailIconUrl("glyph-features"), text: t("reportFeatures", { count: ds.features }) }]
+          : []),
+        ...(ds.mappers ? [{ iconUrl: emailIconUrl("glyph-mappers"), text: t("reportMappers", { count: ds.mappers }) }] : []),
+      ];
+      return emailListItem({
+        // A retired template's dataset page already shows "not found".
+        link: ds.retiresAt
+          ? undefined
+          : {
+              url: getDatasetUrl(baseUrl, { locale, areaId: ds.areaId, templateId: ds.templateId }),
+              action: t("reportOpen"),
+            },
+        iconUrl: emailIconUrl(ds.retiresAt ? EMAIL_REMOVED_TEMPLATE_ICON : ds.templateId),
+        title,
+        subtitle: escapeHtml(ds.areaName),
+        stats,
+        warning: ds.retiresAt && {
+          iconUrl: emailIconUrl("glyph-alert"),
+          title: t("reportRetiredTitle"),
+          // "soon" is the message's select branch for a date already past.
+          body: t("reportRetiredBody", {
+            template: title,
+            date: ds.retiresAt > now ? formatLongDate.format(ds.retiresAt) : "soon",
+          }),
+        },
+      });
+    });
 
-  // Check if any datasets use deprecated templates
-  const deprecatedDatasets = recentDatasets.filter((ds) => ds.daysRemaining !== undefined);
-  let deprecationNotice: string | undefined;
-  if (deprecatedDatasets.length > 0) {
-    const notices = deprecatedDatasets.map((ds) =>
-      ds.daysRemaining === 0
-        ? t("templateDeprecated")
-        : t("templateDeprecatedDaysRemaining", { days: ds.daysRemaining! })
-    );
-    deprecationNotice = notices.join("<br>");
-  }
+  const hidden = changedDatasets.length - rows.length;
+  const body = [
+    emailList(rows),
+    hidden > 0 ? emailParagraph(t("reportMore", { count: hidden }), { muted: true }) : "",
+    emailButton(`${baseUrl}/${locale}/dashboard`, t("reportGoToDashboard")),
+  ].join("");
 
-  const reportChangedText = t("reportChanged", { lastPeriod });
-  const savedDatasetsLink = createEmailLink(`${getEmailBaseUrl()}/`, t("reportSaved"));
-  const emailBody =
-    count > 0
-      ? generateEmailBodyWithChanges(
-          recentDatasets,
-          frequency,
-          reportChangedText,
-          deprecationNotice,
-          userLocale
-        )
-      : await formatEmail(userLocale, "reportNoChanges", {
-          savedDatasetsLink,
-          lastPeriod,
-        });
+  const timestamp = new Intl.DateTimeFormat(locale, {
+    dateStyle: "long",
+    timeStyle: "short",
+    timeZone: "UTC",
+  }).format(new Date());
 
-  // Generate footer
-  const timestamp = new Date().toISOString().split(".")[0];
-  const generatedAtText = t("generatedAt", { timestamp });
-  const preferencesLink = createEmailLink(`${getEmailBaseUrl()}/preferences`, t("preferencesPage"));
-  const unsubscribeText = await formatEmail(userLocale, "unsubscribe", {
-    preferencesLink,
+  const { html, text } = renderEmail({
+    locale,
+    heading: subject,
+    body,
+    footer: [t("generatedAt", { timestamp }), emailPreferencesLine(t, locale)],
   });
 
-  const htmlContent = `
-    <div lang="${userLocale}" dir="${dir}">
-      <p>${t("greeting")}</p>
-
-      ${emailBody}
-
-      <p style="color: #999; font-size: 12px;">
-        ${generatedAtText}
-      </p>
-      <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0;">
-      <p style="color: #666; font-size: 14px;">
-        ${unsubscribeText}
-      </p>
-    </div>
-  `;
-
-  return {
-    subject,
-    html: htmlContent,
-    text: htmlToText(htmlContent),
-  };
+  return { subject, html, text };
 }
 
 /** Generates next due user report email. Returns null if no user is due. */
@@ -282,7 +189,9 @@ export async function generateNextUserReport(): Promise<{
       areaId: true,
       templateId: true,
       cityName: true,
+      dataCount: true,
       stats: true,
+      area: { select: { name: true, names: true } },
       template: {
         select: {
           name: true,
@@ -301,17 +210,27 @@ export async function generateNextUserReport(): Promise<{
     orderBy: { updatedAt: "desc" },
   });
 
-  const datasetsWithRecentChanges = recentDatasets
-    .map((d) => ({ ...d, stats: readStats(d) ?? {} }))
-    .filter(
-      (d) =>
-        d.stats.mostRecentElement &&
-        new Date(d.stats.mostRecentElement) >= since
-    );
+  const reportDatasets = recentDatasets.flatMap((dataset): ReportDataset[] => {
+    const stats = readStats(dataset);
+    const lastChanged = new Date(stats?.mostRecentElement ?? NaN);
+    if (Number.isNaN(lastChanged.getTime()) || lastChanged < since) return [];
+    return [
+      {
+        areaId: dataset.areaId,
+        templateId: dataset.templateId,
+        areaName: resolveDatasetAreaName(dataset, userLocale),
+        templateName: resolveTemplateForLocale(dataset.template, userLocale).name,
+        lastChanged,
+        features: dataset.dataCount,
+        mappers: stats?.editorsCount,
+        retiresAt: dataset.template.deprecatesAt ?? undefined,
+      },
+    ];
+  });
 
   // Don't send email if no recent updates, but DO update lastReportSent
   // Note: Users with no watched datasets are excluded by the query filter
-  if (datasetsWithRecentChanges.length === 0) {
+  if (reportDatasets.length === 0) {
     await prisma.user.update({
       where: { id: user.id },
       data: { lastReportSent: new Date() },
@@ -319,45 +238,13 @@ export async function generateNextUserReport(): Promise<{
     return null;
   }
 
-  const datasetStats: UserReportData = {
-    user: {
-      id: user.id,
-      email: user.email,
-      reportsFrequency: user.reportsFrequency,
-      language: user.language,
-    },
-    recentDatasets: datasetsWithRecentChanges.map((dataset) => {
-      const mostRecentElement = dataset.stats.mostRecentElement;
-
-      // Resolve template name for user's locale
-      const resolvedTemplate = resolveTemplateForLocale(
-        dataset.template,
-        userLocale
-      );
-
-      // Calculate days remaining if template is deprecated
-      let daysRemaining: number | undefined;
-      if (dataset.template.deprecatesAt) {
-        daysRemaining = Math.ceil(
-          (new Date(dataset.template.deprecatesAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000)
-        );
-        if (daysRemaining < 0) daysRemaining = 0;
-      }
-
-      return {
-        id: dataset.id,
-        areaId: dataset.areaId,
-        templateId: dataset.templateId,
-        name: dataset.cityName,
-        templateName: resolvedTemplate.name,
-        lastChanged: mostRecentElement ? new Date(mostRecentElement) : null,
-        daysRemaining,
-      };
-    }),
-  };
-
-  const emailContent = await generateEmailContent(datasetStats, userLocale);
-  const latestChangeDate = getLatestChangeDate(datasetsWithRecentChanges);
+  const emailContent = await generateEmailContent(
+    reportDatasets,
+    user.reportsFrequency,
+    userLocale
+  );
+  const latestChange = Math.max(...reportDatasets.map((ds) => ds.lastChanged.getTime()));
+  const latestChangeDate = new Date(latestChange).toLocaleDateString();
 
   return {
     userId: user.id,
@@ -366,8 +253,8 @@ export async function generateNextUserReport(): Promise<{
     emailContent,
     reportData: {
       reportsFrequency: user.reportsFrequency,
-      totalDatasets: datasetStats.recentDatasets.length,
-      publicDatasetsCount: datasetStats.recentDatasets.length,
+      totalDatasets: reportDatasets.length,
+      publicDatasetsCount: reportDatasets.length,
       latestChangeDate,
     },
   };

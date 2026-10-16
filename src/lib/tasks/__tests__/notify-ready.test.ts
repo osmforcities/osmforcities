@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import { AVAILABLE_LOCALES } from "@/i18n/constants";
 import { prisma } from "@/lib/db";
 import { sendEmail } from "@/lib/email";
 import { notifyDatasetReady } from "../notify-ready";
@@ -127,6 +128,31 @@ describe("notifyDatasetReady", () => {
 
     expect(findDataset).not.toHaveBeenCalled();
     expect(sendEmail).not.toHaveBeenCalled();
+  });
+
+  it.each(AVAILABLE_LOCALES)("renders %s with button and preferences footer", async (locale) => {
+    findMany.mockResolvedValue([save("s1", "a@x.test", locale)] as never);
+
+    await notifyDatasetReady("ds-1", 42);
+
+    const { html, text } = vi.mocked(sendEmail).mock.calls[0][0];
+    const mapUrl = `https://osmforcities.test/${locale}/area/271110/dataset/schools`;
+    const preferencesUrl = `https://osmforcities.test/${locale}/preferences`;
+    expect(html).toContain(`lang="${locale}"`);
+    expect(html).toMatch(/<h1[^>]*>[^<]+<\/h1>/);
+    expect(html).not.toMatch(/\{\w+\}/);
+    expect(text?.split(mapUrl)).toHaveLength(2);
+    expect(text?.split(preferencesUrl)).toHaveLength(2);
+  });
+
+  it("labels the button in English for English users", async () => {
+    findMany.mockResolvedValue([save("s1", "a@x.test", "en")] as never);
+
+    await notifyDatasetReady("ds-1", 42);
+
+    expect(vi.mocked(sendEmail).mock.calls[0][0].text).toContain(
+      "Open the map [https://osmforcities.test/en/area/271110/dataset/schools]"
+    );
   });
 
   it("escapes OSM-sourced names in the HTML body", async () => {

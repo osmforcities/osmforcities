@@ -6,6 +6,7 @@
  * Reads templates.yml and generates:
  * - getCategoryIcon: category slug -> icon (from the categories section only)
  * - getTemplateIcon: template slug -> icon, falling back to getCategoryIcon
+ * - public/email-icons: PNG tiles per template and UI glyphs for emails
  *
  * All icon names are validated against lucide-react exports; generation
  * fails listing any unknown names.
@@ -16,9 +17,11 @@ import {
   collectCategoryIcons,
   collectTemplateIcons,
 } from "./lib/template-parser";
-import { writeFileSync } from "fs";
+import { mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
 import * as lucide from "lucide-react";
+import { EMAIL_GLYPHS, EMAIL_ICON_DIR, EMAIL_REMOVED_TEMPLATE_ICON } from "../src/lib/email-layout";
+import { renderGlyph, renderTemplateTile } from "./lib/email-icon-render";
 
 const FALLBACK_ICON = "MapPin";
 
@@ -134,9 +137,35 @@ function writeIconsFile(content: string): void {
 }
 
 /**
+ * Write the email PNGs: one tile per template (its icon, else its category's),
+ * the UI glyphs, and the neutral tile report rows use for removed templates.
+ */
+async function writeEmailIcons(
+  categoryIcons: Map<string, string>,
+  templateIcons: Map<string, string>,
+): Promise<void> {
+  const outDir = join(__dirname, "../public", EMAIL_ICON_DIR);
+  mkdirSync(outDir, { recursive: true });
+  const { templates } = loadTemplatesYaml();
+  for (const [id, template] of Object.entries(templates)) {
+    const iconName =
+      templateIcons.get(id) ?? categoryIcons.get(template.category) ?? FALLBACK_ICON;
+    writeFileSync(join(outDir, `${id}.png`), await renderTemplateTile(iconName));
+  }
+  for (const [name, { icon, color }] of Object.entries(EMAIL_GLYPHS)) {
+    writeFileSync(join(outDir, `glyph-${name}.png`), await renderGlyph(icon, color));
+  }
+  writeFileSync(
+    join(outDir, `${EMAIL_REMOVED_TEMPLATE_ICON}.png`),
+    await renderTemplateTile(FALLBACK_ICON),
+  );
+  console.log(`Generated public/${EMAIL_ICON_DIR} with ${Object.keys(templates).length} template tiles`);
+}
+
+/**
  * Main generation function
  */
-function generateIcons(): void {
+async function generateIcons(): Promise<void> {
   try {
     const { content, categoryIcons, templateIcons } =
       generateIconsFileContent();
@@ -144,10 +173,11 @@ function generateIcons(): void {
     console.log(
       `Generated src/lib/category-icons.tsx with ${categoryIcons.size} category and ${templateIcons.size} template mappings`,
     );
+    await writeEmailIcons(categoryIcons, templateIcons);
   } catch (error) {
     console.error("Failed to generate icons:", error);
     process.exit(1);
   }
 }
 
-generateIcons();
+void generateIcons();

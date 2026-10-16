@@ -53,15 +53,20 @@ Prereqs: local dev server, signed in (osmforcities-dev-auth), Overpass tunnel up
 1. **Propose** — a template is worth adding when it maps a distinct civic need, has a
    clean wiki-documented selector, and is neither so broad it trips the size cap nor so
    rare it is empty in most cities.
-2. **Define** — add the row, pick a seeded `category`, decide parent, add a Lucide `icon`
-   (validated by `pnpm generate-icons`), add name/description to `templates.i18n.yml`.
-   `pnpm db:sync`.
+2. **Define** — add the row, pick a seeded `category`, decide parent, add a Lucide `icon`, add name/description to `templates.i18n.yml`. Run `pnpm generate-icons` (validates the icon name, regenerates `src/lib/category-icons.tsx` and the email PNGs in `public/email-icons/`), then `pnpm db:sync`.
 3. **Choose `filterableTags`** — see below.
 4. **Pick demonstrators** — see below.
 5. **Seed / feature** — see Overpass budget below.
-6. **Ship** — commit `templates.yml`, `templates.i18n.yml`, `messages/*.json`. Don't push
-   or open a PR until the maintainer says so. On merge, deploy runs `db:sync`; removed
-   templates soft-deprecate (30 days) then delete.
+6. **Ship** — commit `templates.yml`, `templates.i18n.yml`, `messages/*.json`, plus the generated `src/lib/category-icons.tsx` and any new or changed `public/email-icons/*.png`. Don't push or open a PR until the maintainer says so. On merge, deploy runs `db:sync`; removed templates soft-deprecate (30 days) then delete.
+
+### Generated icon files
+
+`pnpm generate-icons` writes two committed outputs from `templates.yml`:
+
+- `src/lib/category-icons.tsx` — the app's template and category icons.
+- `public/email-icons/` — PNGs for emails: one 80px tile per template (its icon, else its category icon), `glyph-*.png` for report stats and warnings, and `_removed.png`, the neutral tile report rows use for removed templates.
+
+Emails need PNGs because email clients strip SVG, and static `.png` files cache on the CDN, so opening an email costs the server nothing. They are committed rather than built at deploy time to keep the on-server `next build` lean. Output is byte-identical across runs, so a template change shows only its own PNG in the diff. The unit test `prisma/lib/__tests__/email-icons.test.ts` fails if any template is missing its PNG. The generator only writes files: delete a removed template's PNG by hand if you want it gone.
 
 ### Tuning `filterableTags` from the dashboard
 

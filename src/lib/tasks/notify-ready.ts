@@ -1,14 +1,7 @@
-import { htmlToText } from "html-to-text";
 import { prisma } from "@/lib/db";
 import { sendEmail } from "@/lib/email";
-import {
-  createEmailLink,
-  escapeHtml,
-  getEmailBaseUrl,
-  getEmailT,
-  isRTL,
-  type Locale,
-} from "@/lib/email-i18n";
+import { escapeHtml, getEmailBaseUrl, getEmailT, type Locale } from "@/lib/email-i18n";
+import { emailButton, emailPreferencesLine, renderEmail } from "@/lib/email-layout";
 import { resolveDatasetAreaName } from "@/lib/area-name";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getDatasetUrl } from "@/lib/urls";
@@ -69,17 +62,21 @@ export async function notifyDatasetReady(
             areaId: dataset.areaId,
             templateId: dataset.templateId,
           });
-          const sentence = t("mapReady", {
-            template: escapeHtml(names.template),
-            area: escapeHtml(names.area),
+          const { html, text } = renderEmail({
+            locale,
+            heading: t("mapReady", {
+              template: escapeHtml(names.template),
+              area: escapeHtml(names.area),
+            }),
+            body: emailButton(url, t("mapReadyAction")),
+            footer: [emailPreferencesLine(t, locale)],
           });
-          const html = `<div lang="${locale}" dir="${isRTL(locale) ? "rtl" : "ltr"}"><p>${createEmailLink(url, sentence)}</p></div>`;
 
           await sendEmail({
             to: save.user.email,
             subject: t("mapReady", names),
             html,
-            text: htmlToText(html),
+            text,
           });
         }
         // Conditional so an unsave mid-send is a no-op, not a throw.
