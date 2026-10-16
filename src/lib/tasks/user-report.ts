@@ -176,16 +176,30 @@ export async function generateNextUserReport(): Promise<{
     orderBy: { updatedAt: "desc" },
   });
 
-  const datasetsWithRecentChanges = recentDatasets.flatMap((d) => {
-    const mostRecentElement = readStats(d)?.mostRecentElement;
-    return mostRecentElement && new Date(mostRecentElement) >= since
-      ? [{ ...d, lastChanged: new Date(mostRecentElement) }]
-      : [];
+  const reportDatasets = recentDatasets.flatMap((dataset): ReportDataset[] => {
+    const mostRecentElement = readStats(dataset)?.mostRecentElement;
+    if (!mostRecentElement || new Date(mostRecentElement) < since) return [];
+    const { deprecatesAt } = dataset.template;
+    return [
+      {
+        areaId: dataset.areaId,
+        templateId: dataset.templateId,
+        areaName: resolveDatasetAreaName(dataset, userLocale),
+        templateName: resolveTemplateForLocale(dataset.template, userLocale).name,
+        lastChanged: new Date(mostRecentElement),
+        daysRemaining: deprecatesAt
+          ? Math.max(
+              0,
+              Math.ceil((new Date(deprecatesAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000))
+            )
+          : undefined,
+      },
+    ];
   });
 
   // Don't send email if no recent updates, but DO update lastReportSent
   // Note: Users with no watched datasets are excluded by the query filter
-  if (datasetsWithRecentChanges.length === 0) {
+  if (reportDatasets.length === 0) {
     await prisma.user.update({
       where: { id: user.id },
       data: { lastReportSent: new Date() },
@@ -193,30 +207,12 @@ export async function generateNextUserReport(): Promise<{
     return null;
   }
 
-  const reportDatasets: ReportDataset[] = datasetsWithRecentChanges.map((dataset) => ({
-    areaId: dataset.areaId,
-    templateId: dataset.templateId,
-    areaName: resolveDatasetAreaName(dataset, userLocale),
-    templateName: resolveTemplateForLocale(dataset.template, userLocale).name,
-    lastChanged: dataset.lastChanged,
-    daysRemaining: dataset.template.deprecatesAt
-      ? Math.max(
-          0,
-          Math.ceil(
-            (new Date(dataset.template.deprecatesAt).getTime() - Date.now()) /
-              (24 * 60 * 60 * 1000)
-          )
-        )
-      : undefined,
-  }));
-
   const emailContent = await generateEmailContent(
     reportDatasets,
     user.reportsFrequency,
     userLocale
   );
-  const latestChangeDate =
-    datasetsWithRecentChanges[0]?.lastChanged.toLocaleDateString() ?? null;
+  const latestChangeDate = reportDatasets[0]?.lastChanged.toLocaleDateString() ?? null;
 
   return {
     userId: user.id,
