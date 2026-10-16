@@ -40,6 +40,8 @@ function toHostElement(element: ReactElement): ReactElement {
  */
 export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
+  // One parameter only: extra or repeated ones would mint new CDN cache keys.
+  if ([...params.keys()].length !== 1) return new Response("Bad request", { status: 404 });
   const glyphName = params.get("glyph");
 
   if (glyphName !== null) {

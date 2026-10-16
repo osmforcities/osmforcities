@@ -36,8 +36,15 @@ describe("GET /api/email-icon", () => {
     expect((await png("template=schools")).equals(await png("template=parks"))).toBe(false);
   });
 
-  it.each(["template=not-a-template", "template=", ""])(
-    "returns 404 for a template outside the catalog (%s)",
+  it.each([
+    "template=not-a-template",
+    "template=",
+    "",
+    "template=schools&x=1",
+    "template=schools&template=schools",
+    "glyph=calendar&x=1",
+  ])(
+    "returns 404 for anything but one catalog template (%s)",
     async (query) => {
       expect((await get(query)).status).toBe(404);
     }
