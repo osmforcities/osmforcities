@@ -5,7 +5,7 @@ type EmailTranslator = Awaited<ReturnType<typeof getEmailT>>;
 
 // Email clients ignore stylesheets, CSS variables and web fonts, so the app
 // tokens are copied here as hex and every style is inline.
-const COLOR = {
+export const COLOR = {
   olive50: "#f6faf5",
   olive100: "#edf6eb",
   olive500: "#57814c",

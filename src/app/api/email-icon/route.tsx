@@ -2,6 +2,7 @@ import { cloneElement, type ReactElement } from "react";
 import { ImageResponse } from "next/og";
 import type { LucideProps } from "lucide-react";
 import { getTemplateIcon } from "@/lib/category-icons";
+import { COLOR } from "@/lib/email-layout";
 
 export const dynamic = "force-dynamic";
 
@@ -41,11 +42,11 @@ export function GET(request: Request) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#edf6eb",
+          backgroundColor: COLOR.olive100,
           borderRadius: 16,
         }}
       >
-        {toHostElement(cloneElement(icon, { size: 44, color: "#3f5c39", strokeWidth: 2 }))}
+        {toHostElement(cloneElement(icon, { size: 44, color: COLOR.olive600, strokeWidth: 2 }))}
       </div>
     ),
     {
