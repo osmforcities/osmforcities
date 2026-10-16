@@ -57,13 +57,15 @@ export async function submitTilesForDataset(
       },
     });
     if (!dataset) return {};
+    // Without a fresh count probe the stored count stands in
+    const count = elementCount ?? dataset.dataCount;
 
     // Nothing to bake: the tiler refuses a query that matches nothing. The
     // row is a plain empty dataset, and one stuck failing on that refusal
     // clears here. lastChecked too, since no reconcile will write it.
     // ponytail: a served row whose features all vanish keeps its last archive
     // and count, clear tilesServedJobId and stats here if that shows up.
-    if ((elementCount ?? dataset.dataCount) === 0) {
+    if (count === 0) {
       const columns = { tilesJobId: null, tilesState: null, tilesError: null };
       await prisma.dataset.update({
         where: { id: datasetId },
@@ -85,11 +87,9 @@ export async function submitTilesForDataset(
     );
     // Over-cap bakes need budgets the default per-query settings refuse. The
     // count probe's element count is the signal, the same number creation
-    // caps on. Without a fresh one the stored count stands in.
+    // caps on.
     const isOverCap =
-      (elementCount ?? dataset.dataCount) *
-        OVERPASS_BYTES_PER_ELEMENT_ESTIMATE >
-      MAX_DATASET_BYTES;
+      count * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE > MAX_DATASET_BYTES;
     const columns = await submitTilesColumns(
       datasetId,
       query,
