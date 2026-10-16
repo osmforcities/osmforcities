@@ -33,8 +33,8 @@ describe("GET /api/email-icon", () => {
     }
   });
 
-  it("rejects an unknown glyph", () => {
-    expect(GET(new Request("https://x.test/api/email-icon?glyph=nope")).status).toBe(404);
+  it.each(["nope", "toString", "constructor", "__proto__"])("rejects unknown glyph %s", (glyph) => {
+    expect(GET(new Request(`https://x.test/api/email-icon?glyph=${glyph}`)).status).toBe(404);
   });
 
   it("falls back to a generic icon for unknown or missing params", async () => {

@@ -40,12 +40,12 @@ export function emailParagraph(
   return `<p${skipClass} style="${options.muted ? MUTED : PARAGRAPH}">${html}</p>`;
 }
 
-export interface EmailStat {
+interface EmailStat {
   iconUrl: string;
   text: string;
 }
 
-export interface EmailWarning {
+interface EmailWarning {
   iconUrl: string;
   title: string;
   body: string;

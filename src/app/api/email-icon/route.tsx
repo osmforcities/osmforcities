@@ -10,12 +10,13 @@ const TILE_PX = 80;
 const GLYPH_PX = 32;
 const CACHE = { "Cache-Control": "public, max-age=86400, s-maxage=604800" };
 
-const GLYPHS: Record<string, { icon: ReactElement<LucideProps>; color: string }> = {
-  calendar: { icon: <CalendarDays />, color: COLOR.muted },
-  features: { icon: <Shapes />, color: COLOR.muted },
-  mappers: { icon: <Users />, color: COLOR.muted },
-  alert: { icon: <TriangleAlert />, color: COLOR.yellow700 },
-};
+// A Map, not an object literal: `?glyph=toString` must not hit Object.prototype.
+const GLYPHS = new Map<string, { icon: ReactElement<LucideProps>; color: string }>([
+  ["calendar", { icon: <CalendarDays />, color: COLOR.muted }],
+  ["features", { icon: <Shapes />, color: COLOR.muted }],
+  ["mappers", { icon: <Users />, color: COLOR.muted }],
+  ["alert", { icon: <TriangleAlert />, color: COLOR.yellow700 }],
+]);
 
 type ForwardRefType = { render: (props: unknown, ref: null) => ReactElement };
 
@@ -40,7 +41,7 @@ export function GET(request: Request) {
   const glyphName = params.get("glyph");
 
   if (glyphName !== null) {
-    const glyph = GLYPHS[glyphName];
+    const glyph = GLYPHS.get(glyphName);
     if (!glyph) return new Response("Unknown glyph", { status: 404 });
     return new ImageResponse(
       toHostElement(cloneElement(glyph.icon, { size: GLYPH_PX, color: glyph.color, strokeWidth: 2 })),

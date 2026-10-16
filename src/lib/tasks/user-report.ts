@@ -47,13 +47,10 @@ async function generateEmailContent(
 
   const now = new Date();
   const glyph = (name: string) => `${baseUrl}/api/email-icon?glyph=${name}`;
+  const thisYear = new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", timeZone: "UTC" });
+  const otherYear = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" });
   const formatShortDate = (date: Date) =>
-    new Intl.DateTimeFormat(locale, {
-      month: "short",
-      day: "numeric",
-      year: date.getUTCFullYear() === now.getUTCFullYear() ? undefined : "numeric",
-      timeZone: "UTC",
-    }).format(date);
+    (date.getUTCFullYear() === now.getUTCFullYear() ? thisYear : otherYear).format(date);
   const formatLongDate = new Intl.DateTimeFormat(locale, { dateStyle: "long", timeZone: "UTC" });
 
   const rows = changedDatasets
@@ -68,9 +65,11 @@ async function generateEmailContent(
       const title = escapeHtml(ds.templateName);
       const stats = [
         { iconUrl: glyph("calendar"), text: t("reportLastEdit", { date: formatShortDate(ds.lastChanged) }) },
-        ds.features > 0 && { iconUrl: glyph("features"), text: t("reportFeatures", { count: ds.features }) },
-        ds.mappers && { iconUrl: glyph("mappers"), text: t("reportMappers", { count: ds.mappers }) },
-      ].filter((stat) => typeof stat === "object");
+        ...(ds.features > 0
+          ? [{ iconUrl: glyph("features"), text: t("reportFeatures", { count: ds.features }) }]
+          : []),
+        ...(ds.mappers ? [{ iconUrl: glyph("mappers"), text: t("reportMappers", { count: ds.mappers }) }] : []),
+      ];
       const icon = new URLSearchParams({ template: ds.templateId, category: ds.categorySlug });
       return emailListItem({
         // A retired template's dataset page already shows "not found".
