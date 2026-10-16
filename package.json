@@ -2,6 +2,7 @@
   "name": "osmforcities",
   "version": "1.20.0",
   "private": true,
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "COMMIT_HASH=$(git rev-parse HEAD 2>/dev/null || echo 'unknown') next dev",
     "dev:test": "NODE_ENV=test next dev",
