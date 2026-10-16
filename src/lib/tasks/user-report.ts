@@ -6,13 +6,12 @@ import { getDatasetUrl } from "@/lib/urls";
 import { escapeHtml, getEmailBaseUrl, getEmailT, type Locale } from "@/lib/email-i18n";
 import {
   emailButton,
-  emailGlyphUrl,
   emailList,
   emailListItem,
   emailParagraph,
   emailPreferencesLine,
-  emailRemovedTemplateIconUrl,
-  emailTemplateIconUrl,
+  emailIconUrl,
+  EMAIL_REMOVED_TEMPLATE_ICON,
   renderEmail,
 } from "@/lib/email-layout";
 
@@ -65,11 +64,11 @@ async function generateEmailContent(
     .map((ds) => {
       const title = escapeHtml(ds.templateName);
       const stats = [
-        { iconUrl: emailGlyphUrl("calendar"), text: t("reportLastEdit", { date: formatShortDate(ds.lastChanged) }) },
+        { iconUrl: emailIconUrl("glyph-calendar"), text: t("reportLastEdit", { date: formatShortDate(ds.lastChanged) }) },
         ...(ds.features > 0
-          ? [{ iconUrl: emailGlyphUrl("features"), text: t("reportFeatures", { count: ds.features }) }]
+          ? [{ iconUrl: emailIconUrl("glyph-features"), text: t("reportFeatures", { count: ds.features }) }]
           : []),
-        ...(ds.mappers ? [{ iconUrl: emailGlyphUrl("mappers"), text: t("reportMappers", { count: ds.mappers }) }] : []),
+        ...(ds.mappers ? [{ iconUrl: emailIconUrl("glyph-mappers"), text: t("reportMappers", { count: ds.mappers }) }] : []),
       ];
       return emailListItem({
         // A retired template's dataset page already shows "not found".
@@ -79,12 +78,12 @@ async function generateEmailContent(
               url: getDatasetUrl(baseUrl, { locale, areaId: ds.areaId, templateId: ds.templateId }),
               action: t("reportOpen"),
             },
-        iconUrl: ds.retiresAt ? emailRemovedTemplateIconUrl() : emailTemplateIconUrl(ds.templateId),
+        iconUrl: emailIconUrl(ds.retiresAt ? EMAIL_REMOVED_TEMPLATE_ICON : ds.templateId),
         title,
         subtitle: escapeHtml(ds.areaName),
         stats,
         warning: ds.retiresAt && {
-          iconUrl: emailGlyphUrl("alert"),
+          iconUrl: emailIconUrl("glyph-alert"),
           title: t("reportRetiredTitle"),
           // "soon" is the message's select branch for a date already past.
           body: t("reportRetiredBody", {

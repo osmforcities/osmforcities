@@ -39,10 +39,6 @@ export const EMAIL_GLYPHS = {
  */
 export const EMAIL_ICON_DIR = "email-icons";
 
-export function emailTemplateIconUrl(templateId: string): string {
-  return `${getEmailBaseUrl()}/${EMAIL_ICON_DIR}/${encodeURIComponent(templateId)}.png`;
-}
-
 /**
  * A neutral tile for templates removed from the catalog: their own PNG may
  * predate the generator, and the row's warning already names the template.
@@ -50,12 +46,9 @@ export function emailTemplateIconUrl(templateId: string): string {
  */
 export const EMAIL_REMOVED_TEMPLATE_ICON = "_removed";
 
-export function emailRemovedTemplateIconUrl(): string {
-  return `${getEmailBaseUrl()}/${EMAIL_ICON_DIR}/${EMAIL_REMOVED_TEMPLATE_ICON}.png`;
-}
-
-export function emailGlyphUrl(glyph: keyof typeof EMAIL_GLYPHS): string {
-  return `${getEmailBaseUrl()}/${EMAIL_ICON_DIR}/glyph-${glyph}.png`;
+/** `name` is a template id, `EMAIL_REMOVED_TEMPLATE_ICON` or `glyph-<glyph>`. */
+export function emailIconUrl(name: string): string {
+  return `${getEmailBaseUrl()}/${EMAIL_ICON_DIR}/${encodeURIComponent(name)}.png`;
 }
 
 function createEmailLink(url: string, text: string): string {
