@@ -5,8 +5,9 @@ import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { getDatasetUrl } from "@/lib/urls";
 import { escapeHtml, getEmailBaseUrl, getEmailT, type Locale } from "@/lib/email-i18n";
 import {
-  createEmailLink,
-  emailNotice,
+  emailButton,
+  emailList,
+  emailListItem,
   emailParagraph,
   emailPreferencesLine,
   renderEmail,
@@ -25,49 +26,56 @@ interface ReportDataset {
   areaName: string;
   templateName: string;
   lastChanged: Date;
+  features: number;
+  mappers?: number;
   daysRemaining?: number;
 }
 
+const MAX_REPORT_ROWS = 10;
+const META_SEPARATOR = " · ";
+
 async function generateEmailContent(
-  recentDatasets: ReportDataset[],
+  changedDatasets: ReportDataset[],
+  savedCount: number,
   frequency: "DAILY" | "WEEKLY",
   locale: Locale
 ): Promise<EmailContent> {
   const t = await getEmailT(locale);
+  const baseUrl = getEmailBaseUrl().replace(/\/+$/, "");
 
-  const subject = t("reportSubjectChanged", { count: recentDatasets.length, frequency });
+  const subject = t("reportSubjectChanged", { count: changedDatasets.length, frequency });
 
-  const formatDay = new Intl.DateTimeFormat(locale, { dateStyle: "long", timeZone: "UTC" });
-  const datasetsByDay = Map.groupBy(recentDatasets, (ds) =>
-    ds.lastChanged.toISOString().slice(0, 10)
-  );
-  const days = [...datasetsByDay.keys()].sort().reverse();
-
-  const body = days
-    .map((day) => {
-      const group = datasetsByDay.get(day)!;
-      const datasets = group.map((ds) => {
-        const name = t("reportDataset", {
-          template: escapeHtml(ds.templateName),
-          area: escapeHtml(ds.areaName),
-        });
-        const url = getDatasetUrl(getEmailBaseUrl(), {
-          locale,
-          areaId: ds.areaId,
-          templateId: ds.templateId,
-        });
-        const link = emailParagraph(createEmailLink(url, name));
-        if (ds.daysRemaining === undefined) return link;
-        const notice =
-          ds.daysRemaining === 0
-            ? t("templateDeprecated")
-            : t("templateDeprecatedDaysRemaining", { days: ds.daysRemaining });
-        return link + emailNotice(notice);
+  const formatDate = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" });
+  const rows = changedDatasets
+    .toSorted((a, b) => b.lastChanged.getTime() - a.lastChanged.getTime())
+    .slice(0, MAX_REPORT_ROWS)
+    .map((ds) => {
+      const meta = [
+        t("reportLastEdit", { date: formatDate.format(ds.lastChanged) }),
+        ds.features > 0 && t("reportFeatures", { count: ds.features }),
+        ds.mappers && t("reportMappers", { count: ds.mappers }),
+      ].filter(Boolean);
+      return emailListItem({
+        url: getDatasetUrl(baseUrl, { locale, areaId: ds.areaId, templateId: ds.templateId }),
+        title: escapeHtml(ds.templateName),
+        subtitle: escapeHtml(ds.areaName),
+        meta: meta.join(META_SEPARATOR),
+        action: t("reportOpen"),
+        notice:
+          ds.daysRemaining === undefined
+            ? undefined
+            : ds.daysRemaining === 0
+              ? t("templateDeprecated")
+              : t("templateDeprecatedDaysRemaining", { days: ds.daysRemaining }),
       });
-      const dayLabel = formatDay.format(group[0].lastChanged);
-      return emailParagraph(`<strong>${dayLabel}</strong>`) + datasets.join("");
-    })
-    .join("");
+    });
+
+  const hidden = changedDatasets.length - rows.length;
+  const body = [
+    emailList(rows),
+    hidden > 0 ? emailParagraph(t("reportMore", { count: hidden }), { muted: true }) : "",
+    emailButton(`${baseUrl}/${locale}/dashboard`, t("reportOpenDashboard", { count: savedCount })),
+  ].join("");
 
   const timestamp = new Intl.DateTimeFormat(locale, {
     dateStyle: "long",
@@ -157,6 +165,7 @@ export async function generateNextUserReport(): Promise<{
       areaId: true,
       templateId: true,
       cityName: true,
+      dataCount: true,
       stats: true,
       area: { select: { name: true, names: true } },
       template: {
@@ -178,7 +187,8 @@ export async function generateNextUserReport(): Promise<{
   });
 
   const reportDatasets = recentDatasets.flatMap((dataset): ReportDataset[] => {
-    const lastChanged = new Date(readStats(dataset)?.mostRecentElement ?? NaN);
+    const stats = readStats(dataset);
+    const lastChanged = new Date(stats?.mostRecentElement ?? NaN);
     if (Number.isNaN(lastChanged.getTime()) || lastChanged < since) return [];
     const { deprecatesAt } = dataset.template;
     return [
@@ -188,6 +198,8 @@ export async function generateNextUserReport(): Promise<{
         areaName: resolveDatasetAreaName(dataset, userLocale),
         templateName: resolveTemplateForLocale(dataset.template, userLocale).name,
         lastChanged,
+        features: dataset.dataCount,
+        mappers: stats?.editorsCount,
         daysRemaining: deprecatesAt
           ? Math.max(
               0,
@@ -210,6 +222,7 @@ export async function generateNextUserReport(): Promise<{
 
   const emailContent = await generateEmailContent(
     reportDatasets,
+    recentDatasets.length,
     user.reportsFrequency,
     userLocale
   );

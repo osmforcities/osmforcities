@@ -622,8 +622,13 @@
     "templateDeprecated": "Ce modèle a été retiré du catalogue.",
     "templateDeprecatedDaysRemaining": "{days, plural, one {Il vous reste # jour avant la suppression de ce jeu de données.} other {Il vous reste # jours avant la suppression de ce jeu de données.}}",
     "mapReady": "La carte « {template} » à {area} est prête",
-    "reportDataset": "{template} à {area}",
-    "mapReadyAction": "Ouvrir la carte"
+    "mapReadyAction": "Ouvrir la carte",
+    "reportLastEdit": "Dernière modification le {date}",
+    "reportFeatures": "{count, plural, one {# élément} other {# éléments}}",
+    "reportMappers": "{count, plural, one {# cartographe} other {# cartographes}}",
+    "reportOpen": "Ouvrir",
+    "reportMore": "{count, plural, one {# autre jeu de données a changé.} other {# autres jeux de données ont changé.}}",
+    "reportOpenDashboard": "{count, plural, one {Ouvrir votre jeu de données enregistré} other {Ouvrir vos # jeux de données enregistrés}}"
   },
   "AboutPage": {
     "metaTitle": "À propos - OSM for Cities",

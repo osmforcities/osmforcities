@@ -622,8 +622,13 @@
     "templateDeprecated": "Diese Vorlage wurde aus dem Katalog entfernt.",
     "templateDeprecatedDaysRemaining": "{days, plural, one {Du hast noch # Tag, bevor dieser Datensatz gelöscht wird.} other {Du hast noch # Tage, bevor dieser Datensatz gelöscht wird.}}",
     "mapReady": "Die Karte „{template}“ in {area} ist fertig",
-    "reportDataset": "{template} in {area}",
-    "mapReadyAction": "Karte öffnen"
+    "mapReadyAction": "Karte öffnen",
+    "reportLastEdit": "Zuletzt bearbeitet am {date}",
+    "reportFeatures": "{count, plural, one {# Objekt} other {# Objekte}}",
+    "reportMappers": "{count, plural, one {# Mapper} other {# Mapper}}",
+    "reportOpen": "Öffnen",
+    "reportMore": "{count, plural, one {# weiterer Datensatz wurde geändert.} other {# weitere Datensätze wurden geändert.}}",
+    "reportOpenDashboard": "{count, plural, one {Deinen gespeicherten Datensatz öffnen} other {Deine # gespeicherten Datensätze öffnen}}"
   },
   "AboutPage": {
     "metaTitle": "Über das Projekt - OSM for Cities",

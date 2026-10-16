@@ -631,8 +631,13 @@
     "templateDeprecated": "Esta plantilla fue eliminada del catálogo.",
     "templateDeprecatedDaysRemaining": "{days, plural, one {Te queda # día antes de que este conjunto de datos sea eliminado.} other {Te quedan # días antes de que este conjunto de datos sea eliminado.}}",
     "mapReady": "El mapa de {template} en {area} está listo",
-    "reportDataset": "{template} en {area}",
-    "mapReadyAction": "Abrir el mapa"
+    "mapReadyAction": "Abrir el mapa",
+    "reportLastEdit": "Última edición el {date}",
+    "reportFeatures": "{count, plural, one {# elemento} other {# elementos}}",
+    "reportMappers": "{count, plural, one {# mapeador} other {# mapeadores}}",
+    "reportOpen": "Abrir",
+    "reportMore": "{count, plural, one {Cambió # conjunto de datos más.} other {Cambiaron # conjuntos de datos más.}}",
+    "reportOpenDashboard": "{count, plural, one {Abrir tu conjunto de datos guardado} other {Abrir tus # conjuntos de datos guardados}}"
   },
   "AboutPage": {
     "metaTitle": "Acerca de - OSM for Cities",

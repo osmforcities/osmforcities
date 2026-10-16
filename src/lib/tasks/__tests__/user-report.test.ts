@@ -56,9 +56,11 @@ describe("user-report email generation", () => {
     areaId: 12345,
     templateId: "template-schools",
     cityName: "Sao Paulo",
+    dataCount: 1284,
     area: { name: "Sao Paulo", names: {} },
     stats: {
       mostRecentElement: "2026-10-16T00:00:00Z",
+      editorsCount: 7,
     },
     template: {
       name: "schools",
@@ -85,8 +87,54 @@ describe("user-report email generation", () => {
     expect(result).not.toBeNull();
     expect(result?.userLanguage).toBe("en");
     expect(result?.emailContent.subject).toBe("1 dataset changed in the last week");
-    expect(result?.emailContent.html).toContain("Schools in Sao Paulo");
-    expect(result?.emailContent.html).toContain("October 16, 2026");
+    expect(result?.emailContent.text).toContain(`Schools [${datasetUrl("en")}]`);
+    expect(result?.emailContent.text).toContain("Sao Paulo");
+    expect(result?.emailContent.text).toContain(
+      "Last edit Oct 16, 2026 · 1,284 features · 7 mappers"
+    );
+  });
+
+  it("links the report to the dashboard with the saved dataset count", async () => {
+    mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+    mockPrisma.dataset.findMany.mockResolvedValue([
+      mockDataset,
+      { ...mockDataset, id: "ds-2", stats: { mostRecentElement: "2026-01-01T00:00:00Z" } },
+    ]);
+
+    const result = await generateNextUserReport();
+
+    expect(result?.emailContent.subject).toBe("1 dataset changed in the last week");
+    expect(result?.emailContent.text).toContain(
+      "Open your 2 saved datasets [https://osmforcities.com/en/dashboard]"
+    );
+  });
+
+  it("lists the most recent change first and caps the list", async () => {
+    mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+    const datasets = Array.from({ length: 12 }, (_, i) => ({
+      ...mockDataset,
+      id: `ds-${i}`,
+      templateId: `t-${i}`,
+      stats: { mostRecentElement: `2026-10-16T${String(i).padStart(2, "0")}:00:00Z` },
+    }));
+    vi.mocked(resolveTemplateForLocale).mockImplementation(() => ({ name: "T", description: "" }));
+    mockPrisma.dataset.findMany.mockResolvedValue(datasets);
+
+    const result = await generateNextUserReport();
+    const { text } = result!.emailContent;
+
+    const shown = [...text.matchAll(/dataset\/(t-\d+)/g)].map((m) => m[1]);
+    expect(shown).toEqual(["t-11", "t-10", "t-9", "t-8", "t-7", "t-6", "t-5", "t-4", "t-3", "t-2"]);
+    expect(text).toContain("2 more datasets changed.");
+  });
+
+  it("uses app olive links, never the old blue", async () => {
+    mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+    mockPrisma.dataset.findMany.mockResolvedValue([mockDataset]);
+
+    const { html } = (await generateNextUserReport())!.emailContent;
+
+    expect(html).not.toMatch(/#007bff|#0b4ad8/i);
   });
 
   it("Portuguese user gets Portuguese template names and dates", async () => {
@@ -98,8 +146,9 @@ describe("user-report email generation", () => {
 
     expect(result?.userLanguage).toBe("pt-BR");
     expect(result?.emailContent.subject).toBe("1 conjunto de dados mudou na última semana");
-    expect(result?.emailContent.html).toContain("Escolas em Sao Paulo");
-    expect(result?.emailContent.html).toContain("16 de outubro de 2026");
+    expect(result?.emailContent.text).toContain(`Escolas [${datasetUrl("pt-BR")}]`);
+    expect(result?.emailContent.text).toContain("Última edição em 16 de out.");
+    expect(result?.emailContent.text).toContain("1.284 feições · 7 mapeadores");
   });
 
   it("uses the localized area name", async () => {
@@ -110,7 +159,7 @@ describe("user-report email generation", () => {
 
     const result = await generateNextUserReport();
 
-    expect(result?.emailContent.html).toContain("em Amesterdão");
+    expect(result?.emailContent.html).toContain("Amesterdão");
   });
 
   it.each(AVAILABLE_LOCALES)("renders %s with card, footer and each URL once in text", async (locale) => {
@@ -143,7 +192,8 @@ describe("user-report email generation", () => {
 
     const result = await generateNextUserReport();
 
-    expect(result?.emailContent.html).toContain("A &amp; B in &lt;b&gt;Town&lt;/b&gt;");
+    expect(result?.emailContent.html).toContain("<strong>A &amp; B</strong>");
+    expect(result?.emailContent.html).toContain("&lt;b&gt;Town&lt;/b&gt;");
   });
 
   it("pluralizes correctly for 1 vs multiple datasets", async () => {
@@ -209,9 +259,9 @@ describe("user-report email generation", () => {
     const result = await generateNextUserReport();
     const { text } = result!.emailContent;
 
-    const schools = text.indexOf("Schools in Sao Paulo");
+    const schools = text.indexOf("Schools [");
     const notice = text.indexOf("You have 1 day left before this dataset is deleted.");
-    const parks = text.indexOf("Parks in Sao Paulo");
+    const parks = text.indexOf("Parks [");
     expect(schools).toBeGreaterThan(-1);
     expect(notice).toBeGreaterThan(schools);
     expect(parks).toBeGreaterThan(notice);

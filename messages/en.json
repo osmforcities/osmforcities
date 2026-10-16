@@ -622,8 +622,13 @@
     "templateDeprecated": "This template was removed from the catalog.",
     "templateDeprecatedDaysRemaining": "{days, plural, one {You have # day left before this dataset is deleted.} other {You have # days left before this dataset is deleted.}}",
     "mapReady": "The map of {template} in {area} is ready",
-    "reportDataset": "{template} in {area}",
-    "mapReadyAction": "Open the map"
+    "mapReadyAction": "Open the map",
+    "reportLastEdit": "Last edit {date}",
+    "reportFeatures": "{count, plural, one {# feature} other {# features}}",
+    "reportMappers": "{count, plural, one {# mapper} other {# mappers}}",
+    "reportOpen": "Open",
+    "reportMore": "{count, plural, one {# more dataset changed.} other {# more datasets changed.}}",
+    "reportOpenDashboard": "{count, plural, one {Open your saved dataset} other {Open your # saved datasets}}"
   },
   "AboutPage": {
     "metaTitle": "About - OSM for Cities",

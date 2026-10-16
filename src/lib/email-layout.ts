@@ -7,8 +7,9 @@ type EmailTranslator = Awaited<ReturnType<typeof getEmailT>>;
 // tokens are copied here as hex and every style is inline.
 const COLOR = {
   olive50: "#f6faf5",
+  olive100: "#edf6eb",
   olive500: "#57814c",
-  blue500: "#0b4ad8",
+  olive600: "#3f5c39",
   yellow100: "#fdf3d2",
   yellow700: "#745b08",
   text: "#222222",
@@ -23,7 +24,7 @@ const MUTED = `margin: 0 0 12px; color: ${COLOR.muted}; font-size: 14px; line-he
 const SKIP_IN_PLAIN_TEXT = "html-only";
 
 export function createEmailLink(url: string, text: string): string {
-  return `<a href="${url}" style="color: ${COLOR.blue500}; text-decoration: none;">${text}</a>`;
+  return `<a href="${url}" style="color: ${COLOR.olive600}; text-decoration: underline;">${text}</a>`;
 }
 
 export function emailButton(url: string, label: string): string {
@@ -39,7 +40,47 @@ export function emailParagraph(
 }
 
 export function emailNotice(html: string): string {
-  return `<p style="margin: 0 0 16px; padding: 8px 12px; border-radius: 8px; background-color: ${COLOR.yellow100}; color: ${COLOR.yellow700}; font-size: 14px; line-height: 150%;">${html}</p>`;
+  return `<p style="margin: 12px 0 0; padding: 8px 12px; border-radius: 8px; background-color: ${COLOR.yellow100}; color: ${COLOR.yellow700}; font-size: 14px; line-height: 150%;">${html}</p>`;
+}
+
+/** Bordered list of rows, one cell per row, divided by hairlines. */
+export function emailList(rows: string[]): string {
+  const cells = rows
+    .map((row, i) => {
+      const divider = i > 0 ? ` border-top: 1px solid ${COLOR.olive100};` : "";
+      return `<tr><td style="padding: 16px;${divider}">${row}</td></tr>`;
+    })
+    .join("");
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: separate; border: 1px solid ${COLOR.olive100}; border-radius: 8px; margin: 0 0 24px;">${cells}</table>`;
+}
+
+/**
+ * One list row: dark title and olive action both open `url`. The action is
+ * HTML-only so plain text prints the URL once, after the title.
+ */
+export function emailListItem({
+  url,
+  title,
+  subtitle,
+  meta,
+  action,
+  notice,
+}: {
+  url: string;
+  title: string;
+  subtitle: string;
+  meta: string;
+  action: string;
+  notice?: string;
+}): string {
+  const link = (text: string, color: string) =>
+    `<a href="${url}" style="color: ${color}; text-decoration: none;">${text}</a>`;
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
+  <tr>
+    <td valign="top" style="font-size: 16px; line-height: 150%;">${link(`<strong>${title}</strong>`, COLOR.text)}<br><span style="color: ${COLOR.muted};">${subtitle}</span><br><span style="color: ${COLOR.muted}; font-size: 14px;">${meta}</span></td>
+    <td class="${SKIP_IN_PLAIN_TEXT}" valign="top" width="1" style="padding: 0 0 0 16px; white-space: nowrap; font-size: 14px; font-weight: 600; line-height: 150%;">${link(action, COLOR.olive600)}</td>
+  </tr>
+</table>${notice ? emailNotice(notice) : ""}`;
 }
 
 export function emailPreferencesLine(t: EmailTranslator, locale: Locale): string {
