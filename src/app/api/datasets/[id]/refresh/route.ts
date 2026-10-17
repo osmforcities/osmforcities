@@ -81,7 +81,8 @@ export async function POST(
         datasetId,
         snapshot.dataCount
       );
-      if (tilesState !== "pending") {
+      // null: an empty dataset, nothing to bake, synced as it stands
+      if (tilesState !== "pending" && tilesState !== null) {
         return NextResponse.json(
           { error: "Failed to queue the map rebuild" },
           { status: 502 }
