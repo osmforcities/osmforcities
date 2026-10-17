@@ -13,7 +13,8 @@ const commitHash =
 
 const nextConfig = {
   outputFileTracingRoot: __dirname,
-  // The Playwright tiler server runs a second `next dev`, which cannot share .next
+  // Set by the Playwright tiler server (a second `next dev` cannot share .next)
+  // and by deploys, which build into .next-build while the live server keeps .next
   distDir: process.env.NEXT_DIST_DIR || ".next",
   env: {
     COMMIT_HASH: commitHash,
