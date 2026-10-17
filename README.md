@@ -6,7 +6,7 @@ A web platform to monitor OpenStreetMap datasets at the city level.
 
 - Node.js (see `.nvmrc` for specific version)
 - PostgreSQL (running on port 5432)
-- pnpm package manager
+- pnpm, at the version pinned in `package.json` (`packageManager`); pnpm 9.7+ switches to it automatically
 
 ## Getting Started
 
@@ -52,6 +52,12 @@ Install dependencies:
 
 ```bash
 pnpm install
+```
+
+New dependency versions must be older than the cooldown set by `minimumReleaseAge` in `pnpm-workspace.yaml`. For an urgent security fix, skip the cooldown for that one install:
+
+```bash
+pnpm add <pkg> --config.minimum-release-age=0
 ```
 
 ### Database Setup
