@@ -19,6 +19,8 @@
 # next.js
 /.next/
 /.next-tiler/
+/.next-build/
+/.next-old/
 /out/
 
 # production
