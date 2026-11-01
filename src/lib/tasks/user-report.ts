@@ -55,17 +55,22 @@ async function generateEmailContent(
   const formatShortDate = (date: Date) =>
     (date.getUTCFullYear() === now.getUTCFullYear() ? thisYear : otherYear).format(date);
   const formatLongDate = new Intl.DateTimeFormat(locale, { dateStyle: "long", timeZone: "UTC" });
-  const retiredBody = (ds: ReportDataset, retiresAt: Date) => {
+  const retiredWarning = (ds: ReportDataset) => {
+    if (!ds.retiresAt) return undefined;
     const template = escapeHtml(ds.templateName);
     // "soon" is the message's select branch for a date already past.
-    const date = retiresAt > now ? formatLongDate.format(retiresAt) : "soon";
-    if (!ds.replacement) return t("reportRetiredBody", { template, date });
-    const url = getDatasetUrl(baseUrl, { locale, areaId: ds.areaId, templateId: ds.replacement.templateId });
-    return t("reportReplacedBody", {
-      template,
-      replacement: createEmailLink(url, escapeHtml(ds.replacement.name)),
-      date,
-    });
+    const date = ds.retiresAt > now ? formatLongDate.format(ds.retiresAt) : "soon";
+    const body = ds.replacement
+      ? t("reportReplacedBody", {
+          template,
+          replacement: createEmailLink(
+            getDatasetUrl(baseUrl, { locale, areaId: ds.areaId, templateId: ds.replacement.templateId }),
+            escapeHtml(ds.replacement.name)
+          ),
+          date,
+        })
+      : t("reportRetiredBody", { template, date });
+    return { iconUrl: emailIconUrl("glyph-alert"), title: t("reportRetiredTitle"), body };
   };
 
   const rows = changedDatasets
@@ -97,11 +102,7 @@ async function generateEmailContent(
         title,
         subtitle: escapeHtml(ds.areaName),
         stats,
-        warning: ds.retiresAt && {
-          iconUrl: emailIconUrl("glyph-alert"),
-          title: t("reportRetiredTitle"),
-          body: retiredBody(ds, ds.retiresAt),
-        },
+        warning: retiredWarning(ds),
       });
     });
 

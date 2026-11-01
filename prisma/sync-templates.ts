@@ -212,21 +212,24 @@ async function main() {
     }
   }
 
-  // Pass 3: replacement pointers, after the upserts so every new id has a row
-  await prisma.template.updateMany({
-    where: { replacedById: { not: null }, id: { notIn: Object.keys(result.replacedBy) } },
-    data: { replacedById: null },
-  });
-  let pointersSet = 0;
-  const unmatchedOldIds: string[] = [];
-  for (const [oldId, newId] of Object.entries(result.replacedBy)) {
-    const { count } = await prisma.template.updateMany({
-      where: { id: oldId },
-      data: { replacedById: newId },
+  // Pass 3: replacement pointers, after the upserts so every new id has a row.
+  // One transaction, so a redirect never sees the pointers half rewritten.
+  const oldIds = Object.keys(result.replacedBy);
+  const unmatchedOldIds = await prisma.$transaction(async (tx) => {
+    await tx.template.updateMany({
+      where: { replacedById: { not: null }, id: { notIn: oldIds } },
+      data: { replacedById: null },
     });
-    if (count === 0) unmatchedOldIds.push(oldId);
-    pointersSet += count;
-  }
+    const unmatched: string[] = [];
+    for (const [oldId, newId] of Object.entries(result.replacedBy)) {
+      const { count } = await tx.template.updateMany({
+        where: { id: oldId },
+        data: { replacedById: newId },
+      });
+      if (count === 0) unmatched.push(oldId);
+    }
+    return unmatched;
+  });
   // A typo, or a template already deleted after its grace period
   if (unmatchedOldIds.length > 0) {
     console.warn(`replacedBy: no template row for ${unmatchedOldIds.join(", ")}`);
@@ -234,7 +237,7 @@ async function main() {
 
   console.log(`Upserted ${upserted} templates from YAML`);
   console.log(`Linked ${parentsLinked} parent relationships`);
-  console.log(`Set ${pointersSet} replacement pointers`);
+  console.log(`Set ${oldIds.length - unmatchedOldIds.length} replacement pointers`);
   console.log("Sync complete");
 }
 
