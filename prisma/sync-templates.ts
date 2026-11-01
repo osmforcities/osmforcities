@@ -6,6 +6,8 @@
  * 2. Templates in DB but not in YAML are marked for deprecation (deprecatesAt = now() + DEPRECATION_DAYS)
  * 3. Templates re-added to YAML have deprecatesAt cleared
  * 4. Templates past deprecation date are deleted
+ * 5. The category tree is upserted; undeclared categories holding no
+ *    templates are pruned (ones still holding a deprecated template stay)
  *
  * Run: pnpm db:sync
  */
@@ -17,6 +19,7 @@ import {
   loadTemplatesI18n,
   loadTemplatesYaml,
   parseTemplates,
+  type ParsedCategory,
 } from "./lib/template-parser";
 
 const prisma = new PrismaClient();
@@ -91,18 +94,7 @@ async function main() {
     console.log(`Undeprecated ${toUndeprecate.length} templates re-added to YAML`);
   }
 
-  // Pre-load all categories for efficient lookup
-  const allCategories = await prisma.category.findMany({
-    select: { id: true, slug: true },
-  });
-  const categoryMap = new Map(allCategories.map((c) => [c.slug, c.id]));
-
-  // Some YAML category values differ from their DB leaf-category slugs
-  // because the leaf slug was changed to avoid colliding with the parent group slug
-  const YAML_TO_DB_SLUG: Record<string, string> = {
-    infrastructure: "infrastructure-general",
-    environment: "environment-general",
-  };
+  const categoryMap = await syncCategories(result.categories);
 
   // Cached size-check verdicts are keyed by area+template only; a changed
   // query must not stay blocked by a verdict computed for the old query
@@ -136,12 +128,8 @@ async function main() {
     const name = i18n?.name?.en ?? template.name;
     const description = i18n?.desc?.en ?? template.description ?? null;
 
-    const categorySlug = template.category || "other";
-    const dbSlug = YAML_TO_DB_SLUG[categorySlug] ?? categorySlug;
-    const categoryId = categoryMap.get(dbSlug) || categoryMap.get("other");
-    if (!categoryId) {
-      throw new Error(`Category "${dbSlug}" not found in database and fallback "other" category is missing`);
-    }
+    // parseTemplates rejects undeclared categories, so the lookup always hits
+    const categoryId = categoryMap.get(template.category)!;
 
     await prisma.template.upsert({
       where: { id: template.id },
@@ -213,7 +201,44 @@ async function main() {
 
   console.log(`Upserted ${upserted} templates from YAML`);
   console.log(`Linked ${parentsLinked} parent relationships`);
+
+  const { count: pruned } = await prisma.category.deleteMany({
+    where: {
+      slug: { notIn: result.categories.map((c) => c.slug) },
+      templates: { none: {} },
+    },
+  });
+  console.log(`Pruned ${pruned} undeclared categories with no templates`);
   console.log("Sync complete");
+}
+
+/**
+ * Upsert the category tree and return slug -> id. Two passes so a parent
+ * exists before a child points at it. `name` is only set on create: labels
+ * come from the CategoryLabel messages, and rewriting legacy names could
+ * collide with the unique index.
+ */
+async function syncCategories(
+  categories: ParsedCategory[],
+): Promise<Map<string, string>> {
+  const ids = new Map<string, string>();
+  for (const { slug } of categories) {
+    const { id } = await prisma.category.upsert({
+      where: { slug },
+      update: {},
+      create: { slug, name: slug },
+      select: { id: true },
+    });
+    ids.set(slug, id);
+  }
+  for (const { slug, parent } of categories) {
+    await prisma.category.update({
+      where: { slug },
+      data: { parentId: parent ? ids.get(parent)! : null },
+    });
+  }
+  console.log(`Synced ${categories.length} categories`);
+  return ids;
 }
 
 main()

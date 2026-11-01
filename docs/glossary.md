@@ -10,6 +10,10 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 **Template**: A named Overpass question, such as "bicycle parking" or "buildings". Applied to an Area it defines a Dataset. _Avoid:_ query, topic, layer.
 
+**Topic**: A top-level Category, such as Mobility or Health. Groups Categories on the area page. _Avoid:_ super-category, group.
+
+**Category**: A grouping of Templates under a Topic, such as Cycling under Mobility. A Template belongs to exactly one, or directly to a Topic. _Avoid:_ tag, type.
+
 **Dataset**: One Template applied to one Area: its features, stats and map. The thing people open, save and share. _Avoid:_ monitor, layer, snapshot.
 
 **Snapshot**: The result of asking Overpass for a Dataset at one point in time. A refresh replaces it. _Avoid:_ fetch, run, update (a refresh is the act, a snapshot is the result).

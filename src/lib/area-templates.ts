@@ -7,11 +7,18 @@ export type AreaTemplate = {
   id: string;
   name: string;
   description: string | null;
-  /** Leaf category slug — used for filtering and URL `?category=` matching. */
-  category: string;
-  /** Human-readable category name — used for display. */
-  categoryLabel: string;
+  /** Labels resolve client-side from the CategoryLabel messages. */
+  categorySlug: string;
+  /** Top-level category; equals categorySlug for a topic's direct members. */
+  topicSlug: string;
   tags: string[];
+};
+
+export type TopicCount = { topicSlug: string; count: number };
+
+export type CategoryGroup<T extends AreaTemplate> = {
+  categorySlug: string;
+  templates: T[];
 };
 
 export type AreaDataTypeStatus = {
@@ -67,6 +74,42 @@ export function buildAreaDataTypes(
     }
     return a.name.localeCompare(b.name);
   });
+}
+
+export function countTemplatesByTopic(templates: AreaTemplate[]): TopicCount[] {
+  const counts = new Map<string, number>();
+  for (const { topicSlug } of templates) {
+    counts.set(topicSlug, (counts.get(topicSlug) ?? 0) + 1);
+  }
+  return [...counts]
+    .map(([topicSlug, count]) => ({ topicSlug, count }))
+    .sort((a, b) => a.topicSlug.localeCompare(b.topicSlug));
+}
+
+/**
+ * A topic's templates grouped by child category (by slug), names A to Z inside
+ * each group. Direct members of the topic come last as their own group.
+ */
+export function groupTopicByCategory<T extends AreaTemplate>(
+  templates: T[],
+  topicSlug: string
+): CategoryGroup<T>[] {
+  const groups = new Map<string, T[]>();
+  for (const template of templates) {
+    if (template.topicSlug !== topicSlug) continue;
+    const group = groups.get(template.categorySlug) ?? [];
+    group.push(template);
+    groups.set(template.categorySlug, group);
+  }
+  const isDirect = (slug: string) => slug === topicSlug;
+  return [...groups]
+    .sort(
+      ([a], [b]) => Number(isDirect(a)) - Number(isDirect(b)) || a.localeCompare(b)
+    )
+    .map(([categorySlug, group]) => ({
+      categorySlug,
+      templates: group.sort((a, b) => a.name.localeCompare(b.name)),
+    }));
 }
 
 /**
@@ -131,11 +174,7 @@ async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
       description: true,
       tags: true,
       category: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-        },
+        select: { slug: true, parent: { select: { slug: true } } },
       },
       // Only fetch the translation for the requested locale — resolveTemplateForLocale
       // picks the matching row (now the only one) and falls back to the base fields.
@@ -157,8 +196,8 @@ async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
       id: resolved.id,
       name: resolved.name,
       description: resolved.description,
-      category: t.category?.slug ?? "other",
-      categoryLabel: t.category?.name ?? "other",
+      categorySlug: t.category.slug,
+      topicSlug: t.category.parent?.slug ?? t.category.slug,
       tags: resolved.tags,
     };
   });
