@@ -384,14 +384,14 @@ describe("template-parser", () => {
           b: { icon: "Car", parent: "a" },
         }),
       ).toEqual([
-        'Category "a" is part of a parent cycle',
-        'Category "b" is part of a parent cycle',
+        'Category "a" must have a topic as parent, not "b"',
+        'Category "b" must have a topic as parent, not "a"',
       ]);
     });
 
     it("rejects a self parent", () => {
       expect(messages({ a: { icon: "Car", parent: "a" } })).toEqual([
-        'Category "a" is part of a parent cycle',
+        'Category "a" must have a topic as parent, not "a"',
       ]);
     });
 
@@ -402,7 +402,7 @@ describe("template-parser", () => {
           transit: { icon: "Bus", parent: "mobility" },
           bus: { icon: "Bus", parent: "transit" },
         }),
-      ).toEqual(['Category "bus" is nested deeper than 2 levels']);
+      ).toEqual(['Category "bus" must have a topic as parent, not "transit"']);
     });
 
     it("rejects a malformed entry", () => {

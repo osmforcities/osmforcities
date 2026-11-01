@@ -533,11 +533,10 @@ export function validateDemonstrators(
   return errors;
 }
 
-const MAX_CATEGORY_DEPTH = 2;
-
 /**
- * Validate the `categories:` tree: each entry is `{ icon, parent? }`, parents
- * exist, no cycles, at most topic -> child. One error per problem.
+ * Validate the `categories:` tree: each entry is `{ icon, parent? }` and a
+ * parent is always a topic, so the tree is at most topic -> child. That one
+ * rule also rules out cycles and self-parents. One error per problem.
  */
 export function validateCategories(raw: unknown): {
   categories: ParsedCategory[];
@@ -574,28 +573,10 @@ export function validateCategories(raw: unknown): {
       });
       continue;
     }
-    const seen = new Set([category.slug]);
-    let depth = 1;
-    let current: string | undefined = category.parent;
-    let cycle = false;
-    while (current) {
-      if (seen.has(current)) {
-        cycle = true;
-        break;
-      }
-      seen.add(current);
-      depth++;
-      current = bySlug.get(current)?.parent;
-    }
-    if (cycle) {
+    if (bySlug.get(category.parent)?.parent) {
       errors.push({
         field: "categories",
-        message: `Category "${category.slug}" is part of a parent cycle`,
-      });
-    } else if (depth > MAX_CATEGORY_DEPTH) {
-      errors.push({
-        field: "categories",
-        message: `Category "${category.slug}" is nested deeper than ${MAX_CATEGORY_DEPTH} levels`,
+        message: `Category "${category.slug}" must have a topic as parent, not "${category.parent}"`,
       });
     }
   }
