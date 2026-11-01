@@ -50,6 +50,8 @@ export interface LogicConfig {
   // Raw so validateDemonstrators can report shape errors on hand-edited YAML
   // (incl. a scalar/array root, not just per-key issues).
   demonstrators?: unknown;
+  // Raw for the same reason, see validateReplacedBy
+  replacedBy?: unknown;
 }
 
 /**
@@ -108,6 +110,8 @@ export interface ParseResult {
   templates: ParsedTemplate[];
   errors: ValidationError[];
   warnings: string[];
+  /** Deprecated id -> replacement id; empty when the section has errors */
+  replacedBy: Record<string, string>;
 }
 
 // Regex for validating key=value format (including composite queries)
@@ -329,6 +333,7 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
   entries: LogicEntry[];
   categories: Record<string, string>;
   demonstrators: unknown;
+  replacedBy: unknown;
 } {
   const filePath = join(basePath, LOGIC_FILE);
   try {
@@ -338,6 +343,7 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
       categories?: Record<string, string>;
       filterableTags?: Record<string, unknown>;
       demonstrators?: unknown;
+      replacedBy?: unknown;
     };
 
     if (!config?.templates || !Array.isArray(config.templates)) {
@@ -402,6 +408,7 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
       entries,
       categories: config.categories ?? {},
       demonstrators: config.demonstrators ?? {},
+      replacedBy: config.replacedBy ?? {},
     };
   } catch (error) {
     if (error instanceof Error) {
@@ -447,7 +454,8 @@ export function loadTemplatesI18n(
 export function loadTemplatesYaml(
   basePath: string = DEFAULT_PRISMA,
 ): LogicConfig {
-  const { entries, categories, demonstrators } = loadTemplatesLogic(basePath);
+  const { entries, categories, demonstrators, replacedBy } =
+    loadTemplatesLogic(basePath);
   const templates: Record<string, TemplateLogic> = {};
   for (const entry of entries) {
     templates[entry.id] = {
@@ -458,7 +466,7 @@ export function loadTemplatesYaml(
       filterableTags: entry.filterableTags,
     };
   }
-  return { templates, categories, demonstrators };
+  return { templates, categories, demonstrators, replacedBy };
 }
 
 /**
@@ -517,6 +525,44 @@ export function validateDemonstrators(
         });
       }
     });
+  }
+
+  return errors;
+}
+
+/**
+ * The old id must have left the template list and the new id must still be in
+ * it, so a pointer never leads to a missing or deprecated template.
+ */
+export function validateReplacedBy(
+  replacedBy: unknown,
+  activeIds: Set<string>,
+): ValidationError[] {
+  const errors: ValidationError[] = [];
+  if (replacedBy === undefined || replacedBy === null) return errors;
+  if (typeof replacedBy !== "object" || Array.isArray(replacedBy)) {
+    return [
+      { field: "replacedBy", message: "replacedBy must be a map of old id to new id" },
+    ];
+  }
+
+  for (const [oldId, newId] of Object.entries(replacedBy)) {
+    if (typeof newId !== "string") {
+      errors.push({
+        field: "replacedBy",
+        message: `replacedBy["${oldId}"] must be a template id`,
+      });
+    } else if (activeIds.has(oldId)) {
+      errors.push({
+        field: "replacedBy",
+        message: `replacedBy: "${oldId}" is still an active template, remove it from templates first`,
+      });
+    } else if (!activeIds.has(newId)) {
+      errors.push({
+        field: "replacedBy",
+        message: `replacedBy["${oldId}"]: "${newId}" is not an active template`,
+      });
+    }
   }
 
   return errors;
@@ -584,7 +630,14 @@ export function parseTemplates(config: LogicConfig): ParseResult {
 
   errors.push(...validateDemonstrators(config.demonstrators, parsedIds));
 
-  return { templates, errors, warnings };
+  const replacedByErrors = validateReplacedBy(config.replacedBy, parsedIds);
+  errors.push(...replacedByErrors);
+  const replacedBy =
+    replacedByErrors.length === 0 && config.replacedBy
+      ? (config.replacedBy as Record<string, string>)
+      : {};
+
+  return { templates, errors, warnings, replacedBy };
 }
 
 /**

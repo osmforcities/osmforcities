@@ -6,6 +6,7 @@
  * 2. Templates in DB but not in YAML are marked for deprecation (deprecatesAt = now() + DEPRECATION_DAYS)
  * 3. Templates re-added to YAML have deprecatesAt cleared
  * 4. Templates past deprecation date are deleted
+ * 5. Deprecated templates listed under `replacedBy` point to their replacement
  *
  * Run: pnpm db:sync
  */
@@ -211,8 +212,29 @@ async function main() {
     }
   }
 
+  // Pass 3: replacement pointers, after the upserts so every new id has a row
+  await prisma.template.updateMany({
+    where: { replacedById: { not: null }, id: { notIn: Object.keys(result.replacedBy) } },
+    data: { replacedById: null },
+  });
+  let pointersSet = 0;
+  const unmatchedOldIds: string[] = [];
+  for (const [oldId, newId] of Object.entries(result.replacedBy)) {
+    const { count } = await prisma.template.updateMany({
+      where: { id: oldId },
+      data: { replacedById: newId },
+    });
+    if (count === 0) unmatchedOldIds.push(oldId);
+    pointersSet += count;
+  }
+  // A typo, or a template already deleted after its grace period
+  if (unmatchedOldIds.length > 0) {
+    console.warn(`replacedBy: no template row for ${unmatchedOldIds.join(", ")}`);
+  }
+
   console.log(`Upserted ${upserted} templates from YAML`);
   console.log(`Linked ${parentsLinked} parent relationships`);
+  console.log(`Set ${pointersSet} replacement pointers`);
   console.log("Sync complete");
 }
 

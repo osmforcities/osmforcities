@@ -66,6 +66,7 @@ describe("user-report email generation", () => {
       name: "schools",
       description: "Schools and education",
       deprecatesAt: null as Date | null,
+      replacedBy: null as { id: string; name: string } | null,
       translations: [
         { locale: "en", name: "Schools", description: "Schools" },
         { locale: "pt-BR", name: "Escolas", description: "Escolas" },
@@ -200,12 +201,17 @@ describe("user-report email generation", () => {
         ...mockDataset,
         id: "ds-retired",
         templateId: "retired",
-        template: { ...mockDataset.template, deprecatesAt: new Date("2026-10-21T12:00:00Z") },
+        template: {
+          ...mockDataset.template,
+          deprecatesAt: new Date("2026-10-21T12:00:00Z"),
+          replacedBy: { id: "streets", name: "Streets" },
+        },
       },
     ]);
 
     const result = await generateNextUserReport();
     const { html, text } = result!.emailContent;
+    const replacementUrl = `https://osmforcities.com/${locale}/area/${mockDataset.areaId}/dataset/streets`;
 
     expect(html).toContain(`lang="${locale}"`);
     expect(html).toMatch(/<h1[^>]*>[^<]*\S[^<]*<\/h1>/);
@@ -214,6 +220,34 @@ describe("user-report email generation", () => {
     expect(text.split(datasetUrl(locale))).toHaveLength(2);
     expect(text.split(`https://osmforcities.com/${locale}/preferences`)).toHaveLength(2);
     expect(text).not.toContain("dataset/retired");
+    expect(text.split(replacementUrl)).toHaveLength(2);
+  });
+
+  it("names and links the replacement of a retired template for the same area", async () => {
+    vi.mocked(resolveTemplateForLocale).mockImplementation((t) => ({
+      name: t.name === "Streets" ? "Streets & roads" : "Highways",
+      description: "",
+    }));
+    mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+    mockPrisma.dataset.findMany.mockResolvedValue([
+      {
+        ...mockDataset,
+        template: {
+          ...mockDataset.template,
+          deprecatesAt: new Date("2026-10-21T12:00:00Z"),
+          replacedBy: { id: "streets", name: "Streets", description: null, translations: [] },
+        },
+      },
+    ]);
+
+    const { html, text } = (await generateNextUserReport())!.emailContent;
+    const url = `https://osmforcities.com/en/area/${mockDataset.areaId}/dataset/streets`;
+
+    expect(html).toMatch(
+      new RegExp(`Highways is no longer in the catalog\\. Use <a href="${url}"[^>]*>Streets &amp; roads</a> instead\\. This dataset will be deleted after October 21, 2026\\.`)
+    );
+    expect(html).not.toContain("page is unavailable");
+    expect(text.replace(/\s+/g, " ")).toContain(`Use Streets & roads [${url}] instead.`);
   });
 
   it("drops the link and Open button from a retired dataset", async () => {

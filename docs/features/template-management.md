@@ -57,7 +57,7 @@ Prereqs: local dev server, signed in (osmforcities-dev-auth), Overpass tunnel up
 3. **Choose `filterableTags`** — see below.
 4. **Pick demonstrators** — see below.
 5. **Seed / feature** — see Overpass budget below.
-6. **Ship** — commit `templates.yml`, `templates.i18n.yml`, `messages/*.json`, plus the generated `src/lib/category-icons.tsx` and any new or changed `public/email-icons/*.png`. Don't push or open a PR until the maintainer says so. On merge, deploy runs `db:sync`; removed templates soft-deprecate (30 days) then delete.
+6. **Ship** — commit `templates.yml`, `templates.i18n.yml`, `messages/*.json`, plus the generated `src/lib/category-icons.tsx` and any new or changed `public/email-icons/*.png`. Don't push or open a PR until the maintainer says so. On merge, deploy runs `db:sync`; removed templates soft-deprecate (30 days) then delete. A removed template merged into another goes under `replacedBy:` in `templates.yml` (`old-id: new-id`): its report email links the replacement and its dataset URLs redirect to it.
 
 ### Generated icon files
 

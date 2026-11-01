@@ -76,6 +76,10 @@ model Template {
   filterableTags String[]             @default([])
   isActive      Boolean               @default(true)
   deprecatesAt  DateTime?
+  // Set on a deprecated template whose datasets move to another template
+  replacedById  String?
+  replacedBy    Template?             @relation("TemplateReplacement", fields: [replacedById], references: [id], onDelete: SetNull)
+  replaces      Template[]            @relation("TemplateReplacement")
   createdAt     DateTime              @default(now())
   updatedAt     DateTime              @updatedAt
   datasets      Dataset[]

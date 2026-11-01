@@ -11,6 +11,7 @@ import {
   emailParagraph,
   emailPreferencesLine,
   emailIconUrl,
+  createEmailLink,
   EMAIL_REMOVED_TEMPLATE_ICON,
   renderEmail,
 } from "@/lib/email-layout";
@@ -32,6 +33,8 @@ interface ReportDataset {
   mappers?: number;
   /** Set once the template left the catalog; the dataset is deleted after it. */
   retiresAt?: Date;
+  /** The retired template's replacement, linked for the same area. */
+  replacement?: { templateId: string; name: string };
 }
 
 const MAX_REPORT_ROWS = 5;
@@ -52,6 +55,18 @@ async function generateEmailContent(
   const formatShortDate = (date: Date) =>
     (date.getUTCFullYear() === now.getUTCFullYear() ? thisYear : otherYear).format(date);
   const formatLongDate = new Intl.DateTimeFormat(locale, { dateStyle: "long", timeZone: "UTC" });
+  const retiredBody = (ds: ReportDataset, retiresAt: Date) => {
+    const template = escapeHtml(ds.templateName);
+    // "soon" is the message's select branch for a date already past.
+    const date = retiresAt > now ? formatLongDate.format(retiresAt) : "soon";
+    if (!ds.replacement) return t("reportRetiredBody", { template, date });
+    const url = getDatasetUrl(baseUrl, { locale, areaId: ds.areaId, templateId: ds.replacement.templateId });
+    return t("reportReplacedBody", {
+      template,
+      replacement: createEmailLink(url, escapeHtml(ds.replacement.name)),
+      date,
+    });
+  };
 
   const rows = changedDatasets
     // Retiring datasets first, so the cap never hides a deletion warning.
@@ -85,11 +100,7 @@ async function generateEmailContent(
         warning: ds.retiresAt && {
           iconUrl: emailIconUrl("glyph-alert"),
           title: t("reportRetiredTitle"),
-          // "soon" is the message's select branch for a date already past.
-          body: t("reportRetiredBody", {
-            template: title,
-            date: ds.retiresAt > now ? formatLongDate.format(ds.retiresAt) : "soon",
-          }),
+          body: retiredBody(ds, ds.retiresAt),
         },
       });
     });
@@ -204,6 +215,14 @@ export async function generateNextUserReport(): Promise<{
               description: true,
             },
           },
+          replacedBy: {
+            select: {
+              id: true,
+              name: true,
+              description: true,
+              translations: { select: { locale: true, name: true, description: true } },
+            },
+          },
         },
       },
     },
@@ -224,6 +243,12 @@ export async function generateNextUserReport(): Promise<{
         features: dataset.dataCount,
         mappers: stats?.editorsCount,
         retiresAt: dataset.template.deprecatesAt ?? undefined,
+        replacement: dataset.template.replacedBy
+          ? {
+              templateId: dataset.template.replacedBy.id,
+              name: resolveTemplateForLocale(dataset.template.replacedBy, userLocale).name,
+            }
+          : undefined,
       },
     ];
   });
