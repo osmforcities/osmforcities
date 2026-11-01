@@ -14,8 +14,8 @@ describe("categoryLabel", () => {
     expect(categoryLabel(resolver({ bus: "Bus" }), "bus")).toBe("Bus");
   });
 
-  it("falls back to title case", () => {
-    expect(categoryLabel(resolver({}), "roads-streets")).toBe("Roads Streets");
+  it("falls back to sentence case", () => {
+    expect(categoryLabel(resolver({}), "roads-streets")).toBe("Roads streets");
   });
 
   it("has an English label for every category in templates.yml", () => {

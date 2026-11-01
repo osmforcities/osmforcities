@@ -76,6 +76,7 @@ export function buildAreaDataTypes(
   });
 }
 
+/** Sorted by slug for a stable order; the UI sorts by localized label. */
 export function countTemplatesByTopic(templates: AreaTemplate[]): TopicCount[] {
   const counts = new Map<string, number>();
   for (const { topicSlug } of templates) {

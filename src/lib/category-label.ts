@@ -1,13 +1,13 @@
 import { useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { toTitleCase, type MessageResolver } from "@/lib/tag-i18n";
+import { toSentenceCase, type MessageResolver } from "@/lib/tag-i18n";
 
 /**
  * Category label by slug from the CategoryLabel messages. A slug without a
- * message ("roads-streets") falls back to title case ("Roads Streets").
+ * message ("roads-streets") falls back to sentence case ("Roads streets").
  */
 export function categoryLabel(t: MessageResolver, slug: string): string {
-  return t.has(slug) ? t(slug) : toTitleCase(slug.replace(/-/g, " "));
+  return t.has(slug) ? t(slug) : toSentenceCase(slug.replace(/-/g, " "));
 }
 
 /** Stable across renders, so it is safe in memo and effect deps. */

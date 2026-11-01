@@ -5,7 +5,7 @@
 # Templates without an icon fall back to their category icon (categories section below).
 
 templates:
-# Transportation
+# Mobility: transit, cycling, other
   - ["bicycle-parking","amenity=bicycle_parking","cycling","Bike"]
   - ["bicycle-rental","amenity=bicycle_rental","cycling","Bike"]
   # Parent template for public transit
@@ -214,7 +214,7 @@ templates:
 # Large-footprint key-presence templates (tiles-only in most cities: rendered
 # from PMTiles, geojson never stored — #487/#489)
   - ["buildings","building","infrastructure","Building"]
-# Transport infrastructure
+# Mobility: roads, pedestrian, cycling
   - ["roads","highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=unclassified","roads","Route"]
   - ["highways","highway","roads","Waypoints"]
   - ["footways","highway=footway;highway=path","pedestrian","Footprints"]
@@ -222,7 +222,7 @@ templates:
   - ["bridges","man_made=bridge","roads","Waypoints"]
   - ["tunnels","tunnel=yes;tunnel=building_passage","roads","Route"]
   - ["crossings","highway=crossing","pedestrian","Footprints"]
-# Traffic
+# Mobility: traffic
   - ["traffic-signs","traffic_sign=*","traffic","Signpost"]
   - ["traffic-lights","highway=traffic_signals","traffic","Lightbulb"]
   - ["speed-cameras","highway=speed_camera;man_made=speed_camera","traffic","Camera"]
