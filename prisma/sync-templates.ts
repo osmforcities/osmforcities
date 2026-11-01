@@ -208,14 +208,7 @@ async function main() {
       templates: { none: {} },
     },
   });
-  console.log(`Pruned ${pruned} undeclared categories with no templates`);
-  // Survivors only hold deprecated templates; a stale parent would nest them
-  // deeper than the parser allows
-  await prisma.category.updateMany({
-    where: { slug: { notIn: result.categories.map((c) => c.slug) } },
-    data: { parentId: null },
-  });
-  console.log("Sync complete");
+  console.log(`Pruned ${pruned} undeclared categories with no templates`);  console.log("Sync complete");
 }
 
 /**
