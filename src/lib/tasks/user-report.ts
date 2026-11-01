@@ -55,9 +55,8 @@ async function generateEmailContent(
   const formatShortDate = (date: Date) =>
     (date.getUTCFullYear() === now.getUTCFullYear() ? thisYear : otherYear).format(date);
   const formatLongDate = new Intl.DateTimeFormat(locale, { dateStyle: "long", timeZone: "UTC" });
-  const retiredWarning = (ds: ReportDataset) => {
+  const retiredWarning = (ds: ReportDataset, template: string) => {
     if (!ds.retiresAt) return undefined;
-    const template = escapeHtml(ds.templateName);
     // "soon" is the message's select branch for a date already past.
     const date = ds.retiresAt > now ? formatLongDate.format(ds.retiresAt) : "soon";
     const body = ds.replacement
@@ -91,7 +90,7 @@ async function generateEmailContent(
         ...(ds.mappers ? [{ iconUrl: emailIconUrl("glyph-mappers"), text: t("reportMappers", { count: ds.mappers }) }] : []),
       ];
       return emailListItem({
-        // A retired template's dataset page already shows "not found".
+        // A retired template's page shows "not found" or redirects, and the warning links any replacement.
         link: ds.retiresAt
           ? undefined
           : {
@@ -102,7 +101,7 @@ async function generateEmailContent(
         title,
         subtitle: escapeHtml(ds.areaName),
         stats,
-        warning: retiredWarning(ds),
+        warning: retiredWarning(ds, title),
       });
     });
 
