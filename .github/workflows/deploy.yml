@@ -22,19 +22,19 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_environment || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Read .nvmrc
         id: node-version
         run: echo "version=$(cat .nvmrc)" >> $GITHUB_OUTPUT
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ steps.node-version.outputs.version }}
           cache: "pnpm"

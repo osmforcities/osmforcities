@@ -29,7 +29,7 @@ jobs:
     # different: it lets the github-actions bot *trigger* reviews of PRs
     # authored by humans or Claude.
     if: github.event.pull_request.user.type != 'Bot'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       pull-requests: write
