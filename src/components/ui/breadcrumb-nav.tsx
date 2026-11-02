@@ -5,7 +5,7 @@ import { Breadcrumbs, Breadcrumb } from "react-aria-components";
 import { Link as NextLink } from "@/i18n/navigation";
 import { ChevronRight, Home } from "lucide-react";
 
-type BreadcrumbItem = {
+export type BreadcrumbItem = {
   label: string;
   href?: string;
 };

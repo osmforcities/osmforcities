@@ -46,7 +46,6 @@ export function CategoryNav({
     <CollapsingPicker
       heading={t("pickCategory")}
       pickedHeading={t("pickedCategory")}
-      headingId="pick-category-heading"
       entries={entries}
       clearHref={areaBrowsePath(areaId, topicSlug)}
     />

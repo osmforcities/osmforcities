@@ -33,7 +33,6 @@ export function TopicNav({ templates, areaId, activeTopicSlug }: TopicNavProps) 
       <CollapsingPicker
         heading={t("pickTopic")}
         pickedHeading={t("pickedTopic")}
-        headingId="pick-topic-heading"
         entries={entries}
         clearHref={areaBrowsePath(areaId)}
       />

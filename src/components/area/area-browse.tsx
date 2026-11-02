@@ -3,12 +3,10 @@
 import type { ReactNode } from "react";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
+import { BreadcrumbNav, type BreadcrumbItem } from "@/components/ui/breadcrumb-nav";
 import type { AreaTemplate } from "@/lib/area-templates";
 import { CategoryNav } from "./category-nav";
 import { TopicNav } from "./topic-nav";
-
-type BreadcrumbItem = { label: string; href?: string };
 
 type AreaBrowseProps = {
   areaId: string;

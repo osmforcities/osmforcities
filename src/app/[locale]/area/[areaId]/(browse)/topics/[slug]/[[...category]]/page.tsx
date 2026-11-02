@@ -40,11 +40,11 @@ export default async function TopicPage({ params }: TopicPageProps) {
   const locale = await getLocale();
   const templates = await getActiveTemplates(locale);
 
-  const groups = groupTopicByCategory(templates, slug);
   const shownTemplates = categorySlug
-    ? groups.find((group) => group.categorySlug === categorySlug)?.templates
+    ? groupTopicByCategory(templates, slug).find((group) => group.categorySlug === categorySlug)
+        ?.templates
     : templates.filter((template) => template.topicSlug === slug);
-  if (groups.length === 0 || !shownTemplates || rest.length > 0) notFound();
+  if (!shownTemplates?.length || rest.length > 0) notFound();
 
   return <DatasetCards templates={shownTemplates} areaId={areaId} />;
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -15,7 +16,6 @@ type PickerEntry = {
 type CollapsingPickerProps = {
   heading: string;
   pickedHeading: string;
-  headingId: string;
   entries: PickerEntry[];
   clearHref: string;
 };
@@ -23,11 +23,11 @@ type CollapsingPickerProps = {
 export function CollapsingPicker({
   heading,
   pickedHeading,
-  headingId,
   entries,
   clearHref,
 }: CollapsingPickerProps) {
   const t = useTranslations("AreaPage");
+  const headingId = useId();
   const picked = entries.find((entry) => entry.isActive);
 
   return (
