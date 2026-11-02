@@ -1,5 +1,9 @@
-import { redirect } from "@/i18n/navigation";
 import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
+import { getActiveTemplates } from "@/lib/area-templates";
+import { categoryBrowsePath } from "@/lib/template-topics";
+
+export const revalidate = 3600;
 
 type AreaTemplatesPageProps = {
   params: Promise<{ areaId: string }>;
@@ -13,6 +17,6 @@ export default async function AreaTemplatesPage({
   const { areaId } = await params;
   const { category } = await searchParams;
   const locale = await getLocale();
-  const query = category ? `?category=${encodeURIComponent(category)}` : "";
-  redirect({ href: `/area/${areaId}${query}`, locale });
+  const templates = await getActiveTemplates(locale);
+  redirect({ href: categoryBrowsePath(areaId, templates, category), locale });
 }
