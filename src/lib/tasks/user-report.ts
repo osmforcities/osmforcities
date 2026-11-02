@@ -33,8 +33,7 @@ interface ReportDataset {
   mappers?: number;
   /** Set once the template left the catalog; the dataset is deleted after it. */
   retiresAt?: Date;
-  /** The retired template's replacement, linked for the same area. */
-  replacement?: { templateId: string; name: string };
+  replacedBy?: { templateId: string; name: string };
 }
 
 const MAX_REPORT_ROWS = 5;
@@ -59,12 +58,12 @@ async function generateEmailContent(
     if (!ds.retiresAt) return undefined;
     // "soon" is the message's select branch for a date already past.
     const date = ds.retiresAt > now ? formatLongDate.format(ds.retiresAt) : "soon";
-    const body = ds.replacement
+    const body = ds.replacedBy
       ? t("reportReplacedBody", {
           template,
           replacement: createEmailLink(
-            getDatasetUrl(baseUrl, { locale, areaId: ds.areaId, templateId: ds.replacement.templateId }),
-            escapeHtml(ds.replacement.name)
+            getDatasetUrl(baseUrl, { locale, areaId: ds.areaId, templateId: ds.replacedBy.templateId }),
+            escapeHtml(ds.replacedBy.name)
           ),
           date,
         })
@@ -243,7 +242,7 @@ export async function generateNextUserReport(): Promise<{
         features: dataset.dataCount,
         mappers: stats?.editorsCount,
         retiresAt: dataset.template.deprecatesAt ?? undefined,
-        replacement: dataset.template.replacedBy
+        replacedBy: dataset.template.replacedBy
           ? {
               templateId: dataset.template.replacedBy.id,
               name: resolveTemplateForLocale(dataset.template.replacedBy, userLocale).name,

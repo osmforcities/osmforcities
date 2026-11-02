@@ -121,7 +121,7 @@ export interface ParseResult {
   categories: ParsedCategory[];
   errors: ValidationError[];
   warnings: string[];
-  /** Deprecated id -> replacement id; empty when the section has errors */
+  /** Empty when the section has errors */
   replacedBy: Record<string, string>;
 }
 
@@ -541,20 +541,16 @@ export function validateDemonstrators(
   return errors;
 }
 
-/**
- * The old id must have left the template list and the new id must still be in
- * it, so a pointer never leads to a missing or deprecated template.
- */
 export function validateReplacedBy(
   replacedBy: unknown,
   activeIds: Set<string>,
-): ValidationError[] {
+): { replacedBy: Record<string, string>; errors: ValidationError[] } {
   const errors: ValidationError[] = [];
-  if (replacedBy === undefined || replacedBy === null) return errors;
+  const map: Record<string, string> = {};
+  if (replacedBy === undefined || replacedBy === null) return { replacedBy: map, errors };
   if (typeof replacedBy !== "object" || Array.isArray(replacedBy)) {
-    return [
-      { field: "replacedBy", message: "replacedBy must be a map of old id to new id" },
-    ];
+    errors.push({ field: "replacedBy", message: "replacedBy must be a map of old id to new id" });
+    return { replacedBy: map, errors };
   }
 
   for (const [oldId, newId] of Object.entries(replacedBy)) {
@@ -573,10 +569,13 @@ export function validateReplacedBy(
         field: "replacedBy",
         message: `replacedBy["${oldId}"]: "${newId}" is not an active template`,
       });
+    } else {
+      map[oldId] = newId;
     }
   }
 
-  return errors;
+  // All or nothing, so no caller ever applies part of a broken section
+  return { replacedBy: errors.length === 0 ? map : {}, errors };
 }
 
 /**
@@ -692,12 +691,11 @@ export function parseTemplates(config: LogicConfig): ParseResult {
 
   errors.push(...validateDemonstrators(config.demonstrators, parsedIds));
 
-  const replacedByErrors = validateReplacedBy(config.replacedBy, parsedIds);
+  const { replacedBy, errors: replacedByErrors } = validateReplacedBy(
+    config.replacedBy,
+    parsedIds,
+  );
   errors.push(...replacedByErrors);
-  const replacedBy =
-    replacedByErrors.length === 0 && config.replacedBy
-      ? (config.replacedBy as Record<string, string>)
-      : {};
 
   const { categories, errors: categoryErrors } = validateCategories(
     config.categories ?? {},

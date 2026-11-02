@@ -71,8 +71,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
     return <TemplateNotFoundError templateId={templateId} />;
   }
 
-  // A retired template's URLs go to the same area's replacement dataset.
-  // Without a replacement it still shows "not found" further down.
+  // Without a replacement, a retired template still shows "not found" further down
   if (template.deprecatesAt && template.replacedById) {
     redirect({ href: `/area/${osmRelationId}/dataset/${template.replacedById}`, locale });
   }

@@ -200,8 +200,7 @@ async function main() {
     }
   }
 
-  // Pass 3: replacement pointers, after the upserts so every new id has a row.
-  // One transaction, so a redirect never sees the pointers half rewritten.
+  // Pass 3: after the upserts so every new id has a row, in one transaction so redirects never see a half rewrite
   const oldIds = Object.keys(result.replacedBy);
   const unmatchedOldIds = await prisma.$transaction(async (tx) => {
     await tx.template.updateMany({
@@ -218,7 +217,6 @@ async function main() {
     }
     return unmatched;
   });
-  // A typo, or a template already deleted after its grace period
   if (unmatchedOldIds.length > 0) {
     console.warn(`replacedBy: no template row for ${unmatchedOldIds.join(", ")}`);
   }

@@ -609,32 +609,40 @@ describe("template-parser", () => {
   describe("validateReplacedBy", () => {
     const active = new Set(["streets", "trees"]);
 
-    it("returns no errors for a valid map", () => {
-      expect(validateReplacedBy({ highways: "streets" }, active)).toHaveLength(0);
+    it("returns a valid map with no errors", () => {
+      expect(validateReplacedBy({ highways: "streets" }, active)).toEqual({
+        replacedBy: { highways: "streets" },
+        errors: [],
+      });
+    });
+
+    it("returns no map when any pointer is bad", () => {
+      const { replacedBy } = validateReplacedBy({ highways: "streets", roads: "nope" }, active);
+      expect(replacedBy).toEqual({});
     });
 
     it("accepts an empty or absent section", () => {
-      expect(validateReplacedBy(undefined, active)).toHaveLength(0);
-      expect(validateReplacedBy(null, active)).toHaveLength(0);
-      expect(validateReplacedBy({}, active)).toHaveLength(0);
+      expect(validateReplacedBy(undefined, active).errors).toHaveLength(0);
+      expect(validateReplacedBy(null, active).errors).toHaveLength(0);
+      expect(validateReplacedBy({}, active).errors).toHaveLength(0);
     });
 
     it("errors on a scalar or array root", () => {
       for (const root of [42, "streets", ["highways", "streets"]]) {
-        const errors = validateReplacedBy(root, active);
+        const { errors } = validateReplacedBy(root, active);
         expect(errors).toHaveLength(1);
         expect(errors[0].message).toContain("map of old id to new id");
       }
     });
 
     it("errors when the replacement is missing from the template list", () => {
-      const errors = validateReplacedBy({ highways: "streetz" }, active);
+      const { errors } = validateReplacedBy({ highways: "streetz" }, active);
       expect(errors).toHaveLength(1);
       expect(errors[0].message).toContain('"streetz" is not an active template');
     });
 
     it("errors when the replacement is itself deprecated", () => {
-      const errors = validateReplacedBy(
+      const { errors } = validateReplacedBy(
         { highways: "roads", roads: "streets" },
         active,
       );
@@ -643,13 +651,13 @@ describe("template-parser", () => {
     });
 
     it("errors when the deprecated id is still in the template list", () => {
-      const errors = validateReplacedBy({ trees: "streets" }, active);
+      const { errors } = validateReplacedBy({ trees: "streets" }, active);
       expect(errors).toHaveLength(1);
       expect(errors[0].message).toContain('"trees" is still an active template');
     });
 
     it("errors when the value is not a string", () => {
-      const errors = validateReplacedBy({ highways: 42 }, active);
+      const { errors } = validateReplacedBy({ highways: 42 }, active);
       expect(errors).toHaveLength(1);
       expect(errors[0].message).toContain("must be a template id");
     });
