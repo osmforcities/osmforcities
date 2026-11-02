@@ -1,8 +1,8 @@
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { auth } from "@/auth";
-import { AreaBrowse } from "@/components/area/area-browse";
+import { AreaBrowse, AreaBrowseSkeleton } from "@/components/area/area-browse";
 import { TrackView } from "@/components/analytics/track-view";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { resolveAreaName } from "@/lib/area-name";
@@ -17,10 +17,15 @@ type AreaBrowseLayoutProps = {
   params: Promise<{ areaId: string }>;
 };
 
-export default async function AreaBrowseLayout({
-  children,
-  params,
-}: AreaBrowseLayoutProps) {
+export default function AreaBrowseLayout({ children, params }: AreaBrowseLayoutProps) {
+  return (
+    <Suspense fallback={<AreaBrowseSkeleton />}>
+      <AreaBrowseShell params={params}>{children}</AreaBrowseShell>
+    </Suspense>
+  );
+}
+
+async function AreaBrowseShell({ children, params }: AreaBrowseLayoutProps) {
   const { areaId } = await params;
   const osmRelationId = parseAreaIdOrNotFound(areaId);
   const locale = await getLocale();

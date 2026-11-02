@@ -2,7 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { getTemplateIcon } from "@/lib/category-icons";
 import type { AreaTemplate } from "@/lib/area-templates";
 
-export const datasetGridClassName =
+const datasetGridClassName =
   "grid auto-rows-fr grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3.5 lg:grid-cols-3";
 
 type DatasetCardsProps = {
@@ -17,6 +17,19 @@ export function DatasetCards({ templates, areaId }: DatasetCardsProps) {
         <li key={template.id}>
           <DatasetCard template={template} areaId={areaId} />
         </li>
+      ))}
+    </ul>
+  );
+}
+
+export function DatasetCardsSkeleton() {
+  return (
+    <ul aria-busy className={datasetGridClassName}>
+      {Array.from({ length: 6 }, (_, index) => (
+        <li
+          key={index}
+          className="h-20 animate-pulse rounded-xl border border-gray-200 bg-white"
+        />
       ))}
     </ul>
   );
