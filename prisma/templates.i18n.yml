@@ -277,13 +277,13 @@ templates:
     name:
       en: Parcel Lockers
       pt: Lockers de encomendas
-      es: Consignas de paquetes
+      es: Casilleros de paquetes
       fr: Consignes à colis
       de: Paketstationen
     desc:
       en: Parcel Lockers
       pt: Lockers de encomendas
-      es: Consignas de paquetes
+      es: Casilleros de paquetes
       fr: Consignes à colis
       de: Paketstationen
   shower:
@@ -316,13 +316,13 @@ templates:
     name:
       en: Luggage Lockers
       pt: Guarda-volumes
-      es: Consignas de equipaje
+      es: Casilleros de equipaje
       fr: Consignes à bagages
       de: Gepäckschließfächer
     desc:
       en: Luggage Lockers
       pt: Guarda-volumes
-      es: Consignas de equipaje
+      es: Casilleros de equipaje
       fr: Consignes à bagages
       de: Gepäckschließfächer
   post-boxes:
@@ -563,13 +563,13 @@ templates:
     name:
       en: Speech Therapists
       pt: Fonoaudiólogos
-      es: Logopedas
+      es: Terapeutas del lenguaje
       fr: Orthophonistes
       de: Logopädiepraxen
     desc:
       en: Speech Therapists
       pt: Fonoaudiólogos
-      es: Logopedas
+      es: Terapeutas del lenguaje
       fr: Orthophonistes
       de: Logopädiepraxen
   occupational-therapists:
@@ -1007,13 +1007,13 @@ templates:
     name:
       en: Town Halls
       pt: Prefeituras
-      es: Ayuntamientos
+      es: Municipalidades
       fr: Mairies
       de: Rathäuser
     desc:
       en: Town Halls
       pt: Prefeituras
-      es: Ayuntamientos
+      es: Municipalidades
       fr: Mairies
       de: Rathäuser
   senior-centers:
@@ -1085,13 +1085,13 @@ templates:
     name:
       en: Fire Stations
       pt: Corpos de bombeiros
-      es: Parques de bomberos
+      es: Estaciones de bomberos
       fr: Casernes de pompiers
       de: Feuerwachen
     desc:
       en: Fire Stations
       pt: Corpos de bombeiros
-      es: Parques de bomberos
+      es: Estaciones de bomberos
       fr: Casernes de pompiers
       de: Feuerwachen
   ambulance-stations:
@@ -1202,13 +1202,13 @@ templates:
     name:
       en: Waste Baskets
       pt: Lixeiras
-      es: Papeleras
+      es: Cestos de basura
       fr: Poubelles
       de: Abfalleimer
     desc:
       en: Waste Baskets
       pt: Lixeiras
-      es: Papeleras
+      es: Cestos de basura
       fr: Poubelles
       de: Abfalleimer
   bottle-return:
@@ -1227,14 +1227,14 @@ templates:
   benches:
     name:
       en: Benches
-      pt: Bancos
-      es: Bancos
+      pt: Bancos de praça
+      es: Bancos de plaza
       fr: Bancs
       de: Sitzbänke
     desc:
       en: Benches
-      pt: Bancos
-      es: Bancos
+      pt: Bancos de praça
+      es: Bancos de plaza
       fr: Bancs
       de: Sitzbänke
   telephones:
@@ -1436,13 +1436,13 @@ templates:
     name:
       en: Mobile Phone
       pt: Celulares
-      es: Teléfonos móviles
+      es: Celulares
       fr: Téléphones mobiles
       de: Handyläden
     desc:
       en: Mobile Phone
       pt: Celulares
-      es: Teléfonos móviles
+      es: Celulares
       fr: Téléphones mobiles
       de: Handyläden
   shoes:
@@ -1826,13 +1826,13 @@ templates:
     name:
       en: Forests
       pt: Florestas
-      es: Bosques
+      es: Áreas forestales
       fr: Forêts
       de: Forstflächen
     desc:
       en: Forests
       pt: Florestas
-      es: Bosques
+      es: Áreas forestales
       fr: Forêts
       de: Forstflächen
   woods:
@@ -1969,13 +1969,13 @@ templates:
     name:
       en: Springs
       pt: Nascentes
-      es: Fuentes
+      es: Manantiales
       fr: Sources
       de: Quellen
     desc:
       en: Springs
       pt: Nascentes
-      es: Fuentes
+      es: Manantiales
       fr: Sources
       de: Quellen
   hot-springs:
@@ -2372,13 +2372,13 @@ templates:
     name:
       en: Cycleways
       pt: Ciclovias
-      es: Carriles bici
+      es: Ciclovías
       fr: Pistes cyclables
       de: Radwege
     desc:
       en: Cycleways
       pt: Ciclovias
-      es: Carriles bici
+      es: Ciclovías
       fr: Pistes cyclables
       de: Radwege
   bridges:
@@ -2645,13 +2645,13 @@ templates:
     name:
       en: Gymnasiums
       pt: Ginásios
-      es: Gimnasios
+      es: Gimnasia
       fr: Gymnases
       de: Turnhallen
     desc:
       en: Gymnasiums
       pt: Ginásios
-      es: Gimnasios
+      es: Gimnasia
       fr: Gymnases
       de: Turnhallen
   shooting:

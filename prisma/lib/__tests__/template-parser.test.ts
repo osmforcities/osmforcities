@@ -475,6 +475,20 @@ describe("template-parser", () => {
       expect(config.templates["bicycle-parking"].desc.en).toBeDefined();
       expect(config.templates["bicycle-parking"].name.pt).toBeDefined();
     });
+
+    it("gives every template a distinct name within each locale", () => {
+      const idsByLocaleName = new Map<string, string[]>();
+      for (const [id, { name }] of Object.entries(
+        loadTemplatesI18n("./prisma").templates,
+      )) {
+        for (const [locale, label] of Object.entries(name)) {
+          const key = `${locale}: ${label}`;
+          idsByLocaleName.set(key, [...(idsByLocaleName.get(key) ?? []), id]);
+        }
+      }
+      const clashes = [...idsByLocaleName].filter(([, ids]) => ids.length > 1);
+      expect(clashes).toEqual([]);
+    });
   });
 
   describe("loadTemplatesYaml", () => {
