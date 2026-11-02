@@ -286,11 +286,9 @@ templates:
   - ["dairy-yards","farmyard=dairy","agriculture","Milk"]
   # Agricultural buildings
   - ["barns","building=barn","agriculture","Warehouse"]
-  # building=agricultural is a rare synonym of farm_auxiliary (OSM wiki)
   - ["farm-auxiliary","building=farm_auxiliary;building=agricultural","agriculture","Wrench"]
   - ["greenhouses","building=greenhouse","agriculture","Sprout"]
   # Livestock housing
-  # building=livestock alone is the rare fallback tag, so the precise values count too
   - ["livestock-buildings","building=livestock;building=cowshed;building=stable;building=sty;building=barn","agriculture","Warehouse"]
   - ["cowsheds","building=cowshed","agriculture","Warehouse"]
   - ["pig-sties","building=sty","agriculture","Warehouse"]
