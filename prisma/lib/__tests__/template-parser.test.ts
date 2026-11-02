@@ -407,7 +407,7 @@ describe("template-parser", () => {
 
     it("rejects a malformed entry", () => {
       expect(messages({ bus: "Bus" })).toEqual([
-        'Category "bus" must be an object with a string "icon"',
+        'Category "bus" must be an object with a string "icon" and an optional string "parent"',
       ]);
       expect(messages(["bus"])).toEqual([
         "categories must be a map keyed by category slug",

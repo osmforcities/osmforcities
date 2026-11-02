@@ -557,7 +557,7 @@ export function validateCategories(raw: unknown): {
     if (typeof icon !== "string" || (parent !== undefined && typeof parent !== "string")) {
       errors.push({
         field: "categories",
-        message: `Category "${slug}" must be an object with a string "icon"`,
+        message: `Category "${slug}" must be an object with a string "icon" and an optional string "parent"`,
       });
       continue;
     }
