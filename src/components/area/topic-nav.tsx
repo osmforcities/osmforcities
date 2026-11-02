@@ -1,10 +1,10 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { AreaTemplate } from "@/lib/area-templates";
-import { areaBrowsePath } from "@/lib/template-topics";
+import { useCategoryLabel } from "@/lib/category-label";
+import { areaBrowsePath, countTemplatesByTopic } from "@/lib/template-topics";
 import { CollapsingPicker } from "./collapsing-picker";
-import { useTopics } from "./use-topics";
 
 type TopicNavProps = {
   templates: AreaTemplate[];
@@ -15,7 +15,18 @@ type TopicNavProps = {
 
 export function TopicNav({ templates, areaId, activeTopicSlug }: TopicNavProps) {
   const t = useTranslations("AreaPage");
-  const topics = useTopics(templates);
+  const locale = useLocale();
+  const categoryLabel = useCategoryLabel();
+
+  const entries = countTemplatesByTopic(templates)
+    .map(({ topicSlug, count }) => ({
+      key: topicSlug,
+      href: areaBrowsePath(areaId, topicSlug),
+      label: categoryLabel(topicSlug),
+      count,
+      isActive: topicSlug === activeTopicSlug,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label, locale));
 
   return (
     <div className="mt-2 lg:mt-4">
@@ -23,13 +34,7 @@ export function TopicNav({ templates, areaId, activeTopicSlug }: TopicNavProps) 
         heading={t("pickTopic")}
         pickedHeading={t("pickedTopic")}
         headingId="pick-topic-heading"
-        entries={topics.map((topic) => ({
-          key: topic.slug,
-          href: areaBrowsePath(areaId, topic.slug),
-          label: topic.label,
-          count: topic.count,
-          isActive: topic.slug === activeTopicSlug,
-        }))}
+        entries={entries}
         clearHref={areaBrowsePath(areaId)}
       />
     </div>

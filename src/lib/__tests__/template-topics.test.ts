@@ -20,7 +20,6 @@ const tpl = (
   description: null,
   categorySlug,
   topicSlug,
-  tags: [],
   commonRank: null,
   ...over,
 });
@@ -37,21 +36,21 @@ describe("listCommonTemplates", () => {
 });
 
 describe("countTemplatesByTopic", () => {
-  it("counts templates per topic, sorted by slug", () => {
+  it("counts templates per topic", () => {
     const counts = countTemplatesByTopic([
       tpl("a", "A", "bus", "mobility"),
       tpl("b", "B", "healthcare", "health"),
       tpl("c", "C", "mobility", "mobility"),
     ]);
     expect(counts).toEqual([
-      { topicSlug: "health", count: 1 },
       { topicSlug: "mobility", count: 2 },
+      { topicSlug: "health", count: 1 },
     ]);
   });
 });
 
 describe("groupTopicByCategory", () => {
-  it("groups a topic's templates by child category, direct members last, in the given order", () => {
+  it("groups a topic's templates by child category, in the given order", () => {
     const groups = groupTopicByCategory(
       [
         tpl("taxi", "Taxi ranks", "mobility", "mobility"),
@@ -63,6 +62,8 @@ describe("groupTopicByCategory", () => {
       "mobility"
     );
     expect(groups).toEqual([
+      { categorySlug: "mobility", templates: [expect.objectContaining({ id: "taxi" })] },
+      { categorySlug: "rail", templates: [expect.objectContaining({ id: "rail" })] },
       {
         categorySlug: "bus",
         templates: [
@@ -70,8 +71,6 @@ describe("groupTopicByCategory", () => {
           expect.objectContaining({ id: "stops" }),
         ],
       },
-      { categorySlug: "rail", templates: [expect.objectContaining({ id: "rail" })] },
-      { categorySlug: "mobility", templates: [expect.objectContaining({ id: "taxi" })] },
     ]);
   });
 

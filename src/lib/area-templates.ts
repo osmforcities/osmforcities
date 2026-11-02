@@ -10,7 +10,6 @@ export type AreaTemplate = {
   categorySlug: string;
   /** Equals categorySlug for templates filed directly under a topic. */
   topicSlug: string;
-  tags: string[];
   commonRank: number | null;
 };
 
@@ -25,7 +24,6 @@ async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
       id: true,
       name: true,
       description: true,
-      tags: true,
       commonRank: true,
       category: {
         select: { slug: true, parent: { select: { slug: true } } },
@@ -52,7 +50,6 @@ async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
         description: resolved.description,
         categorySlug: t.category.slug,
         topicSlug: t.category.parent?.slug ?? t.category.slug,
-        tags: resolved.tags,
         commonRank: t.commonRank,
       };
     })

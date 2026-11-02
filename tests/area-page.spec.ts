@@ -63,12 +63,12 @@ test.describe("Area Page", () => {
 
     await expect(page.locator("[data-testid='dataset-cards']")).toBeVisible();
 
-    await page.getByRole("link", { name: /^Mobility\d+$/ }).click();
+    await page.getByRole("link", { name: /^Mobility \d+$/ }).click();
     await expect(page).toHaveURL(/\/area\/298470\/topics\/mobility$/);
     const topicChip = page.getByRole("link", { name: "Clear Mobility" });
     await expect(topicChip).toBeVisible();
 
-    await page.getByRole("link", { name: /^Cycling\d+$/ }).click();
+    await page.getByRole("link", { name: /^Cycling \d+$/ }).click();
     await expect(page).toHaveURL(/\/topics\/mobility\/cycling$/);
     await expect(page.getByRole("link", { name: "Clear Cycling" })).toBeVisible();
 

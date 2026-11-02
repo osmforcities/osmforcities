@@ -9,7 +9,6 @@ const template = (id: string, name: string, description: string | null): AreaTem
   description,
   categorySlug: "bus",
   topicSlug: "mobility",
-  tags: [],
   commonRank: null,
 });
 

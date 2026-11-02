@@ -10,7 +10,6 @@ const template = (id: string, categorySlug: string, topicSlug: string): AreaTemp
   description: null,
   categorySlug,
   topicSlug,
-  tags: [],
   commonRank: null,
 });
 

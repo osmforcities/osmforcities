@@ -1,48 +1,33 @@
 import type { AreaTemplate } from "@/lib/area-templates";
 
-export type TopicCount = { topicSlug: string; count: number };
+type CategoryGroup = { categorySlug: string; templates: AreaTemplate[] };
 
-export type CategoryGroup<T extends AreaTemplate> = {
-  categorySlug: string;
-  templates: T[];
-};
-
-export function listCommonTemplates<T extends AreaTemplate>(templates: T[]): T[] {
+export function listCommonTemplates(templates: AreaTemplate[]): AreaTemplate[] {
   return templates
     .filter((template) => template.commonRank !== null)
     .sort((a, b) => a.commonRank! - b.commonRank!);
 }
 
-/** Sorted by slug for a stable order; the UI sorts by localized label. */
-export function countTemplatesByTopic(templates: AreaTemplate[]): TopicCount[] {
+export function countTemplatesByTopic(
+  templates: AreaTemplate[]
+): { topicSlug: string; count: number }[] {
   const counts = new Map<string, number>();
   for (const { topicSlug } of templates) {
     counts.set(topicSlug, (counts.get(topicSlug) ?? 0) + 1);
   }
-  return [...counts]
-    .map(([topicSlug, count]) => ({ topicSlug, count }))
-    .sort((a, b) => a.topicSlug.localeCompare(b.topicSlug));
+  return [...counts].map(([topicSlug, count]) => ({ topicSlug, count }));
 }
 
-/** Direct members of the topic come last, as the "Other" group. Keeps the given template order. */
-export function groupTopicByCategory<T extends AreaTemplate>(
-  templates: T[],
-  topicSlug: string
-): CategoryGroup<T>[] {
-  const groups = new Map<string, T[]>();
+/** Direct members of the topic form a group keyed by the topic's own slug. Keeps the given order. */
+export function groupTopicByCategory(templates: AreaTemplate[], topicSlug: string): CategoryGroup[] {
+  const groups = new Map<string, AreaTemplate[]>();
   for (const template of templates) {
     if (template.topicSlug !== topicSlug) continue;
     const group = groups.get(template.categorySlug) ?? [];
     group.push(template);
     groups.set(template.categorySlug, group);
   }
-  const isDirect = (categorySlug: string) => categorySlug === topicSlug;
-  return [...groups]
-    .sort(([a], [b]) => Number(isDirect(a)) - Number(isDirect(b)) || a.localeCompare(b))
-    .map(([categorySlug, group]) => ({
-      categorySlug,
-      templates: group,
-    }));
+  return [...groups].map(([categorySlug, group]) => ({ categorySlug, templates: group }));
 }
 
 export function findTopicOfCategory(

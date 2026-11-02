@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
-export type PickerEntry = {
+type PickerEntry = {
   key: string;
   href: string;
   label: string;
