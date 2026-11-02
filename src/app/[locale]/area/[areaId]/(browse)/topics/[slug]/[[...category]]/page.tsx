@@ -6,7 +6,6 @@ import { resolveAreaName } from "@/lib/area-name";
 import { parseAreaIdOrNotFound } from "@/lib/area-route";
 import { getActiveTemplates } from "@/lib/area-templates";
 import { categoryLabel } from "@/lib/category-label";
-import { groupTopicByCategory } from "@/lib/template-topics";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import type { MessageResolver } from "@/lib/tag-i18n";
 
@@ -40,11 +39,11 @@ export default async function TopicPage({ params }: TopicPageProps) {
   const locale = await getLocale();
   const templates = await getActiveTemplates(locale);
 
-  const shownTemplates = categorySlug
-    ? groupTopicByCategory(templates, slug).find((group) => group.categorySlug === categorySlug)
-        ?.templates
-    : templates.filter((template) => template.topicSlug === slug);
-  if (!shownTemplates?.length || rest.length > 0) notFound();
+  const shownTemplates = templates.filter(
+    (template) =>
+      template.topicSlug === slug && (!categorySlug || template.categorySlug === categorySlug)
+  );
+  if (shownTemplates.length === 0 || rest.length > 0) notFound();
 
   return <DatasetCards templates={shownTemplates} areaId={areaId} />;
 }

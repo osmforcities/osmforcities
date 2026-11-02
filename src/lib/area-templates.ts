@@ -67,6 +67,6 @@ async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
  */
 export const getActiveTemplates = unstable_cache(
   fetchActiveTemplates,
-  ["active-templates"],
+  ["active-templates-v2"],
   { revalidate: 3600, tags: ["templates"] }
 );

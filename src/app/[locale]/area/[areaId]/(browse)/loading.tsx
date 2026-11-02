@@ -1,9 +1,8 @@
+import { datasetGridClassName } from "@/components/area/dataset-cards";
+
 export default function Loading() {
   return (
-    <ul
-      aria-busy
-      className="grid auto-rows-fr grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3.5 lg:grid-cols-3"
-    >
+    <ul aria-busy className={datasetGridClassName}>
       {Array.from({ length: 6 }, (_, index) => (
         <li
           key={index}

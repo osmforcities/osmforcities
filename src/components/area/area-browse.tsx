@@ -31,7 +31,7 @@ export function AreaBrowse({
   return (
     <div className="min-h-[calc(100dvh_-_var(--nav-height))] bg-gray-50">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 pt-6 pb-12 sm:px-6 lg:pt-8">
-        <header className="flex flex-col gap-4">
+        <header className="mb-2 flex flex-col gap-4 lg:mb-4">
           <BreadcrumbNav items={parentBreadcrumb} />
           <h1 className="text-3xl font-bold tracking-tight text-gray-900 lg:text-5xl">
             {areaName}

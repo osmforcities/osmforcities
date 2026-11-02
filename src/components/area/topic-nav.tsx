@@ -29,13 +29,11 @@ export function TopicNav({ templates, areaId, activeTopicSlug }: TopicNavProps) 
     .sort((a, b) => a.label.localeCompare(b.label, locale));
 
   return (
-    <div className="mt-2 lg:mt-4">
-      <CollapsingPicker
-        heading={t("pickTopic")}
-        pickedHeading={t("pickedTopic")}
-        entries={entries}
-        clearHref={areaBrowsePath(areaId)}
-      />
-    </div>
+    <CollapsingPicker
+      heading={t("pickTopic")}
+      pickedHeading={t("pickedTopic")}
+      entries={entries}
+      clearHref={areaBrowsePath(areaId)}
+    />
   );
 }
