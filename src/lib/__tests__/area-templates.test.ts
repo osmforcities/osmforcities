@@ -5,17 +5,11 @@ import {
   type CreatedDatasetStatus,
 } from "../area-templates";
 
-const tpl = (
-  id: string,
-  name: string,
-  categorySlug = "bus",
-  topicSlug = "mobility"
-): AreaTemplate => ({
+const tpl = (id: string, name: string, categorySlug = "bus"): AreaTemplate => ({
   id,
   name,
   description: null,
   categorySlug,
-  topicSlug,
   tags: [],
 });
 

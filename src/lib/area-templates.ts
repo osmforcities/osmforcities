@@ -9,8 +9,6 @@ export type AreaTemplate = {
   description: string | null;
   /** Labels resolve client-side from the CategoryLabel messages. */
   categorySlug: string;
-  /** Top-level category; equals categorySlug for a topic's direct members. */
-  topicSlug: string;
   tags: string[];
 };
 
@@ -131,7 +129,7 @@ async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
       description: true,
       tags: true,
       category: {
-        select: { slug: true, parent: { select: { slug: true } } },
+        select: { slug: true },
       },
       // Only fetch the translation for the requested locale — resolveTemplateForLocale
       // picks the matching row (now the only one) and falls back to the base fields.
@@ -154,7 +152,6 @@ async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
       name: resolved.name,
       description: resolved.description,
       categorySlug: t.category.slug,
-      topicSlug: t.category.parent?.slug ?? t.category.slug,
       tags: resolved.tags,
     };
   });
