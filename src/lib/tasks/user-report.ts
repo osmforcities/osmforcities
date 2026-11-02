@@ -11,6 +11,7 @@ import {
   emailParagraph,
   emailPreferencesLine,
   emailIconUrl,
+  createEmailLink,
   EMAIL_REMOVED_TEMPLATE_ICON,
   renderEmail,
 } from "@/lib/email-layout";
@@ -32,6 +33,7 @@ interface ReportDataset {
   mappers?: number;
   /** Set once the template left the catalog; the dataset is deleted after it. */
   retiresAt?: Date;
+  replacedBy?: { templateId: string; name: string };
 }
 
 const MAX_REPORT_ROWS = 5;
@@ -52,6 +54,22 @@ async function generateEmailContent(
   const formatShortDate = (date: Date) =>
     (date.getUTCFullYear() === now.getUTCFullYear() ? thisYear : otherYear).format(date);
   const formatLongDate = new Intl.DateTimeFormat(locale, { dateStyle: "long", timeZone: "UTC" });
+  const retiredWarning = (ds: ReportDataset, template: string) => {
+    if (!ds.retiresAt) return undefined;
+    // "soon" is the message's select branch for a date already past.
+    const date = ds.retiresAt > now ? formatLongDate.format(ds.retiresAt) : "soon";
+    const body = ds.replacedBy
+      ? t("reportReplacedBody", {
+          template,
+          replacement: createEmailLink(
+            getDatasetUrl(baseUrl, { locale, areaId: ds.areaId, templateId: ds.replacedBy.templateId }),
+            escapeHtml(ds.replacedBy.name)
+          ),
+          date,
+        })
+      : t("reportRetiredBody", { template, date });
+    return { iconUrl: emailIconUrl("glyph-alert"), title: t("reportRetiredTitle"), body };
+  };
 
   const rows = changedDatasets
     // Retiring datasets first, so the cap never hides a deletion warning.
@@ -71,7 +89,7 @@ async function generateEmailContent(
         ...(ds.mappers ? [{ iconUrl: emailIconUrl("glyph-mappers"), text: t("reportMappers", { count: ds.mappers }) }] : []),
       ];
       return emailListItem({
-        // A retired template's dataset page already shows "not found".
+        // A retired template's page shows "not found" or redirects, and the warning links any replacement.
         link: ds.retiresAt
           ? undefined
           : {
@@ -82,15 +100,7 @@ async function generateEmailContent(
         title,
         subtitle: escapeHtml(ds.areaName),
         stats,
-        warning: ds.retiresAt && {
-          iconUrl: emailIconUrl("glyph-alert"),
-          title: t("reportRetiredTitle"),
-          // "soon" is the message's select branch for a date already past.
-          body: t("reportRetiredBody", {
-            template: title,
-            date: ds.retiresAt > now ? formatLongDate.format(ds.retiresAt) : "soon",
-          }),
-        },
+        warning: retiredWarning(ds, title),
       });
     });
 
@@ -204,6 +214,14 @@ export async function generateNextUserReport(): Promise<{
               description: true,
             },
           },
+          replacedBy: {
+            select: {
+              id: true,
+              name: true,
+              description: true,
+              translations: { select: { locale: true, name: true, description: true } },
+            },
+          },
         },
       },
     },
@@ -224,6 +242,12 @@ export async function generateNextUserReport(): Promise<{
         features: dataset.dataCount,
         mappers: stats?.editorsCount,
         retiresAt: dataset.template.deprecatesAt ?? undefined,
+        replacedBy: dataset.template.replacedBy
+          ? {
+              templateId: dataset.template.replacedBy.id,
+              name: resolveTemplateForLocale(dataset.template.replacedBy, userLocale).name,
+            }
+          : undefined,
       },
     ];
   });

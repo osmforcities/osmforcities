@@ -50,7 +50,7 @@ export function emailIconUrl(iconName: string): string {
   return `${getEmailBaseUrl()}/${EMAIL_ICON_DIR}/${encodeURIComponent(iconName)}.png`;
 }
 
-function createEmailLink(url: string, text: string): string {
+export function createEmailLink(url: string, text: string): string {
   return `<a href="${url}" style="color: ${COLOR.olive600}; text-decoration: underline;">${text}</a>`;
 }
 

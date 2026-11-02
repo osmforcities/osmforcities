@@ -22,6 +22,7 @@ import {
   loadTemplatesLogic,
   loadTemplatesI18n,
   validateDemonstrators,
+  validateReplacedBy,
   validateCategories,
 } from "../template-parser";
 
@@ -602,6 +603,80 @@ describe("template-parser", () => {
       );
       expect(errors).toHaveLength(1);
       expect(errors[0].message).toContain("note must be a string");
+    });
+  });
+
+  describe("validateReplacedBy", () => {
+    const active = new Set(["streets", "trees"]);
+
+    it("returns a valid map with no errors", () => {
+      expect(validateReplacedBy({ highways: "streets" }, active)).toEqual({
+        replacedBy: { highways: "streets" },
+        errors: [],
+      });
+    });
+
+    it("returns no map when any pointer is bad", () => {
+      const { replacedBy } = validateReplacedBy({ highways: "streets", roads: "nope" }, active);
+      expect(replacedBy).toEqual({});
+    });
+
+    it("accepts an empty or absent section", () => {
+      expect(validateReplacedBy(undefined, active).errors).toHaveLength(0);
+      expect(validateReplacedBy(null, active).errors).toHaveLength(0);
+      expect(validateReplacedBy({}, active).errors).toHaveLength(0);
+    });
+
+    it("errors on a scalar or array root", () => {
+      for (const root of [42, "streets", ["highways", "streets"]]) {
+        const { errors } = validateReplacedBy(root, active);
+        expect(errors).toHaveLength(1);
+        expect(errors[0].message).toContain("map of old id to new id");
+      }
+    });
+
+    it("errors when the replacement is missing from the template list", () => {
+      const { errors } = validateReplacedBy({ highways: "streetz" }, active);
+      expect(errors).toHaveLength(1);
+      expect(errors[0].message).toContain('"streetz" is not an active template');
+    });
+
+    it("errors when the replacement is itself deprecated", () => {
+      const { errors } = validateReplacedBy(
+        { highways: "roads", roads: "streets" },
+        active,
+      );
+      expect(errors).toHaveLength(1);
+      expect(errors[0].message).toContain('"roads" is not an active template');
+    });
+
+    it("errors when the deprecated id is still in the template list", () => {
+      const { errors } = validateReplacedBy({ trees: "streets" }, active);
+      expect(errors).toHaveLength(1);
+      expect(errors[0].message).toContain('"trees" is still an active template');
+    });
+
+    it("errors when the value is not a string", () => {
+      const { errors } = validateReplacedBy({ highways: 42 }, active);
+      expect(errors).toHaveLength(1);
+      expect(errors[0].message).toContain("must be a template id");
+    });
+  });
+
+  describe("parseTemplates replacedBy", () => {
+    const templates = { streets: { query: "highway=residential", category: "transport" } };
+    const categories = { transport: { icon: "bus" } };
+
+    it("returns the validated map", () => {
+      const result = parseTemplates({ templates, categories, replacedBy: { highways: "streets" } });
+      expect(result.errors).toHaveLength(0);
+      expect(result.replacedBy).toEqual({ highways: "streets" });
+    });
+
+    it("fails and returns no map on a bad pointer", () => {
+      const result = parseTemplates({ templates, categories, replacedBy: { highways: "nope" } });
+      expect(result.errors).toHaveLength(1);
+      expect(result.replacedBy).toEqual({});
     });
   });
 });

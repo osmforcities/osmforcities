@@ -64,6 +64,50 @@ test.describe("Template Deprecation", () => {
     }
   });
 
+  test("deprecated template with a replacement redirects to it for the same area", async ({ page }) => {
+    const prisma = new PrismaClient();
+    const ids = ["test-replaced", "test-replacement"];
+
+    try {
+      testUser = await createTestUser(prisma);
+      await setupAuthenticationWithLogin(page, testUser);
+      await prisma.template.deleteMany({ where: { id: { in: ids } } });
+
+      const testCategory = await prisma.category.upsert({
+        where: { slug: "test" },
+        create: { id: "cat-test", name: "Test", slug: "test" },
+        update: {},
+      });
+      const base = {
+        overpassQuery: 'node["amenity"](area.searchArea);',
+        category: { connect: { id: testCategory.id } },
+        tags: ["amenity"],
+        isActive: true,
+      };
+      await prisma.template.create({
+        data: { ...base, id: "test-replacement", name: "Replacement Template" },
+      });
+      await prisma.template.create({
+        data: {
+          ...base,
+          id: "test-replaced",
+          name: "Replaced Template",
+          deprecatesAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          replacedBy: { connect: { id: "test-replacement" } },
+        },
+      });
+
+      await page.goto("/area/3039/dataset/test-replaced");
+
+      await expect(page).toHaveURL(/\/area\/3039\/dataset\/test-replacement$/);
+      await expect(page.locator("text=Dataset Template Not Found")).toHaveCount(0);
+    } finally {
+      await prisma.template.deleteMany({ where: { id: { in: ids } } });
+      await prisma.category.deleteMany({ where: { slug: "test" } });
+      await prisma.$disconnect();
+    }
+  });
+
   test("non-deprecated template route works normally", async ({ page }) => {
     const prisma = new PrismaClient();
 

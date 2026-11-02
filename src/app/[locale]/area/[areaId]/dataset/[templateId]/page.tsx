@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { getTranslations, getLocale } from "next-intl/server";
 import { transformDataset } from "@/lib/dataset/transform";
 import { DatasetInteractiveSection } from "@/components/dataset/dataset-interactive-section";
@@ -68,6 +69,11 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
 
   if (!template) {
     return <TemplateNotFoundError templateId={templateId} />;
+  }
+
+  // Without a replacement, a retired template still shows "not found" further down
+  if (template.deprecatesAt && template.replacedById) {
+    redirect({ href: `/area/${osmRelationId}/dataset/${template.replacedById}`, locale });
   }
 
   // Known before the dataset exists, so the wait screens can name it

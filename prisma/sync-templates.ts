@@ -8,6 +8,7 @@
  * 4. Templates past deprecation date are deleted
  * 5. The category tree is upserted; undeclared categories holding no
  *    templates are pruned (ones still holding a deprecated template stay)
+ * 6. Deprecated templates listed under `replacedBy` point to their replacement
  *
  * Run: pnpm db:sync
  */
@@ -199,8 +200,30 @@ async function main() {
     }
   }
 
+  // Pass 3: after the upserts so every new id has a row, in one transaction so redirects never see a half rewrite
+  const oldIds = Object.keys(result.replacedBy);
+  const unmatchedOldIds = await prisma.$transaction(async (tx) => {
+    await tx.template.updateMany({
+      where: { replacedById: { not: null }, id: { notIn: oldIds } },
+      data: { replacedById: null },
+    });
+    const unmatched: string[] = [];
+    for (const [oldId, newId] of Object.entries(result.replacedBy)) {
+      const { count } = await tx.template.updateMany({
+        where: { id: oldId },
+        data: { replacedById: newId },
+      });
+      if (count === 0) unmatched.push(oldId);
+    }
+    return unmatched;
+  });
+  if (unmatchedOldIds.length > 0) {
+    console.warn(`replacedBy: no template row for ${unmatchedOldIds.join(", ")}`);
+  }
+
   console.log(`Upserted ${upserted} templates from YAML`);
   console.log(`Linked ${parentsLinked} parent relationships`);
+  console.log(`Set ${oldIds.length - unmatchedOldIds.length} replacement pointers`);
 
   const { count: pruned } = await prisma.category.deleteMany({
     where: {

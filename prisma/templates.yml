@@ -485,6 +485,12 @@ filterableTags:
   basketball:       [surface, lit]
   tennis:           [surface, lit]
 
+# Replacements for removed templates (old-id: new-id).
+# The old id leaves the templates list above and deprecates as usual; its report
+# email links the replacement and its dataset URLs redirect to it. Sync fails if
+# the old id is still listed or the new id is missing or deprecated.
+replacedBy: {}
+
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
 # validated by sync (template-parser.ts) but never written to the DB. Selection

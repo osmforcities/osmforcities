@@ -628,7 +628,8 @@
     "reportMore": "{count, plural, one {# more dataset changed.} other {# more datasets changed.}}",
     "reportGoToDashboard": "Go to your dashboard",
     "reportRetiredTitle": "Removed from the catalog",
-    "reportRetiredBody": "{template} is no longer in the catalog and its page is unavailable. {date, select, soon {This dataset will be deleted soon.} other {This dataset will be deleted after {date}.}}"
+    "reportRetiredBody": "{template} is no longer in the catalog and its page is unavailable. {date, select, soon {This dataset will be deleted soon.} other {This dataset will be deleted after {date}.}}",
+    "reportReplacedBody": "{template} is no longer in the catalog. Use {replacement} instead. {date, select, soon {This dataset will be deleted soon.} other {This dataset will be deleted after {date}.}}"
   },
   "AboutPage": {
     "metaTitle": "About - OSM for Cities",
