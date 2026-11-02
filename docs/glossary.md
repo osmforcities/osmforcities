@@ -8,7 +8,11 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 **Overpass**: The query service the app asks for OpenStreetMap data. Templates are written in its language. _Avoid:_ OSM API, the database.
 
-**Template**: A named Overpass question, such as "bicycle parking" or "buildings". Applied to an Area it defines a Dataset. _Avoid:_ query, topic, layer.
+**Template**: A named Overpass question, such as "bicycle parking" or "buildings". Applied to an Area it defines a Dataset. _Avoid:_ query, layer.
+
+**Topic**: A top-level Category, such as Mobility or Health. Groups Categories on the area page. _Avoid:_ super-category, group.
+
+**Category**: A grouping of Templates under a Topic, such as Cycling under Mobility. A Template belongs to exactly one, or directly to a Topic. _Avoid:_ tag, type.
 
 **Dataset**: One Template applied to one Area: its features, stats and map. The thing people open, save and share. _Avoid:_ monitor, layer, snapshot.
 

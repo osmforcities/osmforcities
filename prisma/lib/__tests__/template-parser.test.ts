@@ -23,6 +23,7 @@ import {
   loadTemplatesI18n,
   validateDemonstrators,
   validateReplacedBy,
+  validateCategories,
 } from "../template-parser";
 
 describe("template-parser", () => {
@@ -319,6 +320,7 @@ describe("template-parser", () => {
             icon: "Bike",
           },
         },
+        categories: { transportation: { icon: "Car" } },
       };
       const result = parseTemplates(config);
       expect(result.errors).toHaveLength(0);
@@ -330,6 +332,94 @@ describe("template-parser", () => {
       );
       expect(result.templates[0].category).toBe("transportation");
     });
+
+    it("rejects a template whose category is not declared", () => {
+      const result = parseTemplates({
+        templates: { parking: { query: "amenity=parking", category: "transport" } },
+        categories: { mobility: { icon: "Car" } },
+      });
+      expect(result.errors.map((e) => e.message)).toContain(
+        'Template "parking" references undeclared category: "transport"',
+      );
+    });
+
+    it("returns the declared categories", () => {
+      const result = parseTemplates({
+        templates: { parking: { query: "amenity=parking", category: "roads" } },
+        categories: {
+          mobility: { icon: "Car" },
+          roads: { icon: "Route", parent: "mobility" },
+        },
+      });
+      expect(result.errors).toHaveLength(0);
+      expect(result.categories).toEqual([
+        { slug: "mobility", icon: "Car" },
+        { slug: "roads", icon: "Route", parent: "mobility" },
+      ]);
+    });
+  });
+
+  describe("validateCategories", () => {
+    const messages = (raw: unknown) =>
+      validateCategories(raw).errors.map((e) => e.message);
+
+    it("accepts topics with children", () => {
+      const { categories, errors } = validateCategories({
+        mobility: { icon: "Car" },
+        bus: { icon: "Bus", parent: "mobility" },
+      });
+      expect(errors).toEqual([]);
+      expect(categories).toHaveLength(2);
+    });
+
+    it("rejects an unknown parent", () => {
+      expect(messages({ bus: { icon: "Bus", parent: "transit" } })).toEqual([
+        'Category "bus" references unknown parent: "transit"',
+      ]);
+    });
+
+    it("rejects a cycle", () => {
+      expect(
+        messages({
+          a: { icon: "Car", parent: "b" },
+          b: { icon: "Car", parent: "a" },
+        }),
+      ).toEqual([
+        'Category "a" must have a topic as parent, not "b"',
+        'Category "b" must have a topic as parent, not "a"',
+      ]);
+    });
+
+    it("rejects a self parent", () => {
+      expect(messages({ a: { icon: "Car", parent: "a" } })).toEqual([
+        'Category "a" must have a topic as parent, not "a"',
+      ]);
+    });
+
+    it("rejects depth over 2", () => {
+      expect(
+        messages({
+          mobility: { icon: "Car" },
+          transit: { icon: "Bus", parent: "mobility" },
+          bus: { icon: "Bus", parent: "transit" },
+        }),
+      ).toEqual(['Category "bus" must have a topic as parent, not "transit"']);
+    });
+
+    it("rejects a malformed entry", () => {
+      expect(messages({ bus: "Bus" })).toEqual([
+        'Category "bus" must be an object with a string "icon" and an optional string "parent"',
+      ]);
+      expect(messages(["bus"])).toEqual([
+        "categories must be a map keyed by category slug",
+      ]);
+    });
+
+    it("rejects an empty parent instead of treating it as a topic", () => {
+      expect(messages({ bus: { icon: "Bus", parent: "" } })).toEqual([
+        'Category "bus" must be an object with a string "icon" and an optional string "parent"',
+      ]);
+    });
   });
 
   describe("loadTemplatesLogic", () => {
@@ -340,7 +430,7 @@ describe("template-parser", () => {
       expect(byId.get("bicycle-parking")).toEqual({
         id: "bicycle-parking",
         query: "amenity=bicycle_parking",
-        category: "transport",
+        category: "cycling",
         icon: "Bike",
         filterableTags: [
           "bicycle_parking",
@@ -352,8 +442,10 @@ describe("template-parser", () => {
       });
       // parent parsing (5th element) is still exercised by public-transit children
       expect(byId.get("bus-stops")?.parent).toBe("public-transit");
-      expect(categories.transport).toBe("Car");
-      expect(categories.agriculture).toBe("Wheat");
+      expect(categories).toMatchObject({
+        mobility: { icon: "Car" },
+        agriculture: { icon: "Wheat", parent: "nature-environment" },
+      });
     });
 
     it("attaches per-template filterableTags from the map (curated only)", () => {
@@ -399,6 +491,25 @@ describe("template-parser", () => {
       expect(first.name).toBeDefined();
       expect(first.description).toBeDefined();
       expect(first.overpassQuery).toContain("area.searchArea");
+    });
+
+    it("declares the 8 topics and puts fuel under mobility", () => {
+      const result = parseTemplates(loadTemplatesYaml("./prisma"));
+      const topics = result.categories.filter((c) => !c.parent).map((c) => c.slug);
+      expect(topics.sort()).toEqual([
+        "buildings-infrastructure",
+        "education-culture",
+        "health",
+        "leisure-sports",
+        "mobility",
+        "nature-environment",
+        "public-services",
+        "shops-services",
+      ]);
+      const slugs = result.categories.map((c) => c.slug);
+      expect(slugs).not.toContain("transport");
+      expect(slugs).not.toContain("other");
+      expect(result.templates.find((t) => t.id === "fuel")?.category).toBe("mobility");
     });
 
     it("exposes the demonstrators section keyed by template id", () => {
@@ -546,15 +657,16 @@ describe("template-parser", () => {
 
   describe("parseTemplates replacedBy", () => {
     const templates = { streets: { query: "highway=residential", category: "transport" } };
+    const categories = { transport: { icon: "bus" } };
 
     it("returns the validated map", () => {
-      const result = parseTemplates({ templates, replacedBy: { highways: "streets" } });
+      const result = parseTemplates({ templates, categories, replacedBy: { highways: "streets" } });
       expect(result.errors).toHaveLength(0);
       expect(result.replacedBy).toEqual({ highways: "streets" });
     });
 
     it("fails and returns no map on a bad pointer", () => {
-      const result = parseTemplates({ templates, replacedBy: { highways: "nope" } });
+      const result = parseTemplates({ templates, categories, replacedBy: { highways: "nope" } });
       expect(result.errors).toHaveLength(1);
       expect(result.replacedBy).toEqual({});
     });

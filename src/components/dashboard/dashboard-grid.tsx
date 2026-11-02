@@ -6,6 +6,7 @@ import { Card, CardHeader, CardFooter } from "@/components/ui/card";
 import { getTemplateIcon } from "@/lib/category-icons";
 import { resolveDatasetAreaName } from "@/lib/area-name";
 import { QuotaIndicator } from "@/components/dashboard/quota-indicator";
+import { useCategoryLabel } from "@/lib/category-label";
 
 type Dataset = {
   id: string;
@@ -42,6 +43,7 @@ type DashboardGridProps = {
  */
 export function DashboardGrid({ datasets, saveLimit }: DashboardGridProps) {
   const t = useTranslations("TabLayout");
+  const categoryLabel = useCategoryLabel();
   const locale = useLocale();
 
   if (datasets.length === 0) {
@@ -131,8 +133,8 @@ export function DashboardGrid({ datasets, saveLimit }: DashboardGridProps) {
 
               <CardFooter>
                 <div className="flex flex-wrap gap-2 w-full">
-                  <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700 capitalize">
-                    {dataset.template.category.slug}
+                  <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700">
+                    {categoryLabel(dataset.template.category.slug)}
                   </span>
                   <span
                     className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${

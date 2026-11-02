@@ -7,10 +7,8 @@ export type AreaTemplate = {
   id: string;
   name: string;
   description: string | null;
-  /** Leaf category slug — used for filtering and URL `?category=` matching. */
-  category: string;
-  /** Human-readable category name — used for display. */
-  categoryLabel: string;
+  /** Labels resolve client-side from the CategoryLabel messages. */
+  categorySlug: string;
   tags: string[];
 };
 
@@ -131,11 +129,7 @@ async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
       description: true,
       tags: true,
       category: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-        },
+        select: { slug: true },
       },
       // Only fetch the translation for the requested locale — resolveTemplateForLocale
       // picks the matching row (now the only one) and falls back to the base fields.
@@ -157,8 +151,7 @@ async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
       id: resolved.id,
       name: resolved.name,
       description: resolved.description,
-      category: t.category?.slug ?? "other",
-      categoryLabel: t.category?.name ?? "other",
+      categorySlug: t.category.slug,
       tags: resolved.tags,
     };
   });

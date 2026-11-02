@@ -168,7 +168,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-09-07T18:06:35.354Z
+ * Generated: 2026-11-01T23:13:33.297Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -186,9 +186,17 @@ export function getCategoryIcon(category: string) {
       return <Heart className="w-5 h-5" />;
     case "barriers":
       return <Square className="w-5 h-5" />;
+    case "buildings-infrastructure":
+      return <Building2 className="w-5 h-5" />;
+    case "bus":
+      return <Bus className="w-5 h-5" />;
     case "culture":
       return <Palette className="w-5 h-5" />;
+    case "cycling":
+      return <Bike className="w-5 h-5" />;
     case "education":
+      return <School className="w-5 h-5" />;
+    case "education-culture":
       return <School className="w-5 h-5" />;
     case "emergency":
       return <ShieldAlert className="w-5 h-5" />;
@@ -200,6 +208,8 @@ export function getCategoryIcon(category: string) {
       return <Utensils className="w-5 h-5" />;
     case "government":
       return <Shield className="w-5 h-5" />;
+    case "health":
+      return <Hospital className="w-5 h-5" />;
     case "healthcare":
       return <Hospital className="w-5 h-5" />;
     case "housing":
@@ -208,13 +218,29 @@ export function getCategoryIcon(category: string) {
       return <Gauge className="w-5 h-5" />;
     case "leisure":
       return <TreePine className="w-5 h-5" />;
+    case "leisure-sports":
+      return <Trophy className="w-5 h-5" />;
+    case "mobility":
+      return <Car className="w-5 h-5" />;
     case "nature":
       return <Leaf className="w-5 h-5" />;
+    case "nature-environment":
+      return <Leaf className="w-5 h-5" />;
+    case "pedestrian":
+      return <Footprints className="w-5 h-5" />;
+    case "public-services":
+      return <Shield className="w-5 h-5" />;
+    case "rail":
+      return <Train className="w-5 h-5" />;
     case "religion":
       return <Landmark className="w-5 h-5" />;
+    case "roads":
+      return <Route className="w-5 h-5" />;
     case "services":
       return <Wrench className="w-5 h-5" />;
     case "shops":
+      return <ShoppingBag className="w-5 h-5" />;
+    case "shops-services":
       return <ShoppingBag className="w-5 h-5" />;
     case "social":
       return <Users className="w-5 h-5" />;
@@ -222,8 +248,8 @@ export function getCategoryIcon(category: string) {
       return <Trophy className="w-5 h-5" />;
     case "tourism":
       return <Camera className="w-5 h-5" />;
-    case "transport":
-      return <Car className="w-5 h-5" />;
+    case "traffic":
+      return <TrafficCone className="w-5 h-5" />;
     default:
       return <MapPin className="w-5 h-5" />;
   }

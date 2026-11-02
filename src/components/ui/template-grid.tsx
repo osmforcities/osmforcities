@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { getTemplateIcon } from "@/lib/category-icons";
 import { formatRelativeTime, formatCompactNumber } from "@/lib/dataset-stats";
 import type { AreaDataType } from "@/lib/area-templates";
+import { useCategoryLabel } from "@/lib/category-label";
 import { useState, useMemo, useEffect } from "react";
 
 type DatasetGridProps = {
@@ -29,20 +30,25 @@ type StatusFilter = "all" | "featured" | "saved";
 export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridProps) {
   const t = useTranslations("AreaPage");
   const locale = useLocale();
+  const categoryLabel = useCategoryLabel();
 
   // Categories present in this template set: { slug, label, count }, sorted by label.
   const categories = useMemo(() => {
     const map = new Map<string, { slug: string; label: string; count: number }>();
     for (const tpl of templates) {
-      const entry = map.get(tpl.category);
+      const entry = map.get(tpl.categorySlug);
       if (entry) {
         entry.count += 1;
       } else {
-        map.set(tpl.category, { slug: tpl.category, label: tpl.categoryLabel, count: 1 });
+        map.set(tpl.categorySlug, {
+          slug: tpl.categorySlug,
+          label: categoryLabel(tpl.categorySlug),
+          count: 1,
+        });
       }
     }
     return [...map.values()].sort((a, b) => a.label.localeCompare(b.label));
-  }, [templates]);
+  }, [templates, categoryLabel]);
 
   const knownSlug = useMemo(
     () => new Set(categories.map((c) => c.slug)),
@@ -90,7 +96,7 @@ export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridP
       filtered = filtered.filter((tpl) => (tpl.status?.savedCount ?? 0) > 0);
     }
     if (selectedCategory !== ALL) {
-      filtered = filtered.filter((tpl) => tpl.category === selectedCategory);
+      filtered = filtered.filter((tpl) => tpl.categorySlug === selectedCategory);
     }
     const term = searchTerm.trim().toLowerCase();
     if (term) {
@@ -98,12 +104,12 @@ export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridP
         (tpl) =>
           tpl.name.toLowerCase().includes(term) ||
           tpl.description?.toLowerCase().includes(term) ||
-          tpl.categoryLabel.toLowerCase().includes(term) ||
+          categoryLabel(tpl.categorySlug).toLowerCase().includes(term) ||
           tpl.tags.some((tag) => tag.toLowerCase().includes(term))
       );
     }
     return filtered;
-  }, [templates, selectedStatus, selectedCategory, searchTerm]);
+  }, [templates, selectedStatus, selectedCategory, searchTerm, categoryLabel]);
 
   if (templates.length === 0) {
     return (
@@ -250,14 +256,14 @@ export function DatasetGrid({ templates, areaId, initialCategory }: DatasetGridP
                   <CardHeader>
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-olive-100 text-olive-600 rounded-lg">
-                        {getTemplateIcon(template.id, template.category)}
+                        {getTemplateIcon(template.id, template.categorySlug)}
                       </div>
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900 group-hover:text-olive-700">
                           {template.name}
                         </h3>
-                        <p className="text-sm text-gray-500 capitalize">
-                          {template.categoryLabel}
+                        <p className="text-sm text-gray-500">
+                          {categoryLabel(template.categorySlug)}
                         </p>
                       </div>
                       {template.status?.isFeatured && (
@@ -375,7 +381,7 @@ function CategoryItem({
           : "text-gray-700 hover:bg-gray-100"
       }`}
     >
-      <span className="truncate capitalize">{label}</span>
+      <span className="truncate">{label}</span>
       <span className={`text-xs ${active ? "text-olive-600" : "text-gray-400"}`}>
         {count}
       </span>
