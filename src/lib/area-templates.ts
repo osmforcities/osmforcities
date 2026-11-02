@@ -14,13 +14,6 @@ export type AreaTemplate = {
   tags: string[];
 };
 
-export type TopicCount = { topicSlug: string; count: number };
-
-export type CategoryGroup<T extends AreaTemplate> = {
-  categorySlug: string;
-  templates: T[];
-};
-
 export type AreaDataTypeStatus = {
   dataCount: number;
   contributors: number;
@@ -74,43 +67,6 @@ export function buildAreaDataTypes(
     }
     return a.name.localeCompare(b.name);
   });
-}
-
-/** Sorted by slug for a stable order; the UI sorts by localized label. */
-export function countTemplatesByTopic(templates: AreaTemplate[]): TopicCount[] {
-  const counts = new Map<string, number>();
-  for (const { topicSlug } of templates) {
-    counts.set(topicSlug, (counts.get(topicSlug) ?? 0) + 1);
-  }
-  return [...counts]
-    .map(([topicSlug, count]) => ({ topicSlug, count }))
-    .sort((a, b) => a.topicSlug.localeCompare(b.topicSlug));
-}
-
-/**
- * A topic's templates grouped by child category (by slug), names A to Z inside
- * each group. Direct members of the topic come last as their own group.
- */
-export function groupTopicByCategory<T extends AreaTemplate>(
-  templates: T[],
-  topicSlug: string
-): CategoryGroup<T>[] {
-  const groups = new Map<string, T[]>();
-  for (const template of templates) {
-    if (template.topicSlug !== topicSlug) continue;
-    const group = groups.get(template.categorySlug) ?? [];
-    group.push(template);
-    groups.set(template.categorySlug, group);
-  }
-  const isDirect = (slug: string) => slug === topicSlug;
-  return [...groups]
-    .sort(
-      ([a], [b]) => Number(isDirect(a)) - Number(isDirect(b)) || a.localeCompare(b)
-    )
-    .map(([categorySlug, group]) => ({
-      categorySlug,
-      templates: group.sort((a, b) => a.name.localeCompare(b.name)),
-    }));
 }
 
 /**

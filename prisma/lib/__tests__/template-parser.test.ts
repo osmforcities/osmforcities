@@ -413,6 +413,12 @@ describe("template-parser", () => {
         "categories must be a map keyed by category slug",
       ]);
     });
+
+    it("rejects an empty parent instead of treating it as a topic", () => {
+      expect(messages({ bus: { icon: "Bus", parent: "" } })).toEqual([
+        'Category "bus" must be an object with a string "icon" and an optional string "parent"',
+      ]);
+    });
   });
 
   describe("loadTemplatesLogic", () => {

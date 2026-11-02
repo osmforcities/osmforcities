@@ -554,7 +554,7 @@ export function validateCategories(raw: unknown): {
   const bySlug = new Map<string, ParsedCategory>();
   for (const [slug, def] of Object.entries(raw)) {
     const { icon, parent } = (def ?? {}) as { icon?: unknown; parent?: unknown };
-    if (typeof icon !== "string" || (parent !== undefined && typeof parent !== "string")) {
+    if (typeof icon !== "string" || (parent !== undefined && (typeof parent !== "string" || !parent))) {
       errors.push({
         field: "categories",
         message: `Category "${slug}" must be an object with a string "icon" and an optional string "parent"`,
