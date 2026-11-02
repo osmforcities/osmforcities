@@ -678,6 +678,8 @@ candidate but kept). The niche farmyard sub-values (feedlot/stockyard/poultry/da
   Munich. Even on a pedestrian path the blind/kerb a11y keys stay off: `tactile_paving` 0.6%,
   `wheelchair` 4%, `incline` 1% — that data lives on the crossing nodes, not the footway ways.
   `surface`/`smoothness` are the accessibility-quality proxies that actually sit on the way.
+  Later added `footway` first (sidewalk/crossing/traffic_island/access_aisle/link) so sidewalks
+  separate from park paths ([#517]).
 - **cycleways** — `[surface, lit, oneway, smoothness]`. Strong across cycling cities (Utrecht/
   Munich 59–89%). `segregated`/`width` too sparse to keep.
 
@@ -693,14 +695,18 @@ candidate but kept). The niche farmyard sub-values (feedlot/stockyard/poultry/da
   structurally different ways: physically **segregated** corridors as `highway=busway` (separate
   ways — Rio 1185, SP corredores 572) and **on-street** lanes as `busway:*=lane` attributes on the
   road (Bogotá Transmilenio, SP faixas). `busways` = `highway=busway` (`[surface]`); `bus-lanes` =
-  `busway=lane;busway:left=lane;busway:right=lane;busway:both=lane`, age-view only because its
-  color-by would be fragmented across those sibling keys. Keeping them separate avoids mixing
+  `busway=lane;busway:left=lane;busway:right=lane;busway:both=lane` plus the newer
+  `lanes:bus=*` / `bus:lanes=*` keys (and their `:forward`/`:backward` forms) that the wiki
+  prefers over the deprecated `busway=*` ([#517]), age-view only because its color-by would be
+  fragmented across those sibling keys. Keeping them separate avoids mixing
   separate-way corridors with attributed road geometry in one legend.
 - **traffic-calming** — `[traffic_calming]`. The value *is* the type (hump/bump/table/island/dip),
   a textbook color-by. Sparse in Germany (Munich 152) but heavily mapped in Latin America
   (São Paulo 7k+ "lombadas") — demonstrate there.
 - **speed-cameras — query fixed.** The template queried `man_made=speed_camera` (≈0 features
-  everywhere); the feature is actually tagged `highway=speed_camera` (São Paulo 878). Union both.
+  everywhere); the feature is actually tagged `highway=speed_camera` (São Paulo 878). The wiki
+  lists `man_made=speed_camera` as a tagging mistake, so the query is `highway=speed_camera` only
+  ([#517]).
   `[maxspeed]` is the enforced-limit color-by, 97% covered. **Lesson: confirm the query tag itself
   matches real features before tuning — a near-empty dataset is often a wrong selector, not a
   missing city.**
@@ -713,6 +719,20 @@ sit on the sibling road or crossing node, not the queried element.
 > `transportation` / `transport_infrastructure` / `traffic` split was consolidated — see the
 > `categories:` map). Merging categories is YAML-only; emptied categories drop out of the browse
 > UI, which lists only categories that have templates.
+
+### OSM wiki alignment, roads and buildings ([#517])
+
+- **roads** — adds `highway=motorway;highway=trunk`, completing the wiki's 7-tag "Roads" group
+  so urban expressways count.
+- **houses** — adds `building=bungalow`. `building=residential` stays out on purpose: it is the
+  generic fallback and covers apartment blocks too.
+- **farm-auxiliary** absorbs `building=agricultural` (a rare synonym, 32K uses vs 2.4M). The
+  `agricultural-buildings` template is removed, `replacedBy: farm-auxiliary`.
+- **livestock-buildings** — broadened to `building=livestock;cowshed;stable;sty;barn`, since
+  `building=livestock` alone is the fallback when the precise value is unknown (8.6K uses). The
+  specific templates stay.
+- **bridges** is renamed "Bridge Outlines": `man_made=bridge` is the optional outline, not the
+  `bridge=yes` way, so it counts drawn outlines, not bridges.
 
 ### Civic, retail & remaining domains (batch)
 
@@ -786,3 +806,5 @@ agriculture, infrastructure, housing, environment).
 
 - Unknown template id under `filterableTags` — a typo there only leaves that one template
   age-view-only, so it never blocks the seed/deploy.
+
+[#517]: https://github.com/osmforcities/osmforcities/issues/517

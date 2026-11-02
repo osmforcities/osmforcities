@@ -168,7 +168,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-11-01T23:13:33.297Z
+ * Generated: 2026-11-02T20:25:05.277Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -264,8 +264,6 @@ export function getCategoryIcon(category: string) {
  */
 export function getTemplateIcon(templateId: string, category: string) {
   switch (templateId.toLowerCase()) {
-    case "agricultural-buildings":
-      return <Warehouse className="w-5 h-5" />;
     case "agricultural-tanks":
       return <Cylinder className="w-5 h-5" />;
     case "alpine-huts":

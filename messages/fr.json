@@ -770,6 +770,7 @@
     "access": "Accès",
     "fee": "Payant",
     "crossing": "Passage",
+    "footway": "Type de cheminement piéton",
     "crossing:markings": "Marquage",
     "station": "Type de station",
     "wheelchair": "Accès fauteuil roulant",
@@ -1095,6 +1096,13 @@
     },
     "oneway": {
       "-1": "Sens inverse"
+    },
+    "footway": {
+      "sidewalk": "Trottoir",
+      "crossing": "Traversée",
+      "traffic_island": "Îlot",
+      "access_aisle": "Allée d'accès",
+      "link": "Liaison"
     },
     "sidewalk": {
       "both": "Des deux côtés",

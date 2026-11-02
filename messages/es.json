@@ -779,6 +779,7 @@
     "access": "Acceso",
     "fee": "Tarifa",
     "crossing": "Cruce",
+    "footway": "Tipo de vía peatonal",
     "crossing:markings": "Marcas viales",
     "station": "Tipo de estación",
     "wheelchair": "Acceso para silla de ruedas",
@@ -1104,6 +1105,13 @@
     },
     "oneway": {
       "-1": "Sentido inverso"
+    },
+    "footway": {
+      "sidewalk": "Acera",
+      "crossing": "Cruce",
+      "traffic_island": "Isleta",
+      "access_aisle": "Pasillo de acceso",
+      "link": "Conexión"
     },
     "sidewalk": {
       "both": "Ambos lados",

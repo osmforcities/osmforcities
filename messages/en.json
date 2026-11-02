@@ -770,6 +770,7 @@
     "access": "Access",
     "fee": "Fee",
     "crossing": "Crossing",
+    "footway": "Footway type",
     "crossing:markings": "Markings",
     "station": "Station type",
     "wheelchair": "Wheelchair access",
@@ -1095,6 +1096,13 @@
     },
     "oneway": {
       "-1": "Reverse direction"
+    },
+    "footway": {
+      "sidewalk": "Sidewalk",
+      "crossing": "Crossing",
+      "traffic_island": "Traffic island",
+      "access_aisle": "Access aisle",
+      "link": "Link"
     },
     "sidewalk": {
       "both": "Both sides",

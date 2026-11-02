@@ -2357,17 +2357,17 @@ templates:
       de: Alle Gebäudegrundrisse
   footways:
     name:
-      en: Footways
+      en: Footways & Paths
       pt: Calçadas e trilhas
       es: Aceras y senderos
       fr: Trottoirs et sentiers
-      de: Fußwege
+      de: Fußwege und Pfade
     desc:
-      en: Footways
+      en: Footways & Paths
       pt: Calçadas e trilhas
       es: Aceras y senderos
       fr: Trottoirs et sentiers
-      de: Fußwege
+      de: Fußwege und Pfade
   cycleways:
     name:
       en: Cycleways
@@ -2383,17 +2383,17 @@ templates:
       de: Radwege
   bridges:
     name:
-      en: Bridges
-      pt: Pontes
-      es: Puentes
-      fr: Ponts
-      de: Brücken
+      en: Bridge Outlines
+      pt: Contornos de pontes
+      es: Contornos de puentes
+      fr: Contours de ponts
+      de: Brückenumrisse
     desc:
-      en: Bridges
-      pt: Pontes
-      es: Puentes
-      fr: Ponts
-      de: Brücken
+      en: Bridge outlines drawn by mappers, mostly for large bridges
+      pt: Contornos de pontes desenhados por mapeadores, principalmente de pontes grandes
+      es: Contornos de puentes dibujados por mapeadores, sobre todo de puentes grandes
+      fr: Contours de ponts dessinés par les contributeurs, surtout pour les grands ponts
+      de: Von Mappern gezeichnete Brückenumrisse, meist bei großen Brücken
   tunnels:
     name:
       en: Tunnels
@@ -2402,11 +2402,11 @@ templates:
       fr: Tunnels
       de: Tunnel
     desc:
-      en: Tunnels
-      pt: Túneis
-      es: Túneles
-      fr: Tunnels
-      de: Tunnel
+      en: Tunnel sections of roads and railways, plus passages through buildings
+      pt: Trechos em túnel de vias e ferrovias, além de passagens sob edificações
+      es: Tramos en túnel de vías y ferrocarriles, además de pasajes bajo edificios
+      fr: Sections en tunnel de routes et de voies ferrées, ainsi que passages sous bâtiments
+      de: Tunnelabschnitte von Straßen und Bahnstrecken sowie Durchfahrten durch Gebäude
   crossings:
     name:
       en: Crossings
@@ -2435,13 +2435,13 @@ templates:
       de: Verkehrszeichen
   traffic-lights:
     name:
-      en: Traffic Lights
+      en: Traffic Signals
       pt: Semáforos
       es: Semáforos
       fr: Feux de circulation
       de: Ampeln
     desc:
-      en: Traffic Lights
+      en: Traffic Signals
       pt: Semáforos
       es: Semáforos
       fr: Feux de circulation
@@ -2474,16 +2474,16 @@ templates:
       de: Verkehrsberuhigung
   apartments:
     name:
-      en: Apartments
-      pt: Apartamentos
-      es: Apartamentos
-      fr: Appartements
+      en: Apartment Buildings
+      pt: Prédios de apartamentos
+      es: Edificios de apartamentos
+      fr: Immeubles d'habitation
       de: Mehrfamilienhäuser
     desc:
-      en: Apartments
-      pt: Apartamentos
-      es: Apartamentos
-      fr: Appartements
+      en: Apartment Buildings
+      pt: Prédios de apartamentos
+      es: Edificios de apartamentos
+      fr: Immeubles d'habitation
       de: Mehrfamilienhäuser
   houses:
     name:
@@ -2927,31 +2927,18 @@ templates:
       es: Graneros
       fr: Granges
       de: Scheunen
-  agricultural-buildings:
-    name:
-      en: Agricultural Buildings
-      pt: Construções agrícolas
-      es: Edificios agrícolas
-      fr: Bâtiments agricoles
-      de: Landwirtschaftliche Gebäude
-    desc:
-      en: Agricultural Buildings
-      pt: Construções agrícolas
-      es: Edificios agrícolas
-      fr: Bâtiments agricoles
-      de: Landwirtschaftliche Gebäude
   farm-auxiliary:
     name:
-      en: Farm Auxiliary
-      pt: Instalações auxiliares de fazenda
-      es: Instalaciones auxiliares de granja
-      fr: Installations agricoles auxiliaires
+      en: Farm Auxiliary Buildings
+      pt: Construções auxiliares de fazenda
+      es: Edificios auxiliares de granja
+      fr: Bâtiments agricoles auxiliaires
       de: Landwirtschaftliche Nebengebäude
     desc:
-      en: Farm Auxiliary
-      pt: Instalações auxiliares de fazenda
-      es: Instalaciones auxiliares de granja
-      fr: Installations agricoles auxiliaires
+      en: Farm Auxiliary Buildings
+      pt: Construções auxiliares de fazenda
+      es: Edificios auxiliares de granja
+      fr: Bâtiments agricoles auxiliaires
       de: Landwirtschaftliche Nebengebäude
   greenhouses:
     name:
@@ -2974,11 +2961,11 @@ templates:
       fr: Bâtiments d'élevage
       de: Stallgebäude
     desc:
-      en: Livestock Buildings
-      pt: Construções para criação de animais
-      es: Edificios para ganado
-      fr: Bâtiments d'élevage
-      de: Stallgebäude
+      en: All livestock housing, including cowsheds, stables, sties and barns
+      pt: Todas as construções para animais, incluindo estábulos, cavalariças, chiqueiros e celeiros
+      es: Todos los edificios para ganado, incluidos establos, caballerizas, porquerizas y graneros
+      fr: Tous les bâtiments d'élevage, y compris étables, écuries, porcheries et granges
+      de: Alle Stallgebäude, einschließlich Kuhställen, Pferdeställen, Schweineställen und Scheunen
   cowsheds:
     name:
       en: Cowsheds
@@ -2994,13 +2981,13 @@ templates:
       de: Kuhställe
   pig-sties:
     name:
-      en: Pig Sties
+      en: Pigsties
       pt: Chiqueiros
       es: Porquerizas
       fr: Porcheries
       de: Schweineställe
     desc:
-      en: Pig Sties
+      en: Pigsties
       pt: Chiqueiros
       es: Porquerizas
       fr: Porcheries
