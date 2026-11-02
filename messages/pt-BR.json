@@ -349,7 +349,7 @@
     "error": "Erro",
     "noResults": "Nenhum Resultado",
     "noResultsDescription": "A consulta não retornou resultados. Isso pode significar:",
-    "noFeaturesMatch": "Nenhum recurso corresponde aos critérios nesta área",
+    "noFeaturesMatch": "Nenhum elemento corresponde aos critérios nesta área",
     "areaNoAmenities": "A área pode não ter as amenidades especificadas",
     "queryNeedsAdjustment": "A consulta pode precisar de ajustes",
     "testQuery": "Testar Consulta",
