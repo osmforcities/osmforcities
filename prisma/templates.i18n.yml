@@ -2390,10 +2390,10 @@ templates:
       de: Brückenumrisse
     desc:
       en: Bridge outlines drawn by mappers, mostly for large bridges
-      pt: Contornos de pontes desenhados por mapeadores, principalmente de pontes grandes
-      es: Contornos de puentes dibujados por mapeadores, sobre todo de puentes grandes
-      fr: Contours de ponts dessinés par les contributeurs, surtout pour les grands ponts
-      de: Von Mappern gezeichnete Brückenumrisse, meist bei großen Brücken
+      pt: Contornos desenhados de pontes, sobretudo das grandes
+      es: Contornos dibujados de puentes, sobre todo los grandes
+      fr: Contours dessinés des ponts, surtout les plus grands
+      de: Gezeichnete Brückenumrisse, meist großer Brücken
   tunnels:
     name:
       en: Tunnels
@@ -2402,11 +2402,11 @@ templates:
       fr: Tunnels
       de: Tunnel
     desc:
-      en: Tunnel sections of roads and railways, plus passages through buildings
-      pt: Trechos em túnel de vias e ferrovias, além de passagens sob edificações
-      es: Tramos en túnel de vías y ferrocarriles, además de pasajes bajo edificios
-      fr: Sections en tunnel de routes et de voies ferrées, ainsi que passages sous bâtiments
-      de: Tunnelabschnitte von Straßen und Bahnstrecken sowie Durchfahrten durch Gebäude
+      en: Road and rail tunnels, plus passages through buildings
+      pt: Túneis de vias e ferrovias e passagens sob edificações
+      es: Túneles viales y ferroviarios y pasajes bajo edificios
+      fr: Tunnels routiers et ferroviaires, passages sous bâtiments
+      de: Straßen- und Bahntunnel sowie Gebäudedurchfahrten
   crossings:
     name:
       en: Crossings
@@ -2483,7 +2483,7 @@ templates:
       en: Buildings with several homes, such as apartment blocks
       pt: Edificações com várias moradias, como prédios residenciais
       es: Edificios con varias viviendas, como bloques de apartamentos
-      fr: Bâtiments à plusieurs logements, comme les immeubles résidentiels
+      fr: Immeubles et autres bâtiments à plusieurs logements
       de: Gebäude mit mehreren Wohnungen, etwa Wohnblöcke
   houses:
     name:
@@ -2935,11 +2935,11 @@ templates:
       fr: Bâtiments agricoles auxiliaires
       de: Landwirtschaftliche Nebengebäude
     desc:
-      en: Farm buildings that are not homes, such as sheds and workshops
-      pt: Construções de fazenda que não são moradias, como galpões e oficinas
-      es: Edificios de granja que no son viviendas, como cobertizos y talleres
-      fr: Bâtiments de ferme non habités, comme les hangars et les ateliers
-      de: Landwirtschaftliche Gebäude ohne Wohnnutzung, etwa Schuppen und Werkstätten
+      en: Sheds, workshops and other non-residential farm buildings
+      pt: Galpões, oficinas e outras construções de fazenda
+      es: Cobertizos, talleres y otras construcciones de granja
+      fr: Hangars, ateliers et autres bâtiments de ferme
+      de: Schuppen, Werkstätten und andere Nebengebäude auf Höfen
   greenhouses:
     name:
       en: Greenhouses
@@ -2961,11 +2961,11 @@ templates:
       fr: Bâtiments d'élevage
       de: Stallgebäude
     desc:
-      en: All livestock housing, including cowsheds, stables, sties and barns
-      pt: Todas as construções para animais, incluindo estábulos, cavalariças, chiqueiros e celeiros
-      es: Todos los edificios para ganado, incluidos establos, caballerizas, porquerizas y graneros
-      fr: Tous les bâtiments d'élevage, y compris étables, écuries, porcheries et granges
-      de: Alle Stallgebäude, einschließlich Kuhställen, Pferdeställen, Schweineställen und Scheunen
+      en: Cowsheds, stables, sties, barns and other animal housing
+      pt: Estábulos, cavalariças, chiqueiros, celeiros e similares
+      es: Establos, caballerizas, porquerizas, graneros y similares
+      fr: Étables, écuries, porcheries, granges et autres abris
+      de: Kuhställe, Pferdeställe, Schweineställe und Scheunen
   cowsheds:
     name:
       en: Cowsheds
