@@ -470,7 +470,7 @@ describe("template-parser", () => {
       const config = loadTemplatesI18n("./prisma");
       expect(config.templates["bicycle-parking"]).toBeDefined();
       expect(config.templates["bicycle-parking"].name.en).toBe(
-        "Bicycle Parking",
+        "Bicycle parking",
       );
       expect(config.templates["bicycle-parking"].desc.en).toBeDefined();
       expect(config.templates["bicycle-parking"].name.pt).toBeDefined();

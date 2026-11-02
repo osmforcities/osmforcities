@@ -12,7 +12,7 @@ How code in this repo should be written. Reviewers (human and agent) check chang
 
 - Changing an existing English string updates every locale in the same PR. A stale translation is worse than a missing one.
 - Accessible names (`aria-label`, alt text) and plain-text email parts go through i18n like visible text.
-- One term per glossary concept, per locale. Dataset: es _conjunto de datos_, pt-BR _conjunto de dados_, fr _jeu de données_, de _Datensatz_. Template: _plantilla_, _modelo_, _modèle_, _Vorlage_. Area: _área_, _área_, _zone_, _Gebiet_. Save: _guardar_, _salvar_, _enregistrer_, _speichern_.
+- One term per glossary concept, per locale. Dataset: es _conjunto de datos_, pt-BR _conjunto de dados_, fr _jeu de données_, de _Datensatz_. Template: _plantilla_, _modelo_, _modèle_, _Vorlage_. Area: _área_, _área_, _zone_, _Gebiet_. Save: _guardar_, _salvar_, _enregistrer_, _speichern_. Feature: _elemento_, _elemento_, _élément_, _Objekt_.
 - One address form per locale: es _tú_, pt-BR _você_, fr _vous_, de _du_.
 - Spanish is Latin American neutral, Portuguese is Brazilian. No regional slang, no English left untranslated. Run `pnpm i18n:review` after changing translations.
 - English headings, buttons and labels use sentence case. Other locales never copy English title case.
