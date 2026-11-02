@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { Dataset } from "@/schemas/dataset";
 import { Link } from "@/i18n/navigation";
+import { useCategoryLabel } from "@/lib/category-label";
 
 type CategoryFacetProps = {
   dataset: Dataset;
@@ -20,6 +21,7 @@ const chipClasses =
  */
 export function CategoryFacet({ dataset, areaName }: CategoryFacetProps) {
   const t = useTranslations("DatasetPage");
+  const categoryLabel = useCategoryLabel();
   const category = dataset.template.category;
 
   if (!category) {
@@ -30,12 +32,12 @@ export function CategoryFacet({ dataset, areaName }: CategoryFacetProps) {
     <Link
       href={`/area/${dataset.area.id}?category=${encodeURIComponent(category.slug)}`}
       aria-label={t("categoryFacetLabel", {
-        category: category.name,
+        category: categoryLabel(category.slug),
         area: areaName,
       })}
       className={`${chipClasses} transition-colors hover:border-olive-200 hover:bg-olive-100 hover:text-olive-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive-500`}
     >
-      {category.name}
+      {categoryLabel(category.slug)}
     </Link>
   );
 }

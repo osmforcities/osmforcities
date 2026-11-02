@@ -1,12 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { buildAreaDataTypes, type AreaTemplate, type CreatedDatasetStatus } from "../area-templates";
+import {
+  buildAreaDataTypes,
+  type AreaTemplate,
+  type CreatedDatasetStatus,
+} from "../area-templates";
 
-const tpl = (id: string, name: string, category = "transport"): AreaTemplate => ({
+const tpl = (id: string, name: string, categorySlug = "bus"): AreaTemplate => ({
   id,
   name,
   description: null,
-  category,
-  categoryLabel: category,
+  categorySlug,
   tags: [],
 });
 

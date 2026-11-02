@@ -41,11 +41,11 @@ async function getTemplateHierarchy(locale: string) {
     .map((t) => ({
       id: t.id,
       name: pickName(t, locale),
-      category: t.category?.slug ?? "other",
+      category: t.category.slug,
       children: t.children.map((c) => ({
         id: c.id,
         name: pickName(c, locale),
-        category: c.category?.slug ?? "other",
+        category: c.category.slug,
       })),
     }))
     .filter((r) => r.children.length > 0);
