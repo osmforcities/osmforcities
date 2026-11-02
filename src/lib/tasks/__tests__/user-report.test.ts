@@ -179,7 +179,7 @@ describe("user-report email generation", () => {
     expect(result?.emailContent.subject).toBe("1 conjunto de dados mudou na última semana");
     expect(result?.emailContent.text).toContain(`Escolas [${datasetUrl("pt-BR")}]`);
     expect(result?.emailContent.text).toContain("Última edição em 16 de out.");
-    expect(result?.emailContent.text).toContain("1.284 feições\n7 mapeadores");
+    expect(result?.emailContent.text).toContain("1.284 elementos\n7 mapeadores");
   });
 
   it("uses the localized area name", async () => {
