@@ -23,6 +23,7 @@ import {
   loadTemplatesI18n,
   validateDemonstrators,
   validateReplacedBy,
+  validateCommonTemplates,
   validateCategories,
 } from "../template-parser";
 
@@ -678,5 +679,71 @@ describe("template-parser", () => {
       expect(result.errors).toHaveLength(1);
       expect(result.replacedBy).toEqual({});
     });
+  });
+  describe("validateCommonTemplates", () => {
+    const active = new Set(["bus-stops", "schools"]);
+
+    it("returns the ids in YAML order", () => {
+      expect(validateCommonTemplates(["schools", "bus-stops"], active)).toEqual({
+        commonTemplates: ["schools", "bus-stops"],
+        errors: [],
+      });
+    });
+
+    it("accepts an absent section", () => {
+      expect(validateCommonTemplates(undefined, active)).toEqual({
+        commonTemplates: [],
+        errors: [],
+      });
+    });
+
+    it("errors on a non-list root", () => {
+      const { errors } = validateCommonTemplates({ "bus-stops": 1 }, active);
+      expect(errors).toHaveLength(1);
+      expect(errors[0].message).toContain("list of template ids");
+    });
+
+    it("errors on a missing or deprecated id and returns no list", () => {
+      const result = validateCommonTemplates(["bus-stops", "trees"], active);
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].message).toContain('"trees" is not an active template');
+      expect(result.commonTemplates).toEqual([]);
+    });
+
+    it("errors on a duplicate id", () => {
+      const { errors } = validateCommonTemplates(["schools", "schools"], active);
+      expect(errors).toHaveLength(1);
+      expect(errors[0].message).toContain('"schools" is listed twice');
+    });
+  });
+
+  describe("parseTemplates commonTemplates", () => {
+    const templates = { streets: { query: "highway=residential", category: "transport" } };
+    const categories = { transport: { icon: "bus" } };
+
+    it("returns the validated list", () => {
+      const result = parseTemplates({ templates, categories, commonTemplates: ["streets"] });
+      expect(result.errors).toHaveLength(0);
+      expect(result.commonTemplates).toEqual(["streets"]);
+    });
+
+    it("fails on an unknown id", () => {
+      const result = parseTemplates({ templates, categories, commonTemplates: ["nope"] });
+      expect(result.errors).toHaveLength(1);
+    });
+  });
+
+  it("templates.yml lists valid common templates", () => {
+    const result = parseTemplates(loadTemplatesYaml("./prisma"));
+    expect(result.errors).toEqual([]);
+    expect(result.commonTemplates).toEqual([
+      "bus-stops",
+      "schools",
+      "clinics",
+      "pharmacies",
+      "buildings",
+      "footways",
+      "cycleways",
+    ]);
   });
 });

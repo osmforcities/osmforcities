@@ -62,6 +62,7 @@ export interface LogicConfig {
   demonstrators?: unknown;
   // Raw for the same reason, see validateReplacedBy
   replacedBy?: unknown;
+  commonTemplates?: unknown;
 }
 
 /**
@@ -123,6 +124,7 @@ export interface ParseResult {
   warnings: string[];
   /** Empty when the section has errors */
   replacedBy: Record<string, string>;
+  commonTemplates: string[];
 }
 
 // Regex for validating key=value format (including composite queries)
@@ -345,6 +347,7 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
   categories: unknown;
   demonstrators: unknown;
   replacedBy: unknown;
+  commonTemplates: unknown;
 } {
   const filePath = join(basePath, LOGIC_FILE);
   try {
@@ -355,6 +358,7 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
       filterableTags?: Record<string, unknown>;
       demonstrators?: unknown;
       replacedBy?: unknown;
+      commonTemplates?: unknown;
     };
 
     if (!config?.templates || !Array.isArray(config.templates)) {
@@ -420,6 +424,7 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
       categories: config.categories ?? {},
       demonstrators: config.demonstrators ?? {},
       replacedBy: config.replacedBy ?? {},
+      commonTemplates: config.commonTemplates,
     };
   } catch (error) {
     if (error instanceof Error) {
@@ -465,7 +470,7 @@ export function loadTemplatesI18n(
 export function loadTemplatesYaml(
   basePath: string = DEFAULT_PRISMA,
 ): LogicConfig {
-  const { entries, categories, demonstrators, replacedBy } =
+  const { entries, categories, demonstrators, replacedBy, commonTemplates } =
     loadTemplatesLogic(basePath);
   const templates: Record<string, TemplateLogic> = {};
   for (const entry of entries) {
@@ -477,7 +482,7 @@ export function loadTemplatesYaml(
       filterableTags: entry.filterableTags,
     };
   }
-  return { templates, categories, demonstrators, replacedBy };
+  return { templates, categories, demonstrators, replacedBy, commonTemplates };
 }
 
 /**
@@ -576,6 +581,44 @@ export function validateReplacedBy(
 
   // All or nothing, so no caller ever applies part of a broken section
   return { replacedBy: errors.length === 0 ? map : {}, errors };
+}
+
+export function validateCommonTemplates(
+  commonTemplates: unknown,
+  activeIds: Set<string>,
+): { commonTemplates: string[]; errors: ValidationError[] } {
+  const errors: ValidationError[] = [];
+  if (commonTemplates === undefined || commonTemplates === null) {
+    return { commonTemplates: [], errors };
+  }
+  if (!Array.isArray(commonTemplates)) {
+    errors.push({
+      field: "commonTemplates",
+      message: "commonTemplates must be a list of template ids",
+    });
+    return { commonTemplates: [], errors };
+  }
+
+  const seen = new Set<string>();
+  for (const id of commonTemplates) {
+    if (typeof id !== "string" || !activeIds.has(id)) {
+      errors.push({
+        field: "commonTemplates",
+        message: `commonTemplates: "${String(id)}" is not an active template`,
+      });
+    } else if (seen.has(id)) {
+      errors.push({
+        field: "commonTemplates",
+        message: `commonTemplates: "${id}" is listed twice`,
+      });
+    }
+    seen.add(String(id));
+  }
+
+  return {
+    commonTemplates: errors.length === 0 ? (commonTemplates as string[]) : [],
+    errors,
+  };
 }
 
 /**
@@ -697,6 +740,12 @@ export function parseTemplates(config: LogicConfig): ParseResult {
   );
   errors.push(...replacedByErrors);
 
+  const { commonTemplates, errors: commonErrors } = validateCommonTemplates(
+    config.commonTemplates,
+    parsedIds,
+  );
+  errors.push(...commonErrors);
+
   const { categories, errors: categoryErrors } = validateCategories(
     config.categories ?? {},
   );
@@ -711,7 +760,7 @@ export function parseTemplates(config: LogicConfig): ParseResult {
     }
   }
 
-  return { templates, categories, errors, warnings, replacedBy };
+  return { templates, categories, errors, warnings, replacedBy, commonTemplates };
 }
 
 /**

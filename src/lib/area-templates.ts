@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
 import { mapAppLocaleToDb, resolveTemplateForLocale } from "@/lib/template-locale";
@@ -9,8 +10,75 @@ export type AreaTemplate = {
   description: string | null;
   /** Labels resolve client-side from the CategoryLabel messages. */
   categorySlug: string;
+  /** Equals categorySlug for templates filed directly under a topic. */
+  topicSlug: string;
   tags: string[];
+  commonRank: number | null;
 };
+
+export type TopicCount = { topicSlug: string; count: number };
+
+export type CategoryGroup<T extends AreaTemplate> = {
+  categorySlug: string;
+  templates: T[];
+};
+
+export function listCommonTemplates<T extends AreaTemplate>(templates: T[]): T[] {
+  return templates
+    .filter((template) => template.commonRank !== null)
+    .sort((a, b) => a.commonRank! - b.commonRank!);
+}
+
+/** Sorted by slug for a stable order; the UI sorts by localized label. */
+export function countTemplatesByTopic(templates: AreaTemplate[]): TopicCount[] {
+  const counts = new Map<string, number>();
+  for (const { topicSlug } of templates) {
+    counts.set(topicSlug, (counts.get(topicSlug) ?? 0) + 1);
+  }
+  return [...counts]
+    .map(([topicSlug, count]) => ({ topicSlug, count }))
+    .sort((a, b) => a.topicSlug.localeCompare(b.topicSlug));
+}
+
+/** Direct members of the topic come last, as the "Other" group. */
+export function groupTopicByCategory<T extends AreaTemplate>(
+  templates: T[],
+  topicSlug: string
+): CategoryGroup<T>[] {
+  const groups = new Map<string, T[]>();
+  for (const template of templates) {
+    if (template.topicSlug !== topicSlug) continue;
+    const group = groups.get(template.categorySlug) ?? [];
+    group.push(template);
+    groups.set(template.categorySlug, group);
+  }
+  const isDirect = (categorySlug: string) => categorySlug === topicSlug;
+  return [...groups]
+    .sort(([a], [b]) => Number(isDirect(a)) - Number(isDirect(b)) || a.localeCompare(b))
+    .map(([categorySlug, group]) => ({
+      categorySlug,
+      templates: group.sort((a, b) => a.name.localeCompare(b.name)),
+    }));
+}
+
+export function findTopicOfCategory(
+  templates: AreaTemplate[],
+  categorySlug: string
+): string | undefined {
+  return templates.find(
+    (template) =>
+      template.categorySlug === categorySlug || template.topicSlug === categorySlug
+  )?.topicSlug;
+}
+
+export function matchesSearch(template: AreaTemplate, query: string): boolean {
+  const term = query.trim().toLowerCase();
+  return (
+    template.name.toLowerCase().includes(term) ||
+    (template.description?.toLowerCase().includes(term) ?? false) ||
+    template.tags.some((tag) => tag.toLowerCase().includes(term))
+  );
+}
 
 export type AreaDataTypeStatus = {
   dataCount: number;
@@ -103,18 +171,18 @@ export async function getAreaCreatedDatasets(
 
 /**
  * All active data types for an area, each carrying its dataset status when one
- * exists, ordered so created/featured/saved data surfaces first.
+ * exists, ordered so created/featured/saved data surfaces first. Request-scoped
+ * cache: the area layout and its page both call it.
  */
-export async function getAreaDataTypes(
-  areaId: number,
-  locale: string
-): Promise<AreaDataType[]> {
-  const [templates, datasets] = await Promise.all([
-    getActiveTemplates(locale),
-    getAreaCreatedDatasets(areaId),
-  ]);
-  return buildAreaDataTypes(templates, datasets);
-}
+export const getAreaDataTypes = cache(
+  async (areaId: number, locale: string): Promise<AreaDataType[]> => {
+    const [templates, datasets] = await Promise.all([
+      getActiveTemplates(locale),
+      getAreaCreatedDatasets(areaId),
+    ]);
+    return buildAreaDataTypes(templates, datasets);
+  }
+);
 
 async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
   const dbLocale = mapAppLocaleToDb(locale);
@@ -128,8 +196,9 @@ async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
       name: true,
       description: true,
       tags: true,
+      commonRank: true,
       category: {
-        select: { slug: true },
+        select: { slug: true, parent: { select: { slug: true } } },
       },
       // Only fetch the translation for the requested locale — resolveTemplateForLocale
       // picks the matching row (now the only one) and falls back to the base fields.
@@ -152,7 +221,9 @@ async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
       name: resolved.name,
       description: resolved.description,
       categorySlug: t.category.slug,
+      topicSlug: t.category.parent?.slug ?? t.category.slug,
       tags: resolved.tags,
+      commonRank: t.commonRank,
     };
   });
 }
