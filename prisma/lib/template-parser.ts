@@ -561,7 +561,7 @@ export function validateCategories(raw: unknown): {
       });
       continue;
     }
-    bySlug.set(slug, parent ? { slug, icon, parent } : { slug, icon });
+    bySlug.set(slug, { slug, icon, parent });
   }
 
   for (const category of bySlug.values()) {

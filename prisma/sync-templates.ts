@@ -213,29 +213,28 @@ async function main() {
 }
 
 /**
- * Upsert the category tree and return slug -> id. Two passes so a parent
- * exists before a child points at it. `name` is only set on create: labels
- * come from the CategoryLabel messages, and rewriting legacy names could
- * collide with the unique index.
+ * Upsert the category tree and return slug -> id. Topics go first so a child's
+ * parent id is known. `name` is only set on create: labels come from the
+ * CategoryLabel messages, and rewriting legacy names could collide with the
+ * unique index.
  */
 async function syncCategories(
   categories: ParsedCategory[],
 ): Promise<Map<string, string>> {
   const ids = new Map<string, string>();
-  for (const { slug } of categories) {
+  const topicsFirst = [...categories].sort(
+    (a, b) => Number(!!a.parent) - Number(!!b.parent),
+  );
+  for (const { slug, parent } of topicsFirst) {
+    // parseTemplates guarantees a parent is a topic, so it is already in ids
+    const parentId = parent ? ids.get(parent)! : null;
     const { id } = await prisma.category.upsert({
       where: { slug },
-      update: {},
-      create: { slug, name: slug },
+      update: { parentId },
+      create: { slug, name: slug, parentId },
       select: { id: true },
     });
     ids.set(slug, id);
-  }
-  for (const { slug, parent } of categories) {
-    await prisma.category.update({
-      where: { slug },
-      data: { parentId: parent ? ids.get(parent)! : null },
-    });
   }
   console.log(`Synced ${categories.length} categories`);
   return ids;

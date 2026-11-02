@@ -26,7 +26,7 @@ async function getTemplates(locale: string) {
     const resolved = resolveTemplateForLocale(t, locale);
     return {
       ...resolved,
-      category: t.category?.slug ?? "other",
+      category: t.category.slug,
       _count: t._count,
     };
   });
