@@ -208,12 +208,12 @@
     "unsaveTooltip": "Aus den gespeicherten Datensätzen entfernen",
     "saveLimitReached": "Speicherlimit erreicht",
     "saveLimitMessage": "Du kannst bis zu {limit, number} Datensätze speichern. Entferne zuerst einen aus deinem Dashboard. <link>Zum Dashboard</link>.",
-    "featured": "Hervorgehoben",
-    "featuredTooltip": "Dies ist ein hervorgehobener Datensatz",
-    "feature": "Hervorheben",
-    "unfeature": "Nicht mehr hervorheben",
-    "featureTitle": "Diesen Datensatz auf der Startseite hervorheben",
-    "unfeatureTitle": "Hervorhebung entfernen",
+    "featured": "Empfohlen",
+    "featuredTooltip": "Dies ist ein empfohlener Datensatz",
+    "feature": "Empfehlen",
+    "unfeature": "Nicht mehr empfehlen",
+    "featureTitle": "Diesen Datensatz auf der Startseite empfehlen",
+    "unfeatureTitle": "Empfehlung entfernen",
     "featureError": "Hervorhebung konnte nicht aktualisiert werden. Versuche es erneut."
   },
   "AuthForm": {

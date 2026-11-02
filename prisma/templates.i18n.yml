@@ -123,13 +123,13 @@ templates:
       pt: Plataformas de transporte público
       es: Andenes de transporte público
       fr: Quais de transport en commun
-      de: ÖPNV-Bahnsteige
+      de: Bahn- und Bussteige
     desc:
       en: Transit Platforms
       pt: Plataformas de transporte público
       es: Andenes de transporte público
       fr: Quais de transport en commun
-      de: ÖPNV-Bahnsteige
+      de: Bahn- und Bussteige
   ferry-terminals:
     name:
       en: Ferry Terminals
@@ -180,27 +180,27 @@ templates:
       en: Tram, subway, light rail and mainline railway tracks
       pt: Trilhos de bonde, metrô, VLT e ferrovias
       es: Vías de tranvía, metro, tren ligero y ferrocarril
-      fr: Voies de tramway, métro, train léger et chemin de fer
+      fr: Voies de tramway, métro, métro léger et chemin de fer
       de: Straßenbahn-, U-Bahn-, Stadtbahn- und Eisenbahngleise
   busways:
     name:
       en: Busways
       pt: Corredores de ônibus
       es: Corredores de autobús
-      fr: Couloirs de bus
+      fr: Voies de bus en site propre
       de: Bustrassen
     desc:
       en: Dedicated bus rapid transit corridors
       pt: Corredores exclusivos de ônibus (BRT)
       es: Corredores exclusivos de autobús (BRT)
-      fr: Couloirs réservés de bus à haut niveau de service (BRT)
+      fr: Voies réservées aux bus à haut niveau de service (BHNS)
       de: Eigene Trassen für Schnellbusverkehr (BRT)
   bus-lanes:
     name:
       en: Bus Lanes
       pt: Faixas de ônibus
       es: Carriles de autobús
-      fr: Voies de bus
+      fr: Couloirs de bus
       de: Busspuren
     desc:
       en: On-street exclusive bus lanes
@@ -681,13 +681,13 @@ templates:
       en: Kindergarten
       pt: Jardins de infância
       es: Jardines de infancia
-      fr: Jardins d'enfants
+      fr: Écoles maternelles
       de: Kindergärten
     desc:
       en: Kindergarten
       pt: Jardins de infância
       es: Jardines de infancia
-      fr: Jardins d'enfants
+      fr: Écoles maternelles
       de: Kindergärten
   college:
     name:
@@ -1191,13 +1191,13 @@ templates:
       pt: Descarte de resíduos
       es: Eliminación de residuos
       fr: Élimination des déchets
-      de: Müllentsorgung
+      de: Müllcontainer
     desc:
       en: Waste Disposal
       pt: Descarte de resíduos
       es: Eliminación de residuos
       fr: Élimination des déchets
-      de: Müllentsorgung
+      de: Müllcontainer
   waste-basket:
     name:
       en: Waste Baskets
@@ -1356,15 +1356,15 @@ templates:
       de: Bekleidungsgeschäfte
   chemist:
     name:
-      en: Chemist
-      pt: Farmácia
-      es: Farmacia
+      en: Drugstores
+      pt: Drogarias e perfumarias
+      es: Perfumerías y droguerías
       fr: Drogueries
       de: Drogerien
     desc:
-      en: Chemist
-      pt: Farmácia
-      es: Farmacia
+      en: Drugstores
+      pt: Drogarias e perfumarias
+      es: Perfumerías y droguerías
       fr: Drogueries
       de: Drogerien
   fuel:
@@ -1633,13 +1633,13 @@ templates:
       pt: Piscinas
       es: Piscinas
       fr: Piscines
-      de: Schwimmbäder
+      de: Schwimmbecken
     desc:
       en: Swimming Pools
       pt: Piscinas
       es: Piscinas
       fr: Piscines
-      de: Schwimmbäder
+      de: Schwimmbecken
   sports-centres:
     name:
       en: Sports Centres
@@ -1864,13 +1864,13 @@ templates:
   grasslands:
     name:
       en: Grasslands
-      pt: Pastagens
+      pt: Campos naturais
       es: Pastizales
       fr: Prairies naturelles
       de: Grasland
     desc:
       en: Grasslands
-      pt: Pastagens
+      pt: Campos naturais
       es: Pastizales
       fr: Prairies naturelles
       de: Grasland
@@ -1928,29 +1928,29 @@ templates:
       de: Klippen
   caves:
     name:
-      en: Caves
-      pt: Cavernas
-      es: Cuevas
-      fr: Grottes
-      de: Höhlen
+      en: Cave Entrances
+      pt: Entradas de cavernas
+      es: Entradas de cuevas
+      fr: Entrées de grottes
+      de: Höhleneingänge
     desc:
-      en: Caves
-      pt: Cavernas
-      es: Cuevas
-      fr: Grottes
-      de: Höhlen
+      en: Cave Entrances
+      pt: Entradas de cavernas
+      es: Entradas de cuevas
+      fr: Entrées de grottes
+      de: Höhleneingänge
   water:
     name:
-      en: Water
-      pt: Água
-      es: Agua
-      fr: Eau
+      en: Water Bodies
+      pt: Corpos d'água
+      es: Cuerpos de agua
+      fr: Plans d'eau
       de: Gewässer
     desc:
-      en: Water
-      pt: Água
-      es: Agua
-      fr: Eau
+      en: Water Bodies
+      pt: Corpos d'água
+      es: Cuerpos de agua
+      fr: Plans d'eau
       de: Gewässer
   coastlines:
     name:
@@ -2033,13 +2033,13 @@ templates:
   scrub:
     name:
       en: Scrub
-      pt: Vegetação rasteira
+      pt: Vegetação arbustiva
       es: Matorral
       fr: Broussailles
       de: Gebüsch
     desc:
       en: Scrub
-      pt: Vegetação rasteira
+      pt: Vegetação arbustiva
       es: Matorral
       fr: Broussailles
       de: Gebüsch
@@ -2059,13 +2059,13 @@ templates:
   fell:
     name:
       en: Fell
-      pt: Colina
+      pt: Campos de altitude
       es: Monte
       fr: Pelouse alpine
       de: Fjell
     desc:
       en: Fell
-      pt: Colina
+      pt: Campos de altitude
       es: Monte
       fr: Pelouse alpine
       de: Fjell
@@ -2462,13 +2462,13 @@ templates:
   traffic-calming:
     name:
       en: Traffic Calming
-      pt: Medidas de acalmamento de tráfego
+      pt: Moderação de tráfego
       es: Pacificación de tráfico
       fr: Modération du trafic
       de: Verkehrsberuhigung
     desc:
       en: Traffic Calming
-      pt: Medidas de acalmamento de tráfego
+      pt: Moderação de tráfego
       es: Pacificación de tráfico
       fr: Modération du trafic
       de: Verkehrsberuhigung
@@ -2477,13 +2477,13 @@ templates:
       en: Apartments
       pt: Apartamentos
       es: Apartamentos
-      fr: Appartements
+      fr: Immeubles d'habitation
       de: Mehrfamilienhäuser
     desc:
       en: Apartments
       pt: Apartamentos
       es: Apartamentos
-      fr: Appartements
+      fr: Immeubles d'habitation
       de: Mehrfamilienhäuser
   houses:
     name:
@@ -2526,17 +2526,17 @@ templates:
       de: Wohnheime
   hotel-guesthouse:
     name:
-      en: Hotel Guesthouse
-      pt: Hotéis e pousadas
-      es: Hoteles y hostales
-      fr: Hôtels et maisons d'hôtes
-      de: Hotels und Pensionen
+      en: Guesthouses and Hostels
+      pt: Pousadas e albergues
+      es: Hostales y albergues
+      fr: Maisons d'hôtes et auberges de jeunesse
+      de: Pensionen und Hostels
     desc:
-      en: Hotel Guesthouse
-      pt: Hotéis e pousadas
-      es: Hoteles y hostales
-      fr: Hôtels et maisons d'hôtes
-      de: Hotels und Pensionen
+      en: Guesthouses and Hostels
+      pt: Pousadas e albergues
+      es: Hostales y albergues
+      fr: Maisons d'hôtes et auberges de jeunesse
+      de: Pensionen und Hostels
   football:
     name:
       en: Football
@@ -2643,17 +2643,17 @@ templates:
       de: Leichtathletik
   gymnasiums:
     name:
-      en: Gymnasiums
-      pt: Ginásios
+      en: Gymnastics
+      pt: Ginástica
       es: Gimnasia
-      fr: Gymnases
-      de: Turnhallen
+      fr: Gymnastique
+      de: Turnen
     desc:
-      en: Gymnasiums
-      pt: Ginásios
+      en: Gymnastics
+      pt: Ginástica
       es: Gimnasia
-      fr: Gymnases
-      de: Turnhallen
+      fr: Gymnastique
+      de: Turnen
   shooting:
     name:
       en: Shooting
@@ -2904,13 +2904,13 @@ templates:
   dairy-yards:
     name:
       en: Dairy Yards
-      pt: Laticínios
+      pt: Fazendas leiteiras
       es: Instalaciones lecheras
       fr: Installations laitières
       de: Milchviehhöfe
     desc:
       en: Dairy farming infrastructure
-      pt: Infraestrutura de laticínios
+      pt: Infraestrutura de produção leiteira
       es: Infraestructura lechera
       fr: Infrastructure d'élevage laitier
       de: Infrastruktur der Milchviehhaltung

@@ -94,13 +94,13 @@
     "category": "Categoria",
     "totalFeatures": "Total de Feições",
     "totalEditors": "Total de Editores",
-    "changesets": "Conjuntos de Mudanças",
-    "avgAgeDays": "Idade Média (dias)",
+    "changesets": "Conjuntos de alterações",
+    "avgAgeDays": "Tempo médio desde a edição (dias)",
     "recentActivity": "Atividade Recente (Últimos 3 Meses)",
     "elementsEdited": "Elementos Editados",
     "percentOfTotal": "% do total",
     "activeEditors": "Editores Ativos",
-    "recentChangesets": "Conjuntos de Mudanças Recentes",
+    "recentChangesets": "Conjuntos de alterações recentes",
     "overallAssessment": "Avaliação Geral",
     "activityLevel": "Nível de Atividade",
     "communityStrength": "Força da Comunidade",
@@ -251,18 +251,18 @@
     "searchPlaceholder": "Buscar tipos de dados...",
     "noResults": "Nenhum tipo de dado encontrado",
     "noResultsDescription": "Tente outro termo de busca ou categoria.",
-    "noDatasetsAvailable": "Nenhum dataset disponível",
-    "noDatasetsDescription": "Atualmente não há datasets disponíveis para esta área. Volte mais tarde ou entre em contato conosco se precisar de tipos de dados específicos.",
+    "noDatasetsAvailable": "Nenhum conjunto de dados disponível",
+    "noDatasetsDescription": "Atualmente não há conjuntos de dados disponíveis para esta área. Volte mais tarde ou entre em contato conosco se precisar de tipos de dados específicos.",
     "moreTags": "+{count} mais",
-    "dataset": "dataset",
-    "datasets": "datasets",
-    "comingSoon": "Descoberta de datasets em breve!",
-    "comingSoonDescription": "Você poderá explorar e criar datasets para esta área diretamente desta página.",
+    "dataset": "conjunto de dados",
+    "datasets": "conjuntos de dados",
+    "comingSoon": "Descoberta de conjuntos de dados em breve!",
+    "comingSoonDescription": "Você poderá explorar e criar conjuntos de dados para esta área diretamente desta página.",
     "areaDetails": "Detalhes da Área",
     "boundingBox": "Caixa Delimitadora",
     "sections": {
       "featured": "Destaques",
-      "largest": "Maiores Datasets",
+      "largest": "Maiores conjuntos de dados",
       "mostSaved": "Mais Salvos",
       "mostContributors": "Mais Contribuidores",
       "recentlyEdited": "Editados Recentemente"
@@ -285,7 +285,7 @@
     "city": "Cidade",
     "town": "Cidade",
     "village": "Vila",
-    "hamlet": "Aldeia",
+    "hamlet": "Povoado",
     "municipality": "Município",
     "county": "Condado",
     "state": "Estado",
@@ -326,7 +326,7 @@
     "selectAreaDescription": "Digite o nome de uma área e selecione das sugestões. Pode ser uma cidade, vila, bairro ou qualquer área administrativa no OpenStreetMap.",
     "nextSelectTemplate": "Próximo: Selecionar Modelo",
     "selectTemplate": "Selecionar um Modelo",
-    "selectTemplateDescription": "Escolha um modelo de dados que define quais recursos do OpenStreetMap monitorar.",
+    "selectTemplateDescription": "Escolha um modelo de dados que define quais elementos do OpenStreetMap monitorar.",
     "back": "Voltar",
     "nextTestQuery": "Próximo: Testar Consulta",
     "testYourQuery": "Testar Sua Consulta",
@@ -493,7 +493,7 @@
       },
       "inspect": {
         "title": "Inspecione dados em um mapa",
-        "description": "Explore conjuntos de dados visualmente em um mapa interativo. Clique em características individuais para ver informações detalhadas, comparar dados históricos e entender relações espaciais em sua cidade."
+        "description": "Explore conjuntos de dados visualmente em um mapa interativo. Clique em elementos individuais para ver informações detalhadas, comparar dados históricos e entender relações espaciais em sua cidade."
       },
       "download": {
         "title": "Baixe dados para análise",
@@ -536,7 +536,7 @@
       "communityGroups": {
         "category": "Grupos comunitários",
         "title": "Monitore seu bairro",
-        "description": "Acompanhe o desenvolvimento de infraestrutura local e serviços em sua área para advogar pelas necessidades de sua comunidade."
+        "description": "Acompanhe o desenvolvimento de infraestrutura local e serviços em sua área para defender as necessidades de sua comunidade."
       },
       "publicInstitutions": {
         "category": "Instituições públicas",
@@ -678,7 +678,7 @@
     "suggestionSpecificTemplate": "Use um modelo mais específico (ex., \"Escolas Primárias\" em vez de \"Todas as Escolas\")",
     "suggestionContactUs": "Entre em contato se precisar de dados para áreas grandes",
     "somethingWentWrongTitle": "Algo deu errado",
-    "unexpectedErrorDescription": "Encontramos um erro inesperado ao cargar o conjunto de dados. Por favor tente novamente.",
+    "unexpectedErrorDescription": "Encontramos um erro inesperado ao carregar o conjunto de dados. Por favor tente novamente.",
     "errorDetails": "Detalhes do Erro"
   },
   "DatasetUpsell": {

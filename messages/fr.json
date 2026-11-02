@@ -293,7 +293,7 @@
     "region": "Région",
     "province": "Province",
     "district": "District",
-    "suburb": "Banlieue",
+    "suburb": "Grand quartier",
     "neighbourhood": "Quartier",
     "city_block": "Îlot urbain",
     "city_district": "Arrondissement",
@@ -564,7 +564,7 @@
         "education": {
           "category": "Éducation",
           "title": "Établissements d'enseignement",
-          "description": "Écoles, universités, bibliothèques et jardins d'enfants qui offrent des possibilités d'apprentissage à tous les âges."
+          "description": "Écoles, universités, bibliothèques et écoles maternelles qui offrent des possibilités d'apprentissage à tous les âges."
         },
         "leisure": {
           "category": "Sports et loisirs",
