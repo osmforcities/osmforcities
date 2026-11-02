@@ -770,6 +770,7 @@
     "access": "Zugang",
     "fee": "Gebühr",
     "crossing": "Übergang",
+    "footway": "Fußwegtyp",
     "crossing:markings": "Markierung",
     "station": "Stationstyp",
     "wheelchair": "Rollstuhlzugang",
@@ -1095,6 +1096,13 @@
     },
     "oneway": {
       "-1": "Gegenrichtung"
+    },
+    "footway": {
+      "sidewalk": "Gehweg",
+      "crossing": "Überweg",
+      "traffic_island": "Verkehrsinsel",
+      "access_aisle": "Zugangsstreifen",
+      "link": "Verbindung"
     },
     "sidewalk": {
       "both": "Beide Seiten",

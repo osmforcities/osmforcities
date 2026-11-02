@@ -23,7 +23,8 @@ templates:
   - ["rail-tracks","railway=tram;railway=subway;railway=light_rail;railway=rail","rail","TrainTrack"]
   # Bus rapid transit: segregated corridors (highway=busway) and on-street lanes
   - ["busways","highway=busway","bus","BusFront"]
-  - ["bus-lanes","busway=lane;busway:left=lane;busway:right=lane;busway:both=lane","bus","Milestone"]
+  # busway=* is deprecated but still holds most data, so old and new keys both count
+  - ["bus-lanes","busway=lane;busway:left=lane;busway:right=lane;busway:both=lane;lanes:bus=*;lanes:bus:forward=*;lanes:bus:backward=*;bus:lanes=*;bus:lanes:forward=*;bus:lanes:backward=*","bus","Milestone"]
 # Financial
   - ["atms","amenity=atm","financial","Banknote"]
   - ["banks","amenity=bank","financial","Landmark"]
@@ -215,7 +216,7 @@ templates:
 # from PMTiles, geojson never stored — #487/#489)
   - ["buildings","building","infrastructure","Building"]
 # Mobility: roads, pedestrian, cycling
-  - ["roads","highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=unclassified","roads","Route"]
+  - ["roads","highway=motorway;highway=trunk;highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=unclassified","roads","Route"]
   - ["highways","highway","roads","Waypoints"]
   - ["footways","highway=footway;highway=path","pedestrian","Footprints"]
   - ["cycleways","highway=cycleway","cycling","Bike"]
@@ -225,11 +226,12 @@ templates:
 # Mobility: traffic
   - ["traffic-signs","traffic_sign=*","traffic","Signpost"]
   - ["traffic-lights","highway=traffic_signals","traffic","Lightbulb"]
-  - ["speed-cameras","highway=speed_camera;man_made=speed_camera","traffic","Camera"]
+  - ["speed-cameras","highway=speed_camera","traffic","Camera"]
   - ["traffic-calming","traffic_calming=*","traffic","TrafficCone"]
 # Housing
   - ["apartments","building=apartments","housing","Building2"]
-  - ["houses","building=house;building=detached;building=semidetached_house;building=terrace","housing","Home"]
+  # building=residential left out: generic fallback that also covers apartment blocks
+  - ["houses","building=house;building=detached;building=semidetached_house;building=terrace;building=bungalow","housing","Home"]
   - ["residential","landuse=residential","housing","Building2"]
   - ["dormitories","building=dormitory","housing","Building"]
   - ["hotel-guesthouse","tourism=guest_house;tourism=hostel","housing","BedDouble"]
@@ -284,11 +286,10 @@ templates:
   - ["dairy-yards","farmyard=dairy","agriculture","Milk"]
   # Agricultural buildings
   - ["barns","building=barn","agriculture","Warehouse"]
-  - ["agricultural-buildings","building=agricultural","agriculture","Warehouse"]
-  - ["farm-auxiliary","building=farm_auxiliary","agriculture","Wrench"]
+  - ["farm-auxiliary","building=farm_auxiliary;building=agricultural","agriculture","Wrench"]
   - ["greenhouses","building=greenhouse","agriculture","Sprout"]
   # Livestock housing
-  - ["livestock-buildings","building=livestock","agriculture","Warehouse"]
+  - ["livestock-buildings","building=livestock;building=cowshed;building=stable;building=sty;building=barn","agriculture","Warehouse"]
   - ["cowsheds","building=cowshed","agriculture","Warehouse"]
   - ["pig-sties","building=sty","agriculture","Warehouse"]
   - ["stables","building=stable","agriculture","Warehouse"]
@@ -399,7 +400,7 @@ filterableTags:
   roads:            [surface, maxspeed, lit, sidewalk]
   highways:         [highway, surface, lit]
   buildings:        [building]
-  footways:         [surface, lit, smoothness]
+  footways:         [footway, surface, lit, smoothness]
   cycleways:        [surface, lit, oneway, smoothness]
   traffic-calming:  [traffic_calming]
   speed-cameras:    [maxspeed]
@@ -489,7 +490,8 @@ filterableTags:
 # The old id leaves the templates list above and deprecates as usual; its report
 # email links the replacement and its dataset URLs redirect to it. Sync fails if
 # the old id is still listed or the new id is missing or deprecated.
-replacedBy: {}
+replacedBy:
+  agricultural-buildings: farm-auxiliary
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
