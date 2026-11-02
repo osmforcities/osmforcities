@@ -236,6 +236,8 @@ return <p>{t("newFeature")}</p>;
 - **Consider cultural context** for different languages
 - **Use proper punctuation** and capitalization
 - **Test with longer text** to ensure UI doesn't break
+- **Spanish (`es`) is one locale for all regions**: pick the word every Spanish speaker shares, else the Latin American majority word (Ciclovías, not Carriles bici). Use `tú`, never `vosotros`
+- **Template names are unique per locale**: two templates never share a name (Bancos vs Bancos de plaza). A parser test enforces it
 
 ### Section Organization
 
