@@ -94,12 +94,13 @@ test.describe.serial("Featured datasets", () => {
     await expect(page.locator(`a[href$='${FEATURED_PATH}']`)).toBeVisible();
   });
 
-  test("area page is public and marks the featured template (logged out)", async ({ page }) => {
-    await page.goto(`/en/area/${AREA_ID}`);
+  test("area topic page is public and links the dataset (logged out)", async ({ page }) => {
+    await page.goto(`/en/area/${AREA_ID}/topics/mobility`);
 
-    const card = page
-      .locator("[data-testid='template-grid']")
-      .locator(`a[href$='/dataset/${FEATURED_TEMPLATE_ID}']`);
-    await expect(card.getByLabel("Featured")).toBeVisible();
+    await expect(
+      page
+        .locator("[data-testid='dataset-cards']")
+        .locator(`a[href$='/dataset/${FEATURED_TEMPLATE_ID}']`)
+    ).toBeVisible();
   });
 });

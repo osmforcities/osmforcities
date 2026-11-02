@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { AreaTemplate } from "@/lib/area-templates";
 import { countTemplatesByTopic } from "@/lib/template-topics";
 import { useCategoryLabel } from "@/lib/category-label";
@@ -9,6 +9,7 @@ import { useCategoryLabel } from "@/lib/category-label";
 export type TopicEntry = { slug: string; label: string; count: number };
 
 export function useTopics(templates: AreaTemplate[]): TopicEntry[] {
+  const locale = useLocale();
   const categoryLabel = useCategoryLabel();
   return useMemo(
     () =>
@@ -18,8 +19,8 @@ export function useTopics(templates: AreaTemplate[]): TopicEntry[] {
           label: categoryLabel(topicSlug),
           count,
         }))
-        .sort((a, b) => a.label.localeCompare(b.label)),
-    [templates, categoryLabel]
+        .sort((a, b) => a.label.localeCompare(b.label, locale)),
+    [templates, categoryLabel, locale]
   );
 }
 

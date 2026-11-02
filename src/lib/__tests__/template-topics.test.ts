@@ -6,7 +6,6 @@ import {
   findTopicOfCategory,
   groupTopicByCategory,
   listCommonTemplates,
-  matchesSearch,
 } from "../template-topics";
 
 const tpl = (
@@ -52,13 +51,13 @@ describe("countTemplatesByTopic", () => {
 });
 
 describe("groupTopicByCategory", () => {
-  it("groups a topic's templates by child category, direct members last, names A to Z", () => {
+  it("groups a topic's templates by child category, direct members last, in the given order", () => {
     const groups = groupTopicByCategory(
       [
         tpl("taxi", "Taxi ranks", "mobility", "mobility"),
         tpl("rail", "Railway stations", "rail", "mobility"),
-        tpl("stops", "Bus stops", "bus", "mobility"),
         tpl("lanes", "Bus lanes", "bus", "mobility"),
+        tpl("stops", "Bus stops", "bus", "mobility"),
         tpl("clinics", "Clinics", "healthcare", "health"),
       ],
       "mobility"
@@ -106,8 +105,8 @@ describe("categoryBrowsePath", () => {
     tpl("taxi", "Taxi ranks", "mobility", "mobility"),
   ];
 
-  it("points a child category at its anchor on the topic page", () => {
-    expect(categoryBrowsePath("42", templates, "bus")).toBe("/area/42/topics/mobility#bus");
+  it("points a child category at its own page under the topic", () => {
+    expect(categoryBrowsePath("42", templates, "bus")).toBe("/area/42/topics/mobility/bus");
   });
 
   it("points a topic at its topic page", () => {
@@ -117,22 +116,5 @@ describe("categoryBrowsePath", () => {
   it("falls back to the hub for a missing or unknown category", () => {
     expect(categoryBrowsePath("42", templates, undefined)).toBe("/area/42");
     expect(categoryBrowsePath("42", templates, "nope")).toBe("/area/42");
-  });
-});
-
-describe("matchesSearch", () => {
-  const cycleways = tpl("cycleways", "Cycleways", "cycling", "mobility", {
-    description: "Paths built for bicycles",
-    tags: ["highway=cycleway"],
-  });
-
-  it("matches name, description or tags, ignoring case and outer spaces", () => {
-    expect(matchesSearch(cycleways, "  CYCLE ")).toBe(true);
-    expect(matchesSearch(cycleways, "bicycles")).toBe(true);
-    expect(matchesSearch(cycleways, "highway=")).toBe(true);
-  });
-
-  it("does not match unrelated text", () => {
-    expect(matchesSearch(cycleways, "pharmacy")).toBe(false);
   });
 });

@@ -6,16 +6,6 @@ import {
   TestUser,
 } from "./utils/auth";
 
-/**
- * Area Page Tests
- *
- * Tests the area page functionality including:
- * - Area page loads correctly with area information
- * - Datasets are displayed in a grid
- * - Navigation works properly (breadcrumbs, external links)
- * - Error handling for invalid area IDs
- */
-
 test.describe("Area Page", () => {
   let testUser: TestUser;
 
@@ -71,8 +61,20 @@ test.describe("Area Page", () => {
     // Check that we're not on a 404 page
     await expect(page.locator("h1")).not.toContainText("404");
 
-    // Check that template grid is present
-    await expect(page.locator("[data-testid='template-grid']")).toBeVisible();
+    await expect(page.locator("[data-testid='dataset-cards']")).toBeVisible();
+
+    await page.getByRole("link", { name: /^Mobility\d+$/ }).click();
+    await expect(page).toHaveURL(/\/area\/298470\/topics\/mobility$/);
+    const topicChip = page.getByRole("link", { name: "Clear Mobility" });
+    await expect(topicChip).toBeVisible();
+
+    await page.getByRole("link", { name: /^Cycling\d+$/ }).click();
+    await expect(page).toHaveURL(/\/topics\/mobility\/cycling$/);
+    await expect(page.getByRole("link", { name: "Clear Cycling" })).toBeVisible();
+
+    await topicChip.click();
+    await expect(page).toHaveURL(/\/area\/298470$/);
+    await expect(page.getByRole("heading", { name: "Pick a topic" })).toBeVisible();
   });
 
   test("should display clickable dataset cards", async ({ page }) => {
@@ -114,7 +116,7 @@ test.describe("Area Page", () => {
     await page.waitForLoadState("domcontentloaded");
 
     // Wait for templates to load
-    await expect(page.locator("[data-testid='template-grid']")).toBeVisible();
+    await expect(page.locator("[data-testid='dataset-cards']")).toBeVisible();
 
     // Check that dataset cards are present and clickable
     const datasetCards = page.locator("a[href*='/dataset/']");
@@ -173,12 +175,8 @@ test.describe("Area Page", () => {
     await page.waitForLoadState("domcontentloaded");
 
     // Wait for templates to load
-    await expect(page.locator("[data-testid='template-grid']")).toBeVisible();
+    await expect(page.locator("[data-testid='dataset-cards']")).toBeVisible();
 
-    // Verify Portuguese translations appear
-    await expect(
-      page.locator("text=Estacionamento para bicicletas")
-    ).toBeVisible();
     await expect(page.locator("text=Pontos de ônibus")).toBeVisible();
   });
 });

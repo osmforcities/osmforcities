@@ -24,7 +24,7 @@ export function countTemplatesByTopic(templates: AreaTemplate[]): TopicCount[] {
     .sort((a, b) => a.topicSlug.localeCompare(b.topicSlug));
 }
 
-/** Direct members of the topic come last, as the "Other" group. */
+/** Direct members of the topic come last, as the "Other" group. Keeps the given template order. */
 export function groupTopicByCategory<T extends AreaTemplate>(
   templates: T[],
   topicSlug: string
@@ -41,7 +41,7 @@ export function groupTopicByCategory<T extends AreaTemplate>(
     .sort(([a], [b]) => Number(isDirect(a)) - Number(isDirect(b)) || a.localeCompare(b))
     .map(([categorySlug, group]) => ({
       categorySlug,
-      templates: group.sort((a, b) => a.name.localeCompare(b.name)),
+      templates: group,
     }));
 }
 
@@ -55,24 +55,19 @@ export function findTopicOfCategory(
   )?.topicSlug;
 }
 
+export function areaBrowsePath(areaId: string, topicSlug?: string, categorySlug?: string): string {
+  const hubPath = `/area/${areaId}`;
+  if (!topicSlug) return hubPath;
+  const topicPath = `${hubPath}/topics/${topicSlug}`;
+  return categorySlug ? `${topicPath}/${categorySlug}` : topicPath;
+}
+
+/** A legacy ?category= naming a topic itself opens the topic, not its "Other" group. */
 export function categoryBrowsePath(
   areaId: string,
   templates: AreaTemplate[],
   categorySlug: string | undefined
 ): string {
-  const hubPath = `/area/${areaId}`;
-  if (!categorySlug) return hubPath;
-  const topicSlug = findTopicOfCategory(templates, categorySlug);
-  if (!topicSlug) return hubPath;
-  const topicPath = `${hubPath}/topics/${topicSlug}`;
-  return categorySlug === topicSlug ? topicPath : `${topicPath}#${categorySlug}`;
-}
-
-export function matchesSearch(template: AreaTemplate, query: string): boolean {
-  const term = query.trim().toLowerCase();
-  return (
-    template.name.toLowerCase().includes(term) ||
-    (template.description?.toLowerCase().includes(term) ?? false) ||
-    template.tags.some((tag) => tag.toLowerCase().includes(term))
-  );
+  const topicSlug = categorySlug ? findTopicOfCategory(templates, categorySlug) : undefined;
+  return areaBrowsePath(areaId, topicSlug, categorySlug === topicSlug ? undefined : categorySlug);
 }

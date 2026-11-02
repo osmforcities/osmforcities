@@ -7,7 +7,7 @@ import { TrackView } from "@/components/analytics/track-view";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { resolveAreaName } from "@/lib/area-name";
 import { parseAreaIdOrNotFound } from "@/lib/area-route";
-import { getAreaDataTypes } from "@/lib/area-templates";
+import { getActiveTemplates } from "@/lib/area-templates";
 import { getAreaDetailsById } from "@/lib/nominatim";
 
 export const revalidate = 3600;
@@ -28,7 +28,7 @@ export default async function AreaBrowseLayout({
 
   const [areaInfo, templates, session] = await Promise.all([
     getAreaDetailsById(osmRelationId, locale),
-    getAreaDataTypes(osmRelationId, locale),
+    getActiveTemplates(locale),
     auth(),
   ]);
   if (!areaInfo) notFound();
@@ -37,9 +37,10 @@ export default async function AreaBrowseLayout({
   // A state can share the area's name (Mexico City), which would repeat the title
   const parentBreadcrumb = [
     { label: navT("home"), href: "/" },
-    { label: areaInfo.country || "Area" },
-    ...(areaInfo.state ? [{ label: areaInfo.state }] : []),
-  ].filter(({ label }) => label !== areaName);
+    ...[areaInfo.country, areaInfo.state]
+      .filter((place): place is string => Boolean(place) && place !== areaName)
+      .map((place) => ({ label: place })),
+  ];
 
   return (
     <>
