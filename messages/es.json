@@ -95,7 +95,6 @@
     "totalFeatures": "Total de Elementos",
     "totalEditors": "Total de Editores",
     "changesets": "Conjuntos de Cambios",
-    "avgAgeDays": "Edad Promedio (días)",
     "recentActivity": "Actividad Reciente (Últimos 3 Meses)",
     "elementsEdited": "Elementos Editados",
     "percentOfTotal": "% del total",
@@ -779,6 +778,7 @@
     "access": "Acceso",
     "fee": "Tarifa",
     "crossing": "Cruce",
+    "footway": "Tipo de vía peatonal",
     "crossing:markings": "Marcas viales",
     "station": "Tipo de estación",
     "wheelchair": "Acceso para silla de ruedas",
@@ -1104,6 +1104,13 @@
     },
     "oneway": {
       "-1": "Sentido inverso"
+    },
+    "footway": {
+      "sidewalk": "Acera",
+      "crossing": "Cruce",
+      "traffic_island": "Isleta",
+      "access_aisle": "Pasillo de acceso",
+      "link": "Conexión"
     },
     "sidewalk": {
       "both": "Ambos lados",

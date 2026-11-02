@@ -95,7 +95,6 @@
     "totalFeatures": "Total Features",
     "totalEditors": "Total Editors",
     "changesets": "Changesets",
-    "avgAgeDays": "Avg Age (days)",
     "recentActivity": "Recent Activity (Last 3 Months)",
     "elementsEdited": "Elements Edited",
     "percentOfTotal": "% of total",
@@ -770,6 +769,7 @@
     "access": "Access",
     "fee": "Fee",
     "crossing": "Crossing",
+    "footway": "Footway type",
     "crossing:markings": "Markings",
     "station": "Station type",
     "wheelchair": "Wheelchair access",
@@ -1095,6 +1095,13 @@
     },
     "oneway": {
       "-1": "Reverse direction"
+    },
+    "footway": {
+      "sidewalk": "Sidewalk",
+      "crossing": "Crossing",
+      "traffic_island": "Traffic island",
+      "access_aisle": "Access aisle",
+      "link": "Link"
     },
     "sidewalk": {
       "both": "Both sides",

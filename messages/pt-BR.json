@@ -95,7 +95,6 @@
     "totalFeatures": "Total de elementos",
     "totalEditors": "Total de Editores",
     "changesets": "Conjuntos de alterações",
-    "avgAgeDays": "Tempo médio desde a edição (dias)",
     "recentActivity": "Atividade Recente (Últimos 3 Meses)",
     "elementsEdited": "Elementos Editados",
     "percentOfTotal": "% do total",
@@ -779,6 +778,7 @@
     "access": "Acesso",
     "fee": "Tarifa",
     "crossing": "Travessia",
+    "footway": "Tipo de via de pedestre",
     "crossing:markings": "Faixa de pedestres",
     "station": "Tipo de estação",
     "wheelchair": "Acesso para cadeirantes",
@@ -1104,6 +1104,13 @@
     },
     "oneway": {
       "-1": "Sentido inverso"
+    },
+    "footway": {
+      "sidewalk": "Calçada",
+      "crossing": "Travessia",
+      "traffic_island": "Ilha de refúgio",
+      "access_aisle": "Faixa de acesso",
+      "link": "Conexão"
     },
     "sidewalk": {
       "both": "Ambos os lados",
