@@ -16,6 +16,8 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 **Dataset**: One Template applied to one Area: its features, stats and map. The thing people open, save and share. _Avoid:_ monitor, layer, snapshot.
 
+**Feature**: One OpenStreetMap object (node, way or relation) in a Dataset: a bench, a bus stop, a building. _Avoid:_ resource, item, record.
+
 **Snapshot**: The result of asking Overpass for a Dataset at one point in time. A refresh replaces it. _Avoid:_ fetch, run, update (a refresh is the act, a snapshot is the result).
 
 **Stats**: The numbers derived from a snapshot: feature counts, geometry mix, edit recency, mappers, tag coverage. _Avoid:_ metrics, analytics.
@@ -36,7 +38,7 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 ## Map building
 
-**Tiler**: The service that turns a Template into a map archive. The only thing that fetches full Datasets from Overpass. _Avoid:_ baker, pmtiler, tile server.
+**Tiler**: The service that turns a Template into a map archive. The only thing that fetches full Datasets from Overpass. Code: [osmforcities/overpass-pmtiler](https://github.com/osmforcities/overpass-pmtiler). _Avoid:_ baker, pmtiler, tile server.
 
 **Bake**: One run of the tiler for one Dataset: queued, fetching, converting, baking, then done or failed. _Avoid:_ job (in prose), processing, build.
 

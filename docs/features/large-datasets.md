@@ -117,9 +117,8 @@ Historical; the "Implemented" paragraph below is current. At the time no app cod
 ## overpass-pmtiler: settled design (2026-09-05)
 
 Extraction+bake service co-located with Overpass, so a multi-GB fetch is a
-localhost read. Name `overpass-pmtiler`; developed in its own (currently
-private) repo. Deployment lives in the infra repo: it reuses the existing
-restricted vhost and exposes nothing new.
+localhost read. Name `overpass-pmtiler`; developed in its own repo,
+[osmforcities/overpass-pmtiler][tiler repo].
 
 Decisions (brainstorm 2026-09-05):
 
@@ -187,12 +186,12 @@ bake runs (checklist item that still needs a probe).
      breaks the `step` expression.
    - Harness + archive preserved in `spikes/2026-09-04-large-datasets/`.
 2. ~~overpass-box tiler service exploration~~ **SETTLED (2026-09-05)** — design
-   above; service work tracked in the overpass-pmtiler repo (milestone v0.1 =
+   above; service work tracked in the [tiler repo] (milestone v0.1 =
    one SP-class job end-to-end; issues 1-8 seeded 2026-09-05).
 3. Contention probe: measure live Overpass query latency while a bake runs
    alongside it (only remaining pre-build measurement).
 4. Rewrite [#490] (and touch up [#487]) to the settled design; service work items
-   tracked in the overpass-pmtiler repo.
+   tracked in the [tiler repo].
 5. Then: app-side work ([#489] protocol + vector source) in a worktree, behind a
    flag, landed as a draft PR first.
 
@@ -205,3 +204,4 @@ bake runs (checklist item that still needs a probe).
 [#489]: https://github.com/osmforcities/osmforcities/issues/489
 [#490]: https://github.com/osmforcities/osmforcities/issues/490
 [#501]: https://github.com/osmforcities/osmforcities/issues/501
+[tiler repo]: https://github.com/osmforcities/overpass-pmtiler

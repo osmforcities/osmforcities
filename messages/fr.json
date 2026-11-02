@@ -95,7 +95,6 @@
     "totalFeatures": "Total des éléments",
     "totalEditors": "Total des contributeurs",
     "changesets": "Groupes de modifications",
-    "avgAgeDays": "Âge moyen (jours)",
     "recentActivity": "Activité récente (3 derniers mois)",
     "elementsEdited": "Éléments modifiés",
     "percentOfTotal": "% du total",
@@ -286,7 +285,7 @@
     "region": "Région",
     "province": "Province",
     "district": "District",
-    "suburb": "Banlieue",
+    "suburb": "Grand quartier",
     "neighbourhood": "Quartier",
     "city_block": "Îlot urbain",
     "city_district": "Arrondissement",
@@ -557,7 +556,7 @@
         "education": {
           "category": "Éducation",
           "title": "Établissements d'enseignement",
-          "description": "Écoles, universités, bibliothèques et jardins d'enfants qui offrent des possibilités d'apprentissage à tous les âges."
+          "description": "Écoles, universités, bibliothèques et écoles maternelles qui offrent des possibilités d'apprentissage à tous les âges."
         },
         "leisure": {
           "category": "Sports et loisirs",
@@ -763,6 +762,7 @@
     "access": "Accès",
     "fee": "Payant",
     "crossing": "Passage",
+    "footway": "Type de cheminement piéton",
     "crossing:markings": "Marquage",
     "station": "Type de station",
     "wheelchair": "Accès fauteuil roulant",
@@ -1088,6 +1088,13 @@
     },
     "oneway": {
       "-1": "Sens inverse"
+    },
+    "footway": {
+      "sidewalk": "Trottoir",
+      "crossing": "Traversée",
+      "traffic_island": "Îlot",
+      "access_aisle": "Allée d'accès",
+      "link": "Liaison"
     },
     "sidewalk": {
       "both": "Des deux côtés",

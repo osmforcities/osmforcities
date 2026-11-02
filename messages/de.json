@@ -95,7 +95,6 @@
     "totalFeatures": "Objekte gesamt",
     "totalEditors": "Bearbeiter gesamt",
     "changesets": "Änderungssätze",
-    "avgAgeDays": "Ø Alter (Tage)",
     "recentActivity": "Aktuelle Aktivität (letzte 3 Monate)",
     "elementsEdited": "Bearbeitete Elemente",
     "percentOfTotal": "% der Gesamtzahl",
@@ -208,13 +207,13 @@
     "unsaveTooltip": "Aus den gespeicherten Datensätzen entfernen",
     "saveLimitReached": "Speicherlimit erreicht",
     "saveLimitMessage": "Du kannst bis zu {limit, number} Datensätze speichern. Entferne zuerst einen aus deinem Dashboard. <link>Zum Dashboard</link>.",
-    "featured": "Hervorgehoben",
-    "featuredTooltip": "Dies ist ein hervorgehobener Datensatz",
-    "feature": "Hervorheben",
-    "unfeature": "Nicht mehr hervorheben",
-    "featureTitle": "Diesen Datensatz auf der Startseite hervorheben",
-    "unfeatureTitle": "Hervorhebung entfernen",
-    "featureError": "Hervorhebung konnte nicht aktualisiert werden. Versuche es erneut."
+    "featured": "Empfohlen",
+    "featuredTooltip": "Dies ist ein empfohlener Datensatz",
+    "feature": "Empfehlen",
+    "unfeature": "Nicht mehr empfehlen",
+    "featureTitle": "Diesen Datensatz auf der Startseite empfehlen",
+    "unfeatureTitle": "Empfehlung entfernen",
+    "featureError": "Empfehlung konnte nicht aktualisiert werden. Versuche es erneut."
   },
   "AuthForm": {
     "checkYourEmail": "Prüfe dein E-Mail-Postfach",
@@ -763,6 +762,7 @@
     "access": "Zugang",
     "fee": "Gebühr",
     "crossing": "Übergang",
+    "footway": "Fußwegtyp",
     "crossing:markings": "Markierung",
     "station": "Stationstyp",
     "wheelchair": "Rollstuhlzugang",
@@ -1088,6 +1088,13 @@
     },
     "oneway": {
       "-1": "Gegenrichtung"
+    },
+    "footway": {
+      "sidewalk": "Gehweg",
+      "crossing": "Überweg",
+      "traffic_island": "Verkehrsinsel",
+      "access_aisle": "Zugangsstreifen",
+      "link": "Verbindung"
     },
     "sidewalk": {
       "both": "Beide Seiten",
