@@ -214,7 +214,7 @@
     "unfeature": "Nicht mehr empfehlen",
     "featureTitle": "Diesen Datensatz auf der Startseite empfehlen",
     "unfeatureTitle": "Empfehlung entfernen",
-    "featureError": "Hervorhebung konnte nicht aktualisiert werden. Versuche es erneut."
+    "featureError": "Empfehlung konnte nicht aktualisiert werden. Versuche es erneut."
   },
   "AuthForm": {
     "checkYourEmail": "Prüfe dein E-Mail-Postfach",
