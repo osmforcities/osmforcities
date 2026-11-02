@@ -33,11 +33,13 @@ export default async function AreaBrowseLayout({
   ]);
   if (!areaInfo) notFound();
 
-  const hubBreadcrumb = [
+  const areaName = resolveAreaName(areaInfo, locale);
+  // A state can share the area's name (Mexico City), which would repeat the title
+  const parentBreadcrumb = [
     { label: navT("home"), href: "/" },
     { label: areaInfo.country || "Area" },
     ...(areaInfo.state ? [{ label: areaInfo.state }] : []),
-  ];
+  ].filter(({ label }) => label !== areaName);
 
   return (
     <>
@@ -51,8 +53,8 @@ export default async function AreaBrowseLayout({
       />
       <AreaBrowse
         areaId={areaId}
-        areaName={resolveAreaName(areaInfo, locale)}
-        hubBreadcrumb={hubBreadcrumb}
+        areaName={areaName}
+        parentBreadcrumb={parentBreadcrumb}
         templates={templates}
       >
         {children}

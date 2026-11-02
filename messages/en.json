@@ -266,7 +266,9 @@
     "otherCategory": "Other",
     "jumpToCategory": "Jump to category",
     "topicMetaTitle": "{topic} in {area}",
-    "clearSearch": "Clear search"
+    "clearSearch": "Clear search",
+    "seeAll": "See all",
+    "seeAllInTopic": "See all in {topic}"
   },
   "CategoryCards": {
     "title": "Find data in {area}",
