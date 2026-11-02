@@ -36,7 +36,7 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 ## Map building
 
-**Tiler**: The service that turns a Template into a map archive. The only thing that fetches full Datasets from Overpass. _Avoid:_ baker, pmtiler, tile server.
+**Tiler**: The service that turns a Template into a map archive. The only thing that fetches full Datasets from Overpass. Code: [osmforcities/overpass-pmtiler](https://github.com/osmforcities/overpass-pmtiler). _Avoid:_ baker, pmtiler, tile server.
 
 **Bake**: One run of the tiler for one Dataset: queued, fetching, converting, baking, then done or failed. _Avoid:_ job (in prose), processing, build.
 

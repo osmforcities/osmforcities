@@ -1,6 +1,6 @@
 # The tiler is the only thing that fetches full datasets
 
-The app used to fetch every dataset itself and ship it whole to the browser, which broke past a few hundred thousand features. Now one service, the tiler, fetches from Overpass, converts, computes stats and bakes the map archive; the app asks Overpass only the count question and pulls the tiler's outputs. One data path for every size, and the heavy fetch stays next to Overpass.
+The app used to fetch every dataset itself and ship it whole to the browser, which broke past a few hundred thousand features. Now one service, the [tiler], fetches from Overpass, converts, computes stats and bakes the map archive; the app asks Overpass only the count question and pulls the tiler's outputs. One data path for every size, and the heavy fetch stays next to Overpass.
 
 ## Consequences
 
@@ -20,5 +20,6 @@ The app used to fetch every dataset itself and ship it whole to the browser, whi
 - A small dataset takes more than 30 seconds to show its map through the tiler, on an area Overpass has seen recently.
 - People who want to self-host ask for a way to run without the tiler, even after [#560] has made the tiler easy to set up.
 
+[tiler]: https://github.com/osmforcities/overpass-pmtiler
 [measured]: ../features/large-datasets.md#small-dataset-time-to-map-2026-10-05
 [#560]: https://github.com/osmforcities/osmforcities/issues/560
