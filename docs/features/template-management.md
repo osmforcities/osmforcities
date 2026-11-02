@@ -731,7 +731,7 @@ sit on the sibling road or crossing node, not the queried element.
 - **livestock-buildings** — broadened to `building=livestock;cowshed;stable;sty;barn`, since
   `building=livestock` alone is the fallback when the precise value is unknown (8.6K uses). The
   specific templates stay.
-- **bridges** is renamed "Bridge Outlines": `man_made=bridge` is the optional outline, not the
+- **bridges** is renamed "Bridge outlines": `man_made=bridge` is the optional outline, not the
   `bridge=yes` way, so it counts drawn outlines, not bridges.
 
 ### Civic, retail & remaining domains (batch)
