@@ -270,7 +270,7 @@
     "subtitle": "Parcourez les catégories de données OpenStreetMap. La disponibilité dépend de la cartographie locale."
   },
   "NavSearch": {
-    "searchPlaceholder": "Rechercher une zone",
+    "searchPlaceholder": "Rechercher des zones",
     "noAreasFound": "Aucune zone trouvée",
     "searching": "Recherche...",
     "typeMoreChars": "Saisissez {count} caractère{count, plural, one {} other {s}} de plus pour rechercher",

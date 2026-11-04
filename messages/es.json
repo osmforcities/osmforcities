@@ -270,7 +270,7 @@
     "subtitle": "Explora categorías de datos de OpenStreetMap. Lo disponible depende del mapeo local."
   },
   "NavSearch": {
-    "searchPlaceholder": "Buscar un área",
+    "searchPlaceholder": "Buscar áreas",
     "noAreasFound": "No se encontraron áreas",
     "searching": "Buscando...",
     "typeMoreChars": "Escribe {count} carácter{count, plural, one {} other {es}} más para buscar",

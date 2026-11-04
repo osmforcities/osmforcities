@@ -270,7 +270,7 @@
     "subtitle": "Durchstöbere die Kategorien von OpenStreetMap-Daten. Was verfügbar ist, hängt von der lokalen Kartierung ab."
   },
   "NavSearch": {
-    "searchPlaceholder": "Gebiet suchen",
+    "searchPlaceholder": "Gebiete suchen",
     "noAreasFound": "Keine Gebiete gefunden",
     "searching": "Suche läuft...",
     "typeMoreChars": "Gib noch {count} Zeichen{count, plural, one {} other {}} ein, um zu suchen",

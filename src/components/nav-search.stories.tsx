@@ -21,14 +21,14 @@ type Story = StoryObj<typeof meta>;
 /** Opens on press; Escape and x both collapse it and return focus to the button. */
 export const OpenAndClose: Story = {
   play: async ({ canvas }) => {
-    await userEvent.click(canvas.getByRole("button", { name: "Search an area" }));
-    await expect(canvas.getByRole("combobox", { name: "Search an area" })).toHaveFocus();
+    await userEvent.click(canvas.getByRole("button", { name: "Search areas" }));
+    await expect(canvas.getByRole("combobox", { name: "Search areas" })).toHaveFocus();
 
     await userEvent.keyboard("{Escape}");
-    await expect(canvas.getByRole("button", { name: "Search an area" })).toHaveFocus();
+    await expect(canvas.getByRole("button", { name: "Search areas" })).toHaveFocus();
 
-    await userEvent.click(canvas.getByRole("button", { name: "Search an area" }));
+    await userEvent.click(canvas.getByRole("button", { name: "Search areas" }));
     await userEvent.click(canvas.getByRole("button", { name: "Clear search" }));
-    await expect(canvas.getByRole("button", { name: "Search an area" })).toHaveFocus();
+    await expect(canvas.getByRole("button", { name: "Search areas" })).toHaveFocus();
   },
 };
