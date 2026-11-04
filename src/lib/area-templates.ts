@@ -11,6 +11,8 @@ export type AreaTemplate = {
   /** Equals categorySlug for templates filed directly under a topic. */
   topicSlug: string;
   commonRank: number | null;
+  englishName: string;
+  osmTags: string[];
 };
 
 async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
@@ -25,6 +27,7 @@ async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
       name: true,
       description: true,
       commonRank: true,
+      tags: true,
       category: {
         select: { slug: true, parent: { select: { slug: true } } },
       },
@@ -51,6 +54,8 @@ async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
         categorySlug: t.category.slug,
         topicSlug: t.category.parent?.slug ?? t.category.slug,
         commonRank: t.commonRank,
+        englishName: t.name,
+        osmTags: t.tags,
       };
     })
     // Sorted after translation, so the order follows the reader's language
@@ -67,6 +72,6 @@ async function fetchActiveTemplates(locale: string): Promise<AreaTemplate[]> {
  */
 export const getActiveTemplates = unstable_cache(
   fetchActiveTemplates,
-  ["active-templates-v2"],
+  ["active-templates-v3"],
   { revalidate: 3600, tags: ["templates"] }
 );

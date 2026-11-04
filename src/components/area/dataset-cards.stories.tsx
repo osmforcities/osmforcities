@@ -10,6 +10,8 @@ const template = (id: string, name: string, description: string | null): AreaTem
   categorySlug: "bus",
   topicSlug: "mobility",
   commonRank: null,
+  englishName: id,
+  osmTags: [],
 });
 
 const meta = {

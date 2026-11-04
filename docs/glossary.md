@@ -6,6 +6,8 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 **Area**: A city or administrative region, identified by its OpenStreetMap relation id. _Avoid:_ city, region, boundary.
 
+**Area page**: The page at `/area/{id}` where people browse an Area's Templates: common datasets, a topic picker and search. Topic and category pages sit below it. _Avoid:_ hub, area hub, landing.
+
 **Overpass**: The query service the app asks for OpenStreetMap data. Templates are written in its language. _Avoid:_ OSM API, the database.
 
 **Template**: A named Overpass question, such as "bicycle parking" or "buildings". Applied to an Area it defines a Dataset. _Avoid:_ query, layer.

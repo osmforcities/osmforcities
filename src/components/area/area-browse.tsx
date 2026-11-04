@@ -1,12 +1,17 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { useParams } from "next/navigation";
+import { useMemo, useState, type ReactNode } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Button } from "react-aria-components";
 import { BreadcrumbNav, type BreadcrumbItem } from "@/components/ui/breadcrumb-nav";
+import { EmptyState } from "@/components/ui/empty-state";
 import type { AreaTemplate } from "@/lib/area-templates";
+import { useCategoryLabel } from "@/lib/category-label";
+import { createTemplateSearch } from "@/lib/template-search";
 import { CategoryNav } from "./category-nav";
-import { DatasetCardsSkeleton } from "./dataset-cards";
+import { DatasetCards, DatasetCardsSkeleton } from "./dataset-cards";
+import { DatasetSearchField } from "./dataset-search-field";
 import { TopicNav } from "./topic-nav";
 
 type AreaBrowseProps = {
@@ -18,7 +23,7 @@ type AreaBrowseProps = {
   children: ReactNode;
 };
 
-/** In the layout so the pickers stay mounted across picker clicks. */
+/** In the layout so the pickers and the search stay mounted across picker clicks. */
 export function AreaBrowse({
   areaId,
   areaName,
@@ -28,6 +33,28 @@ export function AreaBrowse({
 }: AreaBrowseProps) {
   const t = useTranslations("AreaPage");
   const { slug: topicSlug, category } = useParams<{ slug?: string; category?: string[] }>();
+  const searchParams = useSearchParams();
+  // Read once: replaceState never adds history entries, and Back from a dataset remounts the layout
+  const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  const categoryLabel = useCategoryLabel();
+  const searchTemplates = useMemo(
+    () => createTemplateSearch(templates, categoryLabel),
+    [templates, categoryLabel]
+  );
+  const trimmedQuery = query.trim();
+  const isSearching = trimmedQuery !== "";
+  const results = isSearching ? searchTemplates(trimmedQuery) : [];
+
+  const changeQuery = (value: string) => {
+    setQuery(value);
+    // Native replaceState keeps Next's router in sync without a server round trip per keystroke
+    const url = new URL(window.location.href);
+    if (value.trim()) url.searchParams.set("q", value);
+    else url.searchParams.delete("q");
+    window.history.replaceState(null, "", url);
+  };
+
+  const browseHeading = topicSlug ? t("datasetsTitle") : t("commonDatasets");
 
   return (
     <AreaFrame>
@@ -37,25 +64,75 @@ export function AreaBrowse({
           {areaName}
         </h1>
       </header>
-      <TopicNav templates={templates} areaId={areaId} activeTopicSlug={topicSlug} />
-      {topicSlug && (
-        <CategoryNav
-          templates={templates}
-          areaId={areaId}
-          topicSlug={topicSlug}
-          activeCategorySlug={category?.[0]}
-        />
+      <DatasetSearchField
+        label={t("searchLabel", { area: areaName })}
+        value={query}
+        onChange={changeQuery}
+      />
+      {!isSearching && (
+        <>
+          <TopicNav templates={templates} areaId={areaId} activeTopicSlug={topicSlug} />
+          {topicSlug && (
+            <CategoryNav
+              templates={templates}
+              areaId={areaId}
+              topicSlug={topicSlug}
+              activeCategorySlug={category?.[0]}
+            />
+          )}
+        </>
       )}
       <section aria-labelledby="datasets-heading" className="mt-2 flex flex-col gap-3">
         <h2
           id="datasets-heading"
+          aria-live={isSearching ? "polite" : undefined}
           className="text-xs font-semibold uppercase tracking-wide text-gray-500"
         >
-          {topicSlug ? t("datasetsTitle") : t("commonDatasets")}
+          {isSearching
+            ? t("searchResults", { count: results.length, query: trimmedQuery })
+            : browseHeading}
         </h2>
-        {children}
+        {isSearching ? (
+          <SearchResults
+            results={results}
+            areaId={areaId}
+            query={trimmedQuery}
+            onClear={() => changeQuery("")}
+          />
+        ) : (
+          children
+        )}
       </section>
     </AreaFrame>
+  );
+}
+
+type SearchResultsProps = {
+  results: AreaTemplate[];
+  areaId: string;
+  query: string;
+  onClear: () => void;
+};
+
+function SearchResults({ results, areaId, query, onClear }: SearchResultsProps) {
+  const t = useTranslations("AreaPage");
+
+  if (results.length > 0) return <DatasetCards templates={results} areaId={areaId} />;
+
+  return (
+    <div className="flex flex-col items-center">
+      <EmptyState
+        type="no-results"
+        title={t("noSearchResults", { query })}
+        description={t("noSearchResultsHint")}
+      />
+      <Button
+        onPress={onClear}
+        className="min-h-12 rounded-lg border border-gray-300 bg-white px-4 font-medium text-gray-900 hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive-500"
+      >
+        {t("clearSearch")}
+      </Button>
+    </div>
   );
 }
 

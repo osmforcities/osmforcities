@@ -11,6 +11,8 @@ const template = (id: string, categorySlug: string, topicSlug: string): AreaTemp
   categorySlug,
   topicSlug,
   commonRank: null,
+  englishName: id,
+  osmTags: [],
 });
 
 const templates = [

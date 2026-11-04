@@ -258,7 +258,12 @@
     "clearPick": "Clear {name}",
     "datasetsTitle": "Datasets",
     "otherCategory": "Other",
-    "topicMetaTitle": "{topic} in {area}"
+    "topicMetaTitle": "{topic} in {area}",
+    "searchLabel": "Search datasets in {area}",
+    "searchResults": "{count, plural, one {# result for \"{query}\"} other {# results for \"{query}\"}}",
+    "noSearchResults": "No datasets match \"{query}\"",
+    "noSearchResultsHint": "Try another word or check the spelling.",
+    "clearSearch": "Clear search"
   },
   "CategoryCards": {
     "title": "Find data in {area}",
