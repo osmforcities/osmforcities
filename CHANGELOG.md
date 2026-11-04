@@ -4,9 +4,9 @@
 
 ### Added
 
-- Area pages are now a hub: a picker of 8 topics (Health, Mobility, Nature and more) and a Common datasets section, with a page per topic and per category that can be shared and reached with Back. The category sidebar is gone, and old `?category=` links redirect to the new pages [#674], [#665]
+- Area pages are redesigned: a picker of 8 topics (Health, Mobility, Nature and more) and a Common datasets section, with a page per topic and per category that can be shared and reached with Back. The category sidebar is gone, and old `?category=` links redirect to the new pages [#674], [#665]
 - Area pages have a dataset search that tolerates typos and missing accents and matches names, descriptions, categories and OSM tags ("bycicle", "onibus") [#679]
-- While a new dataset is being counted, a full-page wait screen shows progress, says when a large area takes longer, and shows a too-large or timed-out count on the same screen instead of an error page [#575]
+- While a new dataset is being counted, a wait page shows progress, says when a large area takes longer, and shows a too-large or timed-out count on the same page instead of an error page [#575]
 - A deprecated template can point to its replacement: its dataset pages redirect there, and the report email links the replacement [#664]
 - The sign-in page explains how signing in works: no passwords, a sign-in link by email, and other emails only about saved datasets, which can be turned off in Preferences [#587]
 - A saved dataset with no features can be unsaved from its empty screen, freeing the save slot [#612]
@@ -19,7 +19,7 @@
 - Road and building templates follow the OSM wiki: fixed queries (speed cameras, bus lanes, roads, houses, livestock buildings), clearer names (Footways and paths, Bridge outlines, Apartment buildings, Traffic signals), and Agricultural buildings merged into Farm auxiliary buildings. Dataset counts shift on the next refresh [#669]
 - Template names match their OSM data (Guesthouses and hostels, Cave entrances, Drugstores), Spanish uses neutral Latin American terms, no two templates share a name in any language, and pt/fr/de wording bugs are fixed [#670], [#672]
 - Language has its own section in Preferences, and changing it no longer resends the report settings [#585]
-- Groundwork for serving every dataset map as vector tiles, all behind the tiles flag (off in production): creation and refresh submit a tile bake, each bake writes stats, a full-page wait screen covers the first bake, "email me when the map is ready", and fixes to retries, Sync and map styling [#625], [#627], [#629], [#632], [#634], [#635], [#636], [#637], [#649], [#650], [#577], [#614]
+- Groundwork for serving every dataset map as vector tiles, all behind the tiles flag (off in production): creation and refresh submit a tile bake, each bake writes stats, the wait page covers the first bake, "email me when the map is ready", and fixes to retries, Sync and map styling [#625], [#627], [#629], [#632], [#634], [#635], [#636], [#637], [#649], [#650], [#577], [#614]
 
 ### Fixed
 
