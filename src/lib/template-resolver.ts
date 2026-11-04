@@ -15,6 +15,10 @@ export async function resolveTemplate(identifier: TemplateIdentifier) {
       overpassQuery: true,
       isActive: true,
       deprecatesAt: true,
+      replacedById: true,
+      translations: {
+        select: { locale: true, name: true, description: true },
+      },
     },
   });
 

@@ -76,6 +76,10 @@ model Template {
   filterableTags String[]             @default([])
   isActive      Boolean               @default(true)
   deprecatesAt  DateTime?
+  commonRank    Int?
+  replacedById  String?
+  replacedBy    Template?             @relation("TemplateReplacement", fields: [replacedById], references: [id], onDelete: SetNull)
+  replaces      Template[]            @relation("TemplateReplacement")
   createdAt     DateTime              @default(now())
   updatedAt     DateTime              @updatedAt
   datasets      Dataset[]
@@ -158,6 +162,7 @@ model DatasetSave {
   userId    String
   datasetId String
   createdAt DateTime @default(now())
+  notifyWhenReady Boolean @default(false)
   dataset   Dataset  @relation(fields: [datasetId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 

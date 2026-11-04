@@ -53,15 +53,20 @@ Prereqs: local dev server, signed in (osmforcities-dev-auth), Overpass tunnel up
 1. **Propose** — a template is worth adding when it maps a distinct civic need, has a
    clean wiki-documented selector, and is neither so broad it trips the size cap nor so
    rare it is empty in most cities.
-2. **Define** — add the row, pick a seeded `category`, decide parent, add a Lucide `icon`
-   (validated by `pnpm generate-icons`), add name/description to `templates.i18n.yml`.
-   `pnpm db:sync`.
+2. **Define** — add the row, pick a seeded `category`, decide parent, add a Lucide `icon`, add name/description to `templates.i18n.yml`. Run `pnpm generate-icons` (validates the icon name, regenerates `src/lib/category-icons.tsx` and the email PNGs in `public/email-icons/`), then `pnpm db:sync`.
 3. **Choose `filterableTags`** — see below.
 4. **Pick demonstrators** — see below.
 5. **Seed / feature** — see Overpass budget below.
-6. **Ship** — commit `templates.yml`, `templates.i18n.yml`, `messages/*.json`. Don't push
-   or open a PR until the maintainer says so. On merge, deploy runs `db:sync`; removed
-   templates soft-deprecate (30 days) then delete.
+6. **Ship** — commit `templates.yml`, `templates.i18n.yml`, `messages/*.json`, plus the generated `src/lib/category-icons.tsx` and any new or changed `public/email-icons/*.png`. Don't push or open a PR until the maintainer says so. On merge, deploy runs `db:sync`; removed templates soft-deprecate (30 days) then delete. A removed template merged into another goes under `replacedBy:` in `templates.yml` (`old-id: new-id`): its report email links the replacement and its dataset URLs redirect to it.
+
+### Generated icon files
+
+`pnpm generate-icons` writes two committed outputs from `templates.yml`:
+
+- `src/lib/category-icons.tsx` — the app's template and category icons.
+- `public/email-icons/` — PNGs for emails: one 80px tile per template (its icon, else its category icon), `glyph-*.png` for report stats and warnings, and `_removed.png`, the neutral tile report rows use for removed templates.
+
+Emails need PNGs because email clients strip SVG, and static `.png` files cache on the CDN, so opening an email costs the server nothing. They are committed rather than built at deploy time to keep the on-server `next build` lean. Output is byte-identical across runs, so a template change shows only its own PNG in the diff. The unit test `prisma/lib/__tests__/email-icons.test.ts` fails if any template is missing its PNG. The generator only writes files: delete a removed template's PNG by hand if you want it gone.
 
 ### Tuning `filterableTags` from the dashboard
 
@@ -669,10 +674,7 @@ candidate but kept). The niche farmyard sub-values (feedlot/stockyard/poultry/da
   European capital (all asphalt) but carries the paved/unpaved signal that matters in the Global
   South — pick at least one demonstrator (e.g. Rio) that shows the variance. Dropped `name`
   (identity, not a filter) and `lanes` (numeric count, poor color-by).
-- **footways** — `[surface, lit, smoothness]`. `surface` 72%, `lit` 46%, `smoothness` 25% in
-  Munich. Even on a pedestrian path the blind/kerb a11y keys stay off: `tactile_paving` 0.6%,
-  `wheelchair` 4%, `incline` 1% — that data lives on the crossing nodes, not the footway ways.
-  `surface`/`smoothness` are the accessibility-quality proxies that actually sit on the way.
+- **footways** — `[surface, lit, smoothness]`. `surface` 72%, `lit` 46%, `smoothness` 25% in Munich. Even on a pedestrian path the blind/kerb a11y keys stay off: `tactile_paving` 0.6%, `wheelchair` 4%, `incline` 1% — that data lives on the crossing nodes, not the footway ways. `surface`/`smoothness` are the accessibility-quality proxies that actually sit on the way. Later added `footway` first (sidewalk/crossing/traffic_island/access_aisle/link) so sidewalks separate from park paths ([#517]).
 - **cycleways** — `[surface, lit, oneway, smoothness]`. Strong across cycling cities (Utrecht/
   Munich 59–89%). `segregated`/`width` too sparse to keep.
 
@@ -684,21 +686,11 @@ candidate but kept). The niche farmyard sub-values (feedlot/stockyard/poultry/da
   `parking` type. `electrified` 91%, `service` 51%, `usage` 33% in Munich. Dropped `gauge`
   (99% present but single-valued — a code, not a filter) and `maxspeed` (numeric). Top-level, not
   a child of `public-transit` (tracks aren't a subset of the stops union).
-- **busways** vs **bus-lanes** — two clean templates for one messy reality. BRT is tagged two
-  structurally different ways: physically **segregated** corridors as `highway=busway` (separate
-  ways — Rio 1185, SP corredores 572) and **on-street** lanes as `busway:*=lane` attributes on the
-  road (Bogotá Transmilenio, SP faixas). `busways` = `highway=busway` (`[surface]`); `bus-lanes` =
-  `busway=lane;busway:left=lane;busway:right=lane;busway:both=lane`, age-view only because its
-  color-by would be fragmented across those sibling keys. Keeping them separate avoids mixing
-  separate-way corridors with attributed road geometry in one legend.
+- **busways** vs **bus-lanes** — two clean templates for one messy reality. BRT is tagged two structurally different ways: physically **segregated** corridors as `highway=busway` (separate ways — Rio 1185, SP corredores 572) and **on-street** lanes as `busway:*=lane` attributes on the road (Bogotá Transmilenio, SP faixas). `busways` = `highway=busway` (`[surface]`); `bus-lanes` = `busway=lane;busway:left=lane;busway:right=lane;busway:both=lane` plus the newer `lanes:bus=*` / `bus:lanes=*` keys (and their `:forward`/`:backward` forms) that the wiki prefers over the deprecated `busway=*` ([#517]), age-view only because its color-by would be fragmented across those sibling keys. Keeping them separate avoids mixing separate-way corridors with attributed road geometry in one legend.
 - **traffic-calming** — `[traffic_calming]`. The value *is* the type (hump/bump/table/island/dip),
   a textbook color-by. Sparse in Germany (Munich 152) but heavily mapped in Latin America
   (São Paulo 7k+ "lombadas") — demonstrate there.
-- **speed-cameras — query fixed.** The template queried `man_made=speed_camera` (≈0 features
-  everywhere); the feature is actually tagged `highway=speed_camera` (São Paulo 878). Union both.
-  `[maxspeed]` is the enforced-limit color-by, 97% covered. **Lesson: confirm the query tag itself
-  matches real features before tuning — a near-empty dataset is often a wrong selector, not a
-  missing city.**
+- **speed-cameras — query fixed.** The template queried `man_made=speed_camera` (≈0 features everywhere); the feature is actually tagged `highway=speed_camera` (São Paulo 878). The wiki lists `man_made=speed_camera` as a tagging mistake, so the query is `highway=speed_camera` only ([#517]). `[maxspeed]` is the enforced-limit color-by, 97% covered. **Lesson: confirm the query tag itself matches real features before tuning — a near-empty dataset is often a wrong selector, not a missing city.**
 
 Traffic-signs, traffic-lights, bridges and tunnels stay age-view only: sign values are
 country-specific codes (not colorable), and the useful bridge/tunnel/acoustic-signal attributes
@@ -708,6 +700,14 @@ sit on the sibling road or crossing node, not the queried element.
 > `transportation` / `transport_infrastructure` / `traffic` split was consolidated — see the
 > `categories:` map). Merging categories is YAML-only; emptied categories drop out of the browse
 > UI, which lists only categories that have templates.
+
+### OSM wiki alignment, roads and buildings ([#517])
+
+- **roads** — adds `highway=motorway;highway=trunk`, completing the wiki's 7-tag "Roads" group so urban expressways count.
+- **houses** — adds `building=bungalow`. `building=residential` stays out on purpose: it is the generic fallback and covers apartment blocks too.
+- **farm-auxiliary** absorbs `building=agricultural` (a rare synonym, 32K uses vs 2.4M). The `agricultural-buildings` template is removed, `replacedBy: farm-auxiliary`.
+- **livestock-buildings** — broadened to `building=livestock;cowshed;stable;sty;barn`, since `building=livestock` alone is the fallback when the precise value is unknown (8.6K uses). The specific templates stay.
+- **bridges** is renamed "Bridge outlines": `man_made=bridge` is the optional outline, not the `bridge=yes` way, so it counts drawn outlines, not bridges.
 
 ### Civic, retail & remaining domains (batch)
 
@@ -781,3 +781,5 @@ agriculture, infrastructure, housing, environment).
 
 - Unknown template id under `filterableTags` — a typo there only leaves that one template
   age-view-only, so it never blocks the seed/deploy.
+
+[#517]: https://github.com/osmforcities/osmforcities/issues/517

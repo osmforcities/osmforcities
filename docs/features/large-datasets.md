@@ -9,13 +9,15 @@ Words used here (tiler, bake, archive, cap, count probe, lane, reconcile) are de
 
 ## Dataset lifecycle (decided 2026-09-18)
 
-What a signed-in person sees from first opening a dataset to using its map. One page, three moods, then the map.
+What a signed-in person sees from first opening a dataset to using its map. One page, three moods, then the map. The page takes over only while a dataset has never had a map: no stored features, no served archive, bake pending or failed.
 
 1. **Counting.** No dataset yet; the app asks Overpass how many elements the area has. Seconds for a warm city, about a minute for the largest in-scope city, a few minutes for an area nobody has opened before (one retry on raised budgets). After 30 s the copy admits it is taking longer.
-2. **Baking.** The dataset exists with a pending bake. Same page with the element count, a tier (about a minute / a few minutes / 10 to 15 minutes) and the tiler's live stage. From the second tier up it offers a one-time email. Flips to the map by itself when the archive lands.
-3. **Failed.** Same page. Too large waits a week before the next try (a reverted bad import can bring the area back under the ceiling); the email, if asked for, says so. Anything else says "isn't ready yet", keeps the row, and retries on a growing wait: 15 minutes after the first failure, 1 hour after the second, 6 hours after the third, then daily for good. A failed Overpass fetch, a failed submit and a failed bake all count; only a finished bake resets the count. A dataset whose bake is still pending is not retried on the short waits. If the tiler does not answer when a scheduled refresh starts, that refresh is skipped for every dataset and charges none of them; pending bakes are still checked. Health reports degraded when more than five datasets are past their third failure or the tiler has been unreachable for over 30 minutes.
+2. **Baking.** The dataset exists with a pending bake. Same page with the tiler's live stage and a five-step progress block. No wait estimate: the tiler has none to give. Checks the bake every few seconds and flips to the map in place when the archive lands, no reload.
+3. **Failed.** Same page, no polling. Too large is its own screen and waits a week before the next try (a reverted bad import can bring the area back under the ceiling). Anything else retries on a growing wait: 15 minutes after the first failure, 1 hour after the second, 6 hours after the third, then daily for good. A failed Overpass fetch, a failed submit and a failed bake all count; only a finished bake resets the count. A dataset whose bake is still pending is not retried on the short waits. If the tiler does not answer when a scheduled refresh starts, that refresh is skipped for every dataset and charges none of them; pending bakes are still checked. Health reports degraded when more than five datasets are past their third failure or the tiler has been unreachable for over 30 minutes.
 4. **Ready.** The normal sidebar-and-map page, served from the archive.
 5. **Rebuild.** A refresh bakes in the background; visitors keep the old archive and "fetched" time, and nothing on the page says so. Admin Sync is disabled while a bake is pending. Bakes show on the admin datasets page and as dashboard badges.
+
+Baking, failed and too large all carry one button: save the dataset and email me when the map is ready. Saving is the notification: only saved datasets are retried, and the one mail goes out when a bake with features lands, never on a failure. Unsaving cancels it, and turning email off in Preferences covers it too.
 
 Every first load waits for a bake, small datasets included. Cards on the area, explore and home pages do not yet show a baking dataset.
 
@@ -115,9 +117,8 @@ Historical; the "Implemented" paragraph below is current. At the time no app cod
 ## overpass-pmtiler: settled design (2026-09-05)
 
 Extraction+bake service co-located with Overpass, so a multi-GB fetch is a
-localhost read. Name `overpass-pmtiler`; developed in its own (currently
-private) repo. Deployment lives in the infra repo: it reuses the existing
-restricted vhost and exposes nothing new.
+localhost read. Name `overpass-pmtiler`; developed in its own repo,
+[osmforcities/overpass-pmtiler][tiler repo].
 
 Decisions (brainstorm 2026-09-05):
 
@@ -160,9 +161,9 @@ scheduler) -> pull outputs -> serve from app nginx. Dataset status maps from
 job state; "processing, check back later" is `state != done`. `failed`
 carries the Overpass error text through.
 
-**Implemented (as of 2026-09-18):** `Dataset` carries `tilesJobId/tilesState/tilesUpdatedAt/tilesError` for the job being built and `tilesServedJobId` for the served archive, which moves only when a bake lands (blue/green), so a pending or failed rebuild keeps the previous archive on the map; every successful snapshot submits a bake job (`src/lib/tiler/submit.ts`); the update-datasets cron reconciles pending jobs (`src/lib/tiler/poll.ts`) — pull to `TILES_DIR`, ack, keep current + previous archive (never the served one); `GET /api/tiles/{jobId}.pmtiles` serves with Range support. `TILER_URL` unset = kill switch. The map renders from the archive behind `NEXT_PUBLIC_TILES_ENABLED` ([#489]). A live status route feeds the processing panel and reconciles on demand. Over-cap creations take the tiles-only lane (count, submit with raised budgets, no app-side fetch), with one probe retry for cold areas; the lane needs both the tiler and the render flag on. Stats for tiles-only rows come from the tiler's `stats.json`.
+**Implemented (as of 2026-09-18):** `Dataset` carries `tilesJobId/tilesState/tilesUpdatedAt/tilesError` for the job being built and `tilesServedJobId` for the served archive, which moves only when a bake lands (blue/green), so a pending or failed rebuild keeps the previous archive on the map; every successful snapshot submits a bake job (`src/lib/tiler/submit.ts`); the update-datasets cron reconciles pending jobs (`src/lib/tiler/poll.ts`) — pull to `TILES_DIR`, ack, keep current + previous archive (never the served one); `GET /api/tiles/{jobId}.pmtiles` serves with Range support. `TILER_URL` unset = kill switch. The map renders from the archive behind `NEXT_PUBLIC_TILES_ENABLED` ([#489]). A live status route feeds the wait page and reconciles on demand. With both the tiler and the render flag on, every dataset takes the tiles-only lane: creation runs the count probe only (one retry for cold areas) and submits a bake, raised budgets when over the cap; every refresh, cron or admin Sync, runs the count probe for the bake's budgets and submits, with no app-side fetch and no stored count until the bake lands. The reconcile is then the only writer of stats, counters and geojson (feature fill for under-cap rows). Either flag off, creation and refresh fetch as before.
 
-**Not yet:** refresh = submit only, the tiler as the authoritative stats writer for every dataset, feature fill for under-cap rows, the wait page and ready notification from the lifecycle above, and the backfill + flag flip ([#501]).
+**Not yet:** the backfill + flag flip ([#501]).
 
 Main real work item: relation/multipolygon assembly in the convert stage —
 the spike skipped relations (15,783 in SP buildings).
@@ -185,12 +186,12 @@ bake runs (checklist item that still needs a probe).
      breaks the `step` expression.
    - Harness + archive preserved in `spikes/2026-09-04-large-datasets/`.
 2. ~~overpass-box tiler service exploration~~ **SETTLED (2026-09-05)** — design
-   above; service work tracked in the overpass-pmtiler repo (milestone v0.1 =
+   above; service work tracked in the [tiler repo] (milestone v0.1 =
    one SP-class job end-to-end; issues 1-8 seeded 2026-09-05).
 3. Contention probe: measure live Overpass query latency while a bake runs
    alongside it (only remaining pre-build measurement).
 4. Rewrite [#490] (and touch up [#487]) to the settled design; service work items
-   tracked in the overpass-pmtiler repo.
+   tracked in the [tiler repo].
 5. Then: app-side work ([#489] protocol + vector source) in a worktree, behind a
    flag, landed as a draft PR first.
 
@@ -203,3 +204,4 @@ bake runs (checklist item that still needs a probe).
 [#489]: https://github.com/osmforcities/osmforcities/issues/489
 [#490]: https://github.com/osmforcities/osmforcities/issues/490
 [#501]: https://github.com/osmforcities/osmforcities/issues/501
+[tiler repo]: https://github.com/osmforcities/overpass-pmtiler

@@ -8,10 +8,8 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 
-import {
-  isMagicLinkRateLimited,
-  MAGIC_LINK_TOKEN_TTL_MS,
-} from "@/lib/magic-link-rate-limit";
+import { isMagicLinkRateLimited } from "@/lib/magic-link-rate-limit";
+import { MAGIC_LINK_TOKEN_TTL_MS } from "@/lib/magic-link-ttl";
 import { prisma } from "@/lib/db";
 
 const mockCount = vi.mocked(prisma.verificationToken.count);

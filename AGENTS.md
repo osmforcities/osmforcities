@@ -8,10 +8,14 @@ Next.js 15 + React 19 app that turns OpenStreetMap data into city datasets peopl
 pnpm dev                 # dev server
 pnpm type-check
 pnpm lint
-pnpm test:unit           # vitest
-pnpm test-storybook      # Storybook interaction tests
 pnpm storybook
-NODE_ENV=test pnpm playwright test --grep "name"   # targeted e2e only
+
+# Tests, one line per layer (which layer a change needs: CODING_STANDARDS.md, Tests)
+pnpm test:unit                                       # all vitest projects (unit + Storybook)
+pnpm vitest run src/lib/__tests__/<name>.test.ts     # unit: one file
+pnpm test-storybook                                  # component: Storybook interaction tests
+pnpm vitest run src/components/<name>.stories.tsx    # component: one story file, no Storybook server
+NODE_ENV=test pnpm playwright test --grep "name"     # e2e: targeted only, needs the test DB from .env.test
 ```
 
 ## Rules

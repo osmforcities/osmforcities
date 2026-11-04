@@ -2,6 +2,7 @@ import { test, expect } from "./test-setup";
 import { createTestUser, cleanupTestUser } from "./utils/auth";
 import { PrismaClient } from "@prisma/client";
 import { getLocalizedPath } from "./config";
+import enMessages from "../messages/en.json";
 
 test.describe("Dashboard Page - Essential Workflows", () => {
   let testUser: { id: string; email: string; password?: string };
@@ -269,7 +270,10 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     await expect(datasetCard.getByText("(US)")).toBeVisible();
 
     // Check for category badge
-    await expect(datasetCard.getByText(template.category?.slug ?? "other")).toBeVisible();
+    const categoryLabels: Record<string, string> = enMessages.CategoryLabel;
+    await expect(
+      datasetCard.getByText(categoryLabels[template.category.slug], { exact: true })
+    ).toBeVisible();
 
     // Check for status badge
     await expect(datasetCard.getByText("Active")).toBeVisible();

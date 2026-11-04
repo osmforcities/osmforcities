@@ -1,9 +1,34 @@
 import { describe, it, expect } from "vitest";
-import { dueForRefreshWhere, retryWaitMs } from "../dataset-retry";
+import { dueForRefreshWhere, isRetryDue, retryWaitMs } from "../dataset-retry";
 
 const MIN = 60 * 1000;
 const HOUR = 60 * MIN;
 const DAY = 24 * HOUR;
+
+describe("isRetryDue", () => {
+  const now = new Date("2026-10-05T12:00:00Z");
+  const row = (agoMs: number | null, consecutiveFailures: number, tilesError: string | null = null) => ({
+    lastAttempted: agoMs === null ? null : new Date(now.getTime() - agoMs),
+    consecutiveFailures,
+    tilesError,
+  });
+
+  it("is due when the row was never attempted", () => {
+    expect(isRetryDue(row(null, 0), now)).toBe(true);
+  });
+
+  it("follows the ladder from lastAttempted", () => {
+    expect(isRetryDue(row(14 * MIN, 1), now)).toBe(false);
+    expect(isRetryDue(row(16 * MIN, 1), now)).toBe(true);
+    expect(isRetryDue(row(59 * MIN, 2), now)).toBe(false);
+    expect(isRetryDue(row(61 * MIN, 2), now)).toBe(true);
+  });
+
+  it("keeps the weekly wait after a too-large refusal", () => {
+    expect(isRetryDue(row(6 * DAY, 1, "too_large: out of memory"), now)).toBe(false);
+    expect(isRetryDue(row(8 * DAY, 1, "too_large: out of memory"), now)).toBe(true);
+  });
+});
 
 describe("retryWaitMs", () => {
   it("keeps the daily cadence for a healthy row", () => {
@@ -43,7 +68,7 @@ describe("dueForRefreshWhere", () => {
         (d) => d.getTime()
       )
     );
-    expect(OR).toContainEqual({ lastAttempted: null });
+    expect(OR.some((c) => c.lastAttempted === null)).toBe(true);
   });
 
   it("keeps rows with a null tilesError in the ladder clauses", () => {
@@ -54,15 +79,12 @@ describe("dueForRefreshWhere", () => {
     expect(JSON.stringify(rung)).toContain('{"tilesError":null}');
   });
 
-  it("never retries on a short rung while the last bake is still pending", () => {
-    // A metro bake can outlast the 15 min rung; resubmitting would orphan it.
-    const rungs = dueForRefreshWhere(now).OR.filter(
-      (c) => "consecutiveFailures" in c && typeof c.consecutiveFailures === "number"
-    );
-    expect(rungs).toHaveLength(3);
-    for (const rung of rungs) {
-      expect(JSON.stringify(rung)).toContain(
-        '{"OR":[{"tilesState":null},{"NOT":{"tilesState":"pending"}}]}'
+  it("never refreshes a row whose bake is still pending, on any clause", () => {
+    const { OR } = dueForRefreshWhere(now);
+    expect(OR).toHaveLength(6);
+    for (const clause of OR) {
+      expect(JSON.stringify(clause)).toContain(
+        '{"OR":[{"tilesState":null},{"NOT":{"tilesState":"pending"}},{"tilesJobId":null}]}'
       );
     }
   });

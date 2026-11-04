@@ -137,12 +137,9 @@ export async function setupAuthenticationWithLogin(
   user: TestUser
 ): Promise<TestUser> {
   // Use fast API-based authentication for tests
-  const response = await page.request.post(
-    "http://localhost:3000/api/auth/test-signin",
-    {
-      data: { email: user.email },
-    }
-  );
+  const response = await page.request.post("/api/auth/test-signin", {
+    data: { email: user.email },
+  });
 
   if (!response.ok()) {
     throw new Error(
@@ -153,7 +150,7 @@ export async function setupAuthenticationWithLogin(
   // The API endpoint sets the session cookie automatically
   // Navigate to user's preferred locale to avoid middleware redirect
   const locale = user.language || "en";
-  await page.goto(`http://localhost:3000/${locale}`);
+  await page.goto(`/${locale}`);
   await page.waitForLoadState("domcontentloaded");
 
   return user;

@@ -3,15 +3,23 @@ import path from "node:path";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { DatasetStatsSchema } from "@/schemas/dataset";
+import { AGE_CATEGORY_ORDER } from "@/lib/feature-age";
+import { ageDimensionFromCounts } from "@/lib/filter-dimensions";
 import { tilesDir } from "./client";
 
 const TILER_STATS_SCHEMA_VERSION = 1;
 
-// The stats the app stores, plus the two the tiler keeps outside that blob.
-// Both rules match the ones the dataset page enforces on the columns below.
+// The stats the app stores, plus the ones the tiler keeps outside that blob.
+// features and bbox match the rules the dataset page enforces on the columns
+// below; ageBands is one count per AGE_CATEGORY_ORDER bucket, undated features
+// in the last one, as the app counts them.
 const TilerStatsSchema = DatasetStatsSchema.extend({
   features: z.number().int().nonnegative(),
   bbox: z.array(z.number()).length(4).nullable(),
+  ageBands: z
+    .array(z.number().int().nonnegative())
+    .length(AGE_CATEGORY_ORDER.length)
+    .optional(),
 });
 
 export async function readPulledStats(jobId: string): Promise<unknown> {
@@ -46,7 +54,13 @@ export function tilerStatsToDatasetColumns(raw: unknown) {
     return null;
   }
 
-  const { features, bbox, ...stats } = parsed.data;
+  const { features, bbox, ageBands, ...stats } = parsed.data;
+  if (ageBands) {
+    stats.filterDimensions = [
+      ...(stats.filterDimensions ?? []),
+      ageDimensionFromCounts(ageBands),
+    ];
+  }
   return {
     // Prisma Json columns cannot hold the Dates zod coerced.
     stats: JSON.parse(JSON.stringify(stats)),

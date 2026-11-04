@@ -6,16 +6,6 @@ import {
   TestUser,
 } from "./utils/auth";
 
-/**
- * Area Page Tests
- *
- * Tests the area page functionality including:
- * - Area page loads correctly with area information
- * - Datasets are displayed in a grid
- * - Navigation works properly (breadcrumbs, external links)
- * - Error handling for invalid area IDs
- */
-
 test.describe("Area Page", () => {
   let testUser: TestUser;
 
@@ -28,37 +18,6 @@ test.describe("Area Page", () => {
   });
 
   test("should display area information and datasets", async ({ page }) => {
-    // Mock Nominatim response for area details
-    await page.route(
-      "**/nominatim.openstreetmap.org/lookup*",
-      async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify([
-            {
-              place_id: 123456,
-              osm_type: "relation",
-              osm_id: 298470,
-              display_name: "São Paulo, State of São Paulo, Brazil",
-              name: "São Paulo",
-              class: "place",
-              type: "city",
-              boundingbox: ["-23.8", "-23.3", "-46.8", "-46.1"],
-              lat: "-23.5",
-              lon: "-46.6",
-              address: {
-                country_code: "br",
-                country: "Brazil",
-                state: "State of São Paulo",
-                type: "city",
-              },
-            },
-          ]),
-        });
-      }
-    );
-
     const areaId = "298470";
 
     // Navigate to area page
@@ -71,42 +30,23 @@ test.describe("Area Page", () => {
     // Check that we're not on a 404 page
     await expect(page.locator("h1")).not.toContainText("404");
 
-    // Check that template grid is present
-    await expect(page.locator("[data-testid='template-grid']")).toBeVisible();
+    await expect(page.locator("[data-testid='dataset-cards']")).toBeVisible();
+
+    await page.getByRole("link", { name: /^Mobility \d+$/ }).click();
+    await expect(page).toHaveURL(/\/area\/298470\/topics\/mobility$/);
+    const topicChip = page.getByRole("link", { name: "Clear Mobility" });
+    await expect(topicChip).toBeVisible();
+
+    await page.getByRole("link", { name: /^Cycling \d+$/ }).click();
+    await expect(page).toHaveURL(/\/topics\/mobility\/cycling$/);
+    await expect(page.getByRole("link", { name: "Clear Cycling" })).toBeVisible();
+
+    await topicChip.click();
+    await expect(page).toHaveURL(/\/area\/298470$/);
+    await expect(page.getByRole("heading", { name: "Pick a topic" })).toBeVisible();
   });
 
   test("should display clickable dataset cards", async ({ page }) => {
-    // Mock Nominatim response
-    await page.route(
-      "**/nominatim.openstreetmap.org/lookup*",
-      async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify([
-            {
-              place_id: 123456,
-              osm_type: "relation",
-              osm_id: 298470,
-              display_name: "São Paulo, State of São Paulo, Brazil",
-              name: "São Paulo",
-              class: "place",
-              type: "city",
-              boundingbox: ["-23.8", "-23.3", "-46.8", "-46.1"],
-              lat: "-23.5",
-              lon: "-46.6",
-              address: {
-                country_code: "br",
-                country: "Brazil",
-                state: "State of São Paulo",
-                type: "city",
-              },
-            },
-          ]),
-        });
-      }
-    );
-
     const areaId = "298470";
 
     // Navigate to area page
@@ -114,7 +54,7 @@ test.describe("Area Page", () => {
     await page.waitForLoadState("domcontentloaded");
 
     // Wait for templates to load
-    await expect(page.locator("[data-testid='template-grid']")).toBeVisible();
+    await expect(page.locator("[data-testid='dataset-cards']")).toBeVisible();
 
     // Check that dataset cards are present and clickable
     const datasetCards = page.locator("a[href*='/dataset/']");
@@ -129,41 +69,23 @@ test.describe("Area Page", () => {
     await expect(firstDatasetLink.locator("h3")).toBeVisible(); // Dataset name
   });
 
+  test("search finds a dataset and Back returns to the results", async ({ page }) => {
+    await page.goto(getLocalizedPath("/area/298470/topics/mobility"));
+    await page.getByRole("searchbox").fill("bakery");
+    await expect(page).toHaveURL(/\/area\/298470\/topics\/mobility\?q=bakery$/);
+
+    await page.getByRole("link", { name: /^Bakeries/ }).click();
+    await expect(page).toHaveURL(/\/area\/298470\/dataset\/bakeries$/);
+
+    await page.goBack();
+    await expect(page.getByRole("searchbox")).toHaveValue("bakery");
+    await expect(page.getByRole("link", { name: /^Bakeries/ })).toBeVisible();
+  });
+
   // Invalid area ID 404 handling is covered by dataset-page.spec.ts.
   // pt-BR template rendering is covered by dataset-translations.spec.ts.
 
   test("should display templates in Portuguese (pt-BR)", async ({ page }) => {
-    // Mock Nominatim response for area details
-    await page.route(
-      "**/nominatim.openstreetmap.org/lookup*",
-      async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify([
-            {
-              place_id: 123456,
-              osm_type: "relation",
-              osm_id: 298470,
-              display_name: "São Paulo, State of São Paulo, Brazil",
-              name: "São Paulo",
-              class: "place",
-              type: "city",
-              boundingbox: ["-23.8", "-23.3", "-46.8", "-46.1"],
-              lat: "-23.5",
-              lon: "-46.6",
-              address: {
-                country_code: "br",
-                country: "Brazil",
-                state: "State of São Paulo",
-                type: "city",
-              },
-            },
-          ]),
-        });
-      }
-    );
-
     // Create user with pt-BR language and authenticate
     testUser = await setupAuthenticationWithSignup(page, { language: "pt-BR" });
 
@@ -173,12 +95,8 @@ test.describe("Area Page", () => {
     await page.waitForLoadState("domcontentloaded");
 
     // Wait for templates to load
-    await expect(page.locator("[data-testid='template-grid']")).toBeVisible();
+    await expect(page.locator("[data-testid='dataset-cards']")).toBeVisible();
 
-    // Verify Portuguese translations appear
-    await expect(
-      page.locator("text=Estacionamento para bicicletas")
-    ).toBeVisible();
     await expect(page.locator("text=Pontos de ônibus")).toBeVisible();
   });
 });

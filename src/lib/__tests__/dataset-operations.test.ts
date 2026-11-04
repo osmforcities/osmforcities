@@ -46,6 +46,11 @@ vi.mock("@/lib/area-boundary", () => ({
   fetchOsmRelationData: vi.fn(),
 }));
 
+vi.mock("@/lib/tiler/submit", () => ({
+  submitTilesForDataset: vi.fn().mockResolvedValue({}),
+  recordFailedSubmit: vi.fn(),
+}));
+
 vi.mock("@/lib/umami", () => ({
   trackEvent: vi.fn(),
 }));
@@ -69,6 +74,7 @@ vi.mock("@/lib/area-refresh", async (importOriginal) => {
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 import { refreshAreaInfoIfStale } from "@/lib/area-refresh";
+import { recordFailedSubmit, submitTilesForDataset } from "@/lib/tiler/submit";
 import { prisma } from "@/lib/db";
 
 const mockFetchDatasetSnapshot = vi.mocked(fetchDatasetSnapshot);
@@ -197,6 +203,44 @@ describe("getOrCreateDataset — error sanitization", () => {
 
     await expect(getOrCreateDataset(1, "test-template", "en")).rejects.toThrow(
       "Dataset too large"
+    );
+  });
+});
+
+describe("getOrCreateDataset — tiles columns on create", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("carries a failed submit's tilesError so the first render shows the failed screen", async () => {
+    mockFetchDatasetSnapshot.mockResolvedValue({
+      tilesOnly: true,
+      geojson: null,
+      stats: null,
+      bbox: null,
+      dataCount: 100,
+    } as never);
+    vi.mocked(prisma.dataset.create).mockResolvedValue({
+      ...existingDatasetRow,
+      tilesState: null,
+      tilesJobId: null,
+      tilesError: null,
+    } as never);
+    vi.mocked(submitTilesForDataset).mockResolvedValueOnce({
+      tilesState: "failed",
+      tilesError: "Tiler submit failed: 500",
+    });
+
+    const { dataset, wasCreated } = await getOrCreateDataset(1, "test-template", "en");
+
+    expect(wasCreated).toBe(true);
+    expect(dataset).toMatchObject({
+      tilesState: "failed",
+      tilesError: "Tiler submit failed: 500",
+    });
+    expect(recordFailedSubmit).toHaveBeenCalledWith(
+      dataset.id,
+      "Tiler submit failed: 500"
     );
   });
 });

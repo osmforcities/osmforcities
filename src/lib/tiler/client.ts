@@ -5,14 +5,15 @@ import path from "node:path";
 import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import type { Dataset } from "@prisma/client";
+import { AGE_BUCKET_DAYS } from "@/lib/feature-age";
 
 /**
  * Client for the overpass-pmtiler service (see overpass-pmtiler/API.md).
  *
- * The integration is additive: the app's own Overpass fetch stays the source
- * of truth for geojson/stats, so every helper here degrades gracefully when
- * the tiler is unreachable. TILER_URL unset disables the whole integration
- * (the kill switch).
+ * With the tiles flag on the tiler is the data source (the tiles-only lane, see
+ * tilesOnlyLaneEnabled); off, it only adds archives to the app's own fetch.
+ * Every helper here degrades gracefully when the tiler is unreachable.
+ * TILER_URL unset disables the whole integration (the kill switch).
  */
 
 export type TileJobState =
@@ -107,7 +108,14 @@ export async function submitTileJob(input: {
   const response = await fetch(`${requireTilerUrl()}/jobs`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
+    body: JSON.stringify({
+      ...input,
+      // Stats then carry the legend's age counts (over-cap rows hold no features)
+      ageBandsDays: AGE_BUCKET_DAYS,
+      // data.ndjson then carries user/timestamp, which the feature fill
+      // in reconcile stores like the app's snapshot
+      keepMeta: true,
+    }),
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
   // 202 = accepted, 200 = idempotent resubmit of a known id; both fine.
@@ -207,6 +215,40 @@ export async function downloadTileOutputs(id: string): Promise<void> {
     `${requireTilerUrl()}/jobs/${id}/stats.json`,
     path.join(dir, `${id}.stats.json`)
   );
+}
+
+/**
+ * The nd-geojson a done bake was baked from. Held in memory, not written to
+ * TILES_DIR: callers only fetch it under the storage cap and store it as
+ * geojson, so no file would ever be served or pruned.
+ */
+export async function fetchTileNdjson(
+  id: string,
+  maxBytes: number
+): Promise<string | null> {
+  const response = await fetch(
+    `${requireTilerUrl()}/jobs/${requireValidJobId(id)}/data.ndjson`,
+    { signal: AbortSignal.timeout(DOWNLOAD_TIMEOUT_MS) }
+  );
+  if (!response.ok || !response.body) {
+    throw new Error(`Tiler ndjson download failed: ${response.status}`);
+  }
+  // Streamed with a hard stop: the caller's cap check is a per-feature
+  // estimate, and geometry-heavy bakes can pass it at hundreds of MB.
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let bytes = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    bytes += value.byteLength;
+    if (bytes > maxBytes) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks).toString("utf8");
 }
 
 /** Ack a pulled job so the tiler frees its spool. 404 (already swept) is fine. */

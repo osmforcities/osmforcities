@@ -7,7 +7,7 @@ import {
   DatasetTooLargeError,
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
-import { submitTilesForDataset } from "@/lib/tiler/submit";
+import { submitTilesForDataset, tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
@@ -58,11 +58,39 @@ export async function POST(
       );
     }
 
+    const tilesLane = tilesOnlyLaneEnabled();
+    if (tilesLane) {
+      // Claims the slot before the probe, like the cron does, so a tick
+      // meanwhile does not submit a second bake
+      await prisma.dataset.update({
+        where: { id: datasetId },
+        data: { lastAttempted: new Date() },
+      });
+    }
+
     const snapshot = await fetchDatasetSnapshot(
       dataset.areaId,
       dataset.template.overpassQuery,
       dataset.templateId
     );
+
+    // On the tiles-only lane the snapshot is the count probe alone: the Sync
+    // button queues a bake sized by it, and the reconcile writes the data.
+    if (tilesLane) {
+      const { tilesState } = await submitTilesForDataset(
+        datasetId,
+        snapshot.dataCount
+      );
+      // null: an empty dataset, nothing to bake, synced as it stands
+      if (tilesState !== "pending" && tilesState !== null) {
+        return NextResponse.json(
+          { error: "Failed to queue the map rebuild" },
+          { status: 502 }
+        );
+      }
+      await trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
+      return NextResponse.json({ success: true, tilesState });
+    }
 
     const updatedDataset = await prisma.dataset.update({
       where: {
@@ -93,15 +121,19 @@ export async function POST(
       },
     });
 
-    await submitTilesForDataset(datasetId);
+    // Empty when the tiler is off, so the stored tilesState stands. A
+    // "pending" here tells the client a rebuild was queued, not completed.
+    const tilesColumns = await submitTilesForDataset(datasetId);
+    const refreshedDataset = { ...updatedDataset, ...tilesColumns };
 
     await trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
 
     return NextResponse.json({
       success: true,
-      dataset: updatedDataset,
+      dataset: refreshedDataset,
       dataCount: snapshot.dataCount,
-      lastChecked: updatedDataset.lastChecked,
+      lastChecked: refreshedDataset.lastChecked,
+      tilesState: refreshedDataset.tilesState,
     });
   } catch (error) {
     if (error instanceof DatasetTooLargeError) {

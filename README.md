@@ -6,7 +6,7 @@ A web platform to monitor OpenStreetMap datasets at the city level.
 
 - Node.js (see `.nvmrc` for specific version)
 - PostgreSQL (running on port 5432)
-- pnpm package manager
+- pnpm, at the version pinned in `package.json` (`packageManager`); pnpm 9.7+ switches to it automatically
 
 ## Getting Started
 
@@ -54,6 +54,12 @@ Install dependencies:
 pnpm install
 ```
 
+New dependency versions must be older than the cooldown set by `minimumReleaseAge` in `pnpm-workspace.yaml`. For an urgent security fix, skip the cooldown for that one install:
+
+```bash
+pnpm add <pkg> --config.minimum-release-age=0
+```
+
 ### Database Setup
 
 1. Generate the Prisma client:
@@ -83,6 +89,29 @@ pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to view the application.
+
+## Testing
+
+### Where e2e specs go
+
+Playwright has two projects, each with its own dev server:
+
+- `tests/tiler/`: the `tiler` project, against `:3100` with tiles on, a mock tiler and a mock Overpass. Put specs here when they need the tiles lane.
+- everything else under `tests/`: the `chromium` project, against `:3000`.
+
+Locally both servers start. In CI each job runs one project and starts only its server (`E2E_PROJECT`), so a spec that reaches the other project's server passes locally and fails in CI. The tiler specs run as one CI job, so a slow new tiler spec makes every PR wait longer.
+
+### Real tiler smoke test
+
+The `tiler` Playwright project runs against a mock tiler. `tests/tiler/smoke.spec.ts` swaps in a real overpass-pmtiler to catch contract drift (job JSON, `stats.json`, archive format). Run it by hand before a release and before changing the tiler contract. CI skips it.
+
+Needs Python 3, `tippecanoe` on `PATH`, an overpass-pmtiler checkout, and the test database on port 5433. The tiler fetches from the app's mock Overpass, which serves the checkout's `fixtures/delft-parks.json`, so no tunnel is needed.
+
+```bash
+PMTILER_SMOKE=1 PMTILER_DIR=../overpass-pmtiler pnpm test:playwright tests/tiler/smoke.spec.ts
+```
+
+`PMTILER_DIR` is resolved from the app folder. The tiler listens on port 8199, and ports 3000 and 3100 must be free. Run only this spec: with `PMTILER_SMOKE=1` the other tiler specs would talk to the real tiler and fail.
 
 ## Tasks API
 

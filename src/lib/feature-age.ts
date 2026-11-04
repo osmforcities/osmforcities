@@ -23,6 +23,12 @@ export const AGE_CATEGORY_ORDER = [
   "very-old",
 ] as const;
 
+/**
+ * Day cutoffs between the buckets above, the one source for the legend
+ * counts, the paint stops and the tiler's baked counts.
+ */
+export const AGE_BUCKET_DAYS = [7, 30, 90] as const;
+
 export type AgeCategory = (typeof AGE_CATEGORY_ORDER)[number];
 export type AgeCategoryValues<T> = Record<AgeCategory, T>;
 
@@ -55,10 +61,7 @@ export function featureTs(feature: Feature): number | undefined {
 export function ageCategoryOfTs(ts: unknown, nowMs = Date.now()): AgeCategory {
   if (typeof ts !== "number" || !Number.isFinite(ts)) return "very-old";
   const ageDays = (nowMs / 1000 - ts) / DAY_S;
-  if (ageDays <= 7) return "recent";
-  if (ageDays <= 30) return "medium";
-  if (ageDays <= 90) return "older";
-  return "very-old";
+  return AGE_CATEGORY_ORDER[AGE_BUCKET_DAYS.filter((d) => ageDays > d).length];
 }
 
 /**
@@ -79,15 +82,16 @@ export function ageStep<T>(
     return veryOld;
   }
   const nowS = nowMs / 1000;
+  const [recentDays, mediumDays, olderDays] = AGE_BUCKET_DAYS;
   return [
     "step",
     ["number", ["get", AGE_TS_KEY], 0],
     veryOld,
-    nowS - 90 * DAY_S,
+    nowS - olderDays * DAY_S,
     values.older,
-    nowS - 30 * DAY_S,
+    nowS - mediumDays * DAY_S,
     values.medium,
-    nowS - 7 * DAY_S,
+    nowS - recentDays * DAY_S,
     values.recent,
   ];
 }

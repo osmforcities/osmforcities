@@ -1,5 +1,60 @@
 # osmforcities
 
+## 1.21.0
+
+### Added
+
+- Area pages are redesigned: a picker of 8 topics (Health, Mobility, Nature and more) and a Common datasets section, with a page per topic and per category that can be shared and reached with Back. The category sidebar is gone, and old `?category=` links redirect to the new pages [#674], [#665]
+- Area pages have a dataset search that tolerates typos and missing accents and matches names, descriptions, categories and OSM tags ("bycicle", "onibus") [#679]
+- While a new dataset is being counted, a wait page shows progress, says when a large area takes longer, and shows a too-large or timed-out count on the same page instead of an error page [#575]
+- A deprecated template can point to its replacement: its dataset pages redirect there, and the report email links the replacement [#664]
+- The sign-in page explains how signing in works: no passwords, a sign-in link by email, and other emails only about saved datasets, which can be turned off in Preferences [#587]
+- A saved dataset with no features can be unsaved from its empty screen, freeing the save slot [#612]
+
+### Changed
+
+- The top bar search is a "Search areas" button that opens into a search box (icon only on phones), and its messages are translated [#681]
+- All emails share one card layout. The report email lists each changed dataset as a row with its icon, last edit, features and mappers (at most 5, then a count), has a dashboard button, and warns inside the row when a dataset's template is leaving the catalog. Report dates are localized [#642]
+- The sign-in email has a prominent sign-in link, the raw URL as a fallback, the 24-hour expiry and an "ignore if you didn't ask" line, translated in every language [#638]
+- Road and building templates follow the OSM wiki: fixed queries (speed cameras, bus lanes, roads, houses, livestock buildings), clearer names (Footways and paths, Bridge outlines, Apartment buildings, Traffic signals), and Agricultural buildings merged into Farm auxiliary buildings. Dataset counts shift on the next refresh [#669]
+- Template names match their OSM data (Guesthouses and hostels, Cave entrances, Drugstores), Spanish uses neutral Latin American terms, no two templates share a name in any language, and pt/fr/de wording bugs are fixed [#670], [#672]
+- Language has its own section in Preferences, and changing it no longer resends the report settings [#585]
+- Groundwork for serving every dataset map as vector tiles, all behind the tiles flag (off in production): creation and refresh submit a tile bake, each bake writes stats, the wait page covers the first bake, "email me when the map is ready", and fixes to retries, Sync and map styling [#625], [#627], [#629], [#632], [#634], [#635], [#636], [#637], [#649], [#650], [#577], [#614]
+
+### Fixed
+
+- An Overpass timeout reported inside a normal reply is treated as a timeout instead of saving the dataset as empty, and a non-JSON reply fails with a clear error [#584]
+- Relative timestamps no longer cause a hydration mismatch [#621]
+
+[#575]: https://github.com/osmforcities/osmforcities/pull/575
+[#577]: https://github.com/osmforcities/osmforcities/pull/577
+[#584]: https://github.com/osmforcities/osmforcities/pull/584
+[#585]: https://github.com/osmforcities/osmforcities/pull/585
+[#587]: https://github.com/osmforcities/osmforcities/pull/587
+[#612]: https://github.com/osmforcities/osmforcities/pull/612
+[#614]: https://github.com/osmforcities/osmforcities/pull/614
+[#621]: https://github.com/osmforcities/osmforcities/pull/621
+[#625]: https://github.com/osmforcities/osmforcities/pull/625
+[#627]: https://github.com/osmforcities/osmforcities/pull/627
+[#629]: https://github.com/osmforcities/osmforcities/pull/629
+[#632]: https://github.com/osmforcities/osmforcities/pull/632
+[#634]: https://github.com/osmforcities/osmforcities/pull/634
+[#635]: https://github.com/osmforcities/osmforcities/pull/635
+[#636]: https://github.com/osmforcities/osmforcities/pull/636
+[#637]: https://github.com/osmforcities/osmforcities/pull/637
+[#638]: https://github.com/osmforcities/osmforcities/pull/638
+[#642]: https://github.com/osmforcities/osmforcities/pull/642
+[#649]: https://github.com/osmforcities/osmforcities/pull/649
+[#650]: https://github.com/osmforcities/osmforcities/pull/650
+[#664]: https://github.com/osmforcities/osmforcities/pull/664
+[#665]: https://github.com/osmforcities/osmforcities/pull/665
+[#669]: https://github.com/osmforcities/osmforcities/pull/669
+[#670]: https://github.com/osmforcities/osmforcities/pull/670
+[#672]: https://github.com/osmforcities/osmforcities/pull/672
+[#674]: https://github.com/osmforcities/osmforcities/pull/674
+[#679]: https://github.com/osmforcities/osmforcities/pull/679
+[#681]: https://github.com/osmforcities/osmforcities/pull/681
+
 ## 1.20.0
 
 ### Added

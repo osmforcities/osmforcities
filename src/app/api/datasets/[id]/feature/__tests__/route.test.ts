@@ -10,7 +10,9 @@ vi.mock("@/auth", () => ({
 
 import { PUT } from "../route";
 
-describe("PUT /api/datasets/[id]/feature", () => {
+// Skipped: reads real rows from the Playwright test DB (port 5433, seeded by
+// its global-setup), which the unit CI job does not have.
+describe.skip("PUT /api/datasets/[id]/feature", () => {
   let testDatasetId: string;
   let originalIsFeaturedValue: boolean | undefined;
 

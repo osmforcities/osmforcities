@@ -1,7 +1,28 @@
 import { useState, useCallback } from "react";
 import type { MapLayerMouseEvent } from "react-map-gl/maplibre";
+import type { MapGeoJSONFeature } from "maplibre-gl";
 import type { Feature } from "geojson";
 import { resolveProxyFeature } from "../layers/polygon-proxy-points";
+
+export function toSelectedFeature(
+  hit: MapGeoJSONFeature,
+  sourceFeatures: Feature[]
+): Feature {
+  const feature = resolveProxyFeature(hit, sourceFeatures);
+  // Vector tiles carry the OSM id as "@id" (raw-tag convention), while
+  // the geojson path and the detail panel use "id" — normalize the hit
+  // so the panel's OSM link works on both sources. No spread: a tile hit's
+  // geometry is a prototype getter, so a spread copy loses it (no highlight).
+  const props = feature.properties;
+  if (props && !props.id && props["@id"]) {
+    return {
+      type: "Feature",
+      geometry: feature.geometry,
+      properties: { ...props, id: props["@id"] },
+    };
+  }
+  return feature;
+}
 
 export function useFeatureSelection(
   onFeatureSelect?: (feature: Feature | null) => void,
@@ -14,14 +35,7 @@ export function useFeatureSelection(
     (event: MapLayerMouseEvent) => {
       const hit = event.features?.[0];
       if (hit) {
-        let feature = resolveProxyFeature(hit, sourceFeatures);
-        // Vector tiles carry the OSM id as "@id" (raw-tag convention), while
-        // the geojson path and the detail panel use "id" — normalize the hit
-        // so the panel's OSM link works on both sources.
-        const props = feature.properties;
-        if (props && !props.id && props["@id"]) {
-          feature = { ...feature, properties: { ...props, id: props["@id"] } };
-        }
+        const feature = toSelectedFeature(hit, sourceFeatures);
         setSelectedFeature(feature);
         onFeatureSelect?.(feature);
       } else {

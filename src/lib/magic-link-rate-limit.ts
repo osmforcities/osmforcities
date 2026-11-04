@@ -1,8 +1,7 @@
 import { prisma } from "@/lib/db";
+import { MAGIC_LINK_TOKEN_TTL_MS } from "@/lib/magic-link-ttl";
 
 const MINUTE = 60 * 1000;
-
-export const MAGIC_LINK_TOKEN_TTL_MS = 24 * 60 * MINUTE;
 
 const LIMITS = [
   { windowMs: 15 * MINUTE, max: 3 },

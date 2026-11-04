@@ -3,13 +3,21 @@ import { prisma } from "@/lib/db";
 import {
   ackTileJob,
   downloadTileOutputs,
+  fetchTileNdjson,
   getTileJob,
   pruneTileArchives,
   tilerEnabled,
   type TileJob,
 } from "./client";
 import { readPulledStats, tilerStatsToDatasetColumns } from "./stats";
+import { ndjsonToFeatureCollection } from "./features";
 import { isTooLarge } from "@/lib/dataset-retry";
+import { notifyDatasetReady } from "@/lib/tasks/notify-ready";
+import { tilesOnlyLaneEnabled } from "./submit";
+import {
+  MAX_DATASET_BYTES,
+  OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
+} from "@/lib/constants";
 
 export type TileFailureKind = "bake" | "too_large" | "reconcile";
 
@@ -56,6 +64,64 @@ async function commitOutcome(
   return count > 0;
 }
 
+
+// A failed bake is a failed refresh, counted like the cron counts one. On the
+// tiles-only lane it also starts the retry wait: a first bake was never
+// claimed, so without it a visit would resubmit at once.
+async function failBake(
+  dataset: { id: string; tilesJobId: string },
+  error: string
+): Promise<ReconcileResult> {
+  const won = await commitOutcome(dataset, {
+    tilesState: "failed",
+    tilesError: error,
+    consecutiveFailures: { increment: 1 },
+    ...(tilesOnlyLaneEnabled() && { lastError: error, lastAttempted: new Date() }),
+  });
+  return won ? { outcome: "failed", error } : { outcome: "pending" };
+}
+
+/**
+ * Flag-off fill gate: never-filled rows, plus tiles-only rows filled before
+ * bakes carried age counts. App snapshots always store an age dimension, and
+ * older ones store no filterDimensions at all, so neither matches.
+ */
+function needsTilerStatsFill(stats: Prisma.JsonValue): boolean {
+  if (stats === null) return true;
+  const dimensions = (stats as { filterDimensions?: { kind: string }[] })
+    .filterDimensions;
+  return Array.isArray(dimensions) && !dimensions.some((d) => d.kind === "age");
+}
+
+/**
+ * The bake's features as stored geojson, so export and the geojson fallback
+ * keep working once creation stops fetching it. Over the storage cap the
+ * column is JsonNull, as the app stores over-cap rows. A failed pull returns
+ * nothing to write: the stored geojson stays until the next bake.
+ */
+async function featureFill(
+  jobId: string,
+  features: number
+): Promise<Pick<Prisma.DatasetUpdateManyMutationInput, "geojson">> {
+  if (features * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE > MAX_DATASET_BYTES) {
+    return { geojson: Prisma.JsonNull };
+  }
+  try {
+    // The estimate is per element; the bytes are the real cap
+    const ndjson = await fetchTileNdjson(jobId, MAX_DATASET_BYTES);
+    if (ndjson === null) return { geojson: Prisma.JsonNull };
+    return {
+      // Parsed JSON, so already JSON-safe (no Dates to serialize)
+      geojson: ndjsonToFeatureCollection(
+        ndjson
+      ) as unknown as Prisma.InputJsonValue,
+    };
+  } catch (error) {
+    console.error(`Feature fill failed for bake ${jobId}:`, error);
+    return {};
+  }
+}
+
 /**
  * Apply one tiler job's current state to its dataset row: pull + ack + prune
  * on done, record failures, leave running jobs pending. Callers fetch the job
@@ -74,34 +140,44 @@ export async function reconcileDataset(
     // Swept by the tiler before we pulled (PMTILER_MAX_AGE_DAYS) — or already
     // pulled and acked by a concurrent reconcile, which the conditional write
     // detects. A genuinely swept job resubmits on the next daily snapshot.
-    const error = "job expired before pull";
-    const won = await commitOutcome(dataset, {
-      tilesState: "failed",
-      tilesError: error,
-      consecutiveFailures: { increment: 1 },
-    });
-    return won ? { outcome: "failed", error } : { outcome: "pending" };
+    return failBake(dataset, "job expired before pull");
   }
   if (job.state === "done") {
     if (inflightPulls.has(dataset.tilesJobId)) return { outcome: "pending" };
     inflightPulls.add(dataset.tilesJobId);
     let won: boolean;
+    let dataCount: number;
     try {
       await downloadTileOutputs(dataset.tilesJobId);
 
-      // Only tiles-only datasets take the tiler's stats. Ones the app fetched
-      // keep its own, so drift between the two pipelines stays visible.
+      // Unusable stats (read error, unknown schema) leave every data column
+      // as it was: the archive still lands, but the refresh did not happen.
       let statsColumns: Prisma.DatasetUpdateManyMutationInput = {};
       const row = await prisma.dataset.findUnique({
         where: { id: dataset.id },
-        select: { stats: true },
+        select: { stats: true, dataCount: true },
       });
-      if (row && row.stats === null) {
+      dataCount = row?.dataCount ?? 0;
+      // On the tiles-only lane every finished bake is the dataset's refresh:
+      // its stats replace the stored ones. Off, the tiler only fills empty
+      // stats.
+      const authoritative = tilesOnlyLaneEnabled();
+      if (row && (authoritative || needsTilerStatsFill(row.stats))) {
         try {
           const mapped = tilerStatsToDatasetColumns(
             await readPulledStats(dataset.tilesJobId)
           );
-          if (mapped) statsColumns = mapped;
+          if (mapped) {
+            statsColumns = mapped;
+            dataCount = mapped.dataCount;
+            if (authoritative) {
+              Object.assign(
+                statsColumns,
+                await featureFill(dataset.tilesJobId, mapped.dataCount),
+                { lastChecked: new Date(), lastError: null }
+              );
+            }
+          }
         } catch (error) {
           // Losing the stats must not also lose the archive.
           console.error(
@@ -124,27 +200,24 @@ export async function reconcileDataset(
     } finally {
       inflightPulls.delete(dataset.tilesJobId);
     }
-    if (!won) return { outcome: "pending" }; // the winner acks and prunes
+    if (!won) return { outcome: "pending" }; // the winner acks, prunes and mails
     // Best-effort housekeeping: a failed ack just leaves the job for the
     // tiler's own sweep. Prune never rejects (it logs internally).
     await ackTileJob(dataset.tilesJobId).catch((error) => {
       console.error(`Tile job ack failed for ${dataset.tilesJobId}:`, error);
     });
     await pruneTileArchives(dataset.id);
+    await notifyDatasetReady(dataset.id, dataCount);
     return { outcome: "completed" };
   }
   if (job.state === "failed") {
     // errorKind "too_large" is a permanent refusal for this query —
     // prefixed so nothing downstream blind-retries it.
-    const error =
+    return failBake(
+      dataset,
       (job.errorKind ? `${job.errorKind}: ` : "") +
-      (job.error ?? "tiler job failed");
-    const won = await commitOutcome(dataset, {
-      tilesState: "failed",
-      tilesError: error,
-      consecutiveFailures: { increment: 1 },
-    });
-    return won ? { outcome: "failed", error } : { outcome: "pending" };
+        (job.error ?? "tiler job failed")
+    );
   }
   return { outcome: "pending" };
 }

@@ -1,0 +1,1 @@
+{"type":"Feature","geometry":{"type":"Point","coordinates":[4.9,52.37]},"properties":{"@id":"node/1","@user":"mock","@timestamp":"2026-09-01T00:00:00Z","_ts":1788220800,"amenity":"luggage_locker"}}

@@ -12,7 +12,7 @@ import {
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
 import { Prisma } from "@prisma/client";
-import { submitTilesForDataset } from "@/lib/tiler/submit";
+import { recordFailedSubmit, submitTilesForDataset } from "@/lib/tiler/submit";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { createLogger } from "@/lib/logger";
@@ -81,6 +81,12 @@ const DATASET_DETAIL_SELECT = {
   tilesState: true,
   tilesJobId: true,
   tilesServedJobId: true,
+  // Picks the failed screen on the server; DatasetSchema drops it before the
+  // client sees the dataset
+  tilesError: true,
+  // The retry wait of a failed first bake, also server-only
+  lastAttempted: true,
+  consecutiveFailures: true,
   template: {
     select: {
       id: true,
@@ -236,10 +242,12 @@ async function createDatasetOnDemand(
       select: DATASET_DETAIL_SELECT,
     });
 
-    // Only the two columns DATASET_DETAIL_SELECT reads — merging the whole
-    // column set would give the create path a shape the read path lacks
-    // (tilesError is operator-only).
-    const { tilesState, tilesJobId } = await submitTilesForDataset(dataset.id);
+    // A failed submit must render the failed screen on this very request
+    const { tilesState, tilesJobId, tilesError } = await submitTilesForDataset(
+      dataset.id
+    );
+    // Starts the retry wait, so a reload does not resubmit at once
+    if (tilesState === "failed") await recordFailedSubmit(dataset.id, tilesError);
 
     await trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`);
 
@@ -250,6 +258,7 @@ async function createDatasetOnDemand(
       ...dataset,
       tilesState: tilesState ?? dataset.tilesState,
       tilesJobId: tilesJobId ?? dataset.tilesJobId,
+      tilesError: tilesError ?? dataset.tilesError,
       template: resolvedTemplate,
     };
   } catch (error) {

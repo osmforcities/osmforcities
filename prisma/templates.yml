@@ -5,25 +5,26 @@
 # Templates without an icon fall back to their category icon (categories section below).
 
 templates:
-# Transportation
-  - ["bicycle-parking","amenity=bicycle_parking","transport","Bike"]
-  - ["bicycle-rental","amenity=bicycle_rental","transport","Bike"]
+# Mobility: transit, cycling, other
+  - ["bicycle-parking","amenity=bicycle_parking","cycling","Bike"]
+  - ["bicycle-rental","amenity=bicycle_rental","cycling","Bike"]
   # Parent template for public transit
-  - ["public-transit","highway=bus_stop;railway=station;railway=tram_stop;railway=subway_entrance;public_transport=platform","transport","Train"]
-  - ["bus-stops","highway=bus_stop","transport","Bus","public-transit"]
-  - ["ev-charging","amenity=charging_station","transport","Zap"]
-  - ["railway-stations","railway=station","transport","Train","public-transit"]
-  - ["tram-stops","railway=tram_stop","transport","TramFront","public-transit"]
-  - ["subway-entrances","railway=subway_entrance","transport","TrainFrontTunnel","public-transit"]
-  - ["transit-platforms","public_transport=platform","transport","RailSymbol","public-transit"]
-  - ["ferry-terminals","amenity=ferry_terminal","transport","Ship"]
-  - ["taxi-ranks","amenity=taxi","transport","CarTaxiFront"]
-  - ["parking","amenity=parking;amenity=parking_space","transport","SquareParking"]
+  - ["public-transit","highway=bus_stop;railway=station;railway=tram_stop;railway=subway_entrance;public_transport=platform","mobility","Train"]
+  - ["bus-stops","highway=bus_stop","bus","Bus","public-transit"]
+  - ["ev-charging","amenity=charging_station","mobility","Zap"]
+  - ["railway-stations","railway=station","rail","Train","public-transit"]
+  - ["tram-stops","railway=tram_stop","rail","TramFront","public-transit"]
+  - ["subway-entrances","railway=subway_entrance","rail","TrainFrontTunnel","public-transit"]
+  - ["transit-platforms","public_transport=platform","mobility","RailSymbol","public-transit"]
+  - ["ferry-terminals","amenity=ferry_terminal","mobility","Ship"]
+  - ["taxi-ranks","amenity=taxi","mobility","CarTaxiFront"]
+  - ["parking","amenity=parking;amenity=parking_space","roads","SquareParking"]
   # Rail network (tracks/lines) - complements public-transit stops
-  - ["rail-tracks","railway=tram;railway=subway;railway=light_rail;railway=rail","transport","TrainTrack"]
+  - ["rail-tracks","railway=tram;railway=subway;railway=light_rail;railway=rail","rail","TrainTrack"]
   # Bus rapid transit: segregated corridors (highway=busway) and on-street lanes
-  - ["busways","highway=busway","transport","BusFront"]
-  - ["bus-lanes","busway=lane;busway:left=lane;busway:right=lane;busway:both=lane","transport","Milestone"]
+  - ["busways","highway=busway","bus","BusFront"]
+  # busway=* is deprecated but still holds most data, so old and new keys both count
+  - ["bus-lanes","busway=lane;busway:left=lane;busway:right=lane;busway:both=lane;lanes:bus=*;lanes:bus:forward=*;lanes:bus:backward=*;bus:lanes=*;bus:lanes:forward=*;bus:lanes:backward=*","bus","Milestone"]
 # Financial
   - ["atms","amenity=atm","financial","Banknote"]
   - ["banks","amenity=bank","financial","Landmark"]
@@ -125,7 +126,7 @@ templates:
   - ["shopping-malls","shop=mall","shops","ShoppingBag"]
   - ["clothes","shop=clothes","shops","Shirt"]
   - ["chemist","shop=chemist","shops","Pill"]
-  - ["fuel","amenity=fuel","shops","Fuel"]
+  - ["fuel","amenity=fuel","mobility","Fuel"]
   - ["hardware","shop=hardware","shops","Hammer"]
   - ["diy","shop=doityourself","shops","Wrench"]
   - ["furniture","shop=furniture","shops","Sofa"]
@@ -214,22 +215,23 @@ templates:
 # Large-footprint key-presence templates (tiles-only in most cities: rendered
 # from PMTiles, geojson never stored — #487/#489)
   - ["buildings","building","infrastructure","Building"]
-# Transport infrastructure
-  - ["roads","highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=unclassified","transport","Route"]
-  - ["highways","highway","transport","Waypoints"]
-  - ["footways","highway=footway;highway=path","transport","Footprints"]
-  - ["cycleways","highway=cycleway","transport","Bike"]
-  - ["bridges","man_made=bridge","transport","Waypoints"]
-  - ["tunnels","tunnel=yes;tunnel=building_passage","transport","Route"]
-  - ["crossings","highway=crossing","transport","Footprints"]
-# Traffic
-  - ["traffic-signs","traffic_sign=*","transport","Signpost"]
-  - ["traffic-lights","highway=traffic_signals","transport","Lightbulb"]
-  - ["speed-cameras","highway=speed_camera;man_made=speed_camera","transport","Camera"]
-  - ["traffic-calming","traffic_calming=*","transport","TrafficCone"]
+# Mobility: roads, pedestrian, cycling
+  - ["roads","highway=motorway;highway=trunk;highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=unclassified","roads","Route"]
+  - ["highways","highway","roads","Waypoints"]
+  - ["footways","highway=footway;highway=path","pedestrian","Footprints"]
+  - ["cycleways","highway=cycleway","cycling","Bike"]
+  - ["bridges","man_made=bridge","roads","Waypoints"]
+  - ["tunnels","tunnel=yes;tunnel=building_passage","roads","Route"]
+  - ["crossings","highway=crossing","pedestrian","Footprints"]
+# Mobility: traffic
+  - ["traffic-signs","traffic_sign=*","traffic","Signpost"]
+  - ["traffic-lights","highway=traffic_signals","traffic","Lightbulb"]
+  - ["speed-cameras","highway=speed_camera","traffic","Camera"]
+  - ["traffic-calming","traffic_calming=*","traffic","TrafficCone"]
 # Housing
   - ["apartments","building=apartments","housing","Building2"]
-  - ["houses","building=house;building=detached;building=semidetached_house;building=terrace","housing","Home"]
+  # building=residential left out: generic fallback that also covers apartment blocks
+  - ["houses","building=house;building=detached;building=semidetached_house;building=terrace;building=bungalow","housing","Home"]
   - ["residential","landuse=residential","housing","Building2"]
   - ["dormitories","building=dormitory","housing","Building"]
   - ["hotel-guesthouse","tourism=guest_house;tourism=hostel","housing","BedDouble"]
@@ -284,11 +286,10 @@ templates:
   - ["dairy-yards","farmyard=dairy","agriculture","Milk"]
   # Agricultural buildings
   - ["barns","building=barn","agriculture","Warehouse"]
-  - ["agricultural-buildings","building=agricultural","agriculture","Warehouse"]
-  - ["farm-auxiliary","building=farm_auxiliary","agriculture","Wrench"]
+  - ["farm-auxiliary","building=farm_auxiliary;building=agricultural","agriculture","Wrench"]
   - ["greenhouses","building=greenhouse","agriculture","Sprout"]
   # Livestock housing
-  - ["livestock-buildings","building=livestock","agriculture","Warehouse"]
+  - ["livestock-buildings","building=livestock;building=cowshed;building=stable;building=sty;building=barn","agriculture","Warehouse"]
   - ["cowsheds","building=cowshed","agriculture","Warehouse"]
   - ["pig-sties","building=sty","agriculture","Warehouse"]
   - ["stables","building=stable","agriculture","Warehouse"]
@@ -399,7 +400,7 @@ filterableTags:
   roads:            [surface, maxspeed, lit, sidewalk]
   highways:         [highway, surface, lit]
   buildings:        [building]
-  footways:         [surface, lit, smoothness]
+  footways:         [footway, surface, lit, smoothness]
   cycleways:        [surface, lit, oneway, smoothness]
   traffic-calming:  [traffic_calming]
   speed-cameras:    [maxspeed]
@@ -484,6 +485,24 @@ filterableTags:
   football:         [surface, lit]
   basketball:       [surface, lit]
   tennis:           [surface, lit]
+
+# The area hub's "Common datasets" grid, in this order. Sync fails on a missing
+# or deprecated id.
+commonTemplates:
+  - bus-stops
+  - schools
+  - clinics
+  - pharmacies
+  - buildings
+  - footways
+  - cycleways
+
+# Replacements for removed templates (old-id: new-id).
+# The old id leaves the templates list above and deprecates as usual; its report
+# email links the replacement and its dataset URLs redirect to it. Sync fails if
+# the old id is still listed or the new id is missing or deprecated.
+replacedBy:
+  agricultural-buildings: farm-auxiliary
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -1036,27 +1055,49 @@ demonstrators:
     - { area: 62428,   note: "Munich, DE - surface 71%, lit 55%" }
     - { area: 71525,   note: "Paris, FR - surface 42%, lit 25%" }
 
-# Category to icon mapping (fallback for templates without icon)
+# Category tree, synced to the DB. A category without a parent is a topic
+# (area page sidebar); children nest one level under it. The icon is the
+# fallback for templates without one.
 categories:
-  transport: Car
-  financial: DollarSign
-  amenities: Heart
-  healthcare: Hospital
-  education: School
-  tourism: Camera
-  culture: Palette
-  social: Users
-  government: Shield
-  environment: Leaf
-  shops: ShoppingBag
-  food: Utensils
-  leisure: TreePine
-  emergency: ShieldAlert
-  services: Wrench
-  nature: Leaf
-  infrastructure: Gauge
-  housing: Building2
-  sports: Trophy
-  religion: Landmark
-  barriers: Square
-  agriculture: Wheat
+  buildings-infrastructure: { icon: Building2 }
+  infrastructure: { icon: Gauge, parent: buildings-infrastructure }
+  housing: { icon: Building2, parent: buildings-infrastructure }
+  barriers: { icon: Square, parent: buildings-infrastructure }
+
+  education-culture: { icon: School }
+  education: { icon: School, parent: education-culture }
+  culture: { icon: Palette, parent: education-culture }
+  religion: { icon: Landmark, parent: education-culture }
+
+  health: { icon: Hospital }
+  healthcare: { icon: Hospital, parent: health }
+
+  leisure-sports: { icon: Trophy }
+  leisure: { icon: TreePine, parent: leisure-sports }
+  sports: { icon: Trophy, parent: leisure-sports }
+  tourism: { icon: Camera, parent: leisure-sports }
+
+  mobility: { icon: Car }
+  bus: { icon: Bus, parent: mobility }
+  rail: { icon: Train, parent: mobility }
+  cycling: { icon: Bike, parent: mobility }
+  pedestrian: { icon: Footprints, parent: mobility }
+  roads: { icon: Route, parent: mobility }
+  traffic: { icon: TrafficCone, parent: mobility }
+
+  nature-environment: { icon: Leaf }
+  nature: { icon: Leaf, parent: nature-environment }
+  environment: { icon: Leaf, parent: nature-environment }
+  agriculture: { icon: Wheat, parent: nature-environment }
+
+  public-services: { icon: Shield }
+  emergency: { icon: ShieldAlert, parent: public-services }
+  government: { icon: Shield, parent: public-services }
+  social: { icon: Users, parent: public-services }
+  amenities: { icon: Heart, parent: public-services }
+
+  shops-services: { icon: ShoppingBag }
+  shops: { icon: ShoppingBag, parent: shops-services }
+  food: { icon: Utensils, parent: shops-services }
+  services: { icon: Wrench, parent: shops-services }
+  financial: { icon: DollarSign, parent: shops-services }

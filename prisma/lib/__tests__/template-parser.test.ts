@@ -22,6 +22,9 @@ import {
   loadTemplatesLogic,
   loadTemplatesI18n,
   validateDemonstrators,
+  validateReplacedBy,
+  validateCommonTemplates,
+  validateCategories,
 } from "../template-parser";
 
 describe("template-parser", () => {
@@ -318,6 +321,7 @@ describe("template-parser", () => {
             icon: "Bike",
           },
         },
+        categories: { transportation: { icon: "Car" } },
       };
       const result = parseTemplates(config);
       expect(result.errors).toHaveLength(0);
@@ -329,6 +333,94 @@ describe("template-parser", () => {
       );
       expect(result.templates[0].category).toBe("transportation");
     });
+
+    it("rejects a template whose category is not declared", () => {
+      const result = parseTemplates({
+        templates: { parking: { query: "amenity=parking", category: "transport" } },
+        categories: { mobility: { icon: "Car" } },
+      });
+      expect(result.errors.map((e) => e.message)).toContain(
+        'Template "parking" references undeclared category: "transport"',
+      );
+    });
+
+    it("returns the declared categories", () => {
+      const result = parseTemplates({
+        templates: { parking: { query: "amenity=parking", category: "roads" } },
+        categories: {
+          mobility: { icon: "Car" },
+          roads: { icon: "Route", parent: "mobility" },
+        },
+      });
+      expect(result.errors).toHaveLength(0);
+      expect(result.categories).toEqual([
+        { slug: "mobility", icon: "Car" },
+        { slug: "roads", icon: "Route", parent: "mobility" },
+      ]);
+    });
+  });
+
+  describe("validateCategories", () => {
+    const messages = (raw: unknown) =>
+      validateCategories(raw).errors.map((e) => e.message);
+
+    it("accepts topics with children", () => {
+      const { categories, errors } = validateCategories({
+        mobility: { icon: "Car" },
+        bus: { icon: "Bus", parent: "mobility" },
+      });
+      expect(errors).toEqual([]);
+      expect(categories).toHaveLength(2);
+    });
+
+    it("rejects an unknown parent", () => {
+      expect(messages({ bus: { icon: "Bus", parent: "transit" } })).toEqual([
+        'Category "bus" references unknown parent: "transit"',
+      ]);
+    });
+
+    it("rejects a cycle", () => {
+      expect(
+        messages({
+          a: { icon: "Car", parent: "b" },
+          b: { icon: "Car", parent: "a" },
+        }),
+      ).toEqual([
+        'Category "a" must have a topic as parent, not "b"',
+        'Category "b" must have a topic as parent, not "a"',
+      ]);
+    });
+
+    it("rejects a self parent", () => {
+      expect(messages({ a: { icon: "Car", parent: "a" } })).toEqual([
+        'Category "a" must have a topic as parent, not "a"',
+      ]);
+    });
+
+    it("rejects depth over 2", () => {
+      expect(
+        messages({
+          mobility: { icon: "Car" },
+          transit: { icon: "Bus", parent: "mobility" },
+          bus: { icon: "Bus", parent: "transit" },
+        }),
+      ).toEqual(['Category "bus" must have a topic as parent, not "transit"']);
+    });
+
+    it("rejects a malformed entry", () => {
+      expect(messages({ bus: "Bus" })).toEqual([
+        'Category "bus" must be an object with a string "icon" and an optional string "parent"',
+      ]);
+      expect(messages(["bus"])).toEqual([
+        "categories must be a map keyed by category slug",
+      ]);
+    });
+
+    it("rejects an empty parent instead of treating it as a topic", () => {
+      expect(messages({ bus: { icon: "Bus", parent: "" } })).toEqual([
+        'Category "bus" must be an object with a string "icon" and an optional string "parent"',
+      ]);
+    });
   });
 
   describe("loadTemplatesLogic", () => {
@@ -339,7 +431,7 @@ describe("template-parser", () => {
       expect(byId.get("bicycle-parking")).toEqual({
         id: "bicycle-parking",
         query: "amenity=bicycle_parking",
-        category: "transport",
+        category: "cycling",
         icon: "Bike",
         filterableTags: [
           "bicycle_parking",
@@ -351,8 +443,10 @@ describe("template-parser", () => {
       });
       // parent parsing (5th element) is still exercised by public-transit children
       expect(byId.get("bus-stops")?.parent).toBe("public-transit");
-      expect(categories.transport).toBe("Car");
-      expect(categories.agriculture).toBe("Wheat");
+      expect(categories).toMatchObject({
+        mobility: { icon: "Car" },
+        agriculture: { icon: "Wheat", parent: "nature-environment" },
+      });
     });
 
     it("attaches per-template filterableTags from the map (curated only)", () => {
@@ -377,10 +471,24 @@ describe("template-parser", () => {
       const config = loadTemplatesI18n("./prisma");
       expect(config.templates["bicycle-parking"]).toBeDefined();
       expect(config.templates["bicycle-parking"].name.en).toBe(
-        "Bicycle Parking",
+        "Bicycle parking",
       );
       expect(config.templates["bicycle-parking"].desc.en).toBeDefined();
       expect(config.templates["bicycle-parking"].name.pt).toBeDefined();
+    });
+
+    it("gives every template a distinct name within each locale", () => {
+      const idsByLocaleName = new Map<string, string[]>();
+      for (const [id, { name }] of Object.entries(
+        loadTemplatesI18n("./prisma").templates,
+      )) {
+        for (const [locale, label] of Object.entries(name)) {
+          const key = `${locale}: ${label}`;
+          idsByLocaleName.set(key, [...(idsByLocaleName.get(key) ?? []), id]);
+        }
+      }
+      const clashes = [...idsByLocaleName].filter(([, ids]) => ids.length > 1);
+      expect(clashes).toEqual([]);
     });
   });
 
@@ -398,6 +506,25 @@ describe("template-parser", () => {
       expect(first.name).toBeDefined();
       expect(first.description).toBeDefined();
       expect(first.overpassQuery).toContain("area.searchArea");
+    });
+
+    it("declares the 8 topics and puts fuel under mobility", () => {
+      const result = parseTemplates(loadTemplatesYaml("./prisma"));
+      const topics = result.categories.filter((c) => !c.parent).map((c) => c.slug);
+      expect(topics.sort()).toEqual([
+        "buildings-infrastructure",
+        "education-culture",
+        "health",
+        "leisure-sports",
+        "mobility",
+        "nature-environment",
+        "public-services",
+        "shops-services",
+      ]);
+      const slugs = result.categories.map((c) => c.slug);
+      expect(slugs).not.toContain("transport");
+      expect(slugs).not.toContain("other");
+      expect(result.templates.find((t) => t.id === "fuel")?.category).toBe("mobility");
     });
 
     it("exposes the demonstrators section keyed by template id", () => {
@@ -492,5 +619,145 @@ describe("template-parser", () => {
       expect(errors).toHaveLength(1);
       expect(errors[0].message).toContain("note must be a string");
     });
+  });
+
+  describe("validateReplacedBy", () => {
+    const active = new Set(["streets", "trees"]);
+
+    it("returns a valid map with no errors", () => {
+      expect(validateReplacedBy({ highways: "streets" }, active)).toEqual({
+        replacedBy: { highways: "streets" },
+        errors: [],
+      });
+    });
+
+    it("returns no map when any pointer is bad", () => {
+      const { replacedBy } = validateReplacedBy({ highways: "streets", roads: "nope" }, active);
+      expect(replacedBy).toEqual({});
+    });
+
+    it("accepts an empty or absent section", () => {
+      expect(validateReplacedBy(undefined, active).errors).toHaveLength(0);
+      expect(validateReplacedBy(null, active).errors).toHaveLength(0);
+      expect(validateReplacedBy({}, active).errors).toHaveLength(0);
+    });
+
+    it("errors on a scalar or array root", () => {
+      for (const root of [42, "streets", ["highways", "streets"]]) {
+        const { errors } = validateReplacedBy(root, active);
+        expect(errors).toHaveLength(1);
+        expect(errors[0].message).toContain("map of old id to new id");
+      }
+    });
+
+    it("errors when the replacement is missing from the template list", () => {
+      const { errors } = validateReplacedBy({ highways: "streetz" }, active);
+      expect(errors).toHaveLength(1);
+      expect(errors[0].message).toContain('"streetz" is not an active template');
+    });
+
+    it("errors when the replacement is itself deprecated", () => {
+      const { errors } = validateReplacedBy(
+        { highways: "roads", roads: "streets" },
+        active,
+      );
+      expect(errors).toHaveLength(1);
+      expect(errors[0].message).toContain('"roads" is not an active template');
+    });
+
+    it("errors when the deprecated id is still in the template list", () => {
+      const { errors } = validateReplacedBy({ trees: "streets" }, active);
+      expect(errors).toHaveLength(1);
+      expect(errors[0].message).toContain('"trees" is still an active template');
+    });
+
+    it("errors when the value is not a string", () => {
+      const { errors } = validateReplacedBy({ highways: 42 }, active);
+      expect(errors).toHaveLength(1);
+      expect(errors[0].message).toContain("must be a template id");
+    });
+  });
+
+  describe("parseTemplates replacedBy", () => {
+    const templates = { streets: { query: "highway=residential", category: "transport" } };
+    const categories = { transport: { icon: "bus" } };
+
+    it("returns the validated map", () => {
+      const result = parseTemplates({ templates, categories, replacedBy: { highways: "streets" } });
+      expect(result.errors).toHaveLength(0);
+      expect(result.replacedBy).toEqual({ highways: "streets" });
+    });
+
+    it("fails and returns no map on a bad pointer", () => {
+      const result = parseTemplates({ templates, categories, replacedBy: { highways: "nope" } });
+      expect(result.errors).toHaveLength(1);
+      expect(result.replacedBy).toEqual({});
+    });
+  });
+  describe("validateCommonTemplates", () => {
+    const active = new Set(["bus-stops", "schools"]);
+
+    it("returns the ids in YAML order", () => {
+      expect(validateCommonTemplates(["schools", "bus-stops"], active)).toEqual({
+        commonTemplates: ["schools", "bus-stops"],
+        errors: [],
+      });
+    });
+
+    it("accepts an absent section", () => {
+      expect(validateCommonTemplates(undefined, active)).toEqual({
+        commonTemplates: [],
+        errors: [],
+      });
+    });
+
+    it("errors on a non-list root", () => {
+      const { errors } = validateCommonTemplates({ "bus-stops": 1 }, active);
+      expect(errors).toHaveLength(1);
+      expect(errors[0].message).toContain("list of template ids");
+    });
+
+    it("errors on a missing or deprecated id and returns no list", () => {
+      const result = validateCommonTemplates(["bus-stops", "trees"], active);
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].message).toContain('"trees" is not an active template');
+      expect(result.commonTemplates).toEqual([]);
+    });
+
+    it("errors on a duplicate id", () => {
+      const { errors } = validateCommonTemplates(["schools", "schools"], active);
+      expect(errors).toHaveLength(1);
+      expect(errors[0].message).toContain('"schools" is listed twice');
+    });
+  });
+
+  describe("parseTemplates commonTemplates", () => {
+    const templates = { streets: { query: "highway=residential", category: "transport" } };
+    const categories = { transport: { icon: "bus" } };
+
+    it("returns the validated list", () => {
+      const result = parseTemplates({ templates, categories, commonTemplates: ["streets"] });
+      expect(result.errors).toHaveLength(0);
+      expect(result.commonTemplates).toEqual(["streets"]);
+    });
+
+    it("fails on an unknown id", () => {
+      const result = parseTemplates({ templates, categories, commonTemplates: ["nope"] });
+      expect(result.errors).toHaveLength(1);
+    });
+  });
+
+  it("templates.yml lists valid common templates", () => {
+    const result = parseTemplates(loadTemplatesYaml("./prisma"));
+    expect(result.errors).toEqual([]);
+    expect(result.commonTemplates).toEqual([
+      "bus-stops",
+      "schools",
+      "clinics",
+      "pharmacies",
+      "buildings",
+      "footways",
+      "cycleways",
+    ]);
   });
 });

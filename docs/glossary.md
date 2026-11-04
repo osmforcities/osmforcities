@@ -6,11 +6,19 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 **Area**: A city or administrative region, identified by its OpenStreetMap relation id. _Avoid:_ city, region, boundary.
 
+**Area page**: The page at `/area/{id}` where people browse an Area's Templates: common datasets, a topic picker and search. Topic and category pages sit below it. _Avoid:_ hub, area hub, landing.
+
 **Overpass**: The query service the app asks for OpenStreetMap data. Templates are written in its language. _Avoid:_ OSM API, the database.
 
-**Template**: A named Overpass question, such as "bicycle parking" or "buildings". Applied to an Area it defines a Dataset. _Avoid:_ query, topic, layer.
+**Template**: A named Overpass question, such as "bicycle parking" or "buildings". Applied to an Area it defines a Dataset. _Avoid:_ query, layer.
+
+**Topic**: A top-level Category, such as Mobility or Health. Groups Categories on the area page. _Avoid:_ super-category, group.
+
+**Category**: A grouping of Templates under a Topic, such as Cycling under Mobility. A Template belongs to exactly one, or directly to a Topic. _Avoid:_ tag, type.
 
 **Dataset**: One Template applied to one Area: its features, stats and map. The thing people open, save and share. _Avoid:_ monitor, layer, snapshot.
+
+**Feature**: One OpenStreetMap object (node, way or relation) in a Dataset: a bench, a bus stop, a building. _Avoid:_ resource, item, record.
 
 **Snapshot**: The result of asking Overpass for a Dataset at one point in time. A refresh replaces it. _Avoid:_ fetch, run, update (a refresh is the act, a snapshot is the result).
 
@@ -28,11 +36,11 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 **Over-cap dataset**: A Dataset above the cap. The app stores none of its features; map and stats come from the archive. _Avoid:_ large, heavy, big, metro (metro describes an Area, not a Dataset).
 
-**Tiles-only lane**: The creation path an over-cap dataset takes: count, then bake, never fetch. _Avoid:_ async lane, slow lane, large-dataset path.
+**Tiles-only lane**: The path every Dataset takes once the map renders archives: creation counts, then bakes, and every refresh bakes. The app never fetches the features itself. _Avoid:_ async lane, slow lane, large-dataset path.
 
 ## Map building
 
-**Tiler**: The service that turns a Template into a map archive. The only thing that fetches full Datasets from Overpass. _Avoid:_ baker, pmtiler, tile server.
+**Tiler**: The service that turns a Template into a map archive. The only thing that fetches full Datasets from Overpass. Code: [osmforcities/overpass-pmtiler](https://github.com/osmforcities/overpass-pmtiler). _Avoid:_ baker, pmtiler, tile server.
 
 **Bake**: One run of the tiler for one Dataset: queued, fetching, converting, baking, then done or failed. _Avoid:_ job (in prose), processing, build.
 
@@ -52,8 +60,6 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 ## Waiting
 
-**Wait page**: The full page between opening a Dataset for the first time and seeing its map. Three moods: counting, baking, failed. _Avoid:_ loading state, skeleton, processing panel.
+**Wait page**: The full page between opening a Dataset for the first time and seeing its map. Four moods: counting, baking, failed, timed out (Overpass gave up before any row existed). _Avoid:_ loading state, skeleton, processing panel.
 
-**Tier**: The expected-wait bucket the wait page shows, from the count probe's answer: about a minute, a few minutes, ten to fifteen minutes. _Avoid:_ estimate, ETA, size class.
-
-**Ready notification**: A one-time email asked for on the wait page, sent when the first bake lands or fails for good. _Avoid:_ alert, subscription, report (reports are the recurring saved-dataset emails).
+**Ready notification**: A one-time email asked for on a dataset with no map yet, sent once when a bake with features lands, never for a failure. Asking is saving with the flag set; unsaving cancels it. _Avoid:_ alert, subscription, report (reports are the recurring saved-dataset emails).

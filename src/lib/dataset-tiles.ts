@@ -19,6 +19,25 @@ export function datasetTilesPath(dataset: {
 }
 
 /**
+ * True while a dataset has never had a map: its first bake is pending or
+ * failed. A rebuild keeps its served archive, and an empty count keeps the
+ * empty screen.
+ */
+export function awaitsFirstMap(dataset: {
+  dataCount: number;
+  geojson: unknown;
+  tilesServedJobId: string | null;
+  tilesState: string | null;
+}): boolean {
+  return (
+    dataset.dataCount !== 0 &&
+    !dataset.geojson &&
+    !dataset.tilesServedJobId &&
+    (dataset.tilesState === "pending" || dataset.tilesState === "failed")
+  );
+}
+
+/**
  * What a Sync click reports. A pending bake means the refresh only queued a
  * rebuild, so "fetched" stays put; anything else (including responses without
  * the field) is the synced path.

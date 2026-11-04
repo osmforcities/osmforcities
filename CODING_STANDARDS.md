@@ -5,8 +5,23 @@ How code in this repo should be written. Reviewers (human and agent) check chang
 ## i18n
 
 - All user-visible text goes through `useTranslations()` / `getTranslations()`. No string literals in JSX, including bare expressions like `{"some text"}` or template literals.
-- Every new key exists in `messages/en.json`. Other locales may lag; English is the source.
+- Every new key exists in `messages/en.json`. Other locales may lag on new keys; English is the source.
 - If `pnpm type-check` fails with `NamespacedMessageKeys` errors after adding keys, delete the stale generated `messages/en.d.json.ts`.
+
+### Copy
+
+- Changing an existing English string updates every locale in the same PR. A stale translation is worse than a missing one.
+- Accessible names (`aria-label`, alt text) and plain-text email parts go through i18n like visible text.
+- One term per glossary concept, per locale. Dataset: es _conjunto de datos_, pt-BR _conjunto de dados_, fr _jeu de données_, de _Datensatz_. Template: _plantilla_, _modelo_, _modèle_, _Vorlage_. Area: _área_, _área_, _zone_, _Gebiet_. Save: _guardar_, _salvar_, _enregistrer_, _speichern_. Feature: _elemento_, _elemento_, _élément_, _Objekt_.
+- One address form per locale: es _tú_, pt-BR _você_, fr _vous_, de _du_.
+- Spanish is Latin American neutral, Portuguese is Brazilian. No regional slang, no English left untranslated. Run `pnpm i18n:review` after changing translations.
+- English headings, buttons and labels use sentence case. Other locales never copy English title case.
+- Full sentences end with a period; headings, labels and buttons do not.
+- No punctuation or symbols as keys or baked into labels (`✕`, `(`, `:`, trailing colons, `→`). Components render icons and separators.
+- Use ICU placeholders and plurals (`{count, plural, ...}`), never concatenated fragments.
+- Plain, accurate copy: no pipeline jargon, no promises the app does not keep, no description repeating its heading.
+- Group controls under a heading that names what they affect.
+- When the English CTA is first person ("email me"), translations are too ("me avisar", "mich benachrichtigen").
 
 ## Navigation
 
@@ -40,12 +55,26 @@ How code in this repo should be written. Reviewers (human and agent) check chang
 
 ## Comments
 
-- Comments explain why, not what. No bare issue or PR refs (`#512`, `see #490`): they don't resolve where code is read. State the reason; use a full URL only if the ticket adds something the comment can't.
+- Names first. A comment that says what a value, function or block is means the name is wrong: rename and delete the comment.
+- Comment only what code can't say: a non-obvious reason, a bug workaround, an outside constraint (API limit, browser quirk). One line by default.
+- No bare issue or PR refs (`#512`, `see #490`): they don't resolve where code is read. State the reason; use a full URL only if the ticket adds something the comment can't.
 
 ## Tests
 
-- Prefer unit (`pnpm test:unit`) and Storybook interaction tests (`pnpm test-storybook`).
-- Playwright is expensive: add an end-to-end test only for a flow nothing cheaper can cover, and run it targeted (`--grep`), never the full suite during development.
+The kind of change decides the test. Commands for each layer are in [AGENTS.md](AGENTS.md).
+
+| Change | Required test |
+| --- | --- |
+| Pure logic: lib functions, parsers, state transitions, formatting | Unit test (`*.test.ts`) in a `__tests__/` folder |
+| API route handler behavior | Unit test of the handler, Prisma and `fetch` mocked |
+| Component states and interaction in isolation | Storybook story with an interaction (`play`) test |
+| A user flow that crosses client, server, DB or an async lifecycle (dataset create, save, refresh, tiler bake) | Playwright spec in `tests/` |
+| Bug fix | Regression test at the lowest layer that reproduces the bug |
+
+- A change can need more than one row: a new tiler state needs a unit test for the transition and a Playwright spec for the flow.
+- A known bug the PR does not fix is written as the correct behavior and marked `test.fail()` / `it.fails`, with a comment describing the bug (full issue URL, not a bare ref). The fixing PR removes the marker.
+- No test needed for copy-only, styling-only, docs, or config with no behavior.
+- Playwright is the most expensive layer: use it only when no cheaper row covers the change, and run it targeted (`--grep`), never the full suite during development.
 
 ## Commits and PRs
 

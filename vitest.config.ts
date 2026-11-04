@@ -49,6 +49,9 @@ export default defineConfig({
         test: {
           name: 'unit',
           environment: 'node',
+          // Loading the storybook project sets NODE_ENV=development for the
+          // whole run, which turns off the test-only guards (e.g. sendEmail).
+          env: { NODE_ENV: 'test' },
           include: [
             'src/**/__tests__/**/*.test.ts',
             'prisma/**/__tests__/**/*.test.ts',

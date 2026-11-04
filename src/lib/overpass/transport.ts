@@ -7,18 +7,21 @@ import {
 } from "@/types/overpass";
 import { OSMElementSchema } from "@/types/osm";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
+import { COUNT_REQUEST_TIMEOUT_MS } from "@/lib/constants";
 
 const OVERPASS_API_URL =
   process.env.OVERPASS_API_URL ||
   "https://maps.mail.ru/osm/tools/overpass/api/interpreter";
 
-const COUNT_REQUEST_TIMEOUT_MS = 30_000;
 const FETCH_REQUEST_TIMEOUT_MS = 180_000;
 
-/** Overpass request aborted because it exceeded the allowed time */
+/**
+ * Overpass request aborted because it exceeded the allowed time, or Overpass
+ * gave up on the query itself (HTTP 200 + remark: timeout, out of memory)
+ */
 export class OverpassTimeoutError extends Error {
-  constructor() {
-    super("Overpass request timed out");
+  constructor(message = "Overpass request timed out") {
+    super(message);
     this.name = "OverpassTimeoutError";
   }
 }
@@ -90,13 +93,36 @@ export async function executeOverpassQuery(
     throw new Error(`Overpass API error: ${response.status}`);
   }
 
-  const data = await response.json();
+  return parseOverpassBody(await response.text());
+}
+
+/**
+ * Overpass reports failures inside HTTP 200 bodies. A remark means the query
+ * was cut short (timeout, out of memory): returning its elements would store
+ * a provider failure as an area that has none of the feature.
+ */
+function parseOverpassBody(text: string): OverpassResponse {
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error("Overpass API returned non-JSON response");
+  }
 
   const errorValidation = OverpassErrorSchema.safeParse(data);
   if (errorValidation.success) {
     throw new Error(
       `Overpass API error: ${errorValidation.data.error.message}`
     );
+  }
+
+  if (data?.remark) {
+    throw new OverpassTimeoutError(`Overpass API error: ${data.remark}`);
+  }
+
+  // Envelope only: convertOverpassToGeoJSON drops malformed elements one by one
+  if (!Array.isArray(data?.elements)) {
+    throw new Error("Overpass API returned an unexpected response shape");
   }
 
   return data as OverpassResponse;
@@ -114,9 +140,11 @@ export async function countOverpassElements(
   // blocked the area+template for SIZE_CHECK_TTL_HOURS.
   const countQuery = query.replace(/\bout(\s+[^;]+)?;\s*$/, "out count;");
 
-  let response: Response;
+  // The body read sits inside the try: Overpass sends the 200 headers at once
+  // and the body only when the query ends, so the abort usually lands there.
+  let data;
   try {
-    response = await fetch(OVERPASS_API_URL, {
+    const response = await fetch(OVERPASS_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -125,19 +153,19 @@ export async function countOverpassElements(
       body: `data=${encodeURIComponent(countQuery)}`,
       signal: AbortSignal.timeout(timeoutMs),
     });
+
+    if (response.status === 504) {
+      throw new OverpassTimeoutError();
+    }
+    if (!response.ok) {
+      throw new Error(`Overpass API error: ${response.status}`);
+    }
+
+    data = await response.json();
   } catch (error) {
     if (isTimeoutError(error)) throw new OverpassTimeoutError();
     throw error;
   }
-
-  if (response.status === 504) {
-    throw new OverpassTimeoutError();
-  }
-  if (!response.ok) {
-    throw new Error(`Overpass API error: ${response.status}`);
-  }
-
-  const data = await response.json();
   const total = data?.elements?.[0]?.tags?.total;
   if (total === undefined) {
     // Overpass answers oversized/expensive count queries with HTTP 200 + a `remark`
@@ -229,16 +257,7 @@ export async function executeOverpassQueryWithByteLimit(
     }
   }
 
-  const data = JSON.parse(text);
-
-  const errorValidation = OverpassErrorSchema.safeParse(data);
-  if (errorValidation.success) {
-    throw new Error(
-      `Overpass API error: ${errorValidation.data.error.message}`
-    );
-  }
-
-  return data as OverpassResponse;
+  return parseOverpassBody(text);
 }
 
 export function convertOverpassToGeoJSON(

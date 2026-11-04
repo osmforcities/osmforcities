@@ -1,14 +1,31 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { NextRequest } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { submitTilesForDataset, tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
 
 vi.mock("@/auth", () => ({
   auth: vi.fn(),
 }));
 
 vi.mock("@/lib/db", () => ({
-  prisma: { dataset: { findUnique: vi.fn() } },
+  prisma: { dataset: { findUnique: vi.fn(), update: vi.fn() } },
+}));
+
+vi.mock("@/lib/dataset-snapshot", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/dataset-snapshot")>()),
+  fetchDatasetSnapshot: vi.fn().mockResolvedValue({ dataCount: 3 }),
+  snapshotDatasetColumns: vi.fn().mockReturnValue({}),
+}));
+
+vi.mock("@/lib/tiler/submit", () => ({
+  submitTilesForDataset: vi.fn(),
+  tilesOnlyLaneEnabled: vi.fn().mockReturnValue(false),
+}));
+
+vi.mock("@/lib/umami", () => ({
+  trackEvent: vi.fn(),
+  getClientInfo: vi.fn(),
 }));
 
 import { POST } from "../route";
@@ -58,6 +75,98 @@ describe("POST /api/datasets/[id]/refresh", () => {
     expect(prisma.dataset.findUnique).toHaveBeenCalledWith({
       where: { id: "does-not-exist" },
       include: expect.any(Object),
+    });
+  });
+
+  describe("on a successful refresh", () => {
+    const stored = { id: "ds-1", tilesState: "done", lastChecked: new Date() };
+
+    beforeEach(() => {
+      vi.mocked(auth).mockResolvedValue(session(true));
+      vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+        id: "ds-1",
+        isActive: true,
+        areaId: 1,
+        templateId: "clocks",
+        template: { overpassQuery: "q" },
+      } as never);
+      vi.mocked(prisma.dataset.update).mockResolvedValue(stored as never);
+    });
+
+    it("returns the tilesState the tile submit just recorded", async () => {
+      vi.mocked(submitTilesForDataset).mockResolvedValueOnce({
+        tilesJobId: "job-2",
+        tilesState: "pending",
+        tilesError: null,
+      });
+      const body = await (await call()).json();
+      expect(body.tilesState).toBe("pending");
+      expect(body.dataset.tilesState).toBe("pending");
+    });
+
+    it("falls back to the stored tilesState when the tiler is off", async () => {
+      vi.mocked(submitTilesForDataset).mockResolvedValueOnce({});
+      const body = await (await call()).json();
+      expect(body.tilesState).toBe("done");
+    });
+
+    describe("on the tiles-only lane", () => {
+      beforeEach(() => {
+        vi.mocked(tilesOnlyLaneEnabled).mockReturnValue(true);
+        vi.mocked(submitTilesForDataset).mockClear();
+        vi.mocked(prisma.dataset.update).mockClear();
+      });
+
+      afterEach(() => {
+        vi.mocked(tilesOnlyLaneEnabled).mockReturnValue(false);
+      });
+
+      it("submits a bake sized by the probe and reports it queued", async () => {
+        vi.mocked(submitTilesForDataset).mockResolvedValueOnce({
+          tilesJobId: "job-2",
+          tilesState: "pending",
+          tilesError: null,
+        });
+        const res = await call();
+        expect(res.status).toBe(200);
+        expect(await res.json()).toEqual({ success: true, tilesState: "pending" });
+        // The probe count sizes the bake but is not stored
+        expect(submitTilesForDataset).toHaveBeenCalledWith("does-not-exist", 3);
+        // Only the attempt is recorded, so the cron does not resubmit over it
+        expect(prisma.dataset.update).toHaveBeenCalledOnce();
+        expect(prisma.dataset.update).toHaveBeenCalledWith({
+          where: { id: "does-not-exist" },
+          data: { lastAttempted: expect.any(Date) },
+        });
+      });
+
+      it("reports an empty dataset synced, with no bake to queue", async () => {
+        vi.mocked(submitTilesForDataset).mockResolvedValueOnce({
+          tilesJobId: null,
+          tilesState: null,
+          tilesError: null,
+        });
+        const res = await call();
+        expect(res.status).toBe(200);
+        expect(await res.json()).toEqual({ success: true, tilesState: null });
+      });
+
+      it("fails when the submit threw before recording anything", async () => {
+        vi.mocked(submitTilesForDataset).mockResolvedValueOnce({});
+        const res = await call();
+        expect(res.status).toBe(502);
+      });
+
+      it("fails when the bake could not be queued", async () => {
+        vi.mocked(submitTilesForDataset).mockResolvedValueOnce({
+          tilesState: "failed",
+          tilesError: "Tiler submit failed: 503",
+        });
+        const res = await call();
+        expect(res.status).toBe(502);
+        // The raw tiler message is operator-only
+        expect(JSON.stringify(await res.json())).not.toContain("503");
+      });
     });
   });
 });

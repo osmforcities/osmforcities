@@ -16,9 +16,10 @@ vi.mock("@/lib/magic-link-rate-limit", () => ({
   isMagicLinkRateLimited: vi.fn(),
 }));
 
-vi.mock("@/lib/email-i18n", () => ({
-  formatEmail: vi.fn().mockResolvedValue("body"),
-  createEmailLink: vi.fn().mockReturnValue("link"),
+vi.mock("@/lib/magic-link-email", () => ({
+  buildMagicLinkEmail: vi
+    .fn()
+    .mockResolvedValue({ subject: "s", html: "h", text: "t" }),
 }));
 
 import { POST } from "../route";
@@ -78,5 +79,17 @@ describe("POST /api/auth/send-magic-link last-email cookie", () => {
     vi.unstubAllEnvs();
     expect(res.status).toBe(500);
     expect(res.cookies.get(LAST_EMAIL_COOKIE)).toBeUndefined();
+  });
+
+  it("returns 400 for a body that is not an object", async () => {
+    for (const body of ["null", "42", '"x"']) {
+      const res = await POST(
+        new NextRequest("http://localhost:3000/api/auth/send-magic-link", {
+          method: "POST",
+          body,
+        })
+      );
+      expect(res.status).toBe(400);
+    }
   });
 });

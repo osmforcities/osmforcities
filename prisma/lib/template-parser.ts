@@ -42,14 +42,27 @@ export interface Demonstrator {
 }
 
 /**
+ * One node of the category tree. A category without a parent is a topic.
+ */
+export interface ParsedCategory {
+  slug: string;
+  icon: string;
+  parent?: string;
+}
+
+/**
  * Logic-only config from templates.yml (used by parseTemplates and collectIcons)
  */
 export interface LogicConfig {
   templates: Record<string, TemplateLogic>;
-  categories?: Record<string, string>;
+  // Raw so validateCategories can report shape errors on hand-edited YAML
+  categories?: unknown;
   // Raw so validateDemonstrators can report shape errors on hand-edited YAML
   // (incl. a scalar/array root, not just per-key issues).
   demonstrators?: unknown;
+  // Raw for the same reason, see validateReplacedBy
+  replacedBy?: unknown;
+  commonTemplates?: unknown;
 }
 
 /**
@@ -106,8 +119,12 @@ export interface ValidationError {
  */
 export interface ParseResult {
   templates: ParsedTemplate[];
+  categories: ParsedCategory[];
   errors: ValidationError[];
   warnings: string[];
+  /** Empty when the section has errors */
+  replacedBy: Record<string, string>;
+  commonTemplates: string[];
 }
 
 // Regex for validating key=value format (including composite queries)
@@ -327,17 +344,21 @@ export function buildTemplate(config: TemplateConfig): ParsedTemplate {
  */
 export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
   entries: LogicEntry[];
-  categories: Record<string, string>;
+  categories: unknown;
   demonstrators: unknown;
+  replacedBy: unknown;
+  commonTemplates: unknown;
 } {
   const filePath = join(basePath, LOGIC_FILE);
   try {
     const file = readFileSync(filePath, "utf8");
     const config = yaml.load(file) as {
       templates?: unknown[];
-      categories?: Record<string, string>;
+      categories?: unknown;
       filterableTags?: Record<string, unknown>;
       demonstrators?: unknown;
+      replacedBy?: unknown;
+      commonTemplates?: unknown;
     };
 
     if (!config?.templates || !Array.isArray(config.templates)) {
@@ -402,6 +423,8 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
       entries,
       categories: config.categories ?? {},
       demonstrators: config.demonstrators ?? {},
+      replacedBy: config.replacedBy ?? {},
+      commonTemplates: config.commonTemplates,
     };
   } catch (error) {
     if (error instanceof Error) {
@@ -447,7 +470,8 @@ export function loadTemplatesI18n(
 export function loadTemplatesYaml(
   basePath: string = DEFAULT_PRISMA,
 ): LogicConfig {
-  const { entries, categories, demonstrators } = loadTemplatesLogic(basePath);
+  const { entries, categories, demonstrators, replacedBy, commonTemplates } =
+    loadTemplatesLogic(basePath);
   const templates: Record<string, TemplateLogic> = {};
   for (const entry of entries) {
     templates[entry.id] = {
@@ -458,7 +482,7 @@ export function loadTemplatesYaml(
       filterableTags: entry.filterableTags,
     };
   }
-  return { templates, categories, demonstrators };
+  return { templates, categories, demonstrators, replacedBy, commonTemplates };
 }
 
 /**
@@ -520,6 +544,132 @@ export function validateDemonstrators(
   }
 
   return errors;
+}
+
+export function validateReplacedBy(
+  replacedBy: unknown,
+  activeIds: Set<string>,
+): { replacedBy: Record<string, string>; errors: ValidationError[] } {
+  const errors: ValidationError[] = [];
+  const map: Record<string, string> = {};
+  if (replacedBy === undefined || replacedBy === null) return { replacedBy: map, errors };
+  if (typeof replacedBy !== "object" || Array.isArray(replacedBy)) {
+    errors.push({ field: "replacedBy", message: "replacedBy must be a map of old id to new id" });
+    return { replacedBy: map, errors };
+  }
+
+  for (const [oldId, newId] of Object.entries(replacedBy)) {
+    if (typeof newId !== "string") {
+      errors.push({
+        field: "replacedBy",
+        message: `replacedBy["${oldId}"] must be a template id`,
+      });
+    } else if (activeIds.has(oldId)) {
+      errors.push({
+        field: "replacedBy",
+        message: `replacedBy: "${oldId}" is still an active template, remove it from templates first`,
+      });
+    } else if (!activeIds.has(newId)) {
+      errors.push({
+        field: "replacedBy",
+        message: `replacedBy["${oldId}"]: "${newId}" is not an active template`,
+      });
+    } else {
+      map[oldId] = newId;
+    }
+  }
+
+  // All or nothing, so no caller ever applies part of a broken section
+  return { replacedBy: errors.length === 0 ? map : {}, errors };
+}
+
+export function validateCommonTemplates(
+  commonTemplates: unknown,
+  activeIds: Set<string>,
+): { commonTemplates: string[]; errors: ValidationError[] } {
+  const errors: ValidationError[] = [];
+  if (commonTemplates === undefined || commonTemplates === null) {
+    return { commonTemplates: [], errors };
+  }
+  if (!Array.isArray(commonTemplates)) {
+    errors.push({
+      field: "commonTemplates",
+      message: "commonTemplates must be a list of template ids",
+    });
+    return { commonTemplates: [], errors };
+  }
+
+  const seen = new Set<string>();
+  for (const id of commonTemplates) {
+    if (typeof id !== "string" || !activeIds.has(id)) {
+      errors.push({
+        field: "commonTemplates",
+        message: `commonTemplates: "${String(id)}" is not an active template`,
+      });
+    } else if (seen.has(id)) {
+      errors.push({
+        field: "commonTemplates",
+        message: `commonTemplates: "${id}" is listed twice`,
+      });
+    }
+    seen.add(String(id));
+  }
+
+  return {
+    commonTemplates: errors.length === 0 ? (commonTemplates as string[]) : [],
+    errors,
+  };
+}
+
+/**
+ * Validate the `categories:` tree: each entry is `{ icon, parent? }` and a
+ * parent is always a topic, so the tree is at most topic -> child. That one
+ * rule also rules out cycles and self-parents. One error per problem.
+ */
+export function validateCategories(raw: unknown): {
+  categories: ParsedCategory[];
+  errors: ValidationError[];
+} {
+  const errors: ValidationError[] = [];
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    errors.push({
+      field: "categories",
+      message: "categories must be a map keyed by category slug",
+    });
+    return { categories: [], errors };
+  }
+
+  const bySlug = new Map<string, ParsedCategory>();
+  for (const [slug, def] of Object.entries(raw)) {
+    const { icon, parent } = (def ?? {}) as { icon?: unknown; parent?: unknown };
+    if (typeof icon !== "string" || (parent !== undefined && (typeof parent !== "string" || !parent))) {
+      errors.push({
+        field: "categories",
+        message: `Category "${slug}" must be an object with a string "icon" and an optional string "parent"`,
+      });
+      continue;
+    }
+    bySlug.set(slug, { slug, icon, parent });
+  }
+
+  for (const category of bySlug.values()) {
+    if (!category.parent) continue;
+    if (!bySlug.has(category.parent)) {
+      errors.push({
+        field: "categories",
+        message: `Category "${category.slug}" references unknown parent: "${category.parent}"`,
+      });
+      continue;
+    }
+    if (bySlug.get(category.parent)?.parent) {
+      errors.push({
+        field: "categories",
+        message: `Category "${category.slug}" must have a topic as parent, not "${category.parent}"`,
+      });
+    }
+  }
+
+  return { categories: [...bySlug.values()], errors };
 }
 
 /**
@@ -584,14 +734,42 @@ export function parseTemplates(config: LogicConfig): ParseResult {
 
   errors.push(...validateDemonstrators(config.demonstrators, parsedIds));
 
-  return { templates, errors, warnings };
+  const { replacedBy, errors: replacedByErrors } = validateReplacedBy(
+    config.replacedBy,
+    parsedIds,
+  );
+  errors.push(...replacedByErrors);
+
+  const { commonTemplates, errors: commonErrors } = validateCommonTemplates(
+    config.commonTemplates,
+    parsedIds,
+  );
+  errors.push(...commonErrors);
+
+  const { categories, errors: categoryErrors } = validateCategories(
+    config.categories ?? {},
+  );
+  errors.push(...categoryErrors);
+  const declared = new Set(categories.map((c) => c.slug));
+  for (const template of templates) {
+    if (!declared.has(template.category)) {
+      errors.push({
+        field: "category",
+        message: `Template "${template.id}" references undeclared category: "${template.category}"`,
+      });
+    }
+  }
+
+  return { templates, categories, errors, warnings, replacedBy, commonTemplates };
 }
 
 /**
  * Collect category icons from the explicit categories section only
  */
 export function collectCategoryIcons(config: LogicConfig): Map<string, string> {
-  return new Map(Object.entries(config.categories || {}));
+  return new Map(
+    validateCategories(config.categories ?? {}).categories.map((c) => [c.slug, c.icon]),
+  );
 }
 
 /**
