@@ -270,12 +270,11 @@
     "subtitle": "Explora categorías de datos de OpenStreetMap. Lo disponible depende del mapeo local."
   },
   "NavSearch": {
-    "openSearch": "Buscar una ciudad",
-    "searchPlaceholder": "Buscar una ciudad o región",
-    "noAreasFound": "No se encontraron ciudades ni regiones",
+    "searchPlaceholder": "Buscar un área",
+    "noAreasFound": "No se encontraron áreas",
     "searching": "Buscando...",
     "typeMoreChars": "Escribe {count} carácter{count, plural, one {} other {es}} más para buscar",
-    "searchHint": "Elige primero una ciudad y luego busca sus conjuntos de datos",
+    "searchHint": "Elige primero un área y luego busca sus conjuntos de datos.",
     "population": "{count, plural, one {{count, number, ::compact-short .#} habitante} other {{count, number, ::compact-short .#} habitantes}}",
     "clearSearch": "Limpiar búsqueda"
   },

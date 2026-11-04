@@ -19,7 +19,7 @@ import { AreaSearchResult } from "@/components/area-search-result";
 type SearchResultItem = AreaSearchResultData | SpecialSearchItem;
 
 type SpecialSearchItem = {
-  id: "no-results" | "loading" | "need-more-chars" | "search-hint";
+  id: "no-results" | "loading" | "need-more-chars";
   name: string;
   displayName: "";
   osmType: "";
@@ -143,8 +143,7 @@ function NavSearch() {
       selectedKey &&
       selectedKey !== "no-results" &&
       selectedKey !== "loading" &&
-      selectedKey !== "need-more-chars" &&
-      selectedKey !== "search-hint"
+      selectedKey !== "need-more-chars"
     ) {
       const selectedArea = areas.find(
         (area) => area.id.toString() === selectedKey
@@ -187,14 +186,13 @@ function NavSearch() {
         className="flex items-center gap-2 rounded p-3 font-medium text-gray-700 transition-colors hover:bg-olive-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-olive-500 focus-visible:ring-offset-2 md:px-4 md:py-2 md:text-sm"
       >
         <Search size={16} aria-hidden />
-        <span className="sr-only md:not-sr-only">{t("openSearch")}</span>
+        <span className="sr-only md:not-sr-only">{t("searchPlaceholder")}</span>
       </Button>
     );
   }
 
   return (
-    <div className="absolute inset-0 z-10 flex items-center bg-white px-3 md:static md:flex-1 md:px-0">
-      <div className="flex-1">
+    <div className="absolute inset-0 z-10 flex flex-col justify-center bg-white px-3 md:static md:flex-1 md:px-0">
       {/* Screen reader announcements for search state changes */}
       <div aria-live="polite" aria-atomic="true" className="sr-only">
         {inputValue.length > 0 &&
@@ -229,8 +227,11 @@ function NavSearch() {
             data-testid="nav-search-input"
             autoFocus
             onKeyDown={handleKeyDown}
-            onBlur={() => {
-              if (inputValue === "") collapse();
+            onBlur={(event) => {
+              const stillInside = event.currentTarget.parentElement?.contains(
+                event.relatedTarget as Node | null
+              );
+              if (inputValue === "" && !stillInside) collapse();
             }}
             className={`w-full px-3 py-1.5 text-sm border-0 rounded-l focus:outline-none bg-white transition-all duration-150 ${
               inputValue.length > 0 && inputValue.length < MIN_SEARCH_CHARS
@@ -305,7 +306,6 @@ function NavSearch() {
           </Popover>
         )}
       </ComboBox>
-      </div>
     </div>
   );
 }

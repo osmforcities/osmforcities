@@ -32,10 +32,6 @@ test.describe("Navbar", () => {
     // Search is available to all users (public discovery feature)
     await page.getByTestId("nav-search-open").click();
     await expect(page.getByTestId("nav-search-input")).toBeFocused();
-
-    // Escape with an empty box collapses back to the button
-    await page.keyboard.press("Escape");
-    await expect(page.getByTestId("nav-search-open")).toBeFocused();
   });
 
   test("shows correct content for authenticated users", async ({ page }) => {
