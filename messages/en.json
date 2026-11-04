@@ -270,11 +270,12 @@
     "subtitle": "Browse categories of OpenStreetMap data. What's available depends on local mapping."
   },
   "NavSearch": {
-    "searchPlaceholder": "Search cities and areas...",
-    "noAreasFound": "No areas found",
+    "openSearch": "Search a city",
+    "searchPlaceholder": "Search a city or region",
+    "noAreasFound": "No cities or regions found",
     "searching": "Searching...",
     "typeMoreChars": "Type {count} more character{count, plural, one {} other {s}} to search",
-    "searchHint": "Try searching for cities, regions, or countries",
+    "searchHint": "Pick a city first, then search its datasets",
     "population": "{count, plural, one {{count, number, ::compact-short .#} person} other {{count, number, ::compact-short .#} people}}",
     "clearSearch": "Clear search"
   },

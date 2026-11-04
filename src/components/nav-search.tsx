@@ -59,7 +59,9 @@ function NavSearch() {
 
   const [inputValue, setInputValue] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const restoreFocusRef = useRef(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Debounce the search term with 500ms delay
@@ -148,27 +150,51 @@ function NavSearch() {
         (area) => area.id.toString() === selectedKey
       );
       if (selectedArea) {
-        setInputValue("");
-        setDebouncedSearchTerm("");
+        collapse();
         router.push(`/area/${selectedArea.id}`);
       }
     }
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Escape") {
-      setInputValue("");
-      setDebouncedSearchTerm("");
-    }
-  };
-
-  const clearInput = () => {
+  const collapse = () => {
     setInputValue("");
     setDebouncedSearchTerm("");
+    setIsExpanded(false);
   };
 
+  const collapseToTrigger = () => {
+    collapse();
+    restoreFocusRef.current = true;
+  };
+
+  useEffect(() => {
+    if (!isExpanded && restoreFocusRef.current) {
+      restoreFocusRef.current = false;
+      triggerRef.current?.focus();
+    }
+  }, [isExpanded]);
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Escape") collapseToTrigger();
+  };
+
+  if (!isExpanded) {
+    return (
+      <Button
+        ref={triggerRef}
+        onPress={() => setIsExpanded(true)}
+        data-testid="nav-search-open"
+        className="flex items-center gap-2 rounded p-3 font-medium text-gray-700 transition-colors hover:bg-olive-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-olive-500 focus-visible:ring-offset-2 md:px-4 md:py-2 md:text-sm"
+      >
+        <Search size={16} aria-hidden />
+        <span className="sr-only md:not-sr-only">{t("openSearch")}</span>
+      </Button>
+    );
+  }
+
   return (
-    <div className="flex-1 max-w-lg">
+    <div className="absolute inset-0 z-10 flex items-center bg-white px-3 md:static md:flex-1 md:px-0">
+      <div className="flex-1">
       {/* Screen reader announcements for search state changes */}
       <div aria-live="polite" aria-atomic="true" className="sr-only">
         {inputValue.length > 0 &&
@@ -184,7 +210,7 @@ function NavSearch() {
           inputValue.length >= MIN_SEARCH_CHARS &&
           !isLoading &&
           !error &&
-          "No areas found"}
+          t("noAreasFound")}
       </div>
 
       <ComboBox
@@ -198,12 +224,14 @@ function NavSearch() {
       >
         <div className="relative flex rounded border border-border focus-within:border-olive-500 focus-within:ring-2 focus-within:ring-olive-500/20">
           <Input
-            placeholder={isFocused ? t("searchPlaceholder") : ""}
+            placeholder={t("searchPlaceholder")}
             aria-label={t("searchPlaceholder")}
             data-testid="nav-search-input"
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
+            autoFocus
             onKeyDown={handleKeyDown}
+            onBlur={() => {
+              if (inputValue === "") collapse();
+            }}
             className={`w-full px-3 py-1.5 text-sm border-0 rounded-l focus:outline-none bg-white transition-all duration-150 ${
               inputValue.length > 0 && inputValue.length < MIN_SEARCH_CHARS
                 ? "text-gray-500"
@@ -214,23 +242,12 @@ function NavSearch() {
           />
           <Button
             className="px-2 py-1.5 border-0 rounded-r bg-white hover:bg-olive-100 focus:outline-none transition-all duration-150"
-            onPress={clearInput}
+            onPress={collapseToTrigger}
             excludeFromTabOrder
-            aria-label={inputValue ? t("clearSearch") : undefined}
-            aria-hidden={!inputValue || undefined}
+            aria-label={t("clearSearch")}
           >
-            {!inputValue ? (
-              <Search size={16} className="text-gray-400" />
-            ) : (
-              <X size={16} className="text-gray-600 hover:text-gray-900" />
-            )}
+            <X size={16} className="text-gray-600 hover:text-gray-900" />
           </Button>
-          {/* Character counter */}
-          {inputValue.length > 0 && (
-            <div className="absolute -bottom-5 right-0 text-xs text-gray-400">
-              {`${inputValue.length}/${MIN_SEARCH_CHARS}`}
-            </div>
-          )}
         </div>
 
         {inputValue.length > 0 && (
@@ -245,9 +262,11 @@ function NavSearch() {
                     <ListBoxItem
                       key={item.id}
                       id={item.id}
+                      textValue={item.name}
                       className="px-4 py-2.5 text-sm text-gray-500"
                     >
-                      {item.name}
+                      <p>{item.name}</p>
+                      <p className="mt-0.5 text-xs">{t("searchHint")}</p>
                     </ListBoxItem>
                   );
                 }
@@ -286,6 +305,7 @@ function NavSearch() {
           </Popover>
         )}
       </ComboBox>
+      </div>
     </div>
   );
 }
