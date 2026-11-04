@@ -76,6 +76,7 @@ model Template {
   filterableTags String[]             @default([])
   isActive      Boolean               @default(true)
   deprecatesAt  DateTime?
+  commonRank    Int?
   replacedById  String?
   replacedBy    Template?             @relation("TemplateReplacement", fields: [replacedById], references: [id], onDelete: SetNull)
   replaces      Template[]            @relation("TemplateReplacement")

@@ -486,6 +486,17 @@ filterableTags:
   basketball:       [surface, lit]
   tennis:           [surface, lit]
 
+# The area hub's "Common datasets" grid, in this order. Sync fails on a missing
+# or deprecated id.
+commonTemplates:
+  - bus-stops
+  - schools
+  - clinics
+  - pharmacies
+  - buildings
+  - footways
+  - cycleways
+
 # Replacements for removed templates (old-id: new-id).
 # The old id leaves the templates list above and deprecates as usual; its report
 # email links the replacement and its dataset URLs redirect to it. Sync fails if

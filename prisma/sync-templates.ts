@@ -121,6 +121,11 @@ async function main() {
     );
   }
 
+  const commonRankOf = (templateId: string) => {
+    const rank = result.commonTemplates.indexOf(templateId);
+    return rank === -1 ? null : rank;
+  };
+
   // Upsert templates from YAML
   // Pass 1: upsert all templates without parent (ensures parents exist first)
   let upserted = 0;
@@ -141,6 +146,7 @@ async function main() {
         category: { connect: { id: categoryId } },
         tags: template.tags,
         filterableTags: template.filterableTags,
+        commonRank: commonRankOf(template.id),
         updatedAt: new Date(),
       },
       create: {
@@ -151,6 +157,7 @@ async function main() {
         category: { connect: { id: categoryId } },
         tags: template.tags,
         filterableTags: template.filterableTags,
+        commonRank: commonRankOf(template.id),
       },
     });
     upserted++;
