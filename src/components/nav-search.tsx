@@ -183,7 +183,7 @@ function NavSearch() {
         ref={triggerRef}
         onPress={() => setIsExpanded(true)}
         data-testid="nav-search-open"
-        className="flex items-center gap-2 rounded p-3 font-medium text-gray-600 transition-colors hover:bg-olive-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-olive-500 focus-visible:ring-offset-2 md:px-4 md:py-2 md:text-sm md:text-gray-700"
+        className="flex items-center gap-2 rounded p-3 font-medium text-gray-600 transition-colors hover:bg-olive-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-olive-500 focus-visible:ring-offset-2 md:px-4 md:py-2 md:text-sm md:font-semibold md:text-gray-900"
       >
         <Search className="h-7 w-7 md:h-4 md:w-4" aria-hidden />
         <span className="sr-only md:not-sr-only">{t("searchPlaceholder")}</span>
