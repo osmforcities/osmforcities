@@ -258,7 +258,12 @@
     "clearPick": "{name} entfernen",
     "datasetsTitle": "Datensätze",
     "otherCategory": "Sonstiges",
-    "topicMetaTitle": "{topic} in {area}"
+    "topicMetaTitle": "{topic} in {area}",
+    "searchLabel": "Datensätze in {area} durchsuchen",
+    "searchResults": "{count, plural, one {# Ergebnis für „{query}“} other {# Ergebnisse für „{query}“}}",
+    "noSearchResults": "Kein Datensatz passt zu „{query}“",
+    "noSearchResultsHint": "Probier ein anderes Wort oder prüf die Schreibweise.",
+    "clearSearch": "Suche löschen"
   },
   "CategoryCards": {
     "title": "Daten in {area} finden",

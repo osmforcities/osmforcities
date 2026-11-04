@@ -21,6 +21,8 @@ const tpl = (
   categorySlug,
   topicSlug,
   commonRank: null,
+  englishName: id,
+  osmTags: [],
   ...over,
 });
 

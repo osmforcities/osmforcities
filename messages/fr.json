@@ -258,7 +258,12 @@
     "clearPick": "Retirer {name}",
     "datasetsTitle": "Jeux de données",
     "otherCategory": "Autres",
-    "topicMetaTitle": "{topic} à {area}"
+    "topicMetaTitle": "{topic} à {area}",
+    "searchLabel": "Rechercher des jeux de données pour {area}",
+    "searchResults": "{count, plural, one {# résultat pour « {query} »} other {# résultats pour « {query} »}}",
+    "noSearchResults": "Aucun jeu de données ne correspond à « {query} »",
+    "noSearchResultsHint": "Essayez un autre mot ou vérifiez l’orthographe.",
+    "clearSearch": "Effacer la recherche"
   },
   "CategoryCards": {
     "title": "Trouver des données dans {area}",

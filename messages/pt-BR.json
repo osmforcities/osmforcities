@@ -258,7 +258,12 @@
     "clearPick": "Remover {name}",
     "datasetsTitle": "Conjuntos de dados",
     "otherCategory": "Outros",
-    "topicMetaTitle": "{topic} em {area}"
+    "topicMetaTitle": "{topic} em {area}",
+    "searchLabel": "Buscar conjuntos de dados em {area}",
+    "searchResults": "{count, plural, one {# resultado para \"{query}\"} other {# resultados para \"{query}\"}}",
+    "noSearchResults": "Nenhum conjunto de dados corresponde a \"{query}\"",
+    "noSearchResultsHint": "Tente outra palavra ou confira a ortografia.",
+    "clearSearch": "Limpar busca"
   },
   "CategoryCards": {
     "title": "Encontrar dados em {area}",

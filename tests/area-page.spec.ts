@@ -131,6 +131,42 @@ test.describe("Area Page", () => {
     await expect(firstDatasetLink.locator("h3")).toBeVisible(); // Dataset name
   });
 
+  test("search finds a dataset and Back returns to the results", async ({ page }) => {
+    await page.route("**/nominatim.openstreetmap.org/lookup*", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify([
+          {
+            place_id: 123456,
+            osm_type: "relation",
+            osm_id: 298470,
+            display_name: "São Paulo, State of São Paulo, Brazil",
+            name: "São Paulo",
+            class: "place",
+            type: "city",
+            boundingbox: ["-23.8", "-23.3", "-46.8", "-46.1"],
+            lat: "-23.5",
+            lon: "-46.6",
+            address: { country_code: "br", country: "Brazil", type: "city" },
+          },
+        ]),
+      });
+    });
+
+    await page.goto(getLocalizedPath("/area/298470/topics/mobility"));
+    await page.getByRole("searchbox", { name: "Search datasets in São Paulo" }).fill("bakery");
+    await expect(page).toHaveURL(/\/area\/298470\/topics\/mobility\?q=bakery$/);
+    await expect(page.getByRole("link", { name: "Clear Mobility" })).toBeHidden();
+
+    await page.getByRole("link", { name: /^Bakeries/ }).click();
+    await expect(page).toHaveURL(/\/area\/298470\/dataset\/bakeries$/);
+
+    await page.goBack();
+    await expect(page.getByRole("searchbox")).toHaveValue("bakery");
+    await expect(page.getByRole("link", { name: /^Bakeries/ })).toBeVisible();
+  });
+
   // Invalid area ID 404 handling is covered by dataset-page.spec.ts.
   // pt-BR template rendering is covered by dataset-translations.spec.ts.
 
