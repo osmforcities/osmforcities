@@ -139,20 +139,12 @@ function NavSearch() {
   const handleInputChange = (value: string) => setInputValue(value);
 
   const handleSelectionChange = (selectedKey: React.Key | null) => {
-    if (
-      selectedKey &&
-      selectedKey !== "no-results" &&
-      selectedKey !== "error" &&
-      selectedKey !== "loading" &&
-      selectedKey !== "need-more-chars"
-    ) {
-      const selectedArea = areas.find(
-        (area) => area.id.toString() === selectedKey
-      );
-      if (selectedArea) {
-        collapse();
-        router.push(`/area/${selectedArea.id}`);
-      }
+    const selectedArea = areas.find(
+      (area) => area.id.toString() === selectedKey
+    );
+    if (selectedArea) {
+      collapse();
+      router.push(`/area/${selectedArea.id}`);
     }
   };
 
