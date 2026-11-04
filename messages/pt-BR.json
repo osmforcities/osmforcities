@@ -273,6 +273,8 @@
     "searchPlaceholder": "Buscar áreas",
     "noAreasFound": "Nenhuma área encontrada",
     "searching": "Buscando...",
+    "searchFailed": "A busca falhou, tente novamente.",
+    "areasFound": "{count, plural, one {# área encontrada} other {# áreas encontradas}}",
     "typeMoreChars": "Digite {count} caractere{count, plural, one {} other {s}} a mais para buscar",
     "searchHint": "Escolha uma área e depois busque os conjuntos de dados dela.",
     "population": "{count, plural, one {{count, number, ::compact-short .#} habitante} other {{count, number, ::compact-short .#} habitantes}}",

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, userEvent } from "storybook/test";
+import { expect, userEvent, within } from "storybook/test";
 import NavSearch from "./nav-search";
 
 const meta = {
@@ -30,5 +30,25 @@ export const OpenAndClose: Story = {
     await userEvent.click(canvas.getByRole("button", { name: "Search areas" }));
     await userEvent.click(canvas.getByRole("button", { name: "Clear search" }));
     await expect(canvas.getByRole("button", { name: "Search areas" })).toHaveFocus();
+  },
+};
+
+/** A failed request says so, without the "pick an area first" hint meant for no matches. */
+export const SearchFailed: Story = {
+  beforeEach: () => {
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = () => Promise.reject(new TypeError("Failed to fetch"));
+    return () => {
+      globalThis.fetch = realFetch;
+    };
+  },
+  play: async ({ canvas, canvasElement }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Search areas" }));
+    await userEvent.keyboard("paris");
+    const body = within(canvasElement.ownerDocument.body);
+    await expect(
+      await body.findByText("Search failed, please try again.", { selector: "p" }, { timeout: 8000 })
+    ).toBeVisible();
+    await expect(body.queryByText("Pick an area first, then search its datasets.")).toBeNull();
   },
 };

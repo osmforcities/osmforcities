@@ -273,6 +273,8 @@
     "searchPlaceholder": "Gebiete suchen",
     "noAreasFound": "Keine Gebiete gefunden",
     "searching": "Suche läuft...",
+    "searchFailed": "Suche fehlgeschlagen, bitte versuch es noch einmal.",
+    "areasFound": "{count, plural, one {# Gebiet gefunden} other {# Gebiete gefunden}}",
     "typeMoreChars": "Gib noch {count} Zeichen{count, plural, one {} other {}} ein, um zu suchen",
     "searchHint": "Wähle zuerst ein Gebiet und durchsuche dann seine Datensätze.",
     "population": "{count, plural, one {{count, number, ::compact-short .#} Einwohner} other {{count, number, ::compact-short .#} Einwohner}}",

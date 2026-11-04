@@ -19,7 +19,7 @@ import { AreaSearchResult } from "@/components/area-search-result";
 type SearchResultItem = AreaSearchResultData | SpecialSearchItem;
 
 type SpecialSearchItem = {
-  id: "no-results" | "loading" | "need-more-chars";
+  id: "no-results" | "error" | "loading" | "need-more-chars";
   name: string;
   displayName: "";
   osmType: "";
@@ -125,7 +125,7 @@ function NavSearch() {
 
     // Show error state
     if (error) {
-      return [createSpecialSearchItem("no-results", t("noAreasFound"))];
+      return [createSpecialSearchItem("error", t("searchFailed"))];
     }
 
     // Show no results when we have a valid search but no results
@@ -142,6 +142,7 @@ function NavSearch() {
     if (
       selectedKey &&
       selectedKey !== "no-results" &&
+      selectedKey !== "error" &&
       selectedKey !== "loading" &&
       selectedKey !== "need-more-chars"
     ) {
@@ -200,10 +201,9 @@ function NavSearch() {
           t("typeMoreChars", {
             count: MIN_SEARCH_CHARS - inputValue.length,
           } as Parameters<typeof t>[1])}
-        {isLoading && "Searching for areas"}
-        {error && "Search failed, please try again"}
-        {areas.length > 0 &&
-          `Found ${areas.length} area${areas.length === 1 ? "" : "s"}`}
+        {isLoading && t("searching")}
+        {error && t("searchFailed")}
+        {areas.length > 0 && t("areasFound", { count: areas.length })}
         {areas.length === 0 &&
           inputValue.length >= MIN_SEARCH_CHARS &&
           !isLoading &&
@@ -258,7 +258,7 @@ function NavSearch() {
           >
             <ListBox className="outline-none py-2">
               {(item: SearchResultItem) => {
-                if (item.id === "no-results") {
+                if (item.id === "no-results" || item.id === "error") {
                   return (
                     <ListBoxItem
                       key={item.id}
@@ -267,7 +267,9 @@ function NavSearch() {
                       className="px-4 py-2.5 text-sm text-gray-500"
                     >
                       <p>{item.name}</p>
-                      <p className="mt-0.5 text-xs">{t("searchHint")}</p>
+                      {item.id === "no-results" && (
+                        <p className="mt-0.5 text-xs">{t("searchHint")}</p>
+                      )}
                     </ListBoxItem>
                   );
                 }

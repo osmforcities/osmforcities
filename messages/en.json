@@ -273,6 +273,8 @@
     "searchPlaceholder": "Search areas",
     "noAreasFound": "No areas found",
     "searching": "Searching...",
+    "searchFailed": "Search failed, please try again.",
+    "areasFound": "{count, plural, one {# area found} other {# areas found}}",
     "typeMoreChars": "Type {count} more character{count, plural, one {} other {s}} to search",
     "searchHint": "Pick an area first, then search its datasets.",
     "population": "{count, plural, one {{count, number, ::compact-short .#} person} other {{count, number, ::compact-short .#} people}}",
