@@ -270,11 +270,13 @@
     "subtitle": "Parcourez les catégories de données OpenStreetMap. La disponibilité dépend de la cartographie locale."
   },
   "NavSearch": {
-    "searchPlaceholder": "Rechercher des villes et des zones...",
+    "searchPlaceholder": "Rechercher des zones",
     "noAreasFound": "Aucune zone trouvée",
     "searching": "Recherche...",
+    "searchFailed": "La recherche a échoué, veuillez réessayer.",
+    "areasFound": "{count, plural, one {# zone trouvée} other {# zones trouvées}}",
     "typeMoreChars": "Saisissez {count} caractère{count, plural, one {} other {s}} de plus pour rechercher",
-    "searchHint": "Essayez de rechercher des villes, des régions ou des pays",
+    "searchHint": "Choisissez d’abord une zone, puis cherchez ses jeux de données.",
     "population": "{count, plural, one {{count, number, ::compact-short .#} habitant} other {{count, number, ::compact-short .#} habitants}}",
     "clearSearch": "Effacer la recherche"
   },

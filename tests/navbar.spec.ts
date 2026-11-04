@@ -29,9 +29,9 @@ test.describe("Navbar", () => {
     // Should show "Sign In" for unauthenticated users (in navbar)
     await expect(page.getByTestId("navbar-sign-in")).toBeVisible();
 
-    // Search input is visible for all users (public discovery feature)
-    const searchInput = page.getByTestId("nav-search-input");
-    await expect(searchInput).toBeVisible();
+    // Search is available to all users (public discovery feature)
+    await page.getByTestId("nav-search-open").click();
+    await expect(page.getByTestId("nav-search-input")).toBeFocused();
   });
 
   test("shows correct content for authenticated users", async ({ page }) => {
@@ -46,6 +46,7 @@ test.describe("Navbar", () => {
       await expect(page.getByText("Sign Out")).toBeVisible();
 
       // Search input should be visible for authenticated users
+      await page.getByTestId("nav-search-open").click();
       const searchInput = page.getByTestId("nav-search-input");
       await expect(searchInput).toBeVisible();
       await expect(searchInput).toHaveAttribute("role", "combobox");
@@ -79,7 +80,7 @@ test.describe("Navbar", () => {
     }) => {
       const searchInput = page.getByTestId("nav-search-input");
 
-      await searchInput.click();
+      await page.getByTestId("nav-search-open").click();
       await searchInput.fill("são");
 
       // Wait for debounced search to complete and API call to finish
@@ -113,7 +114,7 @@ test.describe("Navbar", () => {
     }) => {
       const searchInput = page.getByTestId("nav-search-input");
 
-      await searchInput.click();
+      await page.getByTestId("nav-search-open").click();
       await searchInput.fill("são");
 
       // Wait for debounced search to complete and API call to finish
@@ -141,7 +142,7 @@ test.describe("Navbar", () => {
     }) => {
       const searchInput = page.getByTestId("nav-search-input");
 
-      await searchInput.click();
+      await page.getByTestId("nav-search-open").click();
       await searchInput.fill("Paris");
 
       const options = page.getByRole("option");
