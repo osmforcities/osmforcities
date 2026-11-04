@@ -1,5 +1,60 @@
 # osmforcities
 
+## 1.21.0
+
+### Added
+
+- Area pages are now a hub: common datasets up front, then 8 topics (Mobility, Nature and environment, and so on) with their own topic and category pages [#674], [#665]
+- Area pages have a typo-tolerant search over the area's datasets [#679]
+- While a new dataset is being counted, a full-page wait screen shows progress, says when a large area takes longer, and shows a too-large or timed-out count on the same screen instead of an error page [#575]
+- A deprecated template can point to its replacement: its dataset pages redirect there, and the report email links the replacement [#664]
+- The sign-in page explains what happens after entering an email: a sign-in link, or a new account for a new address [#587]
+- A dataset without a map can be unsaved from its card [#612]
+
+### Changed
+
+- The top bar search collapses to an icon and says it finds places [#681]
+- Report and map-ready emails use a shared card layout: datasets as rows with stats and icons, at most 5 per email, with a dashboard button and a clear warning for datasets leaving the catalog [#642]
+- The sign-in email is clearer and fully translated [#638]
+- Road and building templates follow the OSM wiki: fixed queries (speed cameras, bus lanes, roads, houses, livestock buildings), clearer names (Footways and paths, Bridge outlines, Apartment buildings, Traffic signals), and Agricultural buildings merged into Farm auxiliary buildings. Dataset counts shift on the next refresh [#669]
+- Template names match their OSM data in every language, Spanish uses neutral terms, and pt/fr/de wording bugs are fixed [#670], [#672]
+- Language has its own section in Preferences, and the reports checkbox is disabled while saving [#585]
+- Groundwork for serving every dataset map as vector tiles, all behind the tiles flag (off in production): creation and refresh submit a tile bake, each bake writes stats, a full-page wait screen covers the first bake, "email me when the map is ready", and fixes to retries, Sync and map styling [#625], [#627], [#629], [#632], [#634], [#635], [#636], [#637], [#649], [#650], [#577], [#614]
+
+### Fixed
+
+- Overpass replies that are not JSON or carry an error remark are detected as failures instead of empty data [#584]
+- Relative timestamps no longer cause a hydration mismatch [#621]
+
+[#575]: https://github.com/osmforcities/osmforcities/pull/575
+[#577]: https://github.com/osmforcities/osmforcities/pull/577
+[#584]: https://github.com/osmforcities/osmforcities/pull/584
+[#585]: https://github.com/osmforcities/osmforcities/pull/585
+[#587]: https://github.com/osmforcities/osmforcities/pull/587
+[#612]: https://github.com/osmforcities/osmforcities/pull/612
+[#614]: https://github.com/osmforcities/osmforcities/pull/614
+[#621]: https://github.com/osmforcities/osmforcities/pull/621
+[#625]: https://github.com/osmforcities/osmforcities/pull/625
+[#627]: https://github.com/osmforcities/osmforcities/pull/627
+[#629]: https://github.com/osmforcities/osmforcities/pull/629
+[#632]: https://github.com/osmforcities/osmforcities/pull/632
+[#634]: https://github.com/osmforcities/osmforcities/pull/634
+[#635]: https://github.com/osmforcities/osmforcities/pull/635
+[#636]: https://github.com/osmforcities/osmforcities/pull/636
+[#637]: https://github.com/osmforcities/osmforcities/pull/637
+[#638]: https://github.com/osmforcities/osmforcities/pull/638
+[#642]: https://github.com/osmforcities/osmforcities/pull/642
+[#649]: https://github.com/osmforcities/osmforcities/pull/649
+[#650]: https://github.com/osmforcities/osmforcities/pull/650
+[#664]: https://github.com/osmforcities/osmforcities/pull/664
+[#665]: https://github.com/osmforcities/osmforcities/pull/665
+[#669]: https://github.com/osmforcities/osmforcities/pull/669
+[#670]: https://github.com/osmforcities/osmforcities/pull/670
+[#672]: https://github.com/osmforcities/osmforcities/pull/672
+[#674]: https://github.com/osmforcities/osmforcities/pull/674
+[#679]: https://github.com/osmforcities/osmforcities/pull/679
+[#681]: https://github.com/osmforcities/osmforcities/pull/681
+
 ## 1.20.0
 
 ### Added
