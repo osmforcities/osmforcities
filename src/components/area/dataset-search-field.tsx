@@ -10,7 +10,6 @@ type DatasetSearchFieldProps = {
   onChange: (value: string) => void;
 };
 
-/** Escape and the clear button empty it (React Aria SearchField). */
 export function DatasetSearchField({ label, value, onChange }: DatasetSearchFieldProps) {
   const t = useTranslations("AreaPage");
 

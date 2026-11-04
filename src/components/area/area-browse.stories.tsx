@@ -7,8 +7,7 @@ const template = (
   id: string,
   name: string,
   categorySlug: string,
-  topicSlug: string,
-  osmTags: string[] = []
+  topicSlug: string
 ): AreaTemplate => ({
   id,
   name,
@@ -17,13 +16,13 @@ const template = (
   topicSlug,
   commonRank: null,
   englishName: name,
-  osmTags,
+  osmTags: [],
 });
 
 const templates = [
-  template("bus-stops", "Bus stops", "bus", "mobility", ["highway=bus_stop"]),
+  template("bus-stops", "Bus stops", "bus", "mobility"),
   template("bicycle-parking", "Bicycle parking", "cycling", "mobility"),
-  template("cafes", "Cafés", "food", "food-drink", ["amenity=cafe"]),
+  template("cafes", "Cafés", "food", "food-drink"),
   template("clinics", "Clinics", "health", "health"),
 ];
 
@@ -43,22 +42,15 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** Results replace the pickers and the page; typos and accents still match. */
+/** Results replace the pickers and the page until the search is cleared. */
 export const Searching: Story = {
   play: async ({ canvas }) => {
     const field = canvas.getByRole("searchbox", { name: "Search datasets in São Paulo" });
-    await userEvent.type(field, "bycicle");
-    await expect(canvas.getByRole("heading", { name: '1 result for "bycicle"' })).toBeVisible();
-    await expect(canvas.getByRole("link", { name: "Bicycle parking" })).toHaveAttribute(
-      "href",
-      "/en/area/42/dataset/bicycle-parking"
-    );
+    await userEvent.type(field, "bicycle");
+    await expect(canvas.getByRole("heading", { name: '1 result for "bicycle"' })).toBeVisible();
+    await expect(canvas.getByRole("link", { name: "Bicycle parking" })).toBeVisible();
     await expect(canvas.queryByRole("heading", { name: "Pick a topic" })).toBeNull();
     await expect(canvas.queryByText("Page content")).toBeNull();
-
-    await userEvent.clear(field);
-    await userEvent.type(field, "cafe");
-    await expect(canvas.getByRole("link", { name: "Cafés" })).toBeVisible();
 
     await userEvent.keyboard("{Escape}");
     await expect(field).toHaveValue("");

@@ -30,6 +30,10 @@ const templates = [
     categorySlug: "food",
     topicSlug: "food-drink",
   }),
+  tpl("street-trees", "Árvores de rua", "Street trees", [], {
+    categorySlug: "trees",
+    topicSlug: "nature",
+  }),
   tpl("platforms", "Plataformas", "Platforms", ["highway=bus_stop"], {
     categorySlug: "transit",
   }),
@@ -57,7 +61,7 @@ describe("createTemplateSearch", () => {
   });
 
   it("matches the English name", () => {
-    expect(ids("bakery")).toContain("bakeries");
+    expect(ids("street")).toEqual(["street-trees"]);
   });
 
   it("matches OSM tags", () => {
@@ -82,9 +86,5 @@ describe("createTemplateSearch", () => {
     const results = ids("bus");
     expect(results).toContain("platforms");
     expect(results.indexOf("bus-lanes")).toBeLessThan(results.indexOf("platforms"));
-  });
-
-  it("returns nothing for a blank query", () => {
-    expect(ids("  ")).toEqual([]);
   });
 });

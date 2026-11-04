@@ -1,10 +1,6 @@
 import Fuse from "fuse.js";
 import type { AreaTemplate } from "@/lib/area-templates";
 
-/**
- * Typo- and accent-tolerant search over the area's templates. Every query word
- * must match somewhere, in any order. The reader's language outranks English and tags.
- */
 export function createTemplateSearch(
   templates: AreaTemplate[],
   categoryLabel: (slug: string) => string
@@ -14,7 +10,7 @@ export function createTemplateSearch(
       { name: "name", weight: 3 },
       { name: "description", weight: 1 },
       {
-        name: "labels",
+        name: "categoryLabels",
         weight: 1,
         getFn: (template) => [
           categoryLabel(template.categorySlug),
@@ -31,8 +27,5 @@ export function createTemplateSearch(
     tokenMatch: "all",
   });
 
-  return (query) => {
-    const trimmed = query.trim();
-    return trimmed ? fuse.search(trimmed).map((result) => result.item) : [];
-  };
+  return (query) => fuse.search(query).map((result) => result.item);
 }

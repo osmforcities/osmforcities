@@ -11,7 +11,6 @@ export type AreaTemplate = {
   /** Equals categorySlug for templates filed directly under a topic. */
   topicSlug: string;
   commonRank: number | null;
-  /** Searchable alongside the reader's language. */
   englishName: string;
   osmTags: string[];
 };
