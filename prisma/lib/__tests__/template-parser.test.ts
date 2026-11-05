@@ -865,12 +865,17 @@ describe("template-parser", () => {
     expect(result.errors).toEqual([]);
     expect(result.commonTemplates).toEqual([
       "bus-stops",
-      "schools",
-      "clinics",
-      "pharmacies",
-      "buildings",
+      "roads",
       "footways",
-      "cycleways",
+      "schools",
+      "hospitals",
+      "pharmacies",
+      "parks",
+      "playgrounds",
+      "buildings",
+      "supermarkets",
+      "restaurants",
+      "places-of-worship",
     ]);
   });
 });
