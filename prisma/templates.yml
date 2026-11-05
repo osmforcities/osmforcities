@@ -484,10 +484,7 @@ filterableTags:
 
 # One of the template's filterableTags; absent opens on "Last edited".
 defaultView:
-  # Buildings
   buildings: building
-  town-halls: building
-  # Mobility
   roads: highway
   rail-tracks: railway
   railway-stations: station
@@ -497,11 +494,9 @@ defaultView:
   parking: parking
   bicycle-parking: bicycle_parking
   bicycle-rental: bicycle_rental
-  # Emergency
   fire-hydrants: fire_hydrant:type
   sirens: siren:type
   emergency-shelters: emergency:shelter_type
-  # Other
   pitches: sport
   sports-centres: sport
   stadiums: sport

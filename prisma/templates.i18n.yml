@@ -1999,11 +1999,11 @@ templates:
       fr: Plans d'eau
       de: Gewässer
     desc:
-      en: Lakes, ponds, reservoirs and rivers mapped as areas
-      pt: Lagos, lagoas, represas e rios mapeados como áreas
-      es: Lagos, estanques, embalses y ríos mapeados como áreas
-      fr: Lacs, étangs, réservoirs et rivières cartographiés en surface
-      de: Seen, Teiche, Stauseen und als Fläche erfasste Flüsse
+      en: Lakes, ponds, reservoirs and wide rivers
+      pt: Lagos, lagoas, represas e rios largos
+      es: Lagos, estanques, embalses y ríos anchos
+      fr: Lacs, étangs, réservoirs et rivières larges
+      de: Seen, Teiche, Stauseen und breite Flüsse
   coastlines:
     name:
       en: Coastlines
