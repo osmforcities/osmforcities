@@ -658,11 +658,11 @@ templates:
       fr: Écoles
       de: Schulen
     desc:
-      en: Schools
-      pt: Escolas
-      es: Escuelas
-      fr: Écoles
-      de: Schulen
+      en: Primary and secondary schools, for ages 6 to 18
+      pt: Escolas de ensino fundamental e médio, de 6 a 18 anos
+      es: Escuelas primarias y secundarias, de 6 a 18 años
+      fr: Écoles élémentaires et secondaires, de 6 à 18 ans
+      de: Grund- und weiterführende Schulen für 6- bis 18-Jährige
   universities:
     name:
       en: Universities
@@ -671,11 +671,11 @@ templates:
       fr: Universités
       de: Universitäten
     desc:
-      en: Universities
-      pt: Universidades
-      es: Universidades
-      fr: Universités
-      de: Universitäten
+      en: Higher education and research in various fields
+      pt: Ensino superior e pesquisa em diversas áreas
+      es: Educación superior e investigación en diversas áreas
+      fr: Enseignement supérieur et recherche dans divers domaines
+      de: Hochschulbildung und Forschung in verschiedenen Fächern
   libraries:
     name:
       en: Libraries
@@ -684,11 +684,11 @@ templates:
       fr: Bibliothèques
       de: Bibliotheken
     desc:
-      en: Libraries
-      pt: Bibliotecas
-      es: Bibliotecas
-      fr: Bibliothèques
-      de: Bibliotheken
+      en: Places to read and borrow books
+      pt: Locais para ler e pegar livros emprestados
+      es: Lugares para leer y pedir libros prestados
+      fr: Lieux pour lire et emprunter des livres
+      de: Orte zum Lesen und Ausleihen von Büchern
   kindergarten:
     name:
       en: Kindergarten
@@ -697,11 +697,11 @@ templates:
       fr: Écoles maternelles
       de: Kindergärten
     desc:
-      en: Kindergarten
-      pt: Jardins de infância
-      es: Jardines de infancia
-      fr: Écoles maternelles
-      de: Kindergärten
+      en: Care and early education for children before school age
+      pt: Cuidado e educação infantil antes da idade escolar
+      es: Cuidado y educación inicial antes de la edad escolar
+      fr: Accueil et éducation des enfants avant l'âge scolaire
+      de: Betreuung und frühe Bildung für Kinder vor dem Schulalter
   college:
     name:
       en: College
@@ -710,11 +710,11 @@ templates:
       fr: Établissements d'enseignement supérieur
       de: Berufs- und Fachschulen
     desc:
-      en: College
-      pt: Faculdades
-      es: Facultades
-      fr: Établissements d'enseignement supérieur
-      de: Berufs- und Fachschulen
+      en: Post-secondary education outside universities
+      pt: Ensino técnico e superior fora das universidades
+      es: Educación postsecundaria fuera de las universidades
+      fr: Enseignement post-secondaire hors universités
+      de: Bildung nach der Schule, außerhalb von Universitäten
   childcare:
     name:
       en: Childcare
@@ -723,11 +723,11 @@ templates:
       fr: Crèches
       de: Kinderbetreuung
     desc:
-      en: Childcare
-      pt: Creches
-      es: Guarderías
-      fr: Crèches
-      de: Kinderbetreuung
+      en: Daycare, nurseries and after-school care for children
+      pt: Berçários e cuidado infantil diário e após a escola
+      es: Guarderías y cuidado de niños después de la escuela
+      fr: Garderies, crèches et accueil périscolaire des enfants
+      de: Krippen, Horte und andere Orte der Kinderbetreuung
   driving-school:
     name:
       en: Driving schools
@@ -736,11 +736,11 @@ templates:
       fr: Auto-écoles
       de: Fahrschulen
     desc:
-      en: Driving schools
-      pt: Autoescolas
-      es: Autoescuelas
-      fr: Auto-écoles
-      de: Fahrschulen
+      en: Schools where people learn to drive motor vehicles
+      pt: Escolas onde se aprende a dirigir veículos motorizados
+      es: Escuelas donde se aprende a manejar vehículos motorizados
+      fr: Écoles où l'on apprend à conduire un véhicule à moteur
+      de: Schulen, in denen man das Fahren von Kraftfahrzeugen lernt
   music-school:
     name:
       en: Music schools
@@ -749,11 +749,11 @@ templates:
       fr: Écoles de musique
       de: Musikschulen
     desc:
-      en: Music schools
-      pt: Escolas de música
-      es: Escuelas de música
-      fr: Écoles de musique
-      de: Musikschulen
+      en: Schools and conservatories teaching music
+      pt: Escolas e conservatórios de ensino de música
+      es: Escuelas y conservatorios de enseñanza musical
+      fr: Écoles et conservatoires d'enseignement musical
+      de: Schulen und Konservatorien für Musikunterricht
   language-school:
     name:
       en: Language schools
@@ -762,11 +762,11 @@ templates:
       fr: Écoles de langues
       de: Sprachschulen
     desc:
-      en: Language schools
-      pt: Escolas de idiomas
-      es: Escuelas de idiomas
-      fr: Écoles de langues
-      de: Sprachschulen
+      en: Schools where people study foreign languages
+      pt: Escolas onde se estudam línguas estrangeiras
+      es: Escuelas donde se estudian lenguas extranjeras
+      fr: Écoles où l'on étudie des langues étrangères
+      de: Schulen, an denen man Fremdsprachen lernt
   research-institute:
     name:
       en: Research institutes
@@ -775,11 +775,11 @@ templates:
       fr: Instituts de recherche
       de: Forschungsinstitute
     desc:
-      en: Research institutes
-      pt: Institutos de pesquisa
-      es: Institutos de investigación
-      fr: Instituts de recherche
-      de: Forschungsinstitute
+      en: Institutes and labs dedicated to research
+      pt: Institutos e laboratórios dedicados à pesquisa
+      es: Institutos y laboratorios dedicados a la investigación
+      fr: Instituts et laboratoires dédiés à la recherche
+      de: Institute und Labore, die Forschung betreiben
   hotels:
     name:
       en: Hotels
@@ -907,11 +907,11 @@ templates:
       fr: Cinémas
       de: Kinos
     desc:
-      en: Cinemas
-      pt: Cinemas
-      es: Cines
-      fr: Cinémas
-      de: Kinos
+      en: Movie theaters and other venues showing films
+      pt: Salas de cinema e outros locais que exibem filmes
+      es: Salas de cine y otros lugares donde se proyectan películas
+      fr: Salles et autres lieux de projection de films
+      de: Filmtheater und andere Orte, an denen Filme laufen
   monuments:
     name:
       en: Monuments
@@ -920,11 +920,11 @@ templates:
       fr: Monuments
       de: Denkmäler
     desc:
-      en: Monuments
-      pt: Monumentos
-      es: Monumentos
-      fr: Monuments
-      de: Denkmäler
+      en: Large structures in honor of people or events
+      pt: Grandes estruturas em homenagem a pessoas ou eventos
+      es: Grandes estructuras en honor a personas o eventos
+      fr: Grands ouvrages en hommage à des personnes ou événements
+      de: Große Bauwerke zu Ehren von Personen oder Ereignissen
   arts-centre:
     name:
       en: Arts centre
@@ -933,11 +933,11 @@ templates:
       fr: Centre culturel
       de: Kulturzentren
     desc:
-      en: Arts centre
-      pt: Centro cultural
-      es: Centro cultural
-      fr: Centre culturel
-      de: Kulturzentren
+      en: Venues hosting a variety of arts and cultural activities
+      pt: Espaços com atividades artísticas e culturais variadas
+      es: Espacios con actividades artísticas y culturales variadas
+      fr: Lieux d'activités artistiques et culturelles variées
+      de: Orte für vielfältige künstlerische und kulturelle Angebote
   gallery:
     name:
       en: Gallery
@@ -946,11 +946,11 @@ templates:
       fr: Galerie
       de: Galerien
     desc:
-      en: Gallery
-      pt: Galeria
-      es: Galería
-      fr: Galerie
-      de: Galerien
+      en: Spaces exhibiting paintings, photos and other visual art
+      pt: Espaços que expõem pinturas, fotos e outras artes visuais
+      es: Espacios que exhiben pinturas, fotos y otras artes visuales
+      fr: Lieux exposant peintures, photos et autres arts visuels
+      de: Räume für Malerei, Fotografie und andere bildende Kunst
   memorials:
     name:
       en: Memorials
@@ -959,11 +959,11 @@ templates:
       fr: Mémoriaux
       de: Gedenkstätten
     desc:
-      en: Memorials
-      pt: Memoriais
-      es: Monumentos conmemorativos
-      fr: Mémoriaux
-      de: Gedenkstätten
+      en: Plaques, busts and statues remembering people or events
+      pt: Placas, bustos e estátuas em memória de pessoas ou eventos
+      es: Placas, bustos y estatuas en recuerdo de personas o eventos
+      fr: Plaques, bustes et statues en mémoire de personnes ou faits
+      de: Gedenktafeln, Büsten, Statuen zu Personen oder Ereignissen
   museums:
     name:
       en: Museums
@@ -985,11 +985,11 @@ templates:
       fr: Théâtres
       de: Theater
     desc:
-      en: Theatres
-      pt: Teatros
-      es: Teatros
-      fr: Théâtres
-      de: Theater
+      en: Venues for live plays, musicals and concerts
+      pt: Espaços para peças, musicais e concertos ao vivo
+      es: Salas para obras de teatro, musicales y conciertos en vivo
+      fr: Salles pour pièces, comédies musicales et concerts
+      de: Bühnen für Schauspiel, Musicals und Konzerte
   social-facility:
     name:
       en: Social facility
@@ -2792,11 +2792,11 @@ templates:
       fr: Lieux de culte
       de: Gotteshäuser
     desc:
-      en: Churches, mosques, temples, synagogues and other religious buildings
-      pt: Igrejas, mesquitas, templos, sinagogas e outros locais religiosos
-      es: Iglesias, mezquitas, templos, sinagogas y otros lugares religiosos
-      fr: Églises, mosquées, temples, synagogues et autres lieux de culte
-      de: Kirchen, Moscheen, Tempel, Synagogen und andere Gotteshäuser
+      en: Churches, mosques, synagogues, temples and more
+      pt: Igrejas, mesquitas, sinagogas, templos e outros
+      es: Iglesias, mezquitas, sinagogas, templos y más
+      fr: Églises, mosquées, synagogues, temples et autres
+      de: Kirchen, Moscheen, Synagogen, Tempel und mehr
   walls:
     name:
       en: Walls
