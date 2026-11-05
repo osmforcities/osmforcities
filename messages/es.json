@@ -754,6 +754,9 @@
     "agriculture": "Agricultura",
     "public-services": "Servicios públicos",
     "emergency": "Emergencias",
+    "medical-rescue": "Rescate médico",
+    "firefighting": "Extinción de incendios",
+    "civil-protection": "Protección civil",
     "government": "Gobierno",
     "social": "Social",
     "amenities": "Equipamiento urbano",
@@ -865,7 +868,10 @@
     "fire_hydrant:pressure": "Presión",
     "cash_in": "Depósito de efectivo",
     "indoor": "Interior",
-    "sport": "Deporte"
+    "sport": "Deporte",
+    "siren:purpose": "Finalidad de la sirena",
+    "siren:type": "Tipo de sirena",
+    "emergency:shelter_type": "Tipo de riesgo"
   },
   "TagValue": {
     "__common__": {
@@ -1192,6 +1198,19 @@
     "internet_access": {
       "wlan": "Wi-Fi",
       "terminal": "Terminal"
+    },
+    "siren:purpose": {
+      "civil_defense": "Defensa civil",
+      "fire": "Bomberos",
+      "tornado": "Tornado",
+      "air_raid": "Ataque aéreo",
+      "tsunami": "Tsunami"
+    },
+    "siren:type": {
+      "electronic": "Electrónica",
+      "mechanical": "Mecánica",
+      "electromechanical": "Electromecánica",
+      "pneumatic": "Neumática"
     }
   }
 }

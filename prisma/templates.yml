@@ -100,12 +100,16 @@ templates:
   - ["courts","amenity=courthouse","government","Scale"]
   - ["police-stations","amenity=police","government","Siren"]
   - ["prisons","amenity=prison","government","Building"]
-# Emergency
-  - ["fire-stations","amenity=fire_station","emergency","FireExtinguisher"]
-  - ["ambulance-stations","emergency=ambulance_station","emergency","Ambulance"]
-  - ["emergency-phones","emergency=phone","emergency","Phone"]
-  - ["fire-hydrants","emergency=fire_hydrant","emergency","Flame"]
-  - ["defibrillators","emergency=defibrillator","emergency","HeartPulse"]
+# Emergency (categories follow the OSM wiki's Emergency facilities and amenities page)
+  - ["ambulance-stations","emergency=ambulance_station","medical-rescue","Ambulance"]
+  - ["defibrillators","emergency=defibrillator","medical-rescue","HeartPulse"]
+  - ["fire-stations","amenity=fire_station","firefighting","FireExtinguisher"]
+  - ["fire-hydrants","emergency=fire_hydrant","firefighting","Flame"]
+  - ["firefighting-water-sources","emergency=water_tank;emergency=fire_water_pond;emergency=suction_point","firefighting","Droplets"]
+  - ["assembly-points","emergency=assembly_point","civil-protection","Users"]
+  - ["sirens","emergency=siren","civil-protection","Megaphone"]
+  - ["emergency-shelters","emergency:social_facility=shelter","civil-protection","Tent"]
+  - ["emergency-phones","emergency=phone","civil-protection","Phone"]
 # Environment
   - ["waterfall","waterway=waterfall","environment","Waves"]
   - ["dam","waterway=dam","environment","BrickWall"]
@@ -421,6 +425,8 @@ filterableTags:
   ambulance-stations: [operator]
   fire-hydrants:    [fire_hydrant:type, fire_hydrant:position, fire_hydrant:diameter, fire_hydrant:pressure]
   defibrillators:   [access, indoor]
+  sirens:           [siren:purpose, siren:type, operator]
+  emergency-shelters: [emergency:shelter_type, wheelchair]
   # Religion (replaces the deprecated per-religion value templates)
   places-of-worship: [religion, denomination, wheelchair]
   # Markets: age-view only — operator/organic near-absent (Barcelona 6%/2%, Sao Paulo 13%/1%)
@@ -926,6 +932,21 @@ demonstrators:
     - { area: 71525,   note: "Paris, FR - highest volume, strong access variance" }
     - { area: 62422,   note: "Berlin, DE - best access coverage, high indoor coverage" }
     - { area: 62428,   note: "Munich, DE - solid secondary EU sample, good access/indoor spread" }
+  assembly-points:
+    - { area: 1293250, note: "Taipei, TW - largest sample, mostly school grounds" }
+    - { area: 62422,   note: "Berlin, DE - largest EU sample, building evacuation points" }
+    - { area: 62428,   note: "Munich, DE - secondary EU sample" }
+  sirens:
+    - { area: 435514,  note: "Prague, CZ - best all-around purpose/type/operator coverage, real type variance" }
+    - { area: 62782,   note: "Hamburg, DE - strong purpose/type/operator, electronic and mechanical mix" }
+    - { area: 109166,  note: "Vienna, AT - largest sample, near-complete purpose, type mostly missing" }
+  firefighting-water-sources:
+    - { area: 62782,   note: "Hamburg, DE - largest sample, all three source types" }
+    - { area: 62428,   note: "Munich, DE - all three types, best volume tagging" }
+    - { area: 62422,   note: "Berlin, DE - suction-point heavy, complements the tank-heavy cities" }
+  emergency-shelters:
+    - { area: 1293250, note: "Taipei, TW - municipal shelter import, near-complete hazard type" }
+    - { area: 106569,  note: "Quezon City, PH - Philippine sample, thin but tagged for displaced people" }
   supermarkets:
     - { area: 62422,   note: "Berlin, DE - best across all four keys, many chains, real wheelchair spread" }
     - { area: 347950,  note: "Barcelona, ES - Iberian brand mix, Southern-Europe spread" }
@@ -1088,8 +1109,12 @@ categories:
   environment: { icon: Leaf, parent: nature-environment }
   agriculture: { icon: Wheat, parent: nature-environment }
 
+  emergency: { icon: ShieldAlert }
+  medical-rescue: { icon: Ambulance, parent: emergency }
+  firefighting: { icon: FireExtinguisher, parent: emergency }
+  civil-protection: { icon: Megaphone, parent: emergency }
+
   public-services: { icon: Shield }
-  emergency: { icon: ShieldAlert, parent: public-services }
   government: { icon: Shield, parent: public-services }
   social: { icon: Users, parent: public-services }
   amenities: { icon: Heart, parent: public-services }

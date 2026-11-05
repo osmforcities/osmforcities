@@ -745,6 +745,9 @@
     "agriculture": "Agriculture",
     "public-services": "Public services",
     "emergency": "Emergency",
+    "medical-rescue": "Medical rescue",
+    "firefighting": "Firefighting",
+    "civil-protection": "Civil protection",
     "government": "Government",
     "social": "Social",
     "amenities": "Amenities",
@@ -856,7 +859,10 @@
     "fire_hydrant:pressure": "Pressure",
     "cash_in": "Cash deposit",
     "indoor": "Indoor",
-    "sport": "Sport"
+    "sport": "Sport",
+    "siren:purpose": "Siren purpose",
+    "siren:type": "Siren type",
+    "emergency:shelter_type": "Hazard type"
   },
   "TagValue": {
     "__common__": {
@@ -1183,6 +1189,19 @@
     "internet_access": {
       "wlan": "Wi-Fi",
       "terminal": "Terminal"
+    },
+    "siren:purpose": {
+      "civil_defense": "Civil defense",
+      "fire": "Fire service",
+      "tornado": "Tornado",
+      "air_raid": "Air raid",
+      "tsunami": "Tsunami"
+    },
+    "siren:type": {
+      "electronic": "Electronic",
+      "mechanical": "Mechanical",
+      "electromechanical": "Electromechanical",
+      "pneumatic": "Pneumatic"
     }
   }
 }

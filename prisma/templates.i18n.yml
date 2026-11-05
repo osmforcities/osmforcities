@@ -1159,6 +1159,58 @@ templates:
       es: Desfibriladores de acceso público (DEA)
       fr: Défibrillateurs en accès public (DAE)
       de: Öffentlich zugängliche Defibrillatoren (AED)
+  assembly-points:
+    name:
+      en: Emergency assembly points
+      pt: Pontos de encontro de emergência
+      es: Puntos de reunión de emergencia
+      fr: Points de rassemblement d'urgence
+      de: Notfallsammelstellen
+    desc:
+      en: Safe places where people gather during an evacuation
+      pt: Locais seguros onde as pessoas se reúnem durante uma evacuação
+      es: Lugares seguros donde las personas se reúnen durante una evacuación
+      fr: Lieux sûrs où les personnes se rassemblent lors d'une évacuation
+      de: Sichere Orte, an denen sich Menschen bei einer Evakuierung sammeln
+  sirens:
+    name:
+      en: Warning sirens
+      pt: Sirenes de alerta
+      es: Sirenas de alerta
+      fr: Sirènes d'alerte
+      de: Warnsirenen
+    desc:
+      en: Sirens that warn the public of disasters, air raids or fires
+      pt: Sirenes que alertam a população sobre desastres, ataques aéreos ou incêndios
+      es: Sirenas que alertan a la población de desastres, ataques aéreos o incendios
+      fr: Sirènes qui alertent la population en cas de catastrophe, d'attaque aérienne ou d'incendie
+      de: Sirenen, die die Bevölkerung vor Katastrophen, Luftangriffen oder Bränden warnen
+  firefighting-water-sources:
+    name:
+      en: Firefighting water sources
+      pt: Pontos de água para combate a incêndio
+      es: Fuentes de agua contra incendios
+      fr: Points d'eau incendie
+      de: Löschwasserentnahmestellen
+    desc:
+      en: Water tanks, ponds and suction points firefighters draw water from
+      pt: Reservatórios, lagos e pontos de captação de onde os bombeiros retiram água
+      es: Depósitos, estanques y puntos de aspiración de donde los bomberos toman agua
+      fr: Réservoirs, bassins et points d'aspiration où les pompiers puisent l'eau
+      de: Löschwasserbehälter, Löschteiche und Saugstellen der Feuerwehr
+  emergency-shelters:
+    name:
+      en: Emergency shelters
+      pt: Abrigos de emergência
+      es: Albergues de emergencia
+      fr: Abris d'urgence
+      de: Notunterkünfte
+    desc:
+      en: Buildings designated to house displaced people after a disaster
+      pt: Edifícios designados para abrigar desalojados após um desastre
+      es: Edificios designados para alojar a personas desplazadas tras un desastre
+      fr: Bâtiments désignés pour héberger les personnes déplacées après une catastrophe
+      de: Gebäude, die nach einer Katastrophe zur Unterbringung Betroffener bestimmt sind
   waterfall:
     name:
       en: Waterfall

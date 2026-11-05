@@ -549,12 +549,13 @@ describe("template-parser", () => {
       expect(first.overpassQuery).toContain("area.searchArea");
     });
 
-    it("declares the 8 topics and puts fuel under mobility", () => {
+    it("declares the 9 topics and puts fuel under mobility", () => {
       const result = parseTemplates(loadTemplatesYaml("./prisma"));
       const topics = result.categories.filter((c) => !c.parent).map((c) => c.slug);
       expect(topics.sort()).toEqual([
         "buildings-infrastructure",
         "education-culture",
+        "emergency",
         "health",
         "leisure-sports",
         "mobility",
