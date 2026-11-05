@@ -35,6 +35,10 @@ YAML is the source of truth; deploy runs the sync. No admin UI.
 - **filterableTags** — an allow-list of OSM tag *keys* (top-level `filterableTags:` map)
   that become interactive-legend "Color by" views + the "Critical coverage" stat block.
   Absent → age view only. Each key needs a `TagLabel` in every `messages/*.json`.
+- **defaultView** — the legend view the dataset map and the homepage featured map open
+  on (top-level `defaultView:` map, `template-id: tag`). The tag must be one of the
+  template's `filterableTags`. Absent, or the tag is missing from the data → "Last edited".
+  Use it when edit recency misleads, e.g. `buildings`, mostly old, reads as green areas.
 - **Demonstrator** — an OSM relation id (top-level `demonstrators:` map) whose real data
   shows the template at its best. Curation only: validated by the sync, never written to
   the DB. The workflow reads it to decide which datasets to inspect/seed.
@@ -792,6 +796,8 @@ Part of the disaster epic ([#478]). Emergency is its own topic, split into the c
 - Unknown parent id.
 - Malformed `demonstrators` — scalar/array root, unknown template id, `area` that is not
   a positive integer, non-string `note`.
+- Malformed `defaultView` — non-map root, unknown template id, tag outside the template's
+  `filterableTags`.
 
 **Warns** (non-blocking):
 

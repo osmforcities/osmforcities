@@ -74,6 +74,7 @@ model Template {
   children      Template[]            @relation("TemplateHierarchy")
   tags          String[]
   filterableTags String[]             @default([])
+  defaultView   String?
   isActive      Boolean               @default(true)
   deprecatesAt  DateTime?
   commonRank    Int?

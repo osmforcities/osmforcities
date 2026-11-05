@@ -789,6 +789,46 @@ describe("template-parser", () => {
     });
   });
 
+  describe("parseTemplates defaultView", () => {
+    const templates = {
+      buildings: { query: "building", category: "infrastructure", filterableTags: ["building"] },
+      streets: { query: "highway=residential", category: "infrastructure" },
+    };
+    const categories = { infrastructure: { icon: "Gauge" } };
+    const defaultViewOf = (result: ReturnType<typeof parseTemplates>, id: string) =>
+      result.templates.find((t) => t.id === id)?.defaultView;
+
+    it("sets the view on the named template and null elsewhere", () => {
+      const result = parseTemplates({ templates, categories, defaultView: { buildings: "building" } });
+      expect(result.errors).toEqual([]);
+      expect(defaultViewOf(result, "buildings")).toBe("building");
+      expect(defaultViewOf(result, "streets")).toBeNull();
+    });
+
+    it("errors on an unknown template id", () => {
+      const result = parseTemplates({ templates, categories, defaultView: { nope: "building" } });
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].message).toContain('unknown template id: "nope"');
+    });
+
+    it("errors on a tag outside the template's filterableTags", () => {
+      const result = parseTemplates({ templates, categories, defaultView: { buildings: "roof:shape" } });
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].message).toContain('"roof:shape" is not in its filterableTags');
+      expect(defaultViewOf(result, "buildings")).toBeNull();
+    });
+
+    it("errors on a non-map section", () => {
+      const result = parseTemplates({ templates, categories, defaultView: ["building"] });
+      expect(result.errors).toHaveLength(1);
+    });
+  });
+
+  it("templates.yml opens buildings on the building type view", () => {
+    const result = parseTemplates(loadTemplatesYaml("./prisma"));
+    expect(result.templates.find((t) => t.id === "buildings")?.defaultView).toBe("building");
+  });
+
   it("templates.yml lists valid common templates", () => {
     const result = parseTemplates(loadTemplatesYaml("./prisma"));
     expect(result.errors).toEqual([]);

@@ -146,6 +146,7 @@ async function main() {
         category: { connect: { id: categoryId } },
         tags: template.tags,
         filterableTags: template.filterableTags,
+        defaultView: template.defaultView,
         commonRank: commonRankOf(template.id),
         updatedAt: new Date(),
       },
@@ -157,6 +158,7 @@ async function main() {
         category: { connect: { id: categoryId } },
         tags: template.tags,
         filterableTags: template.filterableTags,
+        defaultView: template.defaultView,
         commonRank: commonRankOf(template.id),
       },
     });

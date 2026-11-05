@@ -6,7 +6,7 @@ import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Link } from "react-aria-components";
 import { ArrowRight } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { FeatureCollection } from "geojson";
 import { mapStyle } from "@/lib/map-tiles";
 import { MapZoomControl } from "@/components/ui/map-zoom-control";
@@ -17,8 +17,16 @@ import type { ProcessedDatasetStats } from "@/lib/dataset-stats";
 import { DatasetStatsRow } from "@/components/ui/dataset-stats-row";
 import { MapLayers } from "@/components/dataset/map/layers";
 import { AoiBoundaryLayer } from "@/components/dataset/map/aoi-boundary-layer";
-import { AgeLegendCompact } from "@/components/dataset/map/age-legend";
+import { CompactLegend } from "@/components/dataset/map/compact-legend";
+import { ageLegendRow } from "@/components/dataset/map/layers/map-style";
 import { processOSMFeaturesForVisualization } from "@/lib/osm-data-processor";
+import {
+  buildCuratedThemes,
+  buildLegendRows,
+  findOpeningTheme,
+} from "@/lib/curated-themes";
+import { tagLabel, tagValue, type MessageResolver } from "@/lib/tag-i18n";
+import { AGE_CATEGORY_ORDER } from "@/lib/feature-age";
 
 function applyViewState(map: MapRef | null, viewState: InitialViewState) {
   if (!map) return;
@@ -50,6 +58,7 @@ type FeaturedDatasetMapClientProps = {
   category: string;
   /** Template slug for the template-specific icon */
   templateId: string;
+  defaultView: string | null;
   stats: ProcessedDatasetStats;
   href: string;
 };
@@ -61,10 +70,15 @@ export function FeaturedDatasetMapClient({
   title,
   category,
   templateId,
+  defaultView,
   stats,
   href,
 }: FeaturedDatasetMapClientProps) {
   const t = useTranslations("Home.featuredDataset");
+  const tMap = useTranslations("DatasetMap");
+  const tTagLabel = useTranslations("TagLabel") as unknown as MessageResolver;
+  const tTagValue = useTranslations("TagValue") as unknown as MessageResolver;
+  const locale = useLocale();
   const mapRef = useRef<MapRef | null>(null);
   const [geojson, setGeojson] = useState<FeatureCollection | null>(null);
   const [boundary, setBoundary] = useState<FeatureCollection | null>(null);
@@ -100,6 +114,35 @@ export function FeaturedDatasetMapClient({
     () => (geojson ? processOSMFeaturesForVisualization(geojson) : null),
     [geojson]
   );
+
+  const openingTheme = useMemo(
+    () =>
+      processedData && defaultView
+        ? findOpeningTheme(
+            buildCuratedThemes(processedData.features, [defaultView]),
+            defaultView
+          )
+        : null,
+    [processedData, defaultView]
+  );
+
+  const legend = openingTheme
+    ? {
+        title: tagLabel(tTagLabel, openingTheme.field),
+        rows: buildLegendRows(openingTheme, {
+          localizeValue: (value) =>
+            tagValue(tTagValue, openingTheme.field, value),
+          locale,
+          otherLabel: tMap("legendOther"),
+          missingLabel: tMap("legendMissing"),
+        }),
+      }
+    : {
+        title: tMap("lastEditedLegend"),
+        rows: AGE_CATEGORY_ORDER.map((category) =>
+          ageLegendRow(category, tMap)
+        ),
+      };
 
   // Client-side navigation swaps props without remounting the Map, so
   // initialViewState alone would keep the old view. area is read via
@@ -150,7 +193,10 @@ export function FeaturedDatasetMapClient({
       >
         {boundary && <AoiBoundaryLayer boundary={boundary} />}
         {processedData && (
-          <MapLayers geoJSONData={processedData} curatedTheme={null} />
+          <MapLayers
+            geoJSONData={processedData}
+            curatedTheme={openingTheme}
+          />
         )}
         <MapZoomControl />
       </Map>
@@ -159,7 +205,7 @@ export function FeaturedDatasetMapClient({
           to the top-right corner there (top-left holds the shared zoom control) */}
       {processedData && (
         <div className="absolute end-3 top-3 sm:end-auto sm:start-4 sm:top-auto sm:bottom-4">
-          <AgeLegendCompact />
+          <CompactLegend title={legend.title} rows={legend.rows} />
         </div>
       )}
 
