@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { resolveTemplateHierarchy } from "../template-hierarchy";
 
-const relative = (id: string, name: string, ptName?: string) => ({
+const relatedTemplate = (id: string, name: string, ptName?: string) => ({
   id,
   name,
   description: null,
@@ -9,7 +9,7 @@ const relative = (id: string, name: string, ptName?: string) => ({
 });
 
 const activeParent = {
-  ...relative("public-transit", "Public transit", "Transporte público"),
+  ...relatedTemplate("public-transit", "Public transit", "Transporte público"),
   isActive: true,
   deprecatesAt: null,
 };
@@ -42,9 +42,9 @@ describe("resolveTemplateHierarchy", () => {
         id: "public-transit",
         parent: null,
         children: [
-          relative("tram-stops", "Tram stops", "Paradas de bonde"),
-          relative("bus-stops", "Bus stops", "Pontos de ônibus"),
-          relative("railway-stations", "Railway stations", "Estações ferroviárias"),
+          relatedTemplate("tram-stops", "Tram stops", "Paradas de bonde"),
+          relatedTemplate("bus-stops", "Bus stops", "Pontos de ônibus"),
+          relatedTemplate("railway-stations", "Railway stations", "Estações ferroviárias"),
         ],
       },
       "pt-BR"

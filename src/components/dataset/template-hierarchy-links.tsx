@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { useTranslations } from "next-intl";
 import type { Dataset } from "@/schemas/dataset";
 import { Link } from "@/i18n/navigation";
@@ -11,8 +12,8 @@ type TemplateHierarchyLinksProps = {
 const linkClasses =
   "text-gray-700 underline decoration-gray-300 underline-offset-2 hover:text-gray-900 hover:decoration-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive-500";
 
-const datasetHref = (dataset: Dataset, templateId: string) =>
-  `/area/${dataset.area.id}/dataset/${templateId}`;
+const datasetHref = (areaId: number, templateId: string) =>
+  `/area/${areaId}/dataset/${templateId}`;
 
 export function ParentTemplateLink({ dataset }: TemplateHierarchyLinksProps) {
   const t = useTranslations("DatasetPage");
@@ -20,11 +21,11 @@ export function ParentTemplateLink({ dataset }: TemplateHierarchyLinksProps) {
   if (!parent) return null;
 
   return (
-    <p className="mt-1 text-sm text-gray-500" data-testid="dataset-parent-template">
+    <p className="mt-1 text-sm text-gray-500">
       {t.rich("partOf", {
         template: parent.name,
         link: (chunks) => (
-          <Link href={datasetHref(dataset, parent.id)} className={linkClasses}>
+          <Link href={datasetHref(dataset.area.id, parent.id)} className={linkClasses}>
             {chunks}
           </Link>
         ),
@@ -35,16 +36,17 @@ export function ParentTemplateLink({ dataset }: TemplateHierarchyLinksProps) {
 
 export function ChildTemplateLinks({ dataset }: TemplateHierarchyLinksProps) {
   const t = useTranslations("DatasetPage");
+  const headingId = useId();
   const children = dataset.template.children ?? [];
   if (children.length === 0) return null;
 
   return (
     <nav
-      aria-labelledby="dataset-child-templates-heading"
+      aria-labelledby={headingId}
       className="mt-4 flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-3 shadow-sm"
     >
       <h3
-        id="dataset-child-templates-heading"
+        id={headingId}
         className="text-[10px] font-bold uppercase tracking-[0.09em] text-gray-400"
       >
         {t("moreSpecific")}
@@ -52,7 +54,7 @@ export function ChildTemplateLinks({ dataset }: TemplateHierarchyLinksProps) {
       <ul className="flex flex-col gap-1.5 text-sm">
         {children.map((child) => (
           <li key={child.id}>
-            <Link href={datasetHref(dataset, child.id)} className={linkClasses}>
+            <Link href={datasetHref(dataset.area.id, child.id)} className={linkClasses}>
               {child.name}
             </Link>
           </li>
