@@ -870,6 +870,16 @@
       "limited": "Limitado",
       "unknown": "Desconhecido"
     },
+    "highway": {
+      "motorway": "Via expressa",
+      "trunk": "Via troncal",
+      "primary": "Via primária",
+      "secondary": "Via secundária",
+      "tertiary": "Via terciária",
+      "residential": "Rua residencial",
+      "living_street": "Rua compartilhada",
+      "unclassified": "Via não classificada"
+    },
     "healthcare:speciality": {
       "general": "Clínica geral",
       "internal": "Medicina interna",

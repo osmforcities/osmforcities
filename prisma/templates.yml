@@ -396,7 +396,7 @@ filterableTags:
   parking:          [parking, access, fee, capacity, surface]
   rail-tracks:      [railway, electrified, usage, service]
   busways:          [surface]
-  roads:            [surface, maxspeed, lit, sidewalk]
+  roads:            [surface, maxspeed, lit, sidewalk, highway]
   buildings:        [building]
   footways:         [footway, surface, lit, smoothness]
   cycleways:        [surface, lit, oneway, smoothness]

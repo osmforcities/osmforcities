@@ -861,6 +861,16 @@
       "limited": "Eingeschränkt",
       "unknown": "Unbekannt"
     },
+    "highway": {
+      "motorway": "Autobahn",
+      "trunk": "Schnellstraße",
+      "primary": "Hauptverbindungsstraße",
+      "secondary": "Landesstraße",
+      "tertiary": "Verbindungsstraße",
+      "residential": "Wohnstraße",
+      "living_street": "Spielstraße",
+      "unclassified": "Nebenstraße"
+    },
     "healthcare:speciality": {
       "general": "Allgemeinmedizin",
       "internal": "Innere Medizin",
