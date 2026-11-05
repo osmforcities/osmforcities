@@ -268,8 +268,9 @@
   "AreaFacts": {
     "capitalCity": "Capital",
     "population": "Pob. {count, number, ::compact-short .#}",
-    "elevation": "Altitud {elevation, number} m",
+    "elevation": "Alt. {elevation, number} m",
     "links": "Enlaces",
+    "website": "Sitio web",
     "openStreetMap": "OpenStreetMap",
     "wikipedia": "Wikipedia",
     "wikidata": "Wikidata"

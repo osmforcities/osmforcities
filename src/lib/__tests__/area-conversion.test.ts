@@ -5,6 +5,7 @@ import {
   InvalidAreaError,
   parsePopulation,
   wikipediaUrl,
+  commonsImageUrl,
 } from "@/lib/area-conversion";
 import type { NominatimResult } from "@/schemas/nominatim";
 import type { OSMRelation } from "@/types/osm";
@@ -245,6 +246,29 @@ describe("fromNominatim area facts", () => {
     expect(withExtratags({ capital: "4" }).isCapital).toBe(false);
   });
 
+  it("keeps http and https websites only", () => {
+    expect(withExtratags({ website: "https://www.paris.fr" }).website).toBe("https://www.paris.fr/");
+    expect(withExtratags({ website: "javascript:alert(1)" }).website).toBeUndefined();
+    expect(withExtratags({ website: "www.paris.fr" }).website).toBeUndefined();
+  });
+
+  it("reads the flag as a Commons file from a File: name or an upload URL", () => {
+    expect(withExtratags({ flag: "File:Flag of Berlin.svg" }).flag).toBe("Flag of Berlin.svg");
+    expect(
+      withExtratags({
+        flag: "http://upload.wikimedia.org/wikipedia/commons/4/4b/Bandeira_da_cidade_de_S%C3%A3o_Paulo.svg",
+      }).flag
+    ).toBe("Bandeira_da_cidade_de_São_Paulo.svg");
+  });
+
+  it("ignores a flag hosted outside Wikimedia Commons", () => {
+    expect(withExtratags({ flag: "https://example.com/flag.svg" }).flag).toBeUndefined();
+    expect(withExtratags({ flag: "Flag of Berlin.svg" }).flag).toBeUndefined();
+    expect(
+      withExtratags({ flag: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Bad%E0%A4%A.svg" }).flag
+    ).toBeUndefined();
+  });
+
   it("keeps the year of a full population date", () => {
     const area = withExtratags({ population: "9209944", "population:date": "2020-03-15" });
     expect(area.populationYear).toBe("2020");
@@ -261,6 +285,14 @@ describe("wikipediaUrl", () => {
   it("keeps a section anchor", () => {
     expect(wikipediaUrl("en:Mexico City#History")).toBe(
       "https://en.wikipedia.org/wiki/Mexico_City#History"
+    );
+  });
+});
+
+describe("commonsImageUrl", () => {
+  it("serves the file at a fixed width through Special:FilePath", () => {
+    expect(commonsImageUrl("Flag of Berlin.svg", 48)).toBe(
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Berlin.svg?width=48"
     );
   });
 });

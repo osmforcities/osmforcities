@@ -24,4 +24,7 @@ export type Area = {
   /** OSM wikipedia tag, `<lang>:<title>`. */
   wikipedia?: string;
   wikidata?: string;
+  website?: string;
+  /** Wikimedia Commons file name. */
+  flag?: string;
 };

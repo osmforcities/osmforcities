@@ -1,7 +1,8 @@
+import Image from "next/image";
 import { Fragment } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/components/ui/link";
-import { wikipediaUrl } from "@/lib/area-conversion";
+import { commonsImageUrl, wikipediaUrl } from "@/lib/area-conversion";
 import type { MessageResolver } from "@/lib/tag-i18n";
 import { getAreaCharacteristics } from "@/lib/utils";
 import type { Area } from "@/types/area";
@@ -24,6 +25,7 @@ export function AreaFacts({ area }: { area: Area }) {
   ].filter((fact): fact is string => Boolean(fact));
 
   const links = [
+    area.website && { label: t("website"), href: area.website },
     { label: t("openStreetMap"), href: `https://www.openstreetmap.org/relation/${area.id}` },
     area.wikipedia && { label: t("wikipedia"), href: wikipediaUrl(area.wikipedia) },
     area.wikidata && { label: t("wikidata"), href: `https://www.wikidata.org/wiki/${area.wikidata}` },
@@ -33,6 +35,16 @@ export function AreaFacts({ area }: { area: Area }) {
     <div className="flex flex-col gap-2 text-sm text-gray-600">
       {facts.length > 0 && (
         <p data-testid="area-facts">
+          {area.flag && (
+            <Image
+              src={commonsImageUrl(area.flag, 48)}
+              alt=""
+              width={24}
+              height={16}
+              unoptimized
+              className="mr-2 inline-block h-4 w-auto border border-gray-200 align-[-2px]"
+            />
+          )}
           {facts.map((fact, index) => (
             <Fragment key={fact}>
               {index > 0 && " · "}

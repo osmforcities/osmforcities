@@ -270,6 +270,7 @@
     "population": "Einw. {count, number, ::compact-short .#}",
     "elevation": "Höhe {elevation, number} m",
     "links": "Links",
+    "website": "Website",
     "openStreetMap": "OpenStreetMap",
     "wikipedia": "Wikipedia",
     "wikidata": "Wikidata"

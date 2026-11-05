@@ -103,7 +103,38 @@ function parseAreaFacts(tags: Record<string, string> = {}) {
     isCapital: tags.capital === "yes" || tags.capital === "2",
     wikipedia: trimmedIfMatches(tags.wikipedia, /^[a-z][a-z-]*:\S/),
     wikidata: trimmedIfMatches(tags.wikidata, /^Q\d+$/),
+    website: parseWebsite(tags.website),
+    flag: parseCommonsFile(tags.flag),
   };
+}
+
+function parseUrl(value: string | undefined): URL | undefined {
+  if (!value || !URL.canParse(value.trim())) return undefined;
+  return new URL(value.trim());
+}
+
+function parseWebsite(value: string | undefined): string | undefined {
+  const url = parseUrl(value);
+  return url && ["http:", "https:"].includes(url.protocol) ? url.href : undefined;
+}
+
+/** OSM writes image tags as `File:<name>` or as a Commons upload URL; anything else could be any host. */
+function parseCommonsFile(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  if (trimmed?.startsWith("File:")) return trimmed.slice("File:".length) || undefined;
+  const url = parseUrl(trimmed);
+  if (url?.hostname !== "upload.wikimedia.org" || !url.pathname.startsWith("/wikipedia/commons/")) {
+    return undefined;
+  }
+  try {
+    return decodeURIComponent(url.pathname.split("/").at(-1) ?? "") || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function commonsImageUrl(file: string, width: number): string {
+  return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=${width}`;
 }
 
 /** `wikipedia` is the OSM tag, `<lang>:<title>[#<section>]`. */

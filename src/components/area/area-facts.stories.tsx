@@ -20,6 +20,8 @@ const mexicoCity: Area = {
   isCapital: true,
   wikipedia: "es:Ciudad de México",
   wikidata: "Q1489",
+  website: "https://www.cdmx.gob.mx/",
+  flag: "Flag of Mexico City.svg",
 };
 
 const meta = {
@@ -35,7 +37,7 @@ type Story = StoryObj<typeof meta>;
 export const FullFacts: Story = {
   play: async ({ canvas }) => {
     await expect(canvas.getByTestId("area-facts")).toHaveTextContent(
-      "Capital city · Pop. 9.2M (2020) · Elevation 2,250 m"
+      "Capital city · Pop. 9.2M (2020) · Elev. 2,250 m"
     );
     await expect(canvas.getByRole("link", { name: "OpenStreetMap" })).toHaveAttribute(
       "href",
@@ -48,6 +50,14 @@ export const FullFacts: Story = {
     await expect(canvas.getByRole("link", { name: "Wikidata" })).toHaveAttribute(
       "href",
       "https://www.wikidata.org/wiki/Q1489"
+    );
+    await expect(canvas.getByRole("link", { name: "Website" })).toHaveAttribute(
+      "href",
+      "https://www.cdmx.gob.mx/"
+    );
+    await expect(canvas.getByTestId("area-facts").querySelector("img")).toHaveAttribute(
+      "src",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mexico%20City.svg?width=48"
     );
   },
 };
@@ -63,11 +73,14 @@ export const EmptyFacts: Story = {
       isCapital: false,
       wikipedia: undefined,
       wikidata: undefined,
+      website: undefined,
+      flag: undefined,
     },
   },
   play: async ({ canvas }) => {
     await expect(canvas.getByTestId("area-facts")).toHaveTextContent(/^City$/);
     await expect(canvas.getAllByRole("link")).toHaveLength(1);
+    await expect(canvas.getByTestId("area-facts").querySelector("img")).toBeNull();
     await expect(canvas.getByRole("link", { name: "OpenStreetMap" })).toBeVisible();
   },
 };
