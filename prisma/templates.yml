@@ -108,7 +108,7 @@ templates:
   - ["defibrillators","emergency=defibrillator","emergency","HeartPulse"]
   - ["assembly-points","emergency=assembly_point","emergency","Users"]
   - ["sirens","emergency=siren","emergency","Megaphone"]
-  - ["emergency-water-sources","emergency=water_tank;emergency=fire_water_pond;emergency=suction_point","emergency","Droplets"]
+  - ["firefighting-water-sources","emergency=water_tank;emergency=fire_water_pond;emergency=suction_point","emergency","Droplets"]
   - ["emergency-shelters","emergency:social_facility=shelter","emergency","Tent"]
 # Environment
   - ["waterfall","waterway=waterfall","environment","Waves"]
@@ -946,7 +946,7 @@ demonstrators:
     - { area: 435514,  note: "Prague, CZ - best all-around purpose/type/operator coverage, real type variance" }
     - { area: 62782,   note: "Hamburg, DE - strong purpose/type/operator, electronic and mechanical mix" }
     - { area: 109166,  note: "Vienna, AT - largest sample, near-complete purpose, type mostly missing" }
-  emergency-water-sources:
+  firefighting-water-sources:
     - { area: 62782,   note: "Hamburg, DE - largest sample, all three source types" }
     - { area: 62428,   note: "Munich, DE - all three types, best volume tagging" }
     - { area: 62422,   note: "Berlin, DE - suction-point heavy, complements the tank-heavy cities" }

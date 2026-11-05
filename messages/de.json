@@ -855,7 +855,7 @@
     "sport": "Sportart",
     "siren:purpose": "Sirenenzweck",
     "siren:type": "Sirenentyp",
-    "emergency:shelter_type": "Katastrophenart"
+    "emergency:shelter_type": "Gefahrenart"
   },
   "TagValue": {
     "__common__": {

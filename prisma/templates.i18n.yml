@@ -1185,12 +1185,12 @@ templates:
       es: Sirenas que alertan a la población de desastres, ataques aéreos o incendios
       fr: Sirènes qui alertent la population en cas de catastrophe, d'attaque aérienne ou d'incendie
       de: Sirenen, die die Bevölkerung vor Katastrophen, Luftangriffen oder Bränden warnen
-  emergency-water-sources:
+  firefighting-water-sources:
     name:
-      en: Emergency water sources
-      pt: Fontes de água de emergência
-      es: Fuentes de agua de emergencia
-      fr: Points d'eau de secours
+      en: Firefighting water sources
+      pt: Pontos de água para combate a incêndio
+      es: Fuentes de agua contra incendios
+      fr: Points d'eau incendie
       de: Löschwasserentnahmestellen
     desc:
       en: Water tanks, ponds and suction points firefighters draw water from

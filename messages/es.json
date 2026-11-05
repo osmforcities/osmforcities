@@ -862,9 +862,9 @@
     "cash_in": "Depósito de efectivo",
     "indoor": "Interior",
     "sport": "Deporte",
-    "siren:purpose": "Propósito de la sirena",
+    "siren:purpose": "Finalidad de la sirena",
     "siren:type": "Tipo de sirena",
-    "emergency:shelter_type": "Tipo de desastre"
+    "emergency:shelter_type": "Tipo de riesgo"
   },
   "TagValue": {
     "__common__": {
