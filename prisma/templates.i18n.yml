@@ -1219,11 +1219,11 @@ templates:
       fr: Cascades
       de: Wasserfälle
     desc:
-      en: Waterfall
-      pt: Cachoeiras
-      es: Cascadas
-      fr: Cascades
-      de: Wasserfälle
+      en: Places where a river or stream drops over a steep edge
+      pt: Pontos onde um rio ou córrego despenca de um desnível
+      es: Lugares donde un río o arroyo cae por un desnivel
+      fr: Endroits où un cours d'eau chute d'une paroi abrupte
+      de: Stellen, an denen ein Fluss oder Bach über eine Stufe fällt
   dam:
     name:
       en: Dam
@@ -1232,11 +1232,11 @@ templates:
       fr: Barrages
       de: Staudämme
     desc:
-      en: Dam
-      pt: Barragens
-      es: Presas
-      fr: Barrages
-      de: Staudämme
+      en: Barriers built across rivers to hold back and control water
+      pt: Barreiras construídas em rios para represar e regular a água
+      es: Muros construidos en ríos para retener y regular el agua
+      fr: Ouvrages en travers d'un cours d'eau pour retenir l'eau
+      de: Bauwerke quer zu Flüssen, die Wasser stauen und regeln
   recycling:
     name:
       en: Recycling
@@ -1856,11 +1856,11 @@ templates:
       fr: Espaces verts aménagés
       de: Gepflegte Grünflächen
     desc:
-      en: Managed green
-      pt: Áreas verdes planejadas
-      es: Áreas verdes planificadas
-      fr: Espaces verts aménagés
-      de: Gepflegte Grünflächen
+      en: Parks, gardens and orchards
+      pt: Parques, jardins e pomares
+      es: Parques, jardines y huertos
+      fr: Parcs, jardins et vergers
+      de: Parks, Gärten und Obstplantagen
   natural-vegetation:
     name:
       en: Natural vegetation
@@ -1869,11 +1869,11 @@ templates:
       fr: Végétation naturelle
       de: Natürliche Vegetation
     desc:
-      en: Natural vegetation
-      pt: Vegetação natural
-      es: Vegetación natural
-      fr: Végétation naturelle
-      de: Natürliche Vegetation
+      en: Woods, managed forests and grasslands
+      pt: Bosques, florestas manejadas e campos naturais
+      es: Bosques, áreas forestales y pastizales
+      fr: Bois, forêts exploitées et prairies naturelles
+      de: Wälder, Forstflächen und Grasland
   forests:
     name:
       en: Forests
@@ -1896,10 +1896,10 @@ templates:
       de: Wälder
     desc:
       en: Tree-covered land, natural or not managed for timber
-      pt: Áreas cobertas por árvores, naturais ou sem exploração de madeira
-      es: Terrenos cubiertos de árboles, naturales o sin explotación maderera
+      pt: Áreas com árvores, naturais ou sem exploração de madeira
+      es: Terrenos con árboles, naturales o sin explotación maderera
       fr: Terrains boisés, naturels ou non exploités pour le bois
-      de: Baumbestandene Flächen, natürlich oder nicht forstlich genutzt
+      de: Baumbestandene Flächen, natürlich oder ohne Forstnutzung
   orchards:
     name:
       en: Orchards
@@ -1908,11 +1908,11 @@ templates:
       fr: Vergers
       de: Obstplantagen
     desc:
-      en: Orchards
-      pt: Pomares
-      es: Huertos
-      fr: Vergers
-      de: Obstplantagen
+      en: Trees or shrubs planted to produce food, such as fruit
+      pt: Árvores ou arbustos plantados para produzir alimentos
+      es: Árboles o arbustos plantados para producir alimentos
+      fr: Arbres ou arbustes plantés pour produire de la nourriture
+      de: Gepflanzte Bäume oder Sträucher zur Nahrungserzeugung
   grasslands:
     name:
       en: Grasslands
@@ -1921,11 +1921,11 @@ templates:
       fr: Prairies naturelles
       de: Grasland
     desc:
-      en: Grasslands
-      pt: Campos naturais
-      es: Pastizales
-      fr: Prairies naturelles
-      de: Grasland
+      en: Natural open land where grasses and herbs dominate
+      pt: Áreas abertas naturais onde predominam capins e ervas
+      es: Áreas abiertas naturales donde dominan pastos y hierbas
+      fr: Espaces ouverts naturels dominés par les herbes
+      de: Natürliche offene Flächen, auf denen Gräser vorherrschen
   wetlands:
     name:
       en: Wetlands
@@ -1947,11 +1947,11 @@ templates:
       fr: Plages
       de: Strände
     desc:
-      en: Beaches
-      pt: Praias
-      es: Playas
-      fr: Plages
-      de: Strände
+      en: Shores made of sand, pebbles or other loose material
+      pt: Faixas de areia, seixos ou outro material solto
+      es: Orillas de arena, guijarros u otro material suelto
+      fr: Rivages de sable, de galets ou d'autres matériaux meubles
+      de: Ufer aus Sand, Kies oder anderem lockerem Material
   peaks:
     name:
       en: Peaks
@@ -1960,11 +1960,11 @@ templates:
       fr: Sommets
       de: Gipfel
     desc:
-      en: Peaks
-      pt: Picos
-      es: Picos
-      fr: Sommets
-      de: Gipfel
+      en: Summits of hills and mountains
+      pt: Topos de morros e montanhas
+      es: Cumbres de cerros y montañas
+      fr: Points culminants des collines et des montagnes
+      de: Höchste Punkte von Hügeln und Bergen
   cliffs:
     name:
       en: Cliffs
@@ -1973,11 +1973,11 @@ templates:
       fr: Falaises
       de: Klippen
     desc:
-      en: Cliffs
-      pt: Penhasco
-      es: Acantilados
-      fr: Falaises
-      de: Klippen
+      en: Steep natural drops in the terrain, often bare rock
+      pt: Desníveis naturais íngremes no terreno, em geral de rocha
+      es: Caídas naturales empinadas del terreno, a menudo de roca
+      fr: Ruptures naturelles abruptes du terrain, souvent rocheuses
+      de: Steile natürliche Geländekanten, meist aus Fels
   caves:
     name:
       en: Cave entrances
@@ -1986,11 +1986,11 @@ templates:
       fr: Entrées de grottes
       de: Höhleneingänge
     desc:
-      en: Cave entrances
-      pt: Entradas de cavernas
-      es: Entradas de cuevas
-      fr: Entrées de grottes
-      de: Höhleneingänge
+      en: Openings into natural underground spaces
+      pt: Aberturas para cavidades subterrâneas naturais
+      es: Aberturas a espacios subterráneos naturales
+      fr: Ouvertures vers des cavités souterraines naturelles
+      de: Zugänge zu natürlichen unterirdischen Hohlräumen
   water:
     name:
       en: Water bodies
@@ -2012,11 +2012,11 @@ templates:
       fr: Littoral
       de: Küstenlinien
     desc:
-      en: Coastlines
-      pt: Linha costeira
-      es: Litorales
-      fr: Littoral
-      de: Küstenlinien
+      en: The line where land meets the sea at high tide
+      pt: Linha onde a terra encontra o mar na maré alta
+      es: Línea donde la tierra se une con el mar en marea alta
+      fr: Ligne où la terre rencontre la mer à marée haute
+      de: Linie, an der Land und Meer bei Flut aufeinandertreffen
   springs:
     name:
       en: Springs
@@ -2025,11 +2025,11 @@ templates:
       fr: Sources
       de: Quellen
     desc:
-      en: Springs
-      pt: Nascentes
-      es: Manantiales
-      fr: Sources
-      de: Quellen
+      en: Places where groundwater flows out of the ground naturally
+      pt: Locais onde a água subterrânea brota naturalmente
+      es: Lugares donde el agua subterránea brota de forma natural
+      fr: Lieux où l'eau souterraine sort naturellement du sol
+      de: Stellen, an denen Grundwasser natürlich zutage tritt
   hot-springs:
     name:
       en: Hot springs
@@ -2038,11 +2038,11 @@ templates:
       fr: Sources chaudes
       de: Heiße Quellen
     desc:
-      en: Hot springs
-      pt: Fontes termais
-      es: Aguas termales
-      fr: Sources chaudes
-      de: Heiße Quellen
+      en: Water that flows out warmed by heat from deep underground
+      pt: Águas que brotam aquecidas pelo calor do subsolo
+      es: Aguas que brotan calentadas por el calor del subsuelo
+      fr: Eaux qui jaillissent réchauffées par la chaleur du sous-sol
+      de: Grundwasser, das durch Erdwärme erhitzt austritt
   geyser:
     name:
       en: Geyser
@@ -2051,11 +2051,11 @@ templates:
       fr: Geysers
       de: Geysire
     desc:
-      en: Geyser
-      pt: Gêiseres
-      es: Géiseres
-      fr: Geysers
-      de: Geysire
+      en: Openings that erupt hot water and steam at intervals
+      pt: Aberturas que lançam água quente e vapor a intervalos
+      es: Aberturas que expulsan agua caliente y vapor a intervalos
+      fr: Ouvertures projetant par intervalles eau chaude et vapeur
+      de: Öffnungen, die periodisch heißes Wasser und Dampf ausstoßen
   glaciers:
     name:
       en: Glaciers
@@ -2064,11 +2064,11 @@ templates:
       fr: Glaciers
       de: Gletscher
     desc:
-      en: Glaciers
-      pt: Geleiras
-      es: Glaciares
-      fr: Glaciers
-      de: Gletscher
+      en: Permanent masses of ice that slowly flow downhill
+      pt: Massas de gelo permanentes que se movem lentamente
+      es: Masas de hielo permanentes que se desplazan lentamente
+      fr: Masses de glace permanentes qui avancent lentement
+      de: Dauerhafte Eismassen, die langsam talwärts fließen
   natural-surfaces:
     name:
       en: Natural surfaces
@@ -2077,11 +2077,11 @@ templates:
       fr: Surfaces naturelles
       de: Natürliche Oberflächen
     desc:
-      en: Natural surfaces
-      pt: Superfícies naturais
-      es: Superficies naturales
-      fr: Surfaces naturelles
-      de: Natürliche Oberflächen
+      en: Low vegetation and bare ground such as rock, sand or mud
+      pt: Vegetação baixa e solo exposto, como rocha, areia ou lama
+      es: Vegetación baja y suelo desnudo, como roca, arena o barro
+      fr: Végétation basse et sol nu, comme roche, sable ou boue
+      de: Niedriger Bewuchs und kahler Boden wie Fels, Sand, Schlamm
   scrub:
     name:
       en: Scrub
@@ -2090,11 +2090,11 @@ templates:
       fr: Broussailles
       de: Gebüsch
     desc:
-      en: Scrub
-      pt: Vegetação arbustiva
-      es: Matorral
-      fr: Broussailles
-      de: Gebüsch
+      en: Uncultivated land covered with bushes or stunted trees
+      pt: Terras não cultivadas cobertas de arbustos ou árvores baixas
+      es: Tierras sin cultivar cubiertas de arbustos o árboles bajos
+      fr: Terres incultes couvertes de buissons ou d'arbres chétifs
+      de: Unkultiviertes Land mit Büschen oder niedrigen Bäumen
   heath:
     name:
       en: Heath
@@ -2103,11 +2103,11 @@ templates:
       fr: Lande
       de: Heide
     desc:
-      en: Heath
-      pt: Charneca
-      es: Brezal
-      fr: Lande
-      de: Heide
+      en: Open land with low woody plants such as heather
+      pt: Terras abertas com plantas lenhosas baixas, como urze
+      es: Terrenos abiertos con plantas leñosas bajas, como el brezo
+      fr: Terrains ouverts à plantes ligneuses basses, dont la bruyère
+      de: Offenes Land mit niedrigen Holzpflanzen wie Heidekraut
   fell:
     name:
       en: Fell
@@ -2116,11 +2116,11 @@ templates:
       fr: Pelouse alpine
       de: Fjell
     desc:
-      en: Fell
-      pt: Campos de altitude
-      es: Monte
-      fr: Pelouse alpine
-      de: Fjell
+      en: Open land above the tree line, with grass and moss
+      pt: Áreas abertas acima do limite arbóreo, com capim e musgo
+      es: Terrenos abiertos sobre el límite arbóreo, con pasto y musgo
+      fr: Terrains ouverts au-dessus des arbres, avec herbe et mousse
+      de: Offenes Land oberhalb der Baumgrenze mit Gras und Moos
   rock:
     name:
       en: Rock
@@ -2129,11 +2129,11 @@ templates:
       fr: Roche
       de: Fels
     desc:
-      en: Rock
-      pt: Rocha
-      es: Roca
-      fr: Roche
-      de: Fels
+      en: Notable rocks fixed to the bedrock below
+      pt: Rochas de destaque ligadas ao leito rochoso
+      es: Rocas destacadas unidas al lecho rocoso
+      fr: Rochers remarquables rattachés au socle rocheux
+      de: Markante Felsen, fest mit dem Untergrund verbunden
   stone:
     name:
       en: Stone
@@ -2142,11 +2142,11 @@ templates:
       fr: Pierre
       de: Findlinge
     desc:
-      en: Stone
-      pt: Pedra
-      es: Piedra
-      fr: Pierre
-      de: Findlinge
+      en: Notable loose boulders, not attached to the bedrock
+      pt: Blocos de pedra soltos, não ligados ao leito rochoso
+      es: Bloques de piedra sueltos, no unidos al lecho rocoso
+      fr: Blocs de pierre isolés, détachés du socle rocheux
+      de: Einzelne lose Gesteinsblöcke, nicht mit dem Fels verbunden
   sand:
     name:
       en: Sand
@@ -2155,11 +2155,11 @@ templates:
       fr: Sable
       de: Sand
     desc:
-      en: Sand
-      pt: Areia
-      es: Arena
-      fr: Sable
-      de: Sand
+      en: Areas covered by sand with little or no vegetation
+      pt: Áreas cobertas de areia, com pouca ou nenhuma vegetação
+      es: Áreas cubiertas de arena, con poca o ninguna vegetación
+      fr: Zones couvertes de sable, avec peu ou pas de végétation
+      de: Mit Sand bedeckte Flächen, kaum oder nicht bewachsen
   shingle:
     name:
       en: Shingle
@@ -2168,11 +2168,11 @@ templates:
       fr: Galets
       de: Kies
     desc:
-      en: Shingle
-      pt: Cascalho
-      es: Guijarros
-      fr: Galets
-      de: Kies
+      en: Banks of rounded pebbles on beaches or riverbeds
+      pt: Acúmulos de pedras arredondadas em praias ou leitos de rio
+      es: Acumulaciones de piedras redondeadas en playas o cauces
+      fr: Amas de pierres arrondies en bord de mer ou de rivière
+      de: Rundliche Steine an Stränden oder in Flussbetten
   mud:
     name:
       en: Mud
@@ -2181,11 +2181,11 @@ templates:
       fr: Boue
       de: Schlamm
     desc:
-      en: Mud
-      pt: Lama
-      es: Barro
-      fr: Boue
-      de: Schlamm
+      en: Soaked, fine-grained bare soil with almost no plants
+      pt: Solo fino e encharcado, quase sem vegetação
+      es: Suelo fino empapado, casi sin vegetación
+      fr: Sol fin détrempé, presque sans végétation
+      de: Durchnässter feinkörniger Boden fast ohne Pflanzen
   street-lamps:
     name:
       en: Street lamps
@@ -2857,11 +2857,11 @@ templates:
       fr: Terres agricoles
       de: Ackerland
     desc:
-      en: Farmland
-      pt: Área agrícola
-      es: Tierra agrícola
-      fr: Terres agricoles
-      de: Ackerland
+      en: Tilled fields for crops sown every year
+      pt: Campos lavrados para cultivos anuais
+      es: Campos labrados para cultivos anuales
+      fr: Champs labourés pour des cultures annuelles
+      de: Gepflügte Felder für einjährige Kulturen
   farmyards:
     name:
       en: Farmyards
@@ -2870,11 +2870,11 @@ templates:
       fr: Cours de ferme
       de: Hofstellen
     desc:
-      en: Farmyards
-      pt: Pátios de fazenda
-      es: Patios de granja
-      fr: Cours de ferme
-      de: Hofstellen
+      en: Land around a farm's house and working buildings
+      pt: Terreno em volta da sede e das construções da fazenda
+      es: Terreno alrededor de la casa y los edificios de una granja
+      fr: Terrain autour de la maison et des bâtiments d'une ferme
+      de: Gelände um Wohnhaus und Wirtschaftsgebäude eines Hofs
   meadows:
     name:
       en: Meadows
@@ -2883,11 +2883,11 @@ templates:
       fr: Prés
       de: Wiesen
     desc:
-      en: Meadows
-      pt: Prados
-      es: Praderas
-      fr: Prés
-      de: Wiesen
+      en: Grassy land used for hay or grazing
+      pt: Terras com capim usadas para feno ou pastagem
+      es: Terrenos con pasto usados para heno o pastoreo
+      fr: Terres herbeuses utilisées pour le foin ou le pâturage
+      de: Grasflächen zur Heugewinnung oder als Weide
   animal-keeping:
     name:
       en: Animal keeping
@@ -2896,11 +2896,11 @@ templates:
       fr: Élevage d'animaux
       de: Tierhaltung
     desc:
-      en: Land use for animal keeping
-      pt: Uso do solo para criação de animais
-      es: Uso del suelo para cría de animales
-      fr: Terrains dédiés à l'élevage d'animaux
-      de: Flächen für Tierhaltung
+      en: Paddocks and other fenced land where animals are kept
+      pt: Piquetes e outras áreas cercadas onde se mantêm animais
+      es: Potreros y otros terrenos cercados donde se tienen animales
+      fr: Paddocks et autres terrains clôturés où vivent des animaux
+      de: Koppeln und andere eingezäunte Flächen für Tiere
   feedlots:
     name:
       en: Feedlots
@@ -2909,11 +2909,11 @@ templates:
       fr: Parcs d'engraissement
       de: Mastanlagen
     desc:
-      en: Feedlot infrastructure
-      pt: Infraestrutura de currais de engorda
-      es: Infraestructura de feedlots
-      fr: Infrastructure de parcs d'engraissement
-      de: Infrastruktur von Mastanlagen
+      en: Yards for intensive fattening of livestock, mostly cattle
+      pt: Áreas de engorda intensiva de gado, sobretudo bovino
+      es: Recintos de engorde intensivo de ganado, sobre todo bovino
+      fr: Zones d'engraissement intensif du bétail, surtout bovin
+      de: Höfe für die intensive Mast von Vieh, meist Rindern
   stockyards:
     name:
       en: Stockyards
@@ -2922,11 +2922,11 @@ templates:
       fr: Parcs à bestiaux
       de: Viehhöfe
     desc:
-      en: Livestock handling infrastructure
-      pt: Infraestrutura de manejo de gado
-      es: Infraestructura de manejo de ganado
-      fr: Infrastructure de gestion du bétail
-      de: Infrastruktur für den Viehumschlag
+      en: Fenced pens where livestock is held for a short time
+      pt: Cercados onde o gado fica retido por pouco tempo
+      es: Recintos cercados donde el ganado se retiene por poco tiempo
+      fr: Enclos où le bétail est gardé temporairement
+      de: Pferche, in denen Vieh vorübergehend gehalten wird
   poultry-yards:
     name:
       en: Poultry yards
@@ -2935,11 +2935,11 @@ templates:
       fr: Élevages de volailles
       de: Geflügelhöfe
     desc:
-      en: Poultry farming infrastructure
-      pt: Infraestrutura de avicultura
-      es: Infraestructura de avicultura
-      fr: Infrastructure d'élevage de volailles
-      de: Infrastruktur der Geflügelhaltung
+      en: Farm areas raising chickens and other poultry
+      pt: Áreas onde se criam galinhas e outras aves
+      es: Áreas donde se crían gallinas y otras aves
+      fr: Zones où sont élevées des poules et autres volailles
+      de: Flächen für die Haltung von Hühnern und anderem Geflügel
   dairy-yards:
     name:
       en: Dairy yards
@@ -2948,11 +2948,11 @@ templates:
       fr: Installations laitières
       de: Milchviehhöfe
     desc:
-      en: Dairy farming infrastructure
-      pt: Infraestrutura de produção leiteira
-      es: Infraestructura lechera
-      fr: Infrastructure d'élevage laitier
-      de: Infrastruktur der Milchviehhaltung
+      en: Farm areas where cows are kept for milk
+      pt: Áreas de fazenda onde vacas são criadas para leite
+      es: Áreas de granja donde se crían vacas para leche
+      fr: Zones de ferme où des vaches sont élevées pour leur lait
+      de: Hofflächen, auf denen Kühe für Milch gehalten werden
   barns:
     name:
       en: Barns
@@ -2961,11 +2961,11 @@ templates:
       fr: Granges
       de: Scheunen
     desc:
-      en: Barns
-      pt: Celeiros
-      es: Graneros
-      fr: Granges
-      de: Scheunen
+      en: Farm buildings for storage and covered work
+      pt: Construções rurais para armazenar e trabalhar sob abrigo
+      es: Construcciones rurales para almacenar y trabajar bajo techo
+      fr: Bâtiments agricoles pour stocker et travailler à l'abri
+      de: Hofgebäude zum Lagern und für Arbeiten unter Dach
   farm-auxiliary:
     name:
       en: Farm auxiliary buildings
@@ -2987,11 +2987,11 @@ templates:
       fr: Serres
       de: Gewächshäuser
     desc:
-      en: Greenhouses
-      pt: Estufas
-      es: Invernaderos
-      fr: Serres
-      de: Gewächshäuser
+      en: Buildings with glass or plastic walls for growing plants
+      pt: Construções com paredes de vidro ou plástico para plantas
+      es: Edificios con paredes de vidrio o plástico para cultivar
+      fr: Bâtiments aux parois de verre ou de plastique pour plantes
+      de: Gebäude mit Glas- oder Folienwänden für den Pflanzenanbau
   livestock-buildings:
     name:
       en: Livestock buildings
@@ -3004,7 +3004,7 @@ templates:
       pt: Estábulos, cavalariças, chiqueiros, celeiros e similares
       es: Establos, caballerizas, porquerizas, graneros y similares
       fr: Étables, écuries, porcheries, granges et autres abris
-      de: Kuhställe, Pferdeställe, Schweineställe und Scheunen
+      de: Kuh-, Pferde- und Schweineställe, Scheunen und mehr
   cowsheds:
     name:
       en: Cowsheds
@@ -3013,11 +3013,11 @@ templates:
       fr: Étables
       de: Kuhställe
     desc:
-      en: Cowsheds
-      pt: Estábulos para gado
-      es: Establos para vacas
-      fr: Étables
-      de: Kuhställe
+      en: Buildings where cows are housed
+      pt: Construções onde vacas são abrigadas
+      es: Edificios donde se alojan vacas
+      fr: Bâtiments qui abritent des vaches
+      de: Gebäude, in denen Kühe untergebracht sind
   pig-sties:
     name:
       en: Pigsties
@@ -3039,11 +3039,11 @@ templates:
       fr: Écuries
       de: Pferdeställe
     desc:
-      en: Stables
-      pt: Estábulos
-      es: Establos
-      fr: Écuries
-      de: Pferdeställe
+      en: Buildings built to house horses
+      pt: Construções feitas para abrigar cavalos
+      es: Edificios construidos para alojar caballos
+      fr: Bâtiments construits pour abriter des chevaux
+      de: Gebäude zur Unterbringung von Pferden
   silos:
     name:
       en: Silos
@@ -3052,11 +3052,11 @@ templates:
       fr: Silos
       de: Silos
     desc:
-      en: Silos
-      pt: Silos
-      es: Silos
-      fr: Silos
-      de: Silos
+      en: Containers that store bulk goods, often grain
+      pt: Reservatórios para grãos e outros materiais a granel
+      es: Depósitos para granos y otros materiales a granel
+      fr: Réservoirs pour le grain et autres produits en vrac
+      de: Speicher für Getreide und andere Schüttgüter
   bunker-silos:
     name:
       en: Bunker silos
@@ -3065,11 +3065,11 @@ templates:
       fr: Silos-couloirs
       de: Fahrsilos
     desc:
-      en: Bunker silos
-      pt: Silos tipo bunker
-      es: Silos tipo búnker
-      fr: Silos-couloirs
-      de: Fahrsilos
+      en: Roofless walled bays for silage, open to vehicles
+      pt: Baias sem teto e com muros para silagem, abertas a veículos
+      es: Recintos murados sin techo para silaje, abiertos a vehículos
+      fr: Cases murées sans toit pour l'ensilage, ouvertes aux engins
+      de: Dachlose, befahrbare Kammern mit Wänden für Silage
   agricultural-tanks:
     name:
       en: Agricultural tanks
@@ -3078,11 +3078,11 @@ templates:
       fr: Cuves agricoles
       de: Landwirtschaftliche Tanks
     desc:
-      en: Agricultural tanks
-      pt: Tanques agrícolas
-      es: Depósitos agrícolas
-      fr: Cuves agricoles
-      de: Landwirtschaftliche Tanks
+      en: Tanks holding liquids or gases, on farms and elsewhere
+      pt: Tanques de líquidos ou gases, em fazendas e em outros locais
+      es: Tanques de líquidos o gases, en granjas y en otros lugares
+      fr: Cuves de liquides ou de gaz, à la ferme ou ailleurs
+      de: Tanks für Flüssigkeiten oder Gase, auf Höfen und anderswo
   slurry-basins:
     name:
       en: Slurry basins
@@ -3091,11 +3091,11 @@ templates:
       fr: Bassins à lisier
       de: Güllebecken
     desc:
-      en: Agricultural slurry storage infrastructure
-      pt: Infraestrutura de armazenamento de esterco
-      es: Infraestructura de almacenamiento de purín
-      fr: Infrastructure de stockage de lisier
-      de: Infrastruktur zur Güllelagerung
+      en: Dug pits with sloped sides that store liquid manure
+      pt: Bacias escavadas de bordas inclinadas para esterco líquido
+      es: Fosas excavadas con bordes inclinados para estiércol líquido
+      fr: Fosses à bords inclinés pour les déjections liquides
+      de: Gegrabene Becken mit schrägen Wänden für Flüssigmist
   slurry-tanks:
     name:
       en: Slurry tanks
@@ -3104,11 +3104,11 @@ templates:
       fr: Cuves à lisier
       de: Gülletanks
     desc:
-      en: Agricultural slurry storage infrastructure
-      pt: Infraestrutura de armazenamento de esterco
-      es: Infraestructura de almacenamiento de purín
-      fr: Infrastructure de stockage de lisier
-      de: Infrastruktur zur Güllelagerung
+      en: Round tanks with upright walls that hold liquid manure
+      pt: Tanques redondos de paredes retas para esterco líquido
+      es: Tanques redondos de paredes rectas para estiércol líquido
+      fr: Cuves rondes à parois droites pour les déjections liquides
+      de: Runde Behälter mit senkrechten Wänden für Flüssigmist
   manure-storage:
     name:
       en: Manure storage
@@ -3117,11 +3117,11 @@ templates:
       fr: Stockage de fumier
       de: Mistlager
     desc:
-      en: Manure storage infrastructure
-      pt: Infraestrutura de armazenamento de esterco
-      es: Infraestructura de almacenamiento de estiércol
-      fr: Infrastructure de stockage de fumier
-      de: Infrastruktur zur Mistlagerung
+      en: Storage tanks known to hold manure
+      pt: Tanques de armazenamento que contêm esterco
+      es: Tanques de almacenamiento que contienen estiércol
+      fr: Réservoirs de stockage contenant du fumier
+      de: Lagertanks, die Mist enthalten
   greenhouse-horticulture:
     name:
       en: Greenhouse horticulture
@@ -3130,11 +3130,11 @@ templates:
       fr: Horticulture sous serre
       de: Unterglasanbau
     desc:
-      en: Greenhouse horticulture
-      pt: Horticultura em estufa
-      es: Horticultura en invernadero
-      fr: Horticulture sous serre
-      de: Unterglasanbau
+      en: Land with clusters of greenhouses for growing crops
+      pt: Terrenos com conjuntos de estufas para cultivo
+      es: Terrenos con grupos de invernaderos para cultivo
+      fr: Terrains couverts de serres pour la culture de plantes
+      de: Flächen mit vielen Gewächshäusern für den Pflanzenanbau
   plant-nurseries:
     name:
       en: Plant nurseries
@@ -3143,11 +3143,11 @@ templates:
       fr: Pépinières
       de: Baumschulen
     desc:
-      en: Plant nurseries
-      pt: Viveiros de plantas
-      es: Viveros de plantas
-      fr: Pépinières
-      de: Baumschulen
+      en: Land where young trees, shrubs and flowers are raised
+      pt: Áreas onde se cultivam mudas de árvores, arbustos e flores
+      es: Terrenos donde se crían árboles, arbustos y flores jóvenes
+      fr: Terrains où sont élevés de jeunes arbres, arbustes et fleurs
+      de: Flächen zur Anzucht junger Bäume, Sträucher und Blumen
   irrigated-green:
     name:
       en: Irrigated green
@@ -3156,8 +3156,8 @@ templates:
       fr: Espaces verts irrigués
       de: Bewässerte Grünflächen
     desc:
-      en: Irrigated green
-      pt: Áreas verdes irrigadas
-      es: Áreas verdes regadas
-      fr: Espaces verts irrigués
-      de: Bewässerte Grünflächen
+      en: Canals and ditches that carry water to farmland
+      pt: Canais e valas que levam água para lavouras
+      es: Canales y acequias que llevan agua a los cultivos
+      fr: Canaux et fossés qui amènent l'eau aux cultures
+      de: Kanäle und Gräben, die Wasser zu Feldern leiten
