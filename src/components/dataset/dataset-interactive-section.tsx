@@ -13,6 +13,10 @@ import { DatasetPanelStats } from "@/components/dataset/dataset-panel-stats";
 import { DatasetTimestamps } from "@/components/dataset/dataset-timestamps";
 import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
 import { FeatureDetailPanel } from "@/components/dataset/feature-detail-panel";
+import {
+  ChildTemplateLinks,
+  ParentTemplateLink,
+} from "@/components/dataset/template-hierarchy-links";
 
 type DatasetInteractiveSectionProps = {
   dataset: Dataset;
@@ -81,6 +85,7 @@ export function DatasetInteractiveSection({
                 </Link>
               </div>
               <DatasetInfoPanel dataset={dataset} />
+              <ParentTemplateLink dataset={dataset} />
               {/* Metadata chip row: category facet (olive) + freshness chips
                   (edited, fetched) sharing one line below the title. */}
               <div className="mt-2 flex flex-wrap items-center gap-1.5">
@@ -103,6 +108,7 @@ export function DatasetInteractiveSection({
               className="flex-1 min-h-0 overflow-y-auto [scrollbar-gutter:stable_both-edges] flex flex-col border-y border-gray-200 my-3 -mx-6 bg-gray-50 px-6 py-3 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-olive-500"
             >
               <DatasetPanelStats dataset={dataset} />
+              <ChildTemplateLinks dataset={dataset} />
             </div>
 
             {/* Section 3 — action buttons: fixed height at the bottom. */}

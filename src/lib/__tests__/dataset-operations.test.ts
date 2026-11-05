@@ -95,7 +95,14 @@ const existingDatasetRow = {
   updatedAt: new Date(),
   isActive: true,
   isFeatured: true,
-  template: { id: "tmpl-1", name: "Test", description: null, translations: [] },
+  template: {
+    id: "tmpl-1",
+    name: "Test",
+    description: null,
+    translations: [],
+    parent: null,
+    children: [],
+  },
   area: {
     id: 1,
     name: "Test City",
@@ -125,6 +132,26 @@ describe("getOrCreateDataset — isFeatured passthrough", () => {
     const selectArg = mockDatasetFindFirst.mock.calls[0]?.[0]?.select;
     expect(selectArg?.isFeatured).toBe(true);
     expect(dataset.isFeatured).toBe(true);
+  });
+});
+
+describe("getOrCreateDataset — template hierarchy", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("selects the parent and only active, non-deprecated children", async () => {
+    mockDatasetFindFirst.mockResolvedValueOnce(existingDatasetRow as never);
+
+    const { dataset } = await getOrCreateDataset(1, "test-template", "en");
+
+    const templateSelect = mockDatasetFindFirst.mock.calls[0]?.[0]?.select?.template;
+    const { select } = templateSelect as {
+      select: { parent: unknown; children: { where: unknown } };
+    };
+    expect(select.parent).toBeDefined();
+    expect(select.children.where).toEqual({ isActive: true, deprecatesAt: null });
+    expect(dataset.template).toMatchObject({ parent: null, children: [] });
   });
 });
 

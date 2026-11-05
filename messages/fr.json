@@ -150,6 +150,8 @@
     "backToAreaLabel": "Retour à {area}",
     "categoryFacetLabel": "Catégorie : {category}. Voir tous les jeux de données {category} dans {area}.",
     "categoryUncategorized": "Autre",
+    "partOf": "Fait partie de <link>{template}</link>",
+    "moreSpecific": "Plus précis",
     "back": "Retour",
     "features": "Éléments",
     "geomPoints": "Points",

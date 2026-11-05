@@ -89,6 +89,8 @@ export const UnsaveDatasetSchema = z.object({
   datasetId: z.string(),
 });
 
+const TemplateLinkSchema = z.object({ id: z.string(), name: z.string() });
+
 export const DatasetSchema = z.object({
   id: z.string(),
   cityName: z.string(),
@@ -124,6 +126,8 @@ export const DatasetSchema = z.object({
     // Query criteria (e.g. ["highway=bus_stop"]); their keys are excluded from
     // the Most-used-tags list since they are ~100% by definition.
     tags: z.array(z.string()).optional(),
+    parent: TemplateLinkSchema.nullable().optional(),
+    children: z.array(TemplateLinkSchema).optional(),
   }),
   user: z
     .object({

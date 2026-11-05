@@ -150,6 +150,8 @@
     "backToAreaLabel": "Zurück zu {area}",
     "categoryFacetLabel": "Kategorie: {category}. Alle Datensätze der Kategorie {category} in {area} anzeigen.",
     "categoryUncategorized": "Sonstige",
+    "partOf": "Teil von <link>{template}</link>",
+    "moreSpecific": "Spezifischer",
     "back": "Zurück",
     "features": "Objekte",
     "geomPoints": "Punkte",

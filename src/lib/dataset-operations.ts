@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { resolveTemplate } from "@/lib/template-resolver";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
+import { resolveTemplateHierarchy } from "@/lib/template-hierarchy";
 import { fetchOsmRelationData } from "@/lib/area-boundary";
 import { refreshAreaInfoIfStale, resolveAreaCenter } from "@/lib/area-refresh";
 import { mergeAreaNames, toStoredNames } from "@/lib/area-name";
@@ -61,6 +62,17 @@ export async function getOrCreateDataset(
   return { dataset, wasCreated: true };
 }
 
+const TRANSLATIONS_SELECT = {
+  select: { locale: true, name: true, description: true },
+} as const;
+
+const RELATED_TEMPLATE_SELECT = {
+  id: true,
+  name: true,
+  description: true,
+  translations: TRANSLATIONS_SELECT,
+} as const;
+
 // The detail-page shape (geojson payload included), used by both the read and
 // the on-demand create below. Distinct from the card-select in
 // dataset-section-select and consumed only in this module.
@@ -101,12 +113,17 @@ const DATASET_DETAIL_SELECT = {
       },
       tags: true,
       filterableTags: true,
-      translations: {
+      translations: TRANSLATIONS_SELECT,
+      parent: {
         select: {
-          locale: true,
-          name: true,
-          description: true,
+          ...RELATED_TEMPLATE_SELECT,
+          isActive: true,
+          deprecatesAt: true,
         },
+      },
+      children: {
+        where: { isActive: true, deprecatesAt: null },
+        select: RELATED_TEMPLATE_SELECT,
       },
     },
   },
@@ -153,13 +170,17 @@ async function getDatasetWithDetails(areaId: number, templateId: string, locale:
     return null;
   }
 
-  // Resolve template translations for the given locale
-  const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
-
   return {
     ...dataset,
-    template: resolvedTemplate,
+    template: resolveDetailTemplate(dataset.template, locale),
   };
+}
+
+function resolveDetailTemplate(
+  template: Prisma.DatasetGetPayload<{ select: typeof DATASET_DETAIL_SELECT }>["template"],
+  locale: string
+) {
+  return resolveTemplateHierarchy(resolveTemplateForLocale(template, locale), locale);
 }
 
 async function createDatasetOnDemand(
@@ -251,15 +272,12 @@ async function createDatasetOnDemand(
 
     await trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`);
 
-    // Resolve template translations for the given locale
-    const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
-
     return {
       ...dataset,
       tilesState: tilesState ?? dataset.tilesState,
       tilesJobId: tilesJobId ?? dataset.tilesJobId,
       tilesError: tilesError ?? dataset.tilesError,
-      template: resolvedTemplate,
+      template: resolveDetailTemplate(dataset.template, locale),
     };
   } catch (error) {
     logger.error("Failed to fetch Overpass data", { areaId, templateId: template.id, error });

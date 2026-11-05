@@ -150,6 +150,8 @@
     "backToAreaLabel": "Back to {area}",
     "categoryFacetLabel": "Category: {category}. View all {category} datasets in {area}.",
     "categoryUncategorized": "Other",
+    "partOf": "Part of <link>{template}</link>",
+    "moreSpecific": "More specific",
     "back": "Back",
     "features": "Features",
     "geomPoints": "Points",

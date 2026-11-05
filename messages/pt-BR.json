@@ -150,6 +150,8 @@
     "backToAreaLabel": "Voltar para {area}",
     "categoryFacetLabel": "Categoria: {category}. Ver todos os conjuntos de dados de {category} em {area}.",
     "categoryUncategorized": "Outros",
+    "partOf": "Parte de <link>{template}</link>",
+    "moreSpecific": "Mais específicos",
     "back": "Voltar",
     "features": "Elementos",
     "geomPoints": "Pontos",
