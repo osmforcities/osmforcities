@@ -125,9 +125,11 @@ export function buildCuratedThemesFromDimensions(
 export function findOpeningTheme(
   themes: CuratedTheme[],
   defaultView: string | null | undefined
-): CuratedTheme | undefined {
-  return themes.find(
-    (theme) => theme.field === defaultView && theme.topValues.length > 0
+): CuratedTheme | null {
+  return (
+    themes.find(
+      (theme) => theme.field === defaultView && theme.topValues.length > 0
+    ) ?? null
   );
 }
 

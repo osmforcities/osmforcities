@@ -309,15 +309,15 @@ describe("findOpeningTheme", () => {
     expect(findOpeningTheme(themes, "building")?.field).toBe("building");
   });
 
-  it("returns undefined without a default view", () => {
-    expect(findOpeningTheme(themes, null)).toBeUndefined();
+  it("returns null without a default view", () => {
+    expect(findOpeningTheme(themes, null)).toBeNull();
   });
 
-  it("returns undefined when the tag is absent from the data", () => {
-    expect(findOpeningTheme(themes, "roof:shape")).toBeUndefined();
+  it("returns null when the tag is absent from the data", () => {
+    expect(findOpeningTheme(themes, "roof:shape")).toBeNull();
   });
 
-  it("returns undefined when the tag is not a theme", () => {
-    expect(findOpeningTheme(themes, "levels")).toBeUndefined();
+  it("returns null when the tag is not a theme", () => {
+    expect(findOpeningTheme(themes, "levels")).toBeNull();
   });
 });

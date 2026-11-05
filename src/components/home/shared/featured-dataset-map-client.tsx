@@ -118,10 +118,10 @@ export function FeaturedDatasetMapClient({
   const openingTheme = useMemo(
     () =>
       processedData && defaultView
-        ? (findOpeningTheme(
+        ? findOpeningTheme(
             buildCuratedThemes(processedData.features, [defaultView]),
             defaultView
-          ) ?? null)
+          )
         : null,
     [processedData, defaultView]
   );

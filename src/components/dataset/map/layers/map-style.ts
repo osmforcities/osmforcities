@@ -92,7 +92,7 @@ export const DEFAULT_STYLE_KNOBS: MapStyleKnobs = {
 
 export const AGE_COLORS = DEFAULT_STYLE_KNOBS.colors;
 
-export const AGE_LABEL_KEYS = {
+const AGE_LABEL_KEYS = {
   recent: "recentChanges",
   medium: "mediumChanges",
   older: "olderChanges",
