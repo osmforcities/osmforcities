@@ -268,6 +268,7 @@
   "AreaFacts": {
     "capitalCity": "Capitale",
     "population": "Pop. {count, number, ::compact-short .#}",
+    "populationWithYear": "Pop. {count, number, ::compact-short .#} ({year})",
     "elevation": "Alt. {elevation, number} m",
     "links": "Liens",
     "website": "Site web",

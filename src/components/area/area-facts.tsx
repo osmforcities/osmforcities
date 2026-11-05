@@ -35,9 +35,9 @@ export function AreaFacts({ area }: { area: Area }) {
   const facts = [
     placeType,
     area.population !== undefined &&
-      [t("population", { count: area.population }), area.populationYear && `(${area.populationYear})`]
-        .filter(Boolean)
-        .join(" "),
+      (area.populationYear
+        ? t("populationWithYear", { count: area.population, year: area.populationYear })
+        : t("population", { count: area.population })),
     area.elevation !== undefined && t("elevation", { elevation: area.elevation }),
   ].filter((fact): fact is string => Boolean(fact));
 

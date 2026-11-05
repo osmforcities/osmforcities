@@ -17,7 +17,7 @@ How code in this repo should be written. Reviewers (human and agent) check chang
 - Spanish is Latin American neutral, Portuguese is Brazilian. No regional slang, no English left untranslated. Run `pnpm i18n:review` after changing translations.
 - English headings, buttons and labels use sentence case. Other locales never copy English title case.
 - Full sentences end with a period; headings, labels and buttons do not.
-- No punctuation or symbols as keys or baked into labels (`✕`, `(`, `:`, trailing colons, `→`). Components render icons and separators.
+- No punctuation or symbols as keys or baked into labels (`✕`, `(`, `:`, trailing colons, `→`). Components render icons and separators. Exception: parentheses around a value that qualifies a figure in the same message, such as its year (`"Pop. {count} ({year})"`).
 - Use ICU placeholders and plurals (`{count, plural, ...}`), never concatenated fragments.
 - Plain, accurate copy: no pipeline jargon, no promises the app does not keep, no description repeating its heading.
 - Group controls under a heading that names what they affect.
