@@ -1184,7 +1184,7 @@ templates:
       pt: Sirenes que avisam de desastres, ataques aéreos ou incêndios
       es: Sirenas que alertan de desastres, ataques aéreos o incendios
       fr: Sirènes annonçant catastrophes, raids aériens ou incendies
-      de: Sirenen warnen vor Katastrophen, Luftangriffen oder Bränden
+      de: Sirenen, die vor Katastrophen, Luftangriffen, Bränden warnen
   firefighting-water-sources:
     name:
       en: Firefighting water sources
