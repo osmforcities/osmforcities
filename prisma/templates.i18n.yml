@@ -2194,11 +2194,11 @@ templates:
       fr: Lampadaires
       de: Straßenlaternen
     desc:
-      en: Street lamps
-      pt: Postes de iluminação
-      es: Farolas
-      fr: Lampadaires
-      de: Straßenlaternen
+      en: Poles with one or more lights that illuminate the street
+      pt: Postes com uma ou mais luzes que iluminam a rua
+      es: Postes con una o más luces que iluminan la calle
+      fr: Poteaux munis d'une ou plusieurs lampes qui éclairent la rue
+      de: Masten mit einer oder mehreren Lampen zur Straßenbeleuchtung
   surveillance:
     name:
       en: Surveillance
@@ -2207,11 +2207,11 @@ templates:
       fr: Caméras de surveillance
       de: Videoüberwachung
     desc:
-      en: Surveillance
-      pt: Câmeras de vigilância
-      es: Cámaras de vigilancia
-      fr: Caméras de surveillance
-      de: Videoüberwachung
+      en: Cameras and other equipment that monitor a place
+      pt: Câmeras e outros equipamentos que monitoram um local
+      es: Cámaras y otros equipos que monitorean un lugar
+      fr: Caméras et autres équipements qui surveillent un lieu
+      de: Kameras und andere Geräte zur Überwachung eines Ortes
   tailings-pond:
     name:
       en: Tailings pond
@@ -2220,11 +2220,11 @@ templates:
       fr: Bassin de résidus miniers
       de: Absetzbecken
     desc:
-      en: Mining tailings storage infrastructure
-      pt: Infraestrutura de armazenamento de rejeitos de mineração
-      es: Infraestructura de almacenamiento de residuos mineros
-      fr: Infrastructure de stockage de résidus miniers
-      de: Infrastruktur zur Lagerung von Bergbaurückständen
+      en: Ponds of liquid waste left over from mining
+      pt: Lagoas de resíduos líquidos da mineração
+      es: Estanques de residuos líquidos de la minería
+      fr: Bassins de déchets liquides issus de l'exploitation minière
+      de: Becken für flüssige Abfälle aus dem Bergbau
   tower:
     name:
       en: Tower
@@ -2233,11 +2233,11 @@ templates:
       fr: Tours
       de: Türme
     desc:
-      en: Tower
-      pt: Torres
-      es: Torres
-      fr: Tours
-      de: Türme
+      en: Tall freestanding structures, from lookouts to bell towers
+      pt: Estruturas altas e independentes, de mirantes a campanários
+      es: Altas estructuras independientes, de miradores a campanarios
+      fr: Hautes structures autoportantes, des belvédères aux clochers
+      de: Hohe freistehende Bauwerke, von Aussichts- bis Glockentürmen
   communications-tower:
     name:
       en: Communications tower
@@ -2246,11 +2246,11 @@ templates:
       fr: Tour de télécommunications
       de: Funktürme
     desc:
-      en: Communications tower
-      pt: Torre de comunicações
-      es: Torre de comunicaciones
-      fr: Tour de télécommunications
-      de: Funktürme
+      en: Very tall towers carrying radio, TV or phone antennas
+      pt: Torres muito altas com antenas de rádio, TV ou telefonia
+      es: Torres muy altas con antenas de radio, TV o telefonía
+      fr: Très hautes tours portant des antennes radio, TV ou mobile
+      de: Sehr hohe Türme mit Antennen für Radio, TV und Mobilfunk
   water-tower:
     name:
       en: Water tower
@@ -2259,11 +2259,11 @@ templates:
       fr: Château d'eau
       de: Wassertürme
     desc:
-      en: Water tower
-      pt: Caixa d'água
-      es: Depósito de agua
-      fr: Château d'eau
-      de: Wassertürme
+      en: Raised tanks that store water and pressurize the supply
+      pt: Tanques elevados que guardam água e dão pressão à rede
+      es: Tanques elevados que almacenan agua y dan presión a la red
+      fr: Réservoirs surélevés stockant l'eau et assurant la pression
+      de: Erhöhte Tanks, die Wasser speichern und Netzdruck erzeugen
   storage-tanks:
     name:
       en: Storage tanks
@@ -2272,11 +2272,11 @@ templates:
       fr: Réservoirs de stockage
       de: Lagertanks
     desc:
-      en: Storage tanks
-      pt: Tanques de armazenamento
-      es: Depósitos
-      fr: Réservoirs de stockage
-      de: Lagertanks
+      en: Containers for liquids or gases, such as water and oil
+      pt: Recipientes para líquidos ou gases, como água e petróleo
+      es: Tanques de líquidos o gases, como agua y petróleo
+      fr: Cuves de liquides ou de gaz, comme l'eau et le pétrole
+      de: Behälter für Flüssigkeiten oder Gase wie Wasser und Öl
   chimney:
     name:
       en: Chimney
@@ -2285,11 +2285,11 @@ templates:
       fr: Cheminées
       de: Schornsteine
     desc:
-      en: Chimney
-      pt: Chaminés
-      es: Chimeneas
-      fr: Cheminées
-      de: Schornsteine
+      en: Tall stacks that vent smoke from factories and power plants
+      pt: Estruturas altas que liberam fumaça de fábricas e usinas
+      es: Conductos altos que expulsan humo de fábricas y centrales
+      fr: Hauts conduits qui évacuent la fumée des usines et centrales
+      de: Hohe Schlote für den Rauch von Fabriken und Kraftwerken
   pipeline:
     name:
       en: Pipeline
@@ -2298,11 +2298,11 @@ templates:
       fr: Canalisations
       de: Pipelines
     desc:
-      en: Pipeline
-      pt: Dutos
-      es: Tuberías
-      fr: Canalisations
-      de: Pipelines
+      en: Major pipes for gas, water, oil or sewage
+      pt: Grandes tubulações de gás, água, petróleo ou esgoto
+      es: Grandes conductos de gas, agua, petróleo o aguas residuales
+      fr: Grandes conduites de gaz, d'eau, de pétrole ou d'eaux usées
+      de: Große Rohrleitungen für Gas, Wasser, Öl oder Abwasser
   mast:
     name:
       en: Mast
@@ -2311,11 +2311,11 @@ templates:
       fr: Mâts
       de: Masten
     desc:
-      en: Mast
-      pt: Mastros
-      es: Mástiles
-      fr: Mâts
-      de: Masten
+      en: Slender vertical structures for antennas or floodlights
+      pt: Estruturas finas e verticais para antenas ou refletores
+      es: Estructuras verticales delgadas para antenas o reflectores
+      fr: Structures verticales fines pour antennes ou projecteurs
+      de: Schlanke senkrechte Bauwerke für Antennen oder Flutlicht
   water-works:
     name:
       en: Water works
@@ -2324,11 +2324,11 @@ templates:
       fr: Station de traitement de l'eau
       de: Wasserwerke
     desc:
-      en: Water works
-      pt: Estação de tratamento de água
-      es: Estación de tratamiento de agua
-      fr: Station de traitement de l'eau
-      de: Wasserwerke
+      en: Plants that treat water to make it safe to drink
+      pt: Instalações que tratam a água para torná-la potável
+      es: Plantas que tratan el agua para que sea potable
+      fr: Installations qui traitent l'eau pour la rendre potable
+      de: Anlagen, die Wasser zu Trinkwasser aufbereiten
   wastewater-plant:
     name:
       en: Wastewater plant
@@ -2337,11 +2337,11 @@ templates:
       fr: Station d'épuration
       de: Kläranlagen
     desc:
-      en: Wastewater plant
-      pt: Estação de tratamento de esgoto
-      es: Estación de tratamiento de aguas residuales
-      fr: Station d'épuration
-      de: Kläranlagen
+      en: Plants that clean sewage from homes and industry
+      pt: Instalações que limpam o esgoto de casas e indústrias
+      es: Plantas que depuran el agua usada de casas e industrias
+      fr: Usines qui traitent les eaux usées des ménages et industries
+      de: Anlagen, die Abwasser aus Haushalten und Industrie reinigen
   pumping-station:
     name:
       en: Pumping station
@@ -2350,11 +2350,11 @@ templates:
       fr: Station de pompage
       de: Pumpwerke
     desc:
-      en: Pumping station
-      pt: Estação de bombeamento
-      es: Estación de bombeo
-      fr: Station de pompage
-      de: Pumpwerke
+      en: Facilities that pump water, sewage and other fluids
+      pt: Instalações que bombeiam água, esgoto e outros fluidos
+      es: Plantas que bombean agua, aguas residuales y otros fluidos
+      fr: Installations pompant eau, eaux usées et autres fluides
+      de: Anlagen zum Pumpen von Wasser, Abwasser und anderen Fluiden
   utility-pole:
     name:
       en: Utility pole
@@ -2363,11 +2363,11 @@ templates:
       fr: Poteaux de réseau
       de: Leitungsmasten
     desc:
-      en: Utility pole
-      pt: Postes de rede
-      es: Postes de servicios
-      fr: Poteaux de réseau
-      de: Leitungsmasten
+      en: Poles carrying power, phone or other lines
+      pt: Postes com fios de energia, telefone ou outros
+      es: Postes con cables de electricidad, teléfono u otros
+      fr: Poteaux pour lignes d'électricité, de téléphone ou autres
+      de: Masten für Strom-, Telefon- und andere Leitungen
   roads:
     name:
       en: Streets and roads
@@ -2532,11 +2532,11 @@ templates:
       fr: Maisons
       de: Einfamilienhäuser
     desc:
-      en: Houses
-      pt: Casas
-      es: Casas
-      fr: Maisons
-      de: Einfamilienhäuser
+      en: Single-family homes, including semi-detached and row houses
+      pt: Casas unifamiliares, inclusive geminadas e em fileira
+      es: Viviendas unifamiliares, incluidas las que comparten muro
+      fr: Maisons individuelles, y compris mitoyennes et en rangée
+      de: Wohnhäuser für eine Familie, auch Doppel- und Reihenhäuser
   residential:
     name:
       en: Residential
@@ -2545,11 +2545,11 @@ templates:
       fr: Zone résidentielle
       de: Wohngebiete
     desc:
-      en: Residential
-      pt: Área residencial
-      es: Zona residencial
-      fr: Zone résidentielle
-      de: Wohngebiete
+      en: Land used mainly for housing
+      pt: Terrenos ocupados principalmente por moradias
+      es: Terrenos ocupados principalmente por viviendas
+      fr: Terrains occupés principalement par des logements
+      de: Flächen, die überwiegend zum Wohnen genutzt werden
   dormitories:
     name:
       en: Dormitories
@@ -2558,11 +2558,11 @@ templates:
       fr: Résidences étudiantes
       de: Wohnheime
     desc:
-      en: Dormitories
-      pt: Alojamentos
-      es: Residencias estudiantiles
-      fr: Résidences étudiantes
-      de: Wohnheime
+      en: Housing run by schools, universities or other institutions
+      pt: Moradias de escolas, universidades e outras instituições
+      es: Viviendas de escuelas, universidades u otras instituciones
+      fr: Logements gérés par des écoles, universités ou institutions
+      de: Unterkünfte von Schulen, Hochschulen und anderen Trägern
   hotel-guesthouse:
     name:
       en: Guesthouses and hostels
@@ -2571,11 +2571,11 @@ templates:
       fr: Maisons d'hôtes et auberges de jeunesse
       de: Pensionen und Hostels
     desc:
-      en: Guesthouses and hostels
-      pt: Pousadas e albergues
-      es: Hostales y albergues
-      fr: Maisons d'hôtes et auberges de jeunesse
-      de: Pensionen und Hostels
+      en: Small owner-run lodgings and cheap stays in shared rooms
+      pt: Pequenas hospedagens familiares e quartos coletivos baratos
+      es: Alojamientos familiares y habitaciones compartidas baratas
+      fr: Petites pensions familiales et chambres partagées bon marché
+      de: Kleine private Unterkünfte und günstige Mehrbettzimmer
   football:
     name:
       en: Football
@@ -2805,11 +2805,11 @@ templates:
       fr: Murs
       de: Mauern
     desc:
-      en: Walls
-      pt: Muros
-      es: Muros
-      fr: Murs
-      de: Mauern
+      en: Solid barriers of brick, stone or concrete
+      pt: Barreiras sólidas de tijolo, pedra ou concreto
+      es: Barreras sólidas de ladrillo, piedra o concreto
+      fr: Barrières pleines en brique, pierre ou béton
+      de: Massive Abgrenzungen aus Ziegel, Stein oder Beton
   fences:
     name:
       en: Fences
@@ -2818,11 +2818,11 @@ templates:
       fr: Clôtures
       de: Zäune
     desc:
-      en: Fences
-      pt: Cercas
-      es: Vallas
-      fr: Clôtures
-      de: Zäune
+      en: Lightweight barriers of wire, wood or metal
+      pt: Barreiras leves de arame, madeira ou metal
+      es: Barreras livianas de alambre, madera o metal
+      fr: Barrières légères en grillage, bois ou métal
+      de: Leichte Abgrenzungen aus Draht, Holz oder Metall
   hedges:
     name:
       en: Hedges
@@ -2831,11 +2831,11 @@ templates:
       fr: Haies
       de: Hecken
     desc:
-      en: Hedges
-      pt: Cercas vivas
-      es: Setos
-      fr: Haies
-      de: Hecken
+      en: Rows of shrubs or trees used as a barrier or boundary
+      pt: Fileiras de arbustos ou árvores como barreira ou divisa
+      es: Hileras de arbustos o árboles usadas como barrera o límite
+      fr: Rangées d'arbustes ou d'arbres servant de barrière ou limite
+      de: Reihen von Sträuchern oder Bäumen als Abgrenzung
   gates:
     name:
       en: Gates
@@ -2844,11 +2844,11 @@ templates:
       fr: Portails
       de: Tore
     desc:
-      en: Gates
-      pt: Portões
-      es: Portones
-      fr: Portails
-      de: Tore
+      en: Sections of a wall or fence that open to allow access
+      pt: Partes de um muro ou cerca que se abrem para dar passagem
+      es: Partes de un muro o cerca que se abren para dar paso
+      fr: Parties d'un mur ou d'une clôture qui s'ouvrent pour passer
+      de: Abschnitte in Mauer oder Zaun, die sich öffnen lassen
   farmland:
     name:
       en: Farmland
