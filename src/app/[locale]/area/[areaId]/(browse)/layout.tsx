@@ -63,7 +63,7 @@ async function AreaBrowseShell({ children, params }: AreaBrowseLayoutProps) {
         areaName={areaName}
         parentBreadcrumb={parentBreadcrumb}
         facts={<AreaFacts area={areaInfo} />}
-        flag={areaInfo.flag && <AreaFlag flag={areaInfo.flag} />}
+        flag={areaInfo.flagFile && <AreaFlag commonsFile={areaInfo.flagFile} />}
         templates={templates}
       >
         {children}

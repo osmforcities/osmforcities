@@ -264,24 +264,24 @@ describe("fromNominatim area facts", () => {
   });
 
   it("reads the flag as a Commons file from a File: name or an upload URL", () => {
-    expect(withExtratags({ flag: "File:Flag of Berlin.svg" }).flag).toBe("Flag of Berlin.svg");
+    expect(withExtratags({ flag: "File:Flag of Berlin.svg" }).flagFile).toBe("Flag of Berlin.svg");
     expect(
       withExtratags({
         flag: "http://upload.wikimedia.org/wikipedia/commons/4/4b/Bandeira_da_cidade_de_S%C3%A3o_Paulo.svg",
-      }).flag
+      }).flagFile
     ).toBe("Bandeira_da_cidade_de_São_Paulo.svg");
     expect(
       withExtratags({
         flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Bandeira_da_cidade_de_S%C3%A3o_Paulo.svg/320px-Bandeira_da_cidade_de_S%C3%A3o_Paulo.svg.png",
-      }).flag
+      }).flagFile
     ).toBe("Bandeira_da_cidade_de_São_Paulo.svg");
   });
 
   it("ignores a flag hosted outside Wikimedia Commons", () => {
-    expect(withExtratags({ flag: "https://example.com/flag.svg" }).flag).toBeUndefined();
-    expect(withExtratags({ flag: "Flag of Berlin.svg" }).flag).toBeUndefined();
+    expect(withExtratags({ flag: "https://example.com/flag.svg" }).flagFile).toBeUndefined();
+    expect(withExtratags({ flag: "Flag of Berlin.svg" }).flagFile).toBeUndefined();
     expect(
-      withExtratags({ flag: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Bad%E0%A4%A.svg" }).flag
+      withExtratags({ flag: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Bad%E0%A4%A.svg" }).flagFile
     ).toBeUndefined();
   });
 

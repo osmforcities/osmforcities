@@ -7,13 +7,12 @@ import type { MessageResolver } from "@/lib/tag-i18n";
 import { getAreaCharacteristics } from "@/lib/utils";
 import type { Area } from "@/types/area";
 
-/** `flag` is a Wikimedia Commons file name. */
-export function AreaFlag({ flag }: { flag: string }) {
+export function AreaFlag({ commonsFile }: { commonsFile: string }) {
   return (
     // Fixed width, stretched height: the text block sets the height and the flag scales into it
     <div className="relative w-[30%] max-w-48 shrink-0">
       <Image
-        src={commonsImageUrl(flag)}
+        src={commonsImageUrl(commonsFile)}
         alt=""
         fill
         unoptimized

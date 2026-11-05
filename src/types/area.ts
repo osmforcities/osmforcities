@@ -25,6 +25,5 @@ export type Area = {
   wikipedia?: string;
   wikidata?: string;
   website?: string;
-  /** Wikimedia Commons file name. */
-  flag?: string;
+  flagFile?: string;
 };

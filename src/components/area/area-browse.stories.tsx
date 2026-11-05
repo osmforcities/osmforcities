@@ -83,7 +83,7 @@ export const FromSharedLink: Story = {
 
 /** The flag sits right of the title, facts and links, as tall as that block. */
 export const WithFlag: Story = {
-  args: { flag: <AreaFlag flag="Bandeira da cidade de São Paulo.svg" /> },
+  args: { flag: <AreaFlag commonsFile="Bandeira da cidade de São Paulo.svg" /> },
   play: async ({ canvas }) => {
     await expect(canvas.getByTestId("area-flag")).toHaveAttribute(
       "src",

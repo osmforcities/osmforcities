@@ -80,9 +80,7 @@ function parseCenter(lat: string, lon: string): { centerLat?: number; centerLon?
 }
 
 export function parsePopulation(value: string | undefined): number | undefined {
-  const trimmed = value?.trim();
-  if (!trimmed || !/^\d+$/.test(trimmed)) return undefined;
-  const population = Number(trimmed);
+  const population = Number(trimmedIfMatches(value, /^\d+$/));
   return population > 0 ? population : undefined;
 }
 
@@ -92,7 +90,7 @@ function trimmedIfMatches(value: string | undefined, pattern: RegExp): string | 
 }
 
 // Any mapper can edit these tags: values that end up in a link or image URL are allowlisted, never passed through
-function parseAreaFacts(tags: Record<string, string> = {}) {
+function parseAreaFacts(tags: Record<string, string>) {
   const population = parsePopulation(tags.population);
   const populationDate = trimmedIfMatches(tags["population:date"], /^\d{4}(-\d{2}){0,2}$/);
   const elevation = trimmedIfMatches(tags.ele, /^-?\d+(\.\d+)?$/);
@@ -105,7 +103,7 @@ function parseAreaFacts(tags: Record<string, string> = {}) {
     wikipedia: trimmedIfMatches(tags.wikipedia, /^[a-z][a-z-]*:[^\s/]/),
     wikidata: trimmedIfMatches(tags.wikidata, /^Q\d+$/),
     website: parseWebsite(tags.website),
-    flag: parseCommonsFile(tags.flag),
+    flagFile: parseCommonsFile(tags.flag),
   };
 }
 
@@ -175,7 +173,7 @@ export function fromNominatim(result: NominatimResult): Area {
     countryCode: result.address?.country_code?.toLowerCase().trim(),
     country: result.address?.country?.trim(),
     state: result.address?.state?.trim(),
-    ...parseAreaFacts(result.extratags ?? undefined),
+    ...parseAreaFacts(result.extratags ?? {}),
   };
 }
 

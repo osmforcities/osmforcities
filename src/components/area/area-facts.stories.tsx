@@ -3,7 +3,7 @@ import { expect } from "storybook/test";
 import type { Area } from "@/types/area";
 import { AreaFacts } from "./area-facts";
 
-const mexicoCity: Area = {
+const mexicoCityWithoutFacts: Area = {
   id: 17483459,
   name: "Mexico City",
   displayName: "Mexico City, Mexico",
@@ -14,6 +14,10 @@ const mexicoCity: Area = {
   boundingBox: [19.24, -99.31, 19.58, -98.98],
   country: "Mexico",
   state: "Mexico City",
+};
+
+const mexicoCity: Area = {
+  ...mexicoCityWithoutFacts,
   population: 9209944,
   populationYear: "2020",
   elevation: 2250,
@@ -59,18 +63,7 @@ export const FullFacts: Story = {
 
 /** No extratags: the place type stays, the OpenStreetMap link always shows. */
 export const EmptyFacts: Story = {
-  args: {
-    area: {
-      ...mexicoCity,
-      population: undefined,
-      populationYear: undefined,
-      elevation: undefined,
-      isCapital: false,
-      wikipedia: undefined,
-      wikidata: undefined,
-      website: undefined,
-    },
-  },
+  args: { area: mexicoCityWithoutFacts },
   play: async ({ canvas }) => {
     await expect(canvas.getByTestId("area-facts")).toHaveTextContent(/^City$/);
     await expect(canvas.getAllByRole("link")).toHaveLength(1);
