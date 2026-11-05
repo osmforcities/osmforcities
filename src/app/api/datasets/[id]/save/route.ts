@@ -45,7 +45,8 @@ export async function POST(
       },
     });
 
-    const notifyWhenReady = notifyRequested && awaitsFirstMap(dataset);
+    const hasNoMap = dataset.dataCount === 0 || awaitsFirstMap(dataset);
+    const notifyWhenReady = notifyRequested && hasNoMap;
 
     if (existingSave && notifyRequested) {
       const save = notifyWhenReady

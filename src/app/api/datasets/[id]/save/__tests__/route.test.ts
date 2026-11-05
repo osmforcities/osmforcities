@@ -86,6 +86,21 @@ describe("POST /api/datasets/[id]/save", () => {
     expect(tx.datasetSave.create).not.toHaveBeenCalled();
   });
 
+  it("keeps the notify flag on an empty dataset that was never baked", async () => {
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+      ...firstBakePending,
+      dataCount: 0,
+      tilesState: null,
+    } as never);
+
+    const res = await post({ notifyWhenReady: true });
+
+    expect(res.status).toBe(200);
+    expect(tx.datasetSave.create).toHaveBeenCalledWith({
+      data: { userId: "u1", datasetId: "ds-1", notifyWhenReady: true },
+    });
+  });
+
   it("saves without the notify flag once the dataset has its map", async () => {
     vi.mocked(prisma.dataset.findUnique).mockResolvedValue(archiveServed as never);
 
