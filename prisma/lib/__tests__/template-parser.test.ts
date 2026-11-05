@@ -509,7 +509,7 @@ describe("template-parser", () => {
 
     it("gives every template in a described topic a short desc distinct from its name in every locale", () => {
       const MAX_DESC_LENGTH = 60;
-      const DESCRIBED_TOPICS = ["mobility", "buildings-infrastructure"];
+      const DESCRIBED_TOPICS = ["mobility", "health", "buildings-infrastructure"];
       const { templates, categories } = parseTemplates(loadTemplatesYaml("./prisma"));
       const describedCategorySlugs = categories
         .filter((c) => DESCRIBED_TOPICS.includes(c.parent ?? c.slug))
