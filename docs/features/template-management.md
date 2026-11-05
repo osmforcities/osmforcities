@@ -711,7 +711,7 @@ sit on the sibling road or crossing node, not the queried element.
 
 ### Trees ([#660])
 
-- One **trees** template (`natural=tree;natural=tree_row;natural=tree_group`) replaces `urban-trees`, `street-trees`, `trees-with-species` and `vegetation-risk-context`, all `replacedBy: trees`. Street trees mapped one by one carry `denotation=avenue`, which `street-trees` (rows only) missed. Species presence is a filter question, not a template. `natural=tree_group` is in for wiki alignment but near-absent today (Berlin 3, Munich 2, Paris 0).
+- One **trees** template (`natural=tree;natural=tree_row;natural=tree_group`) replaces `urban-trees`, `street-trees`, `trees-with-species` and `vegetation-risk-context`, all `replacedBy: trees`. Street trees mapped one by one carry `denotation=avenue`, which `street-trees` (rows only) missed. Species presence is a filter question, not a template. `vegetation-risk-context` also had `natural=wood`. Woods stay in `woods` and `natural-vegetation`, not in `trees`. `natural=tree_group` is in for wiki alignment but near-absent today (Berlin 3, Munich 2, Paris 0).
 - `[natural, leaf_type, leaf_cycle, denotation, genus]`. `natural` splits single trees, rows and groups. Global coverage on tree nodes (taginfo, Oct 2026): leaf_type 24%, leaf_cycle 14%, denotation 10%, genus 5%. `species` (6%) stays out: too many values for a legend.
 - `height` and `circumference` wait for numeric tags ([#441]). Both are intensive (a range, not a total).
 - Demonstrators by measured coverage: Santiago (all four keys 24-42%), Paris (genus 86%), Berlin (leaf_cycle 60%). Barcelona, Buenos Aires, Montreal and New York sit under 15% on every key.
