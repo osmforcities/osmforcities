@@ -2341,7 +2341,7 @@ templates:
       pt: De rodovias a ruas residenciais e compartilhadas
       es: De autopistas a calles residenciales y compartidas
       fr: Des autoroutes aux rues résidentielles et zones de rencontre
-      de: Von der Autobahn bis zum verkehrsberuhigten Bereich
+      de: Von der Autobahn bis zu Wohnstraßen und Spielstraßen
   buildings:
     name:
       en: Buildings
