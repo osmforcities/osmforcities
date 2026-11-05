@@ -108,8 +108,13 @@ function parseAreaFacts(tags: Record<string, string> = {}) {
   };
 }
 
+// Also runs in the browser (area search), where URL.parse is too new for older Safari
 function parseUrl(value: string | undefined): URL | undefined {
-  return URL.parse(value?.trim() ?? "") ?? undefined;
+  try {
+    return new URL(value?.trim() ?? "");
+  } catch {
+    return undefined;
+  }
 }
 
 function parseWebsite(value: string | undefined): string | undefined {
@@ -132,8 +137,8 @@ function parseCommonsFile(value: string | undefined): string | undefined {
   }
 }
 
-export function commonsImageUrl(file: string, width: number): string {
-  return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=${width}`;
+export function commonsImageUrl(file: string): string {
+  return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=320`;
 }
 
 /** `wikipedia` is the OSM tag, `<lang>:<title>[#<section>]`. */

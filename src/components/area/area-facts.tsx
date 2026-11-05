@@ -13,7 +13,7 @@ export function AreaFlag({ flag }: { flag: string }) {
     // Fixed width, stretched height: the text block sets the height and the flag scales into it
     <div className="relative w-[30%] max-w-48 shrink-0">
       <Image
-        src={commonsImageUrl(flag, 320)}
+        src={commonsImageUrl(flag)}
         alt=""
         fill
         unoptimized

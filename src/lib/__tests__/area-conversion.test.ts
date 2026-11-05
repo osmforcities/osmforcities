@@ -297,8 +297,8 @@ describe("wikipediaUrl", () => {
 
 describe("commonsImageUrl", () => {
   it("serves the file at a fixed width through Special:FilePath", () => {
-    expect(commonsImageUrl("Flag of Berlin.svg", 48)).toBe(
-      "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Berlin.svg?width=48"
+    expect(commonsImageUrl("Flag of Berlin.svg")).toBe(
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Berlin.svg?width=320"
     );
   });
 });
