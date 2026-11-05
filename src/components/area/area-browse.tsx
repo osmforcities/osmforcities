@@ -62,15 +62,17 @@ export function AreaBrowse({
 
   return (
     <AreaFrame>
-      <header className="mb-2 flex items-start justify-between gap-4 lg:mb-4">
-        <div className="flex min-w-0 flex-col gap-4">
-          <BreadcrumbNav items={parentBreadcrumb} />
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 lg:text-5xl">
-            {areaName}
-          </h1>
-          {facts}
+      <header className="mb-2 flex flex-col gap-4 lg:mb-4">
+        <BreadcrumbNav items={parentBreadcrumb} />
+        <div className="flex justify-between gap-4">
+          <div className="flex min-w-0 flex-col gap-4">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 lg:text-5xl">
+              {areaName}
+            </h1>
+            {facts}
+          </div>
+          {flag}
         </div>
-        {flag}
       </header>
       <DatasetSearchField
         label={t("searchLabel", { area: areaName })}

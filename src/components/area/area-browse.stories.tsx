@@ -81,13 +81,13 @@ export const FromSharedLink: Story = {
   },
 };
 
-/** The flag sits at the top right of the header, beside the title. */
+/** The flag sits right of the title, facts and links, as tall as that block. */
 export const WithFlag: Story = {
   args: { flag: <AreaFlag flag="Bandeira da cidade de São Paulo.svg" /> },
   play: async ({ canvas }) => {
     await expect(canvas.getByTestId("area-flag")).toHaveAttribute(
       "src",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/Bandeira%20da%20cidade%20de%20S%C3%A3o%20Paulo.svg?width=128"
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Bandeira%20da%20cidade%20de%20S%C3%A3o%20Paulo.svg?width=320"
     );
   },
 };

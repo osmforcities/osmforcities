@@ -10,15 +10,17 @@ import type { Area } from "@/types/area";
 /** `flag` is a Wikimedia Commons file name. */
 export function AreaFlag({ flag }: { flag: string }) {
   return (
-    <Image
-      src={commonsImageUrl(flag, 128)}
-      alt=""
-      width={64}
-      height={43}
-      unoptimized
-      data-testid="area-flag"
-      className="h-10 w-auto shrink-0 border border-gray-200 lg:h-16"
-    />
+    // Fixed width, stretched height: the text block sets the height and the flag scales into it
+    <div className="relative w-[30%] max-w-48 shrink-0">
+      <Image
+        src={commonsImageUrl(flag, 320)}
+        alt=""
+        fill
+        unoptimized
+        data-testid="area-flag"
+        className="object-contain object-right-top"
+      />
+    </div>
   );
 }
 
