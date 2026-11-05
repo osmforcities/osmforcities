@@ -746,7 +746,7 @@
     "rail": "Ferrocarril",
     "cycling": "Bicicleta",
     "pedestrian": "Peatones",
-    "roads": "Calles y carreteras",
+    "roads": "Vialidad",
     "traffic": "Tránsito",
     "nature-environment": "Naturaleza",
     "nature": "Elementos naturales",
@@ -849,7 +849,11 @@
     "organic": "Orgánico",
     "clothes": "Tipo de ropa",
     "garden:type": "Tipo de jardín",
+    "natural": "Tipo",
     "leaf_type": "Tipo de hoja",
+    "leaf_cycle": "Ciclo foliar",
+    "denotation": "Función del árbol",
+    "genus": "Género",
     "water": "Tipo de masa de agua",
     "wetland": "Tipo de humedal",
     "trees": "Árboles cultivados",
@@ -875,6 +879,16 @@
       "no": "No",
       "limited": "Limitado",
       "unknown": "Desconocido"
+    },
+    "highway": {
+      "motorway": "Autopista",
+      "trunk": "Carretera troncal",
+      "primary": "Carretera primaria",
+      "secondary": "Carretera secundaria",
+      "tertiary": "Carretera terciaria",
+      "residential": "Calle residencial",
+      "living_street": "Calle compartida",
+      "unclassified": "Vía sin clasificar"
     },
     "healthcare:speciality": {
       "general": "Medicina general",
@@ -957,11 +971,33 @@
       "sculpture": "Escultura",
       "stele": "Estela"
     },
+    "natural": {
+      "tree": "Árbol",
+      "tree_row": "Hilera de árboles",
+      "tree_group": "Grupo de árboles"
+    },
     "leaf_type": {
       "broadleaved": "Latifoliadas",
       "needleleaved": "Aciculifoliadas",
       "mixed": "Mixto",
       "leafless": "Sin hojas"
+    },
+    "leaf_cycle": {
+      "evergreen": "Perenne",
+      "deciduous": "Caducifolio",
+      "semi_evergreen": "Semiperenne",
+      "semi_deciduous": "Semicaducifolio",
+      "mixed": "Mixto"
+    },
+    "denotation": {
+      "urban": "Árbol urbano",
+      "avenue": "Árbol de calle",
+      "park": "Árbol de parque",
+      "garden": "Árbol de jardín",
+      "agricultural": "Agrícola",
+      "landmark": "Hito",
+      "natural_monument": "Monumento natural",
+      "windbreak": "Cortavientos"
     },
     "fitness_station": {
       "horizontal_bar": "Barra horizontal",

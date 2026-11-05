@@ -746,7 +746,7 @@
     "rail": "Ferrovia",
     "cycling": "Bicicleta",
     "pedestrian": "Pedestres",
-    "roads": "Ruas e estradas",
+    "roads": "Vias",
     "traffic": "Trânsito",
     "nature-environment": "Natureza",
     "nature": "Elementos naturais",
@@ -849,7 +849,11 @@
     "organic": "Orgânico",
     "clothes": "Tipo de roupa",
     "garden:type": "Tipo de jardim",
+    "natural": "Tipo",
     "leaf_type": "Tipo de folha",
+    "leaf_cycle": "Ciclo foliar",
+    "denotation": "Função da árvore",
+    "genus": "Gênero",
     "water": "Tipo de corpo d'água",
     "wetland": "Tipo de área úmida",
     "trees": "Árvores cultivadas",
@@ -875,6 +879,16 @@
       "no": "Não",
       "limited": "Limitado",
       "unknown": "Desconhecido"
+    },
+    "highway": {
+      "motorway": "Via expressa",
+      "trunk": "Via troncal",
+      "primary": "Via primária",
+      "secondary": "Via secundária",
+      "tertiary": "Via terciária",
+      "residential": "Rua residencial",
+      "living_street": "Rua compartilhada",
+      "unclassified": "Via não classificada"
     },
     "healthcare:speciality": {
       "general": "Clínica geral",
@@ -957,11 +971,33 @@
       "sculpture": "Escultura",
       "stele": "Estela"
     },
+    "natural": {
+      "tree": "Árvore",
+      "tree_row": "Fileira de árvores",
+      "tree_group": "Grupo de árvores"
+    },
     "leaf_type": {
       "broadleaved": "Folhas largas",
       "needleleaved": "Aciculifoliadas",
       "mixed": "Misto",
       "leafless": "Sem folhas"
+    },
+    "leaf_cycle": {
+      "evergreen": "Perene",
+      "deciduous": "Caducifólia",
+      "semi_evergreen": "Semiperene",
+      "semi_deciduous": "Semicaducifólia",
+      "mixed": "Misto"
+    },
+    "denotation": {
+      "urban": "Árvore urbana",
+      "avenue": "Árvore de rua",
+      "park": "Árvore de parque",
+      "garden": "Árvore de jardim",
+      "agricultural": "Agrícola",
+      "landmark": "Marco",
+      "natural_monument": "Monumento natural",
+      "windbreak": "Quebra-vento"
     },
     "fitness_station": {
       "horizontal_bar": "Barra horizontal",

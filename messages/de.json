@@ -737,7 +737,7 @@
     "rail": "Schiene",
     "cycling": "Radverkehr",
     "pedestrian": "Fußverkehr",
-    "roads": "Straßen",
+    "roads": "Kfz-Verkehr",
     "traffic": "Verkehr",
     "nature-environment": "Natur",
     "nature": "Naturelemente",
@@ -840,7 +840,11 @@
     "organic": "Bio",
     "clothes": "Kleidungsart",
     "garden:type": "Gartentyp",
+    "natural": "Typ",
     "leaf_type": "Blattart",
+    "leaf_cycle": "Laubwechsel",
+    "denotation": "Baumfunktion",
+    "genus": "Gattung",
     "water": "Gewässertyp",
     "wetland": "Feuchtgebietstyp",
     "trees": "Angebaute Bäume",
@@ -866,6 +870,16 @@
       "no": "Nein",
       "limited": "Eingeschränkt",
       "unknown": "Unbekannt"
+    },
+    "highway": {
+      "motorway": "Autobahn",
+      "trunk": "Schnellstraße",
+      "primary": "Hauptverbindungsstraße",
+      "secondary": "Landesstraße",
+      "tertiary": "Verbindungsstraße",
+      "residential": "Wohnstraße",
+      "living_street": "Spielstraße",
+      "unclassified": "Nebenstraße"
     },
     "healthcare:speciality": {
       "general": "Allgemeinmedizin",
@@ -948,11 +962,33 @@
       "sculpture": "Skulptur",
       "stele": "Stele"
     },
+    "natural": {
+      "tree": "Baum",
+      "tree_row": "Baumreihe",
+      "tree_group": "Baumgruppe"
+    },
     "leaf_type": {
       "broadleaved": "Laubbäume",
       "needleleaved": "Nadelbäume",
       "mixed": "Gemischt",
       "leafless": "Blattlos"
+    },
+    "leaf_cycle": {
+      "evergreen": "Immergrün",
+      "deciduous": "Laubabwerfend",
+      "semi_evergreen": "Halbimmergrün",
+      "semi_deciduous": "Halblaubabwerfend",
+      "mixed": "Gemischt"
+    },
+    "denotation": {
+      "urban": "Stadtbaum",
+      "avenue": "Straßenbaum",
+      "park": "Parkbaum",
+      "garden": "Gartenbaum",
+      "agricultural": "Landwirtschaftlich",
+      "landmark": "Wahrzeichen",
+      "natural_monument": "Naturdenkmal",
+      "windbreak": "Windschutz"
     },
     "fitness_station": {
       "horizontal_bar": "Reck",

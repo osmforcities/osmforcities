@@ -737,7 +737,7 @@
     "rail": "Rail",
     "cycling": "Vélo",
     "pedestrian": "Piétons",
-    "roads": "Routes et rues",
+    "roads": "Voirie",
     "traffic": "Circulation",
     "nature-environment": "Nature",
     "nature": "Éléments naturels",
@@ -840,7 +840,11 @@
     "organic": "Bio",
     "clothes": "Type de vêtements",
     "garden:type": "Type de jardin",
+    "natural": "Type",
     "leaf_type": "Type de feuillage",
+    "leaf_cycle": "Cycle foliaire",
+    "denotation": "Rôle de l'arbre",
+    "genus": "Genre",
     "water": "Type de plan d'eau",
     "wetland": "Type de zone humide",
     "trees": "Arbres cultivés",
@@ -866,6 +870,16 @@
       "no": "Non",
       "limited": "Limité",
       "unknown": "Inconnu"
+    },
+    "highway": {
+      "motorway": "Autoroute",
+      "trunk": "Voie rapide",
+      "primary": "Route principale",
+      "secondary": "Route secondaire",
+      "tertiary": "Route tertiaire",
+      "residential": "Rue résidentielle",
+      "living_street": "Zone de rencontre",
+      "unclassified": "Route mineure"
     },
     "healthcare:speciality": {
       "general": "Médecine générale",
@@ -948,11 +962,33 @@
       "sculpture": "Sculpture",
       "stele": "Stèle"
     },
+    "natural": {
+      "tree": "Arbre",
+      "tree_row": "Alignement d'arbres",
+      "tree_group": "Bosquet"
+    },
     "leaf_type": {
       "broadleaved": "Feuillu",
       "needleleaved": "Résineux",
       "mixed": "Mixte",
       "leafless": "Sans feuilles"
+    },
+    "leaf_cycle": {
+      "evergreen": "Persistant",
+      "deciduous": "Caduc",
+      "semi_evergreen": "Semi-persistant",
+      "semi_deciduous": "Semi-caduc",
+      "mixed": "Mixte"
+    },
+    "denotation": {
+      "urban": "Arbre urbain",
+      "avenue": "Arbre d'alignement",
+      "park": "Arbre de parc",
+      "garden": "Arbre de jardin",
+      "agricultural": "Agricole",
+      "landmark": "Arbre remarquable",
+      "natural_monument": "Monument naturel",
+      "windbreak": "Brise-vent"
     },
     "fitness_station": {
       "horizontal_bar": "Barre fixe",

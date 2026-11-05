@@ -735,9 +735,9 @@
     "mobility": "Mobility",
     "bus": "Bus",
     "rail": "Rail",
-    "cycling": "Cycling",
-    "pedestrian": "Pedestrian",
-    "roads": "Roads and streets",
+    "cycling": "Bicycle",
+    "pedestrian": "Walking",
+    "roads": "Road",
     "traffic": "Traffic",
     "nature-environment": "Nature",
     "nature": "Natural features",
@@ -758,7 +758,7 @@
     "financial": "Finance"
   },
   "TagLabel": {
-    "highway": "Highway type",
+    "highway": "Road type",
     "shelter": "Shelter",
     "bench": "Bench",
     "covered": "Covered",
@@ -840,7 +840,11 @@
     "organic": "Organic",
     "clothes": "Clothing type",
     "garden:type": "Garden type",
+    "natural": "Type",
     "leaf_type": "Leaf type",
+    "leaf_cycle": "Leaf cycle",
+    "denotation": "Tree role",
+    "genus": "Genus",
     "water": "Water body type",
     "wetland": "Wetland type",
     "trees": "Trees grown",
@@ -866,6 +870,16 @@
       "no": "No",
       "limited": "Limited",
       "unknown": "Unknown"
+    },
+    "highway": {
+      "motorway": "Motorway",
+      "trunk": "Trunk road",
+      "primary": "Primary road",
+      "secondary": "Secondary road",
+      "tertiary": "Tertiary road",
+      "residential": "Residential street",
+      "living_street": "Living street",
+      "unclassified": "Unclassified road"
     },
     "healthcare:speciality": {
       "general": "General practice",
@@ -948,11 +962,33 @@
       "sculpture": "Sculpture",
       "stele": "Stele"
     },
+    "natural": {
+      "tree": "Tree",
+      "tree_row": "Tree row",
+      "tree_group": "Tree group"
+    },
     "leaf_type": {
       "broadleaved": "Broadleaved",
       "needleleaved": "Needleleaved",
       "mixed": "Mixed",
       "leafless": "Leafless"
+    },
+    "leaf_cycle": {
+      "evergreen": "Evergreen",
+      "deciduous": "Deciduous",
+      "semi_evergreen": "Semi-evergreen",
+      "semi_deciduous": "Semi-deciduous",
+      "mixed": "Mixed"
+    },
+    "denotation": {
+      "urban": "Urban tree",
+      "avenue": "Street tree",
+      "park": "Park tree",
+      "garden": "Garden tree",
+      "agricultural": "Agricultural",
+      "landmark": "Landmark",
+      "natural_monument": "Natural monument",
+      "windbreak": "Windbreak"
     },
     "fitness_station": {
       "horizontal_bar": "Horizontal bar",

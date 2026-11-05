@@ -181,7 +181,7 @@ templates:
       pt: Estacionamentos abertos, garagens e vagas individuais
       es: Estacionamientos abiertos, garajes y espacios individuales
       fr: Parkings en surface ou couverts et places individuelles
-      de: Parkplätze, Parkhäuser und einzelne Stellplätze
+      de: Offene Parkflächen, Parkhäuser und einzelne Stellplätze
   rail-tracks:
     name:
       en: Rail tracks
@@ -1444,7 +1444,7 @@ templates:
       pt: Postos que vendem gasolina, etanol e diesel
       es: Estaciones que venden combustible para vehículos
       fr: Stations qui vendent du carburant pour les véhicules
-      de: Tankstellen für Benzin, Diesel und andere Kraftstoffe
+      de: Stationen für Benzin, Diesel und andere Kraftstoffe
   hardware:
     name:
       en: Hardware
@@ -1835,32 +1835,19 @@ templates:
       es: Parques para perros
       fr: Parcs canins
       de: Hundewiesen
-  urban-trees:
+  trees:
     name:
-      en: Urban trees
-      pt: Árvores urbanas
-      es: Árboles urbanos
-      fr: Arbres urbains
-      de: Stadtbäume
+      en: Trees
+      pt: Árvores
+      es: Árboles
+      fr: Arbres
+      de: Bäume
     desc:
-      en: Urban trees
-      pt: Árvores urbanas
-      es: Árboles urbanos
-      fr: Arbres urbains
-      de: Stadtbäume
-  street-trees:
-    name:
-      en: Street trees
-      pt: Árvores de rua
-      es: Árboles callejeros
-      fr: Arbres d'alignement
-      de: Straßenbäume
-    desc:
-      en: Street trees
-      pt: Árvores de rua
-      es: Árboles callejeros
-      fr: Arbres d'alignement
-      de: Straßenbäume
+      en: Single trees, tree rows and tree groups
+      pt: Árvores isoladas, fileiras e grupos de árvores
+      es: Árboles aislados, hileras y grupos de árboles
+      fr: Arbres isolés, alignements et bosquets
+      de: Einzelbäume, Baumreihen und Baumgruppen
   managed-green:
     name:
       en: Managed green
@@ -2383,30 +2370,17 @@ templates:
       de: Leitungsmasten
   roads:
     name:
-      en: Roads
-      pt: Vias
-      es: Carreteras
-      fr: Routes
+      en: Streets and roads
+      pt: Ruas e estradas
+      es: Calles y carreteras
+      fr: Rues et routes
       de: Straßen
     desc:
-      en: Streets and roads, from motorways to residential streets
-      pt: Vias, de rodovias a ruas residenciais
-      es: Calles y carreteras, de autopistas a calles residenciales
-      fr: Routes et rues, des autoroutes aux rues résidentielles
-      de: Straßen von der Autobahn bis zur Wohnstraße
-  highways:
-    name:
-      en: Highways
-      pt: Vias e caminhos
-      es: Vías
-      fr: Voies
-      de: Straßen und Wege
-    desc:
-      en: All roads, paths, crossings and signals
-      pt: Todas as vias, caminhos, travessias e semáforos
-      es: Todas las vías, senderos, cruces y semáforos
-      fr: Toutes les routes, chemins, traversées et feux
-      de: Alle Straßen, Wege, Überwege und Ampeln
+      en: From motorways to residential and living streets
+      pt: De rodovias a ruas residenciais e compartilhadas
+      es: De autopistas a calles residenciales y compartidas
+      fr: Des autoroutes aux rues résidentielles et zones de rencontre
+      de: Von der Autobahn bis zu Wohnstraßen und Spielstraßen
   buildings:
     name:
       en: Buildings
@@ -2510,7 +2484,7 @@ templates:
       pt: Semáforos em cruzamentos e travessias de pedestres
       es: Semáforos en intersecciones y cruces peatonales
       fr: Feux de circulation aux carrefours et passages piétons
-      de: Ampeln an Kreuzungen und Fußgängerüberwegen
+      de: Lichtsignale an Kreuzungen und Fußgängerüberwegen
   speed-cameras:
     name:
       en: Speed cameras
@@ -3174,19 +3148,6 @@ templates:
       es: Viveros de plantas
       fr: Pépinières
       de: Baumschulen
-  trees-with-species:
-    name:
-      en: Trees with species
-      pt: Árvores com espécie identificada
-      es: Árboles con especie identificada
-      fr: Arbres avec espèce identifiée
-      de: Bäume mit Artangabe
-    desc:
-      en: Trees with species
-      pt: Árvores com espécie identificada
-      es: Árboles con especie identificada
-      fr: Arbres avec espèce identifiée
-      de: Bäume mit Artangabe
   irrigated-green:
     name:
       en: Irrigated green
@@ -3200,16 +3161,3 @@ templates:
       es: Áreas verdes regadas
       fr: Espaces verts irrigués
       de: Bewässerte Grünflächen
-  vegetation-risk-context:
-    name:
-      en: Vegetation risk context
-      pt: Contexto de vegetação para planejamento
-      es: Contexto de vegetación para planificación
-      fr: Contexte de végétation pour la planification
-      de: Vegetation im Risikokontext
-    desc:
-      en: Vegetation context for emergency planning
-      pt: Contexto de vegetação para planejamento de emergência
-      es: Contexto de vegetación para planificación de emergencias
-      fr: Contexte de végétation pour la planification d'urgence
-      de: Vegetationskontext für die Notfallplanung

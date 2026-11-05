@@ -466,6 +466,20 @@ describe("template-parser", () => {
       // Uncurated templates have no list (age-only in the legend)
       expect(byId.get("golf-courses")?.filterableTags).toBeUndefined();
     });
+
+    it("folds the old tree templates into one trees template", () => {
+      const result = parseTemplates(loadTemplatesYaml("./prisma"));
+      const trees = result.templates.find((t) => t.id === "trees");
+      expect(trees?.category).toBe("nature");
+      expect(trees?.filterableTags).toEqual(["natural", "leaf_type", "leaf_cycle", "denotation", "genus"]);
+      expect(trees?.overpassQuery).toContain('"natural"="tree_group"');
+      expect(result.replacedBy).toMatchObject({
+        "urban-trees": "trees",
+        "street-trees": "trees",
+        "trees-with-species": "trees",
+        "vegetation-risk-context": "trees",
+      });
+    });
   });
 
   describe("loadTemplatesI18n", () => {

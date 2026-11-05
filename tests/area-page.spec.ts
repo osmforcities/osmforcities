@@ -37,9 +37,9 @@ test.describe("Area Page", () => {
     const topicChip = page.getByRole("link", { name: "Clear Mobility" });
     await expect(topicChip).toBeVisible();
 
-    await page.getByRole("link", { name: /^Cycling \d+$/ }).click();
+    await page.getByRole("link", { name: /^Bicycle \d+$/ }).click();
     await expect(page).toHaveURL(/\/topics\/mobility\/cycling$/);
-    await expect(page.getByRole("link", { name: "Clear Cycling" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Clear Bicycle" })).toBeVisible();
 
     await topicChip.click();
     await expect(page).toHaveURL(/\/area\/298470$/);
