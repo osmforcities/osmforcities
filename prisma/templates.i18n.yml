@@ -658,11 +658,11 @@ templates:
       fr: Écoles
       de: Schulen
     desc:
-      en: Primary and secondary schools, for ages 6 to 18
-      pt: Escolas de ensino fundamental e médio, de 6 a 18 anos
-      es: Escuelas primarias y secundarias, de 6 a 18 años
-      fr: Écoles élémentaires et secondaires, de 6 à 18 ans
-      de: Grund- und weiterführende Schulen für 6- bis 18-Jährige
+      en: Primary and secondary schools
+      pt: Escolas de ensino fundamental e médio
+      es: Escuelas primarias y secundarias
+      fr: Écoles élémentaires et secondaires
+      de: Grund- und weiterführende Schulen
   universities:
     name:
       en: Universities
@@ -711,7 +711,7 @@ templates:
       de: Berufs- und Fachschulen
     desc:
       en: Post-secondary education outside universities
-      pt: Ensino técnico e superior fora das universidades
+      pt: Ensino pós-médio fora das universidades
       es: Educación postsecundaria fuera de las universidades
       fr: Enseignement post-secondaire hors universités
       de: Bildung nach der Schule, außerhalb von Universitäten
@@ -724,7 +724,7 @@ templates:
       de: Kinderbetreuung
     desc:
       en: Daycare, nurseries and after-school care for children
-      pt: Berçários e cuidado infantil diário e após a escola
+      pt: Creches, berçários e cuidado infantil após a escola
       es: Guarderías y cuidado de niños después de la escuela
       fr: Garderies, crèches et accueil périscolaire des enfants
       de: Krippen, Horte und andere Orte der Kinderbetreuung
