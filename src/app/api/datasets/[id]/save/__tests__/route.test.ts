@@ -36,9 +36,18 @@ const post = (body?: unknown) =>
 
 const save = { id: "s1", userId: "u1", datasetId: "ds-1", createdAt: new Date() };
 
+const firstBakePending = {
+  id: "ds-1",
+  dataCount: 60000,
+  geojson: null,
+  tilesServedJobId: null,
+  tilesState: "pending",
+};
+const archiveServed = { ...firstBakePending, tilesState: "done", tilesServedJobId: "ds-1-1" };
+
 beforeEach(() => {
   vi.clearAllMocks();
-  vi.mocked(prisma.dataset.findUnique).mockResolvedValue({ id: "ds-1" } as never);
+  vi.mocked(prisma.dataset.findUnique).mockResolvedValue(firstBakePending as never);
   vi.mocked(prisma.datasetSave.findUnique).mockResolvedValue(null);
   tx.datasetSave.count.mockResolvedValue(0);
   tx.datasetSave.create.mockResolvedValue(save);
@@ -74,6 +83,28 @@ describe("POST /api/datasets/[id]/save", () => {
       where: { id: "s1" },
       data: { notifyWhenReady: true },
     });
+    expect(tx.datasetSave.create).not.toHaveBeenCalled();
+  });
+
+  it("saves without the notify flag once the dataset has its map", async () => {
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue(archiveServed as never);
+
+    const res = await post({ notifyWhenReady: true });
+
+    expect(res.status).toBe(200);
+    expect(tx.datasetSave.create).toHaveBeenCalledWith({
+      data: { userId: "u1", datasetId: "ds-1", notifyWhenReady: false },
+    });
+  });
+
+  it("leaves an existing save's flag off once the dataset has its map", async () => {
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue(archiveServed as never);
+    vi.mocked(prisma.datasetSave.findUnique).mockResolvedValue(save as never);
+
+    const res = await post({ notifyWhenReady: true });
+
+    expect(res.status).toBe(200);
+    expect(prisma.datasetSave.update).not.toHaveBeenCalled();
     expect(tx.datasetSave.create).not.toHaveBeenCalled();
   });
 
