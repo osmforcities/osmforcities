@@ -1783,32 +1783,19 @@ templates:
       es: Parques para perros
       fr: Parcs canins
       de: Hundewiesen
-  urban-trees:
+  trees:
     name:
-      en: Urban trees
-      pt: Árvores urbanas
-      es: Árboles urbanos
-      fr: Arbres urbains
-      de: Stadtbäume
+      en: Trees
+      pt: Árvores
+      es: Árboles
+      fr: Arbres
+      de: Bäume
     desc:
-      en: Urban trees
-      pt: Árvores urbanas
-      es: Árboles urbanos
-      fr: Arbres urbains
-      de: Stadtbäume
-  street-trees:
-    name:
-      en: Street trees
-      pt: Árvores de rua
-      es: Árboles callejeros
-      fr: Arbres d'alignement
-      de: Straßenbäume
-    desc:
-      en: Street trees
-      pt: Árvores de rua
-      es: Árboles callejeros
-      fr: Arbres d'alignement
-      de: Straßenbäume
+      en: Single trees, tree rows and tree groups
+      pt: Árvores isoladas, fileiras e grupos de árvores
+      es: Árboles aislados, hileras y grupos de árboles
+      fr: Arbres isolés, alignements et bosquets
+      de: Einzelbäume, Baumreihen und Baumgruppen
   managed-green:
     name:
       en: Managed green
@@ -3122,19 +3109,6 @@ templates:
       es: Viveros de plantas
       fr: Pépinières
       de: Baumschulen
-  trees-with-species:
-    name:
-      en: Trees with species
-      pt: Árvores com espécie identificada
-      es: Árboles con especie identificada
-      fr: Arbres avec espèce identifiée
-      de: Bäume mit Artangabe
-    desc:
-      en: Trees with species
-      pt: Árvores com espécie identificada
-      es: Árboles con especie identificada
-      fr: Arbres avec espèce identifiée
-      de: Bäume mit Artangabe
   irrigated-green:
     name:
       en: Irrigated green
@@ -3148,16 +3122,3 @@ templates:
       es: Áreas verdes regadas
       fr: Espaces verts irrigués
       de: Bewässerte Grünflächen
-  vegetation-risk-context:
-    name:
-      en: Vegetation risk context
-      pt: Contexto de vegetação para planejamento
-      es: Contexto de vegetación para planificación
-      fr: Contexte de végétation pour la planification
-      de: Vegetation im Risikokontext
-    desc:
-      en: Vegetation context for emergency planning
-      pt: Contexto de vegetação para planejamento de emergência
-      es: Contexto de vegetación para planificación de emergencias
-      fr: Contexte de végétation pour la planification d'urgence
-      de: Vegetationskontext für die Notfallplanung

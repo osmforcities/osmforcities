@@ -654,7 +654,7 @@ favor of `natural=heath`/moorland and already inside the `natural-surfaces` unio
 feature's own tag already *is* its type, or the only sub-keys are numeric/identity):
 housing (apartments/houses/residential/dormitories); most nature/landcover (peaks, cliffs,
 caves, coastlines, springs, glaciers, grasslands, scrub, heath, sand, rock, the
-`natural-surfaces` umbrella, urban-trees/street-trees, etc.); most agriculture (farmland —
+`natural-surfaces` umbrella, etc.); most agriculture (farmland —
 `crop` only ~3-10%; the building/`man_made` structures — barns, silos, greenhouses,
 slurry/manure stores, etc.); most infrastructure (street-lamps, chimney, mast, water-tower,
 water-works, pumping-station, utility-pole, tailings-pond); barriers — walls/hedges
@@ -708,6 +708,13 @@ sit on the sibling road or crossing node, not the queried element.
 - **farm-auxiliary** absorbs `building=agricultural` (a rare synonym, 32K uses vs 2.4M). The `agricultural-buildings` template is removed, `replacedBy: farm-auxiliary`.
 - **livestock-buildings** — broadened to `building=livestock;cowshed;stable;sty;barn`, since `building=livestock` alone is the fallback when the precise value is unknown (8.6K uses). The specific templates stay.
 - **bridges** is renamed "Bridge outlines": `man_made=bridge` is the optional outline, not the `bridge=yes` way, so it counts drawn outlines, not bridges.
+
+### Trees ([#660])
+
+- One **trees** template (`natural=tree;natural=tree_row;natural=tree_group`) replaces `urban-trees`, `street-trees`, `trees-with-species` and `vegetation-risk-context`, all `replacedBy: trees`. Street trees mapped one by one carry `denotation=avenue`, which `street-trees` (rows only) missed. Species presence is a filter question, not a template. `natural=tree_group` is in for wiki alignment but near-absent today (Berlin 3, Munich 2, Paris 0).
+- `[leaf_type, leaf_cycle, denotation, genus]`. Global coverage on tree nodes (taginfo, Oct 2026): leaf_type 24%, leaf_cycle 14%, denotation 10%, genus 5%. `species` (6%) stays out: too many values for a legend.
+- `height` and `circumference` wait for numeric tags ([#441]). Both are intensive (a range, not a total).
+- Demonstrators by measured coverage: Santiago (all four keys 24-42%), Paris (genus 86%), Berlin (leaf_cycle 60%). Barcelona, Buenos Aires, Montreal and New York sit under 15% on every key.
 
 ### Civic, retail & remaining domains (batch)
 
@@ -783,3 +790,5 @@ agriculture, infrastructure, housing, environment).
   age-view-only, so it never blocks the seed/deploy.
 
 [#517]: https://github.com/osmforcities/osmforcities/issues/517
+[#441]: https://github.com/osmforcities/osmforcities/issues/441
+[#660]: https://github.com/osmforcities/osmforcities/issues/660

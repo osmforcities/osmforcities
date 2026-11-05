@@ -838,6 +838,9 @@
     "clothes": "Kleidungsart",
     "garden:type": "Gartentyp",
     "leaf_type": "Blattart",
+    "leaf_cycle": "Laubwechsel",
+    "denotation": "Baumfunktion",
+    "genus": "Gattung",
     "water": "Gewässertyp",
     "wetland": "Feuchtgebietstyp",
     "trees": "Angebaute Bäume",
@@ -947,6 +950,23 @@
       "needleleaved": "Nadelbäume",
       "mixed": "Gemischt",
       "leafless": "Blattlos"
+    },
+    "leaf_cycle": {
+      "evergreen": "Immergrün",
+      "deciduous": "Laubabwerfend",
+      "semi_evergreen": "Halbimmergrün",
+      "semi_deciduous": "Halblaubabwerfend",
+      "mixed": "Gemischt"
+    },
+    "denotation": {
+      "urban": "Stadtbaum",
+      "avenue": "Straßenbaum",
+      "park": "Parkbaum",
+      "garden": "Gartenbaum",
+      "agricultural": "Landwirtschaftlich",
+      "landmark": "Wahrzeichen",
+      "natural_monument": "Naturdenkmal",
+      "windbreak": "Windschutz"
     },
     "fitness_station": {
       "horizontal_bar": "Reck",

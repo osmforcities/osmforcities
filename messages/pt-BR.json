@@ -847,6 +847,9 @@
     "clothes": "Tipo de roupa",
     "garden:type": "Tipo de jardim",
     "leaf_type": "Tipo de folha",
+    "leaf_cycle": "Ciclo foliar",
+    "denotation": "Função da árvore",
+    "genus": "Gênero",
     "water": "Tipo de corpo d'água",
     "wetland": "Tipo de área úmida",
     "trees": "Árvores cultivadas",
@@ -956,6 +959,23 @@
       "needleleaved": "Aciculifoliadas",
       "mixed": "Misto",
       "leafless": "Sem folhas"
+    },
+    "leaf_cycle": {
+      "evergreen": "Perene",
+      "deciduous": "Caducifólia",
+      "semi_evergreen": "Semiperene",
+      "semi_deciduous": "Semicaducifólia",
+      "mixed": "Misto"
+    },
+    "denotation": {
+      "urban": "Árvore urbana",
+      "avenue": "Árvore de rua",
+      "park": "Árvore de parque",
+      "garden": "Árvore de jardim",
+      "agricultural": "Agrícola",
+      "landmark": "Marco",
+      "natural_monument": "Monumento natural",
+      "windbreak": "Quebra-vento"
     },
     "fitness_station": {
       "horizontal_bar": "Barra horizontal",
