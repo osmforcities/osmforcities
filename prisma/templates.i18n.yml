@@ -255,11 +255,11 @@ templates:
       fr: Toilettes publiques
       de: Öffentliche Toiletten
     desc:
-      en: Public toilets
-      pt: Banheiros públicos
-      es: Baños públicos
-      fr: Toilettes publiques
-      de: Öffentliche Toiletten
+      en: Toilets open to the public, free or paid
+      pt: Banheiros abertos ao público, gratuitos ou pagos
+      es: Baños abiertos al público, gratuitos o de pago
+      fr: Toilettes accessibles au public, gratuites ou payantes
+      de: Allgemein zugängliche WCs, kostenlos oder gegen Gebühr
   drinking-water:
     name:
       en: Drinking water
@@ -268,11 +268,11 @@ templates:
       fr: Eau potable
       de: Trinkwasser
     desc:
-      en: Drinking water
-      pt: Água potável
-      es: Agua potable
-      fr: Eau potable
-      de: Trinkwasser
+      en: Public taps and drinking fountains with water safe to drink
+      pt: Torneiras públicas e bebedouros com água própria para beber
+      es: Bebederos y tomas de agua apta para beber, de uso público
+      fr: Robinets publics et fontaines où boire une eau potable
+      de: Öffentliche Zapfstellen und Trinkbrunnen mit Trinkwasser
   post-offices:
     name:
       en: Post offices
@@ -281,11 +281,11 @@ templates:
       fr: Bureaux de poste
       de: Postfilialen
     desc:
-      en: Post offices
-      pt: Correios
-      es: Oficinas de correos
-      fr: Bureaux de poste
-      de: Postfilialen
+      en: Offices where letters and parcels are sent or collected
+      pt: Agências onde se enviam e retiram cartas e encomendas
+      es: Oficinas donde se envían y retiran cartas y paquetes
+      fr: Guichets où envoyer et retirer lettres et colis
+      de: Filialen zum Versenden und Abholen von Briefen und Paketen
   parcel-lockers:
     name:
       en: Parcel lockers
@@ -294,11 +294,11 @@ templates:
       fr: Consignes à colis
       de: Paketstationen
     desc:
-      en: Parcel lockers
-      pt: Lockers de encomendas
-      es: Casilleros de paquetes
-      fr: Consignes à colis
-      de: Paketstationen
+      en: Self-service machines for picking up and sending parcels
+      pt: Armários automáticos para retirar e enviar encomendas
+      es: Máquinas de autoservicio para retirar y enviar paquetes
+      fr: Automates en libre-service pour retirer et envoyer des colis
+      de: Automaten zum Abholen und Versenden von Paketen
   shower:
     name:
       en: Showers
@@ -307,11 +307,11 @@ templates:
       fr: Douches publiques
       de: Duschen
     desc:
-      en: Showers
-      pt: Chuveiros públicos
-      es: Duchas públicas
-      fr: Douches publiques
-      de: Duschen
+      en: Showers open to the public, as at beaches and pools
+      pt: Chuveiros de uso público, como em praias e piscinas
+      es: Duchas de uso público, como en playas y piscinas
+      fr: Douches en accès public, comme sur les plages et piscines
+      de: Öffentlich nutzbare Duschen, etwa an Stränden und Bädern
   public-bookcase:
     name:
       en: Public bookcases
@@ -320,11 +320,11 @@ templates:
       fr: Boîtes à livres
       de: Öffentliche Bücherschränke
     desc:
-      en: Public bookcases
-      pt: Estantes públicas de livros
-      es: Estanterías públicas de libros
-      fr: Boîtes à livres
-      de: Öffentliche Bücherschränke
+      en: Street shelves with books to take or leave for free
+      pt: Móveis na rua com livros para pegar e deixar de graça
+      es: Muebles en la calle con libros para tomar y dejar gratis
+      fr: Meubles de rue où prendre et déposer des livres gratuitement
+      de: Möbel im Freien zum kostenlosen Tauschen von Büchern
   luggage-lockers:
     name:
       en: Luggage lockers
@@ -333,11 +333,11 @@ templates:
       fr: Consignes à bagages
       de: Gepäckschließfächer
     desc:
-      en: Luggage lockers
-      pt: Guarda-volumes
-      es: Casilleros de equipaje
-      fr: Consignes à bagages
-      de: Gepäckschließfächer
+      en: Lockers where travelers can store bags and suitcases
+      pt: Armários onde viajantes guardam malas e bolsas
+      es: Compartimentos donde los viajeros guardan maletas y bolsos
+      fr: Casiers où les voyageurs déposent valises et sacs
+      de: Fächer, in denen Reisende Koffer und Taschen aufbewahren
   post-boxes:
     name:
       en: Post boxes
@@ -346,11 +346,11 @@ templates:
       fr: Boîtes aux lettres
       de: Briefkästen
     desc:
-      en: Post boxes
-      pt: Caixas de coleta postal
-      es: Buzones de correos
-      fr: Boîtes aux lettres
-      de: Briefkästen
+      en: Boxes for dropping off outgoing letters and mail
+      pt: Caixas para depositar cartas e correspondências a enviar
+      es: Cajas para depositar cartas y correspondencia por enviar
+      fr: Boîtes pour déposer le courrier à expédier
+      de: Kästen zum Einwerfen von Briefen und Postsendungen
   give-box:
     name:
       en: Give boxes
@@ -359,11 +359,11 @@ templates:
       fr: Boîtes à dons
       de: Giveboxen
     desc:
-      en: Give boxes
-      pt: Armários de doação
-      es: Armarios de intercambio
-      fr: Boîtes à dons
-      de: Giveboxen
+      en: Small spots to leave and take all kinds of items for free
+      pt: Locais para deixar e pegar objetos variados de graça
+      es: Lugares para dejar y tomar objetos variados gratis
+      fr: Lieux où déposer et prendre gratuitement des objets variés
+      de: Orte zum kostenlosen Abgeben und Mitnehmen von Dingen
   hospitals:
     name:
       en: Hospitals
@@ -999,10 +999,10 @@ templates:
       de: Soziale Einrichtungen
     desc:
       en: Shelters, group homes, food banks and other social services
-      pt: Abrigos, casas de acolhimento, bancos de alimentos e outros serviços sociais
-      es: Albergues, hogares de acogida, bancos de alimentos y otros servicios sociales
-      fr: Foyers, centres d'hébergement, banques alimentaires et autres services sociaux
-      de: Unterkünfte, Wohngruppen, Tafeln und andere soziale Einrichtungen
+      pt: Abrigos, casas-lar, bancos de alimentos e outra ajuda social
+      es: Refugios, hogares, bancos de alimentos y otra ayuda social
+      fr: Foyers, hébergements, banques alimentaires et autres aides
+      de: Unterkünfte, Wohngruppen, Tafeln und andere Sozialdienste
   community-centre:
     name:
       en: Community centre
@@ -1011,11 +1011,11 @@ templates:
       fr: Centre communautaire
       de: Gemeindezentren
     desc:
-      en: Community centre
-      pt: Centro comunitário
-      es: Centro comunitario
-      fr: Centre communautaire
-      de: Gemeindezentren
+      en: Halls for local events, celebrations and group activities
+      pt: Espaços para eventos locais, festas e atividades em grupo
+      es: Salones para eventos locales, fiestas y actividades grupales
+      fr: Salles pour fêtes, événements locaux et activités de groupe
+      de: Häuser für lokale Feste, Treffen und Gruppenangebote
   town-halls:
     name:
       en: Town halls
@@ -1037,11 +1037,11 @@ templates:
       fr: Centres pour personnes âgées
       de: Seniorenzentren
     desc:
-      en: Senior centers
-      pt: Centros para idosos
-      es: Centros de mayores
-      fr: Centres pour personnes âgées
-      de: Seniorenzentren
+      en: Day centers, group housing and social support for seniors
+      pt: Centros-dia, moradias coletivas e apoio social a idosos
+      es: Centros de día, hogares y apoyo social para adultos mayores
+      fr: Accueils de jour, foyers et soutien social pour aînés
+      de: Tagesstätten, Wohngruppen und soziale Hilfen für Ältere
   government-office:
     name:
       en: Government office
@@ -1050,11 +1050,11 @@ templates:
       fr: Administrations publiques
       de: Behörden
     desc:
-      en: Government office
-      pt: Repartição pública
-      es: Oficina gubernamental
-      fr: Administrations publiques
-      de: Behörden
+      en: Offices of national, regional and local public agencies
+      pt: Escritórios de órgãos públicos nacionais, regionais e locais
+      es: Oficinas de entes públicos nacionales, regionales y locales
+      fr: Bureaux des services publics nationaux, régionaux et locaux
+      de: Dienststellen staatlicher, regionaler und lokaler Verwaltung
   courts:
     name:
       en: Courts
@@ -1063,11 +1063,11 @@ templates:
       fr: Tribunaux
       de: Gerichte
     desc:
-      en: Courts
-      pt: Tribunais
-      es: Juzgados
-      fr: Tribunaux
-      de: Gerichte
+      en: Buildings where judges hear cases and administer justice
+      pt: Prédios onde juízes julgam casos e aplicam a justiça
+      es: Edificios donde jueces resuelven casos e imparten justicia
+      fr: Lieux où des juges examinent les affaires et rendent justice
+      de: Gebäude, in denen Richter verhandeln und Recht sprechen
   police-stations:
     name:
       en: Police stations
@@ -1076,11 +1076,11 @@ templates:
       fr: Commissariats
       de: Polizeiwachen
     desc:
-      en: Police stations
-      pt: Delegacias
-      es: Comisarías
-      fr: Commissariats
-      de: Polizeiwachen
+      en: Offices where officers serve the public and start patrols
+      pt: Unidades onde policiais atendem o público e saem em patrulha
+      es: Sedes donde la policía atiende al público y sale a patrullar
+      fr: Locaux où la police reçoit le public et part en patrouille
+      de: Anlaufstellen der Polizei für Bürger und Basis für Streifen
   prisons:
     name:
       en: Prisons
@@ -1089,11 +1089,11 @@ templates:
       fr: Prisons
       de: Gefängnisse
     desc:
-      en: Prisons
-      pt: Presídios
-      es: Prisiones
-      fr: Prisons
-      de: Gefängnisse
+      en: Facilities holding people awaiting trial or convicted
+      pt: Locais com presos à espera de julgamento ou já condenados
+      es: Centros con personas en espera de juicio o ya condenadas
+      fr: Lieux de détention avant procès ou après condamnation
+      de: Anstalten für Untersuchungshaft und verurteilte Häftlinge
   fire-stations:
     name:
       en: Fire stations
@@ -1245,11 +1245,11 @@ templates:
       fr: Recyclage
       de: Recycling
     desc:
-      en: Recycling
-      pt: Coleta seletiva
-      es: Reciclaje
-      fr: Recyclage
-      de: Recycling
+      en: Containers and centers that collect recyclable materials
+      pt: Contêineres e ecopontos que recebem materiais recicláveis
+      es: Contenedores y centros que reciben materiales reciclables
+      fr: Conteneurs et centres de collecte des matériaux recyclables
+      de: Container und Wertstoffhöfe für recycelbare Materialien
   waste-disposal:
     name:
       en: Waste disposal
@@ -1258,11 +1258,11 @@ templates:
       fr: Élimination des déchets
       de: Müllcontainer
     desc:
-      en: Waste disposal
-      pt: Descarte de resíduos
-      es: Eliminación de residuos
-      fr: Élimination des déchets
-      de: Müllcontainer
+      en: Large bins and dumpsters for household trash
+      pt: Contêineres grandes para lixo doméstico
+      es: Contenedores grandes para basura doméstica
+      fr: Grands bacs et conteneurs pour les ordures ménagères
+      de: Große Abfallbehälter für Haushaltsmüll
   waste-basket:
     name:
       en: Waste baskets
@@ -1271,11 +1271,11 @@ templates:
       fr: Poubelles
       de: Abfalleimer
     desc:
-      en: Waste baskets
-      pt: Lixeiras
-      es: Cestos de basura
-      fr: Poubelles
-      de: Abfalleimer
+      en: Small street bins for passers-by to drop litter
+      pt: Cestos pequenos na rua para quem passa jogar lixo
+      es: Cestos pequeños en la calle para tirar basura al pasar
+      fr: Petits bacs de rue où les passants jettent leurs déchets
+      de: Kleine Behälter am Straßenrand für den Abfall von Passanten
   bottle-return:
     name:
       en: Bottle return machines
@@ -1284,11 +1284,11 @@ templates:
       fr: Machines de consigne de bouteilles
       de: Leergutautomaten
     desc:
-      en: Bottle return machines
-      pt: Máquinas de retorno de garrafas
-      es: Máquinas de retorno de botellas
-      fr: Machines de consigne de bouteilles
-      de: Leergutautomaten
+      en: Reverse vending machines that refund bottle deposits
+      pt: Máquinas que devolvem o valor de garrafas retornáveis
+      es: Máquinas que devuelven el depósito de botellas retornables
+      fr: Automates qui remboursent la consigne des bouteilles
+      de: Automaten, die Pfandflaschen annehmen und Pfand erstatten
   benches:
     name:
       en: Benches
@@ -1297,11 +1297,11 @@ templates:
       fr: Bancs
       de: Sitzbänke
     desc:
-      en: Benches
-      pt: Bancos de praça
-      es: Bancos de plaza
-      fr: Bancs
-      de: Sitzbänke
+      en: Seats in public places for one or more people
+      pt: Assentos em locais públicos para uma ou mais pessoas
+      es: Asientos en lugares públicos para una o más personas
+      fr: Sièges dans l'espace public pour une ou plusieurs personnes
+      de: Öffentliche Sitzplätze für eine oder mehrere Personen
   telephones:
     name:
       en: Telephones
@@ -1310,11 +1310,11 @@ templates:
       fr: Téléphones publics
       de: Telefone
     desc:
-      en: Telephones
-      pt: Telefones públicos
-      es: Teléfonos públicos
-      fr: Téléphones publics
-      de: Telefone
+      en: Pay phones and phone booths on streets and in public places
+      pt: Orelhões e cabines telefônicas em ruas e locais públicos
+      es: Cabinas y aparatos de pago en calles y lugares públicos
+      fr: Cabines et postes payants dans les rues et lieux publics
+      de: Münztelefone und Telefonzellen auf Straßen und Plätzen
   supermarkets:
     name:
       en: Supermarkets
@@ -2753,11 +2753,11 @@ templates:
       fr: Fontaines
       de: Springbrunnen
     desc:
-      en: Fountains
-      pt: Fontes
-      es: Fuentes
-      fr: Fontaines
-      de: Springbrunnen
+      en: Decorative, historic and recreational water features
+      pt: Chafarizes decorativos, históricos ou recreativos
+      es: Fuentes ornamentales, históricas o recreativas
+      fr: Jets et bassins décoratifs, historiques ou ludiques
+      de: Zier- und historische Brunnen sowie Wasserspiele
   clocks:
     name:
       en: Clocks
@@ -2766,11 +2766,11 @@ templates:
       fr: Horloges publiques
       de: Öffentliche Uhren
     desc:
-      en: Clocks
-      pt: Relógios públicos
-      es: Relojes públicos
-      fr: Horloges publiques
-      de: Öffentliche Uhren
+      en: Street, tower and station clocks anyone can see
+      pt: Relógios de rua, de torre e de estação à vista de todos
+      es: Relojes de calle, torre y estación a la vista de todos
+      fr: Horloges de rue, de clocher et de gare visibles par tous
+      de: Straßen-, Turm- und Bahnhofsuhren, für alle sichtbar
   information-boards:
     name:
       en: Wayfinding & information
@@ -2779,11 +2779,11 @@ templates:
       fr: Signalétique et information
       de: Wegweiser & Information
     desc:
-      en: Wayfinding & information
-      pt: Sinalização e informação
-      es: Señalización e información
-      fr: Signalétique et information
-      de: Wegweiser & Information
+      en: Signposts, maps, boards and tourist offices
+      pt: Placas, mapas, painéis e postos de atendimento ao turista
+      es: Carteles, mapas, paneles y oficinas de turismo
+      fr: Poteaux indicateurs, cartes, panneaux et offices de tourisme
+      de: Schilder, Karten, Infotafeln und Touristenbüros
   places-of-worship:
     name:
       en: Places of worship
