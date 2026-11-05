@@ -737,7 +737,7 @@
     "rail": "Rail",
     "cycling": "Vélo",
     "pedestrian": "Piétons",
-    "roads": "Routes et rues",
+    "roads": "Voirie",
     "traffic": "Circulation",
     "nature-environment": "Nature",
     "nature": "Éléments naturels",
@@ -860,6 +860,16 @@
       "no": "Non",
       "limited": "Limité",
       "unknown": "Inconnu"
+    },
+    "highway": {
+      "motorway": "Autoroute",
+      "trunk": "Voie rapide",
+      "primary": "Route principale",
+      "secondary": "Route secondaire",
+      "tertiary": "Route tertiaire",
+      "residential": "Rue résidentielle",
+      "living_street": "Zone de rencontre",
+      "unclassified": "Route mineure"
     },
     "healthcare:speciality": {
       "general": "Médecine générale",

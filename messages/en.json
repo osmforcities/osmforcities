@@ -735,9 +735,9 @@
     "mobility": "Mobility",
     "bus": "Bus",
     "rail": "Rail",
-    "cycling": "Cycling",
-    "pedestrian": "Pedestrian",
-    "roads": "Roads and streets",
+    "cycling": "Bicycle",
+    "pedestrian": "Walking",
+    "roads": "Road",
     "traffic": "Traffic",
     "nature-environment": "Nature",
     "nature": "Natural features",
@@ -755,7 +755,7 @@
     "financial": "Finance"
   },
   "TagLabel": {
-    "highway": "Highway type",
+    "highway": "Road type",
     "shelter": "Shelter",
     "bench": "Bench",
     "covered": "Covered",
@@ -860,6 +860,16 @@
       "no": "No",
       "limited": "Limited",
       "unknown": "Unknown"
+    },
+    "highway": {
+      "motorway": "Motorway",
+      "trunk": "Trunk road",
+      "primary": "Primary road",
+      "secondary": "Secondary road",
+      "tertiary": "Tertiary road",
+      "residential": "Residential street",
+      "living_street": "Living street",
+      "unclassified": "Unclassified road"
     },
     "healthcare:speciality": {
       "general": "General practice",
