@@ -164,10 +164,7 @@ templates:
   - ["marinas","leisure=marina","leisure","Anchor"]
   - ["dog-parks","leisure=dog_park","leisure","Dog"]
 # Nature
-  # Core urban tree structure (parent for street-trees and trees-with-species)
-  - ["urban-trees","natural=tree;natural=tree_row","nature","TreePine"]
-  # Street-focused arborization (child of urban-trees)
-  - ["street-trees","natural=tree_row","nature","TreeDeciduous","urban-trees"]
+  - ["trees","natural=tree;natural=tree_row;natural=tree_group","nature","TreeDeciduous"]
   # Managed green spaces (planned landscaping)
   - ["managed-green","leisure=park;leisure=garden;landuse=orchard","nature","Leaf"]
   # Natural / spontaneous vegetation
@@ -306,15 +303,8 @@ templates:
 # =========================
   # Advanced landscaping datasets
   # =========================
-  # Trees with species information (advanced)
-  - ["trees-with-species","natural=tree&species=*","nature","Leaf","urban-trees"]
   # Irrigated green areas (where mapped)
   - ["irrigated-green","irrigation=yes","nature","Droplet"]
-# =========================
-  # Climate / emergency context
-  # =========================
-  # Vegetation requiring attention during extreme weather events
-  - ["vegetation-risk-context","natural=tree;natural=tree_row;natural=wood","emergency","TriangleAlert"]
 # Per-template filterable-tag allow-list.
 # Curated OSM tag keys that become interactive-legend views for a template.
 # Templates absent here show the age ("Recent edits") view only.
@@ -472,6 +462,8 @@ filterableTags:
   # Full untouched-template review (epic #245 closure): measured colorable keys with
   # real coverage. Nature/agriculture: orchards trees 29-33%, beaches surface 26-91%.
   orchards:         [trees]
+  # species left out: too many values for a legend
+  trees:            [natural, leaf_type, leaf_cycle, denotation, genus]
   beaches:          [surface]
   dog-parks:        [access]
   # Infrastructure "type" keys, strong coverage (Berlin/Munich/London 61-89%)
@@ -501,6 +493,10 @@ commonTemplates:
 # the old id is still listed or the new id is missing or deprecated.
 replacedBy:
   agricultural-buildings: farm-auxiliary
+  urban-trees: trees
+  street-trees: trees
+  trees-with-species: trees
+  vegetation-risk-context: trees
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -1027,6 +1023,10 @@ demonstrators:
   beaches:
     - { area: 347950,  note: "Barcelona, ES - near-complete surface (sand/pebbles) tagging" }
     - { area: 79604,   note: "Cape Town, ZA - larger sample, real surface variance" }
+  trees:
+    - { area: 164609,  note: "Santiago, CL - 7k trees, every filter tag used (leaf_type 37%, leaf_cycle 30%, denotation 42%, genus 24%)" }
+    - { area: 71525,   note: "Paris, FR - 162k trees, leaf_type 86%, genus 86%, denotation 53%" }
+    - { area: 62422,   note: "Berlin, DE - 286k trees, leaf_type 71%, leaf_cycle 60%" }
   dog-parks:
     - { area: 175905,  note: "New York City, US - strongest access coverage (~37%)" }
     - { area: 62422,   note: "Berlin, DE - solid access coverage, European representative" }

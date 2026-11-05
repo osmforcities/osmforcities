@@ -148,7 +148,6 @@ import {
   TreeDeciduous,
   TreePine,
   Trees,
-  TriangleAlert,
   Trophy,
   Tv,
   Undo2,
@@ -168,7 +167,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-11-05T00:36:17.909Z
+ * Generated: 2026-11-05T01:48:22.266Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -672,8 +671,6 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Cylinder className="w-5 h-5" />;
     case "street-lamps":
       return <Lightbulb className="w-5 h-5" />;
-    case "street-trees":
-      return <TreeDeciduous className="w-5 h-5" />;
     case "subway-entrances":
       return <TrainFrontTunnel className="w-5 h-5" />;
     case "supermarkets":
@@ -710,18 +707,14 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <TramFront className="w-5 h-5" />;
     case "transit-platforms":
       return <RailSymbol className="w-5 h-5" />;
-    case "trees-with-species":
-      return <Leaf className="w-5 h-5" />;
+    case "trees":
+      return <TreeDeciduous className="w-5 h-5" />;
     case "tunnels":
       return <Route className="w-5 h-5" />;
     case "universities":
       return <GraduationCap className="w-5 h-5" />;
-    case "urban-trees":
-      return <TreePine className="w-5 h-5" />;
     case "utility-pole":
       return <Cable className="w-5 h-5" />;
-    case "vegetation-risk-context":
-      return <TriangleAlert className="w-5 h-5" />;
     case "veterinary":
       return <PawPrint className="w-5 h-5" />;
     case "viewpoints":
