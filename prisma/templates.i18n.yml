@@ -633,9 +633,9 @@ templates:
       de: Dialysezentren
     desc:
       en: Centres treating kidney failure with dialysis
-      pt: Centros de tratamento para a insuficiência renal
-      es: Centros de tratamiento para la insuficiencia renal
-      fr: Centres de traitement de l'insuffisance rénale
+      pt: Tratamento da insuficiência renal com diálise
+      es: Tratamiento de la insuficiencia renal con diálisis
+      fr: Traitement de l'insuffisance rénale par dialyse
       de: Zentren für Dialyse bei Nierenversagen
   midwives:
     name:
