@@ -522,14 +522,14 @@ active/featured set bounded.
   variant of "yes" (`yes`/`room`), not a real binary split.
 - **Public-category consolidation.** `fountains` → `amenities` with
   `[drinking_water]` (15-23% coverage, real no/yes/unknown split — tells you if
-  the fountain is potable, not just decorative). `clocks` → `services` with
+  the fountain is potable, not just decorative). `clocks` → `services` (now `amenities`) with
   `[display, support, visibility]` (all 27-48% coverage across Munich/Paris, real
   diversity: analog/digital/sundial; wall/pole/roof/street_lamp/…; area/street/house).
   `guideposts` (`tourism=guidepost`) and `markers`
   (`tourism=information;tourism=guidepost`) **removed** — `guideposts` returned 0
   features in every city checked; real-world guideposts are tagged
   `tourism=information` + `information=guidepost`, which `markers` was already
-  redundantly re-querying. `information-boards` (`tourism=information`) → `services`,
+  redundantly re-querying. `information-boards` (`tourism=information`) → `services` (now `amenities`),
   kept as the single template, with the `information` sub-tag promoted to
   `filterableTags` (`board`/`terminal`/`map`/`guidepost`/`office`/`route_marker`) —
   97% coverage in Paris (2.1k features), 100% in Munich (1.6k features). The `public`
