@@ -507,15 +507,16 @@ describe("template-parser", () => {
       expect(clashes).toEqual([]);
     });
 
-    it("gives every mobility template a short desc distinct from its name in every locale", () => {
+    it("gives every template in a described topic a short desc distinct from its name in every locale", () => {
       const MAX_DESC_LENGTH = 60;
+      const DESCRIBED_TOPICS = ["mobility", "shops-services"];
       const { templates, categories } = parseTemplates(loadTemplatesYaml("./prisma"));
-      const mobilitySlugs = categories
-        .filter((c) => c.slug === "mobility" || c.parent === "mobility")
+      const describedCategorySlugs = categories
+        .filter((c) => DESCRIBED_TOPICS.includes(c.parent ?? c.slug))
         .map((c) => c.slug);
       const i18n = loadTemplatesI18n("./prisma").templates;
       const problems = templates
-        .filter((t) => mobilitySlugs.includes(t.category))
+        .filter((t) => describedCategorySlugs.includes(t.category))
         .flatMap((t) =>
           AVAILABLE_LOCALES.map((locale) => {
             const ymlLocale = YML_LOCALE_MAP[locale] ?? locale;
