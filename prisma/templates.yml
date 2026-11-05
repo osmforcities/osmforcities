@@ -296,7 +296,8 @@ templates:
   # Agricultural storage
   - ["silos","building=silo;man_made=silo","agriculture","Warehouse"]
   - ["bunker-silos","man_made=bunker_silo","agriculture","Warehouse"]
-  - ["agricultural-tanks","man_made=storage_tank","agriculture","Cylinder"]
+  # content=manure left out: manure-storage covers it
+  - ["agricultural-tanks","man_made=storage_tank&content=silage;man_made=storage_tank&content=slurry;man_made=storage_tank&content=feed","agriculture","Cylinder"]
   # Organic fertilizer storage (slurry/manure infrastructure)
   - ["slurry-basins","man_made=slurry_basin","agriculture","Container"]
   - ["slurry-tanks","building=slurry_tank;man_made=slurry_tank","agriculture","Cylinder"]
@@ -304,11 +305,9 @@ templates:
   # Horticulture and plant production
   - ["greenhouse-horticulture","landuse=greenhouse_horticulture","agriculture","Sprout"]
   - ["plant-nurseries","landuse=plant_nursery","agriculture","Sprout"]
-# =========================
-  # Advanced landscaping datasets
-  # =========================
-  # Irrigated green areas (where mapped)
-  - ["irrigated-green","irrigation=yes","nature","Droplet"]
+  # Irrigation: irrigation=yes is on waterways (wiki), irrigated land is irrigation=pivot or irrigated=yes
+  - ["irrigated-green","irrigation=pivot;irrigated=yes","agriculture","Droplet"]
+  - ["irrigation-canals","irrigation=yes","agriculture","Waves"]
 # Per-template filterable-tag allow-list.
 # Curated OSM tag keys that become interactive-legend views for a template.
 # Templates absent here show the age ("Recent edits") view only.
@@ -477,6 +476,7 @@ filterableTags:
   surveillance:     [surveillance:type, surveillance]
   pipeline:         [substance]
   storage-tanks:    [content]
+  agricultural-tanks: [content]
   # Per-sport courts (subsets of pitches): surface/lit like the pitches template
   football:         [surface, lit]
   basketball:       [surface, lit]

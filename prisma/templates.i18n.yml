@@ -3078,11 +3078,11 @@ templates:
       fr: Cuves agricoles
       de: Landwirtschaftliche Tanks
     desc:
-      en: Tanks holding liquids or gases, on farms and elsewhere
-      pt: Tanques de líquidos ou gases, em fazendas e em outros locais
-      es: Tanques de líquidos o gases, en granjas y en otros lugares
-      fr: Cuves de liquides ou de gaz, à la ferme ou ailleurs
-      de: Tanks für Flüssigkeiten oder Gase, auf Höfen und anderswo
+      en: Farm storage for silage, slurry or animal feed
+      pt: Armazenamento de silagem, dejetos líquidos ou ração
+      es: Almacenaje de silaje, estiércol líquido o alimento animal
+      fr: Stockage d'ensilage, de lisier ou d'aliments du bétail
+      de: Lager für Silage, Gülle oder Tierfutter
   slurry-basins:
     name:
       en: Slurry basins
@@ -3150,14 +3150,27 @@ templates:
       de: Flächen zur Anzucht junger Bäume, Sträucher und Blumen
   irrigated-green:
     name:
-      en: Irrigated green
-      pt: Áreas verdes irrigadas
-      es: Áreas verdes regadas
-      fr: Espaces verts irrigués
-      de: Bewässerte Grünflächen
+      en: Irrigated land
+      pt: Terras irrigadas
+      es: Tierras irrigadas
+      fr: Terres irriguées
+      de: Bewässerte Flächen
     desc:
-      en: Canals and ditches that carry water to farmland
-      pt: Canais e valas que levam água para lavouras
-      es: Canales y acequias que llevan agua a los cultivos
-      fr: Canaux et fossés qui amènent l'eau aux cultures
-      de: Kanäle und Gräben, die Wasser zu Feldern leiten
+      en: Fields watered by center pivots or other irrigation
+      pt: Lavouras irrigadas por pivô central ou outros sistemas
+      es: Campos regados por pivote central u otro tipo de riego
+      fr: Champs arrosés par pivot central ou autre irrigation
+      de: Felder mit Kreisberegnung oder anderer Bewässerung
+  irrigation-canals:
+    name:
+      en: Irrigation canals
+      pt: Canais de irrigação
+      es: Canales de riego
+      fr: Canaux d'irrigation
+      de: Bewässerungskanäle
+    desc:
+      en: Ditches and channels that carry water to farmland
+      pt: Valas e regos que levam água para lavouras
+      es: Acequias y zanjas que llevan agua a los cultivos
+      fr: Fossés et rigoles qui amènent l'eau aux cultures
+      de: Gräben und Rinnen, die Wasser zu Feldern leiten

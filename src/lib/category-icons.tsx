@@ -167,7 +167,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-11-05T03:05:42.080Z
+ * Generated: 2026-11-05T14:33:18.964Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -511,6 +511,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Info className="w-5 h-5" />;
     case "irrigated-green":
       return <Droplet className="w-5 h-5" />;
+    case "irrigation-canals":
+      return <Waves className="w-5 h-5" />;
     case "jewelry":
       return <Gem className="w-5 h-5" />;
     case "kindergarten":
