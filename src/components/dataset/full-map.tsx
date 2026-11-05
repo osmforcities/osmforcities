@@ -33,7 +33,8 @@ import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
 import { MapZoomControl } from "@/components/ui/map-zoom-control";
 import { mapStyle } from "@/lib/map-tiles";
-import { AGE_COLORS, AGE_LABEL_KEYS } from "./map/layers/map-style";
+import { ageLegendRow } from "./map/layers/map-style";
+import type { AgeCategory } from "@/lib/feature-age";
 import {
   buildCuratedThemesFromDimensions,
   buildAgeVisibilityFilter,
@@ -167,9 +168,7 @@ export const DatasetFullMap = forwardRef<
   const categories: LegendCategory[] = useMemo(() => {
     if (!activeTheme) {
       return (ageDimension?.values ?? []).map(({ value, count }) => ({
-        id: value,
-        label: t(AGE_LABEL_KEYS[value as keyof typeof AGE_LABEL_KEYS]),
-        color: AGE_COLORS[value as keyof typeof AGE_COLORS],
+        ...ageLegendRow(value as AgeCategory, t),
         count,
       }));
     }

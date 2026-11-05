@@ -18,10 +18,7 @@ import { DatasetStatsRow } from "@/components/ui/dataset-stats-row";
 import { MapLayers } from "@/components/dataset/map/layers";
 import { AoiBoundaryLayer } from "@/components/dataset/map/aoi-boundary-layer";
 import { CompactLegend } from "@/components/dataset/map/compact-legend";
-import {
-  AGE_COLORS,
-  AGE_LABEL_KEYS,
-} from "@/components/dataset/map/layers/map-style";
+import { ageLegendRow } from "@/components/dataset/map/layers/map-style";
 import { processOSMFeaturesForVisualization } from "@/lib/osm-data-processor";
 import {
   buildCuratedThemes,
@@ -142,11 +139,9 @@ export function FeaturedDatasetMapClient({
       }
     : {
         title: tMap("lastEditedLegend"),
-        rows: AGE_CATEGORY_ORDER.map((id) => ({
-          id,
-          label: tMap(AGE_LABEL_KEYS[id]),
-          color: AGE_COLORS[id],
-        })),
+        rows: AGE_CATEGORY_ORDER.map((category) =>
+          ageLegendRow(category, tMap)
+        ),
       };
 
   // Client-side navigation swaps props without remounting the Map, so

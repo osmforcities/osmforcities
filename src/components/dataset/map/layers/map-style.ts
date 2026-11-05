@@ -1,4 +1,8 @@
-import { ageStep, type AgeCategoryValues } from "@/lib/feature-age";
+import {
+  ageStep,
+  type AgeCategory,
+  type AgeCategoryValues,
+} from "@/lib/feature-age";
 
 export type AgeCategoryColors = AgeCategoryValues<string>;
 
@@ -94,6 +98,17 @@ export const AGE_LABEL_KEYS = {
   older: "olderChanges",
   "very-old": "veryOldChanges",
 } as const;
+
+export function ageLegendRow(
+  category: AgeCategory,
+  translate: (key: (typeof AGE_LABEL_KEYS)[AgeCategory]) => string
+) {
+  return {
+    id: category,
+    label: translate(AGE_LABEL_KEYS[category]),
+    color: AGE_COLORS[category],
+  };
+}
 
 // Draw order within a layer: strictly newer above older, so recent never
 // hides under the very-old majority and very-old never covers older
