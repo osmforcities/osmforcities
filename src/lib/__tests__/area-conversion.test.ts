@@ -172,6 +172,74 @@ describe("fromNominatim", () => {
   });
 });
 
+describe("fromNominatim area facts", () => {
+  const withExtratags = (extratags: Record<string, string> | undefined) =>
+    fromNominatim({ ...mockNominatimCity, extratags });
+
+  it("reads facts and links from Mexico City's extratags", () => {
+    const area = withExtratags({
+      population: "9209944",
+      "population:date": "2020",
+      ele: "2250",
+      capital: "yes",
+      wikipedia: "es:Ciudad de México",
+      wikidata: "Q1489",
+      admin_level: "8",
+    });
+
+    expect(area).toMatchObject({
+      population: 9209944,
+      populationDate: "2020",
+      elevation: 2250,
+      isCapital: true,
+      wikipedia: "es:Ciudad de México",
+      wikidata: "Q1489",
+    });
+  });
+
+  it("leaves facts out when extratags are missing", () => {
+    const area = withExtratags(undefined);
+
+    expect(area.population).toBeUndefined();
+    expect(area.populationDate).toBeUndefined();
+    expect(area.elevation).toBeUndefined();
+    expect(area.isCapital).toBe(false);
+    expect(area.wikipedia).toBeUndefined();
+    expect(area.wikidata).toBeUndefined();
+  });
+
+  it("ignores malformed values", () => {
+    const area = withExtratags({
+      population: "about 9 million",
+      "population:date": "census 2020",
+      ele: "2250 m",
+      capital: "no",
+      wikipedia: "Ciudad de México",
+      wikidata: "1489",
+    });
+
+    expect(area.population).toBeUndefined();
+    expect(area.populationDate).toBeUndefined();
+    expect(area.elevation).toBeUndefined();
+    expect(area.isCapital).toBe(false);
+    expect(area.wikipedia).toBeUndefined();
+    expect(area.wikidata).toBeUndefined();
+  });
+
+  it("drops a population date without a population", () => {
+    expect(withExtratags({ "population:date": "2020" }).populationDate).toBeUndefined();
+  });
+
+  it("keeps decimal and negative elevations", () => {
+    expect(withExtratags({ ele: "-28.5" }).elevation).toBe(-28.5);
+  });
+
+  it("treats capital=2 as a national capital, capital=4 as not", () => {
+    expect(withExtratags({ capital: "2" }).isCapital).toBe(true);
+    expect(withExtratags({ capital: "4" }).isCapital).toBe(false);
+  });
+});
+
 describe("fromOverpass", () => {
   const mockOSMRelation: OSMRelation = {
     type: "relation",

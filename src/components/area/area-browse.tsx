@@ -19,6 +19,7 @@ type AreaBrowseProps = {
   areaName: string;
   /** Places above the area, never the area itself. */
   parentBreadcrumb: BreadcrumbItem[];
+  facts?: ReactNode;
   templates: AreaTemplate[];
   children: ReactNode;
 };
@@ -28,6 +29,7 @@ export function AreaBrowse({
   areaId,
   areaName,
   parentBreadcrumb,
+  facts,
   templates,
   children,
 }: AreaBrowseProps) {
@@ -63,6 +65,7 @@ export function AreaBrowse({
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 lg:text-5xl">
           {areaName}
         </h1>
+        {facts}
       </header>
       <DatasetSearchField
         label={t("searchLabel", { area: areaName })}

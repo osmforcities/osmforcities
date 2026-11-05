@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { auth } from "@/auth";
 import { AreaBrowse, AreaBrowseSkeleton } from "@/components/area/area-browse";
+import { AreaFacts } from "@/components/area/area-facts";
 import { TrackView } from "@/components/analytics/track-view";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { resolveAreaName } from "@/lib/area-name";
@@ -40,11 +41,12 @@ async function AreaBrowseShell({ children, params }: AreaBrowseLayoutProps) {
 
   const areaName = resolveAreaName(areaInfo, locale);
   // A state can share the area's name (Mexico City), which would repeat the title
+  const parentPlaces = [areaInfo.state, areaInfo.country].filter(
+    (place): place is string => Boolean(place) && place !== areaName
+  );
   const parentBreadcrumb = [
     { label: navT("home"), href: "/" },
-    ...[areaInfo.country, areaInfo.state]
-      .filter((place): place is string => Boolean(place) && place !== areaName)
-      .map((place) => ({ label: place })),
+    ...parentPlaces.toReversed().map((place) => ({ label: place })),
   ];
 
   return (
@@ -61,6 +63,7 @@ async function AreaBrowseShell({ children, params }: AreaBrowseLayoutProps) {
         areaId={areaId}
         areaName={areaName}
         parentBreadcrumb={parentBreadcrumb}
+        facts={<AreaFacts area={areaInfo} parentPlaces={parentPlaces} />}
         templates={templates}
       >
         {children}

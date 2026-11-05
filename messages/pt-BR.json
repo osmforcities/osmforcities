@@ -265,6 +265,13 @@
     "noSearchResultsHint": "Tente outra palavra ou confira a ortografia.",
     "clearSearch": "Limpar busca"
   },
+  "AreaFacts": {
+    "capitalCity": "Capital",
+    "population": "População {count, number, ::compact-short .#}",
+    "populationOn": "População {count, number, ::compact-short .#} ({date})",
+    "elevation": "Altitude {metres, number} m",
+    "links": "Links"
+  },
   "CategoryCards": {
     "title": "Encontrar dados em {area}",
     "subtitle": "Explore categorias de dados do OpenStreetMap. O que está disponível depende do mapeamento local."

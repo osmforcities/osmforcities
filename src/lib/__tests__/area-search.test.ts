@@ -1,10 +1,6 @@
 import { describe, it, expect } from "vitest";
-import {
-  dedupeAreas,
-  parsePopulation,
-  rankByScale,
-  toAreaSearchResult,
-} from "@/lib/area-search";
+import { parsePopulation } from "@/lib/area-conversion";
+import { dedupeAreas, rankByScale, toAreaSearchResult } from "@/lib/area-search";
 import {
   NominatimSearchResponseSchema,
   type NominatimResult,
@@ -140,9 +136,9 @@ describe("toAreaSearchResult", () => {
     ).toEqual([]);
   });
 
-  it("reads population when tagged, null when not", () => {
+  it("reads population when tagged, undefined when not", () => {
     expect(toAreaSearchResult(saoPaulo[0]).population).toBe(11451999);
-    expect(toAreaSearchResult(rio[1]).population).toBeNull();
+    expect(toAreaSearchResult(rio[1]).population).toBeUndefined();
   });
 
   it("labels an area as city when it is its own address city", () => {
@@ -160,11 +156,11 @@ describe("parsePopulation", () => {
   });
 
   it("rejects missing, non-numeric and multi-value tags", () => {
-    expect(parsePopulation(undefined)).toBeNull();
-    expect(parsePopulation("")).toBeNull();
-    expect(parsePopulation("about 5000")).toBeNull();
-    expect(parsePopulation("1,234")).toBeNull();
-    expect(parsePopulation("100;200")).toBeNull();
-    expect(parsePopulation("0")).toBeNull();
+    expect(parsePopulation(undefined)).toBeUndefined();
+    expect(parsePopulation("")).toBeUndefined();
+    expect(parsePopulation("about 5000")).toBeUndefined();
+    expect(parsePopulation("1,234")).toBeUndefined();
+    expect(parsePopulation("100;200")).toBeUndefined();
+    expect(parsePopulation("0")).toBeUndefined();
   });
 });
