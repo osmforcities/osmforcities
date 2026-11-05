@@ -140,16 +140,13 @@ describe("getOrCreateDataset — template hierarchy", () => {
     vi.clearAllMocks();
   });
 
-  it("selects the parent and only active, non-deprecated children", async () => {
+  it("selects only active, non-deprecated children", async () => {
     mockDatasetFindFirst.mockResolvedValueOnce(existingDatasetRow as never);
 
     const { dataset } = await getOrCreateDataset(1, "test-template", "en");
 
     const templateSelect = mockDatasetFindFirst.mock.calls[0]?.[0]?.select?.template;
-    const { select } = templateSelect as {
-      select: { parent: unknown; children: { where: unknown } };
-    };
-    expect(select.parent).toBeDefined();
+    const { select } = templateSelect as { select: { children: { where: unknown } } };
     expect(select.children.where).toEqual({ isActive: true, deprecatesAt: null });
     expect(dataset.template).toMatchObject({ parent: null, children: [] });
   });

@@ -7,7 +7,7 @@ type RelatedTemplate = {
   translations: Array<{ locale: string; name: string; description: string | null }>;
 };
 
-export type TemplateLink = { id: string; name: string };
+type TemplateLink = { id: string; name: string };
 
 export function resolveTemplateHierarchy<
   T extends {
