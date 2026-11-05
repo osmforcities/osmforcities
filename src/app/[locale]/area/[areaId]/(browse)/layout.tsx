@@ -41,12 +41,11 @@ async function AreaBrowseShell({ children, params }: AreaBrowseLayoutProps) {
 
   const areaName = resolveAreaName(areaInfo, locale);
   // A state can share the area's name (Mexico City), which would repeat the title
-  const parentPlaces = [areaInfo.state, areaInfo.country].filter(
-    (place): place is string => Boolean(place) && place !== areaName
-  );
   const parentBreadcrumb = [
     { label: navT("home"), href: "/" },
-    ...parentPlaces.toReversed().map((place) => ({ label: place })),
+    ...[areaInfo.country, areaInfo.state]
+      .filter((place): place is string => Boolean(place) && place !== areaName)
+      .map((place) => ({ label: place })),
   ];
 
   return (
@@ -63,7 +62,7 @@ async function AreaBrowseShell({ children, params }: AreaBrowseLayoutProps) {
         areaId={areaId}
         areaName={areaName}
         parentBreadcrumb={parentBreadcrumb}
-        facts={<AreaFacts area={areaInfo} parentPlaces={parentPlaces} />}
+        facts={<AreaFacts area={areaInfo} />}
         templates={templates}
       >
         {children}

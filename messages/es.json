@@ -267,8 +267,7 @@
   },
   "AreaFacts": {
     "capitalCity": "Capital",
-    "population": "Población {count, number, ::compact-short .#}",
-    "populationIn": "Población {count, number, ::compact-short .#} en {year}",
+    "population": "Pob. {count, number, ::compact-short .#}",
     "elevation": "Altitud {elevation, number} m",
     "links": "Enlaces",
     "openStreetMap": "OpenStreetMap",

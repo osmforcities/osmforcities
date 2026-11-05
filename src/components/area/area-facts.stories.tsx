@@ -26,7 +26,7 @@ const meta = {
   title: "Area/Facts",
   component: AreaFacts,
   parameters: { a11y: { test: "error" } },
-  args: { area: mexicoCity, parentPlaces: ["Mexico"] },
+  args: { area: mexicoCity },
 } satisfies Meta<typeof AreaFacts>;
 
 export default meta;
@@ -35,7 +35,7 @@ type Story = StoryObj<typeof meta>;
 export const FullFacts: Story = {
   play: async ({ canvas }) => {
     await expect(canvas.getByTestId("area-facts")).toHaveTextContent(
-      "Capital city · Mexico · Population 9.2M in 2020 · Elevation 2,250 m"
+      "Capital city · Pop. 9.2M (2020) · Elevation 2,250 m"
     );
     await expect(canvas.getByRole("link", { name: "OpenStreetMap" })).toHaveAttribute(
       "href",
@@ -64,7 +64,6 @@ export const EmptyFacts: Story = {
       wikipedia: undefined,
       wikidata: undefined,
     },
-    parentPlaces: [],
   },
   play: async ({ canvas }) => {
     await expect(canvas.getByTestId("area-facts")).toHaveTextContent(/^City$/);

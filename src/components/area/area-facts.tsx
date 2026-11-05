@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/components/ui/link";
 import { wikipediaUrl } from "@/lib/area-conversion";
@@ -5,13 +6,7 @@ import type { MessageResolver } from "@/lib/tag-i18n";
 import { getAreaCharacteristics } from "@/lib/utils";
 import type { Area } from "@/types/area";
 
-type AreaFactsProps = {
-  area: Area;
-  /** Places above the area, never the area itself. */
-  parentPlaces: string[];
-};
-
-export function AreaFacts({ area, parentPlaces }: AreaFactsProps) {
+export function AreaFacts({ area }: { area: Area }) {
   const t = useTranslations("AreaFacts");
   // Nominatim address types are open-ended, so they can't be checked against literal message keys
   const translateAddressType = useTranslations("AddressTypes") as unknown as MessageResolver;
@@ -20,13 +15,13 @@ export function AreaFacts({ area, parentPlaces }: AreaFactsProps) {
     ? t("capitalCity")
     : getAreaCharacteristics(area, translateAddressType)[0];
   const facts = [
-    [placeType, parentPlaces.join(", ")].filter(Boolean).join(" · "),
+    placeType,
     area.population !== undefined &&
-      (area.populationYear
-        ? t("populationIn", { count: area.population, year: area.populationYear })
-        : t("population", { count: area.population })),
+      [t("population", { count: area.population }), area.populationYear && `(${area.populationYear})`]
+        .filter(Boolean)
+        .join(" "),
     area.elevation !== undefined && t("elevation", { elevation: area.elevation }),
-  ].filter(Boolean);
+  ].filter((fact): fact is string => Boolean(fact));
 
   const links = [
     { label: t("openStreetMap"), href: `https://www.openstreetmap.org/relation/${area.id}` },
@@ -36,7 +31,16 @@ export function AreaFacts({ area, parentPlaces }: AreaFactsProps) {
 
   return (
     <div className="flex flex-col gap-2 text-sm text-gray-600">
-      {facts.length > 0 && <p data-testid="area-facts">{facts.join(" · ")}</p>}
+      {facts.length > 0 && (
+        <p data-testid="area-facts">
+          {facts.map((fact, index) => (
+            <Fragment key={fact}>
+              {index > 0 && " · "}
+              <span className="whitespace-nowrap">{fact}</span>
+            </Fragment>
+          ))}
+        </p>
+      )}
       <ul aria-label={t("links")} className="flex flex-wrap gap-x-4 gap-y-1">
         {links.map(({ label, href }) => (
           <li key={label}>
