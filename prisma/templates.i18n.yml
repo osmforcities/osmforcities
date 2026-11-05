@@ -2220,11 +2220,11 @@ templates:
       fr: Bassin de résidus miniers
       de: Absetzbecken
     desc:
-      en: Ponds of liquid waste left over from mining
-      pt: Lagoas de resíduos líquidos da mineração
-      es: Estanques de residuos líquidos de la minería
-      fr: Bassins de déchets liquides issus de l'exploitation minière
-      de: Becken für flüssige Abfälle aus dem Bergbau
+      en: Ponds holding liquid or slurry waste from mining
+      pt: Lagoas de resíduos líquidos ou lama da mineração
+      es: Estanques de residuos líquidos o lodos de la minería
+      fr: Bassins de boues et déchets liquides des mines
+      de: Becken für Schlamm und flüssige Abfälle aus dem Bergbau
   tower:
     name:
       en: Tower
