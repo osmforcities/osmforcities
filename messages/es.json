@@ -846,6 +846,7 @@
     "organic": "Orgánico",
     "clothes": "Tipo de ropa",
     "garden:type": "Tipo de jardín",
+    "natural": "Tipo",
     "leaf_type": "Tipo de hoja",
     "leaf_cycle": "Ciclo foliar",
     "denotation": "Función del árbol",
@@ -953,6 +954,11 @@
       "stone": "Piedra",
       "sculpture": "Escultura",
       "stele": "Estela"
+    },
+    "natural": {
+      "tree": "Árbol",
+      "tree_row": "Hilera de árboles",
+      "tree_group": "Grupo de árboles"
     },
     "leaf_type": {
       "broadleaved": "Latifoliadas",

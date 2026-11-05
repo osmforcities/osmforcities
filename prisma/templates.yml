@@ -465,7 +465,7 @@ filterableTags:
   # real coverage. Nature/agriculture: orchards trees 29-33%, beaches surface 26-91%.
   orchards:         [trees]
   # species left out: too many values for a legend
-  trees:            [leaf_type, leaf_cycle, denotation, genus]
+  trees:            [natural, leaf_type, leaf_cycle, denotation, genus]
   beaches:          [surface]
   dog-parks:        [access]
   # Infrastructure "type" keys, strong coverage (Berlin/Munich/London 61-89%)

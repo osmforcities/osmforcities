@@ -837,6 +837,7 @@
     "organic": "Bio",
     "clothes": "Kleidungsart",
     "garden:type": "Gartentyp",
+    "natural": "Typ",
     "leaf_type": "Blattart",
     "leaf_cycle": "Laubwechsel",
     "denotation": "Baumfunktion",
@@ -944,6 +945,11 @@
       "stone": "Gedenkstein",
       "sculpture": "Skulptur",
       "stele": "Stele"
+    },
+    "natural": {
+      "tree": "Baum",
+      "tree_row": "Baumreihe",
+      "tree_group": "Baumgruppe"
     },
     "leaf_type": {
       "broadleaved": "Laubbäume",

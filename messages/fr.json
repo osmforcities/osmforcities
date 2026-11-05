@@ -837,6 +837,7 @@
     "organic": "Bio",
     "clothes": "Type de vêtements",
     "garden:type": "Type de jardin",
+    "natural": "Type",
     "leaf_type": "Type de feuillage",
     "leaf_cycle": "Cycle foliaire",
     "denotation": "Rôle de l'arbre",
@@ -944,6 +945,11 @@
       "stone": "Pierre",
       "sculpture": "Sculpture",
       "stele": "Stèle"
+    },
+    "natural": {
+      "tree": "Arbre",
+      "tree_row": "Alignement d'arbres",
+      "tree_group": "Bosquet"
     },
     "leaf_type": {
       "broadleaved": "Feuillu",

@@ -471,7 +471,7 @@ describe("template-parser", () => {
       const result = parseTemplates(loadTemplatesYaml("./prisma"));
       const trees = result.templates.find((t) => t.id === "trees");
       expect(trees?.category).toBe("nature");
-      expect(trees?.filterableTags).toEqual(["leaf_type", "leaf_cycle", "denotation", "genus"]);
+      expect(trees?.filterableTags).toEqual(["natural", "leaf_type", "leaf_cycle", "denotation", "genus"]);
       expect(trees?.overpassQuery).toContain('"natural"="tree_group"');
       expect(result.replacedBy).toMatchObject({
         "urban-trees": "trees",

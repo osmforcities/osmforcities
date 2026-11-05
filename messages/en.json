@@ -837,6 +837,7 @@
     "organic": "Organic",
     "clothes": "Clothing type",
     "garden:type": "Garden type",
+    "natural": "Type",
     "leaf_type": "Leaf type",
     "leaf_cycle": "Leaf cycle",
     "denotation": "Tree role",
@@ -944,6 +945,11 @@
       "stone": "Stone",
       "sculpture": "Sculpture",
       "stele": "Stele"
+    },
+    "natural": {
+      "tree": "Tree",
+      "tree_row": "Tree row",
+      "tree_group": "Tree group"
     },
     "leaf_type": {
       "broadleaved": "Broadleaved",
