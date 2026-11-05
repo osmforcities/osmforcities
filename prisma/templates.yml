@@ -485,6 +485,32 @@ filterableTags:
 # One of the template's filterableTags; absent opens on "Last edited".
 defaultView:
   buildings: building
+  roads: highway
+  rail-tracks: railway
+  railway-stations: station
+  footways: footway
+  crossings: crossing
+  traffic-calming: traffic_calming
+  parking: parking
+  bicycle-parking: bicycle_parking
+  bicycle-rental: bicycle_rental
+  fire-hydrants: fire_hydrant:type
+  sirens: siren:type
+  emergency-shelters: emergency:shelter_type
+  pitches: sport
+  sports-centres: sport
+  stadiums: sport
+  tracks: sport
+  restaurants: cuisine
+  cafes: cuisine
+  fast-food: cuisine
+  places-of-worship: religion
+  water: water
+  wetlands: wetland
+  forests: leaf_type
+  woods: leaf_type
+  social-facility: social_facility
+  museums: museum
 
 # The area hub's "Common datasets" grid, in this order. Sync fails on a missing
 # or deprecated id.
