@@ -769,7 +769,7 @@ agriculture, infrastructure, housing, environment).
 
 ### Disaster preparedness ([#479])
 
-Extends the emergency category for the disaster epic ([#478]).
+Part of the disaster epic ([#478]). Emergency is its own topic, split into the categories of the OSM wiki's "Emergency facilities and amenities" page, which groups by who responds: `medical-rescue` (ambulance stations, defibrillators), `firefighting` (fire stations, hydrants, water sources) and `civil-protection` (assembly points, sirens, shelters, emergency phones, vegetation risk). iD has no emergency grouping and JOSM keeps one flat group. The move broke the old `/topics/public-services/emergency` URL, accepted as low-traffic.
 
 - **assembly-points** (`emergency=assembly_point`) — **age-view only.** The wiki's hazard keys (`assembly_point:earthquake`, `:flood`, `:tsunami`...) are one boolean key per hazard, so fragmented, and 0% in every area tested (Berlin, Munich, Hamburg, Vienna, Taipei, Paris). `operator` is the host site's name (a school, a hotel), the doctors trap. Outdoor gathering place, so no `wheelchair`.
 - **sirens** (`emergency=siren`) — `[siren:purpose, siren:type, operator]`. `purpose` is near-universal where sirens are mapped and mostly `civil_defense` locally, with `fire`/`tornado`/`air_raid` elsewhere (skewed is fine). `operator` is the civil-protection authority here, not a site name. Dropped `siren:range` (0%). Mapped in Central Europe; NYC and Zurich return none, Oklahoma City a thin untagged set.

@@ -169,7 +169,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-11-05T01:27:47.377Z
+ * Generated: 2026-11-05T01:47:19.219Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -191,6 +191,8 @@ export function getCategoryIcon(category: string) {
       return <Building2 className="w-5 h-5" />;
     case "bus":
       return <Bus className="w-5 h-5" />;
+    case "civil-protection":
+      return <Megaphone className="w-5 h-5" />;
     case "culture":
       return <Palette className="w-5 h-5" />;
     case "cycling":
@@ -205,6 +207,8 @@ export function getCategoryIcon(category: string) {
       return <Leaf className="w-5 h-5" />;
     case "financial":
       return <DollarSign className="w-5 h-5" />;
+    case "firefighting":
+      return <FireExtinguisher className="w-5 h-5" />;
     case "food":
       return <Utensils className="w-5 h-5" />;
     case "government":
@@ -221,6 +225,8 @@ export function getCategoryIcon(category: string) {
       return <TreePine className="w-5 h-5" />;
     case "leisure-sports":
       return <Trophy className="w-5 h-5" />;
+    case "medical-rescue":
+      return <Ambulance className="w-5 h-5" />;
     case "mobility":
       return <Car className="w-5 h-5" />;
     case "nature":

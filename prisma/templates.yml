@@ -100,16 +100,16 @@ templates:
   - ["courts","amenity=courthouse","government","Scale"]
   - ["police-stations","amenity=police","government","Siren"]
   - ["prisons","amenity=prison","government","Building"]
-# Emergency
-  - ["fire-stations","amenity=fire_station","emergency","FireExtinguisher"]
-  - ["ambulance-stations","emergency=ambulance_station","emergency","Ambulance"]
-  - ["emergency-phones","emergency=phone","emergency","Phone"]
-  - ["fire-hydrants","emergency=fire_hydrant","emergency","Flame"]
-  - ["defibrillators","emergency=defibrillator","emergency","HeartPulse"]
-  - ["assembly-points","emergency=assembly_point","emergency","Users"]
-  - ["sirens","emergency=siren","emergency","Megaphone"]
-  - ["firefighting-water-sources","emergency=water_tank;emergency=fire_water_pond;emergency=suction_point","emergency","Droplets"]
-  - ["emergency-shelters","emergency:social_facility=shelter","emergency","Tent"]
+# Emergency (categories follow the OSM wiki's Emergency facilities and amenities page)
+  - ["ambulance-stations","emergency=ambulance_station","medical-rescue","Ambulance"]
+  - ["defibrillators","emergency=defibrillator","medical-rescue","HeartPulse"]
+  - ["fire-stations","amenity=fire_station","firefighting","FireExtinguisher"]
+  - ["fire-hydrants","emergency=fire_hydrant","firefighting","Flame"]
+  - ["firefighting-water-sources","emergency=water_tank;emergency=fire_water_pond;emergency=suction_point","firefighting","Droplets"]
+  - ["assembly-points","emergency=assembly_point","civil-protection","Users"]
+  - ["sirens","emergency=siren","civil-protection","Megaphone"]
+  - ["emergency-shelters","emergency:social_facility=shelter","civil-protection","Tent"]
+  - ["emergency-phones","emergency=phone","civil-protection","Phone"]
 # Environment
   - ["waterfall","waterway=waterfall","environment","Waves"]
   - ["dam","waterway=dam","environment","BrickWall"]
@@ -319,7 +319,7 @@ templates:
   # Climate / emergency context
   # =========================
   # Vegetation requiring attention during extreme weather events
-  - ["vegetation-risk-context","natural=tree;natural=tree_row;natural=wood","emergency","TriangleAlert"]
+  - ["vegetation-risk-context","natural=tree;natural=tree_row;natural=wood","civil-protection","TriangleAlert"]
 # Per-template filterable-tag allow-list.
 # Curated OSM tag keys that become interactive-legend views for a template.
 # Templates absent here show the age ("Recent edits") view only.
@@ -1111,8 +1111,12 @@ categories:
   environment: { icon: Leaf, parent: nature-environment }
   agriculture: { icon: Wheat, parent: nature-environment }
 
+  emergency: { icon: ShieldAlert }
+  medical-rescue: { icon: Ambulance, parent: emergency }
+  firefighting: { icon: FireExtinguisher, parent: emergency }
+  civil-protection: { icon: Megaphone, parent: emergency }
+
   public-services: { icon: Shield }
-  emergency: { icon: ShieldAlert, parent: public-services }
   government: { icon: Shield, parent: public-services }
   social: { icon: Users, parent: public-services }
   amenities: { icon: Heart, parent: public-services }
