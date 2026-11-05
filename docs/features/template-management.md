@@ -767,6 +767,15 @@ agriculture, infrastructure, housing, environment).
   (waterfall/dam), and the remaining outdoor barriers (walls/fences/hedges). Natural and
   structural features carry no single well-covered usability key to color by.
 
+### Disaster preparedness ([#479])
+
+Extends the emergency category for the disaster epic ([#478]).
+
+- **assembly-points** (`emergency=assembly_point`) — **age-view only.** The wiki's hazard keys (`assembly_point:earthquake`, `:flood`, `:tsunami`...) are one boolean key per hazard, so fragmented, and 0% in every area tested (Berlin, Munich, Hamburg, Vienna, Taipei, Paris). `operator` is the host site's name (a school, a hotel), the doctors trap. Outdoor gathering place, so no `wheelchair`.
+- **sirens** (`emergency=siren`) — `[siren:purpose, siren:type, operator]`. `purpose` is near-universal where sirens are mapped and mostly `civil_defense` locally, with `fire`/`tornado`/`air_raid` elsewhere (skewed is fine). `operator` is the civil-protection authority here, not a site name. Dropped `siren:range` (0%). Mapped in Central Europe; NYC and Zurich return none, Oklahoma City a thin untagged set.
+- **emergency-water-sources** (`emergency=water_tank;fire_water_pond;suction_point`) — **age-view only.** The natural color-by is the `emergency` value itself, but `TagLabel` is global per key and `emergency` reads "Emergency care" for hospitals. `water_tank:volume` is free-form numbers (`120.000`, `300000`), a numeric-tag candidate ([#441]), not a legend.
+- **emergency-shelters** (`emergency:social_facility=shelter`) — `[emergency:shelter_type, wheelchair]`. The only wiki-documented disaster-shelter tag (~9k uses, mostly Taiwan and the Philippines). `emergency=shelter` is undocumented (26 uses); `social_facility=shelter` is homeless and refugee housing, already in `social-facility`. Dropped `emergency:social_facility:for` and `evacuation_center` (single-valued). `emergency:shelter_type` stays raw: free-text hazard lists (`水災,震災`), no `TagValue` map.
+
 ## Validation the sync enforces
 
 `prisma/lib/template-parser.ts` (tests: `prisma/lib/__tests__/template-parser.test.ts`).
@@ -782,4 +791,7 @@ agriculture, infrastructure, housing, environment).
 - Unknown template id under `filterableTags` — a typo there only leaves that one template
   age-view-only, so it never blocks the seed/deploy.
 
+[#441]: https://github.com/osmforcities/osmforcities/issues/441
+[#478]: https://github.com/osmforcities/osmforcities/issues/478
+[#479]: https://github.com/osmforcities/osmforcities/issues/479
 [#517]: https://github.com/osmforcities/osmforcities/issues/517

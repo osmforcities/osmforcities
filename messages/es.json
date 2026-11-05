@@ -861,7 +861,10 @@
     "fire_hydrant:pressure": "Presión",
     "cash_in": "Depósito de efectivo",
     "indoor": "Interior",
-    "sport": "Deporte"
+    "sport": "Deporte",
+    "siren:purpose": "Propósito de la sirena",
+    "siren:type": "Tipo de sirena",
+    "emergency:shelter_type": "Tipo de desastre"
   },
   "TagValue": {
     "__common__": {
@@ -1156,6 +1159,19 @@
     "internet_access": {
       "wlan": "Wi-Fi",
       "terminal": "Terminal"
+    },
+    "siren:purpose": {
+      "civil_defense": "Defensa civil",
+      "fire": "Bomberos",
+      "tornado": "Tornado",
+      "air_raid": "Ataque aéreo",
+      "tsunami": "Tsunami"
+    },
+    "siren:type": {
+      "electronic": "Electrónica",
+      "mechanical": "Mecánica",
+      "electromechanical": "Electromecánica",
+      "pneumatic": "Neumática"
     }
   }
 }

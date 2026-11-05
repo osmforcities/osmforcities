@@ -852,7 +852,10 @@
     "fire_hydrant:pressure": "Pression",
     "cash_in": "Dépôt d'espèces",
     "indoor": "Intérieur",
-    "sport": "Sport"
+    "sport": "Sport",
+    "siren:purpose": "Usage de la sirène",
+    "siren:type": "Type de sirène",
+    "emergency:shelter_type": "Type de catastrophe"
   },
   "TagValue": {
     "__common__": {
@@ -1147,6 +1150,19 @@
     "internet_access": {
       "wlan": "Wi-Fi",
       "terminal": "Borne"
+    },
+    "siren:purpose": {
+      "civil_defense": "Protection civile",
+      "fire": "Pompiers",
+      "tornado": "Tornade",
+      "air_raid": "Alerte aérienne",
+      "tsunami": "Tsunami"
+    },
+    "siren:type": {
+      "electronic": "Électronique",
+      "mechanical": "Mécanique",
+      "electromechanical": "Électromécanique",
+      "pneumatic": "Pneumatique"
     }
   }
 }
