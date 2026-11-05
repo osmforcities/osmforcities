@@ -798,7 +798,6 @@ Part of the disaster epic ([#478]). Emergency is its own topic, split into the c
 - Unknown template id under `filterableTags` — a typo there only leaves that one template
   age-view-only, so it never blocks the seed/deploy.
 
-[#441]: https://github.com/osmforcities/osmforcities/issues/441
 [#478]: https://github.com/osmforcities/osmforcities/issues/478
 [#479]: https://github.com/osmforcities/osmforcities/issues/479
 [#517]: https://github.com/osmforcities/osmforcities/issues/517
