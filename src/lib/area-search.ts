@@ -6,8 +6,6 @@ import type { Area } from "@/types/area";
 export type AreaSearchResult = Area & {
   /** Parent names (state, country), excluding the component that is the area itself. */
   parents: string[];
-  /** OSM population tag, when present and a plain integer. */
-  population: number | null;
 };
 
 function adminLevel(result: NominatimResult): number {
@@ -87,13 +85,6 @@ export function rankByScale(results: NominatimResult[]): NominatimResult[] {
   return [...results].sort((a, b) => scale(a) - scale(b));
 }
 
-export function parsePopulation(value: string | undefined): number | null {
-  const trimmed = value?.trim();
-  if (!trimmed || !/^\d+$/.test(trimmed)) return null;
-  const population = Number(trimmed);
-  return population > 0 ? population : null;
-}
-
 export function toAreaSearchResult(result: NominatimResult): AreaSearchResult {
   const area = fromNominatim(result);
   // Skip the address component that is the result itself (a state's own
@@ -113,6 +104,5 @@ export function toAreaSearchResult(result: NominatimResult): AreaSearchResult {
     ...area,
     addresstype,
     parents,
-    population: parsePopulation(result.extratags?.population),
   };
 }

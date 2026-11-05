@@ -265,6 +265,17 @@
     "noSearchResultsHint": "Essayez un autre mot ou vérifiez l’orthographe.",
     "clearSearch": "Effacer la recherche"
   },
+  "AreaFacts": {
+    "capitalCity": "Capitale",
+    "population": "Pop. {count, number, ::compact-short .#}",
+    "populationWithYear": "Pop. {count, number, ::compact-short .#} ({year})",
+    "elevation": "Alt. {elevation, number} m",
+    "links": "Liens",
+    "website": "Site web",
+    "openStreetMap": "OpenStreetMap",
+    "wikipedia": "Wikipedia",
+    "wikidata": "Wikidata"
+  },
   "CategoryCards": {
     "title": "Trouver des données dans {area}",
     "subtitle": "Parcourez les catégories de données OpenStreetMap. La disponibilité dépend de la cartographie locale."

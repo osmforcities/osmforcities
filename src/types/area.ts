@@ -15,4 +15,15 @@ export type Area = {
   countryCode?: string;
   country?: string;
   state?: string;
+  population?: number;
+  /** Year from OSM population:date, kept only alongside a population. */
+  populationYear?: string;
+  /** Metres, from the OSM ele tag. */
+  elevation?: number;
+  isCapital?: boolean;
+  /** OSM wikipedia tag, `<lang>:<title>`. */
+  wikipedia?: string;
+  wikidata?: string;
+  website?: string;
+  flagFile?: string;
 };

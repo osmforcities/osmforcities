@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { fromNominatim, fromOverpass, InvalidAreaError } from "@/lib/area-conversion";
+import {
+  fromNominatim,
+  fromOverpass,
+  InvalidAreaError,
+  parsePopulation,
+  wikipediaUrl,
+  commonsImageUrl,
+} from "@/lib/area-conversion";
 import type { NominatimResult } from "@/schemas/nominatim";
 import type { OSMRelation } from "@/types/osm";
 
@@ -169,6 +176,156 @@ describe("fromNominatim", () => {
 
     const area = fromNominatim(resultWithEmptyName);
     expect(area.name).toBe("Lisbon"); // Falls back to first part of display_name
+  });
+});
+
+describe("fromNominatim area facts", () => {
+  const withExtratags = (extratags: Record<string, string> | undefined) =>
+    fromNominatim({ ...mockNominatimCity, extratags });
+
+  it("reads facts and links from Mexico City's extratags", () => {
+    const area = withExtratags({
+      population: "9209944",
+      "population:date": "2020",
+      ele: "2250",
+      capital: "yes",
+      wikipedia: "es:Ciudad de México",
+      wikidata: "Q1489",
+      admin_level: "8",
+    });
+
+    expect(area).toMatchObject({
+      population: 9209944,
+      populationYear: "2020",
+      elevation: 2250,
+      isCapital: true,
+      wikipedia: "es:Ciudad de México",
+      wikidata: "Q1489",
+    });
+  });
+
+  it("leaves facts out when extratags are missing", () => {
+    const area = withExtratags(undefined);
+
+    expect(area.population).toBeUndefined();
+    expect(area.populationYear).toBeUndefined();
+    expect(area.elevation).toBeUndefined();
+    expect(area.isCapital).toBe(false);
+    expect(area.wikipedia).toBeUndefined();
+    expect(area.wikidata).toBeUndefined();
+  });
+
+  it("ignores malformed values", () => {
+    const area = withExtratags({
+      population: "about 9 million",
+      "population:date": "census 2020",
+      ele: "2250 m",
+      capital: "no",
+      wikipedia: "Ciudad de México",
+      wikidata: "1489",
+    });
+
+    expect(area.population).toBeUndefined();
+    expect(area.populationYear).toBeUndefined();
+    expect(area.elevation).toBeUndefined();
+    expect(area.isCapital).toBe(false);
+    expect(area.wikipedia).toBeUndefined();
+    expect(area.wikidata).toBeUndefined();
+  });
+
+  it("ignores a wikipedia language that would change the link's host", () => {
+    expect(withExtratags({ wikipedia: "evil.example:Page" }).wikipedia).toBeUndefined();
+    expect(withExtratags({ wikipedia: "en@evil.example:Page" }).wikipedia).toBeUndefined();
+  });
+
+  it("ignores a wikipedia tag holding a full URL", () => {
+    expect(
+      withExtratags({ wikipedia: "https://en.wikipedia.org/wiki/Mexico_City" }).wikipedia
+    ).toBeUndefined();
+  });
+
+  it("drops a population date without a population", () => {
+    expect(withExtratags({ "population:date": "2020" }).populationYear).toBeUndefined();
+  });
+
+  it("keeps decimal and negative elevations", () => {
+    expect(withExtratags({ ele: "-28.5" }).elevation).toBe(-28.5);
+  });
+
+  it("treats capital=2 as a national capital, capital=4 as not", () => {
+    expect(withExtratags({ capital: "2" }).isCapital).toBe(true);
+    expect(withExtratags({ capital: "4" }).isCapital).toBe(false);
+  });
+
+  it("keeps http and https websites only", () => {
+    expect(withExtratags({ website: "https://www.paris.fr" }).website).toBe("https://www.paris.fr/");
+    expect(withExtratags({ website: "javascript:alert(1)" }).website).toBeUndefined();
+    expect(withExtratags({ website: "www.paris.fr" }).website).toBeUndefined();
+  });
+
+  it("reads the flag as a Commons file from a File: name or an upload URL", () => {
+    expect(withExtratags({ flag: "File:Flag of Berlin.svg" }).flagFile).toBe("Flag of Berlin.svg");
+    expect(
+      withExtratags({
+        flag: "http://upload.wikimedia.org/wikipedia/commons/4/4b/Bandeira_da_cidade_de_S%C3%A3o_Paulo.svg",
+      }).flagFile
+    ).toBe("Bandeira_da_cidade_de_São_Paulo.svg");
+    expect(
+      withExtratags({
+        flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Bandeira_da_cidade_de_S%C3%A3o_Paulo.svg/320px-Bandeira_da_cidade_de_S%C3%A3o_Paulo.svg.png",
+      }).flagFile
+    ).toBe("Bandeira_da_cidade_de_São_Paulo.svg");
+  });
+
+  it("ignores a flag hosted outside Wikimedia Commons", () => {
+    expect(withExtratags({ flag: "https://example.com/flag.svg" }).flagFile).toBeUndefined();
+    expect(withExtratags({ flag: "Flag of Berlin.svg" }).flagFile).toBeUndefined();
+    expect(
+      withExtratags({ flag: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Bad%E0%A4%A.svg" }).flagFile
+    ).toBeUndefined();
+  });
+
+  it("keeps the year of a full population date", () => {
+    const area = withExtratags({ population: "9209944", "population:date": "2020-03-15" });
+    expect(area.populationYear).toBe("2020");
+  });
+});
+
+describe("wikipediaUrl", () => {
+  it("links the article in the tag's language", () => {
+    expect(wikipediaUrl("es:Ciudad de México")).toBe(
+      "https://es.wikipedia.org/wiki/Ciudad_de_M%C3%A9xico"
+    );
+  });
+
+  it("keeps a section anchor", () => {
+    expect(wikipediaUrl("en:Mexico City#History")).toBe(
+      "https://en.wikipedia.org/wiki/Mexico_City#History"
+    );
+  });
+});
+
+describe("commonsImageUrl", () => {
+  it("serves the file at a fixed width through Special:FilePath", () => {
+    expect(commonsImageUrl("Flag of Berlin.svg")).toBe(
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Berlin.svg?width=320"
+    );
+  });
+});
+
+describe("parsePopulation", () => {
+  it("parses plain integers", () => {
+    expect(parsePopulation("2133111")).toBe(2133111);
+    expect(parsePopulation(" 42 ")).toBe(42);
+  });
+
+  it("rejects missing, non-numeric and multi-value tags", () => {
+    expect(parsePopulation(undefined)).toBeUndefined();
+    expect(parsePopulation("")).toBeUndefined();
+    expect(parsePopulation("about 5000")).toBeUndefined();
+    expect(parsePopulation("1,234")).toBeUndefined();
+    expect(parsePopulation("100;200")).toBeUndefined();
+    expect(parsePopulation("0")).toBeUndefined();
   });
 });
 
