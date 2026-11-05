@@ -91,6 +91,7 @@ function trimmedIfMatches(value: string | undefined, pattern: RegExp): string | 
   return trimmed && pattern.test(trimmed) ? trimmed : undefined;
 }
 
+// Any mapper can edit these tags: values that end up in a link or image URL are allowlisted, never passed through
 function parseAreaFacts(tags: Record<string, string> = {}) {
   const population = parsePopulation(tags.population);
   const populationDate = trimmedIfMatches(tags["population:date"], /^\d{4}(-\d{2}){0,2}$/);

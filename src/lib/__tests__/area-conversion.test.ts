@@ -233,6 +233,11 @@ describe("fromNominatim area facts", () => {
     expect(area.wikidata).toBeUndefined();
   });
 
+  it("ignores a wikipedia language that would change the link's host", () => {
+    expect(withExtratags({ wikipedia: "evil.example:Page" }).wikipedia).toBeUndefined();
+    expect(withExtratags({ wikipedia: "en@evil.example:Page" }).wikipedia).toBeUndefined();
+  });
+
   it("ignores a wikipedia tag holding a full URL", () => {
     expect(
       withExtratags({ wikipedia: "https://en.wikipedia.org/wiki/Mexico_City" }).wikipedia
