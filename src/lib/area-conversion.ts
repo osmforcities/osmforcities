@@ -112,7 +112,6 @@ export function wikipediaUrl(wikipedia: string): string {
   const lang = wikipedia.slice(0, separator);
   const [title, section] = wikipedia
     .slice(separator + 1)
-    .trim()
     .replaceAll(" ", "_")
     .split("#", 2)
     .map(encodeURIComponent);
