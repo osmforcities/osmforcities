@@ -40,7 +40,6 @@ import {
   Cylinder,
   Diamond,
   Dog,
-  DollarSign,
   DoorOpen,
   Droplet,
   Droplets,
@@ -49,6 +48,7 @@ import {
   Eye,
   Factory,
   Fence,
+  FerrisWheel,
   Film,
   FireExtinguisher,
   Flame,
@@ -57,18 +57,19 @@ import {
   Footprints,
   Fuel,
   Gauge,
+  Gavel,
   Gem,
   Gift,
   Glasses,
   Goal,
   GraduationCap,
   Hammer,
-  Heart,
   HeartHandshake,
   HeartPulse,
   Home,
   Hospital,
   Hotel,
+  House,
   IceCreamCone,
   Images,
   Info,
@@ -110,8 +111,6 @@ import {
   Sandwich,
   Scale,
   School,
-  Shield,
-  ShieldAlert,
   Ship,
   Shirt,
   ShoppingBag,
@@ -126,7 +125,6 @@ import {
   Snowflake,
   Sofa,
   Sprout,
-  Square,
   SquareParking,
   Star,
   Stethoscope,
@@ -155,6 +153,7 @@ import {
   Users,
   Utensils,
   UtensilsCrossed,
+  UtilityPole,
   Volleyball,
   Warehouse,
   Waves,
@@ -168,7 +167,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-11-05T02:02:25.781Z
+ * Generated: 2026-11-05T03:02:11.279Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -183,9 +182,9 @@ export function getCategoryIcon(category: string) {
     case "agriculture":
       return <Wheat className="w-5 h-5" />;
     case "amenities":
-      return <Heart className="w-5 h-5" />;
+      return <Sofa className="w-5 h-5" />;
     case "barriers":
-      return <Square className="w-5 h-5" />;
+      return <Fence className="w-5 h-5" />;
     case "buildings-infrastructure":
       return <Building2 className="w-5 h-5" />;
     case "bus":
@@ -199,47 +198,47 @@ export function getCategoryIcon(category: string) {
     case "education":
       return <School className="w-5 h-5" />;
     case "education-culture":
-      return <School className="w-5 h-5" />;
+      return <GraduationCap className="w-5 h-5" />;
     case "emergency":
-      return <ShieldAlert className="w-5 h-5" />;
+      return <Siren className="w-5 h-5" />;
     case "environment":
-      return <Leaf className="w-5 h-5" />;
+      return <Droplets className="w-5 h-5" />;
     case "financial":
-      return <DollarSign className="w-5 h-5" />;
+      return <Banknote className="w-5 h-5" />;
     case "firefighting":
       return <FireExtinguisher className="w-5 h-5" />;
     case "food":
       return <Utensils className="w-5 h-5" />;
     case "government":
-      return <Shield className="w-5 h-5" />;
+      return <Gavel className="w-5 h-5" />;
     case "health":
-      return <Hospital className="w-5 h-5" />;
+      return <HeartPulse className="w-5 h-5" />;
     case "healthcare":
       return <Hospital className="w-5 h-5" />;
     case "housing":
-      return <Building2 className="w-5 h-5" />;
+      return <House className="w-5 h-5" />;
     case "infrastructure":
-      return <Gauge className="w-5 h-5" />;
+      return <UtilityPole className="w-5 h-5" />;
     case "leisure":
-      return <TreePine className="w-5 h-5" />;
+      return <FerrisWheel className="w-5 h-5" />;
     case "leisure-sports":
-      return <Trophy className="w-5 h-5" />;
+      return <PersonStanding className="w-5 h-5" />;
     case "medical-rescue":
       return <Ambulance className="w-5 h-5" />;
     case "mobility":
-      return <Car className="w-5 h-5" />;
+      return <BusFront className="w-5 h-5" />;
     case "nature":
-      return <Leaf className="w-5 h-5" />;
+      return <Trees className="w-5 h-5" />;
     case "nature-environment":
       return <Leaf className="w-5 h-5" />;
     case "pedestrian":
       return <Footprints className="w-5 h-5" />;
     case "public-services":
-      return <Shield className="w-5 h-5" />;
+      return <Landmark className="w-5 h-5" />;
     case "rail":
       return <Train className="w-5 h-5" />;
     case "religion":
-      return <Landmark className="w-5 h-5" />;
+      return <Building className="w-5 h-5" />;
     case "roads":
       return <Route className="w-5 h-5" />;
     case "services":
@@ -249,9 +248,9 @@ export function getCategoryIcon(category: string) {
     case "shops-services":
       return <ShoppingBag className="w-5 h-5" />;
     case "social":
-      return <Users className="w-5 h-5" />;
+      return <HeartHandshake className="w-5 h-5" />;
     case "sports":
-      return <Trophy className="w-5 h-5" />;
+      return <Volleyball className="w-5 h-5" />;
     case "tourism":
       return <Camera className="w-5 h-5" />;
     case "traffic":
