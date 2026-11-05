@@ -2,7 +2,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { NextRequest } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { submitTilesForDataset, tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
+import {
+  recordFailedSubmit,
+  submitTilesForDataset,
+  tilesOnlyLaneEnabled,
+} from "@/lib/tiler/submit";
 
 vi.mock("@/auth", () => ({
   auth: vi.fn(),
@@ -19,6 +23,7 @@ vi.mock("@/lib/dataset-snapshot", async (importOriginal) => ({
 }));
 
 vi.mock("@/lib/tiler/submit", () => ({
+  recordFailedSubmit: vi.fn(),
   submitTilesForDataset: vi.fn(),
   tilesOnlyLaneEnabled: vi.fn().mockReturnValue(false),
 }));
@@ -114,6 +119,7 @@ describe("POST /api/datasets/[id]/refresh", () => {
       beforeEach(() => {
         vi.mocked(tilesOnlyLaneEnabled).mockReturnValue(true);
         vi.mocked(submitTilesForDataset).mockClear();
+        vi.mocked(recordFailedSubmit).mockClear();
         vi.mocked(prisma.dataset.update).mockClear();
       });
 
@@ -155,6 +161,7 @@ describe("POST /api/datasets/[id]/refresh", () => {
         vi.mocked(submitTilesForDataset).mockResolvedValueOnce({});
         const res = await call();
         expect(res.status).toBe(502);
+        expect(recordFailedSubmit).not.toHaveBeenCalled();
       });
 
       it("fails when the bake could not be queued", async () => {
@@ -166,6 +173,10 @@ describe("POST /api/datasets/[id]/refresh", () => {
         expect(res.status).toBe(502);
         // The raw tiler message is operator-only
         expect(JSON.stringify(await res.json())).not.toContain("503");
+        expect(recordFailedSubmit).toHaveBeenCalledWith(
+          "does-not-exist",
+          "Tiler submit failed: 503"
+        );
       });
     });
   });

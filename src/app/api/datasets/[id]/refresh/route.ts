@@ -7,7 +7,11 @@ import {
   DatasetTooLargeError,
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
-import { submitTilesForDataset, tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
+import {
+  recordFailedSubmit,
+  submitTilesForDataset,
+  tilesOnlyLaneEnabled,
+} from "@/lib/tiler/submit";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
@@ -77,10 +81,11 @@ export async function POST(
     // On the tiles-only lane the snapshot is the count probe alone: the Sync
     // button queues a bake sized by it, and the reconcile writes the data.
     if (tilesLane) {
-      const { tilesState } = await submitTilesForDataset(
+      const { tilesState, tilesError } = await submitTilesForDataset(
         datasetId,
         snapshot.dataCount
       );
+      if (tilesState === "failed") await recordFailedSubmit(datasetId, tilesError);
       // null: an empty dataset, nothing to bake, synced as it stands
       if (tilesState !== "pending" && tilesState !== null) {
         return NextResponse.json(
