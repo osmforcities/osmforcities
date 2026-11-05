@@ -1102,11 +1102,11 @@ templates:
       fr: Casernes de pompiers
       de: Feuerwachen
     desc:
-      en: Fire stations
-      pt: Corpos de bombeiros
-      es: Estaciones de bomberos
-      fr: Casernes de pompiers
-      de: Feuerwachen
+      en: Bases of fire brigades, with their trucks and equipment
+      pt: Quartéis dos bombeiros, com viaturas e equipamentos
+      es: Cuarteles de bomberos, con sus vehículos y equipos
+      fr: Bases des sapeurs-pompiers, avec véhicules et matériel
+      de: Standorte der Feuerwehr mit Fahrzeugen und Ausrüstung
   ambulance-stations:
     name:
       en: Ambulance stations
@@ -1115,11 +1115,11 @@ templates:
       fr: Bases d'ambulances
       de: Rettungswachen
     desc:
-      en: Ambulance stations
-      pt: Postos de ambulância
-      es: Bases de ambulancias
-      fr: Bases d'ambulances
-      de: Rettungswachen
+      en: Bases housing ambulances, crews and medical equipment
+      pt: Bases com ambulâncias, equipes e equipamento médico
+      es: Bases con ambulancias, personal y equipo médico
+      fr: Bases abritant ambulances, équipages et matériel médical
+      de: Standorte mit Rettungswagen, Personal und Medizintechnik
   emergency-phones:
     name:
       en: Emergency phones
@@ -1128,11 +1128,11 @@ templates:
       fr: Téléphones d'urgence
       de: Notruftelefone
     desc:
-      en: Emergency phones
-      pt: Telefones de emergência
-      es: Teléfonos de emergencia
-      fr: Téléphones d'urgence
-      de: Notruftelefone
+      en: Phones anyone can use to call emergency services
+      pt: Telefones que qualquer pessoa pode usar para pedir socorro
+      es: Teléfonos que cualquiera puede usar para pedir auxilio
+      fr: Téléphones que chacun peut utiliser pour appeler les secours
+      de: Telefone, über die jeder einen Notruf absetzen kann
   fire-hydrants:
     name:
       en: Fire hydrants
@@ -1141,11 +1141,11 @@ templates:
       fr: Bouches d'incendie
       de: Hydranten
     desc:
-      en: Hydrants firefighters connect hoses to, above or below ground
-      pt: Hidrantes onde os bombeiros conectam as mangueiras, de coluna ou subterrâneos
-      es: Hidrantes donde los bomberos conectan las mangueras, de columna o bajo tierra
-      fr: Poteaux et bouches d'incendie où les pompiers branchent leurs tuyaux
-      de: Über- und Unterflurhydranten, an die die Feuerwehr ihre Schläuche anschließt
+      en: Pillar or underground outlets firefighters connect hoses to
+      pt: Colunas ou bocas no chão onde os bombeiros ligam mangueiras
+      es: Columnas o bocas subterráneas para las mangueras de bomberos
+      fr: Poteaux et bouches où les pompiers branchent leurs tuyaux
+      de: Über- und Unterflurhydranten für die Schläuche der Feuerwehr
   defibrillators:
     name:
       en: Defibrillators
@@ -1154,7 +1154,7 @@ templates:
       fr: Défibrillateurs
       de: Defibrillatoren
     desc:
-      en: Public access defibrillators (aeds)
+      en: Public access defibrillators (AEDs)
       pt: Desfibriladores de acesso público (DEAs)
       es: Desfibriladores de acceso público (DEA)
       fr: Défibrillateurs en accès public (DAE)
@@ -1168,10 +1168,10 @@ templates:
       de: Notfallsammelstellen
     desc:
       en: Safe places where people gather during an evacuation
-      pt: Locais seguros onde as pessoas se reúnem durante uma evacuação
-      es: Lugares seguros donde las personas se reúnen durante una evacuación
-      fr: Lieux sûrs où les personnes se rassemblent lors d'une évacuation
-      de: Sichere Orte, an denen sich Menschen bei einer Evakuierung sammeln
+      pt: Locais seguros onde pessoas se reúnem durante evacuações
+      es: Lugares seguros donde las personas se reúnen al evacuar
+      fr: Lieux sûrs où l'on se rassemble lors d'une évacuation
+      de: Sichere Orte, an denen man sich bei Evakuierungen sammelt
   sirens:
     name:
       en: Warning sirens
@@ -1181,10 +1181,10 @@ templates:
       de: Warnsirenen
     desc:
       en: Sirens that warn the public of disasters, air raids or fires
-      pt: Sirenes que alertam a população sobre desastres, ataques aéreos ou incêndios
-      es: Sirenas que alertan a la población de desastres, ataques aéreos o incendios
-      fr: Sirènes qui alertent la population en cas de catastrophe, d'attaque aérienne ou d'incendie
-      de: Sirenen, die die Bevölkerung vor Katastrophen, Luftangriffen oder Bränden warnen
+      pt: Sirenes que avisam de desastres, ataques aéreos ou incêndios
+      es: Sirenas que alertan de desastres, ataques aéreos o incendios
+      fr: Sirènes annonçant catastrophes, raids aériens ou incendies
+      de: Sirenen warnen vor Katastrophen, Luftangriffen oder Bränden
   firefighting-water-sources:
     name:
       en: Firefighting water sources
@@ -1193,11 +1193,11 @@ templates:
       fr: Points d'eau incendie
       de: Löschwasserentnahmestellen
     desc:
-      en: Water tanks, ponds and suction points firefighters draw water from
-      pt: Reservatórios, lagos e pontos de captação de onde os bombeiros retiram água
-      es: Depósitos, estanques y puntos de aspiración de donde los bomberos toman agua
-      fr: Réservoirs, bassins et points d'aspiration où les pompiers puisent l'eau
-      de: Löschwasserbehälter, Löschteiche und Saugstellen der Feuerwehr
+      en: Tanks, ponds and suction points firefighters draw water from
+      pt: Tanques, lagos e pontos de captação para bombeiros
+      es: Depósitos, estanques y puntos de aspiración para bomberos
+      fr: Réservoirs, bassins et points d'aspiration des pompiers
+      de: Löschwasserbehälter, Löschteiche und Saugstellen
   emergency-shelters:
     name:
       en: Emergency shelters
@@ -1206,11 +1206,11 @@ templates:
       fr: Abris d'urgence
       de: Notunterkünfte
     desc:
-      en: Buildings designated to house displaced people after a disaster
-      pt: Edifícios designados para abrigar desalojados após um desastre
-      es: Edificios designados para alojar a personas desplazadas tras un desastre
-      fr: Bâtiments désignés pour héberger les personnes déplacées après une catastrophe
-      de: Gebäude, die nach einer Katastrophe zur Unterbringung Betroffener bestimmt sind
+      en: Buildings designated to house the displaced after a disaster
+      pt: Edifícios designados para abrigar desalojados após desastres
+      es: Edificios designados para alojar desplazados tras desastres
+      fr: Bâtiments prévus pour loger les sinistrés d'une catastrophe
+      de: Ausgewiesene Gebäude für Betroffene nach einer Katastrophe
   waterfall:
     name:
       en: Waterfall
