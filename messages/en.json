@@ -762,10 +762,10 @@
     "government": "Government",
     "social": "Social",
     "amenities": "Amenities",
+    "waste": "Waste",
     "shops-services": "Shops and services",
     "shops": "Shops",
     "food": "Food and drink",
-    "services": "Services",
     "financial": "Finance"
   },
   "TagLabel": {

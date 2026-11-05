@@ -113,13 +113,13 @@ templates:
 # Environment
   - ["waterfall","waterway=waterfall","environment","Waves"]
   - ["dam","waterway=dam","environment","BrickWall"]
-# Services
-  - ["recycling","amenity=recycling","services","Recycle"]
-  - ["waste-disposal","amenity=waste_disposal","services","Trash2"]
-  - ["benches","amenity=bench","services","RockingChair"]
-  - ["telephones","amenity=telephone","services","Phone"]
-  - ["waste-basket","amenity=waste_basket","services","Trash"]
-  - ["bottle-return","amenity=vending_machine&vending=bottle_return","services","Undo2"]
+# Waste and street furniture
+  - ["recycling","amenity=recycling","waste","Recycle"]
+  - ["waste-disposal","amenity=waste_disposal","waste","Trash2"]
+  - ["benches","amenity=bench","amenities","RockingChair"]
+  - ["telephones","amenity=telephone","amenities","Phone"]
+  - ["waste-basket","amenity=waste_basket","waste","Trash"]
+  - ["bottle-return","amenity=vending_machine&vending=bottle_return","waste","Undo2"]
 # Shops
   - ["supermarkets","shop=supermarket","shops","ShoppingCart"]
   - ["bakeries","shop=bakery","shops","Croissant"]
@@ -251,12 +251,12 @@ templates:
   - ["equestrian","sport=equestrian","sports","Ribbon"]
 # Misc facilities (fountains, clocks, wayfinding)
   - ["fountains","amenity=fountain","amenities","Droplets"]
-  - ["clocks","amenity=clock","services","Clock"]
+  - ["clocks","amenity=clock","amenities","Clock"]
   # Consolidated: tourism=information covers guideposts/boards/maps/route markers via
   # the information= sub-tag (color-by). Replaces the former guideposts + markers
   # templates, which were dead/redundant (guideposts alone returns 0 features in most
   # cities - real guidepost data lives under tourism=information&information=guidepost).
-  - ["information-boards","tourism=information","services","Info"]
+  - ["information-boards","tourism=information","amenities","Info"]
 # Religion
   # Single worship template; the former church/mosque/synagogue/temple/shrine
   # value-templates queried loose religion=* selectors (matching cemeteries,
@@ -511,6 +511,11 @@ defaultView:
   woods: leaf_type
   social-facility: social_facility
   museums: museum
+  benches: backrest
+  recycling: recycling_type
+  bottle-return: operator
+  clocks: display
+  information-boards: information
 
 # The area hub's "Common datasets" grid, in this order. Sync fails on a missing
 # or deprecated id.
@@ -1109,24 +1114,24 @@ demonstrators:
 # fallback for templates without one.
 categories:
   buildings-infrastructure: { icon: Building2 }
-  infrastructure: { icon: Gauge, parent: buildings-infrastructure }
-  housing: { icon: Building2, parent: buildings-infrastructure }
-  barriers: { icon: Square, parent: buildings-infrastructure }
+  infrastructure: { icon: UtilityPole, parent: buildings-infrastructure }
+  housing: { icon: House, parent: buildings-infrastructure }
+  barriers: { icon: Fence, parent: buildings-infrastructure }
 
-  education-culture: { icon: School }
+  education-culture: { icon: GraduationCap }
   education: { icon: School, parent: education-culture }
   culture: { icon: Palette, parent: education-culture }
-  religion: { icon: Landmark, parent: education-culture }
+  religion: { icon: Building, parent: education-culture }
 
-  health: { icon: Hospital }
+  health: { icon: HeartPulse }
   healthcare: { icon: Hospital, parent: health }
 
-  leisure-sports: { icon: Trophy }
-  leisure: { icon: TreePine, parent: leisure-sports }
-  sports: { icon: Trophy, parent: leisure-sports }
+  leisure-sports: { icon: PersonStanding }
+  leisure: { icon: FerrisWheel, parent: leisure-sports }
+  sports: { icon: Volleyball, parent: leisure-sports }
   tourism: { icon: Camera, parent: leisure-sports }
 
-  mobility: { icon: Car }
+  mobility: { icon: BusFront }
   bus: { icon: Bus, parent: mobility }
   rail: { icon: Train, parent: mobility }
   cycling: { icon: Bike, parent: mobility }
@@ -1135,22 +1140,22 @@ categories:
   traffic: { icon: TrafficCone, parent: mobility }
 
   nature-environment: { icon: Leaf }
-  nature: { icon: Leaf, parent: nature-environment }
-  environment: { icon: Leaf, parent: nature-environment }
+  nature: { icon: Trees, parent: nature-environment }
+  environment: { icon: Droplets, parent: nature-environment }
   agriculture: { icon: Wheat, parent: nature-environment }
 
-  emergency: { icon: ShieldAlert }
+  emergency: { icon: Siren }
   medical-rescue: { icon: Ambulance, parent: emergency }
   firefighting: { icon: FireExtinguisher, parent: emergency }
   civil-protection: { icon: Megaphone, parent: emergency }
 
-  public-services: { icon: Shield }
-  government: { icon: Shield, parent: public-services }
-  social: { icon: Users, parent: public-services }
-  amenities: { icon: Heart, parent: public-services }
+  public-services: { icon: Landmark }
+  government: { icon: Gavel, parent: public-services }
+  social: { icon: HeartHandshake, parent: public-services }
+  amenities: { icon: Sofa, parent: public-services }
+  waste: { icon: Trash2, parent: public-services }
 
   shops-services: { icon: ShoppingBag }
   shops: { icon: ShoppingBag, parent: shops-services }
   food: { icon: Utensils, parent: shops-services }
-  services: { icon: Wrench, parent: shops-services }
-  financial: { icon: DollarSign, parent: shops-services }
+  financial: { icon: Banknote, parent: shops-services }

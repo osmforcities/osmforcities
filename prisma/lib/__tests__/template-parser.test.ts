@@ -446,7 +446,7 @@ describe("template-parser", () => {
       // parent parsing (5th element) is still exercised by public-transit children
       expect(byId.get("bus-stops")?.parent).toBe("public-transit");
       expect(categories).toMatchObject({
-        mobility: { icon: "Car" },
+        mobility: { icon: "BusFront" },
         agriculture: { icon: "Wheat", parent: "nature-environment" },
       });
     });
