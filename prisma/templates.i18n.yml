@@ -2331,10 +2331,10 @@ templates:
       de: Leitungsmasten
   roads:
     name:
-      en: Streets
-      pt: Ruas
-      es: Calles
-      fr: Rues
+      en: Streets and roads
+      pt: Ruas e estradas
+      es: Calles y carreteras
+      fr: Rues et routes
       de: Straßen
     desc:
       en: From motorways to residential and living streets

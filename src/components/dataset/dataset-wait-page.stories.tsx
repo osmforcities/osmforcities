@@ -137,7 +137,7 @@ export const BakingQueued: Story = {
 export const BakingFetching: Story = {
   args: {
     datasetId: "ds-sp-roads",
-    templateName: "Streets",
+    templateName: "Streets and roads",
     areaName: "São Paulo",
     areaId: 298285,
     mood: "baking",
