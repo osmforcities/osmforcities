@@ -771,10 +771,10 @@
     "government": "Gobierno",
     "social": "Social",
     "amenities": "Equipamiento urbano",
+    "waste": "Residuos",
     "shops-services": "Comercios y servicios",
     "shops": "Tiendas",
     "food": "Comida y bebida",
-    "services": "Servicios",
     "financial": "Finanzas"
   },
   "TagLabel": {

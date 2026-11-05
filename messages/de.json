@@ -762,10 +762,10 @@
     "government": "Verwaltung",
     "social": "Soziales",
     "amenities": "Ausstattung",
+    "waste": "Abfall",
     "shops-services": "Geschäfte und Dienstleistungen",
     "shops": "Geschäfte",
     "food": "Essen und Trinken",
-    "services": "Dienstleistungen",
     "financial": "Finanzen"
   },
   "TagLabel": {

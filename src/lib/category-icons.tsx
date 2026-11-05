@@ -167,7 +167,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-11-05T03:02:11.279Z
+ * Generated: 2026-11-05T03:05:42.080Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -241,8 +241,6 @@ export function getCategoryIcon(category: string) {
       return <Building className="w-5 h-5" />;
     case "roads":
       return <Route className="w-5 h-5" />;
-    case "services":
-      return <Wrench className="w-5 h-5" />;
     case "shops":
       return <ShoppingBag className="w-5 h-5" />;
     case "shops-services":
@@ -255,6 +253,8 @@ export function getCategoryIcon(category: string) {
       return <Camera className="w-5 h-5" />;
     case "traffic":
       return <TrafficCone className="w-5 h-5" />;
+    case "waste":
+      return <Trash2 className="w-5 h-5" />;
     default:
       return <MapPin className="w-5 h-5" />;
   }
