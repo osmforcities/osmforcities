@@ -4,10 +4,12 @@ import { describe, it, expect } from "vitest";
 import type { Feature } from "geojson";
 import {
   buildCuratedThemes,
+  buildCuratedThemesFromDimensions,
   buildAgeVisibilityFilter,
   buildTagVisibilityFilter,
   buildCuratedColorExpression,
   buildLegendRows,
+  findOpeningTheme,
   sortForDisplay,
   OTHER_CATEGORY,
   MISSING_CATEGORY,
@@ -15,6 +17,7 @@ import {
   type CuratedTheme,
 } from "../curated-themes";
 import { PALETTES } from "../map-palettes";
+import { computeFilterDimensions } from "../filter-dimensions";
 
 const feature = (properties: Record<string, unknown> | null): Feature =>
   ({ type: "Feature", geometry: null, properties } as unknown as Feature);
@@ -290,5 +293,31 @@ describe("buildCuratedColorExpression", () => {
         PALETTES.categorical.other,
       ],
     ]);
+  });
+});
+
+describe("findOpeningTheme", () => {
+  const themes = buildCuratedThemesFromDimensions(
+    computeFilterDimensions(
+      [feature({ building: "house" }), feature({ building: "yes" })],
+      ["building", "roof:shape"],
+      { keepEmpty: true }
+    )
+  );
+
+  it("returns the default view's theme when its tag has values", () => {
+    expect(findOpeningTheme(themes, "building")?.field).toBe("building");
+  });
+
+  it("returns undefined without a default view", () => {
+    expect(findOpeningTheme(themes, null)).toBeUndefined();
+  });
+
+  it("returns undefined when the tag is absent from the data", () => {
+    expect(findOpeningTheme(themes, "roof:shape")).toBeUndefined();
+  });
+
+  it("returns undefined when the tag is not a theme", () => {
+    expect(findOpeningTheme(themes, "levels")).toBeUndefined();
   });
 });

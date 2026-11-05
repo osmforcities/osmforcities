@@ -101,6 +101,7 @@ const DATASET_DETAIL_SELECT = {
       },
       tags: true,
       filterableTags: true,
+      defaultView: true,
       translations: {
         select: {
           locale: true,

@@ -19,6 +19,9 @@ const FEATURED_DATASET_SELECT = {
       centerLon: true,
     },
   },
+  template: {
+    select: { ...DATASET_SELECT.template.select, defaultView: true },
+  },
 } as const;
 
 const getFeaturedDatasets = unstable_cache(
@@ -65,6 +68,7 @@ export async function FeaturedDatasetMap() {
       })}
       category={resolvedTemplate.category?.slug ?? "other"}
       templateId={dataset.templateId}
+      defaultView={dataset.template.defaultView}
       stats={stats}
       href={getDatasetPath({
         locale,

@@ -486,6 +486,10 @@ filterableTags:
   basketball:       [surface, lit]
   tennis:           [surface, lit]
 
+# One of the template's filterableTags; absent opens on "Last edited".
+defaultView:
+  buildings: building
+
 # The area hub's "Common datasets" grid, in this order. Sync fails on a missing
 # or deprecated id.
 commonTemplates:

@@ -88,11 +88,15 @@ describe.skip("GET /api/datasets/[id]/geojson", () => {
     expect(body.type).toBe("FeatureCollection");
     expect(body.features.length).toBeGreaterThan(0);
 
+    const { template } = await prisma.dataset.findUniqueOrThrow({
+      where: { id: testDatasetId },
+      select: { template: { select: { defaultView: true } } },
+    });
+
     for (const feature of body.features) {
-      // Only the age-bucketing timestamp survives; all OSM tags dropped
       const keys = Object.keys(feature.properties);
       expect(
-        keys.every((key) => key === "@timestamp"),
+        keys.every((key) => key === "@timestamp" || key === template.defaultView),
         `unexpected properties: ${keys.join(", ")}`
       ).toBe(true);
 

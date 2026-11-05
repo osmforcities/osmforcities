@@ -88,6 +88,13 @@ export const DEFAULT_STYLE_KNOBS: MapStyleKnobs = {
 
 export const AGE_COLORS = DEFAULT_STYLE_KNOBS.colors;
 
+export const AGE_LABEL_KEYS = {
+  recent: "recentChanges",
+  medium: "mediumChanges",
+  older: "olderChanges",
+  "very-old": "veryOldChanges",
+} as const;
+
 // Draw order within a layer: strictly newer above older, so recent never
 // hides under the very-old majority and very-old never covers older
 export const AGE_SORT_KEY = ageStep({
