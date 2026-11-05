@@ -270,7 +270,10 @@
     "population": "Einwohner {count, number, ::compact-short .#}",
     "populationIn": "Einwohner {count, number, ::compact-short .#} im Jahr {year}",
     "elevation": "Höhe {elevation, number} m",
-    "links": "Links"
+    "links": "Links",
+    "openStreetMap": "OpenStreetMap",
+    "wikipedia": "Wikipedia",
+    "wikidata": "Wikidata"
   },
   "CategoryCards": {
     "title": "Daten in {area} finden",

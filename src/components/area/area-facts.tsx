@@ -29,9 +29,9 @@ export function AreaFacts({ area, parentPlaces }: AreaFactsProps) {
   ].filter(Boolean);
 
   const links = [
-    { label: "OpenStreetMap", href: `https://www.openstreetmap.org/relation/${area.id}` },
-    area.wikipedia && { label: "Wikipedia", href: wikipediaUrl(area.wikipedia) },
-    area.wikidata && { label: "Wikidata", href: `https://www.wikidata.org/wiki/${area.wikidata}` },
+    { label: t("openStreetMap"), href: `https://www.openstreetmap.org/relation/${area.id}` },
+    area.wikipedia && { label: t("wikipedia"), href: wikipediaUrl(area.wikipedia) },
+    area.wikidata && { label: t("wikidata"), href: `https://www.wikidata.org/wiki/${area.wikidata}` },
   ].filter((link): link is { label: string; href: string } => Boolean(link));
 
   return (
