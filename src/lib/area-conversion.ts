@@ -127,11 +127,12 @@ function parseCommonsFile(value: string | undefined): string | undefined {
   const trimmed = value?.trim();
   if (trimmed?.startsWith("File:")) return trimmed.slice("File:".length) || undefined;
   const url = parseUrl(trimmed);
-  if (url?.hostname !== "upload.wikimedia.org" || !url.pathname.startsWith("/wikipedia/commons/")) {
-    return undefined;
-  }
+  if (url?.hostname !== "upload.wikimedia.org") return undefined;
+  // A thumbnail path repeats the file name with a size prefix after it, so read the segment after the hash folders
+  const file = url.pathname.match(/^\/wikipedia\/commons\/(?:thumb\/)?[0-9a-f]\/[0-9a-f]{2}\/([^/]+)/)?.[1];
+  if (!file) return undefined;
   try {
-    return decodeURIComponent(url.pathname.split("/").at(-1) ?? "") || undefined;
+    return decodeURIComponent(file);
   } catch {
     return undefined;
   }

@@ -265,6 +265,11 @@ describe("fromNominatim area facts", () => {
         flag: "http://upload.wikimedia.org/wikipedia/commons/4/4b/Bandeira_da_cidade_de_S%C3%A3o_Paulo.svg",
       }).flag
     ).toBe("Bandeira_da_cidade_de_São_Paulo.svg");
+    expect(
+      withExtratags({
+        flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Bandeira_da_cidade_de_S%C3%A3o_Paulo.svg/320px-Bandeira_da_cidade_de_S%C3%A3o_Paulo.svg.png",
+      }).flag
+    ).toBe("Bandeira_da_cidade_de_São_Paulo.svg");
   });
 
   it("ignores a flag hosted outside Wikimedia Commons", () => {
