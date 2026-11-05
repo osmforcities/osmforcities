@@ -21,7 +21,6 @@ const mexicoCity: Area = {
   wikipedia: "es:Ciudad de México",
   wikidata: "Q1489",
   website: "https://www.cdmx.gob.mx/",
-  flag: "Flag of Mexico City.svg",
 };
 
 const meta = {
@@ -55,10 +54,6 @@ export const FullFacts: Story = {
       "href",
       "https://www.cdmx.gob.mx/"
     );
-    await expect(canvas.getByTestId("area-facts").querySelector("img")).toHaveAttribute(
-      "src",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mexico%20City.svg?width=48"
-    );
   },
 };
 
@@ -74,13 +69,11 @@ export const EmptyFacts: Story = {
       wikipedia: undefined,
       wikidata: undefined,
       website: undefined,
-      flag: undefined,
     },
   },
   play: async ({ canvas }) => {
     await expect(canvas.getByTestId("area-facts")).toHaveTextContent(/^City$/);
     await expect(canvas.getAllByRole("link")).toHaveLength(1);
-    await expect(canvas.getByTestId("area-facts").querySelector("img")).toBeNull();
     await expect(canvas.getByRole("link", { name: "OpenStreetMap" })).toBeVisible();
   },
 };

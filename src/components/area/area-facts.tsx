@@ -7,6 +7,21 @@ import type { MessageResolver } from "@/lib/tag-i18n";
 import { getAreaCharacteristics } from "@/lib/utils";
 import type { Area } from "@/types/area";
 
+/** `flag` is a Wikimedia Commons file name. */
+export function AreaFlag({ flag }: { flag: string }) {
+  return (
+    <Image
+      src={commonsImageUrl(flag, 128)}
+      alt=""
+      width={64}
+      height={43}
+      unoptimized
+      data-testid="area-flag"
+      className="h-10 w-auto shrink-0 border border-gray-200 lg:h-16"
+    />
+  );
+}
+
 export function AreaFacts({ area }: { area: Area }) {
   const t = useTranslations("AreaFacts");
   // Nominatim address types are open-ended, so they can't be checked against literal message keys
@@ -35,16 +50,6 @@ export function AreaFacts({ area }: { area: Area }) {
     <div className="flex flex-col gap-2 text-sm text-gray-600">
       {facts.length > 0 && (
         <p data-testid="area-facts">
-          {area.flag && (
-            <Image
-              src={commonsImageUrl(area.flag, 48)}
-              alt=""
-              width={24}
-              height={16}
-              unoptimized
-              className="mr-2 inline-block h-4 w-auto border border-gray-200 align-[-2px]"
-            />
-          )}
           {facts.map((fact, index) => (
             <Fragment key={fact}>
               {index > 0 && " · "}

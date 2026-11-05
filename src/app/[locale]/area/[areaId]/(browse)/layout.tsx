@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { auth } from "@/auth";
 import { AreaBrowse, AreaBrowseSkeleton } from "@/components/area/area-browse";
-import { AreaFacts } from "@/components/area/area-facts";
+import { AreaFacts, AreaFlag } from "@/components/area/area-facts";
 import { TrackView } from "@/components/analytics/track-view";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { resolveAreaName } from "@/lib/area-name";
@@ -63,6 +63,7 @@ async function AreaBrowseShell({ children, params }: AreaBrowseLayoutProps) {
         areaName={areaName}
         parentBreadcrumb={parentBreadcrumb}
         facts={<AreaFacts area={areaInfo} />}
+        flag={areaInfo.flag && <AreaFlag flag={areaInfo.flag} />}
         templates={templates}
       >
         {children}

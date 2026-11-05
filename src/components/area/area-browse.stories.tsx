@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, userEvent } from "storybook/test";
 import type { AreaTemplate } from "@/lib/area-templates";
 import { AreaBrowse } from "./area-browse";
+import { AreaFlag } from "./area-facts";
 
 const template = (
   id: string,
@@ -77,5 +78,16 @@ export const FromSharedLink: Story = {
   play: async ({ canvas }) => {
     await expect(canvas.getByRole("searchbox")).toHaveValue("bus");
     await expect(canvas.getByRole("link", { name: "Bus stops" })).toBeVisible();
+  },
+};
+
+/** The flag sits at the top right of the header, beside the title. */
+export const WithFlag: Story = {
+  args: { flag: <AreaFlag flag="Bandeira da cidade de São Paulo.svg" /> },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByTestId("area-flag")).toHaveAttribute(
+      "src",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Bandeira%20da%20cidade%20de%20S%C3%A3o%20Paulo.svg?width=128"
+    );
   },
 };
