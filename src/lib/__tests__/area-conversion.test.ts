@@ -233,6 +233,12 @@ describe("fromNominatim area facts", () => {
     expect(area.wikidata).toBeUndefined();
   });
 
+  it("ignores a wikipedia tag holding a full URL", () => {
+    expect(
+      withExtratags({ wikipedia: "https://en.wikipedia.org/wiki/Mexico_City" }).wikipedia
+    ).toBeUndefined();
+  });
+
   it("drops a population date without a population", () => {
     expect(withExtratags({ "population:date": "2020" }).populationYear).toBeUndefined();
   });

@@ -101,7 +101,7 @@ function parseAreaFacts(tags: Record<string, string> = {}) {
     elevation: elevation === undefined ? undefined : Number(elevation),
     // capital=<n> names the admin level it is the capital of; 2 is the country
     isCapital: tags.capital === "yes" || tags.capital === "2",
-    wikipedia: trimmedIfMatches(tags.wikipedia, /^[a-z][a-z-]*:\S/),
+    wikipedia: trimmedIfMatches(tags.wikipedia, /^[a-z][a-z-]*:[^\s/]/),
     wikidata: trimmedIfMatches(tags.wikidata, /^Q\d+$/),
     website: parseWebsite(tags.website),
     flag: parseCommonsFile(tags.flag),
@@ -109,8 +109,7 @@ function parseAreaFacts(tags: Record<string, string> = {}) {
 }
 
 function parseUrl(value: string | undefined): URL | undefined {
-  if (!value || !URL.canParse(value.trim())) return undefined;
-  return new URL(value.trim());
+  return URL.parse(value?.trim() ?? "") ?? undefined;
 }
 
 function parseWebsite(value: string | undefined): string | undefined {
