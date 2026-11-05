@@ -737,7 +737,7 @@
     "rail": "Schiene",
     "cycling": "Radverkehr",
     "pedestrian": "Fußverkehr",
-    "roads": "Straßen",
+    "roads": "Kfz-Verkehr",
     "traffic": "Verkehr",
     "nature-environment": "Natur",
     "nature": "Naturelemente",
@@ -864,6 +864,16 @@
       "no": "Nein",
       "limited": "Eingeschränkt",
       "unknown": "Unbekannt"
+    },
+    "highway": {
+      "motorway": "Autobahn",
+      "trunk": "Schnellstraße",
+      "primary": "Hauptverbindungsstraße",
+      "secondary": "Landesstraße",
+      "tertiary": "Verbindungsstraße",
+      "residential": "Wohnstraße",
+      "living_street": "Spielstraße",
+      "unclassified": "Nebenstraße"
     },
     "healthcare:speciality": {
       "general": "Allgemeinmedizin",

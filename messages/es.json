@@ -746,7 +746,7 @@
     "rail": "Ferrocarril",
     "cycling": "Bicicleta",
     "pedestrian": "Peatones",
-    "roads": "Calles y carreteras",
+    "roads": "Vialidad",
     "traffic": "Tránsito",
     "nature-environment": "Naturaleza",
     "nature": "Elementos naturales",
@@ -873,6 +873,16 @@
       "no": "No",
       "limited": "Limitado",
       "unknown": "Desconocido"
+    },
+    "highway": {
+      "motorway": "Autopista",
+      "trunk": "Carretera troncal",
+      "primary": "Carretera primaria",
+      "secondary": "Carretera secundaria",
+      "tertiary": "Carretera terciaria",
+      "residential": "Calle residencial",
+      "living_street": "Calle compartida",
+      "unclassified": "Vía sin clasificar"
     },
     "healthcare:speciality": {
       "general": "Medicina general",
