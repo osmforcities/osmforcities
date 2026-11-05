@@ -372,11 +372,11 @@ templates:
       fr: Hôpitaux
       de: Krankenhäuser
     desc:
-      en: Hospitals
-      pt: Hospitais
-      es: Hospitales
-      fr: Hôpitaux
-      de: Krankenhäuser
+      en: Facilities with beds for inpatient medical care
+      pt: Estabelecimentos com leitos para internação e tratamento
+      es: Establecimientos con camas para hospitalización
+      fr: Établissements avec lits pour l'hospitalisation
+      de: Einrichtungen mit Betten für die stationäre Behandlung
   clinics:
     name:
       en: Clinics
@@ -385,11 +385,11 @@ templates:
       fr: Cliniques
       de: Medizinische Versorgungszentren
     desc:
-      en: Clinics
-      pt: Clínicas
-      es: Clínicas
-      fr: Cliniques
-      de: Medizinische Versorgungszentren
+      en: Outpatient centres with several doctors
+      pt: Centros de atendimento ambulatorial com vários médicos
+      es: Centros de atención ambulatoria con varios médicos
+      fr: Centres de soins ambulatoires avec plusieurs médecins
+      de: Ambulante Einrichtungen mit mehreren Ärzten
   doctors:
     name:
       en: Doctors
@@ -398,11 +398,11 @@ templates:
       fr: Médecins
       de: Arztpraxen
     desc:
-      en: Doctors
-      pt: Médicos
-      es: Médicos
-      fr: Médecins
-      de: Arztpraxen
+      en: Practices where one or a few doctors see patients
+      pt: Consultórios onde médicos atendem pacientes
+      es: Consultorios donde médicos atienden a pacientes
+      fr: Cabinets où des médecins reçoivent des patients
+      de: Praxen, in denen Ärzte Patienten behandeln
   dentists:
     name:
       en: Dentists
@@ -411,11 +411,11 @@ templates:
       fr: Dentistes
       de: Zahnarztpraxen
     desc:
-      en: Dentists
-      pt: Dentistas
-      es: Dentistas
-      fr: Dentistes
-      de: Zahnarztpraxen
+      en: Dental practices for teeth and oral care
+      pt: Consultórios odontológicos para cuidar dos dentes e da boca
+      es: Consultorios dentales para el cuidado de dientes y boca
+      fr: Cabinets dentaires pour les soins des dents et de la bouche
+      de: Praxen für Zahnbehandlung und Mundgesundheit
   pharmacies:
     name:
       en: Pharmacies
@@ -424,11 +424,11 @@ templates:
       fr: Pharmacies
       de: Apotheken
     desc:
-      en: Pharmacies
-      pt: Farmácias
-      es: Farmacias
-      fr: Pharmacies
-      de: Apotheken
+      en: Shops where pharmacists sell medicines
+      pt: Lojas onde farmacêuticos vendem medicamentos
+      es: Tiendas donde farmacéuticos venden medicamentos
+      fr: Commerces où des pharmaciens vendent des médicaments
+      de: Geschäfte, in denen Apotheker Arzneimittel verkaufen
   health-post:
     name:
       en: Health post
@@ -437,11 +437,11 @@ templates:
       fr: Poste de santé
       de: Gesundheitsposten
     desc:
-      en: Health post
-      pt: Posto de saúde
-      es: Puesto de salud
-      fr: Poste de santé
-      de: Gesundheitsposten
+      en: Small basic care facilities, often without a doctor
+      pt: Pequenas unidades de atendimento básico, muitas sem médico
+      es: Pequeñas unidades de atención básica, a menudo sin médico
+      fr: Petites structures de soins de base, souvent sans médecin
+      de: Kleine Einrichtungen für Grundversorgung, oft ohne Arzt
   nursing-home:
     name:
       en: Nursing home
@@ -450,11 +450,11 @@ templates:
       fr: Maison de retraite
       de: Pflegeheime
     desc:
-      en: Nursing home
-      pt: Lar de idosos
-      es: Residencia de ancianos
-      fr: Maison de retraite
-      de: Pflegeheime
+      en: Residential homes with nursing care for older people
+      pt: Residências com cuidados de enfermagem para idosos
+      es: Hogares con atención de enfermería para adultos mayores
+      fr: Résidences avec soins infirmiers pour personnes âgées
+      de: Wohnheime mit Pflege für ältere Menschen
   veterinary:
     name:
       en: Veterinary
@@ -463,11 +463,11 @@ templates:
       fr: Vétérinaires
       de: Tierarztpraxen
     desc:
-      en: Veterinary
-      pt: Veterinários
-      es: Veterinaria
-      fr: Vétérinaires
-      de: Tierarztpraxen
+      en: Clinics and practices that treat animals
+      pt: Clínicas e consultórios que tratam animais
+      es: Clínicas y consultorios que atienden animales
+      fr: Cliniques et cabinets qui soignent les animaux
+      de: Kliniken und Praxen für die Behandlung von Tieren
   opticians:
     name:
       en: Opticians
@@ -476,11 +476,11 @@ templates:
       fr: Opticiens
       de: Optiker
     desc:
-      en: Opticians
-      pt: Óticas
-      es: Ópticas
-      fr: Opticiens
-      de: Optiker
+      en: Shops selling glasses and contact lenses
+      pt: Lojas que vendem óculos e lentes de contato
+      es: Tiendas de anteojos y lentes de contacto
+      fr: Magasins de lunettes et de lentilles de contact
+      de: Geschäfte für Brillen und Kontaktlinsen
   medical-laboratories:
     name:
       en: Medical laboratories
@@ -489,11 +489,11 @@ templates:
       fr: Laboratoires médicaux
       de: Medizinische Labore
     desc:
-      en: Medical laboratories
-      pt: Laboratórios médicos
-      es: Laboratorios médicos
-      fr: Laboratoires médicaux
-      de: Medizinische Labore
+      en: Labs that test blood, urine and other samples
+      pt: Laboratórios de exames de sangue, urina e outras amostras
+      es: Laboratorios de análisis de sangre, orina y otras muestras
+      fr: Analyses de sang, d'urine et d'autres prélèvements
+      de: Labore für Blut-, Urin- und andere Probenanalysen
   psychotherapists:
     name:
       en: Psychotherapists
@@ -502,11 +502,11 @@ templates:
       fr: Psychothérapeutes
       de: Psychotherapiepraxen
     desc:
-      en: Psychotherapists
-      pt: Psicoterapeutas
-      es: Psicoterapeutas
-      fr: Psychothérapeutes
-      de: Psychotherapiepraxen
+      en: Practices of psychotherapists and clinical psychologists
+      pt: Consultórios de psicoterapia e psicologia clínica
+      es: Consultorios de psicoterapia y psicología clínica
+      fr: Cabinets de psychothérapie et de psychologie clinique
+      de: Praxen für Psychotherapie und klinische Psychologie
   physiotherapists:
     name:
       en: Physiotherapists
@@ -515,11 +515,11 @@ templates:
       fr: Kinésithérapeutes
       de: Physiotherapiepraxen
     desc:
-      en: Physiotherapists
-      pt: Fisioterapeutas
-      es: Fisioterapeutas
-      fr: Kinésithérapeutes
-      de: Physiotherapiepraxen
+      en: Practices treating injuries, pain and limited movement
+      pt: Clínicas para tratar lesões, dores e mobilidade
+      es: Consultorios para tratar lesiones, dolor y movilidad
+      fr: Cabinets pour traiter blessures, douleurs et mobilité
+      de: Praxen für Verletzungen, Schmerzen und Beweglichkeit
   optometrists:
     name:
       en: Optometrists
@@ -528,11 +528,11 @@ templates:
       fr: Optométristes
       de: Optometristen
     desc:
-      en: Optometrists
-      pt: Optometristas
-      es: Optometristas
-      fr: Optométristes
-      de: Optometristen
+      en: Practices that test eyesight and prescribe lenses
+      pt: Consultórios que examinam a visão e prescrevem lentes
+      es: Consultorios que examinan la vista y recetan lentes
+      fr: Cabinets qui examinent la vue et prescrivent des verres
+      de: Praxen für Sehtests und die Verordnung von Sehhilfen
   podiatrists:
     name:
       en: Podiatrists
@@ -541,11 +541,11 @@ templates:
       fr: Podologues
       de: Podologiepraxen
     desc:
-      en: Podiatrists
-      pt: Podólogos
-      es: Podólogos
-      fr: Podologues
-      de: Podologiepraxen
+      en: Practices treating foot and ankle problems
+      pt: Consultórios para tratar problemas nos pés e tornozelos
+      es: Consultorios para tratar problemas de pies y tobillos
+      fr: Cabinets de soins des pieds et des chevilles
+      de: Praxen für Fuß- und Sprunggelenkbeschwerden
   rehabilitation-centres:
     name:
       en: Rehabilitation centres
@@ -554,11 +554,11 @@ templates:
       fr: Centres de réadaptation
       de: Rehazentren
     desc:
-      en: Rehabilitation centres
-      pt: Centros de reabilitação
-      es: Centros de rehabilitación
-      fr: Centres de réadaptation
-      de: Rehazentren
+      en: Centres for recovery after illness, injury or addiction
+      pt: Centros de recuperação após doença, lesão ou dependência
+      es: Centros de recuperación tras enfermedad, lesión o adicción
+      fr: Rétablissement après maladie, blessure ou addiction
+      de: Zentren für Genesung nach Krankheit, Verletzung oder Sucht
   counselling-services:
     name:
       en: Counselling services
@@ -567,11 +567,11 @@ templates:
       fr: Services de conseil
       de: Beratungsstellen
     desc:
-      en: Counselling services
-      pt: Serviços de aconselhamento
-      es: Servicios de asesoramiento
-      fr: Services de conseil
-      de: Beratungsstellen
+      en: Health advice on nutrition, addiction and more
+      pt: Orientação em saúde sobre alimentação, dependências e mais
+      es: Asesoramiento de salud sobre nutrición, adicciones y más
+      fr: Conseil en santé sur la nutrition, les addictions et plus
+      de: Gesundheitsberatung zu Ernährung, Sucht und mehr
   speech-therapists:
     name:
       en: Speech therapists
@@ -580,11 +580,11 @@ templates:
       fr: Orthophonistes
       de: Logopädiepraxen
     desc:
-      en: Speech therapists
-      pt: Fonoaudiólogos
-      es: Terapeutas del lenguaje
-      fr: Orthophonistes
-      de: Logopädiepraxen
+      en: Therapy for speech, voice, swallowing and hearing
+      pt: Tratamento da fala, voz, deglutição e audição
+      es: Terapia del habla, la voz, la deglución y la audición
+      fr: Rééducation de la parole, voix, déglutition et audition
+      de: Therapie bei Sprach-, Stimm-, Schluck- und Hörstörungen
   occupational-therapists:
     name:
       en: Occupational therapists
@@ -593,11 +593,11 @@ templates:
       fr: Ergothérapeutes
       de: Ergotherapiepraxen
     desc:
-      en: Occupational therapists
-      pt: Terapeutas ocupacionais
-      es: Terapeutas ocupacionales
-      fr: Ergothérapeutes
-      de: Ergotherapiepraxen
+      en: Therapy to regain independence in daily life
+      pt: Terapia para recuperar autonomia no dia a dia
+      es: Terapia para recuperar autonomía en la vida diaria
+      fr: Rééducation pour retrouver l'autonomie au quotidien
+      de: Therapie für mehr Selbstständigkeit im Alltag
   alternative-medicine:
     name:
       en: Alternative medicine
@@ -606,11 +606,11 @@ templates:
       fr: Médecine alternative
       de: Alternativmedizin
     desc:
-      en: Alternative medicine
-      pt: Medicina alternativa
-      es: Medicina alternativa
-      fr: Médecine alternative
-      de: Alternativmedizin
+      en: Acupuncture, chiropractic, naturopathy and similar
+      pt: Acupuntura, quiropraxia, naturopatia e similares
+      es: Acupuntura, quiropráctica, naturopatía y similares
+      fr: Acupuncture, chiropraxie, naturopathie et autres
+      de: Akupunktur, Chiropraktik, Naturheilkunde und Ähnliches
   blood-donation:
     name:
       en: Blood donation
@@ -619,11 +619,11 @@ templates:
       fr: Don du sang
       de: Blutspendedienste
     desc:
-      en: Blood donation
-      pt: Doação de sangue
-      es: Donación de sangre
-      fr: Don du sang
-      de: Blutspendedienste
+      en: Centres where people donate blood or plasma
+      pt: Locais para doar sangue ou plasma
+      es: Lugares para donar sangre o plasma
+      fr: Lieux où donner son sang ou son plasma
+      de: Orte, an denen man Blut oder Plasma spenden kann
   dialysis-centres:
     name:
       en: Dialysis centres
@@ -632,11 +632,11 @@ templates:
       fr: Centres de dialyse
       de: Dialysezentren
     desc:
-      en: Dialysis centres
-      pt: Centros de diálise
-      es: Centros de diálisis
-      fr: Centres de dialyse
-      de: Dialysezentren
+      en: Centres treating kidney failure with dialysis
+      pt: Tratamento da insuficiência renal com diálise
+      es: Tratamiento de la insuficiencia renal con diálisis
+      fr: Traitement de l'insuffisance rénale par dialyse
+      de: Zentren für Dialyse bei Nierenversagen
   midwives:
     name:
       en: Midwives
@@ -645,11 +645,11 @@ templates:
       fr: Sages-femmes
       de: Hebammen
     desc:
-      en: Midwives
-      pt: Parteiras
-      es: Parteras
-      fr: Sages-femmes
-      de: Hebammen
+      en: Midwife care for pregnancy, birth and after birth
+      pt: Atendimento de parteiras na gestação, parto e pós-parto
+      es: Atención de parteras en embarazo, parto y posparto
+      fr: Suivi de la grossesse, de l'accouchement et du post-partum
+      de: Hebammenpraxen für Schwangerschaft, Geburt und Wochenbett
   schools:
     name:
       en: Schools
@@ -788,11 +788,11 @@ templates:
       fr: Hôtels
       de: Hotels
     desc:
-      en: Hotels
-      pt: Hotéis
-      es: Hoteles
-      fr: Hôtels
-      de: Hotels
+      en: Establishments that rent rooms to guests
+      pt: Estabelecimentos que alugam quartos a hóspedes
+      es: Establecimientos que alquilan habitaciones a huéspedes
+      fr: Établissements qui louent des chambres à des clients
+      de: Betriebe, die Gästen Zimmer vermieten
   motels:
     name:
       en: Motels
@@ -816,11 +816,11 @@ templates:
       fr: Attractions
       de: Sehenswürdigkeiten
     desc:
-      en: Attractions
-      pt: Atrações
-      es: Atracciones
-      fr: Attractions
-      de: Sehenswürdigkeiten
+      en: Sights and purpose-built places that draw tourists
+      pt: Pontos turísticos e locais criados para atrair visitantes
+      es: Lugares de interés y sitios creados para atraer turistas
+      fr: Sites d'intérêt et lieux conçus pour attirer les touristes
+      de: Touristische Ziele und eigens für Besucher gebaute Anlagen
   viewpoints:
     name:
       en: Viewpoints
@@ -829,11 +829,11 @@ templates:
       fr: Points de vue
       de: Aussichtspunkte
     desc:
-      en: Viewpoints
-      pt: Mirantes
-      es: Miradores
-      fr: Points de vue
-      de: Aussichtspunkte
+      en: Spots, often high up, with a wide view of the surroundings
+      pt: Locais, muitas vezes elevados, com ampla vista da paisagem
+      es: Lugares, a menudo elevados, con amplia vista del entorno
+      fr: Lieux souvent en hauteur offrant une large vue alentour
+      de: Oft erhöhte Orte mit weitem Blick auf die Umgebung
   campsites:
     name:
       en: Campsites
@@ -842,11 +842,11 @@ templates:
       fr: Campings
       de: Campingplätze
     desc:
-      en: Campsites
-      pt: Áreas de acampamento
-      es: Zonas de acampada
-      fr: Campings
-      de: Campingplätze
+      en: Grounds where people camp overnight, in tents or vehicles
+      pt: Terrenos para acampar à noite, em barracas ou veículos
+      es: Terrenos para acampar de noche, en carpas o vehículos
+      fr: Terrains où l'on campe la nuit, en tente ou en véhicule
+      de: Gelände zum Zelten oder Übernachten im Fahrzeug
   alpine-huts:
     name:
       en: Alpine huts
@@ -855,11 +855,11 @@ templates:
       fr: Refuges alpins
       de: Alpenhütten
     desc:
-      en: Alpine huts
-      pt: Refúgios alpinos
-      es: Refugios alpinos
-      fr: Refuges alpins
-      de: Alpenhütten
+      en: Staffed mountain huts offering beds and meals
+      pt: Cabanas de montanha com funcionários, camas e refeições
+      es: Cabañas de montaña atendidas, con camas y comidas
+      fr: Cabanes de montagne gardées, avec couchage et repas
+      de: Bewirtschaftete Berghütten mit Schlafplätzen und Essen
   caravan-sites:
     name:
       en: Caravan sites
@@ -868,11 +868,11 @@ templates:
       fr: Aires pour camping-cars
       de: Wohnmobilstellplätze
     desc:
-      en: Caravan sites
-      pt: Áreas para trailers
-      es: Áreas para caravanas
-      fr: Aires pour camping-cars
-      de: Wohnmobilstellplätze
+      en: Parking-style sites where motorhomes can stay overnight
+      pt: Locais com vagas onde motorhomes podem pernoitar
+      es: Espacios con plazas para pernoctar en casas rodantes
+      fr: Emplacements où les camping-cars peuvent passer la nuit
+      de: Stellflächen, auf denen Wohnmobile über Nacht stehen
   wilderness-huts:
     name:
       en: Wilderness huts
@@ -881,11 +881,11 @@ templates:
       fr: Refuges non gardés
       de: Unbewirtschaftete Hütten
     desc:
-      en: Wilderness huts
-      pt: Abrigos em áreas naturais
-      es: Refugios en zonas naturales
-      fr: Refuges non gardés
-      de: Unbewirtschaftete Hütten
+      en: Remote unstaffed shelters with a place to sleep
+      pt: Cabanas remotas sem funcionários, com lugar para dormir
+      es: Cabañas remotas sin personal, con lugar para dormir
+      fr: Abris isolés, sans gardien, où l'on peut dormir
+      de: Abgelegene Unterstände ohne Personal zum Übernachten
   chalets:
     name:
       en: Chalets
@@ -894,11 +894,11 @@ templates:
       fr: Chalets
       de: Ferienhäuser
     desc:
-      en: Chalets
-      pt: Chalés
-      es: Chalés
-      fr: Chalets
-      de: Ferienhäuser
+      en: Self-catering holiday cottages with kitchen and bathroom
+      pt: Casas de temporada com cozinha e banheiro próprios
+      es: Casas o cabañas vacacionales con cocina y baño propios
+      fr: Logements de vacances avec cuisine et salle de bain
+      de: Eigenständige Unterkünfte für Urlauber mit Küche und Bad
   cinemas:
     name:
       en: Cinemas
@@ -1648,11 +1648,11 @@ templates:
       fr: Parcs
       de: Parks
     desc:
-      en: Parks
-      pt: Parques
-      es: Parques
-      fr: Parcs
-      de: Parks
+      en: Green spaces, usually public, for recreation and relaxation
+      pt: Áreas verdes, em geral públicas, para lazer e descanso
+      es: Áreas verdes, por lo general públicas, para recreación
+      fr: Espaces verts, souvent publics, pour la détente
+      de: Meist öffentliche Grünflächen zur Erholung
   playgrounds:
     name:
       en: Playgrounds
@@ -1661,11 +1661,11 @@ templates:
       fr: Aires de jeux
       de: Spielplätze
     desc:
-      en: Playgrounds
-      pt: Playgrounds
-      es: Parques infantiles
-      fr: Aires de jeux
-      de: Spielplätze
+      en: Areas with swings, slides and other equipment for children
+      pt: Áreas com balanços, escorregadores e outros brinquedos
+      es: Áreas con columpios, toboganes y otros juegos infantiles
+      fr: Espaces avec balançoires, toboggans et autres jeux d'enfants
+      de: Flächen mit Schaukeln, Rutschen und anderen Spielgeräten
   gardens:
     name:
       en: Gardens
@@ -1674,11 +1674,11 @@ templates:
       fr: Jardins
       de: Gärten
     desc:
-      en: Gardens
-      pt: Jardins
-      es: Jardines
-      fr: Jardins
-      de: Gärten
+      en: Planted areas of flowers and plants, decorative or botanical
+      pt: Áreas com flores e plantas, ornamentais ou botânicas
+      es: Áreas con flores y plantas, ornamentales o botánicas
+      fr: Espaces plantés de fleurs, décoratifs ou botaniques
+      de: Angelegte Flächen mit Blumen und Pflanzen, auch botanisch
   fitness-centers:
     name:
       en: Fitness centers
@@ -1687,11 +1687,11 @@ templates:
       fr: Salles de sport
       de: Fitnessstudios
     desc:
-      en: Fitness centers
-      pt: Academias
-      es: Gimnasios
-      fr: Salles de sport
-      de: Fitnessstudios
+      en: Gyms with exercise machines, fitness classes or both
+      pt: Espaços com aparelhos de musculação, aulas ou ambos
+      es: Locales con máquinas de ejercicio, clases o ambos
+      fr: Lieux avec appareils de musculation, cours ou les deux
+      de: Studios mit Trainingsgeräten, Kursen oder beidem
   swimming-pools:
     name:
       en: Swimming pools
@@ -1700,11 +1700,11 @@ templates:
       fr: Piscines
       de: Schwimmbecken
     desc:
-      en: Swimming pools
-      pt: Piscinas
-      es: Piscinas
-      fr: Piscines
-      de: Schwimmbecken
+      en: Water basins of indoor and outdoor pools
+      pt: Tanques de água de piscinas cobertas e ao ar livre
+      es: Áreas de agua de piscinas techadas y al aire libre
+      fr: Bassins des piscines couvertes et en plein air
+      de: Wasserflächen von Becken in Hallen und im Freien
   sports-centres:
     name:
       en: Sports centres
@@ -1729,7 +1729,7 @@ templates:
       en: Large venues with stands for watching sports and events
       pt: Grandes arenas com arquibancadas para esportes e eventos
       es: Grandes recintos con gradas para ver deportes y eventos
-      fr: Grandes enceintes avec tribunes pour le sport et les événements
+      fr: Grandes enceintes avec tribunes pour sport et événements
       de: Große Arenen mit Tribünen für Sport und Veranstaltungen
   pitches:
     name:
@@ -1739,11 +1739,11 @@ templates:
       fr: Terrains de sport
       de: Sportplätze
     desc:
-      en: Fields and courts for football, tennis, basketball and other sports
-      pt: Campos e quadras de futebol, tênis, basquete e outros esportes
-      es: Campos y canchas de fútbol, tenis, baloncesto y otros deportes
-      fr: Terrains de football, tennis, basket et autres sports
-      de: Spielfelder und Plätze für Fußball, Tennis, Basketball und andere Sportarten
+      en: Marked fields and courts for playing sports
+      pt: Campos e quadras demarcados para a prática de esportes
+      es: Campos y canchas demarcados para practicar deportes
+      fr: Terrains et courts délimités pour la pratique du sport
+      de: Markierte Spielfelder und Plätze für den Sport
   golf-courses:
     name:
       en: Golf courses
@@ -1752,11 +1752,11 @@ templates:
       fr: Terrains de golf
       de: Golfplätze
     desc:
-      en: Golf courses
-      pt: Campos de golfe
-      es: Campos de golf
-      fr: Terrains de golf
-      de: Golfplätze
+      en: Grounds with a series of holes for playing golf
+      pt: Áreas com uma sequência de buracos para jogar golfe
+      es: Terrenos con una serie de hoyos para jugar golf
+      fr: Parcours composés d'une série de trous pour le golf
+      de: Anlagen mit einer Reihe von Löchern zum Golfspielen
   tracks:
     name:
       en: Tracks
@@ -1778,11 +1778,11 @@ templates:
       fr: Aires de fitness
       de: Fitnessstationen
     desc:
-      en: Fitness stations
-      pt: Estações de ginástica
-      es: Estaciones de ejercicio
-      fr: Aires de fitness
-      de: Fitnessstationen
+      en: Outdoor exercise equipment such as pull-up bars and benches
+      pt: Equipamentos de exercício ao ar livre, como barras e bancos
+      es: Equipos de ejercicio al aire libre, como barras y bancos
+      fr: Équipements d'exercice en plein air, comme barres et bancs
+      de: Trainingsgeräte im Freien, etwa Klimmzugstangen und Bänke
   ice-rinks:
     name:
       en: Ice rinks
@@ -1791,11 +1791,11 @@ templates:
       fr: Patinoires
       de: Eisbahnen
     desc:
-      en: Ice rinks
-      pt: Pistas de gelo
-      es: Pistas de hielo
-      fr: Patinoires
-      de: Eisbahnen
+      en: Artificial ice surfaces for skating or ice hockey
+      pt: Superfícies de gelo artificial para patinação ou hóquei
+      es: Superficies de hielo artificial para patinaje o hockey
+      fr: Surfaces de glace artificielle pour le patinage ou le hockey
+      de: Künstliche Eisflächen zum Schlittschuhlaufen oder Eishockey
   nature-reserves:
     name:
       en: Nature reserves
@@ -1804,11 +1804,11 @@ templates:
       fr: Réserves naturelles
       de: Naturschutzgebiete
     desc:
-      en: Nature reserves
-      pt: Reservas naturais
-      es: Reservas naturales
-      fr: Réserves naturelles
-      de: Naturschutzgebiete
+      en: Protected areas for wildlife, plants or geological features
+      pt: Áreas protegidas para conservar fauna, flora ou geologia
+      es: Áreas protegidas para conservar fauna, flora o geología
+      fr: Zones protégées pour leur faune, leur flore ou leur géologie
+      de: Geschützte Flächen für Tiere, Pflanzen oder Geologie
   marinas:
     name:
       en: Marinas
@@ -1817,11 +1817,11 @@ templates:
       fr: Ports de plaisance
       de: Jachthäfen
     desc:
-      en: Marinas
-      pt: Marinas
-      es: Marinas
-      fr: Ports de plaisance
-      de: Jachthäfen
+      en: Moorings and docks for yachts and small boats
+      pt: Atracadouros e píeres para iates e barcos pequenos
+      es: Amarres y muelles para yates y botes pequeños
+      fr: Amarrages et pontons pour yachts et petits bateaux
+      de: Liegeplätze und Stege für Jachten und kleine Boote
   dog-parks:
     name:
       en: Dog parks
@@ -1830,11 +1830,11 @@ templates:
       fr: Parcs canins
       de: Hundewiesen
     desc:
-      en: Dog parks
-      pt: Parques para cães
-      es: Parques para perros
-      fr: Parcs canins
-      de: Hundewiesen
+      en: Areas, fenced or not, where dogs may run off the leash
+      pt: Áreas, cercadas ou não, onde cães podem correr soltos
+      es: Áreas, cercadas o no, donde los perros corren sin correa
+      fr: Espaces, clôturés ou non, où les chiens courent sans laisse
+      de: Flächen, eingezäunt oder nicht, für Hunde ohne Leine
   trees:
     name:
       en: Trees
@@ -2584,11 +2584,11 @@ templates:
       fr: Football
       de: Fußball
     desc:
-      en: Football
-      pt: Futebol
-      es: Fútbol
-      fr: Football
-      de: Fußball
+      en: Fields of any size where football (soccer) is played
+      pt: Campos de qualquer tamanho onde se joga futebol
+      es: Campos de cualquier tamaño donde se juega fútbol
+      fr: Terrains de toutes tailles où l'on joue au football
+      de: Spielfelder jeder Größe für Fußball
   basketball:
     name:
       en: Basketball
@@ -2597,11 +2597,11 @@ templates:
       fr: Basket-ball
       de: Basketball
     desc:
-      en: Basketball
-      pt: Basquete
-      es: Baloncesto
-      fr: Basket-ball
-      de: Basketball
+      en: Outdoor and indoor courts used for basketball
+      pt: Quadras abertas e cobertas usadas para basquete
+      es: Canchas abiertas y techadas usadas para baloncesto
+      fr: Terrains extérieurs et couverts pour le basket-ball
+      de: Plätze im Freien und in Hallen für Basketball
   tennis:
     name:
       en: Tennis
@@ -2610,11 +2610,11 @@ templates:
       fr: Tennis
       de: Tennis
     desc:
-      en: Tennis
-      pt: Tênis
-      es: Tenis
-      fr: Tennis
-      de: Tennis
+      en: Public and club courts used for tennis
+      pt: Quadras públicas e de clubes usadas para tênis
+      es: Canchas públicas y de clubes usadas para tenis
+      fr: Courts publics et de clubs pour le tennis
+      de: Öffentliche Plätze und Vereinsplätze für Tennis
   swimming:
     name:
       en: Swimming
@@ -2623,11 +2623,11 @@ templates:
       fr: Natation
       de: Schwimmen
     desc:
-      en: Swimming
-      pt: Natação
-      es: Natación
-      fr: Natation
-      de: Schwimmen
+      en: Aquatic centres, swim clubs and lap lanes
+      pt: Centros aquáticos, clubes de natação e raias
+      es: Centros acuáticos, clubes de natación y carriles
+      fr: Centres aquatiques, clubs de natation et couloirs
+      de: Schwimmhallen, Schwimmvereine und Bahnen
   golf:
     name:
       en: Golf
@@ -2636,11 +2636,11 @@ templates:
       fr: Golf
       de: Golf
     desc:
-      en: Golf
-      pt: Golfe
-      es: Golf
-      fr: Golf
-      de: Golf
+      en: Greens, tees and driving ranges used for golf
+      pt: Greens, tees e áreas de treino usados para golfe
+      es: Greens, tees y campos de práctica usados para golf
+      fr: Greens, départs et practices pour le golf
+      de: Grüns, Abschläge und Driving Ranges für Golf
   skiing:
     name:
       en: Skiing
@@ -2649,11 +2649,11 @@ templates:
       fr: Ski
       de: Skifahren
     desc:
-      en: Skiing
-      pt: Esqui
-      es: Esquí
-      fr: Ski
-      de: Skifahren
+      en: Winter sports areas, jumps and clubs for skiing
+      pt: Áreas de esportes de inverno, rampas e clubes de esqui
+      es: Áreas de deportes de invierno, trampolines y clubes de esquí
+      fr: Domaines skiables, tremplins et clubs de ski
+      de: Wintersportgebiete, Sprungschanzen und Skivereine
   baseball:
     name:
       en: Baseball
@@ -2662,11 +2662,11 @@ templates:
       fr: Baseball
       de: Baseball
     desc:
-      en: Baseball
-      pt: Beisebol
-      es: Béisbol
-      fr: Baseball
-      de: Baseball
+      en: Diamond-shaped fields with bases and a pitcher's mound
+      pt: Campos em diamante com bases e montinho do arremessador
+      es: Campos en forma de diamante con bases y montículo
+      fr: Terrains en losange avec bases et monticule du lanceur
+      de: Rautenförmige Spielfelder mit Bases und Werferhügel
   athletics:
     name:
       en: Athletics
@@ -2675,11 +2675,11 @@ templates:
       fr: Athlétisme
       de: Leichtathletik
     desc:
-      en: Athletics
-      pt: Atletismo
-      es: Atletismo
-      fr: Athlétisme
-      de: Leichtathletik
+      en: Lanes, jump pits and throwing circles for track and field
+      pt: Raias, caixas de salto e áreas de arremesso do atletismo
+      es: Carriles, fosos de salto y áreas de lanzamiento de atletismo
+      fr: Couloirs, sautoirs et aires de lancer pour l'athlétisme
+      de: Bahnen, Sprunggruben und Wurfkreise der Leichtathletik
   gymnasiums:
     name:
       en: Gymnastics
@@ -2688,11 +2688,11 @@ templates:
       fr: Gymnastique
       de: Turnen
     desc:
-      en: Gymnastics
-      pt: Ginástica
-      es: Gimnasia
-      fr: Gymnastique
-      de: Turnen
+      en: Halls and clubs for artistic and rhythmic gymnastics
+      pt: Ginásios e clubes de ginástica artística e rítmica
+      es: Salas y clubes de gimnasia artística y rítmica
+      fr: Salles et clubs de gymnastique artistique et rythmique
+      de: Hallen und Vereine für Kunstturnen und Rhythmische Gymnastik
   shooting:
     name:
       en: Shooting
@@ -2701,11 +2701,11 @@ templates:
       fr: Tir sportif
       de: Schießsport
     desc:
-      en: Shooting
-      pt: Tiro esportivo
-      es: Tiro deportivo
-      fr: Tir sportif
-      de: Schießsport
+      en: Indoor and outdoor ranges for target shooting with guns
+      pt: Estandes cobertos e abertos para tiro ao alvo com armas
+      es: Campos techados y abiertos para tiro al blanco con armas
+      fr: Stands couverts et en plein air pour le tir aux armes à feu
+      de: Schießstände drinnen und draußen für Schusswaffen
   archery:
     name:
       en: Archery
@@ -2714,11 +2714,11 @@ templates:
       fr: Tir à l'arc
       de: Bogenschießen
     desc:
-      en: Archery
-      pt: Arco e flecha
-      es: Tiro con arco
-      fr: Tir à l'arc
-      de: Bogenschießen
+      en: Grounds with targets for shooting arrows with a bow
+      pt: Campos com alvos para atirar flechas com arco
+      es: Campos con blancos para disparar flechas con arco
+      fr: Terrains avec cibles pour tirer des flèches à l'arc
+      de: Plätze mit Zielscheiben zum Schießen mit Pfeil und Bogen
   climbing:
     name:
       en: Climbing
@@ -2727,11 +2727,11 @@ templates:
       fr: Escalade
       de: Klettern
     desc:
-      en: Climbing
-      pt: Escalada
-      es: Escalada
-      fr: Escalade
-      de: Klettern
+      en: Rock faces, routes and climbing walls
+      pt: Paredões rochosos, vias e muros de escalada
+      es: Paredes rocosas, vías y muros de escalada
+      fr: Falaises, voies et murs d'escalade
+      de: Felswände, Kletterrouten und Kletterwände
   equestrian:
     name:
       en: Equestrian
@@ -2740,11 +2740,11 @@ templates:
       fr: Équitation
       de: Reitsport
     desc:
-      en: Equestrian
-      pt: Equitação
-      es: Hípica
-      fr: Équitation
-      de: Reitsport
+      en: Riding arenas and grounds for horse sports, not racing
+      pt: Picadeiros e áreas para esportes equestres, sem corridas
+      es: Picaderos y pistas para deportes ecuestres, sin carreras
+      fr: Manèges et terrains de sports équestres, hors courses
+      de: Reitplätze und Anlagen für Pferdesport, ohne Rennen
   fountains:
     name:
       en: Fountains
