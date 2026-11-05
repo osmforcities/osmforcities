@@ -18,7 +18,7 @@ export function AreaFlag({ flag }: { flag: string }) {
         fill
         unoptimized
         data-testid="area-flag"
-        className="object-contain object-right-top"
+        className="object-contain object-right-top [filter:drop-shadow(0_0_1px_rgb(0_0_0/0.3))_drop-shadow(0_2px_6px_rgb(0_0_0/0.12))]"
       />
     </div>
   );
