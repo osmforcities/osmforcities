@@ -372,11 +372,11 @@ templates:
       fr: Hôpitaux
       de: Krankenhäuser
     desc:
-      en: Hospitals
-      pt: Hospitais
-      es: Hospitales
-      fr: Hôpitaux
-      de: Krankenhäuser
+      en: Facilities with beds for inpatient medical care
+      pt: Estabelecimentos com leitos para internação e tratamento
+      es: Establecimientos con camas para hospitalización
+      fr: Établissements avec lits pour l'hospitalisation
+      de: Einrichtungen mit Betten für die stationäre Behandlung
   clinics:
     name:
       en: Clinics
@@ -385,11 +385,11 @@ templates:
       fr: Cliniques
       de: Medizinische Versorgungszentren
     desc:
-      en: Clinics
-      pt: Clínicas
-      es: Clínicas
-      fr: Cliniques
-      de: Medizinische Versorgungszentren
+      en: Outpatient centres with several doctors
+      pt: Centros de atendimento ambulatorial com vários médicos
+      es: Centros de atención ambulatoria con varios médicos
+      fr: Centres de soins ambulatoires avec plusieurs médecins
+      de: Ambulante Einrichtungen mit mehreren Ärzten
   doctors:
     name:
       en: Doctors
@@ -398,11 +398,11 @@ templates:
       fr: Médecins
       de: Arztpraxen
     desc:
-      en: Doctors
-      pt: Médicos
-      es: Médicos
-      fr: Médecins
-      de: Arztpraxen
+      en: Practices where one or a few doctors see patients
+      pt: Consultórios onde médicos atendem pacientes
+      es: Consultorios donde médicos atienden a pacientes
+      fr: Cabinets où des médecins reçoivent des patients
+      de: Praxen, in denen Ärzte Patienten behandeln
   dentists:
     name:
       en: Dentists
@@ -411,11 +411,11 @@ templates:
       fr: Dentistes
       de: Zahnarztpraxen
     desc:
-      en: Dentists
-      pt: Dentistas
-      es: Dentistas
-      fr: Dentistes
-      de: Zahnarztpraxen
+      en: Dental practices for teeth and oral care
+      pt: Consultórios odontológicos para cuidar dos dentes e da boca
+      es: Consultorios dentales para el cuidado de dientes y boca
+      fr: Cabinets dentaires pour les soins des dents et de la bouche
+      de: Praxen für Zahnbehandlung und Mundgesundheit
   pharmacies:
     name:
       en: Pharmacies
@@ -424,11 +424,11 @@ templates:
       fr: Pharmacies
       de: Apotheken
     desc:
-      en: Pharmacies
-      pt: Farmácias
-      es: Farmacias
-      fr: Pharmacies
-      de: Apotheken
+      en: Shops where pharmacists sell medicines
+      pt: Lojas onde farmacêuticos vendem medicamentos
+      es: Tiendas donde farmacéuticos venden medicamentos
+      fr: Commerces où des pharmaciens vendent des médicaments
+      de: Geschäfte, in denen Apotheker Arzneimittel verkaufen
   health-post:
     name:
       en: Health post
@@ -437,11 +437,11 @@ templates:
       fr: Poste de santé
       de: Gesundheitsposten
     desc:
-      en: Health post
-      pt: Posto de saúde
-      es: Puesto de salud
-      fr: Poste de santé
-      de: Gesundheitsposten
+      en: Small basic care facilities, often without a doctor
+      pt: Pequenas unidades de atendimento básico, muitas sem médico
+      es: Pequeñas unidades de atención básica, a menudo sin médico
+      fr: Petites structures de soins de base, souvent sans médecin
+      de: Kleine Einrichtungen für Grundversorgung, oft ohne Arzt
   nursing-home:
     name:
       en: Nursing home
@@ -450,11 +450,11 @@ templates:
       fr: Maison de retraite
       de: Pflegeheime
     desc:
-      en: Nursing home
-      pt: Lar de idosos
-      es: Residencia de ancianos
-      fr: Maison de retraite
-      de: Pflegeheime
+      en: Residential homes with nursing care for older people
+      pt: Residências com cuidados de enfermagem para idosos
+      es: Hogares con atención de enfermería para adultos mayores
+      fr: Résidences avec soins infirmiers pour personnes âgées
+      de: Wohnheime mit Pflege für ältere Menschen
   veterinary:
     name:
       en: Veterinary
@@ -463,11 +463,11 @@ templates:
       fr: Vétérinaires
       de: Tierarztpraxen
     desc:
-      en: Veterinary
-      pt: Veterinários
-      es: Veterinaria
-      fr: Vétérinaires
-      de: Tierarztpraxen
+      en: Clinics and practices that treat animals
+      pt: Clínicas e consultórios que tratam animais
+      es: Clínicas y consultorios que atienden animales
+      fr: Cliniques et cabinets qui soignent les animaux
+      de: Kliniken und Praxen für die Behandlung von Tieren
   opticians:
     name:
       en: Opticians
@@ -476,11 +476,11 @@ templates:
       fr: Opticiens
       de: Optiker
     desc:
-      en: Opticians
-      pt: Óticas
-      es: Ópticas
-      fr: Opticiens
-      de: Optiker
+      en: Shops selling glasses and contact lenses
+      pt: Lojas que vendem óculos e lentes de contato
+      es: Tiendas de anteojos y lentes de contacto
+      fr: Magasins de lunettes et de lentilles de contact
+      de: Geschäfte für Brillen und Kontaktlinsen
   medical-laboratories:
     name:
       en: Medical laboratories
@@ -489,11 +489,11 @@ templates:
       fr: Laboratoires médicaux
       de: Medizinische Labore
     desc:
-      en: Medical laboratories
-      pt: Laboratórios médicos
-      es: Laboratorios médicos
-      fr: Laboratoires médicaux
-      de: Medizinische Labore
+      en: Labs that test blood, urine and other samples
+      pt: Laboratórios de exames de sangue, urina e outras amostras
+      es: Laboratorios de análisis de sangre, orina y otras muestras
+      fr: Analyses de sang, d'urine et d'autres prélèvements
+      de: Labore für Blut-, Urin- und andere Probenanalysen
   psychotherapists:
     name:
       en: Psychotherapists
@@ -502,11 +502,11 @@ templates:
       fr: Psychothérapeutes
       de: Psychotherapiepraxen
     desc:
-      en: Psychotherapists
-      pt: Psicoterapeutas
-      es: Psicoterapeutas
-      fr: Psychothérapeutes
-      de: Psychotherapiepraxen
+      en: Practices of psychotherapists and clinical psychologists
+      pt: Consultórios de psicoterapia e psicologia clínica
+      es: Consultorios de psicoterapia y psicología clínica
+      fr: Cabinets de psychothérapie et de psychologie clinique
+      de: Praxen für Psychotherapie und klinische Psychologie
   physiotherapists:
     name:
       en: Physiotherapists
@@ -515,11 +515,11 @@ templates:
       fr: Kinésithérapeutes
       de: Physiotherapiepraxen
     desc:
-      en: Physiotherapists
-      pt: Fisioterapeutas
-      es: Fisioterapeutas
-      fr: Kinésithérapeutes
-      de: Physiotherapiepraxen
+      en: Practices treating injuries, pain and limited movement
+      pt: Clínicas para tratar lesões, dores e mobilidade
+      es: Consultorios para tratar lesiones, dolor y movilidad
+      fr: Cabinets pour traiter blessures, douleurs et mobilité
+      de: Praxen für Verletzungen, Schmerzen und Beweglichkeit
   optometrists:
     name:
       en: Optometrists
@@ -528,11 +528,11 @@ templates:
       fr: Optométristes
       de: Optometristen
     desc:
-      en: Optometrists
-      pt: Optometristas
-      es: Optometristas
-      fr: Optométristes
-      de: Optometristen
+      en: Practices that test eyesight and prescribe lenses
+      pt: Consultórios que examinam a visão e prescrevem lentes
+      es: Consultorios que examinan la vista y recetan lentes
+      fr: Cabinets qui examinent la vue et prescrivent des verres
+      de: Praxen für Sehtests und die Verordnung von Sehhilfen
   podiatrists:
     name:
       en: Podiatrists
@@ -541,11 +541,11 @@ templates:
       fr: Podologues
       de: Podologiepraxen
     desc:
-      en: Podiatrists
-      pt: Podólogos
-      es: Podólogos
-      fr: Podologues
-      de: Podologiepraxen
+      en: Practices treating foot and ankle problems
+      pt: Consultórios para tratar problemas nos pés e tornozelos
+      es: Consultorios para tratar problemas de pies y tobillos
+      fr: Cabinets de soins des pieds et des chevilles
+      de: Praxen für Fuß- und Sprunggelenkbeschwerden
   rehabilitation-centres:
     name:
       en: Rehabilitation centres
@@ -554,11 +554,11 @@ templates:
       fr: Centres de réadaptation
       de: Rehazentren
     desc:
-      en: Rehabilitation centres
-      pt: Centros de reabilitação
-      es: Centros de rehabilitación
-      fr: Centres de réadaptation
-      de: Rehazentren
+      en: Centres for recovery after illness, injury or addiction
+      pt: Centros de recuperação após doença, lesão ou dependência
+      es: Centros de recuperación tras enfermedad, lesión o adicción
+      fr: Rétablissement après maladie, blessure ou addiction
+      de: Zentren für Genesung nach Krankheit, Verletzung oder Sucht
   counselling-services:
     name:
       en: Counselling services
@@ -567,11 +567,11 @@ templates:
       fr: Services de conseil
       de: Beratungsstellen
     desc:
-      en: Counselling services
-      pt: Serviços de aconselhamento
-      es: Servicios de asesoramiento
-      fr: Services de conseil
-      de: Beratungsstellen
+      en: Health advice on nutrition, addiction and more
+      pt: Orientação em saúde sobre alimentação, dependências e mais
+      es: Asesoramiento de salud sobre nutrición, adicciones y más
+      fr: Conseil en santé sur la nutrition, les addictions et plus
+      de: Gesundheitsberatung zu Ernährung, Sucht und mehr
   speech-therapists:
     name:
       en: Speech therapists
@@ -580,11 +580,11 @@ templates:
       fr: Orthophonistes
       de: Logopädiepraxen
     desc:
-      en: Speech therapists
-      pt: Fonoaudiólogos
-      es: Terapeutas del lenguaje
-      fr: Orthophonistes
-      de: Logopädiepraxen
+      en: Therapy for speech, voice, swallowing and hearing
+      pt: Tratamento da fala, voz, deglutição e audição
+      es: Terapia del habla, la voz, la deglución y la audición
+      fr: Rééducation de la parole, voix, déglutition et audition
+      de: Therapie bei Sprach-, Stimm-, Schluck- und Hörstörungen
   occupational-therapists:
     name:
       en: Occupational therapists
@@ -593,11 +593,11 @@ templates:
       fr: Ergothérapeutes
       de: Ergotherapiepraxen
     desc:
-      en: Occupational therapists
-      pt: Terapeutas ocupacionais
-      es: Terapeutas ocupacionales
-      fr: Ergothérapeutes
-      de: Ergotherapiepraxen
+      en: Therapy to regain independence in daily life
+      pt: Terapia para recuperar autonomia no dia a dia
+      es: Terapia para recuperar autonomía en la vida diaria
+      fr: Rééducation pour retrouver l'autonomie au quotidien
+      de: Therapie für mehr Selbstständigkeit im Alltag
   alternative-medicine:
     name:
       en: Alternative medicine
@@ -606,11 +606,11 @@ templates:
       fr: Médecine alternative
       de: Alternativmedizin
     desc:
-      en: Alternative medicine
-      pt: Medicina alternativa
-      es: Medicina alternativa
-      fr: Médecine alternative
-      de: Alternativmedizin
+      en: Acupuncture, chiropractic, naturopathy and similar
+      pt: Acupuntura, quiropraxia, naturopatia e similares
+      es: Acupuntura, quiropráctica, naturopatía y similares
+      fr: Acupuncture, chiropraxie, naturopathie et autres
+      de: Akupunktur, Chiropraktik, Naturheilkunde und Ähnliches
   blood-donation:
     name:
       en: Blood donation
@@ -619,11 +619,11 @@ templates:
       fr: Don du sang
       de: Blutspendedienste
     desc:
-      en: Blood donation
-      pt: Doação de sangue
-      es: Donación de sangre
-      fr: Don du sang
-      de: Blutspendedienste
+      en: Centres where people donate blood or plasma
+      pt: Locais para doar sangue ou plasma
+      es: Lugares para donar sangre o plasma
+      fr: Lieux où donner son sang ou son plasma
+      de: Orte, an denen man Blut oder Plasma spenden kann
   dialysis-centres:
     name:
       en: Dialysis centres
@@ -632,11 +632,11 @@ templates:
       fr: Centres de dialyse
       de: Dialysezentren
     desc:
-      en: Dialysis centres
-      pt: Centros de diálise
-      es: Centros de diálisis
-      fr: Centres de dialyse
-      de: Dialysezentren
+      en: Centres treating kidney failure with dialysis
+      pt: Tratamento da insuficiência renal com diálise
+      es: Tratamiento de la insuficiencia renal con diálisis
+      fr: Traitement de l'insuffisance rénale par dialyse
+      de: Zentren für Dialyse bei Nierenversagen
   midwives:
     name:
       en: Midwives
@@ -645,11 +645,11 @@ templates:
       fr: Sages-femmes
       de: Hebammen
     desc:
-      en: Midwives
-      pt: Parteiras
-      es: Parteras
-      fr: Sages-femmes
-      de: Hebammen
+      en: Midwife care for pregnancy, birth and after birth
+      pt: Atendimento de parteiras na gestação, parto e pós-parto
+      es: Atención de parteras en embarazo, parto y posparto
+      fr: Suivi de la grossesse, de l'accouchement et du post-partum
+      de: Hebammenpraxen für Schwangerschaft, Geburt und Wochenbett
   schools:
     name:
       en: Schools
