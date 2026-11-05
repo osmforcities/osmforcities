@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { fromNominatim, fromOverpass, InvalidAreaError } from "@/lib/area-conversion";
+import {
+  fromNominatim,
+  fromOverpass,
+  InvalidAreaError,
+  parsePopulation,
+  wikipediaUrl,
+} from "@/lib/area-conversion";
 import type { NominatimResult } from "@/schemas/nominatim";
 import type { OSMRelation } from "@/types/osm";
 
@@ -189,7 +195,7 @@ describe("fromNominatim area facts", () => {
 
     expect(area).toMatchObject({
       population: 9209944,
-      populationDate: "2020",
+      populationYear: "2020",
       elevation: 2250,
       isCapital: true,
       wikipedia: "es:Ciudad de México",
@@ -201,7 +207,7 @@ describe("fromNominatim area facts", () => {
     const area = withExtratags(undefined);
 
     expect(area.population).toBeUndefined();
-    expect(area.populationDate).toBeUndefined();
+    expect(area.populationYear).toBeUndefined();
     expect(area.elevation).toBeUndefined();
     expect(area.isCapital).toBe(false);
     expect(area.wikipedia).toBeUndefined();
@@ -219,7 +225,7 @@ describe("fromNominatim area facts", () => {
     });
 
     expect(area.population).toBeUndefined();
-    expect(area.populationDate).toBeUndefined();
+    expect(area.populationYear).toBeUndefined();
     expect(area.elevation).toBeUndefined();
     expect(area.isCapital).toBe(false);
     expect(area.wikipedia).toBeUndefined();
@@ -227,7 +233,7 @@ describe("fromNominatim area facts", () => {
   });
 
   it("drops a population date without a population", () => {
-    expect(withExtratags({ "population:date": "2020" }).populationDate).toBeUndefined();
+    expect(withExtratags({ "population:date": "2020" }).populationYear).toBeUndefined();
   });
 
   it("keeps decimal and negative elevations", () => {
@@ -237,6 +243,41 @@ describe("fromNominatim area facts", () => {
   it("treats capital=2 as a national capital, capital=4 as not", () => {
     expect(withExtratags({ capital: "2" }).isCapital).toBe(true);
     expect(withExtratags({ capital: "4" }).isCapital).toBe(false);
+  });
+
+  it("keeps the year of a full population date", () => {
+    const area = withExtratags({ population: "9209944", "population:date": "2020-03-15" });
+    expect(area.populationYear).toBe("2020");
+  });
+});
+
+describe("wikipediaUrl", () => {
+  it("links the article in the tag's language", () => {
+    expect(wikipediaUrl("es:Ciudad de México")).toBe(
+      "https://es.wikipedia.org/wiki/Ciudad_de_M%C3%A9xico"
+    );
+  });
+
+  it("keeps a section anchor", () => {
+    expect(wikipediaUrl("en:Mexico City#History")).toBe(
+      "https://en.wikipedia.org/wiki/Mexico_City#History"
+    );
+  });
+});
+
+describe("parsePopulation", () => {
+  it("parses plain integers", () => {
+    expect(parsePopulation("2133111")).toBe(2133111);
+    expect(parsePopulation(" 42 ")).toBe(42);
+  });
+
+  it("rejects missing, non-numeric and multi-value tags", () => {
+    expect(parsePopulation(undefined)).toBeUndefined();
+    expect(parsePopulation("")).toBeUndefined();
+    expect(parsePopulation("about 5000")).toBeUndefined();
+    expect(parsePopulation("1,234")).toBeUndefined();
+    expect(parsePopulation("100;200")).toBeUndefined();
+    expect(parsePopulation("0")).toBeUndefined();
   });
 });
 

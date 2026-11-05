@@ -15,7 +15,7 @@ const mexicoCity: Area = {
   country: "Mexico",
   state: "Mexico City",
   population: 9209944,
-  populationDate: "2020",
+  populationYear: "2020",
   elevation: 2250,
   isCapital: true,
   wikipedia: "es:Ciudad de México",
@@ -35,7 +35,7 @@ type Story = StoryObj<typeof meta>;
 export const FullFacts: Story = {
   play: async ({ canvas }) => {
     await expect(canvas.getByTestId("area-facts")).toHaveTextContent(
-      "Capital city · Mexico · Population 9.2M (2020) · Elevation 2,250 m"
+      "Capital city · Mexico · Population 9.2M in 2020 · Elevation 2,250 m"
     );
     await expect(canvas.getByRole("link", { name: "OpenStreetMap" })).toHaveAttribute(
       "href",
@@ -58,7 +58,7 @@ export const EmptyFacts: Story = {
     area: {
       ...mexicoCity,
       population: undefined,
-      populationDate: undefined,
+      populationYear: undefined,
       elevation: undefined,
       isCapital: false,
       wikipedia: undefined,

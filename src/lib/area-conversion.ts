@@ -86,24 +86,37 @@ export function parsePopulation(value: string | undefined): number | undefined {
   return population > 0 ? population : undefined;
 }
 
-function matching(value: string | undefined, pattern: RegExp): string | undefined {
+function trimmedIfMatches(value: string | undefined, pattern: RegExp): string | undefined {
   const trimmed = value?.trim();
   return trimmed && pattern.test(trimmed) ? trimmed : undefined;
 }
 
 function parseAreaFacts(tags: Record<string, string> = {}) {
   const population = parsePopulation(tags.population);
-  const elevation = matching(tags.ele, /^-?\d+(\.\d+)?$/);
+  const populationDate = trimmedIfMatches(tags["population:date"], /^\d{4}(-\d{2}){0,2}$/);
+  const elevation = trimmedIfMatches(tags.ele, /^-?\d+(\.\d+)?$/);
   return {
     population,
-    populationDate:
-      population === undefined ? undefined : matching(tags["population:date"], /^\d{4}(-\d{2}){0,2}$/),
+    populationYear: population === undefined ? undefined : populationDate?.slice(0, 4),
     elevation: elevation === undefined ? undefined : Number(elevation),
     // capital=<n> names the admin level it is the capital of; 2 is the country
     isCapital: tags.capital === "yes" || tags.capital === "2",
-    wikipedia: matching(tags.wikipedia, /^[a-z][a-z-]*:\S/),
-    wikidata: matching(tags.wikidata, /^Q\d+$/),
+    wikipedia: trimmedIfMatches(tags.wikipedia, /^[a-z][a-z-]*:\S/),
+    wikidata: trimmedIfMatches(tags.wikidata, /^Q\d+$/),
   };
+}
+
+/** `wikipedia` is the OSM tag, `<lang>:<title>[#<section>]`. */
+export function wikipediaUrl(wikipedia: string): string {
+  const separator = wikipedia.indexOf(":");
+  const lang = wikipedia.slice(0, separator);
+  const [title, section] = wikipedia
+    .slice(separator + 1)
+    .trim()
+    .replaceAll(" ", "_")
+    .split("#", 2)
+    .map(encodeURIComponent);
+  return `https://${lang}.wikipedia.org/wiki/${title}${section ? `#${section}` : ""}`;
 }
 
 export function fromNominatim(result: NominatimResult): Area {

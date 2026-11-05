@@ -16,8 +16,8 @@ export type Area = {
   country?: string;
   state?: string;
   population?: number;
-  /** OSM population:date, kept only alongside a population. */
-  populationDate?: string;
+  /** Year from OSM population:date, kept only alongside a population. */
+  populationYear?: string;
   /** Metres, from the OSM ele tag. */
   elevation?: number;
   isCapital?: boolean;

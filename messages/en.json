@@ -268,8 +268,8 @@
   "AreaFacts": {
     "capitalCity": "Capital city",
     "population": "Population {count, number, ::compact-short .#}",
-    "populationOn": "Population {count, number, ::compact-short .#} ({date})",
-    "elevation": "Elevation {metres, number} m",
+    "populationIn": "Population {count, number, ::compact-short .#} in {year}",
+    "elevation": "Elevation {elevation, number} m",
     "links": "Links"
   },
   "CategoryCards": {

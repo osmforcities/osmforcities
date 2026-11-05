@@ -1,5 +1,4 @@
 import { describe, it, expect } from "vitest";
-import { parsePopulation } from "@/lib/area-conversion";
 import { dedupeAreas, rankByScale, toAreaSearchResult } from "@/lib/area-search";
 import {
   NominatimSearchResponseSchema,
@@ -149,18 +148,3 @@ describe("toAreaSearchResult", () => {
   });
 });
 
-describe("parsePopulation", () => {
-  it("parses plain integers", () => {
-    expect(parsePopulation("2133111")).toBe(2133111);
-    expect(parsePopulation(" 42 ")).toBe(42);
-  });
-
-  it("rejects missing, non-numeric and multi-value tags", () => {
-    expect(parsePopulation(undefined)).toBeUndefined();
-    expect(parsePopulation("")).toBeUndefined();
-    expect(parsePopulation("about 5000")).toBeUndefined();
-    expect(parsePopulation("1,234")).toBeUndefined();
-    expect(parsePopulation("100;200")).toBeUndefined();
-    expect(parsePopulation("0")).toBeUndefined();
-  });
-});

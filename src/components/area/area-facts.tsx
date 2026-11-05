@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/components/ui/link";
+import { wikipediaUrl } from "@/lib/area-conversion";
 import type { MessageResolver } from "@/lib/tag-i18n";
 import { getAreaCharacteristics } from "@/lib/utils";
 import type { Area } from "@/types/area";
@@ -21,10 +22,10 @@ export function AreaFacts({ area, parentPlaces }: AreaFactsProps) {
   const facts = [
     [placeType, parentPlaces.join(", ")].filter(Boolean).join(" · "),
     area.population !== undefined &&
-      (area.populationDate
-        ? t("populationOn", { count: area.population, date: area.populationDate })
+      (area.populationYear
+        ? t("populationIn", { count: area.population, year: area.populationYear })
         : t("population", { count: area.population })),
-    area.elevation !== undefined && t("elevation", { metres: area.elevation }),
+    area.elevation !== undefined && t("elevation", { elevation: area.elevation }),
   ].filter(Boolean);
 
   const links = [
@@ -47,11 +48,4 @@ export function AreaFacts({ area, parentPlaces }: AreaFactsProps) {
       </ul>
     </div>
   );
-}
-
-function wikipediaUrl(tag: string): string {
-  const separator = tag.indexOf(":");
-  const lang = tag.slice(0, separator);
-  const title = tag.slice(separator + 1).trim().replaceAll(" ", "_");
-  return `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(title)}`;
 }
