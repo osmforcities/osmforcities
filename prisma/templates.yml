@@ -164,7 +164,6 @@ templates:
   - ["tracks","leisure=track","leisure","Route"]
   - ["fitness-stations","leisure=fitness_station","leisure","PersonStanding"]
   - ["ice-rinks","leisure=ice_rink","leisure","Snowflake"]
-  - ["nature-reserves","leisure=nature_reserve","leisure","Trees"]
   - ["marinas","leisure=marina","leisure","Anchor"]
   - ["dog-parks","leisure=dog_park","leisure","Dog"]
 # Nature
@@ -183,6 +182,7 @@ templates:
   - ["peaks","natural=peak","nature","Mountain"]
   - ["cliffs","natural=cliff","nature","Mountain"]
   - ["caves","natural=cave_entrance","nature","Mountain"]
+  - ["nature-reserves","leisure=nature_reserve","nature","Trees"]
   - ["water","natural=water;natural=lake;natural=pond","nature","Droplet"]
   - ["coastlines","natural=coastline","nature","Waves"]
   - ["springs","natural=spring","nature","Droplets"]
@@ -1129,7 +1129,8 @@ categories:
   leisure-sports: { icon: PersonStanding }
   leisure: { icon: FerrisWheel, parent: leisure-sports }
   sports: { icon: Volleyball, parent: leisure-sports }
-  tourism: { icon: Camera, parent: leisure-sports }
+
+  tourism: { icon: Camera }
 
   mobility: { icon: BusFront }
   bus: { icon: Bus, parent: mobility }
