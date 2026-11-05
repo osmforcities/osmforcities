@@ -1026,7 +1026,7 @@ templates:
     desc:
       en: City and town halls where the local government sits
       pt: Prefeituras e sedes do governo municipal
-      es: Ayuntamientos y sedes del gobierno municipal
+      es: Palacios municipales y sedes del gobierno local
       fr: Mairies et hôtels de ville, sièges du gouvernement local
       de: Rathäuser und Sitze der Gemeindeverwaltung
   senior-centers:
@@ -1741,7 +1741,7 @@ templates:
     desc:
       en: Fields and courts for football, tennis, basketball and other sports
       pt: Campos e quadras de futebol, tênis, basquete e outros esportes
-      es: Campos y pistas de fútbol, tenis, baloncesto y otros deportes
+      es: Campos y canchas de fútbol, tenis, baloncesto y otros deportes
       fr: Terrains de football, tennis, basket et autres sports
       de: Spielfelder und Plätze für Fußball, Tennis, Basketball und andere Sportarten
   golf-courses:
