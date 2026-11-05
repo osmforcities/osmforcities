@@ -972,11 +972,11 @@ templates:
       fr: Musées
       de: Museen
     desc:
-      en: Museums
-      pt: Museus
-      es: Museos
-      fr: Musées
-      de: Museen
+      en: Museums of art, history, science and more
+      pt: Museus de arte, história, ciência e mais
+      es: Museos de arte, historia, ciencia y más
+      fr: Musées d'art, d'histoire, de sciences et plus
+      de: Museen für Kunst, Geschichte, Wissenschaft und mehr
   theatres:
     name:
       en: Theatres
@@ -998,11 +998,11 @@ templates:
       fr: Établissements d'action sociale
       de: Soziale Einrichtungen
     desc:
-      en: Social facility
-      pt: Instalação de assistência social
-      es: Instalación de asistencia social
-      fr: Établissements d'action sociale
-      de: Soziale Einrichtungen
+      en: Shelters, group homes, food banks and other social services
+      pt: Abrigos, casas de acolhimento, bancos de alimentos e outros serviços sociais
+      es: Albergues, hogares de acogida, bancos de alimentos y otros servicios sociales
+      fr: Foyers, centres d'hébergement, banques alimentaires et autres services sociaux
+      de: Unterkünfte, Wohngruppen, Tafeln und andere soziale Einrichtungen
   community-centre:
     name:
       en: Community centre
@@ -1024,11 +1024,11 @@ templates:
       fr: Mairies
       de: Rathäuser
     desc:
-      en: Town halls
-      pt: Prefeituras
-      es: Municipalidades
-      fr: Mairies
-      de: Rathäuser
+      en: City and town halls where the local government sits
+      pt: Prefeituras e sedes do governo municipal
+      es: Palacios municipales y sedes del gobierno local
+      fr: Mairies et hôtels de ville, sièges du gouvernement local
+      de: Rathäuser und Sitze der Gemeindeverwaltung
   senior-centers:
     name:
       en: Senior centers
@@ -1141,11 +1141,11 @@ templates:
       fr: Bouches d'incendie
       de: Hydranten
     desc:
-      en: Fire hydrants
-      pt: Hidrantes
-      es: Hidrantes
-      fr: Bouches d'incendie
-      de: Hydranten
+      en: Hydrants firefighters connect hoses to, above or below ground
+      pt: Hidrantes onde os bombeiros conectam as mangueiras, de coluna ou subterrâneos
+      es: Hidrantes donde los bomberos conectan las mangueras, de columna o bajo tierra
+      fr: Poteaux et bouches d'incendie où les pompiers branchent leurs tuyaux
+      de: Über- und Unterflurhydranten, an die die Feuerwehr ihre Schläuche anschließt
   defibrillators:
     name:
       en: Defibrillators
@@ -1544,11 +1544,11 @@ templates:
       fr: Restaurants
       de: Restaurants
     desc:
-      en: Restaurants
-      pt: Restaurantes
-      es: Restaurantes
-      fr: Restaurants
-      de: Restaurants
+      en: Sit-down places that serve meals
+      pt: Lugares para sentar e fazer refeições
+      es: Locales con mesa donde se sirven comidas
+      fr: Lieux où l'on s'attable pour prendre un repas
+      de: Lokale, in denen man sich zum Essen hinsetzt
   cafes:
     name:
       en: Cafes
@@ -1557,11 +1557,11 @@ templates:
       fr: Cafés
       de: Cafés
     desc:
-      en: Cafes
-      pt: Cafés
-      es: Cafeterías
-      fr: Cafés
-      de: Cafés
+      en: Coffee shops and places for drinks and light meals
+      pt: Cafeterias e lugares para bebidas e lanches leves
+      es: Cafeterías y locales para bebidas y comidas ligeras
+      fr: Cafés et lieux pour boire un verre ou manger léger
+      de: Cafés für Getränke und kleine Speisen
   fast-food:
     name:
       en: Fast food
@@ -1570,11 +1570,11 @@ templates:
       fr: Restauration rapide
       de: Schnellimbisse
     desc:
-      en: Fast food
-      pt: Fast food
-      es: Comida rápida
-      fr: Restauration rapide
-      de: Schnellimbisse
+      en: Quick-service places to eat in or take away
+      pt: Lanchonetes de serviço rápido para comer no local ou levar
+      es: Locales de comida rápida para comer allí o llevar
+      fr: Restauration rapide sur place ou à emporter
+      de: Schnellimbisse zum Essen vor Ort oder zum Mitnehmen
   bars:
     name:
       en: Bars
@@ -1713,11 +1713,11 @@ templates:
       fr: Centres sportifs
       de: Sportzentren
     desc:
-      en: Sports centres
-      pt: Centros esportivos
-      es: Centros deportivos
-      fr: Centres sportifs
-      de: Sportzentren
+      en: Venues with facilities for one or more sports
+      pt: Centros esportivos com instalações para um ou mais esportes
+      es: Centros deportivos con instalaciones para uno o más deportes
+      fr: Complexes sportifs équipés pour un ou plusieurs sports
+      de: Sportzentren mit Anlagen für eine oder mehrere Sportarten
   stadiums:
     name:
       en: Stadiums
@@ -1726,11 +1726,11 @@ templates:
       fr: Stades
       de: Stadien
     desc:
-      en: Stadiums
-      pt: Estádios
-      es: Estadios
-      fr: Stades
-      de: Stadien
+      en: Large venues with stands for watching sports and events
+      pt: Grandes arenas com arquibancadas para esportes e eventos
+      es: Grandes recintos con gradas para ver deportes y eventos
+      fr: Grandes enceintes avec tribunes pour le sport et les événements
+      de: Große Arenen mit Tribünen für Sport und Veranstaltungen
   pitches:
     name:
       en: Pitches
@@ -1739,11 +1739,11 @@ templates:
       fr: Terrains de sport
       de: Sportplätze
     desc:
-      en: Pitches
-      pt: Campos esportivos
-      es: Campos deportivos
-      fr: Terrains de sport
-      de: Sportplätze
+      en: Fields and courts for football, tennis, basketball and other sports
+      pt: Campos e quadras de futebol, tênis, basquete e outros esportes
+      es: Campos y canchas de fútbol, tenis, baloncesto y otros deportes
+      fr: Terrains de football, tennis, basket et autres sports
+      de: Spielfelder und Plätze für Fußball, Tennis, Basketball und andere Sportarten
   golf-courses:
     name:
       en: Golf courses
@@ -1765,11 +1765,11 @@ templates:
       fr: Pistes d'athlétisme
       de: Lauf- und Rennbahnen
     desc:
-      en: Tracks
-      pt: Pistas de atletismo
-      es: Pistas de atletismo
-      fr: Pistes d'athlétisme
-      de: Lauf- und Rennbahnen
+      en: Running, cycling and racing tracks
+      pt: Pistas de corrida, ciclismo e automobilismo
+      es: Pistas de atletismo, ciclismo y carreras
+      fr: Pistes d'athlétisme, de cyclisme et de course
+      de: Lauf-, Rad- und Rennbahnen
   fitness-stations:
     name:
       en: Fitness stations
@@ -1882,11 +1882,11 @@ templates:
       fr: Forêts
       de: Forstflächen
     desc:
-      en: Forests
-      pt: Florestas
-      es: Áreas forestales
-      fr: Forêts
-      de: Forstflächen
+      en: Land managed for trees, such as timber plantations
+      pt: Áreas de uso florestal, como plantações para madeira
+      es: Terrenos de uso forestal, como plantaciones madereras
+      fr: Terrains à usage forestier, comme les plantations de bois
+      de: Forstwirtschaftlich genutzte Flächen wie Holzplantagen
   woods:
     name:
       en: Woods
@@ -1895,11 +1895,11 @@ templates:
       fr: Bois
       de: Wälder
     desc:
-      en: Woods
-      pt: Bosques
-      es: Bosques
-      fr: Bois
-      de: Wälder
+      en: Tree-covered land, natural or not managed for timber
+      pt: Áreas cobertas por árvores, naturais ou sem exploração de madeira
+      es: Terrenos cubiertos de árboles, naturales o sin explotación maderera
+      fr: Terrains boisés, naturels ou non exploités pour le bois
+      de: Baumbestandene Flächen, natürlich oder nicht forstlich genutzt
   orchards:
     name:
       en: Orchards
@@ -1934,11 +1934,11 @@ templates:
       fr: Zones humides
       de: Feuchtgebiete
     desc:
-      en: Wetlands
-      pt: Áreas úmidas
-      es: Humedales
-      fr: Zones humides
-      de: Feuchtgebiete
+      en: Marshes, swamps, bogs and other waterlogged land
+      pt: Brejos, pântanos, turfeiras e outras áreas alagadas
+      es: Marismas, pantanos, turberas y otras tierras anegadas
+      fr: Marais, tourbières et autres terres gorgées d'eau
+      de: Sümpfe, Moore, Marschen und andere nasse Flächen
   beaches:
     name:
       en: Beaches
@@ -1999,11 +1999,11 @@ templates:
       fr: Plans d'eau
       de: Gewässer
     desc:
-      en: Water bodies
-      pt: Corpos d'água
-      es: Cuerpos de agua
-      fr: Plans d'eau
-      de: Gewässer
+      en: Lakes, ponds, reservoirs and wide rivers
+      pt: Lagos, lagoas, represas e rios largos
+      es: Lagos, estanques, embalses y ríos anchos
+      fr: Lacs, étangs, réservoirs et rivières larges
+      de: Seen, Teiche, Stauseen und breite Flüsse
   coastlines:
     name:
       en: Coastlines
@@ -2792,11 +2792,11 @@ templates:
       fr: Lieux de culte
       de: Gotteshäuser
     desc:
-      en: Places of worship
-      pt: Locais de culto
-      es: Lugares de culto
-      fr: Lieux de culte
-      de: Gotteshäuser
+      en: Churches, mosques, temples, synagogues and other religious buildings
+      pt: Igrejas, mesquitas, templos, sinagogas e outros locais religiosos
+      es: Iglesias, mezquitas, templos, sinagogas y otros lugares religiosos
+      fr: Églises, mosquées, temples, synagogues et autres lieux de culte
+      de: Kirchen, Moscheen, Tempel, Synagogen und andere Gotteshäuser
   walls:
     name:
       en: Walls
