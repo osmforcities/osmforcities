@@ -8,11 +8,11 @@ templates:
       fr: Stationnement vélo
       de: Fahrradabstellanlagen
     desc:
-      en: Bicycle parking
-      pt: Estacionamento para bicicletas
-      es: Estacionamiento de bicicletas
-      fr: Stationnement vélo
-      de: Fahrradabstellanlagen
+      en: Racks, stands and shelters for parking bicycles
+      pt: Paraciclos, bicicletários e abrigos para bicicletas
+      es: Soportes y refugios para estacionar bicicletas
+      fr: Arceaux, râteliers et abris pour garer les vélos
+      de: Fahrradständer, Bügel und überdachte Abstellplätze
   bicycle-rental:
     name:
       en: Bicycle rental
@@ -21,11 +21,11 @@ templates:
       fr: Location de vélos
       de: Fahrradverleih
     desc:
-      en: Bicycle rental
-      pt: Aluguel de bicicletas
-      es: Alquiler de bicicletas
-      fr: Location de vélos
-      de: Fahrradverleih
+      en: Bike sharing stations and bicycle rental shops
+      pt: Estações de bicicletas compartilhadas e locadoras
+      es: Estaciones de bicicletas compartidas y tiendas de alquiler
+      fr: Stations de vélos en libre-service et loueurs de vélos
+      de: Leihradstationen und Fahrradverleihe
   bicycle-shop:
     name:
       en: Bicycle shop
@@ -52,6 +52,19 @@ templates:
       es: Mercados públicos
       fr: Marchés publics
       de: Öffentliche Marktplätze
+  public-transit:
+    name:
+      en: Public transit
+      pt: Transporte público
+      es: Transporte público
+      fr: Transports en commun
+      de: Öffentlicher Verkehr
+    desc:
+      en: Stops, stations, subway entrances and platforms
+      pt: Paradas, estações, acessos ao metrô e plataformas
+      es: Paradas, estaciones, accesos de metro y andenes
+      fr: Arrêts, gares, entrées de métro et quais
+      de: Haltestellen, Bahnhöfe, U-Bahn-Eingänge und Bahnsteige
   bus-stops:
     name:
       en: Bus stops
@@ -60,11 +73,11 @@ templates:
       fr: Arrêts de bus
       de: Bushaltestellen
     desc:
-      en: Bus stops
-      pt: Pontos de ônibus
-      es: Paradas de autobús
-      fr: Arrêts de bus
-      de: Bushaltestellen
+      en: Roadside stops where buses pick up passengers
+      pt: Locais onde os ônibus param para embarque de passageiros
+      es: Lugares donde el autobús se detiene a recoger pasajeros
+      fr: Points où les bus s'arrêtent pour prendre des voyageurs
+      de: Orte, an denen Busse halten und Fahrgäste einsteigen
   ev-charging:
     name:
       en: EV charging
@@ -73,11 +86,11 @@ templates:
       fr: Recharge de véhicules électriques
       de: E-Ladestationen
     desc:
-      en: EV charging
-      pt: Recarga para veículos elétricos
-      es: Carga de vehículos eléctricos
-      fr: Recharge de véhicules électriques
-      de: E-Ladestationen
+      en: Charging points for electric cars and bikes
+      pt: Pontos de recarga para carros e bicicletas elétricas
+      es: Puntos de carga para autos y bicicletas eléctricas
+      fr: Bornes de recharge pour voitures et vélos électriques
+      de: Ladepunkte für Elektroautos und E-Bikes
   railway-stations:
     name:
       en: Railway stations
@@ -86,11 +99,11 @@ templates:
       fr: Gares ferroviaires
       de: Bahnhöfe
     desc:
-      en: Railway stations
-      pt: Estações ferroviárias
-      es: Estaciones de tren
-      fr: Gares ferroviaires
-      de: Bahnhöfe
+      en: Train and metro stations where passengers board
+      pt: Estações de trem e metrô onde os passageiros embarcam
+      es: Estaciones de tren y metro donde suben los pasajeros
+      fr: Gares et stations de métro où montent les voyageurs
+      de: Bahn- und U-Bahn-Stationen für den Fahrgastverkehr
   tram-stops:
     name:
       en: Tram stops
@@ -99,11 +112,11 @@ templates:
       fr: Arrêts de tramway
       de: Straßenbahnhaltestellen
     desc:
-      en: Tram stops
-      pt: Paradas de bonde
-      es: Paradas de tranvía
-      fr: Arrêts de tramway
-      de: Straßenbahnhaltestellen
+      en: Points along tram lines where trams stop for passengers
+      pt: Paradas de bonde e VLT para embarque de passageiros
+      es: Paradas donde el tranvía recoge pasajeros
+      fr: Arrêts où le tramway prend des voyageurs
+      de: Punkte an Straßenbahnlinien, an denen die Bahnen halten
   subway-entrances:
     name:
       en: Subway entrances
@@ -112,11 +125,11 @@ templates:
       fr: Entrées de métro
       de: U-Bahn-Eingänge
     desc:
-      en: Subway entrances
-      pt: Acessos ao metrô
-      es: Accesos de metro
-      fr: Entrées de métro
-      de: U-Bahn-Eingänge
+      en: Stairs and lifts from the street into subway stations
+      pt: Escadas e elevadores da rua até as estações de metrô
+      es: Escaleras y ascensores desde la calle al metro
+      fr: Escaliers et ascenseurs de la rue vers le métro
+      de: Treppen und Aufzüge von der Straße zur U-Bahn
   transit-platforms:
     name:
       en: Transit platforms
@@ -125,11 +138,11 @@ templates:
       fr: Quais de transport en commun
       de: Bahn- und Bussteige
     desc:
-      en: Transit platforms
-      pt: Plataformas de transporte público
-      es: Andenes de transporte público
-      fr: Quais de transport en commun
-      de: Bahn- und Bussteige
+      en: Where passengers wait for buses, trams and trains
+      pt: Onde os passageiros esperam ônibus, bondes e trens
+      es: Donde los pasajeros esperan autobuses, tranvías y trenes
+      fr: Où les voyageurs attendent bus, tramways et trains
+      de: Wo Fahrgäste auf Bus, Straßenbahn und Zug warten
   ferry-terminals:
     name:
       en: Ferry terminals
@@ -138,11 +151,11 @@ templates:
       fr: Terminaux de ferry
       de: Fähranleger
     desc:
-      en: Ferry terminals
-      pt: Terminais de balsas
-      es: Terminales de ferry
-      fr: Terminaux de ferry
-      de: Fähranleger
+      en: Docks where passengers and vehicles board ferries
+      pt: Locais de embarque de passageiros e veículos em balsas
+      es: Muelles donde pasajeros y vehículos abordan el ferry
+      fr: Quais où passagers et véhicules montent à bord des ferries
+      de: Anleger, an denen Fahrgäste und Fahrzeuge an Bord gehen
   taxi-ranks:
     name:
       en: Taxi ranks
@@ -151,11 +164,11 @@ templates:
       fr: Stations de taxi
       de: Taxistände
     desc:
-      en: Taxi ranks
-      pt: Pontos de táxi
-      es: Paradas de taxi
-      fr: Stations de taxi
-      de: Taxistände
+      en: Places where taxis wait for passengers
+      pt: Locais onde os táxis aguardam passageiros
+      es: Lugares donde los taxis esperan pasajeros
+      fr: Emplacements où les taxis attendent les clients
+      de: Plätze, an denen Taxis auf Fahrgäste warten
   parking:
     name:
       en: Parking
@@ -164,11 +177,11 @@ templates:
       fr: Parkings
       de: Parkplätze
     desc:
-      en: Parking
-      pt: Estacionamentos
-      es: Estacionamientos
-      fr: Parkings
-      de: Parkplätze
+      en: Car parks, parking garages and individual parking spaces
+      pt: Estacionamentos abertos, garagens e vagas individuais
+      es: Estacionamientos abiertos, garajes y espacios individuales
+      fr: Parkings en surface ou couverts et places individuelles
+      de: Parkplätze, Parkhäuser und einzelne Stellplätze
   rail-tracks:
     name:
       en: Rail tracks
@@ -1375,11 +1388,11 @@ templates:
       fr: Stations-service
       de: Tankstellen
     desc:
-      en: Fuel
-      pt: Postos de combustível
-      es: Estaciones de servicio
-      fr: Stations-service
-      de: Tankstellen
+      en: Stations selling fuel for cars and other vehicles
+      pt: Postos que vendem gasolina, etanol e diesel
+      es: Estaciones que venden combustible para vehículos
+      fr: Stations qui vendent du carburant pour les véhicules
+      de: Tankstellen für Benzin, Diesel und andere Kraftstoffe
   hardware:
     name:
       en: Hardware
@@ -2324,11 +2337,11 @@ templates:
       fr: Routes
       de: Straßen
     desc:
-      en: Roads
-      pt: Vias
-      es: Carreteras
-      fr: Routes
-      de: Straßen
+      en: Streets and roads, from motorways to residential streets
+      pt: Vias, de rodovias a ruas residenciais
+      es: Calles y carreteras, de autopistas a calles residenciales
+      fr: Routes et rues, des autoroutes aux rues résidentielles
+      de: Straßen von der Autobahn bis zur Wohnstraße
   highways:
     name:
       en: Highways
@@ -2337,11 +2350,11 @@ templates:
       fr: Voies
       de: Straßen und Wege
     desc:
-      en: Everything tagged as part of the road network, including crossings and signals
-      pt: Tudo que é mapeado como parte da rede viária, incluindo travessias e semáforos
-      es: Todo lo etiquetado como parte de la red vial, incluidos cruces y semáforos
-      fr: Tout ce qui est cartographié comme faisant partie du réseau routier, y compris passages et feux
-      de: Alles, was als Teil des Straßennetzes erfasst ist, einschließlich Übergängen und Ampeln
+      en: All roads, paths, crossings and signals
+      pt: Todas as vias, caminhos, travessias e semáforos
+      es: Todas las vías, senderos, cruces y semáforos
+      fr: Toutes les routes, chemins, traversées et feux
+      de: Alle Straßen, Wege, Überwege und Ampeln
   buildings:
     name:
       en: Buildings
@@ -2376,11 +2389,11 @@ templates:
       fr: Pistes cyclables
       de: Radwege
     desc:
-      en: Cycleways
-      pt: Ciclovias
-      es: Ciclovías
-      fr: Pistes cyclables
-      de: Radwege
+      en: Paths built for bicycles, separate from car traffic
+      pt: Vias exclusivas para bicicletas, separadas dos carros
+      es: Vías exclusivas para bicicletas, separadas de los autos
+      fr: Voies réservées aux vélos, séparées de la circulation
+      de: Eigene Wege für den Radverkehr, getrennt vom Autoverkehr
   bridges:
     name:
       en: Bridge outlines
@@ -2415,11 +2428,11 @@ templates:
       fr: Passages piétons
       de: Fußgängerüberwege
     desc:
-      en: Crossings
-      pt: Faixas de pedestres
-      es: Pasos de peatones
-      fr: Passages piétons
-      de: Fußgängerüberwege
+      en: Points where pedestrians and cyclists cross the road
+      pt: Pontos onde pedestres e ciclistas atravessam a via
+      es: Puntos donde peatones y ciclistas cruzan la calle
+      fr: Points où piétons et cyclistes traversent la chaussée
+      de: Stellen, an denen Fuß- und Radverkehr die Straße quert
   traffic-signs:
     name:
       en: Traffic signs
@@ -2428,11 +2441,11 @@ templates:
       fr: Panneaux de signalisation
       de: Verkehrszeichen
     desc:
-      en: Traffic signs
-      pt: Placas de trânsito
-      es: Señales de tráfico
-      fr: Panneaux de signalisation
-      de: Verkehrszeichen
+      en: Road signs for speed limits, warnings and rules
+      pt: Placas de velocidade, advertência e regulamentação
+      es: Señales de velocidad, advertencia y reglamentación
+      fr: Panneaux de limitation de vitesse, de danger et d'obligation
+      de: Schilder für Tempolimits, Gefahren und Verkehrsregeln
   traffic-lights:
     name:
       en: Traffic signals
@@ -2454,11 +2467,11 @@ templates:
       fr: Radars
       de: Blitzer
     desc:
-      en: Speed cameras
-      pt: Radares
-      es: Radares
-      fr: Radars
-      de: Blitzer
+      en: Fixed cameras that enforce speed limits
+      pt: Câmeras fixas que fiscalizam o limite de velocidade
+      es: Cámaras fijas que controlan el límite de velocidad
+      fr: Caméras fixes qui contrôlent la vitesse
+      de: Fest installierte Kameras zur Geschwindigkeitskontrolle
   traffic-calming:
     name:
       en: Traffic calming
@@ -2467,11 +2480,11 @@ templates:
       fr: Modération du trafic
       de: Verkehrsberuhigung
     desc:
-      en: Traffic calming
-      pt: Moderação de tráfego
-      es: Pacificación de tráfico
-      fr: Modération du trafic
-      de: Verkehrsberuhigung
+      en: Speed bumps, chicanes and other measures that slow cars
+      pt: Lombadas, chicanas e outros redutores de velocidade
+      es: Reductores de velocidad, chicanas y estrechamientos
+      fr: Dos-d'âne, chicanes et autres aménagements ralentisseurs
+      de: Temposchwellen, Schikanen und Fahrbahnverengungen
   apartments:
     name:
       en: Apartment buildings

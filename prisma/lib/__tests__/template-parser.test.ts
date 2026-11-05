@@ -26,6 +26,8 @@ import {
   validateCommonTemplates,
   validateCategories,
 } from "../template-parser";
+import { AVAILABLE_LOCALES } from "../../../src/i18n/constants";
+import { YML_LOCALE_MAP } from "../../../src/lib/constants";
 
 describe("template-parser", () => {
   describe("isValidKv", () => {
@@ -489,6 +491,31 @@ describe("template-parser", () => {
       }
       const clashes = [...idsByLocaleName].filter(([, ids]) => ids.length > 1);
       expect(clashes).toEqual([]);
+    });
+
+    it("gives every mobility template a short desc distinct from its name in every locale", () => {
+      const MAX_DESC_LENGTH = 60;
+      const { templates, categories } = parseTemplates(loadTemplatesYaml("./prisma"));
+      const mobilitySlugs = categories
+        .filter((c) => c.slug === "mobility" || c.parent === "mobility")
+        .map((c) => c.slug);
+      const i18n = loadTemplatesI18n("./prisma").templates;
+      const problems = templates
+        .filter((t) => mobilitySlugs.includes(t.category))
+        .flatMap((t) =>
+          AVAILABLE_LOCALES.map((locale) => {
+            const ymlLocale = YML_LOCALE_MAP[locale] ?? locale;
+            const name = i18n[t.id]?.name?.[ymlLocale];
+            const desc = i18n[t.id]?.desc?.[ymlLocale];
+            if (!name || !desc) return `${t.id} ${ymlLocale}: missing`;
+            if (desc === name) return `${t.id} ${ymlLocale}: desc equals name`;
+            if (desc.length > MAX_DESC_LENGTH)
+              return `${t.id} ${ymlLocale}: desc over ${MAX_DESC_LENGTH} chars`;
+            return null;
+          }),
+        )
+        .filter(Boolean);
+      expect(problems).toEqual([]);
     });
   });
 
