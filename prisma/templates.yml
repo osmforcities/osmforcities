@@ -216,8 +216,7 @@ templates:
 # from PMTiles, geojson never stored — #487/#489)
   - ["buildings","building","infrastructure","Building"]
 # Mobility: roads, pedestrian, cycling
-  - ["roads","highway=motorway;highway=trunk;highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=unclassified","roads","Route"]
-  - ["highways","highway","roads","Waypoints"]
+  - ["roads","highway=motorway;highway=trunk;highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=living_street;highway=unclassified","roads","Route"]
   - ["footways","highway=footway;highway=path","pedestrian","Footprints"]
   - ["cycleways","highway=cycleway","cycling","Bike"]
   - ["bridges","man_made=bridge","roads","Waypoints"]
@@ -398,7 +397,6 @@ filterableTags:
   rail-tracks:      [railway, electrified, usage, service]
   busways:          [surface]
   roads:            [surface, maxspeed, lit, sidewalk]
-  highways:         [highway, surface, lit]
   buildings:        [building]
   footways:         [footway, surface, lit, smoothness]
   cycleways:        [surface, lit, oneway, smoothness]

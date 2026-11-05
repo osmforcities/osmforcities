@@ -136,8 +136,8 @@ export const BakingQueued: Story = {
  * fetch ends, so the bar keeps sweeping. */
 export const BakingFetching: Story = {
   args: {
-    datasetId: "ds-sp-highways",
-    templateName: "Highways",
+    datasetId: "ds-sp-roads",
+    templateName: "Streets",
     areaName: "São Paulo",
     areaId: 298285,
     mood: "baking",
