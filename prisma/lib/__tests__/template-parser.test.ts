@@ -515,6 +515,10 @@ describe("template-parser", () => {
         "leisure-sports",
         "tourism",
         "nature-environment",
+        "emergency",
+        "education-culture",
+        "shops-services",
+        "public-services",
         "buildings-infrastructure",
       ];
       const { templates, categories } = parseTemplates(loadTemplatesYaml("./prisma"));
