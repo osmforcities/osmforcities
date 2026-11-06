@@ -19,6 +19,7 @@ import { MapLayers } from "@/components/dataset/map/layers";
 import { TilesLayerGroup } from "@/components/dataset/map/layers/tiles-layer-group";
 import { ensurePmtilesProtocol } from "@/lib/pmtiles-protocol";
 import type { HeroTiles } from "@/lib/featured-hero";
+import type { Bbox } from "@/types/geojson";
 import { AoiBoundaryLayer } from "@/components/dataset/map/aoi-boundary-layer";
 import { CompactLegend } from "@/components/dataset/map/compact-legend";
 import { ageLegendRow } from "@/components/dataset/map/layers/map-style";
@@ -90,7 +91,6 @@ export function FeaturedDatasetMapClient({
   const mapRef = useRef<MapRef | null>(null);
   const [geojson, setGeojson] = useState<FeatureCollection | null>(null);
   const [boundary, setBoundary] = useState<FeatureCollection | null>(null);
-  const tilesUrl = tiles?.url ?? null;
 
   useEffect(() => {
     setGeojson(null);
@@ -99,7 +99,7 @@ export function FeaturedDatasetMapClient({
     const controller = new AbortController();
     // Marketing page: on failure keep the basemap + card, no error UI.
     // slim returns truncated geometry + @timestamp only (no OSM tags).
-    if (!tilesUrl) {
+    if (!tiles?.url) {
       fetch(`/api/datasets/${datasetId}/geojson?slim`, {
         signal: controller.signal,
       })
@@ -118,7 +118,7 @@ export function FeaturedDatasetMapClient({
       .catch(() => {});
 
     return () => controller.abort();
-  }, [datasetId, areaId, tilesUrl]);
+  }, [datasetId, areaId, tiles?.url]);
 
   // Same processing as the dataset page so rendering matches it
   const processedData = useMemo(
@@ -169,11 +169,12 @@ export function FeaturedDatasetMapClient({
 
   // The far-center guard and the no-bounds fallback both need the data bbox.
   // Refit only when it changes the outcome, so the common case never jumps.
-  const storedBbox = tiles?.bbox;
-  const dataBounds = useMemo(
-    () => storedBbox ?? (geojson ? calculateBbox(geojson) : null),
-    [storedBbox, geojson]
-  );
+  // Keyed by value: every server render sends a new bbox array
+  const storedBboxKey = tiles?.bbox?.join(",");
+  const dataBounds = useMemo(() => {
+    if (storedBboxKey) return storedBboxKey.split(",").map(Number) as Bbox;
+    return geojson ? calculateBbox(geojson) : null;
+  }, [storedBboxKey, geojson]);
   useEffect(() => {
     if (!dataBounds) return;
     const withData = computeInitialViewState(areaRef.current, dataBounds);
