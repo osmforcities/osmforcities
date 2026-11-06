@@ -509,7 +509,17 @@ describe("template-parser", () => {
 
     it("gives every template in a described topic a short desc distinct from its name in every locale", () => {
       const MAX_DESC_LENGTH = 60;
-      const DESCRIBED_TOPICS = ["mobility", "health", "public-services"];
+      const DESCRIBED_TOPICS = [
+        "mobility",
+        "health",
+        "leisure-sports",
+        "tourism",
+        "nature-environment",
+        "emergency",
+        "education-culture",
+        "shops-services",
+        "public-services",
+      ];
       const { templates, categories } = parseTemplates(loadTemplatesYaml("./prisma"));
       const describedCategorySlugs = categories
         .filter((c) => DESCRIBED_TOPICS.includes(c.parent ?? c.slug))
@@ -550,7 +560,7 @@ describe("template-parser", () => {
       expect(first.overpassQuery).toContain("area.searchArea");
     });
 
-    it("declares the 9 topics and puts fuel under mobility", () => {
+    it("declares the 10 topics and puts fuel under mobility", () => {
       const result = parseTemplates(loadTemplatesYaml("./prisma"));
       const topics = result.categories.filter((c) => !c.parent).map((c) => c.slug);
       expect(topics.sort()).toEqual([
@@ -563,6 +573,7 @@ describe("template-parser", () => {
         "nature-environment",
         "public-services",
         "shops-services",
+        "tourism",
       ]);
       const slugs = result.categories.map((c) => c.slug);
       expect(slugs).not.toContain("transport");
