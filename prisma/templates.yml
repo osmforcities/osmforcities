@@ -274,41 +274,21 @@ templates:
   # They do not characterize pollution, contamination, or environmental impact.
   # Naming aligns with OpenStreetMap wiki documentation.
 
-  # Agricultural land use
+  # Agricultural land use. Farmyard subtypes (farmyard=dairy etc.) sit on landuse=farmyard areas
   - ["farmland","landuse=farmland","agriculture","Wheat"]
   - ["farmyards","landuse=farmyard","agriculture","Tractor"]
   - ["meadows","landuse=meadow","agriculture","Leaf"]
-  - ["animal-keeping","landuse=animal_keeping","agriculture","Fence"]
-  # Specialized farmyard types (feedlots, stockyards, poultry, dairy)
-  - ["feedlots","farmyard=feedlot","agriculture","Fence"]
-  - ["stockyards","farmyard=stockyard","agriculture","Fence"]
-  - ["poultry-yards","farmyard=poultry","agriculture","Egg"]
-  - ["dairy-yards","farmyard=dairy","agriculture","Milk"]
   # Agricultural buildings
   - ["barns","building=barn","agriculture","Warehouse"]
   - ["farm-auxiliary","building=farm_auxiliary;building=agricultural","agriculture","Wrench"]
   - ["greenhouses","building=greenhouse","agriculture","Sprout"]
-  # Livestock housing
-  - ["livestock-buildings","building=livestock;building=cowshed;building=stable;building=sty;building=barn","agriculture","Warehouse"]
-  - ["cowsheds","building=cowshed","agriculture","Warehouse"]
-  - ["pig-sties","building=sty","agriculture","Warehouse"]
-  - ["stables","building=stable","agriculture","Warehouse"]
+  - ["livestock-buildings","building=livestock;building=cowshed;building=stable;building=sty","agriculture","Warehouse"]
   # Agricultural storage
-  - ["silos","building=silo;man_made=silo","agriculture","Warehouse"]
-  - ["bunker-silos","man_made=bunker_silo","agriculture","Warehouse"]
-  - ["agricultural-tanks","man_made=storage_tank","agriculture","Cylinder"]
-  # Organic fertilizer storage (slurry/manure infrastructure)
-  - ["slurry-basins","man_made=slurry_basin","agriculture","Container"]
-  - ["slurry-tanks","building=slurry_tank;man_made=slurry_tank","agriculture","Cylinder"]
-  - ["manure-storage","man_made=storage_tank&content=manure","agriculture","Package"]
+  - ["silos","building=silo;man_made=silo;man_made=bunker_silo","agriculture","Warehouse"]
+  - ["agricultural-tanks","man_made=storage_tank&content=silage;man_made=storage_tank&content=slurry;man_made=storage_tank&content=feed;man_made=storage_tank&content=manure;man_made=slurry_basin;building=slurry_tank;man_made=slurry_tank","agriculture","Cylinder"]
   # Horticulture and plant production
   - ["greenhouse-horticulture","landuse=greenhouse_horticulture","agriculture","Sprout"]
   - ["plant-nurseries","landuse=plant_nursery","agriculture","Sprout"]
-# =========================
-  # Advanced landscaping datasets
-  # =========================
-  # Irrigated green areas (where mapped)
-  - ["irrigated-green","irrigation=yes","nature","Droplet"]
 # Per-template filterable-tag allow-list.
 # Curated OSM tag keys that become interactive-legend views for a template.
 # Templates absent here show the age ("Recent edits") view only.
@@ -477,6 +457,7 @@ filterableTags:
   surveillance:     [surveillance:type, surveillance]
   pipeline:         [substance]
   storage-tanks:    [content]
+  agricultural-tanks: [content]
   # Per-sport courts (subsets of pitches): surface/lit like the pitches template
   football:         [surface, lit]
   basketball:       [surface, lit]
@@ -535,6 +516,17 @@ commonTemplates:
 # the old id is still listed or the new id is missing or deprecated.
 replacedBy:
   agricultural-buildings: farm-auxiliary
+  feedlots: farmyards
+  stockyards: farmyards
+  poultry-yards: farmyards
+  dairy-yards: farmyards
+  cowsheds: livestock-buildings
+  pig-sties: livestock-buildings
+  stables: livestock-buildings
+  bunker-silos: silos
+  slurry-basins: agricultural-tanks
+  slurry-tanks: agricultural-tanks
+  manure-storage: agricultural-tanks
   urban-trees: trees
   street-trees: trees
   trees-with-species: trees

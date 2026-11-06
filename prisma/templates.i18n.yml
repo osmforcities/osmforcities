@@ -2888,71 +2888,6 @@ templates:
       es: Terrenos con pasto usados para heno o pastoreo
       fr: Terres herbeuses utilisées pour le foin ou le pâturage
       de: Grasflächen zur Heugewinnung oder als Weide
-  animal-keeping:
-    name:
-      en: Animal keeping
-      pt: Criação de animais
-      es: Cría de animales
-      fr: Élevage d'animaux
-      de: Tierhaltung
-    desc:
-      en: Paddocks and other fenced land where animals are kept
-      pt: Piquetes e outras áreas cercadas onde se mantêm animais
-      es: Potreros y otros terrenos cercados donde se tienen animales
-      fr: Paddocks et autres terrains clôturés où vivent des animaux
-      de: Koppeln und andere eingezäunte Flächen für Tiere
-  feedlots:
-    name:
-      en: Feedlots
-      pt: Currais de engorda
-      es: Feedlots
-      fr: Parcs d'engraissement
-      de: Mastanlagen
-    desc:
-      en: Yards for intensive fattening of livestock, mostly cattle
-      pt: Áreas de engorda intensiva de gado, sobretudo bovino
-      es: Recintos de engorde intensivo de ganado, sobre todo bovino
-      fr: Zones d'engraissement intensif du bétail, surtout bovin
-      de: Höfe für die intensive Mast von Vieh, meist Rindern
-  stockyards:
-    name:
-      en: Stockyards
-      pt: Currais de gado
-      es: Corrales de ganado
-      fr: Parcs à bestiaux
-      de: Viehhöfe
-    desc:
-      en: Fenced pens where livestock is held for a short time
-      pt: Cercados onde o gado fica retido por pouco tempo
-      es: Recintos cercados donde el ganado se retiene por poco tiempo
-      fr: Enclos où le bétail est gardé temporairement
-      de: Pferche, in denen Vieh vorübergehend gehalten wird
-  poultry-yards:
-    name:
-      en: Poultry yards
-      pt: Avicultura
-      es: Corrales de aves
-      fr: Élevages de volailles
-      de: Geflügelhöfe
-    desc:
-      en: Farm areas raising chickens and other poultry
-      pt: Áreas onde se criam galinhas e outras aves
-      es: Áreas donde se crían gallinas y otras aves
-      fr: Zones où sont élevées des poules et autres volailles
-      de: Flächen für die Haltung von Hühnern und anderem Geflügel
-  dairy-yards:
-    name:
-      en: Dairy yards
-      pt: Fazendas leiteiras
-      es: Instalaciones lecheras
-      fr: Installations laitières
-      de: Milchviehhöfe
-    desc:
-      en: Farm areas where cows are kept for milk
-      pt: Áreas de fazenda onde vacas são criadas para leite
-      es: Áreas de granja donde se crían vacas para leche
-      fr: Zones de ferme où des vaches sont élevées pour leur lait
-      de: Hofflächen, auf denen Kühe für Milch gehalten werden
   barns:
     name:
       en: Barns
@@ -3000,50 +2935,11 @@ templates:
       fr: Bâtiments d'élevage
       de: Stallgebäude
     desc:
-      en: Cowsheds, stables, sties, barns and other animal housing
-      pt: Estábulos, cavalariças, chiqueiros, celeiros e similares
-      es: Establos, caballerizas, porquerizas, graneros y similares
-      fr: Étables, écuries, porcheries, granges et autres abris
-      de: Kuh-, Pferde- und Schweineställe, Scheunen und mehr
-  cowsheds:
-    name:
-      en: Cowsheds
-      pt: Estábulos para gado
-      es: Establos para vacas
-      fr: Étables
-      de: Kuhställe
-    desc:
-      en: Buildings where cows are housed
-      pt: Construções onde vacas são abrigadas
-      es: Edificios donde se alojan vacas
-      fr: Bâtiments qui abritent des vaches
-      de: Gebäude, in denen Kühe untergebracht sind
-  pig-sties:
-    name:
-      en: Pigsties
-      pt: Chiqueiros
-      es: Porquerizas
-      fr: Porcheries
-      de: Schweineställe
-    desc:
-      en: Buildings for keeping pigs
-      pt: Construções para criação de porcos
-      es: Edificios para la cría de cerdos
-      fr: Bâtiments pour l'élevage de porcs
-      de: Gebäude für die Schweinehaltung
-  stables:
-    name:
-      en: Stables
-      pt: Estábulos
-      es: Establos
-      fr: Écuries
-      de: Pferdeställe
-    desc:
-      en: Buildings built to house horses
-      pt: Construções feitas para abrigar cavalos
-      es: Edificios construidos para alojar caballos
-      fr: Bâtiments construits pour abriter des chevaux
-      de: Gebäude zur Unterbringung von Pferden
+      en: Cowsheds, stables, pigsties and other animal housing
+      pt: Estábulos, cavalariças, chiqueiros e outros abrigos
+      es: Establos, caballerizas, porquerizas y otros alojamientos
+      fr: Étables, écuries, porcheries et autres abris d'animaux
+      de: Ställe für Kühe, Pferde, Schweine und andere Tiere
   silos:
     name:
       en: Silos
@@ -3052,76 +2948,24 @@ templates:
       fr: Silos
       de: Silos
     desc:
-      en: Containers that store bulk goods, often grain
-      pt: Reservatórios para grãos e outros materiais a granel
-      es: Depósitos para granos y otros materiales a granel
-      fr: Réservoirs pour le grain et autres produits en vrac
-      de: Speicher für Getreide und andere Schüttgüter
-  bunker-silos:
-    name:
-      en: Bunker silos
-      pt: Silos tipo bunker
-      es: Silos tipo búnker
-      fr: Silos-couloirs
-      de: Fahrsilos
-    desc:
-      en: Roofless walled bays for silage, open to vehicles
-      pt: Baias sem teto e com muros para silagem, abertas a veículos
-      es: Recintos murados sin techo para silaje, abiertos a vehículos
-      fr: Cases murées sans toit pour l'ensilage, ouvertes aux engins
-      de: Dachlose, befahrbare Kammern mit Wänden für Silage
+      en: Tower and bunker silos for grain, silage and bulk goods
+      pt: Silos verticais e tipo bunker para grãos e silagem
+      es: Silos verticales y tipo búnker para granos y silaje
+      fr: Silos-tours et silos-couloirs pour grain et ensilage
+      de: Hochsilos und Fahrsilos für Getreide und Silage
   agricultural-tanks:
     name:
-      en: Agricultural tanks
-      pt: Tanques agrícolas
-      es: Depósitos agrícolas
-      fr: Cuves agricoles
-      de: Landwirtschaftliche Tanks
+      en: Slurry and silage storage
+      pt: Armazenamento de esterco e silagem
+      es: Almacenamiento de estiércol y silaje
+      fr: Stockage de lisier et d'ensilage
+      de: Gülle- und Silagelager
     desc:
-      en: Tanks holding liquids or gases, on farms and elsewhere
-      pt: Tanques de líquidos ou gases, em fazendas e em outros locais
-      es: Tanques de líquidos o gases, en granjas y en otros lugares
-      fr: Cuves de liquides ou de gaz, à la ferme ou ailleurs
-      de: Tanks für Flüssigkeiten oder Gase, auf Höfen und anderswo
-  slurry-basins:
-    name:
-      en: Slurry basins
-      pt: Bacias de esterco
-      es: Balsas de purín
-      fr: Bassins à lisier
-      de: Güllebecken
-    desc:
-      en: Dug pits with sloped sides that store liquid manure
-      pt: Bacias escavadas de bordas inclinadas para esterco líquido
-      es: Fosas excavadas con bordes inclinados para estiércol líquido
-      fr: Fosses à bords inclinés pour les déjections liquides
-      de: Gegrabene Becken mit schrägen Wänden für Flüssigmist
-  slurry-tanks:
-    name:
-      en: Slurry tanks
-      pt: Tanques de esterco
-      es: Depósitos de purín
-      fr: Cuves à lisier
-      de: Gülletanks
-    desc:
-      en: Round tanks with upright walls that hold liquid manure
-      pt: Tanques redondos de paredes retas para esterco líquido
-      es: Tanques redondos de paredes rectas para estiércol líquido
-      fr: Cuves rondes à parois droites pour les déjections liquides
-      de: Runde Behälter mit senkrechten Wänden für Flüssigmist
-  manure-storage:
-    name:
-      en: Manure storage
-      pt: Armazenamento de esterco
-      es: Almacenamiento de estiércol
-      fr: Stockage de fumier
-      de: Mistlager
-    desc:
-      en: Storage tanks known to hold manure
-      pt: Tanques de armazenamento que contêm esterco
-      es: Tanques de almacenamiento que contienen estiércol
-      fr: Réservoirs de stockage contenant du fumier
-      de: Lagertanks, die Mist enthalten
+      en: Tanks and basins for slurry, manure, silage or feed
+      pt: Tanques e bacias para esterco, silagem ou ração
+      es: Tanques y fosas para estiércol, silaje o alimento animal
+      fr: Cuves et fosses pour lisier, fumier, ensilage ou aliments
+      de: Tanks und Becken für Gülle, Mist, Silage oder Futter
   greenhouse-horticulture:
     name:
       en: Greenhouse horticulture
@@ -3148,16 +2992,3 @@ templates:
       es: Terrenos donde se crían árboles, arbustos y flores jóvenes
       fr: Terrains où sont élevés de jeunes arbres, arbustes et fleurs
       de: Flächen zur Anzucht junger Bäume, Sträucher und Blumen
-  irrigated-green:
-    name:
-      en: Irrigated green
-      pt: Áreas verdes irrigadas
-      es: Áreas verdes regadas
-      fr: Espaces verts irrigués
-      de: Bewässerte Grünflächen
-    desc:
-      en: Canals and ditches that carry water to farmland
-      pt: Canais e valas que levam água para lavouras
-      es: Canales y acequias que llevan agua a los cultivos
-      fr: Canaux et fossés qui amènent l'eau aux cultures
-      de: Kanäle und Gräben, die Wasser zu Feldern leiten

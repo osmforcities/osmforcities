@@ -713,6 +713,16 @@ sit on the sibling road or crossing node, not the queried element.
 - **livestock-buildings** — broadened to `building=livestock;cowshed;stable;sty;barn`, since `building=livestock` alone is the fallback when the precise value is unknown (8.6K uses). The specific templates stay.
 - **bridges** is renamed "Bridge outlines": `man_made=bridge` is the optional outline, not the `bridge=yes` way, so it counts drawn outlines, not bridges.
 
+### Agriculture consolidation ([#662])
+
+Counted per template in farm towns (Vechta, Cloppenburg, Uelzen, Gifhorn, Münster, Kempten, Fresno, Petrolina, Rio Verde, Sorriso, Almería) on our Overpass, Nov 2026. 24 templates down to 11.
+
+- **farmyards** absorbs `feedlots`, `stockyards`, `poultry-yards`, `dairy-yards`. `farmyard=*` subtypes sit on `landuse=farmyard` areas, and all four were 0 in every town.
+- **livestock-buildings** absorbs `cowsheds`, `pig-sties`, `stables` (at most 43 per town). It drops `building=barn` (added in #517): barns have their own template, and the wiki describes barns as storage.
+- **silos** absorbs `bunker-silos` (`man_made=bunker_silo`, 4-57 in German towns, 0 elsewhere).
+- **agricultural-tanks**, renamed "Slurry and silage storage", absorbs `slurry-basins`, `slurry-tanks`, `manure-storage`. Combined it is still small (10-15 in the best German towns) but present.
+- **Removed:** `animal-keeping` (1 feature in all towns), `irrigated-green` and `irrigation-canals`. Irrigation is mapped at province scale: Lleida province has 112 irrigation waterways, its city 0. Fresno, Murcia, Mendoza, Petrolina and the German towns are 0-5. `usage=irrigation` (73K uses) is the main waterway tag, not `irrigation=yes` (8K), but adding it doesn't change city counts.
+
 ### Trees ([#660])
 
 - One **trees** template (`natural=tree;natural=tree_row;natural=tree_group`) replaces `urban-trees`, `street-trees`, `trees-with-species` and `vegetation-risk-context`, all `replacedBy: trees`. Street trees mapped one by one carry `denotation=avenue`, which `street-trees` (rows only) missed. Species presence is a filter question, not a template. `vegetation-risk-context` also had `natural=wood`. Woods stay in `woods` and `natural-vegetation`, not in `trees`. `natural=tree_group` is in for wiki alignment but near-absent today (Berlin 3, Munich 2, Paris 0).
@@ -809,3 +819,4 @@ Part of the disaster epic ([#478]). Emergency is its own topic, split into the c
 [#517]: https://github.com/osmforcities/osmforcities/issues/517
 [#441]: https://github.com/osmforcities/osmforcities/issues/441
 [#660]: https://github.com/osmforcities/osmforcities/issues/660
+[#662]: https://github.com/osmforcities/osmforcities/issues/662
