@@ -2534,7 +2534,7 @@ templates:
     desc:
       en: Single-family homes, including semi-detached and row houses
       pt: Casas unifamiliares, inclusive geminadas e em fileira
-      es: Viviendas unifamiliares, incluidas las que comparten muro
+      es: Casas unifamiliares, incluso con muro compartido o en hilera
       fr: Maisons individuelles, y compris mitoyennes et en rangée
       de: Wohnhäuser für eine Familie, auch Doppel- und Reihenhäuser
   residential:
