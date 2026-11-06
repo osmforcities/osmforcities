@@ -434,7 +434,7 @@ describe("template-parser", () => {
         id: "bicycle-parking",
         query: "amenity=bicycle_parking",
         category: "cycling",
-        icon: "Bike",
+        icon: "bicycle_on_parking_line",
         filterableTags: [
           "bicycle_parking",
           "covered",
