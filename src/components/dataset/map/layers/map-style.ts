@@ -47,7 +47,8 @@ export type MapStyleKnobs = {
 
 export const DEFAULT_STYLE_KNOBS: MapStyleKnobs = {
   base: 1.5,
-  basemapWashOpacity: 0.4,
+  // positron is already pale; the old raster's 0.4 over-muted it
+  basemapWashOpacity: 0.1,
   // Viridis picks, dark end = recent. Multi-hue and colorblind safe; every
   // step keeps full chroma so no category washes into the muted basemap.
   // Chosen over single-hue ramps (BluGrn/teal) whose pale light end made

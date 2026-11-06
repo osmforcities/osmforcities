@@ -15,6 +15,7 @@ import {
   POINT_LAYER_ID,
 } from "./layer-ids";
 import type { CuratedTheme } from "@/lib/curated-themes";
+import { BASEMAP_LABELS_ANCHOR } from "@/lib/map-tiles";
 import { buildCuratedColorExpression } from "@/lib/curated-themes";
 
 const TILES_SOURCE_ID = "dataset-tiles";
@@ -82,6 +83,7 @@ export function TilesLayerGroup({
       <Layer
         id={POLYGON_LAYER_ID}
         source-layer={SOURCE_LAYER}
+        beforeId={BASEMAP_LABELS_ANCHOR}
         type="fill"
         filter={geometryFilter("Polygon", visibilityFilter)}
         paint={fillPaint}
@@ -89,6 +91,7 @@ export function TilesLayerGroup({
       <Layer
         id={POLYGON_STROKE_LAYER_ID}
         source-layer={SOURCE_LAYER}
+        beforeId={BASEMAP_LABELS_ANCHOR}
         type="line"
         filter={geometryFilter("Polygon", visibilityFilter)}
         paint={strokePaint}
@@ -96,6 +99,7 @@ export function TilesLayerGroup({
       <Layer
         id={LINE_LAYER_ID}
         source-layer={SOURCE_LAYER}
+        beforeId={BASEMAP_LABELS_ANCHOR}
         type="line"
         filter={geometryFilter("LineString", visibilityFilter)}
         paint={linePaint}
@@ -104,6 +108,7 @@ export function TilesLayerGroup({
       <Layer
         id={POINT_LAYER_ID}
         source-layer={SOURCE_LAYER}
+        beforeId={BASEMAP_LABELS_ANCHOR}
         type="circle"
         filter={geometryFilter("Point", visibilityFilter)}
         paint={pointPaint}
