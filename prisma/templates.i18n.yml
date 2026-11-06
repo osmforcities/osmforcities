@@ -658,11 +658,11 @@ templates:
       fr: Écoles
       de: Schulen
     desc:
-      en: Schools
-      pt: Escolas
-      es: Escuelas
-      fr: Écoles
-      de: Schulen
+      en: Primary and secondary schools
+      pt: Escolas de ensino fundamental e médio
+      es: Escuelas primarias y secundarias
+      fr: Écoles élémentaires et secondaires
+      de: Grund- und weiterführende Schulen
   universities:
     name:
       en: Universities
@@ -671,11 +671,11 @@ templates:
       fr: Universités
       de: Universitäten
     desc:
-      en: Universities
-      pt: Universidades
-      es: Universidades
-      fr: Universités
-      de: Universitäten
+      en: Higher education and research in various fields
+      pt: Ensino superior e pesquisa em diversas áreas
+      es: Educación superior e investigación en diversas áreas
+      fr: Enseignement supérieur et recherche dans divers domaines
+      de: Hochschulbildung und Forschung in verschiedenen Fächern
   libraries:
     name:
       en: Libraries
@@ -684,11 +684,11 @@ templates:
       fr: Bibliothèques
       de: Bibliotheken
     desc:
-      en: Libraries
-      pt: Bibliotecas
-      es: Bibliotecas
-      fr: Bibliothèques
-      de: Bibliotheken
+      en: Places to read and borrow books
+      pt: Locais para ler e pegar livros emprestados
+      es: Lugares para leer y pedir libros prestados
+      fr: Lieux pour lire et emprunter des livres
+      de: Orte zum Lesen und Ausleihen von Büchern
   kindergarten:
     name:
       en: Kindergarten
@@ -697,11 +697,11 @@ templates:
       fr: Écoles maternelles
       de: Kindergärten
     desc:
-      en: Kindergarten
-      pt: Jardins de infância
-      es: Jardines de infancia
-      fr: Écoles maternelles
-      de: Kindergärten
+      en: Care and early education for children before school age
+      pt: Cuidado e educação infantil antes da idade escolar
+      es: Cuidado y educación inicial antes de la edad escolar
+      fr: Accueil et éducation des enfants avant l'âge scolaire
+      de: Betreuung und frühe Bildung für Kinder vor dem Schulalter
   college:
     name:
       en: College
@@ -710,11 +710,11 @@ templates:
       fr: Établissements d'enseignement supérieur
       de: Berufs- und Fachschulen
     desc:
-      en: College
-      pt: Faculdades
-      es: Facultades
-      fr: Établissements d'enseignement supérieur
-      de: Berufs- und Fachschulen
+      en: Post-secondary education outside universities
+      pt: Ensino pós-médio fora das universidades
+      es: Educación postsecundaria fuera de las universidades
+      fr: Enseignement post-secondaire hors universités
+      de: Bildung nach der Schule, außerhalb von Universitäten
   childcare:
     name:
       en: Childcare
@@ -723,11 +723,11 @@ templates:
       fr: Crèches
       de: Kinderbetreuung
     desc:
-      en: Childcare
-      pt: Creches
-      es: Guarderías
-      fr: Crèches
-      de: Kinderbetreuung
+      en: Daycare, nurseries and after-school care for children
+      pt: Creches, berçários e cuidado infantil após a escola
+      es: Guarderías y cuidado de niños después de la escuela
+      fr: Garderies, crèches et accueil périscolaire des enfants
+      de: Krippen, Horte und andere Orte der Kinderbetreuung
   driving-school:
     name:
       en: Driving schools
@@ -736,11 +736,11 @@ templates:
       fr: Auto-écoles
       de: Fahrschulen
     desc:
-      en: Driving schools
-      pt: Autoescolas
-      es: Autoescuelas
-      fr: Auto-écoles
-      de: Fahrschulen
+      en: Schools where people learn to drive motor vehicles
+      pt: Escolas onde se aprende a dirigir veículos motorizados
+      es: Escuelas donde se aprende a manejar vehículos motorizados
+      fr: Écoles où l'on apprend à conduire un véhicule à moteur
+      de: Schulen, in denen man das Fahren von Kraftfahrzeugen lernt
   music-school:
     name:
       en: Music schools
@@ -749,11 +749,11 @@ templates:
       fr: Écoles de musique
       de: Musikschulen
     desc:
-      en: Music schools
-      pt: Escolas de música
-      es: Escuelas de música
-      fr: Écoles de musique
-      de: Musikschulen
+      en: Schools and conservatories teaching music
+      pt: Escolas e conservatórios de ensino de música
+      es: Escuelas y conservatorios de enseñanza musical
+      fr: Écoles et conservatoires d'enseignement musical
+      de: Schulen und Konservatorien für Musikunterricht
   language-school:
     name:
       en: Language schools
@@ -762,11 +762,11 @@ templates:
       fr: Écoles de langues
       de: Sprachschulen
     desc:
-      en: Language schools
-      pt: Escolas de idiomas
-      es: Escuelas de idiomas
-      fr: Écoles de langues
-      de: Sprachschulen
+      en: Schools where people study foreign languages
+      pt: Escolas onde se estudam línguas estrangeiras
+      es: Escuelas donde se estudian lenguas extranjeras
+      fr: Écoles où l'on étudie des langues étrangères
+      de: Schulen, an denen man Fremdsprachen lernt
   research-institute:
     name:
       en: Research institutes
@@ -775,11 +775,11 @@ templates:
       fr: Instituts de recherche
       de: Forschungsinstitute
     desc:
-      en: Research institutes
-      pt: Institutos de pesquisa
-      es: Institutos de investigación
-      fr: Instituts de recherche
-      de: Forschungsinstitute
+      en: Institutes and labs dedicated to research
+      pt: Institutos e laboratórios dedicados à pesquisa
+      es: Institutos y laboratorios dedicados a la investigación
+      fr: Instituts et laboratoires dédiés à la recherche
+      de: Institute und Labore, die Forschung betreiben
   hotels:
     name:
       en: Hotels
@@ -788,11 +788,11 @@ templates:
       fr: Hôtels
       de: Hotels
     desc:
-      en: Hotels
-      pt: Hotéis
-      es: Hoteles
-      fr: Hôtels
-      de: Hotels
+      en: Establishments that rent rooms to guests
+      pt: Estabelecimentos que alugam quartos a hóspedes
+      es: Establecimientos que alquilan habitaciones a huéspedes
+      fr: Établissements qui louent des chambres à des clients
+      de: Betriebe, die Gästen Zimmer vermieten
   motels:
     name:
       en: Motels
@@ -816,11 +816,11 @@ templates:
       fr: Attractions
       de: Sehenswürdigkeiten
     desc:
-      en: Attractions
-      pt: Atrações
-      es: Atracciones
-      fr: Attractions
-      de: Sehenswürdigkeiten
+      en: Sights and purpose-built places that draw tourists
+      pt: Pontos turísticos e locais criados para atrair visitantes
+      es: Lugares de interés y sitios creados para atraer turistas
+      fr: Sites d'intérêt et lieux conçus pour attirer les touristes
+      de: Touristische Ziele und eigens für Besucher gebaute Anlagen
   viewpoints:
     name:
       en: Viewpoints
@@ -829,11 +829,11 @@ templates:
       fr: Points de vue
       de: Aussichtspunkte
     desc:
-      en: Viewpoints
-      pt: Mirantes
-      es: Miradores
-      fr: Points de vue
-      de: Aussichtspunkte
+      en: Spots, often high up, with a wide view of the surroundings
+      pt: Locais, muitas vezes elevados, com ampla vista da paisagem
+      es: Lugares, a menudo elevados, con amplia vista del entorno
+      fr: Lieux souvent en hauteur offrant une large vue alentour
+      de: Oft erhöhte Orte mit weitem Blick auf die Umgebung
   campsites:
     name:
       en: Campsites
@@ -842,11 +842,11 @@ templates:
       fr: Campings
       de: Campingplätze
     desc:
-      en: Campsites
-      pt: Áreas de acampamento
-      es: Zonas de acampada
-      fr: Campings
-      de: Campingplätze
+      en: Grounds where people camp overnight, in tents or vehicles
+      pt: Terrenos para acampar à noite, em barracas ou veículos
+      es: Terrenos para acampar de noche, en carpas o vehículos
+      fr: Terrains où l'on campe la nuit, en tente ou en véhicule
+      de: Gelände zum Zelten oder Übernachten im Fahrzeug
   alpine-huts:
     name:
       en: Alpine huts
@@ -855,11 +855,11 @@ templates:
       fr: Refuges alpins
       de: Alpenhütten
     desc:
-      en: Alpine huts
-      pt: Refúgios alpinos
-      es: Refugios alpinos
-      fr: Refuges alpins
-      de: Alpenhütten
+      en: Staffed mountain huts offering beds and meals
+      pt: Cabanas de montanha com funcionários, camas e refeições
+      es: Cabañas de montaña atendidas, con camas y comidas
+      fr: Cabanes de montagne gardées, avec couchage et repas
+      de: Bewirtschaftete Berghütten mit Schlafplätzen und Essen
   caravan-sites:
     name:
       en: Caravan sites
@@ -868,11 +868,11 @@ templates:
       fr: Aires pour camping-cars
       de: Wohnmobilstellplätze
     desc:
-      en: Caravan sites
-      pt: Áreas para trailers
-      es: Áreas para caravanas
-      fr: Aires pour camping-cars
-      de: Wohnmobilstellplätze
+      en: Parking-style sites where motorhomes can stay overnight
+      pt: Locais com vagas onde motorhomes podem pernoitar
+      es: Espacios con plazas para pernoctar en casas rodantes
+      fr: Emplacements où les camping-cars peuvent passer la nuit
+      de: Stellflächen, auf denen Wohnmobile über Nacht stehen
   wilderness-huts:
     name:
       en: Wilderness huts
@@ -881,11 +881,11 @@ templates:
       fr: Refuges non gardés
       de: Unbewirtschaftete Hütten
     desc:
-      en: Wilderness huts
-      pt: Abrigos em áreas naturais
-      es: Refugios en zonas naturales
-      fr: Refuges non gardés
-      de: Unbewirtschaftete Hütten
+      en: Remote unstaffed shelters with a place to sleep
+      pt: Cabanas remotas sem funcionários, com lugar para dormir
+      es: Cabañas remotas sin personal, con lugar para dormir
+      fr: Abris isolés, sans gardien, où l'on peut dormir
+      de: Abgelegene Unterstände ohne Personal zum Übernachten
   chalets:
     name:
       en: Chalets
@@ -894,11 +894,11 @@ templates:
       fr: Chalets
       de: Ferienhäuser
     desc:
-      en: Chalets
-      pt: Chalés
-      es: Chalés
-      fr: Chalets
-      de: Ferienhäuser
+      en: Self-catering holiday cottages with kitchen and bathroom
+      pt: Casas de temporada com cozinha e banheiro próprios
+      es: Casas o cabañas vacacionales con cocina y baño propios
+      fr: Logements de vacances avec cuisine et salle de bain
+      de: Eigenständige Unterkünfte für Urlauber mit Küche und Bad
   cinemas:
     name:
       en: Cinemas
@@ -907,11 +907,11 @@ templates:
       fr: Cinémas
       de: Kinos
     desc:
-      en: Cinemas
-      pt: Cinemas
-      es: Cines
-      fr: Cinémas
-      de: Kinos
+      en: Movie theaters and other venues showing films
+      pt: Salas de cinema e outros locais que exibem filmes
+      es: Salas de cine y otros lugares donde se proyectan películas
+      fr: Salles et autres lieux de projection de films
+      de: Filmtheater und andere Orte, an denen Filme laufen
   monuments:
     name:
       en: Monuments
@@ -920,11 +920,11 @@ templates:
       fr: Monuments
       de: Denkmäler
     desc:
-      en: Monuments
-      pt: Monumentos
-      es: Monumentos
-      fr: Monuments
-      de: Denkmäler
+      en: Large structures in honor of people or events
+      pt: Grandes estruturas em homenagem a pessoas ou eventos
+      es: Grandes estructuras en honor a personas o eventos
+      fr: Grands ouvrages en hommage à des personnes ou événements
+      de: Große Bauwerke zu Ehren von Personen oder Ereignissen
   arts-centre:
     name:
       en: Arts centre
@@ -933,11 +933,11 @@ templates:
       fr: Centre culturel
       de: Kulturzentren
     desc:
-      en: Arts centre
-      pt: Centro cultural
-      es: Centro cultural
-      fr: Centre culturel
-      de: Kulturzentren
+      en: Venues hosting a variety of arts and cultural activities
+      pt: Espaços com atividades artísticas e culturais variadas
+      es: Espacios con actividades artísticas y culturales variadas
+      fr: Lieux d'activités artistiques et culturelles variées
+      de: Orte für vielfältige künstlerische und kulturelle Angebote
   gallery:
     name:
       en: Gallery
@@ -946,11 +946,11 @@ templates:
       fr: Galerie
       de: Galerien
     desc:
-      en: Gallery
-      pt: Galeria
-      es: Galería
-      fr: Galerie
-      de: Galerien
+      en: Spaces exhibiting paintings, photos and other visual art
+      pt: Espaços que expõem pinturas, fotos e outras artes visuais
+      es: Espacios que exhiben pinturas, fotos y otras artes visuales
+      fr: Lieux exposant peintures, photos et autres arts visuels
+      de: Räume für Malerei, Fotografie und andere bildende Kunst
   memorials:
     name:
       en: Memorials
@@ -959,11 +959,11 @@ templates:
       fr: Mémoriaux
       de: Gedenkstätten
     desc:
-      en: Memorials
-      pt: Memoriais
-      es: Monumentos conmemorativos
-      fr: Mémoriaux
-      de: Gedenkstätten
+      en: Plaques, busts and statues remembering people or events
+      pt: Placas, bustos e estátuas em memória de pessoas ou eventos
+      es: Placas, bustos y estatuas en recuerdo de personas o eventos
+      fr: Plaques, bustes et statues en mémoire de personnes ou faits
+      de: Gedenktafeln, Büsten, Statuen zu Personen oder Ereignissen
   museums:
     name:
       en: Museums
@@ -985,11 +985,11 @@ templates:
       fr: Théâtres
       de: Theater
     desc:
-      en: Theatres
-      pt: Teatros
-      es: Teatros
-      fr: Théâtres
-      de: Theater
+      en: Venues for live plays, musicals and concerts
+      pt: Espaços para peças, musicais e concertos ao vivo
+      es: Salas para obras de teatro, musicales y conciertos en vivo
+      fr: Salles pour pièces, comédies musicales et concerts
+      de: Bühnen für Schauspiel, Musicals und Konzerte
   social-facility:
     name:
       en: Social facility
@@ -1102,11 +1102,11 @@ templates:
       fr: Casernes de pompiers
       de: Feuerwachen
     desc:
-      en: Fire stations
-      pt: Corpos de bombeiros
-      es: Estaciones de bomberos
-      fr: Casernes de pompiers
-      de: Feuerwachen
+      en: Bases of fire brigades, with their trucks and equipment
+      pt: Quartéis dos bombeiros, com viaturas e equipamentos
+      es: Cuarteles de bomberos, con sus vehículos y equipos
+      fr: Bases des sapeurs-pompiers, avec véhicules et matériel
+      de: Standorte der Feuerwehr mit Fahrzeugen und Ausrüstung
   ambulance-stations:
     name:
       en: Ambulance stations
@@ -1115,11 +1115,11 @@ templates:
       fr: Bases d'ambulances
       de: Rettungswachen
     desc:
-      en: Ambulance stations
-      pt: Postos de ambulância
-      es: Bases de ambulancias
-      fr: Bases d'ambulances
-      de: Rettungswachen
+      en: Bases housing ambulances, crews and medical equipment
+      pt: Bases com ambulâncias, equipes e equipamento médico
+      es: Bases con ambulancias, personal y equipo médico
+      fr: Bases abritant ambulances, équipages et matériel médical
+      de: Standorte mit Rettungswagen, Personal und Medizintechnik
   emergency-phones:
     name:
       en: Emergency phones
@@ -1128,11 +1128,11 @@ templates:
       fr: Téléphones d'urgence
       de: Notruftelefone
     desc:
-      en: Emergency phones
-      pt: Telefones de emergência
-      es: Teléfonos de emergencia
-      fr: Téléphones d'urgence
-      de: Notruftelefone
+      en: Phones anyone can use to call emergency services
+      pt: Telefones que qualquer pessoa pode usar para pedir socorro
+      es: Teléfonos que cualquiera puede usar para pedir auxilio
+      fr: Téléphones que chacun peut utiliser pour appeler les secours
+      de: Telefone, über die jeder einen Notruf absetzen kann
   fire-hydrants:
     name:
       en: Fire hydrants
@@ -1141,11 +1141,11 @@ templates:
       fr: Bouches d'incendie
       de: Hydranten
     desc:
-      en: Hydrants firefighters connect hoses to, above or below ground
-      pt: Hidrantes onde os bombeiros conectam as mangueiras, de coluna ou subterrâneos
-      es: Hidrantes donde los bomberos conectan las mangueras, de columna o bajo tierra
-      fr: Poteaux et bouches d'incendie où les pompiers branchent leurs tuyaux
-      de: Über- und Unterflurhydranten, an die die Feuerwehr ihre Schläuche anschließt
+      en: Pillar or underground outlets firefighters connect hoses to
+      pt: Colunas ou bocas no chão onde os bombeiros ligam mangueiras
+      es: Columnas o bocas subterráneas para las mangueras de bomberos
+      fr: Poteaux et bouches où les pompiers branchent leurs tuyaux
+      de: Über- und Unterflurhydranten für die Schläuche der Feuerwehr
   defibrillators:
     name:
       en: Defibrillators
@@ -1154,7 +1154,7 @@ templates:
       fr: Défibrillateurs
       de: Defibrillatoren
     desc:
-      en: Public access defibrillators (aeds)
+      en: Public access defibrillators (AEDs)
       pt: Desfibriladores de acesso público (DEAs)
       es: Desfibriladores de acceso público (DEA)
       fr: Défibrillateurs en accès public (DAE)
@@ -1168,10 +1168,10 @@ templates:
       de: Notfallsammelstellen
     desc:
       en: Safe places where people gather during an evacuation
-      pt: Locais seguros onde as pessoas se reúnem durante uma evacuação
-      es: Lugares seguros donde las personas se reúnen durante una evacuación
-      fr: Lieux sûrs où les personnes se rassemblent lors d'une évacuation
-      de: Sichere Orte, an denen sich Menschen bei einer Evakuierung sammeln
+      pt: Locais seguros onde pessoas se reúnem durante evacuações
+      es: Lugares seguros donde las personas se reúnen al evacuar
+      fr: Lieux sûrs où l'on se rassemble lors d'une évacuation
+      de: Sichere Orte, an denen man sich bei Evakuierungen sammelt
   sirens:
     name:
       en: Warning sirens
@@ -1181,10 +1181,10 @@ templates:
       de: Warnsirenen
     desc:
       en: Sirens that warn the public of disasters, air raids or fires
-      pt: Sirenes que alertam a população sobre desastres, ataques aéreos ou incêndios
-      es: Sirenas que alertan a la población de desastres, ataques aéreos o incendios
-      fr: Sirènes qui alertent la population en cas de catastrophe, d'attaque aérienne ou d'incendie
-      de: Sirenen, die die Bevölkerung vor Katastrophen, Luftangriffen oder Bränden warnen
+      pt: Sirenes que avisam de desastres, ataques aéreos ou incêndios
+      es: Sirenas que alertan de desastres, ataques aéreos o incendios
+      fr: Sirènes annonçant catastrophes, raids aériens ou incendies
+      de: Sirenen für Katastrophen-, Luftangriffs- oder Feueralarm
   firefighting-water-sources:
     name:
       en: Firefighting water sources
@@ -1193,11 +1193,11 @@ templates:
       fr: Points d'eau incendie
       de: Löschwasserentnahmestellen
     desc:
-      en: Water tanks, ponds and suction points firefighters draw water from
-      pt: Reservatórios, lagos e pontos de captação de onde os bombeiros retiram água
-      es: Depósitos, estanques y puntos de aspiración de donde los bomberos toman agua
-      fr: Réservoirs, bassins et points d'aspiration où les pompiers puisent l'eau
-      de: Löschwasserbehälter, Löschteiche und Saugstellen der Feuerwehr
+      en: Tanks, ponds and suction points firefighters draw water from
+      pt: Tanques, lagos e pontos de captação para bombeiros
+      es: Depósitos, estanques y puntos de aspiración para bomberos
+      fr: Réservoirs, bassins et points d'aspiration des pompiers
+      de: Löschwasserbehälter, Löschteiche und Saugstellen
   emergency-shelters:
     name:
       en: Emergency shelters
@@ -1206,11 +1206,11 @@ templates:
       fr: Abris d'urgence
       de: Notunterkünfte
     desc:
-      en: Buildings designated to house displaced people after a disaster
-      pt: Edifícios designados para abrigar desalojados após um desastre
-      es: Edificios designados para alojar a personas desplazadas tras un desastre
-      fr: Bâtiments désignés pour héberger les personnes déplacées après une catastrophe
-      de: Gebäude, die nach einer Katastrophe zur Unterbringung Betroffener bestimmt sind
+      en: Buildings designated to house the displaced after a disaster
+      pt: Edifícios designados para abrigar desalojados após desastres
+      es: Edificios designados para alojar desplazados tras desastres
+      fr: Bâtiments prévus pour loger les sinistrés d'une catastrophe
+      de: Ausgewiesene Gebäude für Betroffene nach einer Katastrophe
   waterfall:
     name:
       en: Waterfall
@@ -1219,11 +1219,11 @@ templates:
       fr: Cascades
       de: Wasserfälle
     desc:
-      en: Waterfall
-      pt: Cachoeiras
-      es: Cascadas
-      fr: Cascades
-      de: Wasserfälle
+      en: Places where a river or stream drops over a steep edge
+      pt: Pontos onde um rio ou córrego despenca de um desnível
+      es: Lugares donde un río o arroyo cae por un desnivel
+      fr: Endroits où un cours d'eau chute d'une paroi abrupte
+      de: Stellen, an denen ein Fluss oder Bach über eine Stufe fällt
   dam:
     name:
       en: Dam
@@ -1232,11 +1232,11 @@ templates:
       fr: Barrages
       de: Staudämme
     desc:
-      en: Dam
-      pt: Barragens
-      es: Presas
-      fr: Barrages
-      de: Staudämme
+      en: Barriers built across rivers to hold back and control water
+      pt: Barreiras construídas em rios para represar e regular a água
+      es: Muros construidos en ríos para retener y regular el agua
+      fr: Ouvrages en travers d'un cours d'eau pour retenir l'eau
+      de: Bauwerke quer zu Flüssen, die Wasser stauen und regeln
   recycling:
     name:
       en: Recycling
@@ -1648,11 +1648,11 @@ templates:
       fr: Parcs
       de: Parks
     desc:
-      en: Parks
-      pt: Parques
-      es: Parques
-      fr: Parcs
-      de: Parks
+      en: Green spaces, usually public, for recreation and relaxation
+      pt: Áreas verdes, em geral públicas, para lazer e descanso
+      es: Áreas verdes, por lo general públicas, para recreación
+      fr: Espaces verts, souvent publics, pour la détente
+      de: Meist öffentliche Grünflächen zur Erholung
   playgrounds:
     name:
       en: Playgrounds
@@ -1661,11 +1661,11 @@ templates:
       fr: Aires de jeux
       de: Spielplätze
     desc:
-      en: Playgrounds
-      pt: Playgrounds
-      es: Parques infantiles
-      fr: Aires de jeux
-      de: Spielplätze
+      en: Areas with swings, slides and other equipment for children
+      pt: Áreas com balanços, escorregadores e outros brinquedos
+      es: Áreas con columpios, toboganes y otros juegos infantiles
+      fr: Espaces avec balançoires, toboggans et autres jeux d'enfants
+      de: Flächen mit Schaukeln, Rutschen und anderen Spielgeräten
   gardens:
     name:
       en: Gardens
@@ -1674,11 +1674,11 @@ templates:
       fr: Jardins
       de: Gärten
     desc:
-      en: Gardens
-      pt: Jardins
-      es: Jardines
-      fr: Jardins
-      de: Gärten
+      en: Planted areas of flowers and plants, decorative or botanical
+      pt: Áreas com flores e plantas, ornamentais ou botânicas
+      es: Áreas con flores y plantas, ornamentales o botánicas
+      fr: Espaces plantés de fleurs, décoratifs ou botaniques
+      de: Angelegte Flächen mit Blumen und Pflanzen, auch botanisch
   fitness-centers:
     name:
       en: Fitness centers
@@ -1687,11 +1687,11 @@ templates:
       fr: Salles de sport
       de: Fitnessstudios
     desc:
-      en: Fitness centers
-      pt: Academias
-      es: Gimnasios
-      fr: Salles de sport
-      de: Fitnessstudios
+      en: Gyms with exercise machines, fitness classes or both
+      pt: Espaços com aparelhos de musculação, aulas ou ambos
+      es: Locales con máquinas de ejercicio, clases o ambos
+      fr: Lieux avec appareils de musculation, cours ou les deux
+      de: Studios mit Trainingsgeräten, Kursen oder beidem
   swimming-pools:
     name:
       en: Swimming pools
@@ -1700,11 +1700,11 @@ templates:
       fr: Piscines
       de: Schwimmbecken
     desc:
-      en: Swimming pools
-      pt: Piscinas
-      es: Piscinas
-      fr: Piscines
-      de: Schwimmbecken
+      en: Water basins of indoor and outdoor pools
+      pt: Tanques de água de piscinas cobertas e ao ar livre
+      es: Áreas de agua de piscinas techadas y al aire libre
+      fr: Bassins des piscines couvertes et en plein air
+      de: Wasserflächen von Becken in Hallen und im Freien
   sports-centres:
     name:
       en: Sports centres
@@ -1729,7 +1729,7 @@ templates:
       en: Large venues with stands for watching sports and events
       pt: Grandes arenas com arquibancadas para esportes e eventos
       es: Grandes recintos con gradas para ver deportes y eventos
-      fr: Grandes enceintes avec tribunes pour le sport et les événements
+      fr: Grandes enceintes avec tribunes pour sport et événements
       de: Große Arenen mit Tribünen für Sport und Veranstaltungen
   pitches:
     name:
@@ -1739,11 +1739,11 @@ templates:
       fr: Terrains de sport
       de: Sportplätze
     desc:
-      en: Fields and courts for football, tennis, basketball and other sports
-      pt: Campos e quadras de futebol, tênis, basquete e outros esportes
-      es: Campos y canchas de fútbol, tenis, baloncesto y otros deportes
-      fr: Terrains de football, tennis, basket et autres sports
-      de: Spielfelder und Plätze für Fußball, Tennis, Basketball und andere Sportarten
+      en: Marked fields and courts for playing sports
+      pt: Campos e quadras demarcados para a prática de esportes
+      es: Campos y canchas demarcados para practicar deportes
+      fr: Terrains et courts délimités pour la pratique du sport
+      de: Markierte Spielfelder und Plätze für den Sport
   golf-courses:
     name:
       en: Golf courses
@@ -1752,11 +1752,11 @@ templates:
       fr: Terrains de golf
       de: Golfplätze
     desc:
-      en: Golf courses
-      pt: Campos de golfe
-      es: Campos de golf
-      fr: Terrains de golf
-      de: Golfplätze
+      en: Grounds with a series of holes for playing golf
+      pt: Áreas com uma sequência de buracos para jogar golfe
+      es: Terrenos con una serie de hoyos para jugar golf
+      fr: Parcours composés d'une série de trous pour le golf
+      de: Anlagen mit einer Reihe von Löchern zum Golfspielen
   tracks:
     name:
       en: Tracks
@@ -1778,11 +1778,11 @@ templates:
       fr: Aires de fitness
       de: Fitnessstationen
     desc:
-      en: Fitness stations
-      pt: Estações de ginástica
-      es: Estaciones de ejercicio
-      fr: Aires de fitness
-      de: Fitnessstationen
+      en: Outdoor exercise equipment such as pull-up bars and benches
+      pt: Equipamentos de exercício ao ar livre, como barras e bancos
+      es: Equipos de ejercicio al aire libre, como barras y bancos
+      fr: Équipements d'exercice en plein air, comme barres et bancs
+      de: Trainingsgeräte im Freien, etwa Klimmzugstangen und Bänke
   ice-rinks:
     name:
       en: Ice rinks
@@ -1791,11 +1791,11 @@ templates:
       fr: Patinoires
       de: Eisbahnen
     desc:
-      en: Ice rinks
-      pt: Pistas de gelo
-      es: Pistas de hielo
-      fr: Patinoires
-      de: Eisbahnen
+      en: Artificial ice surfaces for skating or ice hockey
+      pt: Superfícies de gelo artificial para patinação ou hóquei
+      es: Superficies de hielo artificial para patinaje o hockey
+      fr: Surfaces de glace artificielle pour le patinage ou le hockey
+      de: Künstliche Eisflächen zum Schlittschuhlaufen oder Eishockey
   nature-reserves:
     name:
       en: Nature reserves
@@ -1804,11 +1804,11 @@ templates:
       fr: Réserves naturelles
       de: Naturschutzgebiete
     desc:
-      en: Nature reserves
-      pt: Reservas naturais
-      es: Reservas naturales
-      fr: Réserves naturelles
-      de: Naturschutzgebiete
+      en: Protected areas for wildlife, plants or geological features
+      pt: Áreas protegidas para conservar fauna, flora ou geologia
+      es: Áreas protegidas para conservar fauna, flora o geología
+      fr: Zones protégées pour leur faune, leur flore ou leur géologie
+      de: Geschützte Flächen für Tiere, Pflanzen oder Geologie
   marinas:
     name:
       en: Marinas
@@ -1817,11 +1817,11 @@ templates:
       fr: Ports de plaisance
       de: Jachthäfen
     desc:
-      en: Marinas
-      pt: Marinas
-      es: Marinas
-      fr: Ports de plaisance
-      de: Jachthäfen
+      en: Moorings and docks for yachts and small boats
+      pt: Atracadouros e píeres para iates e barcos pequenos
+      es: Amarres y muelles para yates y botes pequeños
+      fr: Amarrages et pontons pour yachts et petits bateaux
+      de: Liegeplätze und Stege für Jachten und kleine Boote
   dog-parks:
     name:
       en: Dog parks
@@ -1830,11 +1830,11 @@ templates:
       fr: Parcs canins
       de: Hundewiesen
     desc:
-      en: Dog parks
-      pt: Parques para cães
-      es: Parques para perros
-      fr: Parcs canins
-      de: Hundewiesen
+      en: Areas, fenced or not, where dogs may run off the leash
+      pt: Áreas, cercadas ou não, onde cães podem correr soltos
+      es: Áreas, cercadas o no, donde los perros corren sin correa
+      fr: Espaces, clôturés ou non, où les chiens courent sans laisse
+      de: Flächen, eingezäunt oder nicht, für Hunde ohne Leine
   trees:
     name:
       en: Trees
@@ -1856,11 +1856,11 @@ templates:
       fr: Espaces verts aménagés
       de: Gepflegte Grünflächen
     desc:
-      en: Managed green
-      pt: Áreas verdes planejadas
-      es: Áreas verdes planificadas
-      fr: Espaces verts aménagés
-      de: Gepflegte Grünflächen
+      en: Parks, gardens and orchards
+      pt: Parques, jardins e pomares
+      es: Parques, jardines y huertos
+      fr: Parcs, jardins et vergers
+      de: Parks, Gärten und Obstplantagen
   natural-vegetation:
     name:
       en: Natural vegetation
@@ -1869,11 +1869,11 @@ templates:
       fr: Végétation naturelle
       de: Natürliche Vegetation
     desc:
-      en: Natural vegetation
-      pt: Vegetação natural
-      es: Vegetación natural
-      fr: Végétation naturelle
-      de: Natürliche Vegetation
+      en: Woods, managed forests and grasslands
+      pt: Bosques, florestas manejadas e campos naturais
+      es: Bosques, áreas forestales y pastizales
+      fr: Bois, forêts exploitées et prairies naturelles
+      de: Wälder, Forstflächen und Grasland
   forests:
     name:
       en: Forests
@@ -1896,10 +1896,10 @@ templates:
       de: Wälder
     desc:
       en: Tree-covered land, natural or not managed for timber
-      pt: Áreas cobertas por árvores, naturais ou sem exploração de madeira
-      es: Terrenos cubiertos de árboles, naturales o sin explotación maderera
+      pt: Áreas com árvores, naturais ou sem exploração de madeira
+      es: Terrenos con árboles, naturales o sin explotación maderera
       fr: Terrains boisés, naturels ou non exploités pour le bois
-      de: Baumbestandene Flächen, natürlich oder nicht forstlich genutzt
+      de: Baumbestandene Flächen, natürlich oder ohne Forstnutzung
   orchards:
     name:
       en: Orchards
@@ -1908,11 +1908,11 @@ templates:
       fr: Vergers
       de: Obstplantagen
     desc:
-      en: Orchards
-      pt: Pomares
-      es: Huertos
-      fr: Vergers
-      de: Obstplantagen
+      en: Trees or shrubs planted to produce food, such as fruit
+      pt: Árvores ou arbustos plantados para produzir alimentos
+      es: Árboles o arbustos plantados para producir alimentos
+      fr: Arbres ou arbustes plantés pour produire de la nourriture
+      de: Gepflanzte Bäume oder Sträucher zur Nahrungserzeugung
   grasslands:
     name:
       en: Grasslands
@@ -1921,11 +1921,11 @@ templates:
       fr: Prairies naturelles
       de: Grasland
     desc:
-      en: Grasslands
-      pt: Campos naturais
-      es: Pastizales
-      fr: Prairies naturelles
-      de: Grasland
+      en: Natural open land where grasses and herbs dominate
+      pt: Áreas abertas naturais onde predominam capins e ervas
+      es: Áreas abiertas naturales donde dominan pastos y hierbas
+      fr: Espaces ouverts naturels dominés par les herbes
+      de: Natürliche offene Flächen, auf denen Gräser vorherrschen
   wetlands:
     name:
       en: Wetlands
@@ -1947,11 +1947,11 @@ templates:
       fr: Plages
       de: Strände
     desc:
-      en: Beaches
-      pt: Praias
-      es: Playas
-      fr: Plages
-      de: Strände
+      en: Shores made of sand, pebbles or other loose material
+      pt: Faixas de areia, seixos ou outro material solto
+      es: Orillas de arena, guijarros u otro material suelto
+      fr: Rivages de sable, de galets ou d'autres matériaux meubles
+      de: Ufer aus Sand, Kies oder anderem lockerem Material
   peaks:
     name:
       en: Peaks
@@ -1960,11 +1960,11 @@ templates:
       fr: Sommets
       de: Gipfel
     desc:
-      en: Peaks
-      pt: Picos
-      es: Picos
-      fr: Sommets
-      de: Gipfel
+      en: Summits of hills and mountains
+      pt: Topos de morros e montanhas
+      es: Cumbres de cerros y montañas
+      fr: Points culminants des collines et des montagnes
+      de: Höchste Punkte von Hügeln und Bergen
   cliffs:
     name:
       en: Cliffs
@@ -1973,11 +1973,11 @@ templates:
       fr: Falaises
       de: Klippen
     desc:
-      en: Cliffs
-      pt: Penhasco
-      es: Acantilados
-      fr: Falaises
-      de: Klippen
+      en: Steep natural drops in the terrain, often bare rock
+      pt: Desníveis naturais íngremes no terreno, em geral de rocha
+      es: Caídas naturales empinadas del terreno, a menudo de roca
+      fr: Ruptures naturelles abruptes du terrain, souvent rocheuses
+      de: Steile natürliche Geländekanten, meist aus Fels
   caves:
     name:
       en: Cave entrances
@@ -1986,11 +1986,11 @@ templates:
       fr: Entrées de grottes
       de: Höhleneingänge
     desc:
-      en: Cave entrances
-      pt: Entradas de cavernas
-      es: Entradas de cuevas
-      fr: Entrées de grottes
-      de: Höhleneingänge
+      en: Openings into natural underground spaces
+      pt: Aberturas para cavidades subterrâneas naturais
+      es: Aberturas a espacios subterráneos naturales
+      fr: Ouvertures vers des cavités souterraines naturelles
+      de: Zugänge zu natürlichen unterirdischen Hohlräumen
   water:
     name:
       en: Water bodies
@@ -2012,11 +2012,11 @@ templates:
       fr: Littoral
       de: Küstenlinien
     desc:
-      en: Coastlines
-      pt: Linha costeira
-      es: Litorales
-      fr: Littoral
-      de: Küstenlinien
+      en: The line where land meets the sea at high tide
+      pt: Linha onde a terra encontra o mar na maré alta
+      es: Línea donde la tierra se une con el mar en marea alta
+      fr: Ligne où la terre rencontre la mer à marée haute
+      de: Linie, an der Land und Meer bei Flut aufeinandertreffen
   springs:
     name:
       en: Springs
@@ -2025,11 +2025,11 @@ templates:
       fr: Sources
       de: Quellen
     desc:
-      en: Springs
-      pt: Nascentes
-      es: Manantiales
-      fr: Sources
-      de: Quellen
+      en: Places where groundwater flows out of the ground naturally
+      pt: Locais onde a água subterrânea brota naturalmente
+      es: Lugares donde el agua subterránea brota de forma natural
+      fr: Lieux où l'eau souterraine sort naturellement du sol
+      de: Stellen, an denen Grundwasser natürlich zutage tritt
   hot-springs:
     name:
       en: Hot springs
@@ -2038,11 +2038,11 @@ templates:
       fr: Sources chaudes
       de: Heiße Quellen
     desc:
-      en: Hot springs
-      pt: Fontes termais
-      es: Aguas termales
-      fr: Sources chaudes
-      de: Heiße Quellen
+      en: Water that flows out warmed by heat from deep underground
+      pt: Águas que brotam aquecidas pelo calor do subsolo
+      es: Aguas que brotan calentadas por el calor del subsuelo
+      fr: Eaux qui jaillissent réchauffées par la chaleur du sous-sol
+      de: Grundwasser, das durch Erdwärme erhitzt austritt
   geyser:
     name:
       en: Geyser
@@ -2051,11 +2051,11 @@ templates:
       fr: Geysers
       de: Geysire
     desc:
-      en: Geyser
-      pt: Gêiseres
-      es: Géiseres
-      fr: Geysers
-      de: Geysire
+      en: Openings that erupt hot water and steam at intervals
+      pt: Aberturas que lançam água quente e vapor a intervalos
+      es: Aberturas que expulsan agua caliente y vapor a intervalos
+      fr: Ouvertures projetant par intervalles eau chaude et vapeur
+      de: Öffnungen, die periodisch heißes Wasser und Dampf ausstoßen
   glaciers:
     name:
       en: Glaciers
@@ -2064,11 +2064,11 @@ templates:
       fr: Glaciers
       de: Gletscher
     desc:
-      en: Glaciers
-      pt: Geleiras
-      es: Glaciares
-      fr: Glaciers
-      de: Gletscher
+      en: Permanent masses of ice that slowly flow downhill
+      pt: Massas de gelo permanentes que se movem lentamente
+      es: Masas de hielo permanentes que se desplazan lentamente
+      fr: Masses de glace permanentes qui avancent lentement
+      de: Dauerhafte Eismassen, die langsam talwärts fließen
   natural-surfaces:
     name:
       en: Natural surfaces
@@ -2077,11 +2077,11 @@ templates:
       fr: Surfaces naturelles
       de: Natürliche Oberflächen
     desc:
-      en: Natural surfaces
-      pt: Superfícies naturais
-      es: Superficies naturales
-      fr: Surfaces naturelles
-      de: Natürliche Oberflächen
+      en: Low vegetation and bare ground such as rock, sand or mud
+      pt: Vegetação baixa e solo exposto, como rocha, areia ou lama
+      es: Vegetación baja y suelo desnudo, como roca, arena o barro
+      fr: Végétation basse et sol nu, comme roche, sable ou boue
+      de: Niedriger Bewuchs und kahler Boden wie Fels, Sand, Schlamm
   scrub:
     name:
       en: Scrub
@@ -2090,11 +2090,11 @@ templates:
       fr: Broussailles
       de: Gebüsch
     desc:
-      en: Scrub
-      pt: Vegetação arbustiva
-      es: Matorral
-      fr: Broussailles
-      de: Gebüsch
+      en: Uncultivated land covered with bushes or stunted trees
+      pt: Terras não cultivadas cobertas de arbustos ou árvores baixas
+      es: Tierras sin cultivar cubiertas de arbustos o árboles bajos
+      fr: Terres incultes couvertes de buissons ou d'arbres chétifs
+      de: Unkultiviertes Land mit Büschen oder niedrigen Bäumen
   heath:
     name:
       en: Heath
@@ -2103,11 +2103,11 @@ templates:
       fr: Lande
       de: Heide
     desc:
-      en: Heath
-      pt: Charneca
-      es: Brezal
-      fr: Lande
-      de: Heide
+      en: Open land with low woody plants such as heather
+      pt: Terras abertas com plantas lenhosas baixas, como urze
+      es: Terrenos abiertos con plantas leñosas bajas, como el brezo
+      fr: Terrains ouverts à plantes ligneuses basses, dont la bruyère
+      de: Offenes Land mit niedrigen Holzpflanzen wie Heidekraut
   fell:
     name:
       en: Fell
@@ -2116,11 +2116,11 @@ templates:
       fr: Pelouse alpine
       de: Fjell
     desc:
-      en: Fell
-      pt: Campos de altitude
-      es: Monte
-      fr: Pelouse alpine
-      de: Fjell
+      en: Open land above the tree line, with grass and moss
+      pt: Áreas abertas acima do limite arbóreo, com capim e musgo
+      es: Terrenos abiertos sobre el límite arbóreo, con pasto y musgo
+      fr: Terrains ouverts au-dessus des arbres, avec herbe et mousse
+      de: Offenes Land oberhalb der Baumgrenze mit Gras und Moos
   rock:
     name:
       en: Rock
@@ -2129,11 +2129,11 @@ templates:
       fr: Roche
       de: Fels
     desc:
-      en: Rock
-      pt: Rocha
-      es: Roca
-      fr: Roche
-      de: Fels
+      en: Notable rocks fixed to the bedrock below
+      pt: Rochas de destaque ligadas ao leito rochoso
+      es: Rocas destacadas unidas al lecho rocoso
+      fr: Rochers remarquables rattachés au socle rocheux
+      de: Markante Felsen, fest mit dem Untergrund verbunden
   stone:
     name:
       en: Stone
@@ -2142,11 +2142,11 @@ templates:
       fr: Pierre
       de: Findlinge
     desc:
-      en: Stone
-      pt: Pedra
-      es: Piedra
-      fr: Pierre
-      de: Findlinge
+      en: Notable loose boulders, not attached to the bedrock
+      pt: Blocos de pedra soltos, não ligados ao leito rochoso
+      es: Bloques de piedra sueltos, no unidos al lecho rocoso
+      fr: Blocs de pierre isolés, détachés du socle rocheux
+      de: Einzelne lose Gesteinsblöcke, nicht mit dem Fels verbunden
   sand:
     name:
       en: Sand
@@ -2155,11 +2155,11 @@ templates:
       fr: Sable
       de: Sand
     desc:
-      en: Sand
-      pt: Areia
-      es: Arena
-      fr: Sable
-      de: Sand
+      en: Areas covered by sand with little or no vegetation
+      pt: Áreas cobertas de areia, com pouca ou nenhuma vegetação
+      es: Áreas cubiertas de arena, con poca o ninguna vegetación
+      fr: Zones couvertes de sable, avec peu ou pas de végétation
+      de: Mit Sand bedeckte Flächen, kaum oder nicht bewachsen
   shingle:
     name:
       en: Shingle
@@ -2168,11 +2168,11 @@ templates:
       fr: Galets
       de: Kies
     desc:
-      en: Shingle
-      pt: Cascalho
-      es: Guijarros
-      fr: Galets
-      de: Kies
+      en: Banks of rounded pebbles on beaches or riverbeds
+      pt: Acúmulos de pedras arredondadas em praias ou leitos de rio
+      es: Acumulaciones de piedras redondeadas en playas o cauces
+      fr: Amas de pierres arrondies en bord de mer ou de rivière
+      de: Rundliche Steine an Stränden oder in Flussbetten
   mud:
     name:
       en: Mud
@@ -2181,11 +2181,11 @@ templates:
       fr: Boue
       de: Schlamm
     desc:
-      en: Mud
-      pt: Lama
-      es: Barro
-      fr: Boue
-      de: Schlamm
+      en: Soaked, fine-grained bare soil with almost no plants
+      pt: Solo fino e encharcado, quase sem vegetação
+      es: Suelo fino empapado, casi sin vegetación
+      fr: Sol fin détrempé, presque sans végétation
+      de: Durchnässter feinkörniger Boden fast ohne Pflanzen
   street-lamps:
     name:
       en: Street lamps
@@ -2584,11 +2584,11 @@ templates:
       fr: Football
       de: Fußball
     desc:
-      en: Football
-      pt: Futebol
-      es: Fútbol
-      fr: Football
-      de: Fußball
+      en: Fields of any size where football (soccer) is played
+      pt: Campos de qualquer tamanho onde se joga futebol
+      es: Campos de cualquier tamaño donde se juega fútbol
+      fr: Terrains de toutes tailles où l'on joue au football
+      de: Spielfelder jeder Größe für Fußball
   basketball:
     name:
       en: Basketball
@@ -2597,11 +2597,11 @@ templates:
       fr: Basket-ball
       de: Basketball
     desc:
-      en: Basketball
-      pt: Basquete
-      es: Baloncesto
-      fr: Basket-ball
-      de: Basketball
+      en: Outdoor and indoor courts used for basketball
+      pt: Quadras abertas e cobertas usadas para basquete
+      es: Canchas abiertas y techadas usadas para baloncesto
+      fr: Terrains extérieurs et couverts pour le basket-ball
+      de: Plätze im Freien und in Hallen für Basketball
   tennis:
     name:
       en: Tennis
@@ -2610,11 +2610,11 @@ templates:
       fr: Tennis
       de: Tennis
     desc:
-      en: Tennis
-      pt: Tênis
-      es: Tenis
-      fr: Tennis
-      de: Tennis
+      en: Public and club courts used for tennis
+      pt: Quadras públicas e de clubes usadas para tênis
+      es: Canchas públicas y de clubes usadas para tenis
+      fr: Courts publics et de clubs pour le tennis
+      de: Öffentliche Plätze und Vereinsplätze für Tennis
   swimming:
     name:
       en: Swimming
@@ -2623,11 +2623,11 @@ templates:
       fr: Natation
       de: Schwimmen
     desc:
-      en: Swimming
-      pt: Natação
-      es: Natación
-      fr: Natation
-      de: Schwimmen
+      en: Aquatic centres, swim clubs and lap lanes
+      pt: Centros aquáticos, clubes de natação e raias
+      es: Centros acuáticos, clubes de natación y carriles
+      fr: Centres aquatiques, clubs de natation et couloirs
+      de: Schwimmhallen, Schwimmvereine und Bahnen
   golf:
     name:
       en: Golf
@@ -2636,11 +2636,11 @@ templates:
       fr: Golf
       de: Golf
     desc:
-      en: Golf
-      pt: Golfe
-      es: Golf
-      fr: Golf
-      de: Golf
+      en: Greens, tees and driving ranges used for golf
+      pt: Greens, tees e áreas de treino usados para golfe
+      es: Greens, tees y campos de práctica usados para golf
+      fr: Greens, départs et practices pour le golf
+      de: Grüns, Abschläge und Driving Ranges für Golf
   skiing:
     name:
       en: Skiing
@@ -2649,11 +2649,11 @@ templates:
       fr: Ski
       de: Skifahren
     desc:
-      en: Skiing
-      pt: Esqui
-      es: Esquí
-      fr: Ski
-      de: Skifahren
+      en: Winter sports areas, jumps and clubs for skiing
+      pt: Áreas de esportes de inverno, rampas e clubes de esqui
+      es: Áreas de deportes de invierno, trampolines y clubes de esquí
+      fr: Domaines skiables, tremplins et clubs de ski
+      de: Wintersportgebiete, Sprungschanzen und Skivereine
   baseball:
     name:
       en: Baseball
@@ -2662,11 +2662,11 @@ templates:
       fr: Baseball
       de: Baseball
     desc:
-      en: Baseball
-      pt: Beisebol
-      es: Béisbol
-      fr: Baseball
-      de: Baseball
+      en: Diamond-shaped fields with bases and a pitcher's mound
+      pt: Campos em diamante com bases e montinho do arremessador
+      es: Campos en forma de diamante con bases y montículo
+      fr: Terrains en losange avec bases et monticule du lanceur
+      de: Rautenförmige Spielfelder mit Bases und Werferhügel
   athletics:
     name:
       en: Athletics
@@ -2675,11 +2675,11 @@ templates:
       fr: Athlétisme
       de: Leichtathletik
     desc:
-      en: Athletics
-      pt: Atletismo
-      es: Atletismo
-      fr: Athlétisme
-      de: Leichtathletik
+      en: Lanes, jump pits and throwing circles for track and field
+      pt: Raias, caixas de salto e áreas de arremesso do atletismo
+      es: Carriles, fosos de salto y áreas de lanzamiento de atletismo
+      fr: Couloirs, sautoirs et aires de lancer pour l'athlétisme
+      de: Bahnen, Sprunggruben und Wurfkreise der Leichtathletik
   gymnasiums:
     name:
       en: Gymnastics
@@ -2688,11 +2688,11 @@ templates:
       fr: Gymnastique
       de: Turnen
     desc:
-      en: Gymnastics
-      pt: Ginástica
-      es: Gimnasia
-      fr: Gymnastique
-      de: Turnen
+      en: Halls and clubs for artistic and rhythmic gymnastics
+      pt: Ginásios e clubes de ginástica artística e rítmica
+      es: Salas y clubes de gimnasia artística y rítmica
+      fr: Salles et clubs de gymnastique artistique et rythmique
+      de: Hallen und Vereine für Kunstturnen und Rhythmische Gymnastik
   shooting:
     name:
       en: Shooting
@@ -2701,11 +2701,11 @@ templates:
       fr: Tir sportif
       de: Schießsport
     desc:
-      en: Shooting
-      pt: Tiro esportivo
-      es: Tiro deportivo
-      fr: Tir sportif
-      de: Schießsport
+      en: Indoor and outdoor ranges for target shooting with guns
+      pt: Estandes cobertos e abertos para tiro ao alvo com armas
+      es: Campos techados y abiertos para tiro al blanco con armas
+      fr: Stands couverts et en plein air pour le tir aux armes à feu
+      de: Schießstände drinnen und draußen für Schusswaffen
   archery:
     name:
       en: Archery
@@ -2714,11 +2714,11 @@ templates:
       fr: Tir à l'arc
       de: Bogenschießen
     desc:
-      en: Archery
-      pt: Arco e flecha
-      es: Tiro con arco
-      fr: Tir à l'arc
-      de: Bogenschießen
+      en: Grounds with targets for shooting arrows with a bow
+      pt: Campos com alvos para atirar flechas com arco
+      es: Campos con blancos para disparar flechas con arco
+      fr: Terrains avec cibles pour tirer des flèches à l'arc
+      de: Plätze mit Zielscheiben zum Schießen mit Pfeil und Bogen
   climbing:
     name:
       en: Climbing
@@ -2727,11 +2727,11 @@ templates:
       fr: Escalade
       de: Klettern
     desc:
-      en: Climbing
-      pt: Escalada
-      es: Escalada
-      fr: Escalade
-      de: Klettern
+      en: Rock faces, routes and climbing walls
+      pt: Paredões rochosos, vias e muros de escalada
+      es: Paredes rocosas, vías y muros de escalada
+      fr: Falaises, voies et murs d'escalade
+      de: Felswände, Kletterrouten und Kletterwände
   equestrian:
     name:
       en: Equestrian
@@ -2740,11 +2740,11 @@ templates:
       fr: Équitation
       de: Reitsport
     desc:
-      en: Equestrian
-      pt: Equitação
-      es: Hípica
-      fr: Équitation
-      de: Reitsport
+      en: Riding arenas and grounds for horse sports, not racing
+      pt: Picadeiros e áreas para esportes equestres, sem corridas
+      es: Picaderos y pistas para deportes ecuestres, sin carreras
+      fr: Manèges et terrains de sports équestres, hors courses
+      de: Reitplätze und Anlagen für Pferdesport, ohne Rennen
   fountains:
     name:
       en: Fountains
@@ -2792,11 +2792,11 @@ templates:
       fr: Lieux de culte
       de: Gotteshäuser
     desc:
-      en: Churches, mosques, temples, synagogues and other religious buildings
-      pt: Igrejas, mesquitas, templos, sinagogas e outros locais religiosos
-      es: Iglesias, mezquitas, templos, sinagogas y otros lugares religiosos
-      fr: Églises, mosquées, temples, synagogues et autres lieux de culte
-      de: Kirchen, Moscheen, Tempel, Synagogen und andere Gotteshäuser
+      en: Churches, mosques, synagogues, temples and more
+      pt: Igrejas, mesquitas, sinagogas, templos e outros
+      es: Iglesias, mezquitas, sinagogas, templos y más
+      fr: Églises, mosquées, synagogues, temples et autres
+      de: Kirchen, Moscheen, Synagogen, Tempel und mehr
   walls:
     name:
       en: Walls
@@ -2857,11 +2857,11 @@ templates:
       fr: Terres agricoles
       de: Ackerland
     desc:
-      en: Farmland
-      pt: Área agrícola
-      es: Tierra agrícola
-      fr: Terres agricoles
-      de: Ackerland
+      en: Tilled fields for crops sown every year
+      pt: Campos lavrados para cultivos anuais
+      es: Campos labrados para cultivos anuales
+      fr: Champs labourés pour des cultures annuelles
+      de: Gepflügte Felder für einjährige Kulturen
   farmyards:
     name:
       en: Farmyards
@@ -2870,11 +2870,11 @@ templates:
       fr: Cours de ferme
       de: Hofstellen
     desc:
-      en: Farmyards
-      pt: Pátios de fazenda
-      es: Patios de granja
-      fr: Cours de ferme
-      de: Hofstellen
+      en: Land around a farm's house and working buildings
+      pt: Terreno em volta da sede e das construções da fazenda
+      es: Terreno alrededor de la casa y los edificios de una granja
+      fr: Terrain autour de la maison et des bâtiments d'une ferme
+      de: Gelände um Wohnhaus und Wirtschaftsgebäude eines Hofs
   meadows:
     name:
       en: Meadows
@@ -2883,11 +2883,11 @@ templates:
       fr: Prés
       de: Wiesen
     desc:
-      en: Meadows
-      pt: Prados
-      es: Praderas
-      fr: Prés
-      de: Wiesen
+      en: Grassy land used for hay or grazing
+      pt: Terras com capim usadas para feno ou pastagem
+      es: Terrenos con pasto usados para heno o pastoreo
+      fr: Terres herbeuses utilisées pour le foin ou le pâturage
+      de: Grasflächen zur Heugewinnung oder als Weide
   animal-keeping:
     name:
       en: Animal keeping
@@ -2896,11 +2896,11 @@ templates:
       fr: Élevage d'animaux
       de: Tierhaltung
     desc:
-      en: Land use for animal keeping
-      pt: Uso do solo para criação de animais
-      es: Uso del suelo para cría de animales
-      fr: Terrains dédiés à l'élevage d'animaux
-      de: Flächen für Tierhaltung
+      en: Paddocks and other fenced land where animals are kept
+      pt: Piquetes e outras áreas cercadas onde se mantêm animais
+      es: Potreros y otros terrenos cercados donde se tienen animales
+      fr: Paddocks et autres terrains clôturés où vivent des animaux
+      de: Koppeln und andere eingezäunte Flächen für Tiere
   feedlots:
     name:
       en: Feedlots
@@ -2909,11 +2909,11 @@ templates:
       fr: Parcs d'engraissement
       de: Mastanlagen
     desc:
-      en: Feedlot infrastructure
-      pt: Infraestrutura de currais de engorda
-      es: Infraestructura de feedlots
-      fr: Infrastructure de parcs d'engraissement
-      de: Infrastruktur von Mastanlagen
+      en: Yards for intensive fattening of livestock, mostly cattle
+      pt: Áreas de engorda intensiva de gado, sobretudo bovino
+      es: Recintos de engorde intensivo de ganado, sobre todo bovino
+      fr: Zones d'engraissement intensif du bétail, surtout bovin
+      de: Höfe für die intensive Mast von Vieh, meist Rindern
   stockyards:
     name:
       en: Stockyards
@@ -2922,11 +2922,11 @@ templates:
       fr: Parcs à bestiaux
       de: Viehhöfe
     desc:
-      en: Livestock handling infrastructure
-      pt: Infraestrutura de manejo de gado
-      es: Infraestructura de manejo de ganado
-      fr: Infrastructure de gestion du bétail
-      de: Infrastruktur für den Viehumschlag
+      en: Fenced pens where livestock is held for a short time
+      pt: Cercados onde o gado fica retido por pouco tempo
+      es: Recintos cercados donde el ganado se retiene por poco tiempo
+      fr: Enclos où le bétail est gardé temporairement
+      de: Pferche, in denen Vieh vorübergehend gehalten wird
   poultry-yards:
     name:
       en: Poultry yards
@@ -2935,11 +2935,11 @@ templates:
       fr: Élevages de volailles
       de: Geflügelhöfe
     desc:
-      en: Poultry farming infrastructure
-      pt: Infraestrutura de avicultura
-      es: Infraestructura de avicultura
-      fr: Infrastructure d'élevage de volailles
-      de: Infrastruktur der Geflügelhaltung
+      en: Farm areas raising chickens and other poultry
+      pt: Áreas onde se criam galinhas e outras aves
+      es: Áreas donde se crían gallinas y otras aves
+      fr: Zones où sont élevées des poules et autres volailles
+      de: Flächen für die Haltung von Hühnern und anderem Geflügel
   dairy-yards:
     name:
       en: Dairy yards
@@ -2948,11 +2948,11 @@ templates:
       fr: Installations laitières
       de: Milchviehhöfe
     desc:
-      en: Dairy farming infrastructure
-      pt: Infraestrutura de produção leiteira
-      es: Infraestructura lechera
-      fr: Infrastructure d'élevage laitier
-      de: Infrastruktur der Milchviehhaltung
+      en: Farm areas where cows are kept for milk
+      pt: Áreas de fazenda onde vacas são criadas para leite
+      es: Áreas de granja donde se crían vacas para leche
+      fr: Zones de ferme où des vaches sont élevées pour leur lait
+      de: Hofflächen, auf denen Kühe für Milch gehalten werden
   barns:
     name:
       en: Barns
@@ -2961,11 +2961,11 @@ templates:
       fr: Granges
       de: Scheunen
     desc:
-      en: Barns
-      pt: Celeiros
-      es: Graneros
-      fr: Granges
-      de: Scheunen
+      en: Farm buildings for storage and covered work
+      pt: Construções rurais para armazenar e trabalhar sob abrigo
+      es: Construcciones rurales para almacenar y trabajar bajo techo
+      fr: Bâtiments agricoles pour stocker et travailler à l'abri
+      de: Hofgebäude zum Lagern und für Arbeiten unter Dach
   farm-auxiliary:
     name:
       en: Farm auxiliary buildings
@@ -2987,11 +2987,11 @@ templates:
       fr: Serres
       de: Gewächshäuser
     desc:
-      en: Greenhouses
-      pt: Estufas
-      es: Invernaderos
-      fr: Serres
-      de: Gewächshäuser
+      en: Buildings with glass or plastic walls for growing plants
+      pt: Construções com paredes de vidro ou plástico para plantas
+      es: Edificios con paredes de vidrio o plástico para cultivar
+      fr: Bâtiments aux parois de verre ou de plastique pour plantes
+      de: Gebäude mit Glas- oder Folienwänden für den Pflanzenanbau
   livestock-buildings:
     name:
       en: Livestock buildings
@@ -3004,7 +3004,7 @@ templates:
       pt: Estábulos, cavalariças, chiqueiros, celeiros e similares
       es: Establos, caballerizas, porquerizas, graneros y similares
       fr: Étables, écuries, porcheries, granges et autres abris
-      de: Kuhställe, Pferdeställe, Schweineställe und Scheunen
+      de: Kuh-, Pferde- und Schweineställe, Scheunen und mehr
   cowsheds:
     name:
       en: Cowsheds
@@ -3013,11 +3013,11 @@ templates:
       fr: Étables
       de: Kuhställe
     desc:
-      en: Cowsheds
-      pt: Estábulos para gado
-      es: Establos para vacas
-      fr: Étables
-      de: Kuhställe
+      en: Buildings where cows are housed
+      pt: Construções onde vacas são abrigadas
+      es: Edificios donde se alojan vacas
+      fr: Bâtiments qui abritent des vaches
+      de: Gebäude, in denen Kühe untergebracht sind
   pig-sties:
     name:
       en: Pigsties
@@ -3039,11 +3039,11 @@ templates:
       fr: Écuries
       de: Pferdeställe
     desc:
-      en: Stables
-      pt: Estábulos
-      es: Establos
-      fr: Écuries
-      de: Pferdeställe
+      en: Buildings built to house horses
+      pt: Construções feitas para abrigar cavalos
+      es: Edificios construidos para alojar caballos
+      fr: Bâtiments construits pour abriter des chevaux
+      de: Gebäude zur Unterbringung von Pferden
   silos:
     name:
       en: Silos
@@ -3052,11 +3052,11 @@ templates:
       fr: Silos
       de: Silos
     desc:
-      en: Silos
-      pt: Silos
-      es: Silos
-      fr: Silos
-      de: Silos
+      en: Containers that store bulk goods, often grain
+      pt: Reservatórios para grãos e outros materiais a granel
+      es: Depósitos para granos y otros materiales a granel
+      fr: Réservoirs pour le grain et autres produits en vrac
+      de: Speicher für Getreide und andere Schüttgüter
   bunker-silos:
     name:
       en: Bunker silos
@@ -3065,11 +3065,11 @@ templates:
       fr: Silos-couloirs
       de: Fahrsilos
     desc:
-      en: Bunker silos
-      pt: Silos tipo bunker
-      es: Silos tipo búnker
-      fr: Silos-couloirs
-      de: Fahrsilos
+      en: Roofless walled bays for silage, open to vehicles
+      pt: Baias sem teto e com muros para silagem, abertas a veículos
+      es: Recintos murados sin techo para silaje, abiertos a vehículos
+      fr: Cases murées sans toit pour l'ensilage, ouvertes aux engins
+      de: Dachlose, befahrbare Kammern mit Wänden für Silage
   agricultural-tanks:
     name:
       en: Agricultural tanks
@@ -3078,11 +3078,11 @@ templates:
       fr: Cuves agricoles
       de: Landwirtschaftliche Tanks
     desc:
-      en: Agricultural tanks
-      pt: Tanques agrícolas
-      es: Depósitos agrícolas
-      fr: Cuves agricoles
-      de: Landwirtschaftliche Tanks
+      en: Tanks holding liquids or gases, on farms and elsewhere
+      pt: Tanques de líquidos ou gases, em fazendas e em outros locais
+      es: Tanques de líquidos o gases, en granjas y en otros lugares
+      fr: Cuves de liquides ou de gaz, à la ferme ou ailleurs
+      de: Tanks für Flüssigkeiten oder Gase, auf Höfen und anderswo
   slurry-basins:
     name:
       en: Slurry basins
@@ -3091,11 +3091,11 @@ templates:
       fr: Bassins à lisier
       de: Güllebecken
     desc:
-      en: Agricultural slurry storage infrastructure
-      pt: Infraestrutura de armazenamento de esterco
-      es: Infraestructura de almacenamiento de purín
-      fr: Infrastructure de stockage de lisier
-      de: Infrastruktur zur Güllelagerung
+      en: Dug pits with sloped sides that store liquid manure
+      pt: Bacias escavadas de bordas inclinadas para esterco líquido
+      es: Fosas excavadas con bordes inclinados para estiércol líquido
+      fr: Fosses à bords inclinés pour les déjections liquides
+      de: Gegrabene Becken mit schrägen Wänden für Flüssigmist
   slurry-tanks:
     name:
       en: Slurry tanks
@@ -3104,11 +3104,11 @@ templates:
       fr: Cuves à lisier
       de: Gülletanks
     desc:
-      en: Agricultural slurry storage infrastructure
-      pt: Infraestrutura de armazenamento de esterco
-      es: Infraestructura de almacenamiento de purín
-      fr: Infrastructure de stockage de lisier
-      de: Infrastruktur zur Güllelagerung
+      en: Round tanks with upright walls that hold liquid manure
+      pt: Tanques redondos de paredes retas para esterco líquido
+      es: Tanques redondos de paredes rectas para estiércol líquido
+      fr: Cuves rondes à parois droites pour les déjections liquides
+      de: Runde Behälter mit senkrechten Wänden für Flüssigmist
   manure-storage:
     name:
       en: Manure storage
@@ -3117,11 +3117,11 @@ templates:
       fr: Stockage de fumier
       de: Mistlager
     desc:
-      en: Manure storage infrastructure
-      pt: Infraestrutura de armazenamento de esterco
-      es: Infraestructura de almacenamiento de estiércol
-      fr: Infrastructure de stockage de fumier
-      de: Infrastruktur zur Mistlagerung
+      en: Storage tanks known to hold manure
+      pt: Tanques de armazenamento que contêm esterco
+      es: Tanques de almacenamiento que contienen estiércol
+      fr: Réservoirs de stockage contenant du fumier
+      de: Lagertanks, die Mist enthalten
   greenhouse-horticulture:
     name:
       en: Greenhouse horticulture
@@ -3130,11 +3130,11 @@ templates:
       fr: Horticulture sous serre
       de: Unterglasanbau
     desc:
-      en: Greenhouse horticulture
-      pt: Horticultura em estufa
-      es: Horticultura en invernadero
-      fr: Horticulture sous serre
-      de: Unterglasanbau
+      en: Land with clusters of greenhouses for growing crops
+      pt: Terrenos com conjuntos de estufas para cultivo
+      es: Terrenos con grupos de invernaderos para cultivo
+      fr: Terrains couverts de serres pour la culture de plantes
+      de: Flächen mit vielen Gewächshäusern für den Pflanzenanbau
   plant-nurseries:
     name:
       en: Plant nurseries
@@ -3143,11 +3143,11 @@ templates:
       fr: Pépinières
       de: Baumschulen
     desc:
-      en: Plant nurseries
-      pt: Viveiros de plantas
-      es: Viveros de plantas
-      fr: Pépinières
-      de: Baumschulen
+      en: Land where young trees, shrubs and flowers are raised
+      pt: Áreas onde se cultivam mudas de árvores, arbustos e flores
+      es: Terrenos donde se crían árboles, arbustos y flores jóvenes
+      fr: Terrains où sont élevés de jeunes arbres, arbustes et fleurs
+      de: Flächen zur Anzucht junger Bäume, Sträucher und Blumen
   irrigated-green:
     name:
       en: Irrigated green
@@ -3156,8 +3156,8 @@ templates:
       fr: Espaces verts irrigués
       de: Bewässerte Grünflächen
     desc:
-      en: Irrigated green
-      pt: Áreas verdes irrigadas
-      es: Áreas verdes regadas
-      fr: Espaces verts irrigués
-      de: Bewässerte Grünflächen
+      en: Canals and ditches that carry water to farmland
+      pt: Canais e valas que levam água para lavouras
+      es: Canales y acequias que llevan agua a los cultivos
+      fr: Canaux et fossés qui amènent l'eau aux cultures
+      de: Kanäle und Gräben, die Wasser zu Feldern leiten
