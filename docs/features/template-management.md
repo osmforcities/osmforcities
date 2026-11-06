@@ -67,6 +67,8 @@ Prereqs: local dev server, signed in (osmforcities-dev-auth), Overpass tunnel up
 
 Template icons are [Pinhead](https://pinhead.ink) map icons (CC0, `@waysidemapping/pinhead`), filled glyphs drawn for map symbols. Category and topic icons stay Lucide, like the rest of the UI. The two sets never share a grid: cards show template icons, topic and category pickers show category icons.
 
+When Pinhead has no fitting icon, draw one in `prisma/custom-icons/<id>.svg`: a 15x15 viewBox, filled paths only, no fill attribute (e.g. `stairs` for steps). The generator looks up Pinhead first, then this folder. Keep it rare, and check the Pinhead site first.
+
 `pnpm generate-icons` writes three committed outputs from `templates.yml`:
 
 - `src/lib/category-icons.tsx` — the app's category icons (Lucide) and the template id to Pinhead id lookup.

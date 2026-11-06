@@ -29,6 +29,11 @@ describe("readPinheadPaths", () => {
     expect(paths.every((d) => d.startsWith("M"))).toBe(true);
   });
 
+  it("reads icons Pinhead lacks from prisma/custom-icons", () => {
+    expect(isPinheadIcon("stairs")).toBe(true);
+    expect(readPinheadPaths("stairs")).toHaveLength(1);
+  });
+
   it("throws on an unknown id", () => {
     expect(isPinheadIcon("not_an_icon")).toBe(false);
     expect(() => readPinheadPaths("not_an_icon")).toThrow("Unknown Pinhead icon: not_an_icon");
