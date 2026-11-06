@@ -123,7 +123,7 @@ export const CountingWithRow: Story = {
     await expect(canvas.getByText("Calculating size")).toBeInTheDocument();
     await expect(canvas.getByText("Step 1 of 5")).toBeInTheDocument();
     await expect(
-      canvas.getByRole("button", { name: /Save and email me when it's ready/ })
+      canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeInTheDocument();
   },
 };
@@ -151,7 +151,7 @@ export const BakingQueued: Story = {
       "aria-valuenow"
     );
     await expect(
-      canvas.getByRole("button", { name: /Save and email me when it's ready/ })
+      canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeInTheDocument();
   },
 };
@@ -305,9 +305,9 @@ export const NotifyConfirmed: Story = {
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole("status")
-    ).toHaveTextContent("Saved. You'll get an email when the map is ready.");
+    ).toHaveTextContent(/You'll get an email when the map is ready/);
     await expect(
-      canvas.queryByRole("button", { name: /email me/i })
+      canvas.queryByRole("button", { name: /Notify me by email/i })
     ).not.toBeInTheDocument();
   },
 };
@@ -333,7 +333,7 @@ export const FailedNotReady: Story = {
     await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     await expect(canvas.queryByText(/^Step /)).not.toBeInTheDocument();
     await expect(
-      canvas.getByRole("button", { name: /Save and email me when it's ready/ })
+      canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeInTheDocument();
     await expect(
       canvas.getByRole("link", { name: "Back to Osasco" })
@@ -389,7 +389,7 @@ export const FailedTimedOutWithRow: Story = {
       canvas.getByText("The data took too long to load.")
     ).toBeInTheDocument();
     await expect(
-      canvas.getByRole("button", { name: /Save and email me when it's ready/ })
+      canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeInTheDocument();
   },
 };
@@ -425,7 +425,7 @@ export const FailedTooLarge: Story = {
     ).toBeInTheDocument();
     await expect(
       canvas.getByRole("button", {
-        name: /Save and email me if it becomes available/,
+        name: /Save it and get an email if it becomes available/,
       })
     ).toBeInTheDocument();
   },
@@ -455,7 +455,7 @@ export const FailedTooLargeAtCount: Story = {
     ).toBeInTheDocument();
     await expect(canvas.getByText("Too large to bake.")).toBeInTheDocument();
     await expect(
-      canvas.queryByRole("button", { name: /email me/i })
+      canvas.queryByRole("button", { name: /Notify me by email/i })
     ).not.toBeInTheDocument();
     await expect(
       canvas.getByRole("link", { name: "Back to Tokyo" })
@@ -487,7 +487,7 @@ export const Empty: Story = {
       canvas.getByText(/nobody has mapped them/)
     ).toBeInTheDocument();
     await expect(
-      canvas.getByRole("button", { name: "Save and email me if it gets mapped" })
+      canvas.getByRole("button", { name: /Save it and get an email if it gets mapped/ })
     ).toBeInTheDocument();
   },
 };

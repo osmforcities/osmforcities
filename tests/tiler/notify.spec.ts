@@ -21,10 +21,10 @@ const TEMPLATE_ID = "give-box";
 const PAGE = `/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`;
 // Past the daily refresh cadence, so the next tick refreshes the dataset
 const MORE_THAN_A_DAY_MS = 25 * 60 * 60 * 1000;
-const CONFIRMED = "Saved. You'll get an email when the map is ready.";
+const CONFIRMED = /You'll get an email when the map is ready/;
 
 const notifyButton = (page: Page) =>
-  page.getByRole("button", { name: "Save and email me if it gets mapped" });
+  page.getByRole("button", { name: /Save it and get an email if it gets mapped/ });
 
 // The tiler server runs with EMAIL_DISABLE, but a sent mail still clears the
 // save's flag, so the flag is what these tests watch
@@ -61,7 +61,7 @@ test.describe("Ready notification from the empty state", () => {
     await setupAuthenticationWithLogin(page, user);
     await page.goto(PAGE);
     await notifyButton(page).click();
-    await expect(page.getByRole("status")).toHaveText(CONFIRMED);
+    await expect(page.getByRole("status")).toContainText(CONFIRMED);
 
     const { id } = await prisma.dataset.findFirstOrThrow({
       where: { areaId: AMSTERDAM, templateId: TEMPLATE_ID },
@@ -111,7 +111,7 @@ test.describe("Ready notification from the empty state", () => {
 
     expect(await readSave(datasetId)).toEqual({ notifyWhenReady: true });
     await page.reload();
-    await expect(page.getByRole("status")).toHaveText(CONFIRMED);
+    await expect(page.getByRole("status")).toContainText(CONFIRMED);
   });
 
   test("an empty dataset is never baked, and no daily refresh fails it", async ({

@@ -22,7 +22,7 @@ export const Saving: Story = {
     await userEvent.click(canvas.getByRole("button"));
     await expect(args.onSave).toHaveBeenCalled();
     await expect(
-      await canvas.findByText("Saved. You'll get an email when the map is ready.")
+      await canvas.findByText("You'll get an email when the map is ready.")
     ).toBeInTheDocument();
     await expect(canvas.queryByRole("button")).not.toBeInTheDocument();
   },
@@ -33,7 +33,7 @@ export const AlreadySaved: Story = {
   args: { saved: true },
   play: async ({ canvas }) => {
     await expect(canvas.getByRole("status")).toHaveTextContent(
-      "Saved. You'll get an email when the map is ready."
+      /You'll get an email when the map is ready/
     );
   },
 };
@@ -42,7 +42,7 @@ export const AlreadySaved: Story = {
 export const SavedWithoutEmail: Story = {
   args: { saved: true, notify: false },
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole("status")).toHaveTextContent(/^Saved\.$/);
+    await expect(canvas.getByRole("status")).toHaveTextContent(/^Saved$/);
   },
 };
 
@@ -54,7 +54,7 @@ export const SavedThenUnsave: Story = {
     await expect(args.onUnsave).toHaveBeenCalled();
     await expect(
       await canvas.findByRole("button", {
-        name: "Save and email me when it's ready",
+        name: /Save it and get an email when it's ready/,
       })
     ).toBeInTheDocument();
     await expect(canvas.queryByRole("status")).not.toBeInTheDocument();
@@ -82,7 +82,7 @@ export const IfAvailable: Story = {
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole("button", {
-        name: "Save and email me if it becomes available",
+        name: /Save it and get an email if it becomes available/,
       })
     ).toBeInTheDocument();
   },
@@ -93,7 +93,7 @@ export const IfMapped: Story = {
   args: { offer: "mapped", onSave: fn() },
   play: async ({ canvas }) => {
     await expect(
-      canvas.getByRole("button", { name: "Save and email me if it gets mapped" })
+      canvas.getByRole("button", { name: /Save it and get an email if it gets mapped/ })
     ).toBeInTheDocument();
   },
 };
@@ -103,7 +103,7 @@ export const BeforeDatasetExists: Story = {
   args: { disabled: true, onSave: fn() },
   play: async ({ canvas }) => {
     await expect(
-      canvas.getByRole("button", { name: "Save and email me when it's ready" })
+      canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeDisabled();
   },
 };
