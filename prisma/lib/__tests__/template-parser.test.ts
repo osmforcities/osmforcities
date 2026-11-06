@@ -517,6 +517,7 @@ describe("template-parser", () => {
         "nature-environment",
         "emergency",
         "education-culture",
+        "shops-services",
       ];
       const { templates, categories } = parseTemplates(loadTemplatesYaml("./prisma"));
       const describedCategorySlugs = categories
