@@ -226,6 +226,8 @@ templates:
   - ["roads","highway=motorway;highway=trunk;highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=living_street;highway=unclassified","roads","Route"]
   - ["footways","highway=footway;highway=path","pedestrian","Footprints"]
   - ["cycleways","highway=cycleway","cycling","Bike"]
+  # Explicit values: cycleway=no and =separate are mapped absences
+  - ["cycle-lanes","cycleway=lane;cycleway=track;cycleway=shared_lane;cycleway=share_busway;cycleway=opposite_lane;cycleway=opposite_track;cycleway:left=lane;cycleway:left=track;cycleway:left=shared_lane;cycleway:left=share_busway;cycleway:left=opposite_lane;cycleway:left=opposite_track;cycleway:right=lane;cycleway:right=track;cycleway:right=shared_lane;cycleway:right=share_busway;cycleway:right=opposite_lane;cycleway:right=opposite_track;cycleway:both=lane;cycleway:both=track;cycleway:both=shared_lane;cycleway:both=share_busway;cycleway:both=opposite_lane;cycleway:both=opposite_track","cycling","Bike"]
   - ["bridges","man_made=bridge","roads","Waypoints"]
   - ["tunnels","tunnel=yes;tunnel=building_passage","roads","Route"]
   - ["crossings","highway=crossing","pedestrian","Footprints"]
@@ -382,6 +384,8 @@ filterableTags:
   buildings:        [building]
   footways:         [footway, surface, lit, smoothness]
   cycleways:        [surface, lit, oneway, smoothness]
+  # surface and oneway describe the road here, not the lane (own track surfaces, contraflow lanes)
+  cycle-lanes:      [lit]
   traffic-calming:  [traffic_calming]
   speed-cameras:    [maxspeed]
   schools:          [operator, operator:type, wheelchair, isced:level]
@@ -862,6 +866,11 @@ demonstrators:
     - { area: 419203,  note: "Utrecht, NL - cycling capital, near-complete surface/lit/oneway/smoothness" }
     - { area: 62428,   note: "Munich, DE - surface 89%, oneway/lit/smoothness all strong" }
     - { area: 271110,  note: "Amsterdam, NL - dense cycleway network, rich attributes" }
+  cycle-lanes:
+    - { area: 62422,   note: "Berlin, DE - largest network, lanes and kerb-separated tracks, lit near-universal" }
+    - { area: 175905,  note: "New York, US - several times more on-road lanes than separate cycleways" }
+    - { area: 298285,  note: "Sao Paulo, BR - ciclofaixas on avenues, many contraflow" }
+    - { area: 7444,    note: "Paris, FR - mix of painted lanes, bus-shared lanes and tracks" }
   traffic-calming:
     - { area: 298285,  note: "Sao Paulo, BR - 7k+ features, varied values (hump/bump/table/island/dip)" }
     - { area: 2697338, note: "Rio de Janeiro, BR - heavy lombada tagging, good value spread" }

@@ -168,7 +168,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-11-06T01:57:58.008Z
+ * Generated: 2026-11-06T02:12:26.657Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -384,6 +384,8 @@ export function getTemplateIcon(templateId: string, category: string) {
       return <Scale className="w-5 h-5" />;
     case "crossings":
       return <Footprints className="w-5 h-5" />;
+    case "cycle-lanes":
+      return <Bike className="w-5 h-5" />;
     case "cycleways":
       return <Bike className="w-5 h-5" />;
     case "dam":
