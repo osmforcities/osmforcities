@@ -11,6 +11,7 @@ import { retryFailedBake, tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
 import { isTooLarge } from "@/lib/dataset-retry";
 import { awaitsFirstMap } from "@/lib/dataset-tiles";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
+import { countProbeRunning } from "@/lib/dataset-count-probe";
 import {
   DatasetSizeCheckTimeoutError,
   DatasetTooLargeError,
@@ -147,6 +148,11 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
   );
 }
 
+function waitPageMood(tilesState: string | null, probeRunning: boolean) {
+  if (tilesState === "counting") return probeRunning ? "counting" : "timedOut";
+  return tilesState === "pending" ? "baking" : "failed";
+}
+
 async function AreaTemplateDatasetView({
   areaId,
   templateId,
@@ -199,6 +205,8 @@ async function AreaTemplateDatasetView({
       if (!result.wasCreated) {
         row = { ...row, ...(await retryFailedBake(row)) };
       }
+      const probeRunning =
+        row.tilesState === "counting" && (await countProbeRunning(row));
       // Saving needs a session; anonymous visitors reach here on featured pages
       const notify = (offer: "ready" | "available") =>
         session?.user && (
@@ -222,7 +230,7 @@ async function AreaTemplateDatasetView({
       return (
         <DatasetWaitPage
           datasetId={row.id}
-          mood={row.tilesState === "pending" ? "baking" : "failed"}
+          mood={waitPageMood(row.tilesState, probeRunning)}
           templateName={templateName}
           areaName={fallbackAreaName}
           areaId={areaId}

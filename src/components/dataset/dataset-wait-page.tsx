@@ -39,15 +39,19 @@ function isStage(value: unknown): value is Stage {
 }
 
 type DatasetWaitPageProps = {
-  /** Absent while counting: the row does not exist until the count passes. */
+  /**
+   * Absent only while counting with the tiles-only lane off, where the row
+   * does not exist until the count passes.
+   */
   datasetId?: string;
   templateName: string;
   areaName: string;
   areaId: number;
   /**
    * Counting is the probe before any bake; baking polls the tiler.
-   * Failed is retried by a later visit (or tick, once saved); timedOut is Overpass
-   * giving up (count or feature fetch) before any row existed.
+   * Failed is retried by a later visit (or tick, once saved); timedOut is
+   * Overpass giving up on the count (or, with the lane off, the feature
+   * fetch).
    */
   mood: "counting" | "baking" | "failed" | "timedOut";
   /** Overrides when counting switches to the large-area label. */
@@ -83,9 +87,8 @@ export function DatasetWaitPage({
     return () => clearTimeout(timer);
   }, [mood, coldAfterMs]);
 
-  // Only the bake has anything to poll. A fetch error leaves data unset, so
-  // the interval keeps firing through transient blips and stops only on a
-  // terminal state.
+  // A fetch error leaves data unset, so the interval keeps firing through
+  // transient blips and stops only on a terminal state.
   const { data: status } = useQuery<TilesStatus>({
     queryKey: ["tiles-status", datasetId],
     queryFn: async () => {
@@ -93,7 +96,7 @@ export function DatasetWaitPage({
       if (!response.ok) throw new Error(String(response.status));
       return response.json();
     },
-    enabled: baking,
+    enabled: baking || (mood === "counting" && !!datasetId),
     refetchInterval: (query) => {
       const state = query.state.data?.state;
       return state === undefined || state === "pending" ? POLL_MS : false;
@@ -101,10 +104,11 @@ export function DatasetWaitPage({
   });
 
   useEffect(() => {
-    // Both terminal states belong to a different screen, and only the server
-    // can tell a permanent refusal from one that will be retried.
-    if (status?.state === "done" || status?.state === "failed") router.refresh();
-  }, [status?.state, router]);
+    // Only the server can tell a permanent refusal from one that will be retried
+    if (!status) return;
+    const countFinished = mood === "counting" && status.stage !== "counting";
+    if (status.state !== "pending" || countFinished) router.refresh();
+  }, [status, mood, router]);
 
   const reported = status?.stage;
   const stage: Stage =

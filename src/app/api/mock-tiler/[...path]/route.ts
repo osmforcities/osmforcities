@@ -22,6 +22,7 @@ type ControlBody =
   | { overpassCount: number | null }
   | { overpassEmpty: boolean }
   | { countTimesOut: boolean }
+  | { countHeld: boolean }
   | { submitFails: boolean }
   | { tilerDown: boolean }
   | ({ jobId: string; stats?: unknown } & Omit<TileJob, "id">);
@@ -70,6 +71,7 @@ export async function POST(request: NextRequest, { params }: Context) {
   else if ("overpassCount" in body) state.overpassCount = body.overpassCount;
   else if ("overpassEmpty" in body) state.overpassEmpty = body.overpassEmpty;
   else if ("countTimesOut" in body) state.countTimesOut = body.countTimesOut;
+  else if ("countHeld" in body) state.countHeld = body.countHeld;
   else if ("submitFails" in body) state.submitFails = body.submitFails;
   else if ("tilerDown" in body) state.tilerDown = body.tilerDown;
   else {

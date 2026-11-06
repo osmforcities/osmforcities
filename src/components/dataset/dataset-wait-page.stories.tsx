@@ -61,8 +61,9 @@ type Story = StoryObj<typeof meta>;
 const notify = <NotifyWhenReadyButton />;
 
 /**
- * Step 1: the app's own count probe, before any bake and before any row
- * exists. Nothing to poll, nothing to save yet, so no offer.
+ * Step 1 with the tiles-only lane off: the count probe runs inside the
+ * request, before any row exists. Nothing to poll, nothing to save yet, so no
+ * offer.
  */
 export const CountingWarm: Story = {
   args: {
@@ -101,6 +102,29 @@ export const CountingCold: Story = {
     ).toBeInTheDocument();
     await expect(canvas.queryByText("Calculating size")).not.toBeInTheDocument();
     await expect(canvas.getByText("Step 1 of 5")).toBeInTheDocument();
+  },
+};
+
+/**
+ * Step 1 on the tiles-only lane: the row exists while the probe runs after
+ * the response, so the page polls and offers saving from the start.
+ */
+export const CountingWithRow: Story = {
+  args: {
+    datasetId: "ds-sao-paulo-buildings",
+    templateName: "Buildings",
+    areaName: "São Paulo",
+    areaId: 298285,
+    mood: "counting",
+    notify,
+  },
+  beforeEach: serveTilesStatus({ state: "pending", stage: "counting" }),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText("Calculating size")).toBeInTheDocument();
+    await expect(canvas.getByText("Step 1 of 5")).toBeInTheDocument();
+    await expect(
+      canvas.getByRole("button", { name: /Save and email me when it's ready/ })
+    ).toBeInTheDocument();
   },
 };
 
@@ -263,10 +287,10 @@ export const FailedNotReady: Story = {
 };
 
 /**
- * Overpass gave up before any row existed, on the count probe or on the
- * feature fetch after it. Load is usually the cause, and the timed-out verdict
- * is remembered for a short while, so the person retries later. No row, so no
- * offer.
+ * With the tiles-only lane off, Overpass gave up before any row existed, on
+ * the count probe or on the feature fetch after it. Load is usually the
+ * cause, and the timed-out verdict is remembered for a short while, so the
+ * person retries later. No row, so no offer.
  */
 export const FailedTimedOut: Story = {
   args: {
@@ -288,6 +312,29 @@ export const FailedTimedOut: Story = {
     await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     await expect(
       canvas.getByRole("link", { name: "Back to São Paulo" })
+    ).toBeInTheDocument();
+  },
+};
+
+/**
+ * On the tiles-only lane the row outlives a timed-out probe, so saving keeps
+ * it on the retry schedule.
+ */
+export const FailedTimedOutWithRow: Story = {
+  args: {
+    datasetId: "ds-sao-paulo-buildings",
+    templateName: "Buildings",
+    areaName: "São Paulo",
+    areaId: 298285,
+    mood: "timedOut",
+    notify,
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByText("The data took too long to load.")
+    ).toBeInTheDocument();
+    await expect(
+      canvas.getByRole("button", { name: /Save and email me when it's ready/ })
     ).toBeInTheDocument();
   },
 };

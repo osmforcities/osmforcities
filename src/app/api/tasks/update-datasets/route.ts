@@ -185,8 +185,8 @@ export async function POST(req: NextRequest) {
 
         // On the tiles-only lane the snapshot is the count probe alone and
         // the bake is the refresh: the row keeps serving its data until the
-        // reconcile writes the bake's.
-        if (!tilesLane) {
+        // reconcile writes the bake's. A counting row has no data to keep.
+        if (!tilesLane || dataset.tilesState === "counting") {
           await prisma.dataset.update({
             where: { id: dataset.id },
             data: {

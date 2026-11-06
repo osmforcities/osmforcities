@@ -12,7 +12,12 @@ import {
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
 import { Prisma } from "@prisma/client";
-import { recordFailedSubmit, submitTilesForDataset } from "@/lib/tiler/submit";
+import {
+  recordFailedSubmit,
+  submitTilesForDataset,
+  tilesOnlyLaneEnabled,
+} from "@/lib/tiler/submit";
+import { startCountProbe } from "@/lib/dataset-count-probe";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { createLogger } from "@/lib/logger";
@@ -226,6 +231,10 @@ async function createDatasetOnDemand(
     }
   }
 
+  if (tilesOnlyLaneEnabled()) {
+    return createCountingDataset(area, template, locale);
+  }
+
   try {
     const snapshot = await fetchDatasetSnapshot(
       area.id,
@@ -291,6 +300,48 @@ async function createDatasetOnDemand(
 
     throw new Error("Failed to load dataset data. Please try again later.");
   }
+}
+
+// A probe over a large area outlives the hosting's request timeouts, so it
+// runs after the response. lastAttempted is its claim.
+async function createCountingDataset(
+  area: { id: number; name: string },
+  template: NonNullable<Awaited<ReturnType<typeof resolveTemplate>>>,
+  locale: string
+) {
+  const claimedAt = new Date();
+  let dataset;
+  try {
+    dataset = await prisma.dataset.create({
+      data: {
+        templateId: template.id,
+        areaId: area.id,
+        cityName: area.name,
+        isActive: true,
+        tilesState: "counting",
+        lastAttempted: claimedAt,
+      },
+      select: DATASET_DETAIL_SELECT,
+    });
+  } catch (error) {
+    // A concurrent first visit created it
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      const existing = await getDatasetWithDetails(area.id, template.id, locale);
+      if (existing) return existing;
+    }
+    throw error;
+  }
+
+  startCountProbe(dataset.id, claimedAt);
+  await trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`);
+
+  return {
+    ...dataset,
+    template: resolveTemplateForLocale(dataset.template, locale),
+  };
 }
 
 export async function datasetExists(

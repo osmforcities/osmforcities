@@ -64,6 +64,11 @@ describe("awaitsFirstMap", () => {
     expect(awaitsFirstMap({ ...firstBake, tilesState: "failed" })).toBe(true);
   });
 
+  it("holds while the count probe runs, before any count is stored", async () => {
+    const { awaitsFirstMap } = await loadWithFlag(true);
+    expect(awaitsFirstMap({ ...firstBake, dataCount: 0, tilesState: "counting" })).toBe(true);
+  });
+
   it("lets a rebuild keep its served archive", async () => {
     const { awaitsFirstMap } = await loadWithFlag(true);
     expect(awaitsFirstMap({ ...firstBake, tilesServedJobId: "ds-1-3" })).toBe(false);
