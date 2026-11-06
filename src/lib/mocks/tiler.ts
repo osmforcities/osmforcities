@@ -17,6 +17,7 @@ type MockTilerState = {
   overpassEmpty: boolean;
   /** Count probes answer 504, as Overpass does when one runs out of time. */
   countTimesOut: boolean;
+  countHeld: boolean;
   /** Count probes received, so a spec can tell a stored verdict was reused. */
   countProbes: number;
   /** Feature queries received, so a spec can tell the app fetched none. */
@@ -36,6 +37,7 @@ export function mockTilerState(): MockTilerState {
     overpassCount: null,
     overpassEmpty: false,
     countTimesOut: false,
+    countHeld: false,
     countProbes: 0,
     featureFetches: 0,
     submitFails: false,

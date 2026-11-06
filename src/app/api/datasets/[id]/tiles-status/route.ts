@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { getTileJob, tilerEnabled } from "@/lib/tiler/client";
 import { reconcileDataset } from "@/lib/tiler/poll";
 import { isTooLarge } from "@/lib/dataset-retry";
+import { resumeCountProbeIfDue } from "@/lib/dataset-count-probe";
 
 /**
  * The live stage of one dataset's bake — the wait page polls this
@@ -21,7 +22,14 @@ export async function GET(
   const { id } = await params;
   const dataset = await prisma.dataset.findUnique({
     where: { id },
-    select: { id: true, tilesJobId: true, tilesState: true, tilesError: true },
+    select: {
+      id: true,
+      tilesJobId: true,
+      tilesState: true,
+      tilesError: true,
+      lastAttempted: true,
+      consecutiveFailures: true,
+    },
   });
   if (!dataset) {
     return NextResponse.json({ error: "Dataset not found" }, { status: 404 });
@@ -33,6 +41,13 @@ export async function GET(
     tooLarge: isTooLarge(error),
   });
 
+  if (dataset.tilesState === "counting") {
+    return NextResponse.json(
+      (await resumeCountProbeIfDue(dataset))
+        ? { state: "pending", stage: "counting" }
+        : failedBody(null)
+    );
+  }
   if (dataset.tilesState === "done") return NextResponse.json({ state: "done" });
   if (dataset.tilesState === "failed") {
     return NextResponse.json(failedBody(dataset.tilesError));

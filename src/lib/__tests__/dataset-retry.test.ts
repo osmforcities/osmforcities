@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { dueForRefreshWhere, isRetryDue, retryWaitMs } from "../dataset-retry";
+import {
+  dueForRefreshWhere,
+  isCountProbeDue,
+  isRetryDue,
+  retryWaitMs,
+} from "../dataset-retry";
 
 const MIN = 60 * 1000;
 const HOUR = 60 * MIN;
@@ -27,6 +32,32 @@ describe("isRetryDue", () => {
   it("keeps the weekly wait after a too-large refusal", () => {
     expect(isRetryDue(row(6 * DAY, 1, "too_large: out of memory"), now)).toBe(false);
     expect(isRetryDue(row(8 * DAY, 1, "too_large: out of memory"), now)).toBe(true);
+  });
+});
+
+describe("isCountProbeDue", () => {
+  const now = new Date("2026-10-05T12:00:00Z");
+  const counting = (agoMs: number, consecutiveFailures = 0) => ({
+    tilesState: "counting",
+    lastAttempted: new Date(now.getTime() - agoMs),
+    consecutiveFailures,
+  });
+
+  it("leaves a probe alone while it may still be running", () => {
+    expect(isCountProbeDue(counting(9 * MIN), now)).toBe(false);
+  });
+
+  it("picks up a probe lost past its 10 minute budget", () => {
+    expect(isCountProbeDue(counting(11 * MIN), now)).toBe(true);
+  });
+
+  it("waits out the timed-out verdict before probing again", () => {
+    expect(isCountProbeDue(counting(29 * MIN, 1), now)).toBe(false);
+    expect(isCountProbeDue(counting(31 * MIN, 1), now)).toBe(true);
+  });
+
+  it("is never due for a row past counting", () => {
+    expect(isCountProbeDue({ ...counting(DAY), tilesState: "pending" }, now)).toBe(false);
   });
 });
 
@@ -64,7 +95,14 @@ describe("dueForRefreshWhere", () => {
         : []
     ).sort();
     expect(cutoffs).toEqual(
-      [ago(7 * DAY), ago(DAY), ago(6 * HOUR), ago(HOUR), ago(15 * MIN)].map(
+      [
+        ago(7 * DAY),
+        ago(DAY),
+        ago(6 * HOUR),
+        ago(HOUR),
+        ago(15 * MIN),
+        ago(10 * MIN),
+      ].map(
         (d) => d.getTime()
       )
     );
@@ -79,9 +117,19 @@ describe("dueForRefreshWhere", () => {
     expect(JSON.stringify(rung)).toContain('{"tilesError":null}');
   });
 
+  it("refreshes a counting row once its probe is past budget", () => {
+    const clause = dueForRefreshWhere(now).OR.find(
+      (c) => "tilesState" in c && c.tilesState === "counting"
+    );
+    expect(clause).toMatchObject({
+      consecutiveFailures: 0,
+      lastAttempted: { lt: ago(10 * MIN) },
+    });
+  });
+
   it("never refreshes a row whose bake is still pending, on any clause", () => {
     const { OR } = dueForRefreshWhere(now);
-    expect(OR).toHaveLength(6);
+    expect(OR).toHaveLength(7);
     for (const clause of OR) {
       expect(JSON.stringify(clause)).toContain(
         '{"OR":[{"tilesState":null},{"NOT":{"tilesState":"pending"}},{"tilesJobId":null}]}'

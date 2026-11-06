@@ -1,5 +1,5 @@
 // app/src/lib/__tests__/dataset-operations.test.ts
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("@/lib/db", () => ({
   prisma: {
@@ -49,6 +49,11 @@ vi.mock("@/lib/area-boundary", () => ({
 vi.mock("@/lib/tiler/submit", () => ({
   submitTilesForDataset: vi.fn().mockResolvedValue({}),
   recordFailedSubmit: vi.fn(),
+  tilesOnlyLaneEnabled: vi.fn(() => false),
+}));
+
+vi.mock("@/lib/dataset-count-probe", () => ({
+  startCountProbe: vi.fn(),
 }));
 
 vi.mock("@/lib/umami", () => ({
@@ -74,7 +79,12 @@ vi.mock("@/lib/area-refresh", async (importOriginal) => {
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 import { refreshAreaInfoIfStale } from "@/lib/area-refresh";
-import { recordFailedSubmit, submitTilesForDataset } from "@/lib/tiler/submit";
+import {
+  recordFailedSubmit,
+  submitTilesForDataset,
+  tilesOnlyLaneEnabled,
+} from "@/lib/tiler/submit";
+import { startCountProbe } from "@/lib/dataset-count-probe";
 import { prisma } from "@/lib/db";
 
 const mockFetchDatasetSnapshot = vi.mocked(fetchDatasetSnapshot);
@@ -242,5 +252,37 @@ describe("getOrCreateDataset — tiles columns on create", () => {
       dataset.id,
       "Tiler submit failed: 500"
     );
+  });
+});
+
+describe("getOrCreateDataset — tiles-only lane", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(tilesOnlyLaneEnabled).mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    vi.mocked(tilesOnlyLaneEnabled).mockReturnValue(false);
+  });
+
+  it("creates a counting row and leaves the count probe to after the response", async () => {
+    vi.mocked(prisma.dataset.create).mockResolvedValue({
+      ...existingDatasetRow,
+      dataCount: 0,
+      tilesState: "counting",
+    } as never);
+
+    const { dataset, wasCreated } = await getOrCreateDataset(1, "test-template", "en");
+
+    expect(wasCreated).toBe(true);
+    expect(dataset.tilesState).toBe("counting");
+    expect(vi.mocked(prisma.dataset.create).mock.calls[0][0].data).toMatchObject({
+      tilesState: "counting",
+      lastAttempted: expect.any(Date),
+    });
+    const { lastAttempted } = vi.mocked(prisma.dataset.create).mock.calls[0][0].data;
+    expect(startCountProbe).toHaveBeenCalledWith(dataset.id, lastAttempted);
+    expect(mockFetchDatasetSnapshot).not.toHaveBeenCalled();
+    expect(submitTilesForDataset).not.toHaveBeenCalled();
   });
 });

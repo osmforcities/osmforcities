@@ -21,6 +21,8 @@ type NotifyWhenReadyButtonProps = {
    * an empty one only if someone maps it), so their offers say "if".
    */
   offer?: keyof typeof OFFER_KEY;
+  /** Holds the button's place before the dataset exists to save. */
+  disabled?: boolean;
 };
 
 // The offers run long in German and French; on a phone the button wraps
@@ -46,6 +48,7 @@ export function NotifyWhenReadyButton({
   saved = false,
   notify = true,
   offer = "ready",
+  disabled = false,
 }: NotifyWhenReadyButtonProps) {
   const t = useTranslations("DatasetPage");
   const [confirmed, setConfirmed] = useState(saved);
@@ -108,7 +111,7 @@ export function NotifyWhenReadyButton({
       variant="outline"
       size="sm"
       className={WRAP}
-      disabled={sending}
+      disabled={sending || disabled}
       onClick={() => submit(onSave, true)}
     >
       <Mail aria-hidden />

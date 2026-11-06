@@ -22,6 +22,11 @@ vi.mock("@/lib/tiler/poll", () => ({
   reconcileDataset: vi.fn(),
 }));
 
+vi.mock("@/lib/dataset-count-probe", () => ({
+  resumeCountProbeIfDue: vi.fn(),
+}));
+import { resumeCountProbeIfDue } from "@/lib/dataset-count-probe";
+
 const row = (overrides: Record<string, unknown> = {}) => ({
   id: "ds-1",
   tilesJobId: "ds-1-100",
@@ -88,6 +93,32 @@ describe("GET /api/datasets/[id]/tiles-status", () => {
       row({ tilesState: null, tilesJobId: null }) as never
     );
     expect(await (await get()).json()).toEqual({ state: "none" });
+  });
+
+  describe("a counting dataset", () => {
+    const counting = row({
+      tilesState: "counting",
+      tilesJobId: null,
+      lastAttempted: new Date(),
+      consecutiveFailures: 0,
+    });
+
+    it("reports the counting stage while its probe runs", async () => {
+      vi.mocked(prisma.dataset.findUnique).mockResolvedValue(counting as never);
+      vi.mocked(resumeCountProbeIfDue).mockResolvedValueOnce(true);
+      expect(await (await get()).json()).toEqual({ state: "pending", stage: "counting" });
+      expect(resumeCountProbeIfDue).toHaveBeenCalledWith(counting);
+    });
+
+    it("reports a failed probe so the page swaps to the timed-out screen", async () => {
+      vi.mocked(prisma.dataset.findUnique).mockResolvedValue(counting as never);
+      vi.mocked(resumeCountProbeIfDue).mockResolvedValueOnce(false);
+      expect(await (await get()).json()).toEqual({
+        state: "failed",
+        error: null,
+        tooLarge: false,
+      });
+    });
   });
 
   it("stays pending without touching the tiler when it is disabled", async () => {
