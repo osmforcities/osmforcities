@@ -817,6 +817,14 @@ Education and culture gains a `heritage` category for historic places: `monument
 
 `education-culture` split in two, as tourism did: `education` is a topic with no subcategories, `culture-religion` holds `culture`, `heritage` and `religion`. `/topics/education-culture` had been a sidebar topic on every area page since the area hub shipped, unlike the low-traffic emergency URL above, so `next.config.mjs` redirects it (and any category below it) to the area page.
 
+### Steps, kerbs and sidewalks ([#81])
+
+Three `pedestrian` templates for walkability. Coverage from taginfo, worldwide (2026-11-05):
+
+- **steps** (`highway=steps`) — `[handrail, ramp, lit]`, no default view: `handrail` on 33%. `step_count` (23%) is numeric, left for [#441]. `incline` (46%) is up or down relative to the way's direction, so it means nothing as a legend.
+- **kerbs** (`barrier=kerb`) — `[kerb, tactile_paving]`, default `kerb` (73%: lowered 68%, flush 16%, raised 10%).
+- **sidewalks** (`sidewalk=*` and the side keys on roads) — `[sidewalk, lit]`, no default view: matches tagged only with a side key carry no `sidewalk`. Explicit values, like `cycle-lanes`: `no` and `none` are mapped absences. The side keys only take `yes` and `separate` (other values under 0.1%). `separate` stays: the road has a sidewalk, drawn as its own way, which `footways` shows.
+
 ## Validation the sync enforces
 
 `prisma/lib/template-parser.ts` (tests: `prisma/lib/__tests__/template-parser.test.ts`).
@@ -834,6 +842,7 @@ Education and culture gains a `heritage` category for historic places: `monument
 - Unknown template id under `filterableTags` — a typo there only leaves that one template
   age-view-only, so it never blocks the seed/deploy.
 
+[#81]: https://github.com/osmforcities/osmforcities/issues/81
 [#478]: https://github.com/osmforcities/osmforcities/issues/478
 [#479]: https://github.com/osmforcities/osmforcities/issues/479
 [#503]: https://github.com/osmforcities/osmforcities/issues/503

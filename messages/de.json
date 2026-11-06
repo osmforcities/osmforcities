@@ -878,7 +878,10 @@
     "artwork_type": "Kunstwerkart",
     "archaeological_site": "Fundstättentyp",
     "castle_type": "Burgtyp",
-    "heritage": "Schutzebene"
+    "heritage": "Schutzebene",
+    "kerb": "Bordstein",
+    "handrail": "Geländer",
+    "ramp": "Rampe"
   },
   "TagValue": {
     "__common__": {
@@ -1248,6 +1251,12 @@
       "2": "National",
       "4": "Regional",
       "8": "Kommunal"
+    },
+    "kerb": {
+      "lowered": "Abgesenkt",
+      "flush": "Bündig",
+      "raised": "Erhöht",
+      "rolled": "Abgerundet"
     }
   }
 }

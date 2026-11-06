@@ -887,7 +887,10 @@
     "artwork_type": "Tipo de obra",
     "archaeological_site": "Tipo de sítio",
     "castle_type": "Tipo de castelo",
-    "heritage": "Nível de proteção"
+    "heritage": "Nível de proteção",
+    "kerb": "Meio-fio",
+    "handrail": "Corrimão",
+    "ramp": "Rampa"
   },
   "TagValue": {
     "__common__": {
@@ -1257,6 +1260,12 @@
       "2": "Nacional",
       "4": "Regional",
       "8": "Municipal"
+    },
+    "kerb": {
+      "lowered": "Rebaixado",
+      "flush": "Nivelado",
+      "raised": "Elevado",
+      "rolled": "Arredondado"
     }
   }
 }
