@@ -11,7 +11,7 @@ import { retryFailedBake, tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
 import { isTooLarge } from "@/lib/dataset-retry";
 import { awaitsFirstMap } from "@/lib/dataset-tiles";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
-import { countProbeRunning } from "@/lib/dataset-count-probe";
+import { resumeCountProbeIfDue } from "@/lib/dataset-count-probe";
 import {
   DatasetSizeCheckTimeoutError,
   DatasetTooLargeError,
@@ -206,7 +206,7 @@ async function AreaTemplateDatasetView({
         row = { ...row, ...(await retryFailedBake(row)) };
       }
       const probeRunning =
-        row.tilesState === "counting" && (await countProbeRunning(row));
+        row.tilesState === "counting" && (await resumeCountProbeIfDue(row));
       // Saving needs a session; anonymous visitors reach here on featured pages
       const notify = (offer: "ready" | "available") =>
         session?.user && (

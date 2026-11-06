@@ -23,9 +23,9 @@ vi.mock("@/lib/tiler/poll", () => ({
 }));
 
 vi.mock("@/lib/dataset-count-probe", () => ({
-  countProbeRunning: vi.fn(),
+  resumeCountProbeIfDue: vi.fn(),
 }));
-import { countProbeRunning } from "@/lib/dataset-count-probe";
+import { resumeCountProbeIfDue } from "@/lib/dataset-count-probe";
 
 const row = (overrides: Record<string, unknown> = {}) => ({
   id: "ds-1",
@@ -105,14 +105,14 @@ describe("GET /api/datasets/[id]/tiles-status", () => {
 
     it("reports the counting stage while its probe runs", async () => {
       vi.mocked(prisma.dataset.findUnique).mockResolvedValue(counting as never);
-      vi.mocked(countProbeRunning).mockResolvedValueOnce(true);
+      vi.mocked(resumeCountProbeIfDue).mockResolvedValueOnce(true);
       expect(await (await get()).json()).toEqual({ state: "pending", stage: "counting" });
-      expect(countProbeRunning).toHaveBeenCalledWith(counting);
+      expect(resumeCountProbeIfDue).toHaveBeenCalledWith(counting);
     });
 
     it("reports a failed probe so the page swaps to the timed-out screen", async () => {
       vi.mocked(prisma.dataset.findUnique).mockResolvedValue(counting as never);
-      vi.mocked(countProbeRunning).mockResolvedValueOnce(false);
+      vi.mocked(resumeCountProbeIfDue).mockResolvedValueOnce(false);
       expect(await (await get()).json()).toEqual({
         state: "failed",
         error: null,

@@ -5,7 +5,7 @@ import {
   snapshotDatasetColumns,
 } from "@/lib/dataset-snapshot";
 import { recordFailedSubmit, submitTilesForDataset } from "@/lib/tiler/submit";
-import { isCountProbeDue } from "@/lib/dataset-retry";
+import { isCountProbeDue, type CountProbeRow } from "@/lib/dataset-retry";
 import { UNCATALOGED_FILTER } from "@/lib/dataset-catalog-filter";
 import { createLogger } from "@/lib/logger";
 
@@ -56,6 +56,8 @@ export async function runCountProbe(
         data: {
           consecutiveFailures: { increment: 1 },
           lastError: error instanceof Error ? error.message : String(error),
+          // The verdict's TTL runs from now, not from the claim
+          lastAttempted: new Date(),
         },
       })
       .catch((recordError) =>
@@ -71,24 +73,16 @@ export function startCountProbe(datasetId: string, claimedAt: Date): void {
   after(() => runCountProbe(datasetId, claimedAt));
 }
 
-export type CountProbeRow = {
-  id: string;
-  tilesState: string | null;
-  lastAttempted: Date | null;
-  consecutiveFailures: number;
-};
-
-/** Restarts a lost or failed probe first, when one is due. */
-export async function countProbeRunning(row: CountProbeRow): Promise<boolean> {
-  return (await resumeCountProbe(row)) || row.consecutiveFailures === 0;
-}
-
 /**
+ * @returns whether a probe is running for this row afterwards.
  * Cataloged rows are the cron's, so the two never race. The claim lands only
  * if lastAttempted is unchanged, so of two visits only one probes.
  */
-async function resumeCountProbe(row: CountProbeRow): Promise<boolean> {
-  if (!isCountProbeDue(row, new Date())) return false;
+export async function resumeCountProbeIfDue(
+  row: CountProbeRow
+): Promise<boolean> {
+  const noProbeFailed = row.consecutiveFailures === 0;
+  if (!isCountProbeDue(row, new Date())) return noProbeFailed;
   try {
     const claimedAt = new Date();
     const { count } = await prisma.dataset.updateMany({
@@ -100,11 +94,11 @@ async function resumeCountProbe(row: CountProbeRow): Promise<boolean> {
       },
       data: { lastAttempted: claimedAt },
     });
-    if (count === 0) return false;
+    if (count === 0) return noProbeFailed;
     startCountProbe(row.id, claimedAt);
     return true;
   } catch (error) {
     logger.error("Count probe resume failed", { datasetId: row.id, error });
-    return false;
+    return noProbeFailed;
   }
 }

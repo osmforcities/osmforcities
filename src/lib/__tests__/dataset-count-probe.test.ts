@@ -7,7 +7,7 @@ import {
 } from "@/lib/dataset-snapshot";
 import { recordFailedSubmit, submitTilesForDataset } from "@/lib/tiler/submit";
 import { UNCATALOGED_FILTER } from "@/lib/dataset-catalog-filter";
-import { countProbeRunning, runCountProbe } from "@/lib/dataset-count-probe";
+import { resumeCountProbeIfDue, runCountProbe } from "@/lib/dataset-count-probe";
 
 vi.mock("next/server", () => ({ after: vi.fn() }));
 
@@ -104,13 +104,18 @@ describe("runCountProbe", () => {
       data: {
         consecutiveFailures: { increment: 1 },
         lastError: new DatasetSizeCheckTimeoutError().message,
+        lastAttempted: expect.any(Date),
       },
     });
+    // The retry wait starts at the failure, as the verdict does
+    const { lastAttempted } = vi.mocked(prisma.dataset.updateMany).mock.calls[0][0]
+      .data as { lastAttempted: Date };
+    expect(lastAttempted.getTime()).toBeGreaterThan(claimedAt.getTime());
     expect(submitTilesForDataset).not.toHaveBeenCalled();
   });
 });
 
-describe("countProbeRunning", () => {
+describe("resumeCountProbeIfDue", () => {
   const counting = (agoMs: number, consecutiveFailures = 0) => ({
     id: "ds-1",
     tilesState: "counting",
@@ -119,7 +124,7 @@ describe("countProbeRunning", () => {
   });
 
   it("leaves a probe inside its budget running", async () => {
-    expect(await countProbeRunning(counting(5 * MINUTE_MS))).toBe(true);
+    expect(await resumeCountProbeIfDue(counting(5 * MINUTE_MS))).toBe(true);
     expect(prisma.dataset.updateMany).not.toHaveBeenCalled();
     expect(after).not.toHaveBeenCalled();
   });
@@ -127,7 +132,7 @@ describe("countProbeRunning", () => {
   it("claims and restarts a probe lost past its budget", async () => {
     const lost = counting(11 * MINUTE_MS);
 
-    expect(await countProbeRunning(lost)).toBe(true);
+    expect(await resumeCountProbeIfDue(lost)).toBe(true);
 
     expect(prisma.dataset.updateMany).toHaveBeenCalledWith({
       where: {
@@ -142,19 +147,19 @@ describe("countProbeRunning", () => {
   });
 
   it("reports a failed probe as stopped until its wait is over", async () => {
-    expect(await countProbeRunning(counting(20 * MINUTE_MS, 1))).toBe(false);
+    expect(await resumeCountProbeIfDue(counting(20 * MINUTE_MS, 1))).toBe(false);
     expect(after).not.toHaveBeenCalled();
   });
 
   it("restarts a failed probe once its wait is over", async () => {
-    expect(await countProbeRunning(counting(31 * MINUTE_MS, 1))).toBe(true);
+    expect(await resumeCountProbeIfDue(counting(31 * MINUTE_MS, 1))).toBe(true);
     expect(after).toHaveBeenCalledTimes(1);
   });
 
   it("starts nothing when another visit claimed it first", async () => {
     vi.mocked(prisma.dataset.updateMany).mockResolvedValue({ count: 0 });
 
-    expect(await countProbeRunning(counting(31 * MINUTE_MS, 1))).toBe(false);
+    expect(await resumeCountProbeIfDue(counting(31 * MINUTE_MS, 1))).toBe(false);
     expect(after).not.toHaveBeenCalled();
   });
 });

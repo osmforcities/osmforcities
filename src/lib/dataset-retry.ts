@@ -45,13 +45,16 @@ export function isRetryDue(
   );
 }
 
+export type CountProbeRow = {
+  id: string;
+  tilesState: string | null;
+  lastAttempted: Date | null;
+  consecutiveFailures: number;
+};
+
 // A failed probe waits out the verdict it recorded, or the next one would only read it back
 export function isCountProbeDue(
-  row: {
-    tilesState: string | null;
-    lastAttempted: Date | null;
-    consecutiveFailures: number;
-  },
+  row: Omit<CountProbeRow, "id">,
   now: Date
 ): boolean {
   if (row.tilesState !== "counting") return false;

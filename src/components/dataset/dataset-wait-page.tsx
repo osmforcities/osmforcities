@@ -103,12 +103,13 @@ export function DatasetWaitPage({
     },
   });
 
+  const probeFinished = mood === "counting" && status?.stage !== "counting";
+  const leftThisScreen =
+    !!status && (status.state !== "pending" || probeFinished);
+  // Only the server can tell a permanent refusal from one that will be retried
   useEffect(() => {
-    // Only the server can tell a permanent refusal from one that will be retried
-    if (!status) return;
-    const countFinished = mood === "counting" && status.stage !== "counting";
-    if (status.state !== "pending" || countFinished) router.refresh();
-  }, [status, mood, router]);
+    if (leftThisScreen) router.refresh();
+  }, [leftThisScreen, router]);
 
   const reported = status?.stage;
   const stage: Stage =

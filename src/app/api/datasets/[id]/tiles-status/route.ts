@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { getTileJob, tilerEnabled } from "@/lib/tiler/client";
 import { reconcileDataset } from "@/lib/tiler/poll";
 import { isTooLarge } from "@/lib/dataset-retry";
-import { countProbeRunning } from "@/lib/dataset-count-probe";
+import { resumeCountProbeIfDue } from "@/lib/dataset-count-probe";
 
 /**
  * The live stage of one dataset's bake — the wait page polls this
@@ -44,7 +44,7 @@ export async function GET(
   // An open tab would otherwise wait on a lost probe forever
   if (dataset.tilesState === "counting") {
     return NextResponse.json(
-      (await countProbeRunning(dataset))
+      (await resumeCountProbeIfDue(dataset))
         ? { state: "pending", stage: "counting" }
         : failedBody(null)
     );
