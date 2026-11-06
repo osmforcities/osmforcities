@@ -126,7 +126,7 @@
   },
   "DatasetPage": {
     "tilesStageQueued": "En attente d'un créneau sur le serveur",
-    "tilesStageFetching": "Récupération des données ({mb, number} Mo)",
+    "tilesStageFetching": "Récupération des données{mb, plural, =0 {} other { (# Mo)}}",
     "tilesStageConverting": "Conversion des objets ({pct, number} %)",
     "tilesStageBaking": "Génération des tuiles de la carte ({pct, number} %)",
     "tilesStageCounting": "Calcul de la taille",

@@ -61,8 +61,9 @@ type Story = StoryObj<typeof meta>;
 const notify = <NotifyWhenReadyButton />;
 
 /**
- * Step 1: the app's own count probe, before any bake and before any row
- * exists. Nothing to poll, nothing to save yet, so no offer.
+ * The count with the tiles-only lane off: it runs inside the request, before
+ * any row exists, and the map follows it directly. Nothing to poll, nothing to
+ * save yet and no further steps, so no offer and no step line.
  */
 export const CountingWarm: Story = {
   args: {
@@ -70,13 +71,14 @@ export const CountingWarm: Story = {
     areaName: "Delft",
     areaId: 324431,
     mood: "counting",
+    stepsShown: false,
   },
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole("heading", { name: "Buildings in Delft" })
     ).toBeInTheDocument();
     await expect(canvas.getByText("Calculating size")).toBeInTheDocument();
-    await expect(canvas.getByText("Step 1 of 5")).toBeInTheDocument();
+    await expect(canvas.queryByText(/Step \d of/)).not.toBeInTheDocument();
     await expect(canvas.getByRole("progressbar")).not.toHaveAttribute(
       "aria-valuenow"
     );
@@ -100,7 +102,29 @@ export const CountingCold: Story = {
       await canvas.findByText("Still calculating size, large area")
     ).toBeInTheDocument();
     await expect(canvas.queryByText("Calculating size")).not.toBeInTheDocument();
+  },
+};
+
+/**
+ * Step 1 on the tiles-only lane: the row exists while the probe runs after
+ * the response, so the page polls and offers saving from the start.
+ */
+export const CountingWithRow: Story = {
+  args: {
+    datasetId: "ds-sao-paulo-buildings",
+    templateName: "Buildings",
+    areaName: "São Paulo",
+    areaId: 298285,
+    mood: "counting",
+    notify,
+  },
+  beforeEach: serveTilesStatus({ state: "pending", stage: "counting" }),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText("Calculating size")).toBeInTheDocument();
     await expect(canvas.getByText("Step 1 of 5")).toBeInTheDocument();
+    await expect(
+      canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
+    ).toBeInTheDocument();
   },
 };
 
@@ -160,6 +184,20 @@ export const BakingFetching: Story = {
   },
 };
 
+/** Most fetches finish before a megabyte lands, so no size is shown until one does. */
+export const BakingFetchingFirstMegabyte: Story = {
+  args: { ...BakingFetching.args },
+  beforeEach: serveTilesStatus({
+    state: "pending",
+    stage: "fetching",
+    progress: { bytes: 0 },
+  }),
+  play: async ({ canvas }) => {
+    await expect(await canvas.findByText("Fetching data")).toBeInTheDocument();
+    await expect(canvas.queryByText(/MB/)).not.toBeInTheDocument();
+  },
+};
+
 /** First stage with a percentage: the bar gains a value. */
 export const BakingConverting: Story = {
   args: {
@@ -215,6 +253,47 @@ export const BakingTiles: Story = {
   },
 };
 
+/** Baking before its first percentage: the bar fills from zero, it does not sweep. */
+export const BakingBeforeFirstPercentage: Story = {
+  args: { ...BakingConverting.args },
+  beforeEach: serveTilesStatus({ state: "pending", stage: "baking" }),
+  play: async ({ canvas }) => {
+    await expect(
+      await canvas.findByText("Baking map tiles (0%)")
+    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(canvas.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "0")
+    );
+  },
+};
+
+/** The bake is done while the app pulls its archive: still the last step, full. */
+export const BakeLandedArchivePulling: Story = {
+  args: { ...BakingConverting.args },
+  beforeEach: serveTilesStatus({ state: "pending", stage: "done" }),
+  play: async ({ canvas }) => {
+    await expect(
+      await canvas.findByText("Baking map tiles (100%)")
+    ).toBeInTheDocument();
+    await expect(canvas.getByText("Step 5 of 5")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(canvas.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "100")
+    );
+  },
+};
+
+/** Done, while the refresh to the map is in flight: still the last step, full. */
+export const BakeDoneMapLoading: Story = {
+  args: { ...BakingConverting.args },
+  beforeEach: serveTilesStatus({ state: "done" }),
+  play: async ({ canvas }) => {
+    await expect(
+      await canvas.findByText("Baking map tiles (100%)")
+    ).toBeInTheDocument();
+    await expect(canvas.getByText("Step 5 of 5")).toBeInTheDocument();
+  },
+};
+
 /** The button was already pressed, on this visit or an earlier one. The
  * confirmation never shows the address. */
 export const NotifyConfirmed: Story = {
@@ -263,10 +342,10 @@ export const FailedNotReady: Story = {
 };
 
 /**
- * Overpass gave up before any row existed, on the count probe or on the
- * feature fetch after it. Load is usually the cause, and the timed-out verdict
- * is remembered for a short while, so the person retries later. No row, so no
- * offer.
+ * With the tiles-only lane off, Overpass gave up before any row existed, on
+ * the count probe or on the feature fetch after it. Load is usually the
+ * cause, and the timed-out verdict is remembered for a short while, so the
+ * person retries later. No row, so no offer.
  */
 export const FailedTimedOut: Story = {
   args: {
@@ -288,6 +367,29 @@ export const FailedTimedOut: Story = {
     await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     await expect(
       canvas.getByRole("link", { name: "Back to São Paulo" })
+    ).toBeInTheDocument();
+  },
+};
+
+/**
+ * On the tiles-only lane the row outlives a timed-out probe, so saving keeps
+ * it on the retry schedule.
+ */
+export const FailedTimedOutWithRow: Story = {
+  args: {
+    datasetId: "ds-sao-paulo-buildings",
+    templateName: "Buildings",
+    areaName: "São Paulo",
+    areaId: 298285,
+    mood: "timedOut",
+    notify,
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByText("The data took too long to load.")
+    ).toBeInTheDocument();
+    await expect(
+      canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeInTheDocument();
   },
 };

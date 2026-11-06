@@ -39,21 +39,27 @@ function isStage(value: unknown): value is Stage {
 }
 
 type DatasetWaitPageProps = {
-  /** Absent while counting: the row does not exist until the count passes. */
+  /**
+   * Absent only while counting with the tiles-only lane off, where the row
+   * does not exist until the count passes.
+   */
   datasetId?: string;
   templateName: string;
   areaName: string;
   areaId: number;
   /**
    * Counting is the probe before any bake; baking polls the tiler.
-   * Failed is retried by a later visit (or tick, once saved); timedOut is Overpass
-   * giving up (count or feature fetch) before any row existed.
+   * Failed is retried by a later visit (or tick, once saved); timedOut is
+   * Overpass giving up on the count (or, with the lane off, the feature
+   * fetch).
    */
   mood: "counting" | "baking" | "failed" | "timedOut";
   /** Overrides when counting switches to the large-area label. */
   coldAfterMs?: number;
   /** The save-and-email button. Nothing renders in its place without it. */
   notify?: ReactNode;
+  /** Off the tiles-only lane the count is the only step, so there are no steps to number. */
+  stepsShown?: boolean;
 };
 
 /**
@@ -71,6 +77,7 @@ export function DatasetWaitPage({
   mood,
   coldAfterMs = COUNT_REQUEST_TIMEOUT_MS,
   notify,
+  stepsShown = true,
 }: DatasetWaitPageProps) {
   const t = useTranslations("DatasetPage");
   const router = useRouter();
@@ -83,9 +90,8 @@ export function DatasetWaitPage({
     return () => clearTimeout(timer);
   }, [mood, coldAfterMs]);
 
-  // Only the bake has anything to poll. A fetch error leaves data unset, so
-  // the interval keeps firing through transient blips and stops only on a
-  // terminal state.
+  // A fetch error leaves data unset, so the interval keeps firing through
+  // transient blips and stops only on a terminal state.
   const { data: status } = useQuery<TilesStatus>({
     queryKey: ["tiles-status", datasetId],
     queryFn: async () => {
@@ -93,27 +99,39 @@ export function DatasetWaitPage({
       if (!response.ok) throw new Error(String(response.status));
       return response.json();
     },
-    enabled: baking,
+    enabled: baking || (mood === "counting" && !!datasetId),
     refetchInterval: (query) => {
       const state = query.state.data?.state;
       return state === undefined || state === "pending" ? POLL_MS : false;
     },
   });
 
+  const probeFinished = mood === "counting" && status?.stage !== "counting";
+  const leftThisScreen =
+    !!status && (status.state !== "pending" || probeFinished);
+  // Only the server can tell a permanent refusal from one that will be retried
   useEffect(() => {
-    // Both terminal states belong to a different screen, and only the server
-    // can tell a permanent refusal from one that will be retried.
-    if (status?.state === "done" || status?.state === "failed") router.refresh();
-  }, [status?.state, router]);
+    if (leftThisScreen) router.refresh();
+  }, [leftThisScreen, router]);
 
   const reported = status?.stage;
+  // A finished bake still reads pending while the app pulls its archive, and
+  // the page keeps showing until the refresh to the map lands
+  const bakeLanded = reported === "done" || status?.state === "done";
   const stage: Stage =
-    mood === "counting" ? "counting" : isStage(reported) ? reported : "queued";
+    mood === "counting"
+      ? "counting"
+      : bakeLanded
+        ? "baking"
+        : isStage(reported)
+          ? reported
+          : "queued";
   // Fetching reports bytes, not a percentage: the total is unknown until the
   // fetch ends, so only the last two stages give the bar a value.
-  const pct =
-    stage === "converting" || stage === "baking"
-      ? status?.progress?.pct
+  const pct = bakeLanded
+    ? 100
+    : stage === "converting" || stage === "baking"
+      ? (status?.progress?.pct ?? 0)
       : undefined;
   const mb = status?.progress?.bytes
     ? Math.round(status.progress.bytes / (1024 * 1024))
@@ -157,12 +175,14 @@ export function DatasetWaitPage({
             <div className="space-y-2" aria-live="polite">
               <p className="text-sm text-gray-900">{stageLabel}</p>
               <ProgressBar value={pct} label={stageLabel} />
-              <p className="text-sm text-gray-500">
-                {t("stepLine", {
-                  step: String(STEPS[stage]),
-                  total: String(TOTAL_STEPS),
-                })}
-              </p>
+              {stepsShown && (
+                <p className="text-sm text-gray-500">
+                  {t("stepLine", {
+                    step: String(STEPS[stage]),
+                    total: String(TOTAL_STEPS),
+                  })}
+                </p>
+              )}
             </div>
           )
         }

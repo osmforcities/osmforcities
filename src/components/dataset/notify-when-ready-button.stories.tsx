@@ -98,6 +98,16 @@ export const IfMapped: Story = {
   },
 };
 
+/** Before the dataset exists the offer shows but cannot be pressed yet. */
+export const BeforeDatasetExists: Story = {
+  args: { disabled: true, onSave: fn() },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
+    ).toBeDisabled();
+  },
+};
+
 /** A failed request leaves the button pressable rather than stranding it. */
 export const SaveFails: Story = {
   args: {

@@ -366,6 +366,18 @@ describe("POST /api/tasks/update-datasets", () => {
       ).toHaveLength(1);
     });
 
+    it("stores the count of a counting row whose probe was lost", async () => {
+      vi.mocked(prisma.dataset.findMany).mockResolvedValue([
+        { ...dataset, tilesState: "counting" },
+      ] as never);
+
+      const body = await (await call()).json();
+
+      expect(body.data.successful).toBe(1);
+      expect(updateCallsMatching((d) => d.dataCount === 60_000)).toHaveLength(1);
+      expect(submitTilesForDataset).toHaveBeenCalledWith("ds-1", 60_000);
+    });
+
     it("charges a failed submit to the counter", async () => {
       vi.mocked(submitTilesForDataset).mockResolvedValueOnce({
         tilesState: "failed",

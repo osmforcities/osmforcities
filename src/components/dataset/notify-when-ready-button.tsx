@@ -22,6 +22,8 @@ type NotifyWhenReadyButtonProps = {
    * an empty one only if someone maps it), so their sublines say "if".
    */
   offer?: keyof typeof OFFER_SUB;
+  /** Holds the button's place before the dataset exists to save. */
+  disabled?: boolean;
 };
 
 // Same width as the progress bar above it. A floor, not a fixed height: on a
@@ -30,7 +32,7 @@ const BOX = "min-h-14 w-full max-w-sm justify-center gap-3 py-2 whitespace-norma
 
 // The only hyphens here are in "e-mail"/"E-Mail", which must not split
 // across lines.
-const keepHyphens = (text: string) => text.replaceAll("-", "‑");
+const keepHyphens = (text: string) => text.replaceAll("-", "\u2011");
 
 const OFFER_SUB = {
   ready: "notifySub",
@@ -88,6 +90,7 @@ export function NotifyWhenReadyButton({
   saved = false,
   notify = true,
   offer = "ready",
+  disabled = false,
 }: NotifyWhenReadyButtonProps) {
   const t = useTranslations("DatasetPage");
   const [confirmed, setConfirmed] = useState(saved);
@@ -154,7 +157,7 @@ export function NotifyWhenReadyButton({
     <Button
       size="sm"
       className={BOX}
-      disabled={sending}
+      disabled={sending || disabled}
       onClick={() => submit(onSave, true)}
     >
       <Content
