@@ -29,7 +29,7 @@ const tpl = (
 describe("listCommonTemplates", () => {
   it("keeps only ranked templates, in rank order", () => {
     const common = listCommonTemplates([
-      tpl("schools", "Schools", "education", "education-culture", { commonRank: 1 }),
+      tpl("schools", "Schools", "education", "education", { commonRank: 1 }),
       tpl("benches", "Benches"),
       tpl("stops", "Bus stops", "bus", "mobility", { commonRank: 0 }),
     ]);

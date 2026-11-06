@@ -1147,11 +1147,12 @@ categories:
   housing: { icon: House, parent: buildings-infrastructure }
   barriers: { icon: Fence, parent: buildings-infrastructure }
 
-  education-culture: { icon: GraduationCap }
-  education: { icon: School, parent: education-culture }
-  culture: { icon: Palette, parent: education-culture }
-  heritage: { icon: Castle, parent: education-culture }
-  religion: { icon: Building, parent: education-culture }
+  education: { icon: School }
+
+  culture-religion: { icon: Amphora }
+  culture: { icon: Palette, parent: culture-religion }
+  heritage: { icon: Castle, parent: culture-religion }
+  religion: { icon: Building, parent: culture-religion }
 
   health: { icon: HeartPulse }
   healthcare: { icon: Hospital, parent: health }

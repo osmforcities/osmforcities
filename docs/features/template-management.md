@@ -813,6 +813,10 @@ Education and culture gains a `heritage` category for historic places: `monument
 - **castles** (`historic=castle`) — `[castle_type]`, no default view: `castle_type` on 51%.
 - **ruins** (`historic=ruins`) — **age-view only.** `ruins=*` is on 22%, and 74% of its uses are a bare `yes`, so a legend would be one row.
 
+### Education, culture and religion topics ([#722])
+
+`education-culture` split in two, as tourism did: `education` is a topic with no subcategories, `culture-religion` holds `culture`, `heritage` and `religion`. `/topics/education-culture` had been a sidebar topic on every area page since the area hub shipped, unlike the low-traffic emergency URL above, so `next.config.mjs` redirects it (and any category below it) to the area page.
+
 ## Validation the sync enforces
 
 `prisma/lib/template-parser.ts` (tests: `prisma/lib/__tests__/template-parser.test.ts`).
@@ -838,3 +842,4 @@ Education and culture gains a `heritage` category for historic places: `monument
 [#660]: https://github.com/osmforcities/osmforcities/issues/660
 [#662]: https://github.com/osmforcities/osmforcities/issues/662
 [#717]: https://github.com/osmforcities/osmforcities/issues/717
+[#722]: https://github.com/osmforcities/osmforcities/issues/722

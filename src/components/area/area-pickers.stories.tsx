@@ -21,7 +21,7 @@ const templates = [
   template("cycleways", "cycling", "mobility"),
   template("parking", "mobility", "mobility"),
   template("clinics", "health", "health"),
-  template("schools", "education", "education-culture"),
+  template("schools", "education", "education"),
 ];
 
 const meta = {
@@ -40,7 +40,7 @@ export const TopicsOpen: Story = {
     await expect(canvas.getByRole("heading", { name: "Pick a topic" })).toBeInTheDocument();
     const links = canvas.getAllByRole("link");
     await expect(links.map((link) => link.textContent)).toEqual([
-      "Education and culture1",
+      "Education1",
       "Health1",
       "Mobility4",
     ]);

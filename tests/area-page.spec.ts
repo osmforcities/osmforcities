@@ -82,6 +82,15 @@ test.describe("Area Page", () => {
     await expect(page.getByRole("link", { name: /^Bakeries/ })).toBeVisible();
   });
 
+  test("the retired education-culture topic leads to the area page", async ({ page }) => {
+    await page.goto(getLocalizedPath("/area/298470/topics/education-culture"));
+    await expect(page).toHaveURL(/\/area\/298470$/);
+    await expect(page.getByRole("heading", { name: "Pick a topic" })).toBeVisible();
+
+    await page.goto(getLocalizedPath("/area/298470/topics/education-culture/heritage"));
+    await expect(page).toHaveURL(/\/area\/298470$/);
+  });
+
   // Invalid area ID 404 handling is covered by dataset-page.spec.ts.
   // pt-BR template rendering is covered by dataset-translations.spec.ts.
 
