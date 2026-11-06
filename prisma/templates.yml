@@ -525,15 +525,21 @@ defaultView:
   information-boards: information
 
 # The area hub's "Common datasets" grid, in this order. Sync fails on a missing
-# or deprecated id.
+# or deprecated id. Picked for good OSM coverage worldwide; keep it at 12 so the
+# 2- and 3-column grid fills evenly.
 commonTemplates:
   - bus-stops
-  - schools
-  - clinics
-  - pharmacies
-  - buildings
+  - roads
   - footways
-  - cycleways
+  - schools
+  - hospitals
+  - pharmacies
+  - parks
+  - playgrounds
+  - buildings
+  - supermarkets
+  - restaurants
+  - places-of-worship
 
 # Replacements for removed templates (old-id: new-id).
 # The old id leaves the templates list above and deprecates as usual; its report
