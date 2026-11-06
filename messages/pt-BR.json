@@ -775,7 +775,8 @@
     "shops-services": "Comércio e serviços",
     "shops": "Lojas",
     "food": "Comida e bebida",
-    "financial": "Finanças"
+    "financial": "Finanças",
+    "heritage": "Patrimônio"
   },
   "TagLabel": {
     "highway": "Tipo de via",
@@ -882,7 +883,11 @@
     "sport": "Esporte",
     "siren:purpose": "Finalidade da sirene",
     "siren:type": "Tipo de sirene",
-    "emergency:shelter_type": "Tipo de risco"
+    "emergency:shelter_type": "Tipo de risco",
+    "artwork_type": "Tipo de obra",
+    "archaeological_site": "Tipo de sítio",
+    "castle_type": "Tipo de castelo",
+    "heritage": "Nível de proteção"
   },
   "TagValue": {
     "__common__": {
@@ -1222,6 +1227,36 @@
       "mechanical": "Mecânica",
       "electromechanical": "Eletromecânica",
       "pneumatic": "Pneumática"
+    },
+    "artwork_type": {
+      "sculpture": "Escultura",
+      "statue": "Estátua",
+      "mural": "Mural",
+      "installation": "Instalação",
+      "graffiti": "Grafite",
+      "bust": "Busto",
+      "mosaic": "Mosaico"
+    },
+    "archaeological_site": {
+      "tumulus": "Montículo funerário",
+      "fortification": "Fortificação",
+      "megalith": "Megálito",
+      "settlement": "Assentamento",
+      "mineral_extraction": "Mineração antiga",
+      "petroglyph": "Petróglifo"
+    },
+    "castle_type": {
+      "stately": "Casa senhorial",
+      "manor": "Solar",
+      "defensive": "Castelo defensivo",
+      "palace": "Palácio",
+      "fortress": "Fortaleza"
+    },
+    "heritage": {
+      "1": "Patrimônio Mundial",
+      "2": "Nacional",
+      "4": "Regional",
+      "8": "Municipal"
     }
   }
 }

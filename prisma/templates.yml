@@ -84,12 +84,18 @@ templates:
   - ["chalets","tourism=chalet","tourism","Home"]
 # Culture
   - ["cinemas","amenity=cinema","culture","Film"]
-  - ["monuments","historic=monument","culture","Landmark"]
   - ["arts-centre","amenity=arts_centre","culture","Palette"]
   - ["gallery","tourism=gallery","culture","Images"]
-  - ["memorials","historic=memorial","culture","Landmark"]
   - ["museums","tourism=museum","culture","Landmark"]
   - ["theatres","amenity=theatre","culture","Theater"]
+  - ["artwork","tourism=artwork","culture","Brush"]
+# Heritage
+  - ["monuments","historic=monument","heritage","Landmark"]
+  - ["memorials","historic=memorial","heritage","Landmark"]
+  - ["heritage-sites","heritage=*","heritage","ScrollText"]
+  - ["archaeological-sites","historic=archaeological_site","heritage","Amphora"]
+  - ["ruins","historic=ruins","heritage","BrickWall"]
+  - ["castles","historic=castle","heritage","Castle"]
 # Social
   - ["social-facility","amenity=social_facility","social","HeartHandshake"]
   - ["community-centre","amenity=community_centre","social","Users"]
@@ -264,6 +270,8 @@ templates:
   # value-templates queried loose religion=* selectors (matching cemeteries,
   # schools, etc.) and are replaced by the `religion` color-by filter below.
   - ["places-of-worship","amenity=place_of_worship","religion","Landmark"]
+  - ["cemeteries","landuse=cemetery;amenity=grave_yard","religion","Flower2"]
+  - ["shrines","historic=wayside_shrine","religion","Flame"]
 # Barriers
   - ["walls","barrier=wall","barriers","BrickWall"]
   - ["fences","barrier=fence","barriers","Fence"]
@@ -399,7 +407,13 @@ filterableTags:
   cinemas:          [brand, operator, wheelchair]
   arts-centre:      [operator, wheelchair]
   gallery:          [operator, fee, wheelchair]
+  artwork:          [artwork_type]
+  # Heritage
   memorials:        [memorial]
+  heritage-sites:   [heritage]
+  archaeological-sites: [archaeological_site]
+  # castle_type 51%: filter only, too sparse for the default view
+  castles:          [castle_type]
   # Government
   government-office: [government, operator, admin_level, wheelchair]
   courts:           [operator, wheelchair]
@@ -413,6 +427,9 @@ filterableTags:
   emergency-shelters: [emergency:shelter_type, wheelchair]
   # Religion (replaces the deprecated per-religion value templates)
   places-of-worship: [religion, denomination, wheelchair]
+  # religion on 21% of cemeteries: filter only, too sparse for the default view
+  cemeteries:       [religion, denomination]
+  shrines:          [religion, denomination]
   # Markets: age-view only — operator/organic near-absent (Barcelona 6%/2%, Sao Paulo 13%/1%)
   # Shops (wheelchair = transversal equity signal; brand/operator = chain vs independent)
   supermarkets:     [brand, operator, organic, wheelchair]
@@ -490,6 +507,10 @@ defaultView:
   cafes: cuisine
   fast-food: cuisine
   places-of-worship: religion
+  shrines: religion
+  artwork: artwork_type
+  heritage-sites: heritage
+  archaeological-sites: archaeological_site
   water: water
   wetlands: wetland
   forests: leaf_type
@@ -1123,6 +1144,7 @@ categories:
   education-culture: { icon: GraduationCap }
   education: { icon: School, parent: education-culture }
   culture: { icon: Palette, parent: education-culture }
+  heritage: { icon: Castle, parent: education-culture }
   religion: { icon: Building, parent: education-culture }
 
   health: { icon: HeartPulse }

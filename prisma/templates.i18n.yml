@@ -964,6 +964,71 @@ templates:
       es: Placas, bustos y estatuas en recuerdo de personas o eventos
       fr: Plaques, bustes et statues en mémoire de personnes ou faits
       de: Gedenktafeln, Büsten, Statuen zu Personen oder Ereignissen
+  artwork:
+    name:
+      en: Public art
+      pt: Arte pública
+      es: Arte público
+      fr: Art public
+      de: Kunst im öffentlichen Raum
+    desc:
+      en: Murals, sculptures and installations in public spaces
+      pt: Murais, esculturas e instalações em espaços públicos
+      es: Murales, esculturas e instalaciones en espacios públicos
+      fr: Fresques, sculptures et installations dans l'espace public
+      de: Wandbilder, Skulpturen, Installationen an öffentlichen Orten
+  heritage-sites:
+    name:
+      en: Protected heritage
+      pt: Patrimônio tombado
+      es: Patrimonio protegido
+      fr: Patrimoine protégé
+      de: Geschütztes Kulturerbe
+    desc:
+      en: Buildings and places on an official heritage list
+      pt: Imóveis e lugares em uma lista oficial de patrimônio
+      es: Edificios y lugares en una lista oficial de patrimonio
+      fr: Bâtiments et lieux d'une liste officielle du patrimoine
+      de: Gebäude und Orte auf einer amtlichen Denkmalliste
+  archaeological-sites:
+    name:
+      en: Archaeological sites
+      pt: Sítios arqueológicos
+      es: Sitios arqueológicos
+      fr: Sites archéologiques
+      de: Archäologische Stätten
+    desc:
+      en: Places that preserve traces of past human activity
+      pt: Lugares que preservam vestígios da atividade humana passada
+      es: Lugares que conservan huellas de la actividad humana pasada
+      fr: Lieux qui conservent des traces d'activité humaine passée
+      de: Orte mit erhaltenen Spuren früherer menschlicher Tätigkeit
+  ruins:
+    name:
+      en: Ruins
+      pt: Ruínas
+      es: Ruinas
+      fr: Ruines
+      de: Ruinen
+    desc:
+      en: Remains of buildings partly or fully fallen into decay
+      pt: Restos de construções parcial ou totalmente deterioradas
+      es: Restos de construcciones parcial o totalmente deterioradas
+      fr: Restes de bâtiments partiellement ou totalement délabrés
+      de: Reste teilweise oder ganz verfallener Bauwerke
+  castles:
+    name:
+      en: Castles
+      pt: Castelos
+      es: Castillos
+      fr: Châteaux
+      de: Burgen und Schlösser
+    desc:
+      en: Palaces, fortresses, manor houses and stately homes
+      pt: Palácios, fortalezas, solares e casas senhoriais
+      es: Palacios, fortalezas, mansiones y casas señoriales
+      fr: Palais, forteresses, manoirs et demeures seigneuriales
+      de: Paläste, Festungen, Herrenhäuser und Landsitze
   museums:
     name:
       en: Museums
@@ -2797,6 +2862,32 @@ templates:
       es: Carteles, mapas, paneles y oficinas de turismo
       fr: Poteaux indicateurs, cartes, panneaux et offices de tourisme
       de: Schilder, Karten, Infotafeln und Touristenbüros
+  cemeteries:
+    name:
+      en: Cemeteries
+      pt: Cemitérios
+      es: Cementerios
+      fr: Cimetières
+      de: Friedhöfe
+    desc:
+      en: Religious and secular burial grounds
+      pt: Locais de sepultamento religiosos e laicos
+      es: Lugares de sepultura religiosos y laicos
+      fr: Lieux de sépulture religieux et laïques
+      de: Religiöse und weltliche Begräbnisstätten
+  shrines:
+    name:
+      en: Wayside shrines
+      pt: Altares de rua
+      es: Altares de camino
+      fr: Oratoires
+      de: Bildstöcke und Schreine
+    desc:
+      en: Niches, statues and spirit houses by the roadside
+      pt: Nichos, imagens e casas de espíritos à beira da estrada
+      es: Nichos, imágenes y casas de espíritus junto al camino
+      fr: Niches, statues et maisons des esprits au bord des chemins
+      de: Nischen, Figuren und Geisterhäuschen am Wegesrand
   places-of-worship:
     name:
       en: Places of worship
