@@ -1,7 +1,7 @@
 # Template definitions for OSM for Cities (logic only)
 # Format: [id, query, category, icon, parent?]
 # Composite queries: ; = OR, & = AND. Example: highway=footway;highway=path&surface=paved
-# Template icons are Pinhead ids (file names at https://pinhead.ink), required, validated by pnpm generate-icons.
+# Template icons are Pinhead ids (file names at https://pinhead.ink) or prisma/custom-icons file names, required, validated by pnpm generate-icons.
 # Category icons (categories section below) are Lucide icon names.
 
 templates:
@@ -48,8 +48,8 @@ templates:
   - ["nursing-home","amenity=nursing_home","healthcare","person_standing_holding_cane"]
   - ["veterinary","amenity=veterinary","healthcare","pawprint_with_greek_cross"]
   - ["opticians","shop=optician","healthcare","eyeglasses"]
-  - ["medical-laboratories","healthcare=laboratory","healthcare","round_bottomed_flask"]
-  - ["psychotherapists","healthcare=psychotherapist","healthcare","couch"]
+  - ["medical-laboratories","healthcare=laboratory","healthcare","microscope"]
+  - ["psychotherapists","healthcare=psychotherapist","healthcare","human_head"]
   - ["physiotherapists","healthcare=physiotherapist","healthcare","person_squatting_beside_person_standing_reaching_up"]
   - ["optometrists","healthcare=optometrist","healthcare","eye"]
   - ["podiatrists","healthcare=podiatrist","healthcare","foot"]
@@ -62,23 +62,23 @@ templates:
   - ["dialysis-centres","healthcare=dialysis","healthcare","kidneys"]
   - ["midwives","healthcare=midwife","healthcare","pregnant_person_standing"]
 # Education
-  - ["schools","amenity=school","education","pencil_and_apple"]
+  - ["schools","amenity=school","education","paper_and_pencil"]
   - ["universities","amenity=university","education","square_academic_cap"]
   - ["libraries","amenity=library","education","open_book"]
-  - ["kindergarten","amenity=kindergarten","education","book_with_pencil_and_apple"]
+  - ["kindergarten","amenity=kindergarten","education","rocking_horse"]
   - ["college","amenity=college","education","square_academic_cap"]
   - ["childcare","amenity=childcare","education","baby"]
   - ["driving-school","amenity=driving_school","education","people_in_car"]
   - ["music-school","amenity=music_school","education","eighth_notes"]
-  - ["language-school","amenity=language_school","education","paper_and_pencil"]
+  - ["language-school","amenity=language_school","education","graticule_globe"]
   - ["research-institute","amenity=research_institute","education","book_with_square_academic_cap"]
 # Tourism
   - ["hotels","tourism=hotel","tourism","bed"]
   - ["motels","tourism=motel","tourism","car_beside_person_sleeping_in_bed"]
   - ["attractions","tourism=attraction","tourism","star"]
-  - ["viewpoints","tourism=viewpoint","tourism","rays_outward"]
+  - ["viewpoints","tourism=viewpoint","tourism","person_using_mounted_binoculars"]
   - ["campsites","tourism=camp_site","tourism","campsite"]
-  - ["alpine-huts","tourism=alpine_hut","tourism","cabin"]
+  - ["alpine-huts","tourism=alpine_hut","tourism","person_walking_with_hiking_pole_wearing_backpack_in_gable_roofed_shelter"]
   - ["caravan-sites","tourism=caravan_site","tourism","camper_trailer"]
   - ["wilderness-huts","tourism=wilderness_hut","tourism","cabin"]
   - ["chalets","tourism=chalet","tourism","cabin"]
@@ -88,11 +88,11 @@ templates:
   - ["gallery","tourism=gallery","culture","wall_hanging_with_mountains_and_sun"]
   - ["museums","tourism=museum","culture","classical_building"]
   - ["theatres","amenity=theatre","culture","comedy_mask_and_tragedy_mask"]
-  - ["artwork","tourism=artwork","culture","sculpture"]
+  - ["artwork","tourism=artwork","culture","paintbrush"]
 # Heritage
   - ["monuments","historic=monument","heritage","obelisk_on_plinth"]
   - ["memorials","historic=memorial","heritage","memorial_stone_with_inscription"]
-  - ["heritage-sites","heritage=*","heritage","keystone"]
+  - ["heritage-sites","heritage=*","heritage","plaque"]
   - ["archaeological-sites","historic=archaeological_site","heritage","amphora"]
   - ["ruins","historic=ruins","heritage","megalith"]
   - ["castles","historic=castle","heritage","castle"]
@@ -128,7 +128,7 @@ templates:
   - ["bottle-return","amenity=vending_machine&vending=bottle_return","waste","wheelie_bin_and_drink_bottle_and_can"]
 # Shops
   - ["supermarkets","shop=supermarket","shops","shopping_cart"]
-  - ["bakeries","shop=bakery","shops","croissant"]
+  - ["bakeries","shop=bakery","shops","loaf_of_bread"]
   - ["convenience","shop=convenience","shops","milk_carton_and_apple"]
   - ["butchers","shop=butcher","shops","cleaver"]
   - ["greengrocers","shop=greengrocer","shops","banana_and_apple"]
@@ -144,7 +144,7 @@ templates:
   - ["mobile-phone","shop=mobile_phone","shops","mobile_phone_with_touchscreen_and_antenna"]
   - ["shoes","shop=shoes","shops","shoe"]
   - ["jewelry","shop=jewelry","shops","ring_with_jewel"]
-  - ["bicycle-shop","shop=bicycle","shops","bicycle"]
+  - ["bicycle-shop","shop=bicycle","shops","bicycle_and_tag"]
 # Markets
   # Multi-vendor public markets (distinct from single-vendor shops)
   - ["markets","amenity=marketplace","shops","market_stall"]
@@ -164,10 +164,10 @@ templates:
   - ["fitness-centers","leisure=fitness_centre","leisure","dumbbell"]
   - ["swimming-pools","leisure=swimming_pool","leisure","person_swimming_in_water"]
   - ["sports-centres","leisure=sports_centre","leisure","people_running"]
-  - ["stadiums","leisure=stadium","leisure","round_structure_with_flag"]
+  - ["stadiums","leisure=stadium","leisure","bleachers"]
   - ["pitches","leisure=pitch","leisure","person_running"]
   - ["golf-courses","leisure=golf_course","leisure","person_swinging_golf_club"]
-  - ["tracks","leisure=track","leisure","racetrack_oval"]
+  - ["tracks","leisure=track","leisure","racetrack_oval_with_dashes"]
   - ["fitness-stations","leisure=fitness_station","leisure","person_hanging_from_pull_up_bar"]
   - ["ice-rinks","leisure=ice_rink","leisure","ice_skate"]
   - ["marinas","leisure=marina","leisure","sailboat"]
@@ -181,7 +181,7 @@ templates:
 
   - ["forests","landuse=forest","nature","conifer_tree"]
   - ["woods","natural=wood","nature","conifer_tree_beside_oval_broadleaved_tree"]
-  - ["orchards","landuse=orchard","nature","broadleaved_tree"]
+  - ["orchards","landuse=orchard","nature","apple"]
   - ["grasslands","natural=grassland","nature","grass"]
   - ["wetlands","natural=wetland","nature","grass_in_water"]
   - ["beaches","natural=beach","nature","beach_umbrella_in_ground"]
@@ -201,21 +201,21 @@ templates:
   - ["fell","natural=fell","nature","mountain"]
   - ["rock","natural=rock","nature","pointy_rock"]
   - ["stone","natural=stone","nature","trapezoidal_rock"]
-  - ["sand","natural=sand","nature","waters_meeting_shore"]
+  - ["sand","natural=sand","nature","sandbox"]
   - ["shingle","natural=shingle","nature","round_rock"]
-  - ["mud","natural=mud","nature","person_jumping_in_puddle_with_splashes"]
+  - ["mud","natural=mud","nature","waters"]
 # Infrastructure
   - ["street-lamps","highway=street_lamp","infrastructure","street_lamp_arm"]
   - ["surveillance","man_made=surveillance","infrastructure","wallmounted_surveillance_camera"]
   - ["tailings-pond","man_made=tailings_pond","infrastructure","droplet_from_pipes"]
-  - ["tower","man_made=tower","infrastructure","tower_with_observation_deck"]
+  - ["tower","man_made=tower","infrastructure","lattice_tower_with_observation_deck"]
   - ["communications-tower","man_made=communications_tower","infrastructure","lattice_tower_with_ball_tip_antenna_on_ground_with_beams"]
   - ["water-tower","man_made=water_tower","infrastructure","water_tower"]
   - ["storage-tanks","man_made=storage_tank","infrastructure","cylinder"]
   - ["chimney","man_made=chimney","infrastructure","chimney_with_smoke"]
   - ["pipeline","man_made=pipeline","infrastructure","water_pipe_return_bend_with_handle"]
   - ["mast","man_made=mast","infrastructure","guyed_mast"]
-  - ["water-works","man_made=water_works","infrastructure","water_pipe_return_bend_with_motor_and_handle"]
+  - ["water-works","man_made=water_works","infrastructure","utility_valve_with_droplet"]
   - ["wastewater-plant","man_made=wastewater_plant","infrastructure","sewage_pipe_cross_section"]
   - ["pumping-station","man_made=pumping_station","infrastructure","water_pipe_return_bend_with_motor_and_handle"]
   - ["utility-pole","man_made=utility_pole","infrastructure","utility_pole"]
@@ -232,7 +232,7 @@ templates:
   - ["bridges","man_made=bridge","roads","bridge_tied_arch"]
   - ["tunnels","tunnel=yes;tunnel=building_passage","roads","tunnel"]
   - ["crossings","highway=crossing","pedestrian","person_walking_on_crosswalk"]
-  - ["steps","highway=steps","pedestrian","raised_curb"]
+  - ["steps","highway=steps","pedestrian","stairs"]
   - ["kerbs","barrier=kerb","pedestrian","lowered_curb_under_shoe"]
   # Explicit values: sidewalk=no and =none are mapped absences
   - ["sidewalks","sidewalk=both;sidewalk=left;sidewalk=right;sidewalk=yes;sidewalk=separate;sidewalk:both=yes;sidewalk:both=separate;sidewalk:left=yes;sidewalk:left=separate;sidewalk:right=yes;sidewalk:right=separate","pedestrian","sign_beside_person_walking"]
@@ -280,8 +280,8 @@ templates:
 # Barriers
   - ["walls","barrier=wall","barriers","stone_wall"]
   - ["fences","barrier=fence","barriers","picket_fence"]
-  - ["hedges","barrier=hedge","barriers","hedge"]
-  - ["gates","barrier=gate","barriers","gate"]
+  - ["hedges","barrier=hedge","barriers","shrub"]
+  - ["gates","barrier=gate","barriers","tall_gate"]
 # =========================
   # Agricultural and agro-industrial infrastructure
   # =========================
@@ -292,7 +292,7 @@ templates:
   # Agricultural land use. Farmyard subtypes (farmyard=dairy etc.) sit on landuse=farmyard areas
   - ["farmland","landuse=farmland","agriculture","corn_cob"]
   - ["farmyards","landuse=farmyard","agriculture","barn_and_silo"]
-  - ["meadows","landuse=meadow","agriculture","tulip"]
+  - ["meadows","landuse=meadow","agriculture","grass"]
   # Agricultural buildings
   - ["barns","building=barn","agriculture","barn"]
   - ["farm-auxiliary","building=farm_auxiliary;building=agricultural","agriculture","barn_and_silo"]
