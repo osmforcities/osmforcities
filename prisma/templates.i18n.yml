@@ -671,11 +671,11 @@ templates:
       fr: Universités
       de: Universitäten
     desc:
-      en: Higher education and research in various fields
-      pt: Ensino superior e pesquisa em diversas áreas
-      es: Educación superior e investigación en diversas áreas
-      fr: Enseignement supérieur et recherche dans divers domaines
-      de: Hochschulbildung und Forschung in verschiedenen Fächern
+      en: Higher education and academic research
+      pt: Ensino superior e pesquisa acadêmica
+      es: Educación superior e investigación académica
+      fr: Enseignement supérieur et recherche universitaire
+      de: Hochschulbildung und akademische Forschung
   libraries:
     name:
       en: Libraries
@@ -697,11 +697,11 @@ templates:
       fr: Écoles maternelles
       de: Kindergärten
     desc:
-      en: Care and early education for children before school age
-      pt: Cuidado e educação infantil antes da idade escolar
-      es: Cuidado y educación inicial antes de la edad escolar
-      fr: Accueil et éducation des enfants avant l'âge scolaire
-      de: Betreuung und frühe Bildung für Kinder vor dem Schulalter
+      en: Early education for children before school age
+      pt: Educação infantil antes da idade escolar
+      es: Educación inicial antes de la edad escolar
+      fr: Éducation des enfants avant l'âge scolaire
+      de: Frühe Bildung für Kinder vor dem Schulalter
   college:
     name:
       en: College
@@ -727,7 +727,7 @@ templates:
       pt: Creches, berçários e cuidado infantil após a escola
       es: Guarderías y cuidado de niños después de la escuela
       fr: Garderies, crèches et accueil périscolaire des enfants
-      de: Krippen, Horte und andere Orte der Kinderbetreuung
+      de: Krippen, Horte und Tagespflege für Kinder
   driving-school:
     name:
       en: Driving schools
