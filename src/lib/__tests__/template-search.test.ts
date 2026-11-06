@@ -46,7 +46,7 @@ const labels: Record<string, string> = {
   cycling: "Ciclismo",
   mobility: "Mobilidade",
   food: "Comida",
-  "food-drink": "Comida e bebida",
+  "food-drink": "Comida e Bebida",
 };
 const search = createTemplateSearch(templates, (slug) => labels[slug] ?? slug);
 const ids = (query: string) => search(query).map((template) => template.id);
