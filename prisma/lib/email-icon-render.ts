@@ -3,6 +3,7 @@ import { ImageResponse } from "next/og";
 import * as lucide from "lucide-react";
 import type { LucideProps } from "lucide-react";
 import { COLOR } from "../../src/lib/email-layout";
+import { PINHEAD_VIEWBOX } from "./pinhead";
 
 const TILE_PX = 80;
 const TILE_ICON_PX = 44;
@@ -33,8 +34,16 @@ async function toPng(element: ReactElement, size: number): Promise<Buffer> {
   return Buffer.from(await response.arrayBuffer());
 }
 
-/** A template's icon on the olive tile used by report rows (80px, shown at 40). */
-export function renderTemplateTile(iconName: string): Promise<Buffer> {
+function pinheadSvg(paths: string[], size: number, color: string): ReactElement {
+  return createElement(
+    "svg",
+    { width: size, height: size, viewBox: PINHEAD_VIEWBOX, fill: color },
+    ...paths.map((d) => createElement("path", { key: d, d }))
+  );
+}
+
+/** A template's Pinhead icon on the olive tile used by report rows (80px, shown at 40). */
+export function renderTemplateTile(pinheadPaths: string[]): Promise<Buffer> {
   const tile = createElement(
     "div",
     {
@@ -48,7 +57,7 @@ export function renderTemplateTile(iconName: string): Promise<Buffer> {
         borderRadius: 16,
       },
     },
-    lucideSvg(iconName, { size: TILE_ICON_PX, color: COLOR.olive600, strokeWidth: 2 })
+    pinheadSvg(pinheadPaths, TILE_ICON_PX, COLOR.olive600)
   );
   return toPng(tile, TILE_PX);
 }

@@ -19,6 +19,15 @@ const nextConfig = {
   env: {
     COMMIT_HASH: commitHash,
   },
+  // The template icon sprite is named after its content hash (pnpm generate-icons)
+  async headers() {
+    return [
+      {
+        source: "/template-icons/:file*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+    ];
+  },
 };
 
 const withNextIntl = createNextIntlPlugin({
