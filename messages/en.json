@@ -126,7 +126,7 @@
   },
   "DatasetPage": {
     "tilesStageQueued": "Waiting for a free slot",
-    "tilesStageFetching": "Fetching data ({mb, number} MB)",
+    "tilesStageFetching": "Fetching data{mb, plural, =0 {} other { (# MB)}}",
     "tilesStageConverting": "Converting features ({pct, number}%)",
     "tilesStageBaking": "Baking map tiles ({pct, number}%)",
     "tilesStageCounting": "Calculating size",

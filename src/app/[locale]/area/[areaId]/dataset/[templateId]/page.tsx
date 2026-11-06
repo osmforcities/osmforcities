@@ -6,6 +6,7 @@ import { transformDataset } from "@/lib/dataset/transform";
 import { DatasetInteractiveSection } from "@/components/dataset/dataset-interactive-section";
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { SaveAndNotifyButton } from "@/components/dataset/save-and-notify-button";
+import { NotifyWhenReadyButton } from "@/components/dataset/notify-when-ready-button";
 import { tilerEnabled } from "@/lib/tiler/client";
 import { retryFailedBake, tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
 import { isTooLarge } from "@/lib/dataset-retry";
@@ -126,8 +127,9 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
     );
   }
 
-  // A missing row means the view counts elements before creating it, which
-  // can take a while: show the counting screen instead of a skeleton.
+  // A missing row takes a while to create (the whole count with the tiles-only
+  // lane off), so the counting screen shows meanwhile. On the lane the disabled
+  // button keeps the screen from shifting when the real one arrives.
   return (
     <Suspense
       fallback={
@@ -139,6 +141,11 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
             templateName={templateName}
             areaName={areaName}
             areaId={osmRelationId}
+            notify={
+              tilesOnlyLaneEnabled() && (
+                <NotifyWhenReadyButton offer="ready" disabled />
+              )
+            }
           />
         )
       }

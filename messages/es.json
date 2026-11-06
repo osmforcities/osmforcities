@@ -126,7 +126,7 @@
   },
   "DatasetPage": {
     "tilesStageQueued": "Esperando turno en el servidor",
-    "tilesStageFetching": "Obteniendo datos ({mb, number} MB)",
+    "tilesStageFetching": "Obteniendo datos{mb, plural, =0 {} other { (# MB)}}",
     "tilesStageConverting": "Convirtiendo elementos ({pct, number} %)",
     "tilesStageBaking": "Generando teselas del mapa ({pct, number} %)",
     "tilesStageCounting": "Calculando el tamaño",

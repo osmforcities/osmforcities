@@ -126,7 +126,7 @@
   },
   "DatasetPage": {
     "tilesStageQueued": "Wartet auf einen freien Platz",
-    "tilesStageFetching": "Daten werden geladen ({mb, number} MB)",
+    "tilesStageFetching": "Daten werden geladen{mb, plural, =0 {} other { (# MB)}}",
     "tilesStageConverting": "Objekte werden konvertiert ({pct, number} %)",
     "tilesStageBaking": "Kartenkacheln werden erstellt ({pct, number} %)",
     "tilesStageCounting": "Größe wird berechnet",

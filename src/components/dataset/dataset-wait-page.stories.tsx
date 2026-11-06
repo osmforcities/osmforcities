@@ -184,6 +184,20 @@ export const BakingFetching: Story = {
   },
 };
 
+/** Most fetches finish before a megabyte lands, so no size is shown until one does. */
+export const BakingFetchingFirstMegabyte: Story = {
+  args: { ...BakingFetching.args },
+  beforeEach: serveTilesStatus({
+    state: "pending",
+    stage: "fetching",
+    progress: { bytes: 0 },
+  }),
+  play: async ({ canvas }) => {
+    await expect(await canvas.findByText("Fetching data")).toBeInTheDocument();
+    await expect(canvas.queryByText(/MB/)).not.toBeInTheDocument();
+  },
+};
+
 /** First stage with a percentage: the bar gains a value. */
 export const BakingConverting: Story = {
   args: {
