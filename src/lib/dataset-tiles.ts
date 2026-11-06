@@ -1,3 +1,5 @@
+import type { GeometryMix } from "@/lib/dataset-geometry";
+
 /**
  * Client-side decision: does this dataset render from PMTiles?
  * Opt-in via NEXT_PUBLIC_TILES_ENABLED while #489 is being proven; unset (or
@@ -16,6 +18,14 @@ export function datasetTilesPath(dataset: {
 }): string | null {
   if (!TILES_ENABLED || !dataset.tilesServedJobId) return null;
   return `/api/tiles/${dataset.tilesServedJobId}.pmtiles`;
+}
+
+// Tiles mode holds no client-side features to count.
+export function tilesPointCount(dataset: {
+  dataCount: number;
+  stats: { geometryMix?: Pick<GeometryMix, "points"> } | null;
+}): number {
+  return dataset.stats?.geometryMix?.points ?? dataset.dataCount;
 }
 
 /**
