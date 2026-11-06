@@ -1,5 +1,6 @@
 import {
   Ambulance,
+  Amphora,
   Banknote,
   Bike,
   Building,
@@ -14,7 +15,6 @@ import {
   FireExtinguisher,
   Footprints,
   Gavel,
-  GraduationCap,
   HeartHandshake,
   HeartPulse,
   Hospital,
@@ -44,7 +44,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-11-06T02:52:35.766Z
+ * Generated: 2026-11-06T03:34:17.672Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -317,12 +317,12 @@ export function getCategoryIcon(category: string) {
       return <Megaphone className="w-5 h-5" />;
     case "culture":
       return <Palette className="w-5 h-5" />;
+    case "culture-religion":
+      return <Amphora className="w-5 h-5" />;
     case "cycling":
       return <Bike className="w-5 h-5" />;
     case "education":
       return <School className="w-5 h-5" />;
-    case "education-culture":
-      return <GraduationCap className="w-5 h-5" />;
     case "emergency":
       return <Siren className="w-5 h-5" />;
     case "environment":

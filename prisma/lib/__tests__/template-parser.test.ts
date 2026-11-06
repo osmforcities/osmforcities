@@ -516,7 +516,8 @@ describe("template-parser", () => {
         "tourism",
         "nature-environment",
         "emergency",
-        "education-culture",
+        "education",
+        "culture-religion",
         "shops-services",
         "public-services",
         "buildings-infrastructure",
@@ -561,12 +562,13 @@ describe("template-parser", () => {
       expect(first.overpassQuery).toContain("area.searchArea");
     });
 
-    it("declares the 10 topics and puts fuel under mobility", () => {
+    it("declares the 11 topics and puts fuel under mobility", () => {
       const result = parseTemplates(loadTemplatesYaml("./prisma"));
       const topics = result.categories.filter((c) => !c.parent).map((c) => c.slug);
       expect(topics.sort()).toEqual([
         "buildings-infrastructure",
-        "education-culture",
+        "culture-religion",
+        "education",
         "emergency",
         "health",
         "leisure-sports",
@@ -587,7 +589,7 @@ describe("template-parser", () => {
       const idsIn = (category: string) =>
         result.templates.filter((t) => t.category === category).map((t) => t.id).sort();
       expect(result.categories.find((c) => c.slug === "heritage")?.parent).toBe(
-        "education-culture",
+        "culture-religion",
       );
       expect(idsIn("heritage")).toEqual([
         "archaeological-sites",

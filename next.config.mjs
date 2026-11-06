@@ -28,6 +28,16 @@ const nextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      // Retired topic, split into education and culture-religion
+      {
+        source: "/:locale/area/:areaId/topics/education-culture/:category*",
+        destination: "/:locale/area/:areaId",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 const withNextIntl = createNextIntlPlugin({
