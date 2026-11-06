@@ -36,7 +36,6 @@ export async function POST(req: NextRequest) {
   if (decodeURIComponent(body).includes("out count;")) {
     const state = mockTilerState();
     state.countProbes++;
-    // Read fresh each turn: a reset releases it too
     while (mockTilerState().countHeld) await setTimeout(200);
     if (state.countTimesOut) return new NextResponse(null, { status: 504 });
     return countResponse();

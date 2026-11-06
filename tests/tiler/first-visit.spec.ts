@@ -14,8 +14,6 @@ const TEMPLATE_ID = "post-boxes";
 const PAGE = `/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`;
 const CONFIRMED = "Saved. You'll get an email when the map is ready.";
 
-// The count probe runs after the response, so the first visit never waits on
-// it: the page counts, then bakes, without a reload
 test.describe("First visit to a dataset on the tiles-only lane", () => {
   const prisma = new PrismaClient();
   let user: TestUser;
@@ -110,7 +108,6 @@ test.describe("First visit to a dataset on the tiles-only lane", () => {
 
     await expect(page.getByText("Too large to bake.")).toBeVisible();
     await expect(page.getByRole("status")).toHaveText(CONFIRMED);
-    // Still asking, so a later bake that fits sends the mail
     expect(await readSave(datasetId)).toEqual({ notifyWhenReady: true });
   });
 

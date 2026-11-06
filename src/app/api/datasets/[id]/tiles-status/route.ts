@@ -41,7 +41,6 @@ export async function GET(
     tooLarge: isTooLarge(error),
   });
 
-  // An open tab would otherwise wait on a lost probe forever
   if (dataset.tilesState === "counting") {
     return NextResponse.json(
       (await resumeCountProbeIfDue(dataset))

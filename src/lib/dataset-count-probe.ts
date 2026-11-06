@@ -11,12 +11,6 @@ import { createLogger } from "@/lib/logger";
 
 const logger = createLogger("dataset-count-probe");
 
-/**
- * Never throws: it runs after the response, with no one to catch it. Writes
- * land only while the row still holds this probe's claim, so a probe that
- * outlived its budget and was resumed elsewhere leaves the row to the newer
- * one.
- */
 export async function runCountProbe(
   datasetId: string,
   claimedAt: Date
@@ -49,6 +43,7 @@ export async function runCountProbe(
     const { tilesState, tilesError } = await submitTilesForDataset(datasetId);
     if (tilesState === "failed") await recordFailedSubmit(datasetId, tilesError);
   } catch (error) {
+    const failedAt = new Date();
     logger.error("Count probe failed", { datasetId, error });
     await prisma.dataset
       .updateMany({
@@ -56,8 +51,7 @@ export async function runCountProbe(
         data: {
           consecutiveFailures: { increment: 1 },
           lastError: error instanceof Error ? error.message : String(error),
-          // The verdict's TTL runs from now, not from the claim
-          lastAttempted: new Date(),
+          lastAttempted: failedAt,
         },
       })
       .catch((recordError) =>
@@ -69,15 +63,12 @@ export async function runCountProbe(
   }
 }
 
+// A probe over a large area outlives the hosting's request timeouts
 export function startCountProbe(datasetId: string, claimedAt: Date): void {
   after(() => runCountProbe(datasetId, claimedAt));
 }
 
-/**
- * @returns whether a probe is running for this row afterwards.
- * Cataloged rows are the cron's, so the two never race. The claim lands only
- * if lastAttempted is unchanged, so of two visits only one probes.
- */
+/** @returns whether a probe runs for this row afterwards */
 export async function resumeCountProbeIfDue(
   row: CountProbeRow
 ): Promise<boolean> {
@@ -90,6 +81,7 @@ export async function resumeCountProbeIfDue(
         id: row.id,
         tilesState: "counting",
         lastAttempted: row.lastAttempted,
+        // Cataloged rows are the cron's
         ...UNCATALOGED_FILTER,
       },
       data: { lastAttempted: claimedAt },

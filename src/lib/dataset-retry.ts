@@ -52,7 +52,6 @@ export type CountProbeRow = {
   consecutiveFailures: number;
 };
 
-// A failed probe waits out the verdict it recorded, or the next one would only read it back
 export function isCountProbeDue(
   row: Omit<CountProbeRow, "id">,
   now: Date

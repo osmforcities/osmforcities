@@ -302,8 +302,6 @@ async function createDatasetOnDemand(
   }
 }
 
-// A probe over a large area outlives the hosting's request timeouts, so it
-// runs after the response. lastAttempted is its claim.
 async function createCountingDataset(
   area: { id: number; name: string },
   template: NonNullable<Awaited<ReturnType<typeof resolveTemplate>>>,
@@ -324,11 +322,10 @@ async function createCountingDataset(
       select: DATASET_DETAIL_SELECT,
     });
   } catch (error) {
-    // A concurrent first visit created it
-    if (
+    const createdByConcurrentVisit =
       error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
+      error.code === "P2002";
+    if (createdByConcurrentVisit) {
       const existing = await getDatasetWithDetails(area.id, template.id, locale);
       if (existing) return existing;
     }

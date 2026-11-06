@@ -92,7 +92,7 @@ describe("runCountProbe", () => {
     expect(recordFailedSubmit).toHaveBeenCalledWith("ds-1", "Tiler submit failed: 500");
   });
 
-  it("records a timed-out probe on the row, which stays counting", async () => {
+  it("records a timed-out probe on the row, restarting its retry wait at the failure", async () => {
     vi.mocked(fetchDatasetSnapshot).mockRejectedValue(
       new DatasetSizeCheckTimeoutError()
     );
@@ -107,7 +107,6 @@ describe("runCountProbe", () => {
         lastAttempted: expect.any(Date),
       },
     });
-    // The retry wait starts at the failure, as the verdict does
     const { lastAttempted } = vi.mocked(prisma.dataset.updateMany).mock.calls[0][0]
       .data as { lastAttempted: Date };
     expect(lastAttempted.getTime()).toBeGreaterThan(claimedAt.getTime());

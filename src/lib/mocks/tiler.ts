@@ -17,7 +17,6 @@ type MockTilerState = {
   overpassEmpty: boolean;
   /** Count probes answer 504, as Overpass does when one runs out of time. */
   countTimesOut: boolean;
-  /** Count probes wait for this to clear, as a metro-scale count does. */
   countHeld: boolean;
   /** Count probes received, so a spec can tell a stored verdict was reused. */
   countProbes: number;
