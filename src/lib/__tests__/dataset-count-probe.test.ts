@@ -140,7 +140,7 @@ describe("resumeCountProbeIfDue", () => {
         lastAttempted: lost.lastAttempted,
         ...UNCATALOGED_FILTER,
       },
-      data: { lastAttempted: expect.any(Date) },
+      data: { lastAttempted: expect.any(Date), consecutiveFailures: 0 },
     });
     expect(after).toHaveBeenCalledTimes(1);
   });
@@ -150,15 +150,48 @@ describe("resumeCountProbeIfDue", () => {
     expect(after).not.toHaveBeenCalled();
   });
 
-  it("restarts a failed probe once its wait is over", async () => {
+  it("restarts a failed probe once its wait is over, and the next poll still sees it running", async () => {
     expect(await resumeCountProbeIfDue(counting(31 * MINUTE_MS, 1))).toBe(true);
     expect(after).toHaveBeenCalledTimes(1);
+
+    const { data } = vi.mocked(prisma.dataset.updateMany).mock.calls[0][0] as {
+      data: { lastAttempted: Date; consecutiveFailures: number };
+    };
+    const claimed = { ...counting(0, 1), ...data };
+    expect(await resumeCountProbeIfDue(claimed)).toBe(true);
   });
 
-  it("starts nothing when another visit claimed it first", async () => {
-    vi.mocked(prisma.dataset.updateMany).mockResolvedValue({ count: 0 });
+  describe("when another visit claimed it first", () => {
+    beforeEach(() => {
+      vi.mocked(prisma.dataset.updateMany).mockResolvedValue({ count: 0 });
+    });
 
-    expect(await resumeCountProbeIfDue(counting(31 * MINUTE_MS, 1))).toBe(false);
-    expect(after).not.toHaveBeenCalled();
+    it("starts nothing and reports that visit's probe as running", async () => {
+      vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+        tilesState: "counting",
+        consecutiveFailures: 0,
+      } as never);
+
+      expect(await resumeCountProbeIfDue(counting(31 * MINUTE_MS, 1))).toBe(true);
+      expect(after).not.toHaveBeenCalled();
+    });
+
+    it("reports a probe that failed again as stopped", async () => {
+      vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+        tilesState: "counting",
+        consecutiveFailures: 2,
+      } as never);
+
+      expect(await resumeCountProbeIfDue(counting(31 * MINUTE_MS, 1))).toBe(false);
+    });
+
+    it("keeps the page polling once the count is past, so it moves on", async () => {
+      vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+        tilesState: "pending",
+        consecutiveFailures: 1,
+      } as never);
+
+      expect(await resumeCountProbeIfDue(counting(31 * MINUTE_MS, 1))).toBe(true);
+    });
   });
 });

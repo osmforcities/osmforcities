@@ -68,7 +68,7 @@ export function startCountProbe(datasetId: string, claimedAt: Date): void {
   after(() => runCountProbe(datasetId, claimedAt));
 }
 
-/** @returns whether a probe runs for this row afterwards */
+/** @returns whether the wait page should keep polling this row */
 export async function resumeCountProbeIfDue(
   row: CountProbeRow
 ): Promise<boolean> {
@@ -81,16 +81,27 @@ export async function resumeCountProbeIfDue(
         id: row.id,
         tilesState: "counting",
         lastAttempted: row.lastAttempted,
-        // Cataloged rows are the cron's
+        // Cataloged rows are the cron's, so it never reads this counter
         ...UNCATALOGED_FILTER,
       },
-      data: { lastAttempted: claimedAt },
+      data: { lastAttempted: claimedAt, consecutiveFailures: 0 },
     });
-    if (count === 0) return noProbeFailed;
+    if (count === 0) return probeRunningOrPast(row.id);
     startCountProbe(row.id, claimedAt);
     return true;
   } catch (error) {
     logger.error("Count probe resume failed", { datasetId: row.id, error });
     return noProbeFailed;
   }
+}
+
+async function probeRunningOrPast(datasetId: string): Promise<boolean> {
+  const fresh = await prisma.dataset.findUnique({
+    where: { id: datasetId },
+    select: { tilesState: true, consecutiveFailures: true },
+  });
+  return (
+    !!fresh &&
+    (fresh.tilesState !== "counting" || fresh.consecutiveFailures === 0)
+  );
 }
