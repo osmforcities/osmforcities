@@ -766,7 +766,8 @@
     "shops-services": "Shops and services",
     "shops": "Shops",
     "food": "Food and drink",
-    "financial": "Finance"
+    "financial": "Finance",
+    "heritage": "Heritage"
   },
   "TagLabel": {
     "highway": "Road type",
@@ -873,7 +874,11 @@
     "sport": "Sport",
     "siren:purpose": "Siren purpose",
     "siren:type": "Siren type",
-    "emergency:shelter_type": "Hazard type"
+    "emergency:shelter_type": "Hazard type",
+    "artwork_type": "Artwork type",
+    "archaeological_site": "Site type",
+    "castle_type": "Castle type",
+    "heritage": "Protection level"
   },
   "TagValue": {
     "__common__": {
@@ -1213,6 +1218,33 @@
       "mechanical": "Mechanical",
       "electromechanical": "Electromechanical",
       "pneumatic": "Pneumatic"
+    },
+    "artwork_type": {
+      "sculpture": "Sculpture",
+      "statue": "Statue",
+      "mural": "Mural",
+      "installation": "Installation",
+      "graffiti": "Graffiti",
+      "bust": "Bust",
+      "mosaic": "Mosaic"
+    },
+    "archaeological_site": {
+      "tumulus": "Burial mound",
+      "fortification": "Fortification",
+      "megalith": "Megalith"
+    },
+    "castle_type": {
+      "stately": "Stately home",
+      "manor": "Manor house",
+      "defensive": "Defensive castle",
+      "palace": "Palace",
+      "fortress": "Fortress"
+    },
+    "heritage": {
+      "1": "World Heritage",
+      "2": "National",
+      "4": "Regional",
+      "8": "Municipal"
     }
   }
 }

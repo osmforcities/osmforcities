@@ -775,7 +775,8 @@
     "shops-services": "Comercios y servicios",
     "shops": "Tiendas",
     "food": "Comida y bebida",
-    "financial": "Finanzas"
+    "financial": "Finanzas",
+    "heritage": "Patrimonio"
   },
   "TagLabel": {
     "highway": "Tipo de vía",
@@ -882,7 +883,11 @@
     "sport": "Deporte",
     "siren:purpose": "Finalidad de la sirena",
     "siren:type": "Tipo de sirena",
-    "emergency:shelter_type": "Tipo de riesgo"
+    "emergency:shelter_type": "Tipo de riesgo",
+    "artwork_type": "Tipo de obra",
+    "archaeological_site": "Tipo de sitio",
+    "castle_type": "Tipo de castillo",
+    "heritage": "Nivel de protección"
   },
   "TagValue": {
     "__common__": {
@@ -1222,6 +1227,33 @@
       "mechanical": "Mecánica",
       "electromechanical": "Electromecánica",
       "pneumatic": "Neumática"
+    },
+    "artwork_type": {
+      "sculpture": "Escultura",
+      "statue": "Estatua",
+      "mural": "Mural",
+      "installation": "Instalación",
+      "graffiti": "Grafiti",
+      "bust": "Busto",
+      "mosaic": "Mosaico"
+    },
+    "archaeological_site": {
+      "tumulus": "Túmulo",
+      "fortification": "Fortificación",
+      "megalith": "Megalito"
+    },
+    "castle_type": {
+      "stately": "Casa señorial",
+      "manor": "Casa solariega",
+      "defensive": "Castillo defensivo",
+      "palace": "Palacio",
+      "fortress": "Fortaleza"
+    },
+    "heritage": {
+      "1": "Patrimonio Mundial",
+      "2": "Nacional",
+      "4": "Regional",
+      "8": "Municipal"
     }
   }
 }
