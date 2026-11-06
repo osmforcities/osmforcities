@@ -61,9 +61,9 @@ type Story = StoryObj<typeof meta>;
 const notify = <NotifyWhenReadyButton />;
 
 /**
- * Step 1 with the tiles-only lane off: the count probe runs inside the
- * request, before any row exists. Nothing to poll, nothing to save yet, so no
- * offer.
+ * The count with the tiles-only lane off: it runs inside the request, before
+ * any row exists, and the map follows it directly. Nothing to poll, nothing to
+ * save yet and no further steps, so no offer and no step line.
  */
 export const CountingWarm: Story = {
   args: {
@@ -71,13 +71,14 @@ export const CountingWarm: Story = {
     areaName: "Delft",
     areaId: 324431,
     mood: "counting",
+    stepsShown: false,
   },
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole("heading", { name: "Buildings in Delft" })
     ).toBeInTheDocument();
     await expect(canvas.getByText("Calculating size")).toBeInTheDocument();
-    await expect(canvas.getByText("Step 1 of 5")).toBeInTheDocument();
+    await expect(canvas.queryByText(/Step \d of/)).not.toBeInTheDocument();
     await expect(canvas.getByRole("progressbar")).not.toHaveAttribute(
       "aria-valuenow"
     );
@@ -101,7 +102,6 @@ export const CountingCold: Story = {
       await canvas.findByText("Still calculating size, large area")
     ).toBeInTheDocument();
     await expect(canvas.queryByText("Calculating size")).not.toBeInTheDocument();
-    await expect(canvas.getByText("Step 1 of 5")).toBeInTheDocument();
   },
 };
 

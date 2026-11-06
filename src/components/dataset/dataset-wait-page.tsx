@@ -58,6 +58,8 @@ type DatasetWaitPageProps = {
   coldAfterMs?: number;
   /** The save-and-email button. Nothing renders in its place without it. */
   notify?: ReactNode;
+  /** Off the tiles-only lane the count is the only step, so there are no steps to number. */
+  stepsShown?: boolean;
 };
 
 /**
@@ -75,6 +77,7 @@ export function DatasetWaitPage({
   mood,
   coldAfterMs = COUNT_REQUEST_TIMEOUT_MS,
   notify,
+  stepsShown = true,
 }: DatasetWaitPageProps) {
   const t = useTranslations("DatasetPage");
   const router = useRouter();
@@ -172,12 +175,14 @@ export function DatasetWaitPage({
             <div className="space-y-2" aria-live="polite">
               <p className="text-sm text-gray-900">{stageLabel}</p>
               <ProgressBar value={pct} label={stageLabel} />
-              <p className="text-sm text-gray-500">
-                {t("stepLine", {
-                  step: String(STEPS[stage]),
-                  total: String(TOTAL_STEPS),
-                })}
-              </p>
+              {stepsShown && (
+                <p className="text-sm text-gray-500">
+                  {t("stepLine", {
+                    step: String(STEPS[stage]),
+                    total: String(TOTAL_STEPS),
+                  })}
+                </p>
+              )}
             </div>
           )
         }

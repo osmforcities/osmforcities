@@ -130,6 +130,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
   // A missing row takes a while to create (the whole count with the tiles-only
   // lane off), so the counting screen shows meanwhile. On the lane the disabled
   // button keeps the screen from shifting when the real one arrives.
+  const tilesLane = tilesOnlyLaneEnabled();
   return (
     <Suspense
       fallback={
@@ -142,10 +143,9 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
             areaName={areaName}
             areaId={osmRelationId}
             notify={
-              tilesOnlyLaneEnabled() && (
-                <NotifyWhenReadyButton offer="ready" disabled />
-              )
+              tilesLane && <NotifyWhenReadyButton offer="ready" disabled />
             }
+            stepsShown={tilesLane}
           />
         )
       }
