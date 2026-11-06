@@ -2420,6 +2420,19 @@ templates:
       es: Vías exclusivas para bicicletas, separadas de los autos
       fr: Voies réservées aux vélos, séparées de la circulation
       de: Eigene Wege für den Radverkehr, getrennt vom Autoverkehr
+  cycle-lanes:
+    name:
+      en: Cycle lanes
+      pt: Ciclofaixas
+      es: Carriles para bicicletas
+      fr: Aménagements cyclables sur rue
+      de: Radinfrastruktur an Straßen
+    desc:
+      en: Painted lanes and tracks that are part of the street
+      pt: Faixas pintadas e pistas separadas que fazem parte da rua
+      es: Carriles pintados o separados que forman parte de la calle
+      fr: Bandes peintes et pistes cyclables intégrées à la rue
+      de: Markierte und baulich getrennte Radspuren an der Straße
   bridges:
     name:
       en: Bridge outlines
