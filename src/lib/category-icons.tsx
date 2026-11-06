@@ -44,7 +44,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-11-06T03:34:17.672Z
+ * Generated: 2026-11-06T03:34:37.471Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -52,7 +52,7 @@ import {
  * Template icons are Pinhead map icons (CC0, https://pinhead.ink) in one
  * static sprite, so their paths stay out of the client bundle.
  */
-const TEMPLATE_ICON_SPRITE = "/template-icons/b224955e2b2b.svg";
+const TEMPLATE_ICON_SPRITE = "/template-icons/a1701b20efe9.svg";
 
 const TEMPLATE_ICONS = new Map<string, string>([
   ["agricultural-tanks", "cylinder"],
@@ -177,6 +177,7 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["ice-rinks", "ice_skate"],
   ["information-boards", "info_i"],
   ["jewelry", "ring_with_jewel"],
+  ["kerbs", "lowered_curb_under_shoe"],
   ["kindergarten", "book_with_pencil_and_apple"],
   ["language-school", "paper_and_pencil"],
   ["libraries", "open_book"],
@@ -246,6 +247,7 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["shopping-malls", "person_carrying_shopping_bags"],
   ["shower", "showerhead_with_spray"],
   ["shrines", "column_shrine"],
+  ["sidewalks", "sign_beside_person_walking"],
   ["silos", "silo"],
   ["sirens", "megaphone"],
   ["skiing", "person_skiing_downhill"],
@@ -255,6 +257,7 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["sports-centres", "people_running"],
   ["springs", "droplet_above_water"],
   ["stadiums", "round_structure_with_flag"],
+  ["steps", "raised_curb"],
   ["stone", "trapezoidal_rock"],
   ["storage-tanks", "cylinder"],
   ["street-lamps", "street_lamp_arm"],

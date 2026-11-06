@@ -878,7 +878,10 @@
     "artwork_type": "Artwork type",
     "archaeological_site": "Site type",
     "castle_type": "Castle type",
-    "heritage": "Protection level"
+    "heritage": "Protection level",
+    "kerb": "Curb",
+    "handrail": "Handrail",
+    "ramp": "Ramp"
   },
   "TagValue": {
     "__common__": {
@@ -1248,6 +1251,12 @@
       "2": "National",
       "4": "Regional",
       "8": "Municipal"
+    },
+    "kerb": {
+      "lowered": "Lowered",
+      "flush": "Flush",
+      "raised": "Raised",
+      "rolled": "Rolled"
     }
   }
 }

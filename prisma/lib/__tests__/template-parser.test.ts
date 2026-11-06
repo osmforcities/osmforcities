@@ -467,6 +467,15 @@ describe("template-parser", () => {
       expect(byId.get("golf-courses")?.filterableTags).toBeUndefined();
     });
 
+    it("matches roads with a sidewalk, never roads mapped without one", () => {
+      const result = parseTemplates(loadTemplatesYaml("./prisma"));
+      const query = result.templates.find((t) => t.id === "sidewalks")?.overpassQuery;
+      expect(query).toContain('way["sidewalk"="both"]');
+      expect(query).toContain('way["sidewalk:right"="separate"]');
+      expect(query).not.toMatch(/"sidewalk(:\w+)?"\]/);
+      expect(query).not.toMatch(/"sidewalk(:\w+)?"="(no|none)"/);
+    });
+
     it("folds the old tree templates into one trees template", () => {
       const result = parseTemplates(loadTemplatesYaml("./prisma"));
       const trees = result.templates.find((t) => t.id === "trees");

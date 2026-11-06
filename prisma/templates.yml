@@ -231,6 +231,10 @@ templates:
   - ["bridges","man_made=bridge","roads","bridge_tied_arch"]
   - ["tunnels","tunnel=yes;tunnel=building_passage","roads","tunnel"]
   - ["crossings","highway=crossing","pedestrian","person_walking_on_crosswalk"]
+  - ["steps","highway=steps","pedestrian","raised_curb"]
+  - ["kerbs","barrier=kerb","pedestrian","lowered_curb_under_shoe"]
+  # Explicit values: sidewalk=no and =none are mapped absences
+  - ["sidewalks","sidewalk=both;sidewalk=left;sidewalk=right;sidewalk=yes;sidewalk=separate;sidewalk:both=yes;sidewalk:both=separate;sidewalk:left=yes;sidewalk:left=separate;sidewalk:right=yes;sidewalk:right=separate","pedestrian","sign_beside_person_walking"]
 # Mobility: traffic
   - ["traffic-signs","traffic_sign=*","traffic","sign"]
   - ["traffic-lights","highway=traffic_signals","traffic","three_dots_up_down_in_tall_rounded_rectangle"]
@@ -386,6 +390,9 @@ filterableTags:
   cycleways:        [surface, lit, oneway, smoothness]
   # surface and oneway describe the road here, not the lane (own track surfaces, contraflow lanes)
   cycle-lanes:      [lit]
+  steps:            [handrail, ramp, lit]
+  kerbs:            [kerb, tactile_paving]
+  sidewalks:        [sidewalk, lit]
   traffic-calming:  [traffic_calming]
   speed-cameras:    [maxspeed]
   schools:          [operator, operator:type, wheelchair, isced:level]
@@ -492,6 +499,7 @@ defaultView:
   railway-stations: station
   footways: footway
   crossings: crossing
+  kerbs: kerb
   traffic-calming: traffic_calming
   parking: parking
   bicycle-parking: bicycle_parking

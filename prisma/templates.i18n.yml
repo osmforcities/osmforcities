@@ -2537,6 +2537,45 @@ templates:
       es: Puntos donde peatones y ciclistas cruzan la calle
       fr: Points où piétons et cyclistes traversent la chaussée
       de: Stellen, an denen Fuß- und Radverkehr die Straße quert
+  steps:
+    name:
+      en: Steps
+      pt: Escadas
+      es: Escaleras
+      fr: Escaliers
+      de: Treppen
+    desc:
+      en: Flights of stairs along footways and paths
+      pt: Lances de escada em caminhos de pedestres
+      es: Tramos de escaleras en senderos y caminos peatonales
+      fr: Volées de marches sur les chemins piétons
+      de: Treppen auf Fußwegen und Pfaden
+  kerbs:
+    name:
+      en: Curbs
+      pt: Meios-fios
+      es: Bordes de acera
+      fr: Bordures de trottoir
+      de: Bordsteine
+    desc:
+      en: Edges between sidewalk and street, raised or lowered
+      pt: Bordas entre a calçada e a rua, elevadas ou rebaixadas
+      es: Bordes entre la acera y la calle, elevados o rebajados
+      fr: Bords entre trottoir et chaussée, surélevés ou abaissés
+      de: Kanten zwischen Gehweg und Fahrbahn, erhöht oder abgesenkt
+  sidewalks:
+    name:
+      en: Streets with sidewalks
+      pt: Ruas com calçada
+      es: Calles con aceras
+      fr: Rues avec trottoirs
+      de: Straßen mit Gehweg
+    desc:
+      en: Streets where mappers recorded a sidewalk on either side
+      pt: Vias com calçada registrada em um ou nos dois lados
+      es: Vías con acera registrada en uno o ambos lados
+      fr: Voies avec un trottoir indiqué d'un côté ou des deux
+      de: Straßen mit erfasstem Gehweg auf einer oder beiden Seiten
   traffic-signs:
     name:
       en: Traffic signs
