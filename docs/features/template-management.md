@@ -825,6 +825,10 @@ Three `pedestrian` templates for walkability. Coverage from taginfo, worldwide (
 - **kerbs** (`barrier=kerb`) — `[kerb, tactile_paving]`, default `kerb` (73%: lowered 68%, flush 16%, raised 10%).
 - **sidewalks** (`sidewalk=*` and the side keys on roads) — `[sidewalk, lit]`, no default view: matches tagged only with a side key carry no `sidewalk`. Explicit values, like `cycle-lanes`: `no` and `none` are mapped absences. The side keys only take `yes` and `separate` (other values under 0.1%). `separate` stays: the road has a sidewalk, drawn as its own way, which `footways` shows.
 
+### Cycling infrastructure ([#505])
+
+`cycling-infrastructure` is the umbrella over `cycleways` and `cycle-lanes`: "everything cyclable" without knowing the two mapping schemes. Its query is the union of the children's, and a unit test fails if a parent's query misses any child selector. Overpass unions the matches, so a road with lanes on both sides counts once. `[lit]` only, like `cycle-lanes`: on lanes `surface` and `oneway` describe the road. Cycle routes join when relation geometry lands ([#504]).
+
 ## Validation the sync enforces
 
 `prisma/lib/template-parser.ts` (tests: `prisma/lib/__tests__/template-parser.test.ts`).
@@ -846,6 +850,8 @@ Three `pedestrian` templates for walkability. Coverage from taginfo, worldwide (
 [#478]: https://github.com/osmforcities/osmforcities/issues/478
 [#479]: https://github.com/osmforcities/osmforcities/issues/479
 [#503]: https://github.com/osmforcities/osmforcities/issues/503
+[#504]: https://github.com/osmforcities/osmforcities/issues/504
+[#505]: https://github.com/osmforcities/osmforcities/issues/505
 [#517]: https://github.com/osmforcities/osmforcities/issues/517
 [#441]: https://github.com/osmforcities/osmforcities/issues/441
 [#660]: https://github.com/osmforcities/osmforcities/issues/660

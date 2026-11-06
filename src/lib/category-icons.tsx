@@ -44,7 +44,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-11-06T03:34:37.471Z
+ * Generated: 2026-11-06T03:34:45.434Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -113,6 +113,7 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["crossings", "person_walking_on_crosswalk"],
   ["cycle-lanes", "bicycle_in_rectangle_outline"],
   ["cycleways", "person_riding_bicycle"],
+  ["cycling-infrastructure", "bicycle"],
   ["dam", "dam"],
   ["defibrillators", "heart_with_ecg_line"],
   ["dentists", "molar_tooth"],

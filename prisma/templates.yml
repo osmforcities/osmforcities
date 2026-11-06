@@ -225,9 +225,10 @@ templates:
 # Mobility: roads, pedestrian, cycling
   - ["roads","highway=motorway;highway=trunk;highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=living_street;highway=unclassified","roads","sedan"]
   - ["footways","highway=footway;highway=path","pedestrian","person_walking"]
-  - ["cycleways","highway=cycleway","cycling","person_riding_bicycle"]
+  - ["cycling-infrastructure","highway=cycleway;cycleway=lane;cycleway=track;cycleway=shared_lane;cycleway=share_busway;cycleway=opposite_lane;cycleway=opposite_track;cycleway:left=lane;cycleway:left=track;cycleway:left=shared_lane;cycleway:left=share_busway;cycleway:left=opposite_lane;cycleway:left=opposite_track;cycleway:right=lane;cycleway:right=track;cycleway:right=shared_lane;cycleway:right=share_busway;cycleway:right=opposite_lane;cycleway:right=opposite_track;cycleway:both=lane;cycleway:both=track;cycleway:both=shared_lane;cycleway:both=share_busway;cycleway:both=opposite_lane;cycleway:both=opposite_track","cycling","bicycle"]
+  - ["cycleways","highway=cycleway","cycling","person_riding_bicycle","cycling-infrastructure"]
   # Explicit values: cycleway=no and =separate are mapped absences
-  - ["cycle-lanes","cycleway=lane;cycleway=track;cycleway=shared_lane;cycleway=share_busway;cycleway=opposite_lane;cycleway=opposite_track;cycleway:left=lane;cycleway:left=track;cycleway:left=shared_lane;cycleway:left=share_busway;cycleway:left=opposite_lane;cycleway:left=opposite_track;cycleway:right=lane;cycleway:right=track;cycleway:right=shared_lane;cycleway:right=share_busway;cycleway:right=opposite_lane;cycleway:right=opposite_track;cycleway:both=lane;cycleway:both=track;cycleway:both=shared_lane;cycleway:both=share_busway;cycleway:both=opposite_lane;cycleway:both=opposite_track","cycling","bicycle_in_rectangle_outline"]
+  - ["cycle-lanes","cycleway=lane;cycleway=track;cycleway=shared_lane;cycleway=share_busway;cycleway=opposite_lane;cycleway=opposite_track;cycleway:left=lane;cycleway:left=track;cycleway:left=shared_lane;cycleway:left=share_busway;cycleway:left=opposite_lane;cycleway:left=opposite_track;cycleway:right=lane;cycleway:right=track;cycleway:right=shared_lane;cycleway:right=share_busway;cycleway:right=opposite_lane;cycleway:right=opposite_track;cycleway:both=lane;cycleway:both=track;cycleway:both=shared_lane;cycleway:both=share_busway;cycleway:both=opposite_lane;cycleway:both=opposite_track","cycling","bicycle_in_rectangle_outline","cycling-infrastructure"]
   - ["bridges","man_made=bridge","roads","bridge_tied_arch"]
   - ["tunnels","tunnel=yes;tunnel=building_passage","roads","tunnel"]
   - ["crossings","highway=crossing","pedestrian","person_walking_on_crosswalk"]
@@ -390,6 +391,7 @@ filterableTags:
   cycleways:        [surface, lit, oneway, smoothness]
   # surface and oneway describe the road here, not the lane (own track surfaces, contraflow lanes)
   cycle-lanes:      [lit]
+  cycling-infrastructure: [lit]
   steps:            [handrail, ramp, lit]
   kerbs:            [kerb, tactile_paving]
   sidewalks:        [sidewalk, lit]

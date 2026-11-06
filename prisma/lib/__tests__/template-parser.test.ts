@@ -426,6 +426,23 @@ describe("template-parser", () => {
   });
 
   describe("loadTemplatesLogic", () => {
+    it("gives every parent template a query that covers each child's selectors", () => {
+      const { entries } = loadTemplatesLogic("./prisma");
+      const queryById = new Map(entries.map((e) => [e.id, e.query]));
+      const uncovered = entries
+        .filter((child) => child.parent)
+        .flatMap((child) => {
+          const parentSelectors = queryById.get(child.parent!)!.split(";");
+          const isCovered = (selector: string) =>
+            parentSelectors.some((p) => selector === p || selector.startsWith(`${p}&`));
+          return child.query
+            .split(";")
+            .filter((selector) => !isCovered(selector))
+            .map((selector) => `${child.parent} misses ${child.id}: ${selector}`);
+        });
+      expect(uncovered).toEqual([]);
+    });
+
     it("loads templates.yml array format and returns entries + categories", () => {
       const { entries, categories } = loadTemplatesLogic("./prisma");
       expect(entries.length).toBeGreaterThan(0);
