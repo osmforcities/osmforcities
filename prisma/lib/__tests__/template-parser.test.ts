@@ -582,6 +582,24 @@ describe("template-parser", () => {
       expect(result.templates.find((t) => t.id === "fuel")?.category).toBe("mobility");
     });
 
+    it("keeps historic places under heritage and burial places under religion", () => {
+      const result = parseTemplates(loadTemplatesYaml("./prisma"));
+      const idsIn = (category: string) =>
+        result.templates.filter((t) => t.category === category).map((t) => t.id).sort();
+      expect(result.categories.find((c) => c.slug === "heritage")?.parent).toBe(
+        "education-culture",
+      );
+      expect(idsIn("heritage")).toEqual([
+        "archaeological-sites",
+        "castles",
+        "heritage-sites",
+        "memorials",
+        "monuments",
+        "ruins",
+      ]);
+      expect(idsIn("religion")).toEqual(["cemeteries", "places-of-worship", "shrines"]);
+    });
+
     it("exposes the demonstrators section keyed by template id", () => {
       const config = loadTemplatesYaml("./prisma");
       expect(config.demonstrators).toBeDefined();

@@ -766,7 +766,8 @@
     "shops-services": "Geschäfte und Dienstleistungen",
     "shops": "Geschäfte",
     "food": "Essen und Trinken",
-    "financial": "Finanzen"
+    "financial": "Finanzen",
+    "heritage": "Kulturerbe"
   },
   "TagLabel": {
     "highway": "Straßentyp",
@@ -873,7 +874,11 @@
     "sport": "Sportart",
     "siren:purpose": "Sirenenzweck",
     "siren:type": "Sirenentyp",
-    "emergency:shelter_type": "Gefahrenart"
+    "emergency:shelter_type": "Gefahrenart",
+    "artwork_type": "Kunstwerkart",
+    "archaeological_site": "Fundstättentyp",
+    "castle_type": "Burgtyp",
+    "heritage": "Schutzebene"
   },
   "TagValue": {
     "__common__": {
@@ -1213,6 +1218,36 @@
       "mechanical": "Mechanisch",
       "electromechanical": "Elektromechanisch",
       "pneumatic": "Pneumatisch"
+    },
+    "artwork_type": {
+      "sculpture": "Skulptur",
+      "statue": "Statue",
+      "mural": "Wandbild",
+      "installation": "Installation",
+      "graffiti": "Graffiti",
+      "bust": "Büste",
+      "mosaic": "Mosaik"
+    },
+    "archaeological_site": {
+      "tumulus": "Grabhügel",
+      "fortification": "Befestigung",
+      "megalith": "Megalith",
+      "settlement": "Siedlung",
+      "mineral_extraction": "Historischer Bergbau",
+      "petroglyph": "Petroglyphe"
+    },
+    "castle_type": {
+      "stately": "Schloss",
+      "manor": "Herrenhaus",
+      "defensive": "Burg",
+      "palace": "Palast",
+      "fortress": "Festung"
+    },
+    "heritage": {
+      "1": "Welterbe",
+      "2": "National",
+      "4": "Regional",
+      "8": "Kommunal"
     }
   }
 }

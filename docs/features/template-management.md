@@ -797,6 +797,18 @@ Part of the disaster epic ([#478]). Emergency is its own topic, split into the c
 - **firefighting-water-sources** (`emergency=water_tank;emergency=fire_water_pond;emergency=suction_point`) — **age-view only.** The natural color-by is the `emergency` value itself, but `TagLabel` is global per key and `emergency` reads "Emergency care" for hospitals. `water_tank:volume` is free-form numbers (`120.000`, `300000`), a numeric-tag candidate ([#441]), not a legend.
 - **emergency-shelters** (`emergency:social_facility=shelter`) — `[emergency:shelter_type, wheelchair]`. The only wiki-documented disaster-shelter tag (~9k uses, mostly Taiwan and the Philippines). `emergency=shelter` is undocumented (26 uses); `social_facility=shelter` is homeless and refugee housing, already in `social-facility`. Dropped `emergency:social_facility:for` and `evacuation_center` (single-valued). `emergency:shelter_type` stays raw: free-text hazard lists (`水災,震災`), no `TagValue` map.
 
+### Heritage, cemeteries, shrines and public art ([#717])
+
+Education and culture gains a `heritage` category for historic places: `monuments` and `memorials` move in from `culture`, which keeps venues plus public art. `religion` grows past places of worship to burial places and street shrines, with descs that name no single faith. Coverage from taginfo (2026-11-05):
+
+- **cemeteries** (`landuse=cemetery;amenity=grave_yard`) — `[religion, denomination]`, no default view: `religion` on 21%.
+- **shrines** (`historic=wayside_shrine`) — `[religion, denomination]`, default `religion` (64%, below memorials' 72% but the type key places of worship already open on). Spirit houses in Bangkok, jizo in Kyoto and roadside grottos in Latin America share this tag.
+- **artwork** (`tourism=artwork`) — `[artwork_type]`, default `artwork_type` (85%: sculpture, statue, mural, installation, then graffiti, bust and mosaic at 1-3%). Graffiti and street art map only when notable, per the wiki.
+- **heritage-sites** (`heritage=*`) — filters and opens on the OSM `heritage` key (not the category of the same name). The value is the admin level of the protecting body: `TagValue` labels 1, 2, 4 and 8 (world, national, regional, municipal), other levels stay raw because their meaning varies by country. `heritage:operator` (80%) is left out: short registry codes (`mhs`, `nrhp`), not readable legend rows.
+- **archaeological-sites** (`historic=archaeological_site`) — `[archaeological_site]`, default `archaeological_site` (75%: tumulus, fortification, megalith, then settlement, mineral extraction and petroglyph at 1-3%).
+- **castles** (`historic=castle`) — `[castle_type]`, no default view: `castle_type` on 51%.
+- **ruins** (`historic=ruins`) — **age-view only.** `ruins=*` is on 22%, and 74% of its uses are a bare `yes`, so a legend would be one row.
+
 ## Validation the sync enforces
 
 `prisma/lib/template-parser.ts` (tests: `prisma/lib/__tests__/template-parser.test.ts`).
@@ -820,3 +832,4 @@ Part of the disaster epic ([#478]). Emergency is its own topic, split into the c
 [#441]: https://github.com/osmforcities/osmforcities/issues/441
 [#660]: https://github.com/osmforcities/osmforcities/issues/660
 [#662]: https://github.com/osmforcities/osmforcities/issues/662
+[#717]: https://github.com/osmforcities/osmforcities/issues/717
