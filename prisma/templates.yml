@@ -29,7 +29,7 @@ templates:
   - ["atms","amenity=atm","financial","banknote_in_slot"]
   - ["banks","amenity=bank","financial","banknote"]
 # Amenities
-  - ["public-toilets","amenity=toilets","amenities","person_standing_wearing_dress_beside_broadshouldered_person_standing"]
+  - ["public-toilets","amenity=toilets","amenities","sitting_tank_toilet"]
   - ["drinking-water","amenity=drinking_water","amenities","water_tap_with_drinking_glass"]
   - ["post-offices","amenity=post_office","amenities","envelope"]
   - ["parcel-lockers","amenity=parcel_locker","amenities","lockers_terminal"]
