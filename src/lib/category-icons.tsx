@@ -44,7 +44,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-11-06T02:46:34.099Z
+ * Generated: 2026-11-06T02:52:35.766Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -52,7 +52,7 @@ import {
  * Template icons are Pinhead map icons (CC0, https://pinhead.ink) in one
  * static sprite, so their paths stay out of the client bundle.
  */
-const TEMPLATE_ICON_SPRITE = "/template-icons/3bbdddecc758.svg";
+const TEMPLATE_ICON_SPRITE = "/template-icons/b224955e2b2b.svg";
 
 const TEMPLATE_ICONS = new Map<string, string>([
   ["agricultural-tanks", "cylinder"],
@@ -76,7 +76,7 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["basketball", "basketball"],
   ["beaches", "beach_umbrella_in_ground"],
   ["benches", "bench_with_backrest"],
-  ["bicycle-parking", "bicycle_on_parking_line"],
+  ["bicycle-parking", "wide_p_with_bicycle"],
   ["bicycle-rental", "bicycle_and_arrow_right_above_arrow_left"],
   ["bicycle-shop", "bicycle"],
   ["blood-donation", "droplet_with_greek_cross"],
@@ -208,7 +208,7 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["parking", "car_on_parking_line"],
   ["parks", "tree_beside_bench_with_backrest"],
   ["peaks", "snowcapped_mountain"],
-  ["pharmacies", "mortar_and_pestle_with_greek_cross"],
+  ["pharmacies", "circular_pill_and_capsule_pill"],
   ["physiotherapists", "person_squatting_beside_person_standing_reaching_up"],
   ["pipeline", "water_pipe_return_bend_with_handle"],
   ["pitches", "person_running"],

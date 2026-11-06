@@ -6,7 +6,7 @@
 
 templates:
 # Mobility: transit, cycling, other
-  - ["bicycle-parking","amenity=bicycle_parking","cycling","bicycle_on_parking_line"]
+  - ["bicycle-parking","amenity=bicycle_parking","cycling","wide_p_with_bicycle"]
   - ["bicycle-rental","amenity=bicycle_rental","cycling","bicycle_and_arrow_right_above_arrow_left"]
   # Parent template for public transit
   - ["public-transit","highway=bus_stop;railway=station;railway=tram_stop;railway=subway_entrance;public_transport=platform","mobility","transit_vehicle_with_destination_display"]
@@ -43,7 +43,7 @@ templates:
   - ["clinics","amenity=clinic","healthcare","stethoscope"]
   - ["doctors","amenity=doctors","healthcare","stethoscope"]
   - ["dentists","amenity=dentist","healthcare","molar_tooth"]
-  - ["pharmacies","amenity=pharmacy","healthcare","mortar_and_pestle_with_greek_cross"]
+  - ["pharmacies","amenity=pharmacy","healthcare","circular_pill_and_capsule_pill"]
   - ["health-post","amenity=health_post","healthcare","greek_cross"]
   - ["nursing-home","amenity=nursing_home","healthcare","person_standing_holding_cane"]
   - ["veterinary","amenity=veterinary","healthcare","pawprint_with_greek_cross"]
