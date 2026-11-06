@@ -7,7 +7,7 @@
 templates:
 # Mobility: transit, cycling, other
   - ["bicycle-parking","amenity=bicycle_parking","cycling","bicycle_on_parking_line"]
-  - ["bicycle-rental","amenity=bicycle_rental","cycling","bicycle_under_key"]
+  - ["bicycle-rental","amenity=bicycle_rental","cycling","bicycle_and_arrow_right_above_arrow_left"]
   # Parent template for public transit
   - ["public-transit","highway=bus_stop;railway=station;railway=tram_stop;railway=subway_entrance;public_transport=platform","mobility","transit_vehicle_with_destination_display"]
   - ["bus-stops","highway=bus_stop","bus","bus_with_destination_display","public-transit"]
@@ -45,11 +45,11 @@ templates:
   - ["dentists","amenity=dentist","healthcare","molar_tooth"]
   - ["pharmacies","amenity=pharmacy","healthcare","mortar_and_pestle_with_greek_cross"]
   - ["health-post","amenity=health_post","healthcare","greek_cross"]
-  - ["nursing-home","amenity=nursing_home","healthcare","person_in_wheelchair"]
+  - ["nursing-home","amenity=nursing_home","healthcare","person_standing_holding_cane"]
   - ["veterinary","amenity=veterinary","healthcare","pawprint_with_greek_cross"]
   - ["opticians","shop=optician","healthcare","eyeglasses"]
   - ["medical-laboratories","healthcare=laboratory","healthcare","round_bottomed_flask"]
-  - ["psychotherapists","healthcare=psychotherapist","healthcare","heart_outline"]
+  - ["psychotherapists","healthcare=psychotherapist","healthcare","couch"]
   - ["physiotherapists","healthcare=physiotherapist","healthcare","person_squatting_beside_person_standing_reaching_up"]
   - ["optometrists","healthcare=optometrist","healthcare","eye"]
   - ["podiatrists","healthcare=podiatrist","healthcare","foot"]
@@ -91,7 +91,7 @@ templates:
   - ["artwork","tourism=artwork","culture","sculpture"]
 # Heritage
   - ["monuments","historic=monument","heritage","obelisk_on_plinth"]
-  - ["memorials","historic=memorial","heritage","memorial_stone"]
+  - ["memorials","historic=memorial","heritage","memorial_stone_with_inscription"]
   - ["heritage-sites","heritage=*","heritage","keystone"]
   - ["archaeological-sites","historic=archaeological_site","heritage","amphora"]
   - ["ruins","historic=ruins","heritage","megalith"]
@@ -109,7 +109,7 @@ templates:
 # Emergency (categories follow the OSM wiki's Emergency facilities and amenities page)
   - ["ambulance-stations","emergency=ambulance_station","medical-rescue","compact_box_truck_with_greek_cross"]
   - ["defibrillators","emergency=defibrillator","medical-rescue","heart_with_ecg_line"]
-  - ["fire-stations","amenity=fire_station","firefighting","fire"]
+  - ["fire-stations","amenity=fire_station","firefighting","badge_shield_with_fire"]
   - ["fire-hydrants","emergency=fire_hydrant","firefighting","hydrant"]
   - ["firefighting-water-sources","emergency=water_tank;emergency=fire_water_pond;emergency=suction_point","firefighting","storage_tank"]
   - ["assembly-points","emergency=assembly_point","civil-protection","crowd_of_people"]
@@ -139,7 +139,7 @@ templates:
   - ["fuel","amenity=fuel","mobility","gasoline_pump"]
   - ["hardware","shop=hardware","shops","wrench_and_hammer"]
   - ["diy","shop=doityourself","shops","wrench_and_hammer"]
-  - ["furniture","shop=furniture","shops","couch"]
+  - ["furniture","shop=furniture","shops","club_chair"]
   - ["electronics","shop=electronics","shops","plug"]
   - ["mobile-phone","shop=mobile_phone","shops","mobile_phone_with_touchscreen_and_antenna"]
   - ["shoes","shop=shoes","shops","shoe"]
@@ -184,7 +184,7 @@ templates:
   - ["orchards","landuse=orchard","nature","broadleaved_tree"]
   - ["grasslands","natural=grassland","nature","grass"]
   - ["wetlands","natural=wetland","nature","grass_in_water"]
-  - ["beaches","natural=beach","nature","waters_meeting_shore"]
+  - ["beaches","natural=beach","nature","beach_umbrella_in_ground"]
   - ["peaks","natural=peak","nature","snowcapped_mountain"]
   - ["cliffs","natural=cliff","nature","cliff_with_rocks"]
   - ["caves","natural=cave_entrance","nature","cave"]
@@ -232,7 +232,7 @@ templates:
 # Mobility: traffic
   - ["traffic-signs","traffic_sign=*","traffic","sign"]
   - ["traffic-lights","highway=traffic_signals","traffic","three_dots_up_down_in_tall_rounded_rectangle"]
-  - ["speed-cameras","highway=speed_camera","traffic","flash_camera"]
+  - ["speed-cameras","highway=speed_camera","traffic","wallmounted_surveillance_camera"]
   - ["traffic-calming","traffic_calming=*","traffic","speed_bump"]
 # Housing
   - ["apartments","building=apartments","housing","lowrise_apartment_building"]
@@ -268,7 +268,7 @@ templates:
   # value-templates queried loose religion=* selectors (matching cemeteries,
   # schools, etc.) and are replaced by the `religion` color-by filter below.
   - ["places-of-worship","amenity=place_of_worship","religion","place_of_worship_building"]
-  - ["cemeteries","landuse=cemetery;amenity=grave_yard","religion","gravestone"]
+  - ["cemeteries","landuse=cemetery;amenity=grave_yard","religion","memorial_stone"]
   - ["shrines","historic=wayside_shrine","religion","column_shrine"]
 # Barriers
   - ["walls","barrier=wall","barriers","stone_wall"]

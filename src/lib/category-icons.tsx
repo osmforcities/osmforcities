@@ -44,7 +44,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-11-06T02:24:32.533Z
+ * Generated: 2026-11-06T02:40:37.287Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -52,7 +52,7 @@ import {
  * Template icons are Pinhead map icons (CC0, https://pinhead.ink) in one
  * static sprite, so their paths stay out of the client bundle.
  */
-const TEMPLATE_ICON_SPRITE = "/template-icons/55a3f6129f61.svg";
+const TEMPLATE_ICON_SPRITE = "/template-icons/9c77378ed950.svg";
 
 const TEMPLATE_ICONS = new Map<string, string>([
   ["agricultural-tanks", "cylinder"],
@@ -74,10 +74,10 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["bars", "cocktail"],
   ["baseball", "baseball"],
   ["basketball", "basketball"],
-  ["beaches", "waters_meeting_shore"],
+  ["beaches", "beach_umbrella_in_ground"],
   ["benches", "bench_with_backrest"],
   ["bicycle-parking", "bicycle_on_parking_line"],
-  ["bicycle-rental", "bicycle_under_key"],
+  ["bicycle-rental", "bicycle_and_arrow_right_above_arrow_left"],
   ["bicycle-shop", "bicycle"],
   ["blood-donation", "droplet_with_greek_cross"],
   ["bottle-return", "wheelie_bin_and_drink_bottle_and_can"],
@@ -92,7 +92,7 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["caravan-sites", "camper_trailer"],
   ["castles", "castle"],
   ["caves", "cave"],
-  ["cemeteries", "gravestone"],
+  ["cemeteries", "memorial_stone"],
   ["chalets", "cabin"],
   ["chemist", "tube_and_toothbrush"],
   ["childcare", "baby"],
@@ -136,7 +136,7 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["fences", "picket_fence"],
   ["ferry-terminals", "ferryboat"],
   ["fire-hydrants", "hydrant"],
-  ["fire-stations", "fire"],
+  ["fire-stations", "badge_shield_with_fire"],
   ["firefighting-water-sources", "storage_tank"],
   ["fitness-centers", "dumbbell"],
   ["fitness-stations", "person_hanging_from_pull_up_bar"],
@@ -147,7 +147,7 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["forests", "conifer_tree"],
   ["fountains", "fountain_from_water"],
   ["fuel", "gasoline_pump"],
-  ["furniture", "couch"],
+  ["furniture", "club_chair"],
   ["gallery", "wall_hanging_with_mountains_and_sun"],
   ["gardens", "tulip"],
   ["gates", "gate"],
@@ -187,7 +187,7 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["mast", "guyed_mast"],
   ["meadows", "tulip"],
   ["medical-laboratories", "round_bottomed_flask"],
-  ["memorials", "memorial_stone"],
+  ["memorials", "memorial_stone_with_inscription"],
   ["midwives", "pregnant_person_standing"],
   ["mobile-phone", "mobile_phone_with_touchscreen_and_antenna"],
   ["monuments", "obelisk_on_plinth"],
@@ -198,7 +198,7 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["natural-surfaces", "squat_rock"],
   ["natural-vegetation", "oval_broadleaved_tree_beside_oval_broadleaved_tree"],
   ["nature-reserves", "broadleaved_tree"],
-  ["nursing-home", "person_in_wheelchair"],
+  ["nursing-home", "person_standing_holding_cane"],
   ["occupational-therapists", "puzzle_piece"],
   ["opticians", "eyeglasses"],
   ["optometrists", "eye"],
@@ -219,7 +219,7 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["post-boxes", "post_box"],
   ["post-offices", "envelope"],
   ["prisons", "barred_door"],
-  ["psychotherapists", "heart_outline"],
+  ["psychotherapists", "couch"],
   ["public-bookcase", "open_book_under_roof"],
   ["public-toilets", "sitting_tank_toilet"],
   ["public-transit", "transit_vehicle_with_destination_display"],
@@ -250,7 +250,7 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["skiing", "person_skiing_downhill"],
   ["social-facility", "heart_above_outstretched_hand"],
   ["speech-therapists", "speech_bubble"],
-  ["speed-cameras", "flash_camera"],
+  ["speed-cameras", "wallmounted_surveillance_camera"],
   ["sports-centres", "people_running"],
   ["springs", "droplet_above_water"],
   ["stadiums", "round_structure_with_flag"],
