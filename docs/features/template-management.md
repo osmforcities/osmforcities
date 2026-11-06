@@ -684,6 +684,7 @@ candidate but kept). The niche farmyard sub-values (feedlot/stockyard/poultry/da
 - **footways** — `[surface, lit, smoothness]`. `surface` 72%, `lit` 46%, `smoothness` 25% in Munich. Even on a pedestrian path the blind/kerb a11y keys stay off: `tactile_paving` 0.6%, `wheelchair` 4%, `incline` 1% — that data lives on the crossing nodes, not the footway ways. `surface`/`smoothness` are the accessibility-quality proxies that actually sit on the way. Later added `footway` first (sidewalk/crossing/traffic_island/access_aisle/link) so sidewalks separate from park paths ([#517]).
 - **cycleways** — `[surface, lit, oneway, smoothness]`. Strong across cycling cities (Utrecht/
   Munich 59–89%). `segregated`/`width` too sparse to keep.
+- **cycle-lanes** — `[lit]`. Lanes and tracks tagged on the road way (`cycleway`, `cycleway:left|right|both` = `lane|track|shared_lane|share_busway|opposite_lane|opposite_track`), the wiki's documented values minus the mapped absences `no` and `separate`. Separate from `cycleways` so saved cycleway datasets keep their meaning. It is the larger network outside the Netherlands: New York 10.6k ways vs 2.5k cycleways, São Paulo 4.6k vs 1.8k, Berlin 12.8k vs 11.3k ([#503]). `surface` and `oneway` sit on the road, so they describe the road, not the lane: Berlin tracks carry their own `cycleway:*:surface`, and São Paulo contraflow lanes run against the road's `oneway`. `lit` applies to both. Lane type has no single color-by key, as with `bus-lanes`: it is split across four keys.
 
 ### Rail and bus additions
 
@@ -831,6 +832,7 @@ Education and culture gains a `heritage` category for historic places: `monument
 
 [#478]: https://github.com/osmforcities/osmforcities/issues/478
 [#479]: https://github.com/osmforcities/osmforcities/issues/479
+[#503]: https://github.com/osmforcities/osmforcities/issues/503
 [#517]: https://github.com/osmforcities/osmforcities/issues/517
 [#441]: https://github.com/osmforcities/osmforcities/issues/441
 [#660]: https://github.com/osmforcities/osmforcities/issues/660

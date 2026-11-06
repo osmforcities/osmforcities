@@ -44,7 +44,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-11-06T02:44:56.426Z
+ * Generated: 2026-11-06T02:46:34.099Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -52,7 +52,7 @@ import {
  * Template icons are Pinhead map icons (CC0, https://pinhead.ink) in one
  * static sprite, so their paths stay out of the client bundle.
  */
-const TEMPLATE_ICON_SPRITE = "/template-icons/e451997ad6ce.svg";
+const TEMPLATE_ICON_SPRITE = "/template-icons/3bbdddecc758.svg";
 
 const TEMPLATE_ICONS = new Map<string, string>([
   ["agricultural-tanks", "cylinder"],
@@ -111,6 +111,7 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["counselling-services", "speech_bubbles"],
   ["courts", "balance_scales"],
   ["crossings", "person_walking_on_crosswalk"],
+  ["cycle-lanes", "bicycle_in_rectangle_outline"],
   ["cycleways", "person_riding_bicycle"],
   ["dam", "dam"],
   ["defibrillators", "heart_with_ecg_line"],
