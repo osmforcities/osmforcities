@@ -1325,8 +1325,8 @@ templates:
     desc:
       en: Large stores selling groceries, fresh food and other goods
       pt: Lojas grandes de alimentos, produtos frescos e outros itens
-      es: Tiendas grandes de comestibles, productos frescos y otros
-      fr: Grandes surfaces d'alimentation, produits frais et autres
+      es: Tiendas grandes de comestibles, frescos y otros productos
+      fr: Grandes surfaces d'épicerie, de frais et d'autres articles
       de: Große Läden für Lebensmittel, Frischwaren und andere Waren
   bakeries:
     name:
