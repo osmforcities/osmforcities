@@ -253,6 +253,47 @@ export const BakingTiles: Story = {
   },
 };
 
+/** Baking before its first percentage: the bar fills from zero, it does not sweep. */
+export const BakingBeforeFirstPercentage: Story = {
+  args: { ...BakingConverting.args },
+  beforeEach: serveTilesStatus({ state: "pending", stage: "baking" }),
+  play: async ({ canvas }) => {
+    await expect(
+      await canvas.findByText("Baking map tiles (0%)")
+    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(canvas.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "0")
+    );
+  },
+};
+
+/** The bake is done while the app pulls its archive: still the last step, full. */
+export const BakeLandedArchivePulling: Story = {
+  args: { ...BakingConverting.args },
+  beforeEach: serveTilesStatus({ state: "pending", stage: "done" }),
+  play: async ({ canvas }) => {
+    await expect(
+      await canvas.findByText("Baking map tiles (100%)")
+    ).toBeInTheDocument();
+    await expect(canvas.getByText("Step 5 of 5")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(canvas.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "100")
+    );
+  },
+};
+
+/** Done, while the refresh to the map is in flight: still the last step, full. */
+export const BakeDoneMapLoading: Story = {
+  args: { ...BakingConverting.args },
+  beforeEach: serveTilesStatus({ state: "done" }),
+  play: async ({ canvas }) => {
+    await expect(
+      await canvas.findByText("Baking map tiles (100%)")
+    ).toBeInTheDocument();
+    await expect(canvas.getByText("Step 5 of 5")).toBeInTheDocument();
+  },
+};
+
 /** The button was already pressed, on this visit or an earlier one. The
  * confirmation never shows the address. */
 export const NotifyConfirmed: Story = {

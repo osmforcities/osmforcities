@@ -112,13 +112,23 @@ export function DatasetWaitPage({
   }, [leftThisScreen, router]);
 
   const reported = status?.stage;
+  // A finished bake still reads pending while the app pulls its archive, and
+  // the page keeps showing until the refresh to the map lands
+  const bakeLanded = reported === "done" || status?.state === "done";
   const stage: Stage =
-    mood === "counting" ? "counting" : isStage(reported) ? reported : "queued";
+    mood === "counting"
+      ? "counting"
+      : bakeLanded
+        ? "baking"
+        : isStage(reported)
+          ? reported
+          : "queued";
   // Fetching reports bytes, not a percentage: the total is unknown until the
   // fetch ends, so only the last two stages give the bar a value.
-  const pct =
-    stage === "converting" || stage === "baking"
-      ? status?.progress?.pct
+  const pct = bakeLanded
+    ? 100
+    : stage === "converting" || stage === "baking"
+      ? (status?.progress?.pct ?? 0)
       : undefined;
   const mb = status?.progress?.bytes
     ? Math.round(status.progress.bytes / (1024 * 1024))
