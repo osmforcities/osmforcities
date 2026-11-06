@@ -1231,7 +1231,10 @@
     "archaeological_site": {
       "tumulus": "Burial mound",
       "fortification": "Fortification",
-      "megalith": "Megalith"
+      "megalith": "Megalith",
+      "settlement": "Settlement",
+      "mineral_extraction": "Ancient mine",
+      "petroglyph": "Petroglyph"
     },
     "castle_type": {
       "stately": "Stately home",

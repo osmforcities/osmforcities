@@ -1231,7 +1231,10 @@
     "archaeological_site": {
       "tumulus": "Grabhügel",
       "fortification": "Befestigung",
-      "megalith": "Megalith"
+      "megalith": "Megalith",
+      "settlement": "Siedlung",
+      "mineral_extraction": "Historischer Bergbau",
+      "petroglyph": "Petroglyphe"
     },
     "castle_type": {
       "stately": "Schloss",

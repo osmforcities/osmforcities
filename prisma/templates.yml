@@ -404,7 +404,7 @@ filterableTags:
   arts-centre:      [operator, wheelchair]
   gallery:          [operator, fee, wheelchair]
   artwork:          [artwork_type]
-  # Heritage: type keys only, coverage from taginfo (2026-11-05)
+  # Heritage
   memorials:        [memorial]
   heritage-sites:   [heritage]
   archaeological-sites: [archaeological_site]

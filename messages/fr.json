@@ -1231,7 +1231,10 @@
     "archaeological_site": {
       "tumulus": "Tumulus",
       "fortification": "Fortification",
-      "megalith": "Mégalithe"
+      "megalith": "Mégalithe",
+      "settlement": "Habitat",
+      "mineral_extraction": "Mine ancienne",
+      "petroglyph": "Pétroglyphe"
     },
     "castle_type": {
       "stately": "Château de plaisance",

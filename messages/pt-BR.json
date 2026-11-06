@@ -1240,7 +1240,10 @@
     "archaeological_site": {
       "tumulus": "Montículo funerário",
       "fortification": "Fortificação",
-      "megalith": "Megálito"
+      "megalith": "Megálito",
+      "settlement": "Assentamento",
+      "mineral_extraction": "Mineração antiga",
+      "petroglyph": "Petróglifo"
     },
     "castle_type": {
       "stately": "Casa senhorial",

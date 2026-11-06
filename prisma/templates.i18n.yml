@@ -2865,16 +2865,16 @@ templates:
   shrines:
     name:
       en: Wayside shrines
-      pt: Capelinhas e oratórios
+      pt: Altares de rua
       es: Altares de camino
       fr: Oratoires
       de: Bildstöcke und Schreine
     desc:
-      en: Small street and roadside shrines of any religion
-      pt: Pequenos altares de rua e de estrada, de qualquer religião
-      es: Pequeños altares de calles y caminos, de cualquier religión
-      fr: Petits autels de rue et de bord de route, toutes religions
-      de: Kleine Andachtsorte an Straßen und Wegen, jeder Religion
+      en: Niches, statues and spirit houses by the roadside
+      pt: Nichos, imagens e casas de espíritos à beira da estrada
+      es: Nichos, imágenes y casas de espíritus junto al camino
+      fr: Niches, statues et maisons des esprits au bord des chemins
+      de: Nischen, Figuren und Geisterhäuschen am Wegesrand
   places-of-worship:
     name:
       en: Places of worship

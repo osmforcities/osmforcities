@@ -802,12 +802,12 @@ Part of the disaster epic ([#478]). Emergency is its own topic, split into the c
 Education and culture gains a `heritage` category for historic places: `monuments` and `memorials` move in from `culture`, which keeps venues plus public art. `religion` grows past places of worship to burial places and street shrines, with descs that name no single faith. Coverage from taginfo (2026-11-05):
 
 - **cemeteries** (`landuse=cemetery;amenity=grave_yard`) — `[religion, denomination]`, no default view: `religion` on 21%.
-- **shrines** (`historic=wayside_shrine`) — `[religion, denomination]`, default `religion` (64%). Spirit houses in Bangkok, jizo in Kyoto and roadside grottos in Latin America share this tag.
+- **shrines** (`historic=wayside_shrine`) — `[religion, denomination]`, default `religion` (64%, below memorials' 72% but the type key places of worship already open on). Spirit houses in Bangkok, jizo in Kyoto and roadside grottos in Latin America share this tag.
 - **artwork** (`tourism=artwork`) — `[artwork_type]`, default `artwork_type` (85%: sculpture, statue, mural, installation, then graffiti, bust and mosaic at 1-3%). Graffiti and street art map only when notable, per the wiki.
-- **heritage-sites** (`heritage=*`) — `[heritage]`, default `heritage`. The value is the admin level of the protecting body: `TagValue` labels 1, 2, 4 and 8 (world, national, regional, municipal), other levels stay raw because their meaning varies by country. `heritage:operator` (80%) is left out: short registry codes (`mhs`, `nrhp`), not readable legend rows.
-- **archaeological-sites** (`historic=archaeological_site`) — `[archaeological_site]`, default `archaeological_site` (75%).
+- **heritage-sites** (`heritage=*`) — filters and opens on the OSM `heritage` key (not the category of the same name). The value is the admin level of the protecting body: `TagValue` labels 1, 2, 4 and 8 (world, national, regional, municipal), other levels stay raw because their meaning varies by country. `heritage:operator` (80%) is left out: short registry codes (`mhs`, `nrhp`), not readable legend rows.
+- **archaeological-sites** (`historic=archaeological_site`) — `[archaeological_site]`, default `archaeological_site` (75%: tumulus, fortification, megalith, then settlement, mineral extraction and petroglyph at 1-3%).
 - **castles** (`historic=castle`) — `[castle_type]`, no default view: `castle_type` on 51%.
-- **ruins** (`historic=ruins`) — **age-view only.** `ruins=*` on 22%.
+- **ruins** (`historic=ruins`) — **age-view only.** `ruins=*` is on 22%, and 74% of its uses are a bare `yes`, so a legend would be one row.
 
 ## Validation the sync enforces
 

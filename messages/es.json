@@ -1240,11 +1240,14 @@
     "archaeological_site": {
       "tumulus": "Túmulo",
       "fortification": "Fortificación",
-      "megalith": "Megalito"
+      "megalith": "Megalito",
+      "settlement": "Asentamiento",
+      "mineral_extraction": "Minería antigua",
+      "petroglyph": "Petroglifo"
     },
     "castle_type": {
       "stately": "Casa señorial",
-      "manor": "Casa solariega",
+      "manor": "Casona",
       "defensive": "Castillo defensivo",
       "palace": "Palacio",
       "fortress": "Fortaleza"
