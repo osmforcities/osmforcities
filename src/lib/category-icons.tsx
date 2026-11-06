@@ -44,7 +44,7 @@ import {
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-11-06T02:40:37.287Z
+ * Generated: 2026-11-06T02:44:56.426Z
  * Regenerate with: pnpm generate-icons
  */
 
@@ -52,7 +52,7 @@ import {
  * Template icons are Pinhead map icons (CC0, https://pinhead.ink) in one
  * static sprite, so their paths stay out of the client bundle.
  */
-const TEMPLATE_ICON_SPRITE = "/template-icons/9c77378ed950.svg";
+const TEMPLATE_ICON_SPRITE = "/template-icons/e451997ad6ce.svg";
 
 const TEMPLATE_ICONS = new Map<string, string>([
   ["agricultural-tanks", "cylinder"],
@@ -176,7 +176,7 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["ice-rinks", "ice_skate"],
   ["information-boards", "info_i"],
   ["jewelry", "ring_with_jewel"],
-  ["kindergarten", "rocking_horse"],
+  ["kindergarten", "book_with_pencil_and_apple"],
   ["language-school", "paper_and_pencil"],
   ["libraries", "open_book"],
   ["livestock-buildings", "horse_in_shelter"],
@@ -229,7 +229,7 @@ const TEMPLATE_ICONS = new Map<string, string>([
   ["railway-stations", "transit_vehicle_on_railway_track"],
   ["recycling", "recycling_symbol"],
   ["rehabilitation-centres", "person_walking_holding_railing"],
-  ["research-institute", "microscope"],
+  ["research-institute", "book_with_square_academic_cap"],
   ["residential", "lowrise_building_beside_lollipop_tree_on_ground"],
   ["restaurants", "fork_beside_table_knife"],
   ["roads", "sedan"],
