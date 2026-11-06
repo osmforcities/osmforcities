@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Check, Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -30,9 +29,10 @@ type NotifyWhenReadyButtonProps = {
 // phone the subline wraps.
 const BOX = "min-h-14 w-full max-w-sm justify-center gap-3 py-2 whitespace-normal";
 
-// The only hyphens here are in "e-mail"/"E-Mail", which must not split
-// across lines.
-const keepHyphens = (text: string) => text.replaceAll("-", "\u2011");
+// "e-mail" must not split at its hyphen. Scoped to that word so other hyphens
+// a translation adds still wrap.
+const keepEmailWhole = (text: string) =>
+  text.replace(/\b(e)-(mail)/gi, "$1\u2011$2");
 
 const OFFER_SUB = {
   ready: "notifySub",
@@ -41,11 +41,10 @@ const OFFER_SUB = {
 } as const;
 
 /**
- * Icon disc beside a title and subline. The text column has one fixed width
- * in both states, so the icon stays put when the offer turns into the
- * confirmation. Every locale's subline fits it on one line from `sm` up.
+ * Fixed text width in both states so the icon stays put when the offer turns
+ * into the confirmation. Every locale's subline fits it on one line from `sm` up.
  */
-function Content({
+function IconTitleSub({
   icon,
   disc,
   title,
@@ -56,7 +55,7 @@ function Content({
   disc: string;
   title: string;
   sub?: string;
-  subTone: string;
+  subTone?: string;
 }) {
   return (
     <>
@@ -66,10 +65,10 @@ function Content({
         {icon}
       </span>
       <span className="flex w-68 min-w-0 flex-col text-start">
-        <span className="font-semibold">{keepHyphens(title)}</span>
+        <span className="font-semibold">{keepEmailWhole(title)}</span>
         {sub && (
           <span className={cn("text-xs font-normal sm:whitespace-nowrap", subTone)}>
-            {keepHyphens(sub)}
+            {keepEmailWhole(sub)}
           </span>
         )}
       </span>
@@ -128,7 +127,7 @@ export function NotifyWhenReadyButton({
           "pointer-events-none cursor-default border-olive-300 bg-olive-50 text-olive-700"
         )}
       >
-        <Content
+        <IconTitleSub
           icon={<Check className="size-5" aria-hidden />}
           disc="bg-olive-200"
           title={t("savedTitle")}
@@ -160,12 +159,11 @@ export function NotifyWhenReadyButton({
       disabled={sending || disabled}
       onClick={() => submit(onSave, true)}
     >
-      <Content
+      <IconTitleSub
         icon={<Mail className="size-5" aria-hidden />}
         disc="bg-white/20"
         title={t("notifyTitle")}
         sub={t(OFFER_SUB[offer])}
-        subTone="text-white"
       />
     </Button>
   );

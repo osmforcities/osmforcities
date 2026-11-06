@@ -142,7 +142,7 @@
     "notifySubIfAvailable": "Enregistrer et être prévenu s'il est disponible",
     "notifySubIfMapped": "Enregistrer et être prévenu s'il est cartographié",
     "savedTitle": "Enregistré",
-    "notifyConfirmedSub": "Un e-mail vous préviendra quand ce sera prêt",
+    "notifyConfirmedSub": "Un e-mail vous préviendra quand ce sera prêt.",
     "tilesFailedDescription": "Rouvrez cette page plus tard pour réessayer.",
     "countTimedOutDescription": "La zone est peut-être très grande ou le serveur occupé. Réessayez d'ici {minutes, plural, one {# minute} other {# minutes}} au plus.",
     "backToHome": "Retour à l'accueil",

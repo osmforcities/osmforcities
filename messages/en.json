@@ -142,7 +142,7 @@
     "notifySubIfAvailable": "Save it and get an email if it becomes available",
     "notifySubIfMapped": "Save it and get an email if it gets mapped",
     "savedTitle": "Saved",
-    "notifyConfirmedSub": "You'll get an email when the map is ready",
+    "notifyConfirmedSub": "You'll get an email when the map is ready.",
     "tilesFailedDescription": "Open this page later to try again.",
     "countTimedOutDescription": "The area may be very large or the server busy. Try again in at most {minutes, plural, one {# minute} other {# minutes}}.",
     "backToHome": "Back to Home",

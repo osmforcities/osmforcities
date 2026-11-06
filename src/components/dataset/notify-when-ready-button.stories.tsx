@@ -22,7 +22,7 @@ export const Saving: Story = {
     await userEvent.click(canvas.getByRole("button"));
     await expect(args.onSave).toHaveBeenCalled();
     await expect(
-      await canvas.findByText("You'll get an email when the map is ready")
+      await canvas.findByText("You'll get an email when the map is ready.")
     ).toBeInTheDocument();
     await expect(canvas.queryByRole("button")).not.toBeInTheDocument();
   },
