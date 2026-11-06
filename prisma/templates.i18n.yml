@@ -2472,6 +2472,19 @@ templates:
       es: Aceras, cruces y senderos para peatones
       fr: Trottoirs, traversées et sentiers pour les piétons
       de: Gehwege, Überwege und Pfade für den Fußverkehr
+  cycling-infrastructure:
+    name:
+      en: Cycling infrastructure
+      pt: Infraestrutura cicloviária
+      es: Infraestructura ciclista
+      fr: Infrastructures cyclables
+      de: Radverkehrsanlagen
+    desc:
+      en: Cycleways plus the lanes and tracks along streets
+      pt: Ciclovias e ciclofaixas, separadas ou junto às ruas
+      es: Ciclovías separadas y carriles en las calles
+      fr: Pistes cyclables et bandes le long des rues
+      de: Eigene Radwege und Radspuren an Straßen
   cycleways:
     name:
       en: Cycleways
