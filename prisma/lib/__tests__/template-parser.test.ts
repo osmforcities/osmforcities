@@ -432,7 +432,7 @@ describe("template-parser", () => {
       const uncovered = entries
         .filter((child) => child.parent)
         .flatMap((child) => {
-          const parentSelectors = (queryById.get(child.parent!) ?? "").split(";");
+          const parentSelectors = queryById.get(child.parent!)!.split(";");
           const isCovered = (selector: string) =>
             parentSelectors.some((p) => selector === p || selector.startsWith(`${p}&`));
           return child.query
