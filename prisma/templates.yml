@@ -511,6 +511,7 @@ defaultView:
   woods: leaf_type
   social-facility: social_facility
   museums: museum
+  memorials: memorial
   benches: backrest
   recycling: recycling_type
   bottle-return: operator
