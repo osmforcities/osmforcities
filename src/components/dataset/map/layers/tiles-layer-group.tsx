@@ -15,7 +15,6 @@ import {
   POINT_LAYER_ID,
 } from "./layer-ids";
 import type { CuratedTheme } from "@/lib/curated-themes";
-import type { Dataset } from "@/schemas/dataset";
 import { buildCuratedColorExpression } from "@/lib/curated-themes";
 
 const TILES_SOURCE_ID = "dataset-tiles";
@@ -33,14 +32,6 @@ function geometryFilter(
   return (
     visibilityFilter ? ["all", geom, visibilityFilter] : geom
   ) as FilterSpecification;
-}
-
-// No client-side features here; stats without geometryMix fall back to dataCount.
-export function tilesPointCount(dataset: {
-  dataCount: number;
-  stats: Pick<NonNullable<Dataset["stats"]>, "geometryMix"> | null;
-}): number {
-  return dataset.stats?.geometryMix?.points ?? dataset.dataCount;
 }
 
 type TilesLayerGroupProps = {

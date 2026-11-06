@@ -15,10 +15,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useTranslations, useLocale } from "next-intl";
 import type { Dataset } from "@/schemas/dataset";
 import { MapLayers } from "./map/layers";
-import {
-  TilesLayerGroup,
-  tilesPointCount,
-} from "./map/layers/tiles-layer-group";
+import { TilesLayerGroup } from "./map/layers/tiles-layer-group";
+import { tilesPointCount } from "@/lib/dataset-tiles";
 import { ensurePmtilesProtocol } from "@/lib/pmtiles-protocol";
 import { AoiBoundaryLayer } from "./map/aoi-boundary-layer";
 import {
