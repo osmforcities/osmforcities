@@ -148,7 +148,6 @@
     "backToHome": "Voltar ao Início",
     "emptyDescription": "Podem não existir aqui, ou ninguém os mapeou ainda no OpenStreetMap.",
     "tooLargeDescription": "Este conjunto de dados excede a capacidade atual do servidor, o que é esperado em grandes regiões metropolitanas ou com geometrias muito detalhadas.",
-    "backToAreaLabel": "Voltar para {area}",
     "categoryFacetLabel": "Categoria: {category}. Ver todos os conjuntos de dados de {category} em {area}.",
     "categoryUncategorized": "Outros",
     "back": "Voltar",

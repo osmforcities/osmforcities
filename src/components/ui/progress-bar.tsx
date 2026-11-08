@@ -39,18 +39,18 @@ export function ProgressBar({ value, label }: ProgressBarProps) {
       aria-label={label}
       value={Math.round(percent)}
       isIndeterminate={!determinate}
-      className="h-2 w-full overflow-hidden rounded bg-gray-200"
+      className="h-2 w-full overflow-hidden rounded bg-gray-100"
     >
       {determinate ? (
         <div
-          className="h-full rounded bg-olive-500 transition-all duration-500"
+          className="h-full rounded bg-olive-400 transition-all duration-500"
           // A sliver stays visible at 0% so the bar reads as started.
           style={{ width: `${Math.max(2, percent)}%` }}
         />
       ) : (
         <div
           ref={sweep}
-          className="h-full w-1/3 rounded bg-olive-500 animate-progress-sweep motion-reduce:animate-none"
+          className="h-full w-1/3 rounded bg-olive-400 animate-progress-sweep motion-reduce:animate-none"
         />
       )}
     </AriaProgressBar>

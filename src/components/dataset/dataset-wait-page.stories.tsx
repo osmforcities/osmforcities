@@ -39,7 +39,7 @@ function EmptyPage({
   return (
     <DatasetNoMapPage
       areaId={areaId}
-      backLabel={t("backToAreaLabel", { area: areaName })}
+      categorySlug="mobility"
       title={t("datasetInArea", { dataset: templateName, area: areaName })}
       lead={t("stateNoData")}
       description={t("emptyDescription")}
@@ -53,6 +53,7 @@ const meta = {
   component: DatasetWaitPage,
   parameters: { layout: "fullscreen", a11y: { test: "error" } },
   decorators: [withAppFrame],
+  args: { categorySlug: "mobility" },
 } satisfies Meta<typeof DatasetWaitPage>;
 
 export default meta;
@@ -335,9 +336,10 @@ export const FailedNotReady: Story = {
     await expect(
       canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeInTheDocument();
-    await expect(
-      canvas.getByRole("link", { name: "Back to Osasco" })
-    ).toBeInTheDocument();
+    await expect(canvas.getByRole("link", { name: "Back" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("?category=mobility")
+    );
   },
 };
 
@@ -365,9 +367,10 @@ export const FailedTimedOut: Story = {
       canvas.getByText(/Try again in at most 30 minutes/)
     ).toBeInTheDocument();
     await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
-    await expect(
-      canvas.getByRole("link", { name: "Back to São Paulo" })
-    ).toBeInTheDocument();
+    await expect(canvas.getByRole("link", { name: "Back" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("?category=mobility")
+    );
   },
 };
 
@@ -412,6 +415,7 @@ export const FailedTooLarge: Story = {
       templateName={args.templateName}
       areaName={args.areaName}
       areaId={args.areaId}
+      categorySlug={args.categorySlug}
       notify={<NotifyWhenReadyButton offer="available" />}
     />
   ),
@@ -447,6 +451,7 @@ export const FailedTooLargeAtCount: Story = {
       templateName={args.templateName}
       areaName={args.areaName}
       areaId={args.areaId}
+      categorySlug={args.categorySlug}
     />
   ),
   play: async ({ canvas }) => {
@@ -457,9 +462,10 @@ export const FailedTooLargeAtCount: Story = {
     await expect(
       canvas.queryByRole("button", { name: /Notify me by email/i })
     ).not.toBeInTheDocument();
-    await expect(
-      canvas.getByRole("link", { name: "Back to Tokyo" })
-    ).toBeInTheDocument();
+    await expect(canvas.getByRole("link", { name: "Back" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("?category=mobility")
+    );
   },
 };
 

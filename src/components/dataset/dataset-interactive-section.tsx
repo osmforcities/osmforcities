@@ -69,15 +69,18 @@ export function DatasetInteractiveSection({
                 timestamps (surfaced up top as decision-relevant provenance).
                 Fixed at top, never scrolls. */}
             <div className="shrink-0">
-              {/* Back link to the area — its own row, the single nav control. */}
+              {/* Back to the category the dataset was picked from. */}
               <div className="mb-2 flex">
                 <Link
-                  href={`/area/${dataset.area.id}`}
-                  aria-label={t("backToAreaLabel", { area: areaName })}
-                  className="inline-flex min-w-0 items-center gap-1 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+                  href={
+                    dataset.template.category
+                      ? `/area/${dataset.area.id}?category=${encodeURIComponent(dataset.template.category.slug)}`
+                      : `/area/${dataset.area.id}`
+                  }
+                  className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
                 >
                   <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />
-                  <span className="truncate">{areaName}</span>
+                  {t("back")}
                 </Link>
               </div>
               <DatasetInfoPanel dataset={dataset} />

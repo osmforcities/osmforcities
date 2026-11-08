@@ -148,7 +148,6 @@
     "backToHome": "Zurück zur Startseite",
     "emptyDescription": "Vielleicht gibt es sie hier nicht, oder niemand hat sie bisher in OpenStreetMap erfasst.",
     "tooLargeDescription": "Dieser Datensatz übersteigt die aktuelle Serverkapazität, was bei großen Metropolregionen oder sehr detaillierten Geometrien zu erwarten ist.",
-    "backToAreaLabel": "Zurück zu {area}",
     "categoryFacetLabel": "Kategorie: {category}. Alle Datensätze der Kategorie {category} in {area} anzeigen.",
     "categoryUncategorized": "Sonstige",
     "back": "Zurück",

@@ -148,7 +148,6 @@
     "backToHome": "Back to Home",
     "emptyDescription": "They may not exist here, or nobody has mapped them in OpenStreetMap yet.",
     "tooLargeDescription": "This dataset exceeds the current server capacity, which is expected over large metropolitan areas or with very detailed geometries.",
-    "backToAreaLabel": "Back to {area}",
     "categoryFacetLabel": "Category: {category}. View all {category} datasets in {area}.",
     "categoryUncategorized": "Other",
     "back": "Back",

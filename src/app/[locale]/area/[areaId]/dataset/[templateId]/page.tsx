@@ -92,6 +92,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
   const view = (
     <AreaTemplateDatasetView
       areaId={osmRelationId}
+      categorySlug={template.category.slug}
       templateId={templateId}
       templateName={templateName}
       areaInfo={areaInfo}
@@ -142,6 +143,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
             templateName={templateName}
             areaName={areaName}
             areaId={osmRelationId}
+            categorySlug={template.category.slug}
             notify={
               tilesLane && <NotifyWhenReadyButton offer="ready" disabled />
             }
@@ -162,6 +164,7 @@ function waitPageMood(tilesState: string | null, probeRunning: boolean) {
 
 async function AreaTemplateDatasetView({
   areaId,
+  categorySlug,
   templateId,
   templateName,
   areaInfo,
@@ -170,6 +173,7 @@ async function AreaTemplateDatasetView({
   session,
 }: {
   areaId: number;
+  categorySlug: string;
   templateId: string;
   templateName: string;
   areaInfo: Area | null;
@@ -230,6 +234,7 @@ async function AreaTemplateDatasetView({
             templateName={templateName}
             areaName={fallbackAreaName}
             areaId={areaId}
+            categorySlug={categorySlug}
             notify={notify("available")}
           />
         );
@@ -241,6 +246,7 @@ async function AreaTemplateDatasetView({
           templateName={templateName}
           areaName={fallbackAreaName}
           areaId={areaId}
+          categorySlug={categorySlug}
           notify={notify("ready")}
         />
       );
@@ -267,7 +273,7 @@ async function AreaTemplateDatasetView({
           {trackDetailView}
           <DatasetNoMapPage
             areaId={areaId}
-            backLabel={datasetT("backToAreaLabel", { area: areaName })}
+            categorySlug={categorySlug}
             title={datasetT("datasetInArea", {
               dataset: dataset.template.name,
               area: areaName,
@@ -305,6 +311,7 @@ async function AreaTemplateDatasetView({
           templateName={templateName}
           areaName={fallbackAreaName}
           areaId={areaId}
+          categorySlug={categorySlug}
         />
       );
     }
@@ -316,6 +323,7 @@ async function AreaTemplateDatasetView({
           templateName={templateName}
           areaName={fallbackAreaName}
           areaId={areaId}
+          categorySlug={categorySlug}
         />
       );
     }
