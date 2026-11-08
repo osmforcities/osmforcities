@@ -47,6 +47,7 @@ type DatasetWaitPageProps = {
   templateName: string;
   areaName: string;
   areaId: number;
+  categorySlug: string;
   /**
    * Counting is the probe before any bake; baking polls the tiler.
    * Failed is retried by a later visit (or tick, once saved); timedOut is
@@ -74,6 +75,7 @@ export function DatasetWaitPage({
   templateName,
   areaName,
   areaId,
+  categorySlug,
   mood,
   coldAfterMs = COUNT_REQUEST_TIMEOUT_MS,
   notify,
@@ -164,7 +166,7 @@ export function DatasetWaitPage({
     <div data-testid={`dataset-${mood}-page`}>
       <DatasetNoMapPage
         areaId={areaId}
-        backLabel={t("backToAreaLabel", { area: areaName })}
+        categorySlug={categorySlug}
         tone={failure ? "warning" : "processing"}
         title={t("datasetInArea", { dataset: templateName, area: areaName })}
         lead={failure?.lead}

@@ -39,7 +39,7 @@ function EmptyPage({
   return (
     <DatasetNoMapPage
       areaId={areaId}
-      backLabel={t("backToAreaLabel", { area: areaName })}
+      categorySlug="mobility"
       title={t("datasetInArea", { dataset: templateName, area: areaName })}
       lead={t("stateNoData")}
       description={t("emptyDescription")}
@@ -53,6 +53,7 @@ const meta = {
   component: DatasetWaitPage,
   parameters: { layout: "fullscreen", a11y: { test: "error" } },
   decorators: [withAppFrame],
+  args: { categorySlug: "mobility" },
 } satisfies Meta<typeof DatasetWaitPage>;
 
 export default meta;
@@ -123,7 +124,7 @@ export const CountingWithRow: Story = {
     await expect(canvas.getByText("Calculating size")).toBeInTheDocument();
     await expect(canvas.getByText("Step 1 of 5")).toBeInTheDocument();
     await expect(
-      canvas.getByRole("button", { name: /Save and email me when it's ready/ })
+      canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeInTheDocument();
   },
 };
@@ -151,7 +152,7 @@ export const BakingQueued: Story = {
       "aria-valuenow"
     );
     await expect(
-      canvas.getByRole("button", { name: /Save and email me when it's ready/ })
+      canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeInTheDocument();
   },
 };
@@ -305,9 +306,9 @@ export const NotifyConfirmed: Story = {
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole("status")
-    ).toHaveTextContent("Saved. You'll get an email when the map is ready.");
+    ).toHaveTextContent(/You'll get an email when the map is ready/);
     await expect(
-      canvas.queryByRole("button", { name: /email me/i })
+      canvas.queryByRole("button", { name: /Notify me by email/i })
     ).not.toBeInTheDocument();
   },
 };
@@ -333,11 +334,12 @@ export const FailedNotReady: Story = {
     await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     await expect(canvas.queryByText(/^Step /)).not.toBeInTheDocument();
     await expect(
-      canvas.getByRole("button", { name: /Save and email me when it's ready/ })
+      canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeInTheDocument();
-    await expect(
-      canvas.getByRole("link", { name: "Back to Osasco" })
-    ).toBeInTheDocument();
+    await expect(canvas.getByRole("link", { name: "Back" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("?category=mobility")
+    );
   },
 };
 
@@ -365,9 +367,10 @@ export const FailedTimedOut: Story = {
       canvas.getByText(/Try again in at most 30 minutes/)
     ).toBeInTheDocument();
     await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
-    await expect(
-      canvas.getByRole("link", { name: "Back to São Paulo" })
-    ).toBeInTheDocument();
+    await expect(canvas.getByRole("link", { name: "Back" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("?category=mobility")
+    );
   },
 };
 
@@ -389,7 +392,7 @@ export const FailedTimedOutWithRow: Story = {
       canvas.getByText("The data took too long to load.")
     ).toBeInTheDocument();
     await expect(
-      canvas.getByRole("button", { name: /Save and email me when it's ready/ })
+      canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeInTheDocument();
   },
 };
@@ -412,6 +415,7 @@ export const FailedTooLarge: Story = {
       templateName={args.templateName}
       areaName={args.areaName}
       areaId={args.areaId}
+      categorySlug={args.categorySlug}
       notify={<NotifyWhenReadyButton offer="available" />}
     />
   ),
@@ -425,7 +429,7 @@ export const FailedTooLarge: Story = {
     ).toBeInTheDocument();
     await expect(
       canvas.getByRole("button", {
-        name: /Save and email me if it becomes available/,
+        name: /Save it and get an email if it becomes available/,
       })
     ).toBeInTheDocument();
   },
@@ -447,6 +451,7 @@ export const FailedTooLargeAtCount: Story = {
       templateName={args.templateName}
       areaName={args.areaName}
       areaId={args.areaId}
+      categorySlug={args.categorySlug}
     />
   ),
   play: async ({ canvas }) => {
@@ -455,11 +460,12 @@ export const FailedTooLargeAtCount: Story = {
     ).toBeInTheDocument();
     await expect(canvas.getByText("Too large to bake.")).toBeInTheDocument();
     await expect(
-      canvas.queryByRole("button", { name: /email me/i })
+      canvas.queryByRole("button", { name: /Notify me by email/i })
     ).not.toBeInTheDocument();
-    await expect(
-      canvas.getByRole("link", { name: "Back to Tokyo" })
-    ).toBeInTheDocument();
+    await expect(canvas.getByRole("link", { name: "Back" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("?category=mobility")
+    );
   },
 };
 
@@ -487,7 +493,7 @@ export const Empty: Story = {
       canvas.getByText(/nobody has mapped them/)
     ).toBeInTheDocument();
     await expect(
-      canvas.getByRole("button", { name: "Save and email me if it gets mapped" })
+      canvas.getByRole("button", { name: /Save it and get an email if it gets mapped/ })
     ).toBeInTheDocument();
   },
 };

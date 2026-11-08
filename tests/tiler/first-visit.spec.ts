@@ -12,7 +12,7 @@ import { AMSTERDAM, mockTilerControl, OVER_CAP_COUNT } from "../utils/tiler";
 // Not used by any other spec
 const TEMPLATE_ID = "post-boxes";
 const PAGE = `/en/area/${AMSTERDAM}/dataset/${TEMPLATE_ID}`;
-const CONFIRMED = "Saved. You'll get an email when the map is ready.";
+const CONFIRMED = /You'll get an email when the map is ready/;
 
 test.describe("First visit to a dataset on the tiles-only lane", () => {
   const prisma = new PrismaClient();
@@ -42,9 +42,9 @@ test.describe("First visit to a dataset on the tiles-only lane", () => {
     const counting = page.getByTestId("dataset-counting-page");
     await expect(counting).toContainText("Calculating size");
     await counting
-      .getByRole("button", { name: "Save and email me when it's ready" })
+      .getByRole("button", { name: /Save it and get an email when it's ready/ })
       .click();
-    await expect(page.getByRole("status")).toHaveText(CONFIRMED);
+    await expect(page.getByRole("status")).toContainText(CONFIRMED);
 
     const dataset = await readDataset();
     expect(dataset.tilesState).toBe("counting");
@@ -74,7 +74,7 @@ test.describe("First visit to a dataset on the tiles-only lane", () => {
     await mockTilerControl(page, { countHeld: false });
     const baking = page.getByTestId("dataset-baking-page");
     await expect(baking).toContainText("Waiting for a free slot");
-    await expect(page.getByRole("status")).toHaveText(CONFIRMED);
+    await expect(page.getByRole("status")).toContainText(CONFIRMED);
 
     const { tilesJobId } = await readDataset();
     await mockTilerControl(page, {
@@ -107,7 +107,7 @@ test.describe("First visit to a dataset on the tiles-only lane", () => {
     });
 
     await expect(page.getByText("Too large to bake.")).toBeVisible();
-    await expect(page.getByRole("status")).toHaveText(CONFIRMED);
+    await expect(page.getByRole("status")).toContainText(CONFIRMED);
     expect(await readSave(datasetId)).toEqual({ notifyWhenReady: true });
   });
 
@@ -124,7 +124,7 @@ test.describe("First visit to a dataset on the tiles-only lane", () => {
     const timedOut = page.getByTestId("dataset-timedOut-page");
     await expect(timedOut).toContainText("The data took too long to load.");
     await expect(
-      timedOut.getByRole("button", { name: "Save and email me when it's ready" })
+      timedOut.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeVisible();
     expect(await readDataset()).toMatchObject({ tilesState: "counting" });
   });

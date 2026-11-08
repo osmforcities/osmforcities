@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { ArrowLeft, Layers } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PageShell } from "@/components/ui/page-shell";
 
@@ -20,8 +21,8 @@ const TONE = {
 
 type DatasetNoMapPageProps = {
   areaId: number | string;
-  /** Already-translated "Back to {area}", the same link the dataset sidebar shows. */
-  backLabel: string;
+  /** The way back opens the area on this dataset's category, where it was picked. */
+  categorySlug: string;
   /** The subject only, "{dataset} in {area}". It never changes while the page waits. */
   title: string;
   /** The state that opens the body, tinted by tone, with its own full stop:
@@ -34,20 +35,19 @@ type DatasetNoMapPageProps = {
    *  leave it out; the progress block says everything. */
   description?: ReactNode;
   tone?: keyof typeof TONE;
-  /** The primary action, grouped with the back link at the panel's foot. */
+  /** The primary action, alone at the panel's foot. */
   action?: ReactNode;
 };
 
 /**
  * The dataset page when there is no map to show: no features, too large to
  * bake, or still baking. The same white card the sibling error pages use,
- * holding icon, subject, state or progress, body, then a foot with the
- * primary action and the way back in the sidebar's own arrow-and-area form.
- * The area is already in the title, so nothing above the icon repeats it.
+ * holding a plain "Back" in the corner (the title already names the area),
+ * icon, subject, state or progress, body, then the primary action.
  */
 export function DatasetNoMapPage({
   areaId,
-  backLabel,
+  categorySlug,
   title,
   lead,
   progress,
@@ -55,12 +55,21 @@ export function DatasetNoMapPage({
   tone = "neutral",
   action,
 }: DatasetNoMapPageProps) {
+  const t = useTranslations("DatasetPage");
   return (
     <PageShell placement="center" className="px-4 py-8">
       {/* The nav is in flow above the shell, so the shell centres in the strip
           below it. A bottom margin of the nav's height moves the card's centre
           up by half that: onto the viewport's centre, where the eye expects it. */}
-      <div className="mb-[var(--nav-height)] w-full max-w-md rounded-xl border border-gray-200 bg-white px-6 pb-10 pt-12 text-center shadow-sm sm:px-12">
+      <div className="mb-[var(--nav-height)] w-full max-w-md rounded-xl border border-gray-200 bg-white px-6 pb-10 pt-6 text-center shadow-sm sm:px-12">
+        {/* Same corner as the back link on the map page this card turns into. */}
+        <Link
+          href={`/area/${areaId}?category=${encodeURIComponent(categorySlug)}`}
+          className="-ms-2 mb-6 flex w-fit items-center gap-1 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors sm:-ms-8"
+        >
+          <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />
+          {t("back")}
+        </Link>
         <div className="flex flex-col items-center">
           <div
             className={`mb-6 flex size-16 items-center justify-center rounded-full ${TONE[tone].disc}`}
@@ -80,16 +89,7 @@ export function DatasetNoMapPage({
             </p>
           )}
         </div>
-        <div className="mt-8 flex flex-col items-center gap-4">
-          {action}
-          <Link
-            href={`/area/${areaId}`}
-            className="inline-flex min-w-0 items-center gap-1 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
-          >
-            <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />
-            <span className="truncate">{backLabel}</span>
-          </Link>
-        </div>
+        {action && <div className="mt-8 flex flex-col items-center">{action}</div>}
       </div>
     </PageShell>
   );
