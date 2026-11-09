@@ -452,7 +452,7 @@
     "veryOldChanges": "> 90 days ago",
     "legendViewLabel": "Color by",
     "legendOther": "Other",
-    "legendMissing": "Missing",
+    "legendMissing": "Not specified",
     "collapseLegend": "Hide legend",
     "expandLegend": "Show legend"
   },

@@ -452,7 +452,7 @@
     "veryOldChanges": "vor > 90 Tagen",
     "legendViewLabel": "Färben nach",
     "legendOther": "Sonstige",
-    "legendMissing": "Fehlend",
+    "legendMissing": "Nicht angegeben",
     "collapseLegend": "Legende ausblenden",
     "expandLegend": "Legende anzeigen"
   },
