@@ -20,9 +20,7 @@ const TONE = {
 } as const;
 
 type DatasetNoMapPageProps = {
-  areaId: number | string;
-  /** The way back opens the area on this dataset's category, where it was picked. */
-  categorySlug: string;
+  categoryHref: string;
   /** The subject only, "{dataset} in {area}". It never changes while the page waits. */
   title: string;
   /** The state that opens the body, tinted by tone, with its own full stop:
@@ -46,8 +44,7 @@ type DatasetNoMapPageProps = {
  * icon, subject, state or progress, body, then the primary action.
  */
 export function DatasetNoMapPage({
-  areaId,
-  categorySlug,
+  categoryHref,
   title,
   lead,
   progress,
@@ -64,7 +61,7 @@ export function DatasetNoMapPage({
       <div className="mb-[var(--nav-height)] w-full max-w-md rounded-xl border border-gray-200 bg-white px-6 pb-10 pt-6 text-center shadow-sm sm:px-12">
         {/* Same corner as the back link on the map page this card turns into. */}
         <Link
-          href={`/area/${areaId}?category=${encodeURIComponent(categorySlug)}`}
+          href={categoryHref}
           className="-ms-2 mb-6 flex w-fit items-center gap-1 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors sm:-ms-8"
         >
           <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />

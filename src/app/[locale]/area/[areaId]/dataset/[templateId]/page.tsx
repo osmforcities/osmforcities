@@ -24,6 +24,7 @@ import {
   resolveTemplate,
 } from "@/lib/template-resolver";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
+import { categoryPagePath } from "@/lib/template-topics";
 import type { Area } from "@/types/area";
 import { DatasetLoadingSkeleton } from "@/components/ui/dataset-loading-skeleton";
 import { DatasetWaitPage } from "@/components/dataset/dataset-wait-page";
@@ -80,6 +81,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
 
   // Known before the dataset exists, so the wait screens can name it
   const templateName = resolveTemplateForLocale(template, locale).name;
+  const categoryHref = categoryPagePath(osmRelationId, template.category);
   const areaName = areaInfo
     ? resolveAreaName(areaInfo, locale)
     : String(osmRelationId);
@@ -92,7 +94,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
   const view = (
     <AreaTemplateDatasetView
       areaId={osmRelationId}
-      categorySlug={template.category.slug}
+      categoryHref={categoryHref}
       templateId={templateId}
       templateName={templateName}
       areaInfo={areaInfo}
@@ -142,8 +144,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
             mood="counting"
             templateName={templateName}
             areaName={areaName}
-            areaId={osmRelationId}
-            categorySlug={template.category.slug}
+            categoryHref={categoryHref}
             notify={
               tilesLane && <NotifyWhenReadyButton offer="ready" disabled />
             }
@@ -164,7 +165,7 @@ function waitPageMood(tilesState: string | null, probeRunning: boolean) {
 
 async function AreaTemplateDatasetView({
   areaId,
-  categorySlug,
+  categoryHref,
   templateId,
   templateName,
   areaInfo,
@@ -173,7 +174,7 @@ async function AreaTemplateDatasetView({
   session,
 }: {
   areaId: number;
-  categorySlug: string;
+  categoryHref: string;
   templateId: string;
   templateName: string;
   areaInfo: Area | null;
@@ -233,8 +234,7 @@ async function AreaTemplateDatasetView({
           <DatasetTooLargeState
             templateName={templateName}
             areaName={fallbackAreaName}
-            areaId={areaId}
-            categorySlug={categorySlug}
+            categoryHref={categoryHref}
             notify={notify("available")}
           />
         );
@@ -245,8 +245,7 @@ async function AreaTemplateDatasetView({
           mood={waitPageMood(row.tilesState, probeRunning)}
           templateName={templateName}
           areaName={fallbackAreaName}
-          areaId={areaId}
-          categorySlug={categorySlug}
+          categoryHref={categoryHref}
           notify={notify("ready")}
         />
       );
@@ -272,8 +271,7 @@ async function AreaTemplateDatasetView({
         <>
           {trackDetailView}
           <DatasetNoMapPage
-            areaId={areaId}
-            categorySlug={categorySlug}
+            categoryHref={categoryHref}
             title={datasetT("datasetInArea", {
               dataset: dataset.template.name,
               area: areaName,
@@ -301,7 +299,7 @@ async function AreaTemplateDatasetView({
     return (
       <div className="bg-gray-50 lg:h-[calc(100dvh_-_var(--nav-height))] lg:flex lg:overflow-hidden">
         {trackDetailView}
-        <DatasetInteractiveSection dataset={dataset} boundary={boundary} areaName={areaName} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
+        <DatasetInteractiveSection dataset={dataset} boundary={boundary} areaName={areaName} categoryHref={categoryHref} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
       </div>
     );
   } catch (error) {
@@ -310,8 +308,7 @@ async function AreaTemplateDatasetView({
         <DatasetTooLargeState
           templateName={templateName}
           areaName={fallbackAreaName}
-          areaId={areaId}
-          categorySlug={categorySlug}
+          categoryHref={categoryHref}
         />
       );
     }
@@ -322,8 +319,7 @@ async function AreaTemplateDatasetView({
           mood="timedOut"
           templateName={templateName}
           areaName={fallbackAreaName}
-          areaId={areaId}
-          categorySlug={categorySlug}
+          categoryHref={categoryHref}
         />
       );
     }

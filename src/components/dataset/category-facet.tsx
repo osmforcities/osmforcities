@@ -8,6 +8,7 @@ import { useCategoryLabel } from "@/lib/category-label";
 type CategoryFacetProps = {
   dataset: Dataset;
   areaName: string;
+  categoryHref: string;
 };
 
 const chipClasses =
@@ -15,11 +16,10 @@ const chipClasses =
 
 /**
  * The dataset's category as an olive chip. When the template has a category it
- * links to the area's browse grid pre-filtered to that category
- * (`/area/<id>?category=<slug>`), with an accessible label. Uncategorized
- * templates fall back to a static "Other" chip (no link).
+ * links to the area's browse page for that category, with an accessible label.
+ * Uncategorized templates fall back to a static "Other" chip (no link).
  */
-export function CategoryFacet({ dataset, areaName }: CategoryFacetProps) {
+export function CategoryFacet({ dataset, areaName, categoryHref }: CategoryFacetProps) {
   const t = useTranslations("DatasetPage");
   const categoryLabel = useCategoryLabel();
   const category = dataset.template.category;
@@ -30,7 +30,7 @@ export function CategoryFacet({ dataset, areaName }: CategoryFacetProps) {
 
   return (
     <Link
-      href={`/area/${dataset.area.id}?category=${encodeURIComponent(category.slug)}`}
+      href={categoryHref}
       aria-label={t("categoryFacetLabel", {
         category: categoryLabel(category.slug),
         area: areaName,
