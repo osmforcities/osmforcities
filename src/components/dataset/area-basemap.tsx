@@ -21,8 +21,8 @@ export function AreaBasemap({ areaId }: { areaId: number | string }) {
     queryKey: ["area-boundary", String(areaId)],
     queryFn: async () => {
       const response = await fetch(`/api/areas/${areaId}/boundary`);
-      // No outline for this area is an answer. Anything else is retried.
-      if (response.status === 404) return null;
+      // The route answers 404 for "no outline" and for an Overpass failure
+      // alike, so every failure is retried a few times before giving up.
       if (!response.ok) throw new Error(String(response.status));
       const body = await response.json();
       return body?.type === "FeatureCollection" ? body : null;
@@ -38,7 +38,7 @@ export function AreaBasemap({ areaId }: { areaId: number | string }) {
   return (
     <Map
       mapStyle={mapStyle}
-      aria-label={t("fullScreenMapLabel")}
+      aria-label={t("areaBasemapLabel")}
       initialViewState={{ bounds, fitBoundsOptions: { padding: 40 } }}
       style={{ width: "100%", height: "100%" }}
       dragRotate={false}

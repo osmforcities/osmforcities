@@ -174,13 +174,16 @@ export function DatasetWaitPage({
         tone={failure ? "warning" : "processing"}
         title={t("datasetInArea", { dataset: templateName, area: areaName })}
         lead={failure?.lead}
-        // The stage label says everything a waiting person needs; a sentence
-        // under it only repeated it.
         progress={
           !failure && (
-            <div className="space-y-3" aria-live="polite">
+            <div className="space-y-3">
               <ProgressBar value={pct} label={stageLabel} />
-              <p className="text-lg font-semibold text-gray-900 tabular-nums">
+              {/* Only the label is announced: the note's megabytes change
+                  on every poll and would be read out each time. */}
+              <p
+                aria-live="polite"
+                className="text-lg font-semibold text-gray-900 tabular-nums"
+              >
                 {stageLabel}
               </p>
               <p className="text-sm text-gray-600 tabular-nums">{stageNote}</p>

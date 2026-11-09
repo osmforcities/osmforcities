@@ -441,6 +441,7 @@
     "lastEditedBy": "Last edited by <link>{user}</link>",
     "mapLabel": "Interactive map showing dataset",
     "fullScreenMapLabel": "Full screen interactive map showing dataset",
+    "areaBasemapLabel": "Map of the area, with no data on it yet",
     "loadingMap": "Loading map...",
     "noDataAvailable": "No data available. Data will be automatically refreshed when you visit this page.",
     "noGeographicData": "No geographic data found in the dataset results.",

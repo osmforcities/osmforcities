@@ -331,7 +331,7 @@ export const NotifyConfirmed: Story = {
       canvas.getByRole("status")
     ).toHaveTextContent(/You'll get an email when the map is ready/);
     await expect(
-      canvas.queryByRole("button", { name: /Notify me by email/i })
+      canvas.queryByRole("button", { name: /Save it and get an email/ })
     ).not.toBeInTheDocument();
   },
 };
@@ -483,7 +483,7 @@ export const FailedTooLargeAtCount: Story = {
     ).toBeInTheDocument();
     await expect(canvas.getByText("Too large to bake.")).toBeInTheDocument();
     await expect(
-      canvas.queryByRole("button", { name: /Notify me by email/i })
+      canvas.queryByRole("button", { name: /Save it and get an email/ })
     ).not.toBeInTheDocument();
     await expect(canvas.getByRole("link", { name: "Back" })).toHaveAttribute(
       "href",

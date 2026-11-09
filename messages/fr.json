@@ -441,6 +441,7 @@
     "lastEditedBy": "Dernière modification par <link>{user}</link>",
     "mapLabel": "Carte interactive du jeu de données",
     "fullScreenMapLabel": "Carte interactive en plein écran du jeu de données",
+    "areaBasemapLabel": "Carte de la zone, encore sans données",
     "loadingMap": "Chargement de la carte...",
     "noDataAvailable": "Aucune donnée disponible. Les données seront automatiquement actualisées lorsque vous visiterez cette page.",
     "noGeographicData": "Aucune donnée géographique trouvée dans les résultats du jeu de données.",

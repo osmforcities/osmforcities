@@ -441,6 +441,7 @@
     "lastEditedBy": "Zuletzt bearbeitet von <link>{user}</link>",
     "mapLabel": "Interaktive Karte des Datensatzes",
     "fullScreenMapLabel": "Interaktive Vollbildkarte des Datensatzes",
+    "areaBasemapLabel": "Karte des Gebiets, noch ohne Daten",
     "loadingMap": "Karte wird geladen...",
     "noDataAvailable": "Keine Daten verfügbar. Die Daten werden automatisch aktualisiert, wenn du diese Seite besuchst.",
     "noGeographicData": "Keine geografischen Daten in den Ergebnissen des Datensatzes gefunden.",

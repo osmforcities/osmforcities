@@ -221,6 +221,28 @@ describe("getAreaBoundary", () => {
     expect(result?.features).toHaveLength(1);
   });
 
+  it("returns the Overpass boundary when the area has no row yet", async () => {
+    mockFindUnique.mockResolvedValueOnce(null);
+    mockExecuteOverpassQuery.mockResolvedValueOnce({ elements: [] } as never);
+    mockConvert.mockReturnValueOnce({
+      type: "FeatureCollection",
+      features: [
+        {
+          id: "relation/1802546",
+          type: "Feature",
+          properties: {},
+          geometry: storedPolygon.features[0].geometry,
+        },
+      ],
+    } as never);
+    // The wait page asks before the row exists: nothing to write to.
+    mockUpdate.mockResolvedValueOnce({ count: 0 });
+
+    const result = await getAreaBoundary(1802546);
+
+    expect(result?.features).toHaveLength(1);
+  });
+
   it("falls back to Overpass when nothing is stored", async () => {
     mockFindUnique.mockResolvedValueOnce({ geojson: null } as never);
     mockExecuteOverpassQuery.mockResolvedValueOnce({ elements: [] } as never);
