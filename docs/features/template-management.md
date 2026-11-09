@@ -836,7 +836,11 @@ Three `pedestrian` templates for walkability. Coverage from taginfo, worldwide (
 Houten (NL, relation 419211) is built around cycleways and footpaths, and `footways` showed about three quarters of that network there. A special city is a city picked for a theme and used to tune templates and map views. It is recorded as a demonstrator and its dataset is featured by an admin after release. No new product concept.
 
 - **footways** gains `highway=pedestrian`, which no template matched in any city. Cycleways stay out: outside the Netherlands a cycleway is not a walking surface, and the query language has no negation for "unless `foot=no`".
-- **car-free-paths** (`highway=footway`, `path`, `cycleway`, `pedestrian`, `steps`, `bridleway`) — `[highway, footway, surface, lit]`, default `highway`, the same pattern as `roads`. `footway` separates sidewalks and crossings from other footways where they are drawn as their own ways, as in Lisbon, the second demonstrator. In Houten it is mostly unset. Utrecht, the third, shows the same network as Houten at city scale. `living_street` and `track` stay out because motor vehicles circulate on them. Category `pedestrian`: every way in it is walkable, not every way is cyclable. No parent and no children, since `cycleways` already has a parent. "Paths", not "network": the template lists ways and makes no connectivity claim. Not in the common templates.
+- **car-free-paths** unions `highway=footway`, `path`, `cycleway`, `pedestrian`, `steps` and `bridleway`, and opens on `highway`, the same pattern as `roads`.
+  - `living_street` and `track` stay out because motor vehicles circulate on them.
+  - `footway` separates sidewalks and crossings from other footways where they are drawn as their own ways, as in Lisbon, the second demonstrator. In Houten it is mostly unset. Utrecht, the third, shows the same network as Houten at city scale.
+  - Category `pedestrian`: every way in it is walkable, not every way is cyclable. No parent and no children, since `cycleways` already has a parent.
+  - "Paths", not "network": the template lists ways and makes no connectivity claim.
 - `highway` value labels existed only for road classes, so the six way types got `TagValue` labels in every locale, worded after the iD presets.
 - Pedestrian plazas (closed ways with `area=yes`) draw as filled polygons and read well next to the lines, checked on the Houten dashboard.
 - Icon `person_walking_and_person_riding_bicycle`, found by name in Pinhead: iD has no preset for a union of way types.
