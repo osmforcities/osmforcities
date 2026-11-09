@@ -885,6 +885,7 @@ demonstrators:
   car-free-paths:
     - { area: 419211,  note: "Houten, NL - city planned around cycleways and footpaths, cars kept to a ring road" }
     - { area: 5400890, note: "Lisbon, PT - sidewalks and crossings drawn as their own ways, shown by the footway view" }
+    - { area: 419203,  note: "Utrecht, NL - cycleway and footway layers at city scale, many pedestrian streets" }
   cycleways:
     - { area: 419203,  note: "Utrecht, NL - cycling capital, near-complete surface/lit/oneway/smoothness" }
     - { area: 62428,   note: "Munich, DE - surface 89%, oneway/lit/smoothness all strong" }
