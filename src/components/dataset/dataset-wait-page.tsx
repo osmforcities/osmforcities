@@ -134,12 +134,25 @@ export function DatasetWaitPage({
     stage === "counting"
       ? t(cold ? "tilesStageCountingCold" : "tilesStageCounting")
       : stage === "fetching"
-        ? t("tilesStageFetching", { mb: mb ?? 0 })
+        ? t("tilesStageFetching")
         : stage === "converting"
           ? t("tilesStageConverting", { pct: Math.round(pct ?? 0) })
           : stage === "baking"
             ? t("tilesStageBaking", { pct: Math.round(pct ?? 0) })
             : t("tilesStageQueued");
+
+  // One plain sentence on what the stage does. The megabytes live here, not
+  // in the label, so the label stays one short line.
+  const stageNote =
+    stage === "counting"
+      ? t("tilesNoteCounting")
+      : stage === "fetching"
+        ? t("tilesNoteFetching", { mb: mb ?? 0 })
+        : stage === "converting"
+          ? t("tilesNoteConverting")
+          : stage === "baking"
+            ? t("tilesNoteBaking")
+            : t("tilesNoteQueued");
 
   const failure =
     mood === "timedOut"
@@ -166,10 +179,11 @@ export function DatasetWaitPage({
         progress={
           !failure && (
             <div className="space-y-3" aria-live="polite">
+              <ProgressBar value={pct} label={stageLabel} />
               <p className="text-lg font-semibold text-gray-900 tabular-nums">
                 {stageLabel}
               </p>
-              <ProgressBar value={pct} label={stageLabel} />
+              <p className="text-sm text-gray-600 tabular-nums">{stageNote}</p>
             </div>
           )
         }

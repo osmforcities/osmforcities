@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useId, useState, type ReactNode } from "react";
-import { createPortal } from "react-dom";
-import { SAVE_HINT_SLOT_ID } from "@/components/ui/dataset-no-map-page";
-import { Bookmark, BookmarkCheck, Check, Mail } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { BookmarkCheck, Check, Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 
@@ -26,10 +24,9 @@ type NotifyWhenReadyButtonProps = {
   disabled?: boolean;
 };
 
-// The map page's Save button, so the control does not change when the map lands.
-const SAVE = "h-8 w-full text-sm";
-// What saving does here: one centred line under the status.
-const HINT = "flex items-start justify-center gap-2 text-sm [&_svg]:mt-0.5";
+// The map page's Save button in size and place. The label says what saving
+// does here (the email), so it is a floor, not a fixed height: it may wrap.
+const SAVE = "h-auto min-h-8 w-full py-1.5 text-sm whitespace-normal";
 
 // "e-mail" must not split at its hyphen. Scoped to that word so other hyphens
 // a translation adds still wrap.
@@ -67,15 +64,6 @@ export function NotifyWhenReadyButton({
   disabled = false,
 }: NotifyWhenReadyButtonProps) {
   const t = useTranslations("DatasetPage");
-  const hintId = useId();
-  // On the no-map page the hint belongs with the status, away from this
-  // button, so it is placed in the page's slot. Standing alone it stays here.
-  // ponytail: placed after mount, so it appears a beat late. Lift the saved
-  // state into the page if that shows.
-  const [hintSlot, setHintSlot] = useState<Element | null>();
-  useEffect(() => {
-    setHintSlot(document.getElementById(SAVE_HINT_SLOT_ID));
-  }, []);
   const [confirmed, setConfirmed] = useState(saved);
   // Any press from here on asks for the email.
   const [notifying, setNotifying] = useState(notify);
@@ -99,32 +87,19 @@ export function NotifyWhenReadyButton({
     }
   };
 
-  const hint = confirmed ? (
-    <p role="status" className={`${HINT} text-olive-700`}>
-      <IconLabel
-        icon={<Check className="size-4 shrink-0" aria-hidden />}
-        label={notifying ? t("notifyConfirmedSub") : t("savedTitle")}
-      />
-    </p>
-  ) : (
-    <p id={hintId} className={`${HINT} text-gray-600`}>
-      <IconLabel
-        icon={<Mail className="size-4 shrink-0" aria-hidden />}
-        label={t(OFFER_SUB[offer])}
-      />
-    </p>
-  );
-
-  return (
-    <div className="flex w-full flex-col gap-2">
-      {/* Unknown until mounted, so the hint never shows in the wrong place. */}
-      {hintSlot === undefined
-        ? null
-        : hintSlot
-          ? createPortal(hint, hintSlot)
-          : hint}
-      {confirmed ? (
-        onUnsave && (
+  if (confirmed) {
+    return (
+      <div className="flex w-full flex-col gap-2">
+        <p
+          role="status"
+          className="flex items-start justify-center gap-2 text-sm text-olive-700 [&_svg]:mt-0.5"
+        >
+          <IconLabel
+            icon={<Check className="size-4 shrink-0" aria-hidden />}
+            label={notifying ? t("notifyConfirmedSub") : t("savedTitle")}
+          />
+        </p>
+        {onUnsave && (
           <Button
             variant="outline"
             className={SAVE}
@@ -134,21 +109,21 @@ export function NotifyWhenReadyButton({
             <BookmarkCheck className="h-4 w-4" />
             {t("unsave")}
           </Button>
-        )
-      ) : (
-        // Named by its own label plus the hint, so "Save" alone never hides
-        // that this press also asks for the email.
-        <Button
-          id={`${hintId}-save`}
-          className={SAVE}
-          aria-labelledby={`${hintId}-save ${hintId}`}
-          disabled={sending || disabled}
-          onClick={() => submit(onSave, true)}
-        >
-          <Bookmark className="h-4 w-4" />
-          {t("save")}
-        </Button>
-      )}
-    </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <Button
+      className={SAVE}
+      disabled={sending || disabled}
+      onClick={() => submit(onSave, true)}
+    >
+      <IconLabel
+        icon={<Mail className="size-4 shrink-0" aria-hidden />}
+        label={t(OFFER_SUB[offer])}
+      />
+    </Button>
   );
 }

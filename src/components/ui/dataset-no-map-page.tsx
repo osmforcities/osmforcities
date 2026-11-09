@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { AreaBasemap } from "@/components/dataset/area-basemap";
 
-export const SAVE_HINT_SLOT_ID = "dataset-save-hint";
-
 /** The colour of the state line: what kind of "no map" this is. */
 const TONE = {
   neutral: "text-gray-900",
@@ -70,8 +68,6 @@ export function DatasetNoMapPage({
           {progress}
           {lead && <p className={`text-lg font-semibold ${TONE[tone]}`}>{lead}</p>}
           {description && <p className="mt-1 text-gray-600">{description}</p>}
-          {/* The save button below puts its "what saving does" line here. */}
-          <div id={SAVE_HINT_SLOT_ID} className="mt-6 empty:hidden" />
         </div>
         {/* The map page's action rows. Only saving works before there is a
             map, so the rest hold their place disabled. */}
