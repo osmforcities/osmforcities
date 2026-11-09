@@ -135,7 +135,7 @@
     "tilesNoteBaking": "Almost there. The map opens by itself when this finishes.",
     "tilesStageCounting": "Checking the data size",
     "tilesStageCountingCold": "Still checking, large area",
-    "tilesNoteCounting": "Counting how many items this area has.",
+    "tilesNoteCounting": "Counting how many features this area has.",
     "datasetInArea": "{dataset} in {area}",
     "stateBakeFailed": "Bake failed.",
     "stateTooLarge": "Too large to bake.",

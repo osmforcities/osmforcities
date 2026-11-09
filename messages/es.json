@@ -126,7 +126,7 @@
   },
   "DatasetPage": {
     "tilesStageQueued": "Esperando en la cola",
-    "tilesNoteQueued": "Otros mapas se están generando antes. Este empieza en cuanto haya sitio.",
+    "tilesNoteQueued": "Otros mapas se están generando antes. Este empieza en cuanto haya lugar.",
     "tilesStageFetching": "Descargando datos de OpenStreetMap",
     "tilesNoteFetching": "{mb, plural, =0 {} other {# MB hasta ahora. }}El total solo se conoce cuando termina la descarga, así que las áreas grandes pueden tardar.",
     "tilesStageConverting": "Preparando los datos ({pct, number} %)",

@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { AreaBasemap } from "@/components/dataset/area-basemap";
 
-/** The colour of the state line: what kind of "no map" this is. */
-const TONE = {
+const LEAD_TONE = {
   neutral: "text-gray-900",
   processing: "text-gray-900",
   warning: "text-orange-600",
@@ -27,7 +26,7 @@ type DatasetNoMapPageProps = {
   /** What happened and what the person can do about it. The waiting screens
    *  leave it out; the progress block says everything. */
   description?: ReactNode;
-  tone?: keyof typeof TONE;
+  tone?: keyof typeof LEAD_TONE;
   /** The save control, above the disabled rest of the map page's actions. */
   action?: ReactNode;
 };
@@ -66,7 +65,7 @@ export function DatasetNoMapPage({
         {/* The state owns the whole tinted well, where the stats will be. */}
         <div className="-mx-6 my-3 flex min-h-0 flex-1 flex-col justify-center border-y border-gray-200 bg-gray-50 px-6 py-8 text-center lg:overflow-y-auto">
           {progress}
-          {lead && <p className={`text-lg font-semibold ${TONE[tone]}`}>{lead}</p>}
+          {lead && <p className={`text-lg font-semibold ${LEAD_TONE[tone]}`}>{lead}</p>}
           {description && <p className="mt-1 text-gray-600">{description}</p>}
         </div>
         {/* The map page's action rows. Only saving works before there is a

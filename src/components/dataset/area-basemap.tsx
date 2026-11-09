@@ -22,12 +22,14 @@ export function AreaBasemap({ areaId }: { areaId: number | string }) {
     queryFn: async () => {
       const response = await fetch(`/api/areas/${areaId}/boundary`);
       // The route answers 404 for "no outline" and for an Overpass failure
-      // alike, so every failure is retried a few times before giving up.
+      // alike, so a failure gets one more try before the place stays empty.
       if (!response.ok) throw new Error(String(response.status));
       const body = await response.json();
       return body?.type === "FeatureCollection" ? body : null;
     },
     staleTime: Infinity,
+    // Each try can cost an Overpass geometry query.
+    retry: 1,
   });
   const bounds = boundary ? calculateBbox(boundary) : null;
 

@@ -28,6 +28,14 @@ const POLL_MS = 4000;
 const STAGES = ["counting", "queued", "fetching", "converting", "baking"] as const;
 type Stage = (typeof STAGES)[number];
 
+const STAGE_NOTE = {
+  counting: "tilesNoteCounting",
+  queued: "tilesNoteQueued",
+  fetching: "tilesNoteFetching",
+  converting: "tilesNoteConverting",
+  baking: "tilesNoteBaking",
+} as const satisfies Record<Stage, string>;
+
 function isStage(value: unknown): value is Stage {
   return STAGES.includes(value as Stage);
 }
@@ -143,16 +151,7 @@ export function DatasetWaitPage({
 
   // One plain sentence on what the stage does. The megabytes live here, not
   // in the label, so the label stays one short line.
-  const stageNote =
-    stage === "counting"
-      ? t("tilesNoteCounting")
-      : stage === "fetching"
-        ? t("tilesNoteFetching", { mb: mb ?? 0 })
-        : stage === "converting"
-          ? t("tilesNoteConverting")
-          : stage === "baking"
-            ? t("tilesNoteBaking")
-            : t("tilesNoteQueued");
+  const stageNote = t(STAGE_NOTE[stage], { mb: mb ?? 0 });
 
   const failure =
     mood === "timedOut"
@@ -178,8 +177,8 @@ export function DatasetWaitPage({
           !failure && (
             <div className="space-y-3">
               <ProgressBar value={pct} label={stageLabel} />
-              {/* Only the label is announced: the note's megabytes change
-                  on every poll and would be read out each time. */}
+              {/* The label is announced, the long note is not: its megabytes
+                  change on every poll and would be read out in full each time. */}
               <p
                 aria-live="polite"
                 className="text-lg font-semibold text-gray-900 tabular-nums"
