@@ -193,7 +193,6 @@
     "fetchCadence": "Les jeux de données sont synchronisés une fois par jour dans OSM for Cities ; ceci est le délai actuel par rapport à OpenStreetMap.",
     "downloadData": "Télécharger les données",
     "download": "Télécharger",
-    "datasetTitle": "{template}",
     "invalidData": "Données invalides",
     "invalidDataMessage": "Le jeu de données contient des données GeoJSON invalides.",
     "value": "Valeur",

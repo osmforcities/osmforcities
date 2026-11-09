@@ -193,7 +193,6 @@
     "fetchCadence": "Datasets are synced once a day in OSM for Cities; this is the current delay relative to OpenStreetMap.",
     "downloadData": "Download Data",
     "download": "Download",
-    "datasetTitle": "{template}",
     "invalidData": "Invalid Data",
     "invalidDataMessage": "The dataset contains invalid GeoJSON data.",
     "value": "Value",

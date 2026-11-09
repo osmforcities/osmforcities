@@ -193,7 +193,6 @@
     "fetchCadence": "Os conjuntos de dados são sincronizados uma vez por dia no OSM for Cities; este é o atraso atual em relação ao OpenStreetMap.",
     "downloadData": "Baixar Dados",
     "download": "Baixar",
-    "datasetTitle": "{template}",
     "invalidData": "Dados Inválidos",
     "invalidDataMessage": "O conjunto de dados contém dados GeoJSON inválidos.",
     "value": "Valor",

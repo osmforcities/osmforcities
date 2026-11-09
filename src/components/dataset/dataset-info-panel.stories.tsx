@@ -10,6 +10,7 @@ const meta: Meta<typeof DatasetInfoPanel> = {
   title: "Dataset/DatasetInfoPanel",
   component: DatasetInfoPanel,
   parameters: { layout: "padded" },
+  args: { areaName: "Lisbon" },
 };
 
 export default meta;
@@ -23,6 +24,9 @@ export const WithDescription: Story = {
     }),
   },
   play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole("heading", { name: "Bicycle parking in Lisbon" })
+    ).toBeInTheDocument();
     await expect(
       canvas.getByTestId("dataset-template-description")
     ).toHaveTextContent("Racks, stands and shelters for parking bicycles");

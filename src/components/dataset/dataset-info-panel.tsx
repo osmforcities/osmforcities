@@ -6,25 +6,24 @@ import { Star } from "lucide-react";
 
 type DatasetInfoPanelProps = {
   dataset: Dataset;
+  areaName: string;
 };
 
-export function DatasetInfoPanel({ dataset }: DatasetInfoPanelProps) {
+export function DatasetInfoPanel({ dataset, areaName }: DatasetInfoPanelProps) {
   const t = useTranslations("DatasetPage");
   const { name, description } = dataset.template;
   // Most templates still repeat the name as description
   const showDescription = description && description !== name;
 
   return (
-    // The area name is carried by the back link above and the category chip
-    // sits on that same breadcrumb row (see dataset-interactive-section).
+    // The title names the area: the back link above only says "Back", and the
+    // no-map screens this page follows use the same "{dataset} in {area}".
     <>
       <h2
         className="text-2xl font-semibold leading-tight"
         data-testid="dataset-template-name"
       >
-        {t("datasetTitle", {
-          template: name,
-        })}
+        {t("datasetInArea", { dataset: name, area: areaName })}
         {/* Short sr-only text: the full tooltip sentence would pollute the
             heading's accessible name */}
         {dataset.isFeatured && (
