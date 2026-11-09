@@ -16,7 +16,7 @@ New map surfaces must select `bounds`, `centerLat`, `centerLon` on the area and 
 
 **OpenFreeMap `positron`** (vector, OpenMapTiles schema), vendored at `src/lib/basemap/positron.json` and wired in `src/lib/map-tiles.ts`. Chosen [#737] after a side-by-side spike against Protomaps and VersaTiles.
 
-Why: hosted, no API key, no request limits, commercial use allowed, and the most restrained ground of the candidates, so it stays quiet under the age ramp. Protomaps looks equivalent but its public build sends no CORS headers and self-hosting means a ~138 GB archive. VersaTiles works but its flavors carry saturated road and water colours that compete with the data. It replaced the CARTO raster, whose free key carried non-commercial terms and a 5M tiles/month cap.
+Why: hosted, no API key, no request limits, commercial use allowed, and the most restrained ground of the candidates, so it stays quiet under the age ramp. Protomaps looks equivalent but its public build sends no CORS headers and self-hosting means a ~138 GB file. VersaTiles works but its flavors carry saturated road and water colours that compete with the data. It replaced the CARTO raster, whose free key carried non-commercial terms and a 5M tiles/month cap.
 
 Terms: attribution is required and MapLibre adds it from the source TileJSON (OpenFreeMap, OpenMapTiles, OpenStreetMap), so the attribution control stays. No SLA, no support; the public instance is donation-funded. Self-hosting their build is the fallback. Licences of the vendored style are in `src/lib/basemap/NOTICE.md`.
 

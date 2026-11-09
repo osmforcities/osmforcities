@@ -2,7 +2,6 @@ import type { StyleSpecification, LayerSpecification } from "maplibre-gl";
 import positron from "./basemap/positron.json";
 import { DEFAULT_STYLE_KNOBS } from "@/components/dataset/map/layers/map-style";
 
-// Attribution comes from the source TileJSON: keep the attribution control.
 const positronStyle = positron as unknown as StyleSpecification;
 
 const firstLabelIndex = positronStyle.layers.findIndex(
@@ -12,9 +11,10 @@ const firstLabelIndex = positronStyle.layers.findIndex(
 /** Dataset layers mount with this `beforeId` so basemap labels draw above the data. */
 export const BASEMAP_LABELS_ANCHOR = positronStyle.layers[firstLabelIndex].id;
 
-// Mutes the ground so data layers stay the most saturated thing on screen.
+export const BASEMAP_WASH_LAYER_ID = "basemap-wash";
+
 const wash: LayerSpecification = {
-  id: "basemap-mute",
+  id: BASEMAP_WASH_LAYER_ID,
   type: "background",
   paint: {
     "background-color": "#ffffff",

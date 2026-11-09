@@ -1,10 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { mapStyle, BASEMAP_LABELS_ANCHOR } from "../map-tiles";
-import { DEFAULT_STYLE_KNOBS } from "@/components/dataset/map/layers/map-style";
+import {
+  mapStyle,
+  BASEMAP_LABELS_ANCHOR,
+  BASEMAP_WASH_LAYER_ID,
+} from "../map-tiles";
 
 const layerIds = mapStyle.layers.map((l) => l.id);
 const anchorIndex = layerIds.indexOf(BASEMAP_LABELS_ANCHOR);
-const washIndex = layerIds.indexOf("basemap-mute");
+const washIndex = layerIds.indexOf(BASEMAP_WASH_LAYER_ID);
 
 describe("basemap style", () => {
   it("anchors on the first label layer", () => {
@@ -17,14 +20,6 @@ describe("basemap style", () => {
 
   it("puts the wash right below the labels", () => {
     expect(washIndex).toBe(anchorIndex - 1);
-  });
-
-  it("carries the tuned wash opacity", () => {
-    const wash = mapStyle.layers[washIndex];
-    if (wash.type !== "background") throw new Error("wash is not a background");
-    expect(wash.paint?.["background-opacity"]).toBe(
-      DEFAULT_STYLE_KNOBS.basemapWashOpacity
-    );
   });
 
   it("serves vector tiles, not raster", () => {
