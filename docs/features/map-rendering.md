@@ -14,19 +14,17 @@ New map surfaces must select `bounds`, `centerLat`, `centerLon` on the area and 
 
 ## Basemap
 
-**OpenFreeMap `positron`** (vector, OpenMapTiles schema), vendored at `src/lib/basemap/positron.json` and wired in `src/lib/map-tiles.ts`. Chosen [#737] after a side-by-side spike against Protomaps and VersaTiles.
+**OpenFreeMap `positron`** (vector, OpenMapTiles schema) since [#737]. The style is vendored at `src/lib/basemap/positron.json` and wired in `src/lib/map-tiles.ts`. Tiles, glyphs and sprites load from OpenFreeMap; no API key.
 
-Why: hosted, no API key, no request limits, commercial use allowed, and the most restrained ground of the candidates, so it stays quiet under the age ramp. Protomaps looks equivalent but its public build sends no CORS headers and self-hosting means a ~138 GB file. VersaTiles works but its flavors carry saturated road and water colours that compete with the data. It replaced the CARTO raster, whose free key carried non-commercial terms and a 5M tiles/month cap.
+A vector basemap is required for labels above the data (below), label language ([#361]) and a dark style ([#467]).
 
-Terms: attribution is required and MapLibre adds it from the source TileJSON (OpenFreeMap, OpenMapTiles, OpenStreetMap), so the attribution control stays. No SLA, no support; the public instance is donation-funded. Self-hosting their build is the fallback. Licences of the vendored style are in `src/lib/basemap/NOTICE.md`.
+Terms: attribution is required. MapLibre adds it from the source TileJSON (OpenFreeMap, OpenMapTiles, OpenStreetMap), so the attribution control stays. The public instance has no SLA; self-hosting the OpenFreeMap build is the fallback. Licences of the vendored style are in `src/lib/basemap/NOTICE.md`.
 
-**Basemap labels render above the dataset layers.** Every dataset layer (geojson and tiles groups, AOI boundary, selection highlight) mounts with `beforeId={BASEMAP_LABELS_ANCHOR}`, the style's first symbol layer, so place names stay readable over dense features. The wash sits just below that layer. A new data layer must pass the same `beforeId`, or MapLibre appends it on top of the labels.
-
-Dark basemap is deferred to [#467], which waits on the app theme state. Known needs: a separate age ramp (the current one is dark = recent, so recent features vanish on a dark ground), an inverted `point.strokeColor`, and wash at 0.
+**Basemap labels render above the dataset layers.** Every dataset layer (geojson and tiles groups, AOI boundary, selection highlight) mounts with `beforeId={BASEMAP_LABELS_ANCHOR}`, the style's first symbol layer. The wash sits just below that layer. A new data layer must pass the same `beforeId`, or MapLibre appends it on top of the labels.
 
 ## Style
 
-Single source of truth: `src/components/dataset/map/layers/map-style.ts` (`DEFAULT_STYLE_KNOBS`). Rationale for each choice is commented inline there. Highlights: Viridis age ramp (dark = recent), washed basemap, olive AOI boundary, size reinforces recency. `basemapWashOpacity` was retuned down when the basemap went vector — positron is already pale, so the 0.4 tuned against the CARTO raster over-muted it. Live-tune via the dev-only Tune panel (osmforcities-map-style-tuning skill).
+Single source of truth: `src/components/dataset/map/layers/map-style.ts` (`DEFAULT_STYLE_KNOBS`). Rationale for each choice is commented inline there. Highlights: Viridis age ramp (dark = recent), washed basemap, olive AOI boundary, size reinforces recency. Live-tune via the dev-only Tune panel (osmforcities-map-style-tuning skill).
 
 ## Test datasets
 
@@ -42,3 +40,4 @@ Verify zoom/style changes on BOTH the dataset page and the home featured card. P
 
 [#467]: https://github.com/osmforcities/osmforcities/issues/467
 [#737]: https://github.com/osmforcities/osmforcities/issues/737
+[#361]: https://github.com/osmforcities/osmforcities/issues/361

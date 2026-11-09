@@ -47,7 +47,6 @@ export type MapStyleKnobs = {
 
 export const DEFAULT_STYLE_KNOBS: MapStyleKnobs = {
   base: 1.5,
-  // positron is already pale, a stronger wash erases its streets
   basemapWashOpacity: 0.1,
   // Viridis picks, dark end = recent. Multi-hue and colorblind safe; every
   // step keeps full chroma so no category washes into the muted basemap.
