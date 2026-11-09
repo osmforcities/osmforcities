@@ -49,7 +49,7 @@ export function areaBrowsePath(areaId: string, topicSlug?: string, categorySlug?
 
 /** A category without a parent is a topic itself, so it opens the topic, not its "Other" group. */
 export function categoryPagePath(
-  areaId: number | string,
+  areaId: number,
   category: { slug: string; parent: { slug: string } | null }
 ): string {
   return category.parent
