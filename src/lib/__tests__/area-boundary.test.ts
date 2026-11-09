@@ -4,7 +4,7 @@ vi.mock("@/lib/db", () => ({
   prisma: {
     area: {
       findUnique: vi.fn(),
-      update: vi.fn(),
+      updateMany: vi.fn(),
     },
   },
 }));
@@ -34,7 +34,7 @@ import {
 const mockExecuteOverpassQuery = vi.mocked(executeOverpassQuery);
 const mockConvert = vi.mocked(convertOverpassToGeoJSON);
 const mockFindUnique = vi.mocked(prisma.area.findUnique);
-const mockUpdate = vi.mocked(prisma.area.update);
+const mockUpdate = vi.mocked(prisma.area.updateMany);
 
 /** A real boundary: >5 points in the outer ring. */
 const storedPolygon = {

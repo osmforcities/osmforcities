@@ -136,7 +136,6 @@
     "stateTooLarge": "Trop volumineux pour être généré.",
     "stateNoData": "Pas encore de données.",
     "stateCountTimedOut": "Le chargement des données a pris trop de temps.",
-    "notifyTitle": "Me prévenir par e-mail",
     "notifySub": "Enregistrer et être prévenu quand ce sera prêt",
     "notifySubIfAvailable": "Enregistrer et être prévenu s'il est disponible",
     "notifySubIfMapped": "Enregistrer et être prévenu s'il est cartographié",

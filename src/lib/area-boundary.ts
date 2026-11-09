@@ -94,7 +94,9 @@ export async function getAreaBoundary(areaId: number): Promise<FeatureCollection
     features: [relationFeature],
   };
 
-  await prisma.area.update({
+  // updateMany, not update: the wait page asks for the outline before the
+  // area row exists, and a missing row must not fail the answer.
+  await prisma.area.updateMany({
     where: { id: areaId },
     data: { geojson: JSON.parse(JSON.stringify(featureCollection)) },
   });

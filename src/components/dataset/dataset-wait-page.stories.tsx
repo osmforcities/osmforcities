@@ -6,6 +6,10 @@ import { NotifyWhenReadyButton } from "./notify-when-ready-button";
 import { DatasetTooLargeState } from "@/components/ui/dataset-error-states";
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { withAppFrame } from "../../../.storybook/with-app-frame";
+import rotterdam from "./__fixtures__/boundary-324431.json";
+import saoPaulo from "./__fixtures__/boundary-298285.json";
+import osasco from "./__fixtures__/boundary-298470.json";
+import tokyo from "./__fixtures__/boundary-1543125.json";
 
 /**
  * The component polls the tiles-status route, which Storybook does not serve.
@@ -13,16 +17,38 @@ import { withAppFrame } from "../../../.storybook/with-app-frame";
  * still and the copy is what gets reviewed.
  */
 function serveTilesStatus(status: Record<string, unknown>) {
+  return serveRoute("/tiles-status", () => status);
+}
+
+/** Answers one app route and leaves every other request (the basemap) alone. */
+function serveRoute(route: string, answer: (url: string) => unknown) {
   return () => {
     const realFetch = window.fetch;
-    window.fetch = async () =>
-      new Response(JSON.stringify(status), {
+    window.fetch = async (...request: Parameters<typeof fetch>) => {
+      const url = String(
+        request[0] instanceof Request ? request[0].url : request[0]
+      );
+      if (!url.includes(route)) return realFetch(...request);
+      return new Response(JSON.stringify(answer(url)), {
         headers: { "Content-Type": "application/json" },
       });
+    };
     return () => {
       window.fetch = realFetch;
     };
   };
+}
+
+/** The areas' real OSM boundaries, simplified hard to stay small. */
+const BOUNDARIES: Record<string, unknown> = {
+  "324431": rotterdam,
+  "298285": saoPaulo,
+  "298470": osasco,
+  "1543125": tokyo,
+};
+
+function storedBoundary(url: string) {
+  return BOUNDARIES[url.match(/areas\/(\d+)\/boundary/)?.[1] ?? ""] ?? null;
 }
 
 /** The route's empty branch with its real keys, so the locale toolbar applies. */
@@ -53,6 +79,7 @@ const meta = {
   component: DatasetWaitPage,
   parameters: { layout: "fullscreen", a11y: { test: "error" } },
   decorators: [withAppFrame],
+  beforeEach: serveRoute("/boundary", storedBoundary),
   args: { categorySlug: "mobility" },
 } satisfies Meta<typeof DatasetWaitPage>;
 
@@ -69,13 +96,13 @@ const notify = <NotifyWhenReadyButton />;
 export const CountingWarm: Story = {
   args: {
     templateName: "Buildings",
-    areaName: "Delft",
+    areaName: "Rotterdam",
     areaId: 324431,
     mood: "counting",
   },
   play: async ({ canvas }) => {
     await expect(
-      canvas.getByRole("heading", { name: "Buildings in Delft" })
+      canvas.getByRole("heading", { name: "Buildings in Rotterdam" })
     ).toBeInTheDocument();
     await expect(canvas.getByText("Calculating size")).toBeInTheDocument();
     await expect(canvas.getByRole("progressbar")).not.toHaveAttribute(
@@ -129,9 +156,9 @@ export const CountingWithRow: Story = {
 /** Submitted, waiting for the tiler to pick it up. The bar sweeps. */
 export const BakingQueued: Story = {
   args: {
-    datasetId: "ds-delft-buildings",
+    datasetId: "ds-rotterdam-buildings",
     templateName: "Buildings",
-    areaName: "Delft",
+    areaName: "Rotterdam",
     areaId: 324431,
     mood: "baking",
     notify,
@@ -139,7 +166,7 @@ export const BakingQueued: Story = {
   beforeEach: serveTilesStatus({ state: "pending", stage: "queued" }),
   play: async ({ canvas }) => {
     await expect(
-      canvas.getByRole("heading", { name: "Buildings in Delft" })
+      canvas.getByRole("heading", { name: "Buildings in Rotterdam" })
     ).toBeInTheDocument();
     await expect(
       await canvas.findByText("Waiting for a free slot")
@@ -312,7 +339,7 @@ export const FailedNotReady: Story = {
     datasetId: "ds-osasco-buildings",
     templateName: "Buildings",
     areaName: "Osasco",
-    areaId: 298584,
+    areaId: 298470,
     mood: "failed",
     notify,
   },

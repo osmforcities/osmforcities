@@ -165,8 +165,10 @@ export function DatasetWaitPage({
         // under it only repeated it.
         progress={
           !failure && (
-            <div className="space-y-2" aria-live="polite">
-              <p className="text-sm text-gray-900">{stageLabel}</p>
+            <div className="space-y-3" aria-live="polite">
+              <p className="text-lg font-semibold text-gray-900 tabular-nums">
+                {stageLabel}
+              </p>
               <ProgressBar value={pct} label={stageLabel} />
             </div>
           )

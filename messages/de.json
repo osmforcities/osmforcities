@@ -136,7 +136,6 @@
     "stateTooLarge": "Zu groß zum Erstellen.",
     "stateNoData": "Noch keine Daten.",
     "stateCountTimedOut": "Das Laden der Daten hat zu lange gedauert.",
-    "notifyTitle": "Mich per E-Mail benachrichtigen",
     "notifySub": "Speichern, E-Mail erhalten, sobald es fertig ist",
     "notifySubIfAvailable": "Speichern, E-Mail erhalten, falls verfügbar",
     "notifySubIfMapped": "Speichern, E-Mail erhalten, falls es kartiert wird",

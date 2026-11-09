@@ -136,7 +136,6 @@
     "stateTooLarge": "Too large to bake.",
     "stateNoData": "No data yet.",
     "stateCountTimedOut": "The data took too long to load.",
-    "notifyTitle": "Notify me by email",
     "notifySub": "Save it and get an email when it's ready",
     "notifySubIfAvailable": "Save it and get an email if it becomes available",
     "notifySubIfMapped": "Save it and get an email if it gets mapped",

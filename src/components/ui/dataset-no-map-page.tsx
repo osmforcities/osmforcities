@@ -1,22 +1,18 @@
 import type { ReactNode } from "react";
-import { ArrowLeft, Layers } from "lucide-react";
+import { ArrowLeft, Download, Share2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { PageShell } from "@/components/ui/page-shell";
+import { AreaBasemap } from "@/components/dataset/area-basemap";
 
-/**
- * Why there is no map. The glyph stays the same across every reason (the
- * subject is always this dataset's map) and only the tint changes, so the
- * pages read as one screen in different moods rather than four screens. The
- * tinted disc with a saturated glyph is the grammar the sibling error pages
- * already use.
- */
+export const SAVE_HINT_SLOT_ID = "dataset-save-hint";
+
+/** The colour of the state line: what kind of "no map" this is. */
 const TONE = {
-  neutral: { disc: "bg-gray-100", glyph: "text-gray-500", text: "text-gray-500" },
-  // Work in progress: the bar's olive, so it never reads as the empty state.
-  processing: { disc: "bg-olive-100", glyph: "text-olive-600", text: "text-olive-600" },
-  warning: { disc: "bg-orange-100", glyph: "text-orange-600", text: "text-orange-600" },
-  error: { disc: "bg-red-100", glyph: "text-red-600", text: "text-red-600" },
+  neutral: "text-gray-900",
+  processing: "text-gray-900",
+  warning: "text-orange-600",
+  error: "text-red-600",
 } as const;
 
 type DatasetNoMapPageProps = {
@@ -25,25 +21,25 @@ type DatasetNoMapPageProps = {
   categorySlug: string;
   /** The subject only, "{dataset} in {area}". It never changes while the page waits. */
   title: string;
-  /** The state that opens the body, tinted by tone, with its own full stop:
-   *  "Bake failed.", "No data yet.". The waiting screens leave it out; their
-   *  progress block already says it. */
+  /** The state, tinted by tone: "Bake failed.", "No data yet.". The waiting
+   *  screens leave it out; their progress block says it. */
   lead?: string;
-  /** The progress block (stage, bar, step), between the title and the body. */
+  /** The progress block (stage and bar) of a waiting screen. */
   progress?: ReactNode;
   /** What happened and what the person can do about it. The waiting screens
    *  leave it out; the progress block says everything. */
   description?: ReactNode;
   tone?: keyof typeof TONE;
-  /** The primary action, alone at the panel's foot. */
+  /** The save control, above the disabled rest of the map page's actions. */
   action?: ReactNode;
 };
 
 /**
  * The dataset page when there is no map to show: no features, too large to
- * bake, or still baking. The same white card the sibling error pages use,
- * holding a plain "Back" in the corner (the title already names the area),
- * icon, subject, state or progress, body, then the primary action.
+ * bake, or still baking. It keeps the map page's shape, so nothing moves when
+ * the map lands: the title on top of the side panel, the state where the
+ * stats will be, the action at the foot, and the bare basemap on the area
+ * where the data will be drawn.
  */
 export function DatasetNoMapPage({
   areaId,
@@ -57,40 +53,45 @@ export function DatasetNoMapPage({
 }: DatasetNoMapPageProps) {
   const t = useTranslations("DatasetPage");
   return (
-    <PageShell placement="center" className="px-4 py-8">
-      {/* The nav is in flow above the shell, so the shell centres in the strip
-          below it. A bottom margin of the nav's height moves the card's centre
-          up by half that: onto the viewport's centre, where the eye expects it. */}
-      <div className="mb-[var(--nav-height)] w-full max-w-md rounded-xl border border-gray-200 bg-white px-6 pb-10 pt-6 text-center shadow-sm sm:px-12">
-        {/* Same corner as the back link on the map page this card turns into. */}
-        <Link
-          href={`/area/${areaId}?category=${encodeURIComponent(categorySlug)}`}
-          className="-ms-2 mb-6 flex w-fit items-center gap-1 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors sm:-ms-8"
-        >
-          <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />
-          {t("back")}
-        </Link>
-        <div className="flex flex-col items-center">
-          <div
-            className={`mb-6 flex size-16 items-center justify-center rounded-full ${TONE[tone].disc}`}
+    <div className="flex flex-col bg-gray-50 lg:h-[calc(100dvh_-_var(--nav-height))] lg:flex-row lg:overflow-hidden">
+      <aside className="flex flex-col border-b border-gray-200 bg-white px-6 py-4 lg:h-full lg:w-96 lg:flex-shrink-0 lg:border-b-0 lg:border-r">
+        <div className="shrink-0">
+          <Link
+            href={`/area/${areaId}?category=${encodeURIComponent(categorySlug)}`}
+            className="mb-2 flex w-fit items-center gap-1 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
           >
-            <Layers className={`size-8 ${TONE[tone].glyph}`} aria-hidden />
-          </div>
-          <h1 className="mb-2 text-xl font-semibold text-gray-900">{title}</h1>
-          {/* Title, progress and foot are each 32px apart: mb-2 plus mt-6
-              here, then the foot's mt-8. */}
-          {progress && <div className="mt-6 w-full max-w-sm">{progress}</div>}
-          {description && (
-            <p className="text-gray-600">
-              {lead && (
-                <span className={`me-1 font-medium ${TONE[tone].text}`}>{lead}</span>
-              )}
-              {description}
-            </p>
-          )}
+            <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />
+            {t("back")}
+          </Link>
+          <h1 className="text-2xl font-semibold leading-tight">{title}</h1>
         </div>
-        {action && <div className="mt-8 flex flex-col items-center">{action}</div>}
+        {/* The state owns the whole tinted well, where the stats will be. */}
+        <div className="-mx-6 my-3 flex min-h-0 flex-1 flex-col justify-center border-y border-gray-200 bg-gray-50 px-6 py-8 text-center lg:overflow-y-auto">
+          {progress}
+          {lead && <p className={`text-lg font-semibold ${TONE[tone]}`}>{lead}</p>}
+          {description && <p className="mt-1 text-gray-600">{description}</p>}
+          {/* The save button below puts its "what saving does" line here. */}
+          <div id={SAVE_HINT_SLOT_ID} className="mt-6 empty:hidden" />
+        </div>
+        {/* The map page's action rows. Only saving works before there is a
+            map, so the rest hold their place disabled. */}
+        <div className="flex shrink-0 flex-col gap-2 pt-2">
+          {action}
+          <div className="flex gap-2">
+            <Button disabled variant="outline" className="h-8 flex-1 text-sm">
+              <Download className="h-4 w-4" />
+              {t("download")}
+            </Button>
+            <Button disabled variant="outline" className="h-8 flex-1 text-sm">
+              <Share2 className="h-4 w-4" />
+              {t("share")}
+            </Button>
+          </div>
+        </div>
+      </aside>
+      <div className="h-[60vh] lg:h-full lg:flex-1">
+        <AreaBasemap areaId={areaId} />
       </div>
-    </PageShell>
+    </div>
   );
 }

@@ -136,7 +136,6 @@
     "stateTooLarge": "Grande demais para gerar.",
     "stateNoData": "Ainda sem dados.",
     "stateCountTimedOut": "Os dados demoraram demais para carregar.",
-    "notifyTitle": "Me avisar por e-mail",
     "notifySub": "Salvar e receber e-mail quando ficar pronto",
     "notifySubIfAvailable": "Salvar e receber e-mail se ficar disponível",
     "notifySubIfMapped": "Salvar e receber e-mail se for mapeado",
