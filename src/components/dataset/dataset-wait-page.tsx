@@ -25,19 +25,17 @@ const POLL_MS = 4000;
  * before the tiler has a job at all; the rest are the tiler's stages. No step
  * count is shown: a bake can be interrupted and start over.
  */
-const STAGES = ["counting", "queued", "fetching", "converting", "baking"] as const;
-type Stage = (typeof STAGES)[number];
-
 const STAGE_NOTE = {
   counting: "tilesNoteCounting",
   queued: "tilesNoteQueued",
   fetching: "tilesNoteFetching",
   converting: "tilesNoteConverting",
   baking: "tilesNoteBaking",
-} as const satisfies Record<Stage, string>;
+} as const;
+type Stage = keyof typeof STAGE_NOTE;
 
 function isStage(value: unknown): value is Stage {
-  return STAGES.includes(value as Stage);
+  return typeof value === "string" && value in STAGE_NOTE;
 }
 
 type DatasetWaitPageProps = {

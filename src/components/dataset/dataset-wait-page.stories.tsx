@@ -164,19 +164,34 @@ export const BakingQueued: Story = {
     notify,
   },
   beforeEach: serveTilesStatus({ state: "pending", stage: "queued" }),
-  play: async ({ canvas }) => {
+  play: async ({ canvas, canvasElement }) => {
     await expect(
       canvas.getByRole("heading", { name: "Buildings in Rotterdam" })
     ).toBeInTheDocument();
     await expect(
       await canvas.findByText("Waiting in line")
     ).toBeInTheDocument();
+    // The outline is served, so the basemap mounts on it.
+    await waitFor(() =>
+      expect(canvasElement.querySelector(".maplibregl-map")).not.toBeNull()
+    );
     await expect(canvas.getByRole("progressbar")).not.toHaveAttribute(
       "aria-valuenow"
     );
     await expect(
       canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeInTheDocument();
+  },
+};
+
+/** An area with no outline has nowhere to frame a map: the place stays an
+ * empty well. */
+export const NoOutline: Story = {
+  args: { ...BakingQueued.args, areaId: 1 },
+  beforeEach: BakingQueued.beforeEach,
+  play: async ({ canvas, canvasElement }) => {
+    await expect(await canvas.findByText("Waiting in line")).toBeInTheDocument();
+    await expect(canvasElement.querySelector(".maplibregl-map")).toBeNull();
   },
 };
 

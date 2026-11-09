@@ -15,17 +15,16 @@ import { calculateBbox } from "@/lib/utils";
  * with its outline. It fills the map's place on the screens that have no map
  * to show, so the page keeps the shape it will have once the map lands.
  */
-export function AreaBasemap({ areaId }: { areaId: number | string }) {
+export function AreaBasemap({ areaId }: { areaId: number }) {
   const t = useTranslations("DatasetMap");
   const { data: boundary } = useQuery<FeatureCollection | null>({
-    queryKey: ["area-boundary", String(areaId)],
+    queryKey: ["area-boundary", areaId],
     queryFn: async () => {
       const response = await fetch(`/api/areas/${areaId}/boundary`);
       // The route answers 404 for "no outline" and for an Overpass failure
       // alike, so a failure gets one more try before the place stays empty.
       if (!response.ok) throw new Error(String(response.status));
-      const body = await response.json();
-      return body?.type === "FeatureCollection" ? body : null;
+      return response.json();
     },
     staleTime: Infinity,
     // Each try can cost an Overpass geometry query.

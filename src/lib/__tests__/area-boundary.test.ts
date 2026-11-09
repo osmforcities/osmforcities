@@ -26,6 +26,7 @@ vi.mock("next/cache", () => ({
 
 import { fetchOsmRelationData, getAreaBoundary } from "@/lib/area-boundary";
 import { prisma } from "@/lib/db";
+import { revalidateTag } from "next/cache";
 import {
   executeOverpassQuery,
   convertOverpassToGeoJSON,
@@ -173,6 +174,7 @@ describe("fetchOsmRelationData", () => {
 describe("getAreaBoundary", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUpdate.mockResolvedValue({ count: 1 });
     mockConvert.mockReturnValue({ type: "FeatureCollection", features: [] });
   });
 
@@ -218,6 +220,7 @@ describe("getAreaBoundary", () => {
     expect(mockExecuteOverpassQuery).toHaveBeenCalledOnce();
     // The freshly fetched boundary is written back for the next caller.
     expect(mockUpdate).toHaveBeenCalledOnce();
+    expect(revalidateTag).toHaveBeenCalledOnce();
     expect(result?.features).toHaveLength(1);
   });
 
@@ -241,6 +244,8 @@ describe("getAreaBoundary", () => {
     const result = await getAreaBoundary(1802546);
 
     expect(result?.features).toHaveLength(1);
+    // Nothing was stored, so every other area keeps its cached boundary.
+    expect(revalidateTag).not.toHaveBeenCalled();
   });
 
   it("falls back to Overpass when nothing is stored", async () => {

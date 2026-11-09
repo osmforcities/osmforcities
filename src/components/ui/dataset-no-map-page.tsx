@@ -14,7 +14,7 @@ const LEAD_TONE = {
 
 type DatasetNoMapPageProps = {
   /** The area the basemap frames. */
-  areaId: number | string;
+  areaId: number;
   categoryHref: string;
   /** The subject only, "{dataset} in {area}". It never changes while the page waits. */
   title: string;
