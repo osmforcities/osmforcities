@@ -65,7 +65,7 @@ function EmptyPage({
   return (
     <DatasetNoMapPage
       areaId={areaId}
-      categorySlug="mobility"
+      categoryHref="/area/1/topics/mobility"
       title={t("datasetInArea", { dataset: templateName, area: areaName })}
       lead={t("stateNoData")}
       description={t("emptyDescription")}
@@ -80,7 +80,7 @@ const meta = {
   parameters: { layout: "fullscreen", a11y: { test: "error" } },
   decorators: [withAppFrame],
   beforeEach: serveRoute("/boundary", storedBoundary),
-  args: { categorySlug: "mobility" },
+  args: { categoryHref: "/area/1/topics/mobility" },
 } satisfies Meta<typeof DatasetWaitPage>;
 
 export default meta;
@@ -361,7 +361,7 @@ export const FailedNotReady: Story = {
     ).toBeInTheDocument();
     await expect(canvas.getByRole("link", { name: "Back" })).toHaveAttribute(
       "href",
-      expect.stringContaining("?category=mobility")
+      expect.stringContaining("/area/1/topics/mobility")
     );
   },
 };
@@ -392,7 +392,7 @@ export const FailedTimedOut: Story = {
     await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     await expect(canvas.getByRole("link", { name: "Back" })).toHaveAttribute(
       "href",
-      expect.stringContaining("?category=mobility")
+      expect.stringContaining("/area/1/topics/mobility")
     );
   },
 };
@@ -437,8 +437,8 @@ export const FailedTooLarge: Story = {
     <DatasetTooLargeState
       templateName={args.templateName}
       areaName={args.areaName}
+      categoryHref={args.categoryHref}
       areaId={args.areaId}
-      categorySlug={args.categorySlug}
       notify={<NotifyWhenReadyButton offer="available" />}
     />
   ),
@@ -473,8 +473,8 @@ export const FailedTooLargeAtCount: Story = {
     <DatasetTooLargeState
       templateName={args.templateName}
       areaName={args.areaName}
+      categoryHref={args.categoryHref}
       areaId={args.areaId}
-      categorySlug={args.categorySlug}
     />
   ),
   play: async ({ canvas }) => {
@@ -487,7 +487,7 @@ export const FailedTooLargeAtCount: Story = {
     ).not.toBeInTheDocument();
     await expect(canvas.getByRole("link", { name: "Back" })).toHaveAttribute(
       "href",
-      expect.stringContaining("?category=mobility")
+      expect.stringContaining("/area/1/topics/mobility")
     );
   },
 };

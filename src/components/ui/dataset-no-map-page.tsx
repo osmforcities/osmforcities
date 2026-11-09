@@ -14,9 +14,9 @@ const TONE = {
 } as const;
 
 type DatasetNoMapPageProps = {
+  /** The area the basemap frames. */
   areaId: number | string;
-  /** The way back opens the area on this dataset's category, where it was picked. */
-  categorySlug: string;
+  categoryHref: string;
   /** The subject only, "{dataset} in {area}". It never changes while the page waits. */
   title: string;
   /** The state, tinted by tone: "Bake failed.", "No data yet.". The waiting
@@ -41,7 +41,7 @@ type DatasetNoMapPageProps = {
  */
 export function DatasetNoMapPage({
   areaId,
-  categorySlug,
+  categoryHref,
   title,
   lead,
   progress,
@@ -55,7 +55,7 @@ export function DatasetNoMapPage({
       <aside className="flex flex-col border-b border-gray-200 bg-white px-6 py-4 lg:h-full lg:w-96 lg:flex-shrink-0 lg:border-b-0 lg:border-r">
         <div className="shrink-0">
           <Link
-            href={`/area/${areaId}?category=${encodeURIComponent(categorySlug)}`}
+            href={categoryHref}
             className="mb-2 flex w-fit items-center gap-1 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
           >
             <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />
