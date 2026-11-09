@@ -890,6 +890,10 @@
       "limited": "Eingeschränkt",
       "unknown": "Unbekannt"
     },
+    "lit": {
+      "24/7": "Rund um die Uhr",
+      "automatic": "Mit Bewegungsmelder"
+    },
     "highway": {
       "motorway": "Autobahn",
       "trunk": "Schnellstraße",
@@ -898,7 +902,13 @@
       "tertiary": "Verbindungsstraße",
       "residential": "Wohnstraße",
       "living_street": "Spielstraße",
-      "unclassified": "Nebenstraße"
+      "unclassified": "Nebenstraße",
+      "footway": "Fußweg",
+      "path": "Pfad",
+      "cycleway": "Radweg",
+      "pedestrian": "Fußgängerzone",
+      "steps": "Treppe",
+      "bridleway": "Reitweg"
     },
     "healthcare:speciality": {
       "general": "Allgemeinmedizin",
@@ -1162,7 +1172,9 @@
       "crossing": "Überweg",
       "traffic_island": "Verkehrsinsel",
       "access_aisle": "Zugangsstreifen",
-      "link": "Verbindung"
+      "link": "Verbindung",
+      "alley": "Gasse",
+      "steps": "Treppe"
     },
     "sidewalk": {
       "both": "Beide Seiten",

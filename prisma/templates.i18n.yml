@@ -2467,11 +2467,24 @@ templates:
       fr: Trottoirs et sentiers
       de: Fußwege und Pfade
     desc:
-      en: Sidewalks, crossings and paths for people on foot
-      pt: Calçadas, travessias e trilhas para pedestres
-      es: Aceras, cruces y senderos para peatones
-      fr: Trottoirs, traversées et sentiers pour les piétons
-      de: Gehwege, Überwege und Pfade für den Fußverkehr
+      en: Footways, paths and pedestrian streets for people on foot
+      pt: Calçadas, trilhas e calçadões para pedestres
+      es: Aceras, senderos y calles peatonales para ir a pie
+      fr: Trottoirs, sentiers et rues piétonnes pour aller à pied
+      de: Fußwege, Pfade und Fußgängerzonen für den Fußverkehr
+  car-free-paths:
+    name:
+      en: Car-free paths
+      pt: Caminhos sem carros
+      es: Caminos sin autos
+      fr: Chemins sans voitures
+      de: Autofreie Wege
+    desc:
+      en: Footways, paths, cycleways and pedestrian streets in one map
+      pt: Calçadas, trilhas, ciclovias e calçadões em um só mapa
+      es: Aceras, senderos, ciclovías y calles peatonales en un mapa
+      fr: Trottoirs, sentiers, pistes cyclables et rues piétonnes
+      de: Fußwege, Pfade, Radwege und Fußgängerzonen auf einer Karte
   cycling-infrastructure:
     name:
       en: Cycling infrastructure

@@ -890,6 +890,10 @@
       "limited": "Limité",
       "unknown": "Inconnu"
     },
+    "lit": {
+      "24/7": "24 h sur 24",
+      "automatic": "Avec détecteur de présence"
+    },
     "highway": {
       "motorway": "Autoroute",
       "trunk": "Voie rapide",
@@ -898,7 +902,13 @@
       "tertiary": "Route tertiaire",
       "residential": "Rue résidentielle",
       "living_street": "Zone de rencontre",
-      "unclassified": "Route mineure"
+      "unclassified": "Route mineure",
+      "footway": "Chemin piéton",
+      "path": "Sentier",
+      "cycleway": "Piste cyclable",
+      "pedestrian": "Rue piétonne",
+      "steps": "Escalier",
+      "bridleway": "Sentier équestre"
     },
     "healthcare:speciality": {
       "general": "Médecine générale",
@@ -1162,7 +1172,9 @@
       "crossing": "Traversée",
       "traffic_island": "Îlot",
       "access_aisle": "Allée d'accès",
-      "link": "Liaison"
+      "link": "Liaison",
+      "alley": "Ruelle",
+      "steps": "Escalier"
     },
     "sidewalk": {
       "both": "Des deux côtés",

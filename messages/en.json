@@ -890,6 +890,10 @@
       "limited": "Limited",
       "unknown": "Unknown"
     },
+    "lit": {
+      "24/7": "24 hours",
+      "automatic": "Motion-activated"
+    },
     "highway": {
       "motorway": "Motorway",
       "trunk": "Trunk road",
@@ -898,7 +902,13 @@
       "tertiary": "Tertiary road",
       "residential": "Residential street",
       "living_street": "Living street",
-      "unclassified": "Unclassified road"
+      "unclassified": "Unclassified road",
+      "footway": "Footway",
+      "path": "Path",
+      "cycleway": "Cycleway",
+      "pedestrian": "Pedestrian street",
+      "steps": "Steps",
+      "bridleway": "Bridleway"
     },
     "healthcare:speciality": {
       "general": "General practice",
@@ -1162,7 +1172,9 @@
       "crossing": "Crossing",
       "traffic_island": "Traffic island",
       "access_aisle": "Access aisle",
-      "link": "Link"
+      "link": "Link",
+      "alley": "Alley",
+      "steps": "Steps"
     },
     "sidewalk": {
       "both": "Both sides",

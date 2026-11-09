@@ -224,7 +224,9 @@ templates:
   - ["buildings","building","infrastructure","town_buildings"]
 # Mobility: roads, pedestrian, cycling
   - ["roads","highway=motorway;highway=trunk;highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=living_street;highway=unclassified","roads","sedan"]
-  - ["footways","highway=footway;highway=path","pedestrian","person_walking"]
+  - ["footways","highway=footway;highway=path;highway=pedestrian","pedestrian","person_walking"]
+  # living_street and track left out: motor vehicles circulate on them
+  - ["car-free-paths","highway=footway;highway=path;highway=cycleway;highway=pedestrian;highway=steps;highway=bridleway","pedestrian","person_walking_and_person_riding_bicycle"]
   - ["cycling-infrastructure","highway=cycleway;cycleway=lane;cycleway=track;cycleway=shared_lane;cycleway=share_busway;cycleway=opposite_lane;cycleway=opposite_track;cycleway:left=lane;cycleway:left=track;cycleway:left=shared_lane;cycleway:left=share_busway;cycleway:left=opposite_lane;cycleway:left=opposite_track;cycleway:right=lane;cycleway:right=track;cycleway:right=shared_lane;cycleway:right=share_busway;cycleway:right=opposite_lane;cycleway:right=opposite_track;cycleway:both=lane;cycleway:both=track;cycleway:both=shared_lane;cycleway:both=share_busway;cycleway:both=opposite_lane;cycleway:both=opposite_track","cycling","bicycle"]
   - ["cycleways","highway=cycleway","cycling","person_riding_bicycle","cycling-infrastructure"]
   # Explicit values: cycleway=no and =separate are mapped absences
@@ -388,6 +390,7 @@ filterableTags:
   roads:            [surface, maxspeed, lit, sidewalk, highway]
   buildings:        [building]
   footways:         [footway, surface, lit, smoothness]
+  car-free-paths:   [highway, footway, surface, lit]
   cycleways:        [surface, lit, oneway, smoothness]
   # surface and oneway describe the road here, not the lane (own track surfaces, contraflow lanes)
   cycle-lanes:      [lit]
@@ -500,6 +503,7 @@ defaultView:
   rail-tracks: railway
   railway-stations: station
   footways: footway
+  car-free-paths: highway
   crossings: crossing
   kerbs: kerb
   traffic-calming: traffic_calming
@@ -878,6 +882,9 @@ demonstrators:
     - { area: 62428,   note: "Munich, DE - surface 72%, lit 46%, smoothness 25% across a dense path network" }
     - { area: 419203,  note: "Utrecht, NL - thorough footway surface/lit tagging" }
     - { area: 54517,   note: "Rennes, FR - well-maintained pedestrian-path attributes" }
+  car-free-paths:
+    - { area: 419211,  note: "Houten, NL - city planned around cycleways and footpaths, cars kept to a ring road" }
+    - { area: 5400890, note: "Lisbon, PT - sidewalks and crossings drawn as their own ways, shown by the footway view" }
   cycleways:
     - { area: 419203,  note: "Utrecht, NL - cycling capital, near-complete surface/lit/oneway/smoothness" }
     - { area: 62428,   note: "Munich, DE - surface 89%, oneway/lit/smoothness all strong" }
