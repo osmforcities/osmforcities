@@ -6,11 +6,14 @@ import { processDatasetStats } from "@/lib/dataset-stats";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { resolveDatasetAreaName } from "@/lib/area-name";
 import { getDatasetPath } from "@/lib/urls";
+import { featuredHeroWhere, heroTiles } from "@/lib/featured-hero";
 import { HeroMap } from "./hero-map";
 import { FeaturedDatasetMapClient } from "./featured-dataset-map-client";
 
 const FEATURED_DATASET_SELECT = {
   ...DATASET_SELECT,
+  tilesServedJobId: true,
+  bbox: true,
   area: {
     select: {
       ...DATASET_SELECT.area.select,
@@ -27,7 +30,7 @@ const FEATURED_DATASET_SELECT = {
 const getFeaturedDatasets = unstable_cache(
   () =>
     prisma.dataset.findMany({
-      where: { isFeatured: true, dataCount: { gt: 0 } },
+      where: featuredHeroWhere(),
       select: FEATURED_DATASET_SELECT,
     }),
   ["featured-datasets-hero"],
@@ -69,6 +72,7 @@ export async function FeaturedDatasetMap() {
       category={resolvedTemplate.category?.slug ?? "other"}
       templateId={dataset.templateId}
       defaultView={dataset.template.defaultView}
+      tiles={heroTiles(dataset)}
       stats={stats}
       href={getDatasetPath({
         locale,

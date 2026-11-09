@@ -16,17 +16,24 @@ import type { InitialViewState } from "@/lib/utils";
 import type { ProcessedDatasetStats } from "@/lib/dataset-stats";
 import { DatasetStatsRow } from "@/components/ui/dataset-stats-row";
 import { MapLayers } from "@/components/dataset/map/layers";
+import { TilesLayerGroup } from "@/components/dataset/map/layers/tiles-layer-group";
+import { ensurePmtilesProtocol } from "@/lib/pmtiles-protocol";
+import type { HeroTiles } from "@/lib/featured-hero";
+import type { Bbox } from "@/types/geojson";
 import { AoiBoundaryLayer } from "@/components/dataset/map/aoi-boundary-layer";
 import { CompactLegend } from "@/components/dataset/map/compact-legend";
 import { ageLegendRow } from "@/components/dataset/map/layers/map-style";
 import { processOSMFeaturesForVisualization } from "@/lib/osm-data-processor";
 import {
   buildCuratedThemes,
+  buildCuratedThemesFromDimensions,
   buildLegendRows,
   findOpeningTheme,
 } from "@/lib/curated-themes";
 import { tagLabel, tagValue, type MessageResolver } from "@/lib/tag-i18n";
 import { AGE_CATEGORY_ORDER } from "@/lib/feature-age";
+
+ensurePmtilesProtocol();
 
 function applyViewState(map: MapRef | null, viewState: InitialViewState) {
   if (!map) return;
@@ -59,6 +66,7 @@ type FeaturedDatasetMapClientProps = {
   /** Template slug for the template-specific icon */
   templateId: string;
   defaultView: string | null;
+  tiles: HeroTiles | null;
   stats: ProcessedDatasetStats;
   href: string;
 };
@@ -71,6 +79,7 @@ export function FeaturedDatasetMapClient({
   category,
   templateId,
   defaultView,
+  tiles,
   stats,
   href,
 }: FeaturedDatasetMapClientProps) {
@@ -90,14 +99,16 @@ export function FeaturedDatasetMapClient({
     const controller = new AbortController();
     // Marketing page: on failure keep the basemap + card, no error UI.
     // slim returns truncated geometry + @timestamp only (no OSM tags).
-    fetch(`/api/datasets/${datasetId}/geojson?slim`, {
-      signal: controller.signal,
-    })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data: FeatureCollection | null) => {
-        if (data && !controller.signal.aborted) setGeojson(data);
+    if (!tiles?.url) {
+      fetch(`/api/datasets/${datasetId}/geojson?slim`, {
+        signal: controller.signal,
       })
-      .catch(() => {});
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data: FeatureCollection | null) => {
+          if (data && !controller.signal.aborted) setGeojson(data);
+        })
+        .catch(() => {});
+    }
 
     fetch(`/api/areas/${areaId}/boundary`, { signal: controller.signal })
       .then((response) => (response.ok ? response.json() : null))
@@ -107,7 +118,7 @@ export function FeaturedDatasetMapClient({
       .catch(() => {});
 
     return () => controller.abort();
-  }, [datasetId, areaId]);
+  }, [datasetId, areaId, tiles?.url]);
 
   // Same processing as the dataset page so rendering matches it
   const processedData = useMemo(
@@ -115,16 +126,16 @@ export function FeaturedDatasetMapClient({
     [geojson]
   );
 
-  const openingTheme = useMemo(
-    () =>
-      processedData && defaultView
-        ? findOpeningTheme(
-            buildCuratedThemes(processedData.features, [defaultView]),
-            defaultView
-          )
-        : null,
-    [processedData, defaultView]
-  );
+  const storedDimensions = tiles?.filterDimensions;
+  const openingTheme = useMemo(() => {
+    if (!defaultView) return null;
+    const themes = storedDimensions
+      ? buildCuratedThemesFromDimensions(storedDimensions)
+      : processedData
+        ? buildCuratedThemes(processedData.features, [defaultView])
+        : [];
+    return findOpeningTheme(themes, defaultView);
+  }, [processedData, storedDimensions, defaultView]);
 
   const legend = openingTheme
     ? {
@@ -156,19 +167,22 @@ export function FeaturedDatasetMapClient({
     applyViewState(mapRef.current, computeInitialViewState(areaRef.current, null));
   }, [datasetId]);
 
-  // The far-center guard and the no-bounds fallback both need the data bbox,
-  // which only exists once the geojson arrives. Refit only when it changes
-  // the outcome, so the common case never jumps.
+  // The far-center guard and the no-bounds fallback both need the data bbox.
+  // Refit only when it changes the outcome, so the common case never jumps.
+  // Keyed by value: every server render sends a new bbox array
+  const storedBboxKey = tiles?.bbox?.join(",");
+  const dataBounds = useMemo(() => {
+    if (storedBboxKey) return storedBboxKey.split(",").map(Number) as Bbox;
+    return geojson ? calculateBbox(geojson) : null;
+  }, [storedBboxKey, geojson]);
   useEffect(() => {
-    if (!geojson) return;
-    const dataBounds = calculateBbox(geojson);
     if (!dataBounds) return;
     const withData = computeInitialViewState(areaRef.current, dataBounds);
     const withoutData = computeInitialViewState(areaRef.current, null);
     if (JSON.stringify(withData) !== JSON.stringify(withoutData)) {
       applyViewState(mapRef.current, withData);
     }
-  }, [geojson]);
+  }, [dataBounds]);
 
   const statItems = [
     { type: "features" as const, label: t("stats.features"), value: stats.features },
@@ -192,18 +206,26 @@ export function FeaturedDatasetMapClient({
         style={{ width: "100%", height: "100%" }}
       >
         {boundary && <AoiBoundaryLayer boundary={boundary} />}
-        {processedData && (
-          <MapLayers
-            geoJSONData={processedData}
+        {tiles ? (
+          <TilesLayerGroup
+            tilesUrl={tiles.url}
+            pointCount={tiles.pointCount}
             curatedTheme={openingTheme}
           />
+        ) : (
+          processedData && (
+            <MapLayers
+              geoJSONData={processedData}
+              curatedTheme={openingTheme}
+            />
+          )
         )}
         <MapZoomControl />
       </Map>
 
       {/* Bottom is owned by the info card on small screens, so the legend moves
           to the top-right corner there (top-left holds the shared zoom control) */}
-      {processedData && (
+      {(tiles || processedData) && (
         <div className="absolute end-3 top-3 sm:end-auto sm:start-4 sm:top-auto sm:bottom-4">
           <CompactLegend title={legend.title} rows={legend.rows} />
         </div>

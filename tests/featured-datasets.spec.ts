@@ -57,7 +57,12 @@ test.describe.serial("Featured datasets", () => {
   });
 
   test("homepage hero links to the featured dataset (logged out)", async ({ page }) => {
+    // Tiles lane off: the hero draws the stored geojson
+    const slimGeojson = page.waitForResponse((response) =>
+      response.url().includes("/geojson?slim")
+    );
     await page.goto("/en");
+    expect((await slimGeojson).ok()).toBe(true);
     await page.getByRole("link", { name: /— View dataset$/ }).click();
 
     await expect(page).toHaveURL(new RegExp(`${FEATURED_PATH}$`));
