@@ -29,17 +29,14 @@ function serveTilesStatus(status: Record<string, unknown>) {
 function EmptyPage({
   templateName,
   areaName,
-  areaId,
 }: {
   templateName: string;
   areaName: string;
-  areaId: number;
 }) {
   const t = useTranslations("DatasetPage");
   return (
     <DatasetNoMapPage
-      areaId={areaId}
-      categorySlug="mobility"
+      categoryHref="/area/1/topics/mobility"
       title={t("datasetInArea", { dataset: templateName, area: areaName })}
       lead={t("stateNoData")}
       description={t("emptyDescription")}
@@ -53,7 +50,7 @@ const meta = {
   component: DatasetWaitPage,
   parameters: { layout: "fullscreen", a11y: { test: "error" } },
   decorators: [withAppFrame],
-  args: { categorySlug: "mobility" },
+  args: { categoryHref: "/area/1/topics/mobility" },
 } satisfies Meta<typeof DatasetWaitPage>;
 
 export default meta;
@@ -70,7 +67,6 @@ export const CountingWarm: Story = {
   args: {
     templateName: "Buildings",
     areaName: "Delft",
-    areaId: 324431,
     mood: "counting",
     stepsShown: false,
   },
@@ -95,7 +91,6 @@ export const CountingCold: Story = {
   args: {
     ...CountingWarm.args,
     areaName: "São Paulo",
-    areaId: 298285,
     coldAfterMs: 0,
   },
   play: async ({ canvas }) => {
@@ -115,7 +110,6 @@ export const CountingWithRow: Story = {
     datasetId: "ds-sao-paulo-buildings",
     templateName: "Buildings",
     areaName: "São Paulo",
-    areaId: 298285,
     mood: "counting",
     notify,
   },
@@ -135,7 +129,6 @@ export const BakingQueued: Story = {
     datasetId: "ds-delft-buildings",
     templateName: "Buildings",
     areaName: "Delft",
-    areaId: 324431,
     mood: "baking",
     notify,
   },
@@ -164,7 +157,6 @@ export const BakingFetching: Story = {
     datasetId: "ds-sp-roads",
     templateName: "Streets and roads",
     areaName: "São Paulo",
-    areaId: 298285,
     mood: "baking",
     notify,
   },
@@ -205,7 +197,6 @@ export const BakingConverting: Story = {
     datasetId: "ds-sp-buildings",
     templateName: "Buildings",
     areaName: "São Paulo",
-    areaId: 298285,
     mood: "baking",
     notify,
   },
@@ -319,7 +310,6 @@ export const FailedNotReady: Story = {
     datasetId: "ds-osasco-buildings",
     templateName: "Buildings",
     areaName: "Osasco",
-    areaId: 298584,
     mood: "failed",
     notify,
   },
@@ -338,7 +328,7 @@ export const FailedNotReady: Story = {
     ).toBeInTheDocument();
     await expect(canvas.getByRole("link", { name: "Back" })).toHaveAttribute(
       "href",
-      expect.stringContaining("?category=mobility")
+      expect.stringContaining("/area/1/topics/mobility")
     );
   },
 };
@@ -353,7 +343,6 @@ export const FailedTimedOut: Story = {
   args: {
     templateName: "Buildings",
     areaName: "São Paulo",
-    areaId: 298285,
     mood: "timedOut",
   },
   play: async ({ canvas }) => {
@@ -369,7 +358,7 @@ export const FailedTimedOut: Story = {
     await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     await expect(canvas.getByRole("link", { name: "Back" })).toHaveAttribute(
       "href",
-      expect.stringContaining("?category=mobility")
+      expect.stringContaining("/area/1/topics/mobility")
     );
   },
 };
@@ -383,7 +372,6 @@ export const FailedTimedOutWithRow: Story = {
     datasetId: "ds-sao-paulo-buildings",
     templateName: "Buildings",
     areaName: "São Paulo",
-    areaId: 298285,
     mood: "timedOut",
     notify,
   },
@@ -407,15 +395,13 @@ export const FailedTooLarge: Story = {
     datasetId: "ds-tokyo-buildings",
     templateName: "Buildings",
     areaName: "Tokyo",
-    areaId: 1543125,
     mood: "failed",
   },
   render: (args) => (
     <DatasetTooLargeState
       templateName={args.templateName}
       areaName={args.areaName}
-      areaId={args.areaId}
-      categorySlug={args.categorySlug}
+      categoryHref={args.categoryHref}
       notify={<NotifyWhenReadyButton offer="available" />}
     />
   ),
@@ -443,15 +429,13 @@ export const FailedTooLargeAtCount: Story = {
   args: {
     templateName: "Buildings",
     areaName: "Tokyo",
-    areaId: 1543125,
     mood: "failed",
   },
   render: (args) => (
     <DatasetTooLargeState
       templateName={args.templateName}
       areaName={args.areaName}
-      areaId={args.areaId}
-      categorySlug={args.categorySlug}
+      categoryHref={args.categoryHref}
     />
   ),
   play: async ({ canvas }) => {
@@ -464,7 +448,7 @@ export const FailedTooLargeAtCount: Story = {
     ).not.toBeInTheDocument();
     await expect(canvas.getByRole("link", { name: "Back" })).toHaveAttribute(
       "href",
-      expect.stringContaining("?category=mobility")
+      expect.stringContaining("/area/1/topics/mobility")
     );
   },
 };
@@ -480,7 +464,6 @@ export const Empty: Story = {
     datasetId: "ds-osasco-hospitals",
     templateName: "Hospitals",
     areaName: "Osasco",
-    areaId: 298470,
     mood: "failed",
   },
   render: (args) => <EmptyPage {...args} />,
