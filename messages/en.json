@@ -131,7 +131,6 @@
     "tilesStageBaking": "Baking map tiles ({pct, number}%)",
     "tilesStageCounting": "Calculating size",
     "tilesStageCountingCold": "Still calculating size, large area",
-    "stepLine": "Step {step} of {total}",
     "datasetInArea": "{dataset} in {area}",
     "stateBakeFailed": "Bake failed.",
     "stateTooLarge": "Too large to bake.",

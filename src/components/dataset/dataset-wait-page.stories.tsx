@@ -64,7 +64,7 @@ const notify = <NotifyWhenReadyButton />;
 /**
  * The count with the tiles-only lane off: it runs inside the request, before
  * any row exists, and the map follows it directly. Nothing to poll, nothing to
- * save yet and no further steps, so no offer and no step line.
+ * save yet, so no offer.
  */
 export const CountingWarm: Story = {
   args: {
@@ -72,14 +72,12 @@ export const CountingWarm: Story = {
     areaName: "Delft",
     areaId: 324431,
     mood: "counting",
-    stepsShown: false,
   },
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole("heading", { name: "Buildings in Delft" })
     ).toBeInTheDocument();
     await expect(canvas.getByText("Calculating size")).toBeInTheDocument();
-    await expect(canvas.queryByText(/Step \d of/)).not.toBeInTheDocument();
     await expect(canvas.getByRole("progressbar")).not.toHaveAttribute(
       "aria-valuenow"
     );
@@ -107,7 +105,7 @@ export const CountingCold: Story = {
 };
 
 /**
- * Step 1 on the tiles-only lane: the row exists while the probe runs after
+ * Counting on the tiles-only lane: the row exists while the probe runs after
  * the response, so the page polls and offers saving from the start.
  */
 export const CountingWithRow: Story = {
@@ -122,14 +120,13 @@ export const CountingWithRow: Story = {
   beforeEach: serveTilesStatus({ state: "pending", stage: "counting" }),
   play: async ({ canvas }) => {
     await expect(canvas.getByText("Calculating size")).toBeInTheDocument();
-    await expect(canvas.getByText("Step 1 of 5")).toBeInTheDocument();
     await expect(
       canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeInTheDocument();
   },
 };
 
-/** Step 2: submitted, waiting for the tiler to pick it up. The bar sweeps. */
+/** Submitted, waiting for the tiler to pick it up. The bar sweeps. */
 export const BakingQueued: Story = {
   args: {
     datasetId: "ds-delft-buildings",
@@ -147,7 +144,6 @@ export const BakingQueued: Story = {
     await expect(
       await canvas.findByText("Waiting for a free slot")
     ).toBeInTheDocument();
-    await expect(canvas.getByText("Step 2 of 5")).toBeInTheDocument();
     await expect(canvas.getByRole("progressbar")).not.toHaveAttribute(
       "aria-valuenow"
     );
@@ -178,7 +174,6 @@ export const BakingFetching: Story = {
     await expect(
       await canvas.findByText("Fetching data (84 MB)")
     ).toBeInTheDocument();
-    await expect(canvas.getByText("Step 3 of 5")).toBeInTheDocument();
     await expect(canvas.getByRole("progressbar")).not.toHaveAttribute(
       "aria-valuenow"
     );
@@ -218,7 +213,6 @@ export const BakingConverting: Story = {
     await expect(
       await canvas.findByText("Converting features (37%)")
     ).toBeInTheDocument();
-    await expect(canvas.getByText("Step 4 of 5")).toBeInTheDocument();
     await waitFor(() =>
       expect(canvas.getByRole("progressbar")).toHaveAttribute(
         "aria-valuenow",
@@ -242,7 +236,8 @@ export const BakingTiles: Story = {
     await expect(
       await canvas.findByText("Baking map tiles (62%)")
     ).toBeInTheDocument();
-    await expect(canvas.getByText("Step 5 of 5")).toBeInTheDocument();
+    // No step count: an interrupted bake starts over, so "N of 5" would go backwards
+    await expect(canvas.queryByText(/Step \d of/)).not.toBeInTheDocument();
     // The bar starts indeterminate and gains its value on the first poll, so
     // the assertion has to retry rather than the query.
     await waitFor(() =>
@@ -268,7 +263,7 @@ export const BakingBeforeFirstPercentage: Story = {
   },
 };
 
-/** The bake is done while the app pulls its archive: still the last step, full. */
+/** The bake is done while the app pulls its archive: still the last stage, full. */
 export const BakeLandedArchivePulling: Story = {
   args: { ...BakingConverting.args },
   beforeEach: serveTilesStatus({ state: "pending", stage: "done" }),
@@ -276,14 +271,13 @@ export const BakeLandedArchivePulling: Story = {
     await expect(
       await canvas.findByText("Baking map tiles (100%)")
     ).toBeInTheDocument();
-    await expect(canvas.getByText("Step 5 of 5")).toBeInTheDocument();
     await waitFor(() =>
       expect(canvas.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "100")
     );
   },
 };
 
-/** Done, while the refresh to the map is in flight: still the last step, full. */
+/** Done, while the refresh to the map is in flight: still the last stage, full. */
 export const BakeDoneMapLoading: Story = {
   args: { ...BakingConverting.args },
   beforeEach: serveTilesStatus({ state: "done" }),
@@ -291,7 +285,6 @@ export const BakeDoneMapLoading: Story = {
     await expect(
       await canvas.findByText("Baking map tiles (100%)")
     ).toBeInTheDocument();
-    await expect(canvas.getByText("Step 5 of 5")).toBeInTheDocument();
   },
 };
 

@@ -147,7 +147,6 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
             notify={
               tilesLane && <NotifyWhenReadyButton offer="ready" disabled />
             }
-            stepsShown={tilesLane}
           />
         )
       }

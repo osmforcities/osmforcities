@@ -131,7 +131,6 @@
     "tilesStageBaking": "Génération des tuiles de la carte ({pct, number} %)",
     "tilesStageCounting": "Calcul de la taille",
     "tilesStageCountingCold": "Calcul de la taille en cours, grande zone",
-    "stepLine": "Étape {step} sur {total}",
     "datasetInArea": "{dataset} à {area}",
     "stateBakeFailed": "Échec de la génération.",
     "stateTooLarge": "Trop volumineux pour être généré.",

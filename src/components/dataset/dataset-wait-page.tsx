@@ -21,21 +21,15 @@ type TilesStatus = {
 const POLL_MS = 4000;
 
 /**
- * The steps a person waits through, in order. Counting is the app's own size
- * probe, before the tiler has a job at all; the rest are the tiler's stages.
+ * The stages a person waits through. Counting is the app's own size probe,
+ * before the tiler has a job at all; the rest are the tiler's stages. No step
+ * count is shown: a bake can be interrupted and start over.
  */
-const STEPS = {
-  counting: 1,
-  queued: 2,
-  fetching: 3,
-  converting: 4,
-  baking: 5,
-} as const;
-type Stage = keyof typeof STEPS;
-const TOTAL_STEPS = 5;
+const STAGES = ["counting", "queued", "fetching", "converting", "baking"] as const;
+type Stage = (typeof STAGES)[number];
 
 function isStage(value: unknown): value is Stage {
-  return typeof value === "string" && value in STEPS;
+  return STAGES.includes(value as Stage);
 }
 
 type DatasetWaitPageProps = {
@@ -59,8 +53,6 @@ type DatasetWaitPageProps = {
   coldAfterMs?: number;
   /** The save-and-email button. Nothing renders in its place without it. */
   notify?: ReactNode;
-  /** Off the tiles-only lane the count is the only step, so there are no steps to number. */
-  stepsShown?: boolean;
 };
 
 /**
@@ -79,7 +71,6 @@ export function DatasetWaitPage({
   mood,
   coldAfterMs = COUNT_REQUEST_TIMEOUT_MS,
   notify,
-  stepsShown = true,
 }: DatasetWaitPageProps) {
   const t = useTranslations("DatasetPage");
   const router = useRouter();
@@ -170,21 +161,13 @@ export function DatasetWaitPage({
         tone={failure ? "warning" : "processing"}
         title={t("datasetInArea", { dataset: templateName, area: areaName })}
         lead={failure?.lead}
-        // The stage label and step say everything a waiting person needs;
-        // a sentence under them only repeated it.
+        // The stage label says everything a waiting person needs; a sentence
+        // under it only repeated it.
         progress={
           !failure && (
             <div className="space-y-2" aria-live="polite">
               <p className="text-sm text-gray-900">{stageLabel}</p>
               <ProgressBar value={pct} label={stageLabel} />
-              {stepsShown && (
-                <p className="text-sm text-gray-500">
-                  {t("stepLine", {
-                    step: String(STEPS[stage]),
-                    total: String(TOTAL_STEPS),
-                  })}
-                </p>
-              )}
             </div>
           )
         }

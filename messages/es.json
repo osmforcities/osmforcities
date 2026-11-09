@@ -131,7 +131,6 @@
     "tilesStageBaking": "Generando teselas del mapa ({pct, number} %)",
     "tilesStageCounting": "Calculando el tamaño",
     "tilesStageCountingCold": "Aún calculando el tamaño, área grande",
-    "stepLine": "Paso {step} de {total}",
     "datasetInArea": "{dataset} en {area}",
     "stateBakeFailed": "Error al generar.",
     "stateTooLarge": "Demasiado grande para generar.",

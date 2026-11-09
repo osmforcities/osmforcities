@@ -131,7 +131,6 @@
     "tilesStageBaking": "Gerando tiles do mapa ({pct, number}%)",
     "tilesStageCounting": "Calculando o tamanho",
     "tilesStageCountingCold": "Ainda calculando o tamanho, área grande",
-    "stepLine": "Etapa {step} de {total}",
     "datasetInArea": "{dataset} em {area}",
     "stateBakeFailed": "Falha na geração.",
     "stateTooLarge": "Grande demais para gerar.",
