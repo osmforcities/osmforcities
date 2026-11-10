@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMap } from "react-map-gl/maplibre";
 import type { Feature } from "geojson";
 import { ageStep, type AgeCategory } from "@/lib/feature-age";
+import { BASEMAP_WASH_LAYER_ID } from "@/lib/map-tiles";
 import {
   DEFAULT_STYLE_KNOBS,
   buildLineWidth,
@@ -267,7 +268,11 @@ function StyleTuningPanelInner({ features }: StyleTuningPanelProps) {
     };
     const ageColor = ageStep(knobs.colors);
 
-    setPaint("basemap-mute", "background-opacity", knobs.basemapWashOpacity);
+    setPaint(
+      BASEMAP_WASH_LAYER_ID,
+      "background-opacity",
+      knobs.basemapWashOpacity
+    );
 
     setPaint(
       POINT_LAYER_ID,
