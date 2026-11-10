@@ -22,6 +22,25 @@ const bicycleParkingFeature: Feature = {
   },
 };
 
+// Selection copies "@id" onto "id", the rest stays as the tiler wrote it
+const TILER_TIMESTAMP = "2026-06-15T12:00:00Z";
+
+const tilerFeature: Feature = {
+  type: "Feature",
+  geometry: { type: "Point", coordinates: [4.9, 52.37] },
+  properties: {
+    id: "node/1",
+    "@id": "node/1",
+    "@user": "alice",
+    "@uid": 4242,
+    "@timestamp": TILER_TIMESTAMP,
+    "@version": 2,
+    "@changeset": 13579,
+    amenity: "bench",
+    _ts: 1781524800,
+  },
+};
+
 const noNameFeature: Feature = {
   type: "Feature",
   geometry: { type: "Point", coordinates: [-46.63, -23.55] },
@@ -85,6 +104,27 @@ export const NoName: Story = {
     // No name tag — fallback heading shows capitalized OSM type and ID
     await expect(canvas.getByRole("heading", { name: "Node 789012" })).toBeInTheDocument();
     await expect(canvas.getByText("wall_loops")).toBeInTheDocument();
+    await expect(canvas.queryByText(/Last edited by/i)).not.toBeInTheDocument();
+  },
+};
+
+export const FromTiler: Story = {
+  args: {
+    feature: tilerFeature,
+    onBack: fn(),
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText(/Last edited by/i)).toBeInTheDocument();
+    await expect(canvas.getByRole("link", { name: "alice" })).toHaveAttribute(
+      "href",
+      "https://www.openstreetmap.org/user/alice"
+    );
+    const editedOn = new Intl.DateTimeFormat(undefined, {
+      dateStyle: "medium",
+    }).format(new Date(TILER_TIMESTAMP));
+    await expect(canvas.getByText(new RegExp(editedOn))).toBeInTheDocument();
+    await expect(canvas.queryByText("4242")).not.toBeInTheDocument();
+    await expect(canvas.getByText("bench")).toBeInTheDocument();
   },
 };
 

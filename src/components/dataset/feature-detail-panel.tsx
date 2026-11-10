@@ -44,21 +44,20 @@ export function FeatureDetailPanel({
       ? osmFeatureId.split("/")
       : [undefined, undefined];
 
+  // Tiler geojson carries "@user" / "@timestamp", osmtogeojson the bare keys
+  const userValue = properties["@user"] ?? properties.user;
+  const osmUser = userValue == null ? undefined : String(userValue);
+  const editedAt = new Date(properties["@timestamp"] ?? properties.timestamp);
+
   let name: string | undefined;
-  let osmUser: string | undefined;
-  let osmTimestamp: string | undefined;
   const displayTags: [string, string][] = [];
 
   Object.entries(properties)
     .sort(([a], [b]) => a.localeCompare(b))
     .forEach(([key, value]) => {
       if (key === "id" || key.startsWith("@") || INTERNAL_KEYS.has(key)) return;
+      if (METADATA_KEYS.has(key)) return;
       if (key === "name") { name = String(value); return; }
-      if (METADATA_KEYS.has(key)) {
-        if (key === "user") osmUser = String(value);
-        if (key === "timestamp") osmTimestamp = String(value);
-        return;
-      }
       displayTags.push([key, String(value)]);
     });
 
@@ -71,9 +70,9 @@ export function FeatureDetailPanel({
     ? `https://www.openstreetmap.org/user/${encodeURIComponent(osmUser)}`
     : null;
 
-  const formattedDate = osmTimestamp
-    ? DATE_FORMATTER.format(new Date(osmTimestamp))
-    : null;
+  const formattedDate = isNaN(editedAt.getTime())
+    ? null
+    : DATE_FORMATTER.format(editedAt);
 
   return (
     <div className="flex flex-col h-full" data-testid="feature-detail-panel">
