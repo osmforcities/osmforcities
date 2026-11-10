@@ -14,7 +14,7 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 **Topic**: A top-level Category, such as Mobility or Health. Groups Categories on the area page. _Avoid:_ super-category, group.
 
-**Category**: A grouping of Templates under a Topic, such as Cycling under Mobility. A Template belongs to exactly one, or directly to a Topic. _Avoid:_ tag, type.
+**Category**: A grouping of Templates under a Topic, such as Bicycle under Mobility. A Template belongs to exactly one, or directly to a Topic. _Avoid:_ tag, type.
 
 **Dataset**: One Template applied to one Area: its features, stats and map. The thing people open, save and share. _Avoid:_ monitor, layer, snapshot.
 
@@ -28,7 +28,7 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 ## Size
 
-**Count probe**: The quick "how many elements are there?" question sent to Overpass before a Dataset exists. _Avoid:_ pre-flight, size check, estimate.
+**Count probe**: The quick "how many elements are there?" question sent to Overpass before a Dataset's first bake. On the tiles-only lane it runs after the page response. _Avoid:_ pre-flight, size check, estimate.
 
 **Verdict**: The remembered outcome of a count probe: ok, too large, or timed out. Saves asking the same expensive question again too soon. _Avoid:_ cache, size check result.
 
@@ -42,13 +42,13 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 **Tiler**: The service that turns a Template into a map archive. The only thing that fetches full Datasets from Overpass. Code: [osmforcities/overpass-pmtiler](https://github.com/osmforcities/overpass-pmtiler). _Avoid:_ baker, pmtiler, tile server.
 
-**Bake**: One run of the tiler for one Dataset: queued, fetching, converting, baking, then done or failed. _Avoid:_ job (in prose), processing, build.
+**Bake**: One run of the tiler for one Dataset: queued, fetching, converting, baking, then done or failed. _Avoid:_ job (in prose), processing, build. Exception: UI copy shown to visitors may say "building the map", since "bake" is jargon to them. Code, docs and commits keep "bake".
 
 **Archive**: The single map file a bake produces. Browsers read only the part they are looking at. _Avoid:_ tiles file, PMTiles (the format, not the thing), tileset.
 
 **Served archive**: The archive a Dataset's map currently uses. A rebuild does not change it until the new archive has fully landed. _Avoid:_ current tiles, live archive.
 
-**Tiles state**: The app's view of a Dataset's latest bake: pending, done, or failed. _Avoid:_ job state, bake status (the tiler's stages are finer than this).
+**Tiles state**: The app's view of a Dataset's latest bake: counting (the count probe runs, no bake yet), pending, done, or failed. _Avoid:_ job state, bake status (the tiler's stages are finer than this).
 
 **Reconcile**: Checking on a pending bake and pulling the finished archive and stats into the app. _Avoid:_ poll, sync, pull.
 
@@ -60,6 +60,6 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 ## Waiting
 
-**Wait page**: The full page between opening a Dataset for the first time and seeing its map. Four moods: counting, baking, failed, timed out (Overpass gave up before any row existed). _Avoid:_ loading state, skeleton, processing panel.
+**Wait page**: The full page between opening a Dataset for the first time and seeing its map. Four moods: counting, baking, failed, timed out (Overpass gave up on the count probe). _Avoid:_ loading state, skeleton, processing panel.
 
 **Ready notification**: A one-time email asked for on a dataset with no map yet, sent once when a bake with features lands, never for a failure. Asking is saving with the flag set; unsaving cancels it. _Avoid:_ alert, subscription, report (reports are the recurring saved-dataset emails).

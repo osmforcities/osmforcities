@@ -116,38 +116,35 @@
   "EnterPage": {
     "metaTitle": "Connexion - OSM for Cities",
     "metaDescription": "Connectez-vous pour suivre les jeux de données OpenStreetMap",
-    "signIn": "Se connecter",
-    "notFound": "Introuvable",
-    "testAuthNotEnabled": "L'authentification de test n'est pas activée.",
-    "signInWithEmailPassword": "Connectez-vous avec votre e-mail et votre mot de passe",
-    "createAccount": "Créer un compte",
-    "signupForTesting": "Inscription à des fins de test",
-    "testEnvOnly": "Cette page n'est disponible qu'en environnement de test."
+    "signIn": "Se connecter"
   },
   "DatasetPage": {
-    "tilesStageQueued": "En attente d'un créneau sur le serveur",
-    "tilesStageFetching": "Récupération des données ({mb, number} Mo)",
-    "tilesStageConverting": "Conversion des objets ({pct, number} %)",
-    "tilesStageBaking": "Génération des tuiles de la carte ({pct, number} %)",
-    "tilesStageCounting": "Calcul de la taille",
-    "tilesStageCountingCold": "Calcul de la taille en cours, grande zone",
-    "stepLine": "Étape {step} sur {total}",
+    "tilesStageQueued": "En file d'attente",
+    "tilesNoteQueued": "D'autres cartes sont générées avant. Celle-ci démarre dès qu'une place se libère.",
+    "tilesStageFetching": "Téléchargement des données",
+    "tilesNoteFetching": "{mb, plural, =0 {Depuis OpenStreetMap. } other {# Mo d'OpenStreetMap pour l'instant. }}Le total n'est connu qu'à la fin du téléchargement, les grandes zones peuvent donc prendre du temps.",
+    "tilesStageConverting": "Préparation des données",
+    "tilesNoteConverting": "Transformation du téléchargement en formes que la carte peut dessiner.",
+    "tilesStageBaking": "Construction de la carte",
+    "tilesNoteBaking": "Presque fini. La carte s'ouvre toute seule à la fin.",
+    "tilesStageCounting": "Vérification de la taille",
+    "tilesStageCountingCold": "Vérification en cours, grande zone",
+    "tilesNoteCounting": "Comptage des éléments présents dans cette zone.",
     "datasetInArea": "{dataset} à {area}",
     "stateBakeFailed": "Échec de la génération.",
     "stateTooLarge": "Trop volumineux pour être généré.",
     "stateNoData": "Pas encore de données.",
     "stateCountTimedOut": "Le chargement des données a pris trop de temps.",
-    "notifyCta": "Enregistrer et me prévenir par e-mail quand ce sera prêt",
-    "notifyCtaIfAvailable": "Enregistrer et me prévenir par e-mail s'il devient disponible",
-    "notifyCtaIfMapped": "Enregistrer et me prévenir par e-mail si cela finit par être cartographié",
-    "notifyConfirmed": "Enregistré. Vous recevrez un e-mail quand la carte sera prête.",
-    "savedConfirmed": "Enregistré.",
+    "notifySub": "Enregistrer et être prévenu quand ce sera prêt",
+    "notifySubIfAvailable": "Enregistrer et être prévenu s'il est disponible",
+    "notifySubIfMapped": "Enregistrer et être prévenu s'il est cartographié",
+    "savedTitle": "Enregistré",
+    "notifyConfirmedSub": "Un e-mail vous préviendra quand ce sera prêt.",
     "tilesFailedDescription": "Rouvrez cette page plus tard pour réessayer.",
     "countTimedOutDescription": "La zone est peut-être très grande ou le serveur occupé. Réessayez d'ici {minutes, plural, one {# minute} other {# minutes}} au plus.",
     "backToHome": "Retour à l'accueil",
     "emptyDescription": "Ils n'existent peut-être pas ici, ou personne ne les a encore cartographiés dans OpenStreetMap.",
     "tooLargeDescription": "Ce jeu de données dépasse la capacité actuelle du serveur, ce qui est attendu pour les grandes métropoles ou les géométries très détaillées.",
-    "backToAreaLabel": "Retour à {area}",
     "categoryFacetLabel": "Catégorie : {category}. Voir tous les jeux de données {category} dans {area}.",
     "categoryUncategorized": "Autre",
     "back": "Retour",
@@ -190,7 +187,6 @@
     "fetchCadence": "Les jeux de données sont synchronisés une fois par jour dans OSM for Cities ; ceci est le délai actuel par rapport à OpenStreetMap.",
     "downloadData": "Télécharger les données",
     "download": "Télécharger",
-    "datasetTitle": "{template}",
     "invalidData": "Données invalides",
     "invalidDataMessage": "Le jeu de données contient des données GeoJSON invalides.",
     "value": "Valeur",
@@ -264,6 +260,17 @@
     "noSearchResults": "Aucun jeu de données ne correspond à « {query} »",
     "noSearchResultsHint": "Essayez un autre mot ou vérifiez l’orthographe.",
     "clearSearch": "Effacer la recherche"
+  },
+  "AreaFacts": {
+    "capitalCity": "Capitale",
+    "population": "Pop. {count, number, ::compact-short .#}",
+    "populationWithYear": "Pop. {count, number, ::compact-short .#} ({year})",
+    "elevation": "Alt. {elevation, number} m",
+    "links": "Liens",
+    "website": "Site web",
+    "openStreetMap": "OpenStreetMap",
+    "wikipedia": "Wikipedia",
+    "wikidata": "Wikidata"
   },
   "CategoryCards": {
     "title": "Trouver des données dans {area}",
@@ -366,12 +373,12 @@
     "title": "Préférences",
     "language": "Langue",
     "languageDescription": "Utilisée sur tout le site et dans les e-mails que vous recevez.",
-    "reports": "Rapports par e-mail",
-    "reportsDescription": "Recevez des e-mails lorsque vos jeux de données enregistrés changent."
+    "emails": "E-mails",
+    "emailsDescription": "Recevez un e-mail quand une carte que vous avez demandée est prête, et un rapport des modifications apportées à vos jeux de données enregistrés."
   },
   "PreferencesForm": {
-    "enableReports": "Activer les rapports",
-    "frequency": "Fréquence :",
+    "enableEmails": "M'envoyer des e-mails sur mes jeux de données enregistrés",
+    "reportFrequency": "Fréquence du rapport",
     "daily": "Quotidien",
     "weekly": "Hebdomadaire",
     "language": "Langue"
@@ -425,8 +432,10 @@
     "key": "Clé",
     "value": "Valeur",
     "lastEditedBy": "Dernière modification par <link>{user}</link>",
+    "lastEditedOn": "Dernière modification le {date}",
     "mapLabel": "Carte interactive du jeu de données",
     "fullScreenMapLabel": "Carte interactive en plein écran du jeu de données",
+    "areaBasemapLabel": "Carte de la zone, encore sans données",
     "loadingMap": "Chargement de la carte...",
     "noDataAvailable": "Aucune donnée disponible. Les données seront automatiquement actualisées lorsque vous visiterez cette page.",
     "noGeographicData": "Aucune donnée géographique trouvée dans les résultats du jeu de données.",
@@ -441,7 +450,7 @@
     "veryOldChanges": "il y a plus de 90 jours",
     "legendViewLabel": "Colorer par",
     "legendOther": "Autre",
-    "legendMissing": "Manquant",
+    "legendMissing": "Non renseigné",
     "collapseLegend": "Masquer la légende",
     "expandLegend": "Afficher la légende"
   },
@@ -722,7 +731,7 @@
     "infrastructure": "Infrastructures",
     "housing": "Logement",
     "barriers": "Barrières",
-    "education-culture": "Éducation et culture",
+    "culture-religion": "Culture et religion",
     "education": "Éducation",
     "culture": "Culture",
     "religion": "Religion",
@@ -737,7 +746,7 @@
     "rail": "Rail",
     "cycling": "Vélo",
     "pedestrian": "Piétons",
-    "roads": "Routes et rues",
+    "roads": "Voirie",
     "traffic": "Circulation",
     "nature-environment": "Nature",
     "nature": "Éléments naturels",
@@ -745,14 +754,18 @@
     "agriculture": "Agriculture",
     "public-services": "Services publics",
     "emergency": "Urgences",
+    "medical-rescue": "Secours médical",
+    "firefighting": "Lutte contre l'incendie",
+    "civil-protection": "Sécurité civile",
     "government": "Administration",
     "social": "Social",
     "amenities": "Équipements",
+    "waste": "Déchets",
     "shops-services": "Commerces et services",
     "shops": "Commerces",
     "food": "Restauration",
-    "services": "Services",
-    "financial": "Finance"
+    "financial": "Finance",
+    "heritage": "Patrimoine"
   },
   "TagLabel": {
     "highway": "Type de voie",
@@ -837,7 +850,11 @@
     "organic": "Bio",
     "clothes": "Type de vêtements",
     "garden:type": "Type de jardin",
+    "natural": "Type",
     "leaf_type": "Type de feuillage",
+    "leaf_cycle": "Cycle foliaire",
+    "denotation": "Rôle de l'arbre",
+    "genus": "Genre",
     "water": "Type de plan d'eau",
     "wetland": "Type de zone humide",
     "trees": "Arbres cultivés",
@@ -852,7 +869,17 @@
     "fire_hydrant:pressure": "Pression",
     "cash_in": "Dépôt d'espèces",
     "indoor": "Intérieur",
-    "sport": "Sport"
+    "sport": "Sport",
+    "siren:purpose": "Usage de la sirène",
+    "siren:type": "Type de sirène",
+    "emergency:shelter_type": "Type de risque",
+    "artwork_type": "Type d'œuvre",
+    "archaeological_site": "Type de site",
+    "castle_type": "Type de château",
+    "heritage": "Niveau de protection",
+    "kerb": "Bordure",
+    "handrail": "Main courante",
+    "ramp": "Rampe"
   },
   "TagValue": {
     "__common__": {
@@ -860,6 +887,26 @@
       "no": "Non",
       "limited": "Limité",
       "unknown": "Inconnu"
+    },
+    "lit": {
+      "24/7": "24 h sur 24",
+      "automatic": "Avec détecteur de présence"
+    },
+    "highway": {
+      "motorway": "Autoroute",
+      "trunk": "Voie rapide",
+      "primary": "Route principale",
+      "secondary": "Route secondaire",
+      "tertiary": "Route tertiaire",
+      "residential": "Rue résidentielle",
+      "living_street": "Zone de rencontre",
+      "unclassified": "Route mineure",
+      "footway": "Chemin piéton",
+      "path": "Sentier",
+      "cycleway": "Piste cyclable",
+      "pedestrian": "Rue piétonne",
+      "steps": "Escalier",
+      "bridleway": "Sentier équestre"
     },
     "healthcare:speciality": {
       "general": "Médecine générale",
@@ -942,11 +989,33 @@
       "sculpture": "Sculpture",
       "stele": "Stèle"
     },
+    "natural": {
+      "tree": "Arbre",
+      "tree_row": "Alignement d'arbres",
+      "tree_group": "Bosquet"
+    },
     "leaf_type": {
       "broadleaved": "Feuillu",
       "needleleaved": "Résineux",
       "mixed": "Mixte",
       "leafless": "Sans feuilles"
+    },
+    "leaf_cycle": {
+      "evergreen": "Persistant",
+      "deciduous": "Caduc",
+      "semi_evergreen": "Semi-persistant",
+      "semi_deciduous": "Semi-caduc",
+      "mixed": "Mixte"
+    },
+    "denotation": {
+      "urban": "Arbre urbain",
+      "avenue": "Arbre d'alignement",
+      "park": "Arbre de parc",
+      "garden": "Arbre de jardin",
+      "agricultural": "Agricole",
+      "landmark": "Arbre remarquable",
+      "natural_monument": "Monument naturel",
+      "windbreak": "Brise-vent"
     },
     "fitness_station": {
       "horizontal_bar": "Barre fixe",
@@ -1101,7 +1170,9 @@
       "crossing": "Traversée",
       "traffic_island": "Îlot",
       "access_aisle": "Allée d'accès",
-      "link": "Liaison"
+      "link": "Liaison",
+      "alley": "Ruelle",
+      "steps": "Escalier"
     },
     "sidewalk": {
       "both": "Des deux côtés",
@@ -1147,6 +1218,55 @@
     "internet_access": {
       "wlan": "Wi-Fi",
       "terminal": "Borne"
+    },
+    "siren:purpose": {
+      "civil_defense": "Protection civile",
+      "fire": "Pompiers",
+      "tornado": "Tornade",
+      "air_raid": "Alerte aérienne",
+      "tsunami": "Tsunami"
+    },
+    "siren:type": {
+      "electronic": "Électronique",
+      "mechanical": "Mécanique",
+      "electromechanical": "Électromécanique",
+      "pneumatic": "Pneumatique"
+    },
+    "artwork_type": {
+      "sculpture": "Sculpture",
+      "statue": "Statue",
+      "mural": "Fresque",
+      "installation": "Installation",
+      "graffiti": "Graffiti",
+      "bust": "Buste",
+      "mosaic": "Mosaïque"
+    },
+    "archaeological_site": {
+      "tumulus": "Tumulus",
+      "fortification": "Fortification",
+      "megalith": "Mégalithe",
+      "settlement": "Habitat",
+      "mineral_extraction": "Mine ancienne",
+      "petroglyph": "Pétroglyphe"
+    },
+    "castle_type": {
+      "stately": "Château de plaisance",
+      "manor": "Manoir",
+      "defensive": "Château fort",
+      "palace": "Palais",
+      "fortress": "Forteresse"
+    },
+    "heritage": {
+      "1": "Patrimoine mondial",
+      "2": "National",
+      "4": "Régional",
+      "8": "Municipal"
+    },
+    "kerb": {
+      "lowered": "Abaissé",
+      "flush": "Affleurant",
+      "raised": "Surélevé",
+      "rolled": "Arrondi"
     }
   }
 }

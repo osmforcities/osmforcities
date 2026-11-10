@@ -22,6 +22,26 @@ const bicycleParkingFeature: Feature = {
   },
 };
 
+const TILE_TS = 1781524800;
+
+// Archives keep no editor metadata; selection copies "@id" onto "id"
+const tileFeature: Feature = {
+  type: "Feature",
+  geometry: { type: "Point", coordinates: [4.9, 52.37] },
+  properties: {
+    id: "node/1",
+    "@id": "node/1",
+    amenity: "bench",
+    _ts: TILE_TS,
+  },
+};
+
+const memberNodeFeature: Feature = {
+  type: "Feature",
+  geometry: { type: "Point", coordinates: [4.9, 52.37] },
+  properties: { id: "node/2", "@id": "node/2", _ts: 0 },
+};
+
 const noNameFeature: Feature = {
   type: "Feature",
   geometry: { type: "Point", coordinates: [-46.63, -23.55] },
@@ -85,6 +105,31 @@ export const NoName: Story = {
     // No name tag — fallback heading shows capitalized OSM type and ID
     await expect(canvas.getByRole("heading", { name: "Node 789012" })).toBeInTheDocument();
     await expect(canvas.getByText("wall_loops")).toBeInTheDocument();
+    await expect(canvas.queryByText(/Last edited by/i)).not.toBeInTheDocument();
+  },
+};
+
+export const FromTile: Story = {
+  args: {
+    feature: tileFeature,
+    onBack: fn(),
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByText("Last edited Jun 15, 2026")
+    ).toBeInTheDocument();
+    await expect(canvas.queryByText(/Last edited by/i)).not.toBeInTheDocument();
+    await expect(canvas.getByText("bench")).toBeInTheDocument();
+  },
+};
+
+export const MemberNode: Story = {
+  args: {
+    feature: memberNodeFeature,
+    onBack: fn(),
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.queryByText(/Last edited/i)).not.toBeInTheDocument();
   },
 };
 

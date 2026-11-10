@@ -25,7 +25,7 @@ export function AreaSearchResult({ area }: { area: AreaSearchResultData }) {
             {area.parents.join(", ")}
           </p>
         )}
-        {area.population !== null && (
+        {area.population !== undefined && (
           <p className="text-xs text-gray-500 mt-1" data-testid="area-population">
             {t("population", { count: area.population })}
           </p>

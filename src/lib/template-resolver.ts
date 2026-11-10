@@ -9,7 +9,7 @@ export async function resolveTemplate(identifier: TemplateIdentifier) {
       id: true,
       name: true,
       description: true,
-      category: true,
+      category: { include: { parent: { select: { slug: true } } } },
       tags: true,
       filterableTags: true,
       overpassQuery: true,

@@ -35,6 +35,10 @@ YAML is the source of truth; deploy runs the sync. No admin UI.
 - **filterableTags** — an allow-list of OSM tag *keys* (top-level `filterableTags:` map)
   that become interactive-legend "Color by" views + the "Critical coverage" stat block.
   Absent → age view only. Each key needs a `TagLabel` in every `messages/*.json`.
+- **defaultView** — the legend view the dataset map and the homepage featured map open
+  on (top-level `defaultView:` map, `template-id: tag`). The tag must be one of the
+  template's `filterableTags`. Absent, or the tag is missing from the data → "Last edited".
+  Use it when edit recency misleads, e.g. `buildings`, mostly old, reads as green areas.
 - **Demonstrator** — an OSM relation id (top-level `demonstrators:` map) whose real data
   shows the template at its best. Curation only: validated by the sync, never written to
   the DB. The workflow reads it to decide which datasets to inspect/seed.
@@ -53,18 +57,23 @@ Prereqs: local dev server, signed in (osmforcities-dev-auth), Overpass tunnel up
 1. **Propose** — a template is worth adding when it maps a distinct civic need, has a
    clean wiki-documented selector, and is neither so broad it trips the size cap nor so
    rare it is empty in most cities.
-2. **Define** — add the row, pick a seeded `category`, decide parent, add a Lucide `icon`, add name/description to `templates.i18n.yml`. Run `pnpm generate-icons` (validates the icon name, regenerates `src/lib/category-icons.tsx` and the email PNGs in `public/email-icons/`), then `pnpm db:sync`.
+2. **Define** — add the row, pick a seeded `category`, decide parent, add a [Pinhead](https://pinhead.ink) `icon` (required, the icon's file name without `.svg`, e.g. `bench_with_backrest`), add name/description to `templates.i18n.yml`. To find an icon, look up the tag's preset in the iD editor: most iD icons came into Pinhead under a new name, searchable on the Pinhead site. Run `pnpm generate-icons` (validates the icon id, regenerates `src/lib/category-icons.tsx`, the sprite in `public/template-icons/` and the email PNGs in `public/email-icons/`), then `pnpm db:sync`.
 3. **Choose `filterableTags`** — see below.
 4. **Pick demonstrators** — see below.
 5. **Seed / feature** — see Overpass budget below.
-6. **Ship** — commit `templates.yml`, `templates.i18n.yml`, `messages/*.json`, plus the generated `src/lib/category-icons.tsx` and any new or changed `public/email-icons/*.png`. Don't push or open a PR until the maintainer says so. On merge, deploy runs `db:sync`; removed templates soft-deprecate (30 days) then delete. A removed template merged into another goes under `replacedBy:` in `templates.yml` (`old-id: new-id`): its report email links the replacement and its dataset URLs redirect to it.
+6. **Ship** — commit `templates.yml`, `templates.i18n.yml`, `messages/*.json`, plus the generated `src/lib/category-icons.tsx`, `public/template-icons/*.svg` and any new or changed `public/email-icons/*.png`. Don't push or open a PR until the maintainer says so. On merge, deploy runs `db:sync`; removed templates soft-deprecate (30 days) then delete. A removed template merged into another goes under `replacedBy:` in `templates.yml` (`old-id: new-id`): its report email links the replacement and its dataset URLs redirect to it.
 
 ### Generated icon files
 
-`pnpm generate-icons` writes two committed outputs from `templates.yml`:
+Template icons are [Pinhead](https://pinhead.ink) map icons (CC0, `@waysidemapping/pinhead`), filled glyphs drawn for map symbols. Category and topic icons stay Lucide, like the rest of the UI. The two sets never share a grid: cards show template icons, topic and category pickers show category icons.
 
-- `src/lib/category-icons.tsx` — the app's template and category icons.
-- `public/email-icons/` — PNGs for emails: one 80px tile per template (its icon, else its category icon), `glyph-*.png` for report stats and warnings, and `_removed.png`, the neutral tile report rows use for removed templates.
+When Pinhead has no fitting icon, draw one in `prisma/custom-icons/<id>.svg`: a 15x15 viewBox, filled paths only, no fill attribute (e.g. `stairs` for steps). The generator looks up Pinhead first, then this folder. Keep it rare, and check the Pinhead site first.
+
+`pnpm generate-icons` writes three committed outputs from `templates.yml`:
+
+- `src/lib/category-icons.tsx` — the app's category icons (Lucide) and the template id to Pinhead id lookup.
+- `public/template-icons/<hash>.svg` — one sprite with a `<symbol>` per Pinhead icon in use. Cards draw icons with `<use href>`, so icon paths stay out of the client bundle. The file is named after its content hash and served with an immutable cache header (`next.config.mjs`); the generator deletes the previous sprite. The unit test `prisma/lib/__tests__/pinhead.test.ts` fails if a template icon is missing from it.
+- `public/email-icons/` — PNGs for emails: one 80px tile per template, `glyph-*.png` for report stats and warnings, and `_removed.png`, the neutral tile report rows use for removed templates.
 
 Emails need PNGs because email clients strip SVG, and static `.png` files cache on the CDN, so opening an email costs the server nothing. They are committed rather than built at deploy time to keep the on-server `next build` lean. Output is byte-identical across runs, so a template change shows only its own PNG in the diff. The unit test `prisma/lib/__tests__/email-icons.test.ts` fails if any template is missing its PNG. The generator only writes files: delete a removed template's PNG by hand if you want it gone.
 
@@ -518,14 +527,14 @@ active/featured set bounded.
   variant of "yes" (`yes`/`room`), not a real binary split.
 - **Public-category consolidation.** `fountains` → `amenities` with
   `[drinking_water]` (15-23% coverage, real no/yes/unknown split — tells you if
-  the fountain is potable, not just decorative). `clocks` → `services` with
+  the fountain is potable, not just decorative). `clocks` → `services` (now `amenities`) with
   `[display, support, visibility]` (all 27-48% coverage across Munich/Paris, real
   diversity: analog/digital/sundial; wall/pole/roof/street_lamp/…; area/street/house).
   `guideposts` (`tourism=guidepost`) and `markers`
   (`tourism=information;tourism=guidepost`) **removed** — `guideposts` returned 0
   features in every city checked; real-world guideposts are tagged
   `tourism=information` + `information=guidepost`, which `markers` was already
-  redundantly re-querying. `information-boards` (`tourism=information`) → `services`,
+  redundantly re-querying. `information-boards` (`tourism=information`) → `services` (now `amenities`),
   kept as the single template, with the `information` sub-tag promoted to
   `filterableTags` (`board`/`terminal`/`map`/`guidepost`/`office`/`route_marker`) —
   97% coverage in Paris (2.1k features), 100% in Munich (1.6k features). The `public`
@@ -654,7 +663,7 @@ favor of `natural=heath`/moorland and already inside the `natural-surfaces` unio
 feature's own tag already *is* its type, or the only sub-keys are numeric/identity):
 housing (apartments/houses/residential/dormitories); most nature/landcover (peaks, cliffs,
 caves, coastlines, springs, glaciers, grasslands, scrub, heath, sand, rock, the
-`natural-surfaces` umbrella, urban-trees/street-trees, etc.); most agriculture (farmland —
+`natural-surfaces` umbrella, etc.); most agriculture (farmland —
 `crop` only ~3-10%; the building/`man_made` structures — barns, silos, greenhouses,
 slurry/manure stores, etc.); most infrastructure (street-lamps, chimney, mast, water-tower,
 water-works, pumping-station, utility-pole, tailings-pond); barriers — walls/hedges
@@ -677,6 +686,7 @@ candidate but kept). The niche farmyard sub-values (feedlot/stockyard/poultry/da
 - **footways** — `[surface, lit, smoothness]`. `surface` 72%, `lit` 46%, `smoothness` 25% in Munich. Even on a pedestrian path the blind/kerb a11y keys stay off: `tactile_paving` 0.6%, `wheelchair` 4%, `incline` 1% — that data lives on the crossing nodes, not the footway ways. `surface`/`smoothness` are the accessibility-quality proxies that actually sit on the way. Later added `footway` first (sidewalk/crossing/traffic_island/access_aisle/link) so sidewalks separate from park paths ([#517]).
 - **cycleways** — `[surface, lit, oneway, smoothness]`. Strong across cycling cities (Utrecht/
   Munich 59–89%). `segregated`/`width` too sparse to keep.
+- **cycle-lanes** — `[lit]`. Lanes and tracks tagged on the road way (`cycleway`, `cycleway:left|right|both` = `lane|track|shared_lane|share_busway|opposite_lane|opposite_track`), the wiki's documented values minus the mapped absences `no` and `separate`. Separate from `cycleways` so saved cycleway datasets keep their meaning. It is the larger network outside the Netherlands: New York 10.6k ways vs 2.5k cycleways, São Paulo 4.6k vs 1.8k, Berlin 12.8k vs 11.3k ([#503]). `surface` and `oneway` sit on the road, so they describe the road, not the lane: Berlin tracks carry their own `cycleway:*:surface`, and São Paulo contraflow lanes run against the road's `oneway`. `lit` applies to both. Lane type has no single color-by key, as with `bus-lanes`: it is split across four keys.
 
 ### Rail and bus additions
 
@@ -708,6 +718,23 @@ sit on the sibling road or crossing node, not the queried element.
 - **farm-auxiliary** absorbs `building=agricultural` (a rare synonym, 32K uses vs 2.4M). The `agricultural-buildings` template is removed, `replacedBy: farm-auxiliary`.
 - **livestock-buildings** — broadened to `building=livestock;cowshed;stable;sty;barn`, since `building=livestock` alone is the fallback when the precise value is unknown (8.6K uses). The specific templates stay.
 - **bridges** is renamed "Bridge outlines": `man_made=bridge` is the optional outline, not the `bridge=yes` way, so it counts drawn outlines, not bridges.
+
+### Agriculture consolidation ([#662])
+
+Counted per template in farm towns (Vechta, Cloppenburg, Uelzen, Gifhorn, Münster, Kempten, Fresno, Petrolina, Rio Verde, Sorriso, Almería) on our Overpass, Nov 2026. 24 templates down to 11.
+
+- **farmyards** absorbs `feedlots`, `stockyards`, `poultry-yards`, `dairy-yards`. `farmyard=*` subtypes sit on `landuse=farmyard` areas, and all four were 0 in every town.
+- **livestock-buildings** absorbs `cowsheds`, `pig-sties`, `stables` (at most 43 per town). It drops `building=barn` (added in #517): barns have their own template, and the wiki describes barns as storage.
+- **silos** absorbs `bunker-silos` (`man_made=bunker_silo`, 4-57 in German towns, 0 elsewhere).
+- **agricultural-tanks**, renamed "Slurry and silage storage", absorbs `slurry-basins`, `slurry-tanks`, `manure-storage`. Combined it is still small (10-15 in the best German towns) but present.
+- **Removed:** `animal-keeping` (1 feature in all towns), `irrigated-green` and `irrigation-canals`. Irrigation is mapped at province scale: Lleida province has 112 irrigation waterways, its city 0. Fresno, Murcia, Mendoza, Petrolina and the German towns are 0-5. `usage=irrigation` (73K uses) is the main waterway tag, not `irrigation=yes` (8K), but adding it doesn't change city counts.
+
+### Trees ([#660])
+
+- One **trees** template (`natural=tree;natural=tree_row;natural=tree_group`) replaces `urban-trees`, `street-trees`, `trees-with-species` and `vegetation-risk-context`, all `replacedBy: trees`. Street trees mapped one by one carry `denotation=avenue`, which `street-trees` (rows only) missed. Species presence is a filter question, not a template. `vegetation-risk-context` also had `natural=wood`. Woods stay in `woods` and `natural-vegetation`, not in `trees`. `natural=tree_group` is in for wiki alignment but near-absent today (Berlin 3, Munich 2, Paris 0).
+- `[natural, leaf_type, leaf_cycle, denotation, genus]`. `natural` splits single trees, rows and groups. Global coverage on tree nodes (taginfo, Oct 2026): leaf_type 24%, leaf_cycle 14%, denotation 10%, genus 5%. `species` (6%) stays out: too many values for a legend.
+- `height` and `circumference` wait for numeric tags ([#441]). Both are intensive (a range, not a total).
+- Demonstrators by measured coverage: Santiago (all four keys 24-42%), Paris (genus 86%), Berlin (leaf_cycle 60%). Barcelona, Buenos Aires, Montreal and New York sit under 15% on every key.
 
 ### Civic, retail & remaining domains (batch)
 
@@ -767,6 +794,58 @@ agriculture, infrastructure, housing, environment).
   (waterfall/dam), and the remaining outdoor barriers (walls/fences/hedges). Natural and
   structural features carry no single well-covered usability key to color by.
 
+### Disaster preparedness ([#479])
+
+Part of the disaster epic ([#478]). Emergency is its own topic, split into the categories of the OSM wiki's "Emergency facilities and amenities" page, which groups by who responds: `medical-rescue` (ambulance stations, defibrillators), `firefighting` (fire stations, hydrants, water sources) and `civil-protection` (assembly points, sirens, shelters, emergency phones). iD has no emergency grouping and JOSM keeps one flat group. The move broke the old `/topics/public-services/emergency` URL, accepted as low-traffic.
+
+- **assembly-points** (`emergency=assembly_point`) — **age-view only.** The wiki's hazard keys (`assembly_point:earthquake`, `:flood`, `:tsunami`...) are one boolean key per hazard, so fragmented, and 0% in every area tested (Berlin, Munich, Hamburg, Vienna, Taipei, Paris). `operator` is the host site's name (a school, a hotel), the doctors trap. Outdoor gathering place, so no `wheelchair`.
+- **sirens** (`emergency=siren`) — `[siren:purpose, siren:type, operator]`. `purpose` is near-universal where sirens are mapped and mostly `civil_defense` locally, with `fire`/`tornado`/`air_raid` elsewhere (skewed is fine). `operator` is the civil-protection authority here, not a site name. Dropped `siren:range` (0%). Mapped in Central Europe; NYC and Zurich return none, Oklahoma City a thin untagged set.
+- **firefighting-water-sources** (`emergency=water_tank;emergency=fire_water_pond;emergency=suction_point`) — **age-view only.** The natural color-by is the `emergency` value itself, but `TagLabel` is global per key and `emergency` reads "Emergency care" for hospitals. `water_tank:volume` is free-form numbers (`120.000`, `300000`), a numeric-tag candidate ([#441]), not a legend.
+- **emergency-shelters** (`emergency:social_facility=shelter`) — `[emergency:shelter_type, wheelchair]`. The only wiki-documented disaster-shelter tag (~9k uses, mostly Taiwan and the Philippines). `emergency=shelter` is undocumented (26 uses); `social_facility=shelter` is homeless and refugee housing, already in `social-facility`. Dropped `emergency:social_facility:for` and `evacuation_center` (single-valued). `emergency:shelter_type` stays raw: free-text hazard lists (`水災,震災`), no `TagValue` map.
+
+### Heritage, cemeteries, shrines and public art ([#717])
+
+Education and culture gains a `heritage` category for historic places: `monuments` and `memorials` move in from `culture`, which keeps venues plus public art. `religion` grows past places of worship to burial places and street shrines, with descs that name no single faith. Coverage from taginfo (2026-11-05):
+
+- **cemeteries** (`landuse=cemetery;amenity=grave_yard`) — `[religion, denomination]`, no default view: `religion` on 21%.
+- **shrines** (`historic=wayside_shrine`) — `[religion, denomination]`, default `religion` (64%, below memorials' 72% but the type key places of worship already open on). Spirit houses in Bangkok, jizo in Kyoto and roadside grottos in Latin America share this tag.
+- **artwork** (`tourism=artwork`) — `[artwork_type]`, default `artwork_type` (85%: sculpture, statue, mural, installation, then graffiti, bust and mosaic at 1-3%). Graffiti and street art map only when notable, per the wiki.
+- **heritage-sites** (`heritage=*`) — filters and opens on the OSM `heritage` key (not the category of the same name). The value is the admin level of the protecting body: `TagValue` labels 1, 2, 4 and 8 (world, national, regional, municipal), other levels stay raw because their meaning varies by country. `heritage:operator` (80%) is left out: short registry codes (`mhs`, `nrhp`), not readable legend rows.
+- **archaeological-sites** (`historic=archaeological_site`) — `[archaeological_site]`, default `archaeological_site` (75%: tumulus, fortification, megalith, then settlement, mineral extraction and petroglyph at 1-3%).
+- **castles** (`historic=castle`) — `[castle_type]`, no default view: `castle_type` on 51%.
+- **ruins** (`historic=ruins`) — **age-view only.** `ruins=*` is on 22%, and 74% of its uses are a bare `yes`, so a legend would be one row.
+
+### Education, culture and religion topics ([#722])
+
+`education-culture` split in two, as tourism did: `education` is a topic with no subcategories, `culture-religion` holds `culture`, `heritage` and `religion`. `/topics/education-culture` had been a sidebar topic on every area page since the area hub shipped, unlike the low-traffic emergency URL above, so `next.config.mjs` redirects it (and any category below it) to the area page.
+
+### Steps, kerbs and sidewalks ([#81])
+
+Three `pedestrian` templates for walkability. Coverage from taginfo, worldwide (2026-11-05):
+
+- **steps** (`highway=steps`) — `[handrail, ramp, lit]`, no default view: `handrail` on 33%. `step_count` (23%) is numeric, left for [#441]. `incline` (46%) is up or down relative to the way's direction, so it means nothing as a legend.
+- **kerbs** (`barrier=kerb`) — `[kerb, tactile_paving]`, default `kerb` (73%: lowered 68%, flush 16%, raised 10%).
+- **sidewalks** (`sidewalk=*` and the side keys on roads) — `[sidewalk, lit]`, no default view: matches tagged only with a side key carry no `sidewalk`. Explicit values, like `cycle-lanes`: `no` and `none` are mapped absences. The side keys only take `yes` and `separate` (other values under 0.1%). `separate` stays: the road has a sidewalk, drawn as its own way, which `footways` shows.
+
+### Cycling infrastructure ([#505])
+
+`cycling-infrastructure` is the umbrella over `cycleways` and `cycle-lanes`: "everything cyclable" without knowing the two mapping schemes. Its query is the union of the children's, and a unit test fails if a parent's query misses any child selector. Overpass unions the matches, so a road with lanes on both sides counts once. `[lit]` only, like `cycle-lanes`: on lanes `surface` and `oneway` describe the road. Cycle routes join when relation geometry lands ([#504]).
+
+### Car-free paths and the first special city ([#742])
+
+Houten (NL, relation 419211) is built around cycleways and footpaths, and `footways` showed about three quarters of that network there. A special city is a city picked for a theme and used to tune templates and map views. It is recorded as a demonstrator and its dataset is featured by an admin after release. No new product concept.
+
+- **footways** gains `highway=pedestrian`, which no template matched in any city. Cycleways stay out: outside the Netherlands a cycleway is not a walking surface, and the query language has no negation for "unless `foot=no`".
+- **car-free-paths** unions `highway=footway`, `path`, `cycleway`, `pedestrian`, `steps` and `bridleway`, and opens on `highway`, the same pattern as `roads`.
+  - `living_street` and `track` stay out because motor vehicles circulate on them.
+  - `footway` separates sidewalks and crossings from other footways where they are drawn as their own ways, as in Lisbon, the second demonstrator. In Houten it is mostly unset. Utrecht, the third, shows the same network as Houten at city scale.
+  - Category `pedestrian`: every way in it is walkable, not every way is cyclable. No parent and no children, since `cycleways` already has a parent.
+  - "Paths", not "network": the template lists ways and makes no connectivity claim.
+- `highway` value labels existed only for road classes, so the six way types got `TagValue` labels in every locale, worded after the iD presets.
+- Pedestrian plazas (closed ways with `area=yes`) draw as filled polygons and read well next to the lines, checked on the Houten dashboard.
+- Icon `person_walking_and_person_riding_bicycle`, found by name in Pinhead: iD has no preset for a union of way types.
+- Amsterdam and Munich are over the size cap. With the tiler running, Amsterdam is served from the archive.
+
 ## Validation the sync enforces
 
 `prisma/lib/template-parser.ts` (tests: `prisma/lib/__tests__/template-parser.test.ts`).
@@ -776,10 +855,24 @@ agriculture, infrastructure, housing, environment).
 - Unknown parent id.
 - Malformed `demonstrators` — scalar/array root, unknown template id, `area` that is not
   a positive integer, non-string `note`.
+- Malformed `defaultView` — non-map root, unknown template id, tag outside the template's
+  `filterableTags`.
 
 **Warns** (non-blocking):
 
 - Unknown template id under `filterableTags` — a typo there only leaves that one template
   age-view-only, so it never blocks the seed/deploy.
 
+[#81]: https://github.com/osmforcities/osmforcities/issues/81
+[#478]: https://github.com/osmforcities/osmforcities/issues/478
+[#479]: https://github.com/osmforcities/osmforcities/issues/479
+[#503]: https://github.com/osmforcities/osmforcities/issues/503
+[#504]: https://github.com/osmforcities/osmforcities/issues/504
+[#505]: https://github.com/osmforcities/osmforcities/issues/505
 [#517]: https://github.com/osmforcities/osmforcities/issues/517
+[#441]: https://github.com/osmforcities/osmforcities/issues/441
+[#660]: https://github.com/osmforcities/osmforcities/issues/660
+[#742]: https://github.com/osmforcities/osmforcities/issues/742
+[#662]: https://github.com/osmforcities/osmforcities/issues/662
+[#717]: https://github.com/osmforcities/osmforcities/issues/717
+[#722]: https://github.com/osmforcities/osmforcities/issues/722

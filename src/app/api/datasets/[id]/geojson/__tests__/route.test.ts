@@ -1,162 +1,116 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
-import { Prisma } from "@prisma/client";
+
+vi.mock("@/lib/db", () => ({
+  prisma: { dataset: { findUnique: vi.fn() } },
+}));
+
 import { GET } from "../route";
 
-function makeRequest(id: string, search = "") {
-  return new NextRequest(
-    `http://localhost:3000/api/datasets/${id}/geojson${search}`
+const CACHE_CONTROL =
+  "public, max-age=300, s-maxage=300, stale-while-revalidate=3600";
+
+const properties = {
+  "@id": "way/1",
+  "@timestamp": "2020-01-01T00:00:00Z",
+  building: "house",
+  name: "A",
+};
+
+const datasetRow = (isFeatured: boolean, defaultView: string | null) => ({
+  isFeatured,
+  geojson: {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        geometry: { type: "Point", coordinates: [1.23456789, -9.87654321] },
+        properties,
+      },
+    ],
+  },
+  template: { defaultView },
+});
+
+const datasetsById = new Map<string, ReturnType<typeof datasetRow>>();
+
+function findDataset({
+  where,
+}: {
+  where: { id: string; isFeatured?: boolean };
+}) {
+  const row = datasetsById.get(where.id);
+  const matches =
+    row && (where.isFeatured === undefined || row.isFeatured === where.isFeatured);
+  return Promise.resolve(matches ? row : null);
+}
+
+const call = (id: string, search = "") =>
+  GET(
+    new NextRequest(`http://localhost:3000/api/datasets/${id}/geojson${search}`),
+    { params: Promise.resolve({ id }) }
   );
-}
 
-type Coordinates = number | Coordinates[];
+describe("GET /api/datasets/[id]/geojson", () => {
+  beforeEach(() => {
+    datasetsById.clear();
+    datasetsById.set("featured", datasetRow(true, "building"));
+    datasetsById.set("no-view", datasetRow(true, null));
+    datasetsById.set("not-featured", datasetRow(false, "building"));
+    vi.mocked(prisma.dataset.findUnique).mockImplementation(
+      findDataset as never
+    );
+  });
 
-function collectNumbers(coords: Coordinates, out: number[] = []): number[] {
-  if (typeof coords === "number") {
-    out.push(coords);
-  } else {
-    coords.forEach((c) => collectNumbers(c, out));
-  }
-  return out;
-}
+  it("returns the full geojson with cache headers for a featured dataset", async () => {
+    const res = await call("featured");
 
-// Skipped: reads real rows from the Playwright test DB (port 5433, seeded by
-// its global-setup), which the unit CI job does not have.
-describe.skip("GET /api/datasets/[id]/geojson", () => {
-  let testDatasetId: string;
-  let originalIsFeaturedValue: boolean;
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Content-Type")).toBe("application/geo+json");
+    expect(res.headers.get("Cache-Control")).toBe(CACHE_CONTROL);
+    const body = await res.json();
+    expect(body.features[0].properties).toEqual(properties);
+    expect(body.features[0].geometry.coordinates).toEqual([
+      1.23456789, -9.87654321,
+    ]);
+  });
 
-  beforeAll(async () => {
-    const datasets = await prisma.dataset.findMany({
-      where: { geojson: { not: Prisma.AnyNull } },
-      take: 1,
-      select: { id: true, isFeatured: true },
+  it("?slim keeps the timestamp and default view tag, truncates coordinates", async () => {
+    const res = await call("featured", "?slim");
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Content-Type")).toBe("application/geo+json");
+    expect(res.headers.get("Cache-Control")).toBe(CACHE_CONTROL);
+    const [feature] = (await res.json()).features;
+    expect(feature.properties).toEqual({
+      "@timestamp": properties["@timestamp"],
+      building: "house",
     });
+    expect(feature.geometry.coordinates).toEqual([1.234568, -9.876543]);
+  });
 
-    if (datasets.length === 0) {
-      throw new Error("No datasets with geojson found in test database");
+  it("?slim keeps only the timestamp without a default view", async () => {
+    const res = await call("no-view", "?slim");
+
+    expect((await res.json()).features[0].properties).toEqual({
+      "@timestamp": properties["@timestamp"],
+    });
+  });
+
+  it.each(["", "?slim"])(
+    "returns 404 for a non-featured dataset (%s)",
+    async (search) => {
+      const res = await call("not-featured", search);
+
+      expect(res.status).toBe(404);
+      expect((await res.json()).error).toBe("Dataset or GeoJSON not found");
     }
+  );
 
-    testDatasetId = datasets[0].id;
-    originalIsFeaturedValue = datasets[0].isFeatured;
-  });
+  it("returns 404 for a missing dataset", async () => {
+    const res = await call("missing");
 
-  afterAll(async () => {
-    await prisma.dataset.update({
-      where: { id: testDatasetId },
-      data: { isFeatured: originalIsFeaturedValue },
-    });
-  });
-
-  it("should return geojson with cache headers for a featured dataset", async () => {
-    await prisma.dataset.update({
-      where: { id: testDatasetId },
-      data: { isFeatured: true },
-    });
-
-    const response = await GET(makeRequest(testDatasetId), {
-      params: Promise.resolve({ id: testDatasetId }),
-    });
-
-    expect(response.status).toBe(200);
-    expect(response.headers.get("Content-Type")).toBe("application/geo+json");
-    expect(response.headers.get("Cache-Control")).toBe(
-      "public, max-age=300, s-maxage=300, stale-while-revalidate=3600"
-    );
-    const body = await response.json();
-    expect(body.type).toBe("FeatureCollection");
-  });
-
-  it("should return a slim payload for ?slim", async () => {
-    await prisma.dataset.update({
-      where: { id: testDatasetId },
-      data: { isFeatured: true },
-    });
-
-    const response = await GET(makeRequest(testDatasetId, "?slim"), {
-      params: Promise.resolve({ id: testDatasetId }),
-    });
-
-    expect(response.status).toBe(200);
-    expect(response.headers.get("Content-Type")).toBe("application/geo+json");
-    expect(response.headers.get("Cache-Control")).toBe(
-      "public, max-age=300, s-maxage=300, stale-while-revalidate=3600"
-    );
-
-    const body = await response.json();
-    expect(body.type).toBe("FeatureCollection");
-    expect(body.features.length).toBeGreaterThan(0);
-
-    for (const feature of body.features) {
-      // Only the age-bucketing timestamp survives; all OSM tags dropped
-      const keys = Object.keys(feature.properties);
-      expect(
-        keys.every((key) => key === "@timestamp"),
-        `unexpected properties: ${keys.join(", ")}`
-      ).toBe(true);
-
-      // Geometry preserved with coordinates truncated to 6 decimals
-      expect(feature.geometry).toBeDefined();
-      for (const value of collectNumbers(feature.geometry.coordinates)) {
-        expect(value).toBe(Math.round(value * 1e6) / 1e6);
-      }
-    }
-  });
-
-  it("should return full properties without slim param", async () => {
-    await prisma.dataset.update({
-      where: { id: testDatasetId },
-      data: { isFeatured: true },
-    });
-
-    const response = await GET(makeRequest(testDatasetId), {
-      params: Promise.resolve({ id: testDatasetId }),
-    });
-
-    expect(response.status).toBe(200);
-    const body = await response.json();
-    // Full payload keeps OSM metadata beyond @timestamp (e.g. @id, tags)
-    const hasExtraProps = body.features.some(
-      (feature: { properties: Record<string, unknown> }) =>
-        Object.keys(feature.properties).some((key) => key !== "@timestamp")
-    );
-    expect(hasExtraProps).toBe(true);
-  });
-
-  it("should return 404 for ?slim on a non-featured dataset", async () => {
-    await prisma.dataset.update({
-      where: { id: testDatasetId },
-      data: { isFeatured: false },
-    });
-
-    const response = await GET(makeRequest(testDatasetId, "?slim"), {
-      params: Promise.resolve({ id: testDatasetId }),
-    });
-
-    expect(response.status).toBe(404);
-  });
-
-  it("should return 404 for a non-featured dataset", async () => {
-    await prisma.dataset.update({
-      where: { id: testDatasetId },
-      data: { isFeatured: false },
-    });
-
-    const response = await GET(makeRequest(testDatasetId), {
-      params: Promise.resolve({ id: testDatasetId }),
-    });
-
-    expect(response.status).toBe(404);
-    const body = await response.json();
-    expect(body.error).toBe("Dataset or GeoJSON not found");
-  });
-
-  it("should return 404 for a non-existent dataset", async () => {
-    const response = await GET(makeRequest("invalid-id"), {
-      params: Promise.resolve({ id: "invalid-id" }),
-    });
-
-    expect(response.status).toBe(404);
+    expect(res.status).toBe(404);
   });
 });

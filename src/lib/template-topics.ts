@@ -47,6 +47,16 @@ export function areaBrowsePath(areaId: string, topicSlug?: string, categorySlug?
   return categorySlug ? `${topicPath}/${categorySlug}` : topicPath;
 }
 
+/** A category without a parent is a topic itself, so it opens the topic, not its "Other" group. */
+export function categoryPagePath(
+  areaId: number,
+  category: { slug: string; parent: { slug: string } | null }
+): string {
+  return category.parent
+    ? areaBrowsePath(String(areaId), category.parent.slug, category.slug)
+    : areaBrowsePath(String(areaId), category.slug);
+}
+
 /** A legacy ?category= naming a topic itself opens the topic, not its "Other" group. */
 export function categoryBrowsePath(
   areaId: string,

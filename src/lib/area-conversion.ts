@@ -79,6 +79,80 @@ function parseCenter(lat: string, lon: string): { centerLat?: number; centerLon?
   return { centerLat, centerLon };
 }
 
+export function parsePopulation(value: string | undefined): number | undefined {
+  const population = Number(trimmedIfMatches(value, /^\d+$/));
+  return population > 0 ? population : undefined;
+}
+
+function trimmedIfMatches(value: string | undefined, pattern: RegExp): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed && pattern.test(trimmed) ? trimmed : undefined;
+}
+
+// Any mapper can edit these tags: values that end up in a link or image URL are allowlisted, never passed through
+function parseAreaFacts(tags: Record<string, string>) {
+  const population = parsePopulation(tags.population);
+  const populationDate = trimmedIfMatches(tags["population:date"], /^\d{4}(-\d{2}){0,2}$/);
+  const elevation = trimmedIfMatches(tags.ele, /^-?\d+(\.\d+)?$/);
+  return {
+    population,
+    populationYear: population === undefined ? undefined : populationDate?.slice(0, 4),
+    elevation: elevation === undefined ? undefined : Number(elevation),
+    // capital=<n> names the admin level it is the capital of; 2 is the country
+    isCapital: tags.capital === "yes" || tags.capital === "2",
+    wikipedia: trimmedIfMatches(tags.wikipedia, /^[a-z][a-z-]*:[^\s/]/),
+    wikidata: trimmedIfMatches(tags.wikidata, /^Q\d+$/),
+    website: parseWebsite(tags.website),
+    flagFile: parseCommonsFile(tags.flag),
+  };
+}
+
+// Also runs in the browser (area search), where URL.parse is too new for older Safari
+function parseUrl(value: string | undefined): URL | undefined {
+  try {
+    return new URL(value?.trim() ?? "");
+  } catch {
+    return undefined;
+  }
+}
+
+function parseWebsite(value: string | undefined): string | undefined {
+  const url = parseUrl(value);
+  return url && ["http:", "https:"].includes(url.protocol) ? url.href : undefined;
+}
+
+/** OSM writes image tags as `File:<name>` or as a Commons upload URL; anything else could be any host. */
+function parseCommonsFile(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  if (trimmed?.startsWith("File:")) return trimmed.slice("File:".length) || undefined;
+  const url = parseUrl(trimmed);
+  if (url?.hostname !== "upload.wikimedia.org") return undefined;
+  // A thumbnail path repeats the file name with a size prefix after it, so read the segment after the hash folders
+  const file = url.pathname.match(/^\/wikipedia\/commons\/(?:thumb\/)?[0-9a-f]\/[0-9a-f]{2}\/([^/]+)/)?.[1];
+  if (!file) return undefined;
+  try {
+    return decodeURIComponent(file);
+  } catch {
+    return undefined;
+  }
+}
+
+export function commonsImageUrl(file: string): string {
+  return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=320`;
+}
+
+/** `wikipedia` is the OSM tag, `<lang>:<title>[#<section>]`. */
+export function wikipediaUrl(wikipedia: string): string {
+  const separator = wikipedia.indexOf(":");
+  const lang = wikipedia.slice(0, separator);
+  const [title, section] = wikipedia
+    .slice(separator + 1)
+    .replaceAll(" ", "_")
+    .split("#", 2)
+    .map(encodeURIComponent);
+  return `https://${lang}.wikipedia.org/wiki/${title}${section ? `#${section}` : ""}`;
+}
+
 export function fromNominatim(result: NominatimResult): Area {
   validateId(result.osm_id);
 
@@ -99,6 +173,7 @@ export function fromNominatim(result: NominatimResult): Area {
     countryCode: result.address?.country_code?.toLowerCase().trim(),
     country: result.address?.country?.trim(),
     state: result.address?.state?.trim(),
+    ...parseAreaFacts(result.extratags ?? {}),
   };
 }
 

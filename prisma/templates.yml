@@ -1,272 +1,289 @@
 # Template definitions for OSM for Cities (logic only)
-# Format: [id, query, category, icon?, parent?]
+# Format: [id, query, category, icon, parent?]
 # Composite queries: ; = OR, & = AND. Example: highway=footway;highway=path&surface=paved
-# Icons are Lucide icon names, validated by pnpm generate-icons.
-# Templates without an icon fall back to their category icon (categories section below).
+# Template icons are Pinhead ids (file names at https://pinhead.ink) or prisma/custom-icons file names, required, validated by pnpm generate-icons.
+# Category icons (categories section below) are Lucide icon names.
 
 templates:
 # Mobility: transit, cycling, other
-  - ["bicycle-parking","amenity=bicycle_parking","cycling","Bike"]
-  - ["bicycle-rental","amenity=bicycle_rental","cycling","Bike"]
+  - ["bicycle-parking","amenity=bicycle_parking","cycling","wide_p_with_bicycle"]
+  - ["bicycle-rental","amenity=bicycle_rental","cycling","bicycle_and_arrow_right_above_arrow_left"]
   # Parent template for public transit
-  - ["public-transit","highway=bus_stop;railway=station;railway=tram_stop;railway=subway_entrance;public_transport=platform","mobility","Train"]
-  - ["bus-stops","highway=bus_stop","bus","Bus","public-transit"]
-  - ["ev-charging","amenity=charging_station","mobility","Zap"]
-  - ["railway-stations","railway=station","rail","Train","public-transit"]
-  - ["tram-stops","railway=tram_stop","rail","TramFront","public-transit"]
-  - ["subway-entrances","railway=subway_entrance","rail","TrainFrontTunnel","public-transit"]
-  - ["transit-platforms","public_transport=platform","mobility","RailSymbol","public-transit"]
-  - ["ferry-terminals","amenity=ferry_terminal","mobility","Ship"]
-  - ["taxi-ranks","amenity=taxi","mobility","CarTaxiFront"]
-  - ["parking","amenity=parking;amenity=parking_space","roads","SquareParking"]
+  - ["public-transit","highway=bus_stop;railway=station;railway=tram_stop;railway=subway_entrance;public_transport=platform","mobility","transit_vehicle_with_destination_display"]
+  - ["bus-stops","highway=bus_stop","bus","bus_with_destination_display","public-transit"]
+  - ["ev-charging","amenity=charging_station","mobility","charging_station_with_bolt"]
+  - ["railway-stations","railway=station","rail","transit_vehicle_on_railway_track","public-transit"]
+  - ["tram-stops","railway=tram_stop","rail","tram_with_destination_display_and_pantograph_on_tram_track","public-transit"]
+  - ["subway-entrances","railway=subway_entrance","rail","transit_vehicle_with_destination_display_on_railway_track_in_tunnel","public-transit"]
+  - ["transit-platforms","public_transport=platform","mobility","person_boarding_transit_vehicle_with_destination_display","public-transit"]
+  - ["ferry-terminals","amenity=ferry_terminal","mobility","ferryboat"]
+  - ["taxi-ranks","amenity=taxi","mobility","taxi"]
+  - ["parking","amenity=parking;amenity=parking_space","roads","car_on_parking_line"]
   # Rail network (tracks/lines) - complements public-transit stops
-  - ["rail-tracks","railway=tram;railway=subway;railway=light_rail;railway=rail","rail","TrainTrack"]
+  - ["rail-tracks","railway=tram;railway=subway;railway=light_rail;railway=rail","rail","railway_track"]
   # Bus rapid transit: segregated corridors (highway=busway) and on-street lanes
-  - ["busways","highway=busway","bus","BusFront"]
+  - ["busways","highway=busway","bus","bus_within_guideway"]
   # busway=* is deprecated but still holds most data, so old and new keys both count
-  - ["bus-lanes","busway=lane;busway:left=lane;busway:right=lane;busway:both=lane;lanes:bus=*;lanes:bus:forward=*;lanes:bus:backward=*;bus:lanes=*;bus:lanes:forward=*;bus:lanes:backward=*","bus","Milestone"]
+  - ["bus-lanes","busway=lane;busway:left=lane;busway:right=lane;busway:both=lane;lanes:bus=*;lanes:bus:forward=*;lanes:bus:backward=*;bus:lanes=*;bus:lanes:forward=*;bus:lanes:backward=*","bus","bus"]
 # Financial
-  - ["atms","amenity=atm","financial","Banknote"]
-  - ["banks","amenity=bank","financial","Landmark"]
+  - ["atms","amenity=atm","financial","banknote_in_slot"]
+  - ["banks","amenity=bank","financial","banknote"]
 # Amenities
-  - ["public-toilets","amenity=toilets","amenities","Toilet"]
-  - ["drinking-water","amenity=drinking_water","amenities","Droplet"]
-  - ["post-offices","amenity=post_office","amenities","Mail"]
-  - ["parcel-lockers","amenity=parcel_locker","amenities","Package"]
-  - ["shower","amenity=shower","amenities","ShowerHead"]
-  - ["public-bookcase","amenity=public_bookcase","amenities","BookOpen"]
-  - ["luggage-lockers","amenity=luggage_locker","amenities","Luggage"]
-  - ["post-boxes","amenity=post_box","amenities","Mailbox"]
-  - ["give-box","amenity=give_box","amenities","Gift"]
+  - ["public-toilets","amenity=toilets","amenities","sitting_tank_toilet"]
+  - ["drinking-water","amenity=drinking_water","amenities","water_tap_with_drinking_glass"]
+  - ["post-offices","amenity=post_office","amenities","envelope"]
+  - ["parcel-lockers","amenity=parcel_locker","amenities","lockers_terminal"]
+  - ["shower","amenity=shower","amenities","showerhead_with_spray"]
+  - ["public-bookcase","amenity=public_bookcase","amenities","open_book_under_roof"]
+  - ["luggage-lockers","amenity=luggage_locker","amenities","suitcase_under_key"]
+  - ["post-boxes","amenity=post_box","amenities","post_box"]
+  - ["give-box","amenity=give_box","amenities","giftwrapped_box"]
 # Healthcare
-  - ["hospitals","amenity=hospital","healthcare","Hospital"]
-  - ["clinics","amenity=clinic","healthcare","Stethoscope"]
-  - ["doctors","amenity=doctors","healthcare","Stethoscope"]
-  - ["dentists","amenity=dentist","healthcare","SmilePlus"]
-  - ["pharmacies","amenity=pharmacy","healthcare","Pill"]
-  - ["health-post","amenity=health_post","healthcare","Cross"]
-  - ["nursing-home","amenity=nursing_home","healthcare","BedDouble"]
-  - ["veterinary","amenity=veterinary","healthcare","PawPrint"]
-  - ["opticians","shop=optician","healthcare","Glasses"]
-  - ["medical-laboratories","healthcare=laboratory","healthcare","FlaskConical"]
-  - ["psychotherapists","healthcare=psychotherapist","healthcare","Armchair"]
-  - ["physiotherapists","healthcare=physiotherapist","healthcare","Dumbbell"]
-  - ["optometrists","healthcare=optometrist","healthcare","Eye"]
-  - ["podiatrists","healthcare=podiatrist","healthcare","Footprints"]
-  - ["rehabilitation-centres","healthcare=rehabilitation","healthcare","PersonStanding"]
-  - ["counselling-services","healthcare=counselling","healthcare","MessagesSquare"]
-  - ["speech-therapists","healthcare=speech_therapist","healthcare","MessageCircle"]
-  - ["occupational-therapists","healthcare=occupational_therapist","healthcare","Puzzle"]
-  - ["alternative-medicine","healthcare=alternative","healthcare","Leaf"]
-  - ["blood-donation","healthcare=blood_donation","healthcare","Droplet"]
-  - ["dialysis-centres","healthcare=dialysis","healthcare","Droplets"]
-  - ["midwives","healthcare=midwife","healthcare","Baby"]
+  - ["hospitals","amenity=hospital","healthcare","hospital_h"]
+  - ["clinics","amenity=clinic","healthcare","stethoscope"]
+  - ["doctors","amenity=doctors","healthcare","stethoscope"]
+  - ["dentists","amenity=dentist","healthcare","molar_tooth"]
+  - ["pharmacies","amenity=pharmacy","healthcare","circular_pill_and_capsule_pill"]
+  - ["health-post","amenity=health_post","healthcare","greek_cross"]
+  - ["nursing-home","amenity=nursing_home","healthcare","person_standing_holding_cane"]
+  - ["veterinary","amenity=veterinary","healthcare","pawprint_with_greek_cross"]
+  - ["opticians","shop=optician","healthcare","eyeglasses"]
+  - ["medical-laboratories","healthcare=laboratory","healthcare","microscope"]
+  - ["psychotherapists","healthcare=psychotherapist","healthcare","human_head"]
+  - ["physiotherapists","healthcare=physiotherapist","healthcare","person_squatting_beside_person_standing_reaching_up"]
+  - ["optometrists","healthcare=optometrist","healthcare","eye"]
+  - ["podiatrists","healthcare=podiatrist","healthcare","foot"]
+  - ["rehabilitation-centres","healthcare=rehabilitation","healthcare","person_walking_holding_railing"]
+  - ["counselling-services","healthcare=counselling","healthcare","speech_bubbles"]
+  - ["speech-therapists","healthcare=speech_therapist","healthcare","speech_bubble"]
+  - ["occupational-therapists","healthcare=occupational_therapist","healthcare","puzzle_piece"]
+  - ["alternative-medicine","healthcare=alternative","healthcare","lotus_flower"]
+  - ["blood-donation","healthcare=blood_donation","healthcare","droplet_with_greek_cross"]
+  - ["dialysis-centres","healthcare=dialysis","healthcare","kidneys"]
+  - ["midwives","healthcare=midwife","healthcare","pregnant_person_standing"]
 # Education
-  - ["schools","amenity=school","education","School"]
-  - ["universities","amenity=university","education","GraduationCap"]
-  - ["libraries","amenity=library","education","LibraryBig"]
-  - ["kindergarten","amenity=kindergarten","education","Baby"]
-  - ["college","amenity=college","education","GraduationCap"]
-  - ["childcare","amenity=childcare","education","Backpack"]
-  - ["driving-school","amenity=driving_school","education","Car"]
-  - ["music-school","amenity=music_school","education","Music"]
-  - ["language-school","amenity=language_school","education","Languages"]
-  - ["research-institute","amenity=research_institute","education","Microscope"]
+  - ["schools","amenity=school","education","paper_and_pencil"]
+  - ["universities","amenity=university","education","square_academic_cap"]
+  - ["libraries","amenity=library","education","open_book"]
+  - ["kindergarten","amenity=kindergarten","education","rocking_horse"]
+  - ["college","amenity=college","education","square_academic_cap"]
+  - ["childcare","amenity=childcare","education","baby"]
+  - ["driving-school","amenity=driving_school","education","people_in_car"]
+  - ["music-school","amenity=music_school","education","eighth_notes"]
+  - ["language-school","amenity=language_school","education","graticule_globe"]
+  - ["research-institute","amenity=research_institute","education","book_with_square_academic_cap"]
 # Tourism
-  - ["hotels","tourism=hotel","tourism","Hotel"]
-  - ["motels","tourism=motel","tourism","BedSingle"]
-  - ["attractions","tourism=attraction","tourism","Star"]
-  - ["viewpoints","tourism=viewpoint","tourism","Binoculars"]
-  - ["campsites","tourism=camp_site","tourism","Tent"]
-  - ["alpine-huts","tourism=alpine_hut","tourism","Mountain"]
-  - ["caravan-sites","tourism=caravan_site","tourism","Caravan"]
-  - ["wilderness-huts","tourism=wilderness_hut","tourism","Tent"]
-  - ["chalets","tourism=chalet","tourism","Home"]
+  - ["hotels","tourism=hotel","tourism","bed"]
+  - ["motels","tourism=motel","tourism","car_beside_person_sleeping_in_bed"]
+  - ["attractions","tourism=attraction","tourism","star"]
+  - ["viewpoints","tourism=viewpoint","tourism","person_using_mounted_binoculars"]
+  - ["campsites","tourism=camp_site","tourism","campsite"]
+  - ["alpine-huts","tourism=alpine_hut","tourism","person_walking_with_hiking_pole_wearing_backpack_in_gable_roofed_shelter"]
+  - ["caravan-sites","tourism=caravan_site","tourism","camper_trailer"]
+  - ["wilderness-huts","tourism=wilderness_hut","tourism","cabin"]
+  - ["chalets","tourism=chalet","tourism","cabin"]
 # Culture
-  - ["cinemas","amenity=cinema","culture","Film"]
-  - ["monuments","historic=monument","culture","Landmark"]
-  - ["arts-centre","amenity=arts_centre","culture","Palette"]
-  - ["gallery","tourism=gallery","culture","Images"]
-  - ["memorials","historic=memorial","culture","Landmark"]
-  - ["museums","tourism=museum","culture","Landmark"]
-  - ["theatres","amenity=theatre","culture","Theater"]
+  - ["cinemas","amenity=cinema","culture","film_movie_projector"]
+  - ["arts-centre","amenity=arts_centre","culture","palette"]
+  - ["gallery","tourism=gallery","culture","wall_hanging_with_mountains_and_sun"]
+  - ["museums","tourism=museum","culture","classical_building"]
+  - ["theatres","amenity=theatre","culture","comedy_mask_and_tragedy_mask"]
+  - ["artwork","tourism=artwork","culture","paintbrush"]
+# Heritage
+  - ["monuments","historic=monument","heritage","obelisk_on_plinth"]
+  - ["memorials","historic=memorial","heritage","memorial_stone_with_inscription"]
+  - ["heritage-sites","heritage=*","heritage","plaque"]
+  - ["archaeological-sites","historic=archaeological_site","heritage","amphora"]
+  - ["ruins","historic=ruins","heritage","megalith"]
+  - ["castles","historic=castle","heritage","castle"]
 # Social
-  - ["social-facility","amenity=social_facility","social","HeartHandshake"]
-  - ["community-centre","amenity=community_centre","social","Users"]
-  - ["town-halls","amenity=townhall","social","Landmark"]
-  - ["senior-centers","amenity=social_facility&social_facility:for=senior","social","Accessibility","social-facility"]
+  - ["social-facility","amenity=social_facility","social","heart_above_outstretched_hand"]
+  - ["community-centre","amenity=community_centre","social","house_with_flag"]
+  - ["town-halls","amenity=townhall","social","classical_building_with_flag"]
+  - ["senior-centers","amenity=social_facility&social_facility:for=senior","social","person_standing_wearing_dress_holding_cane","social-facility"]
 # Government
-  - ["government-office","office=government","government","Landmark"]
-  - ["courts","amenity=courthouse","government","Scale"]
-  - ["police-stations","amenity=police","government","Siren"]
-  - ["prisons","amenity=prison","government","Building"]
-# Emergency
-  - ["fire-stations","amenity=fire_station","emergency","FireExtinguisher"]
-  - ["ambulance-stations","emergency=ambulance_station","emergency","Ambulance"]
-  - ["emergency-phones","emergency=phone","emergency","Phone"]
-  - ["fire-hydrants","emergency=fire_hydrant","emergency","Flame"]
-  - ["defibrillators","emergency=defibrillator","emergency","HeartPulse"]
+  - ["government-office","office=government","government","classical_building_with_flag"]
+  - ["courts","amenity=courthouse","government","balance_scales"]
+  - ["police-stations","amenity=police","government","police_officer"]
+  - ["prisons","amenity=prison","government","barred_door"]
+# Emergency (categories follow the OSM wiki's Emergency facilities and amenities page)
+  - ["ambulance-stations","emergency=ambulance_station","medical-rescue","compact_box_truck_with_greek_cross"]
+  - ["defibrillators","emergency=defibrillator","medical-rescue","heart_with_ecg_line"]
+  - ["fire-stations","amenity=fire_station","firefighting","badge_shield_with_fire"]
+  - ["fire-hydrants","emergency=fire_hydrant","firefighting","hydrant"]
+  - ["firefighting-water-sources","emergency=water_tank;emergency=fire_water_pond;emergency=suction_point","firefighting","storage_tank"]
+  - ["assembly-points","emergency=assembly_point","civil-protection","crowd_of_people"]
+  - ["sirens","emergency=siren","civil-protection","megaphone"]
+  - ["emergency-shelters","emergency:social_facility=shelter","civil-protection","gable_roofed_shelter"]
+  - ["emergency-phones","emergency=phone","civil-protection","phone_top_right_and_greek_cross"]
 # Environment
-  - ["waterfall","waterway=waterfall","environment","Waves"]
-  - ["dam","waterway=dam","environment","BrickWall"]
-# Services
-  - ["recycling","amenity=recycling","services","Recycle"]
-  - ["waste-disposal","amenity=waste_disposal","services","Trash2"]
-  - ["benches","amenity=bench","services","RockingChair"]
-  - ["telephones","amenity=telephone","services","Phone"]
-  - ["waste-basket","amenity=waste_basket","services","Trash"]
-  - ["bottle-return","amenity=vending_machine&vending=bottle_return","services","Undo2"]
+  - ["waterfall","waterway=waterfall","environment","waterfall"]
+  - ["dam","waterway=dam","environment","dam"]
+# Waste and street furniture
+  - ["recycling","amenity=recycling","waste","recycling_symbol"]
+  - ["waste-disposal","amenity=waste_disposal","waste","wheelie_bin"]
+  - ["benches","amenity=bench","amenities","bench_with_backrest"]
+  - ["telephones","amenity=telephone","amenities","phone_top_right"]
+  - ["waste-basket","amenity=waste_basket","waste","trash_can"]
+  - ["bottle-return","amenity=vending_machine&vending=bottle_return","waste","wheelie_bin_and_drink_bottle_and_can"]
 # Shops
-  - ["supermarkets","shop=supermarket","shops","ShoppingCart"]
-  - ["bakeries","shop=bakery","shops","Croissant"]
-  - ["convenience","shop=convenience","shops","Store"]
-  - ["butchers","shop=butcher","shops","Beef"]
-  - ["greengrocers","shop=greengrocer","shops","Carrot"]
-  - ["department-stores","shop=department_store","shops","Store"]
-  - ["shopping-malls","shop=mall","shops","ShoppingBag"]
-  - ["clothes","shop=clothes","shops","Shirt"]
-  - ["chemist","shop=chemist","shops","Pill"]
-  - ["fuel","amenity=fuel","mobility","Fuel"]
-  - ["hardware","shop=hardware","shops","Hammer"]
-  - ["diy","shop=doityourself","shops","Wrench"]
-  - ["furniture","shop=furniture","shops","Sofa"]
-  - ["electronics","shop=electronics","shops","Tv"]
-  - ["mobile-phone","shop=mobile_phone","shops","Smartphone"]
-  - ["shoes","shop=shoes","shops","Footprints"]
-  - ["jewelry","shop=jewelry","shops","Gem"]
-  - ["bicycle-shop","shop=bicycle","shops","Store"]
+  - ["supermarkets","shop=supermarket","shops","shopping_cart"]
+  - ["bakeries","shop=bakery","shops","loaf_of_bread"]
+  - ["convenience","shop=convenience","shops","milk_carton_and_apple"]
+  - ["butchers","shop=butcher","shops","cleaver"]
+  - ["greengrocers","shop=greengrocer","shops","banana_and_apple"]
+  - ["department-stores","shop=department_store","shops","shopping_bag"]
+  - ["shopping-malls","shop=mall","shops","person_carrying_shopping_bags"]
+  - ["clothes","shop=clothes","shops","vneck_tshirt"]
+  - ["chemist","shop=chemist","shops","tube_and_toothbrush"]
+  - ["fuel","amenity=fuel","mobility","gasoline_pump"]
+  - ["hardware","shop=hardware","shops","wrench_and_hammer"]
+  - ["diy","shop=doityourself","shops","wrench_and_hammer"]
+  - ["furniture","shop=furniture","shops","club_chair"]
+  - ["electronics","shop=electronics","shops","plug"]
+  - ["mobile-phone","shop=mobile_phone","shops","mobile_phone_with_touchscreen_and_antenna"]
+  - ["shoes","shop=shoes","shops","shoe"]
+  - ["jewelry","shop=jewelry","shops","ring_with_jewel"]
+  - ["bicycle-shop","shop=bicycle","shops","bicycle_and_tag"]
 # Markets
   # Multi-vendor public markets (distinct from single-vendor shops)
-  - ["markets","amenity=marketplace","shops","ShoppingBasket"]
+  - ["markets","amenity=marketplace","shops","market_stall"]
 # Food
-  - ["restaurants","amenity=restaurant","food","UtensilsCrossed"]
-  - ["cafes","amenity=cafe","food","Coffee"]
-  - ["fast-food","amenity=fast_food","food","Sandwich"]
-  - ["bars","amenity=bar","food","Martini"]
-  - ["pubs","amenity=pub","food","Beer"]
-  - ["ice-cream","amenity=ice_cream","food","IceCreamCone"]
-  - ["food-court","amenity=food_court","food","ChefHat"]
-  - ["food-vending","amenity=vending_machine&vending=food;amenity=vending_machine&vending=drinks;amenity=vending_machine&vending=coffee;amenity=vending_machine&vending=water;amenity=vending_machine&vending=milk;amenity=vending_machine&vending=ice_cream;amenity=vending_machine&vending=bread;amenity=vending_machine&vending=sweets;amenity=vending_machine&vending=pizza;amenity=vending_machine&vending=eggs","food","CupSoda"]
+  - ["restaurants","amenity=restaurant","food","fork_beside_table_knife"]
+  - ["cafes","amenity=cafe","food","handled_teacup_and_saucer"]
+  - ["fast-food","amenity=fast_food","food","burger"]
+  - ["bars","amenity=bar","food","cocktail"]
+  - ["pubs","amenity=pub","food","pint_glass"]
+  - ["ice-cream","amenity=ice_cream","food","ice_cream_on_cone"]
+  - ["food-court","amenity=food_court","food","spoon_and_chefs_knife_and_pot"]
+  - ["food-vending","amenity=vending_machine&vending=food;amenity=vending_machine&vending=drinks;amenity=vending_machine&vending=coffee;amenity=vending_machine&vending=water;amenity=vending_machine&vending=milk;amenity=vending_machine&vending=ice_cream;amenity=vending_machine&vending=bread;amenity=vending_machine&vending=sweets;amenity=vending_machine&vending=pizza;amenity=vending_machine&vending=eggs","food","vending_machine_with_drink_can"]
 # Leisure
-  - ["parks","leisure=park","leisure","TreePine"]
-  - ["playgrounds","leisure=playground","leisure","ToyBrick"]
-  - ["gardens","leisure=garden","leisure","Flower2"]
-  - ["fitness-centers","leisure=fitness_centre","leisure","Dumbbell"]
-  - ["swimming-pools","leisure=swimming_pool","leisure","Waves"]
-  - ["sports-centres","leisure=sports_centre","leisure","LayoutGrid"]
-  - ["stadiums","leisure=stadium","leisure","Ticket"]
-  - ["pitches","leisure=pitch","leisure","Goal"]
-  - ["golf-courses","leisure=golf_course","leisure","LandPlot"]
-  - ["tracks","leisure=track","leisure","Route"]
-  - ["fitness-stations","leisure=fitness_station","leisure","PersonStanding"]
-  - ["ice-rinks","leisure=ice_rink","leisure","Snowflake"]
-  - ["nature-reserves","leisure=nature_reserve","leisure","Trees"]
-  - ["marinas","leisure=marina","leisure","Anchor"]
-  - ["dog-parks","leisure=dog_park","leisure","Dog"]
+  - ["parks","leisure=park","leisure","tree_beside_bench_with_backrest"]
+  - ["playgrounds","leisure=playground","leisure","person_sitting_on_swing"]
+  - ["gardens","leisure=garden","leisure","tulip"]
+  - ["fitness-centers","leisure=fitness_centre","leisure","dumbbell"]
+  - ["swimming-pools","leisure=swimming_pool","leisure","person_swimming_in_water"]
+  - ["sports-centres","leisure=sports_centre","leisure","people_running"]
+  - ["stadiums","leisure=stadium","leisure","bleachers"]
+  - ["pitches","leisure=pitch","leisure","person_running"]
+  - ["golf-courses","leisure=golf_course","leisure","person_swinging_golf_club"]
+  - ["tracks","leisure=track","leisure","racetrack_oval_with_dashes"]
+  - ["fitness-stations","leisure=fitness_station","leisure","person_hanging_from_pull_up_bar"]
+  - ["ice-rinks","leisure=ice_rink","leisure","ice_skate"]
+  - ["marinas","leisure=marina","leisure","sailboat"]
+  - ["dog-parks","leisure=dog_park","leisure","dog_wearing_collar"]
 # Nature
-  # Core urban tree structure (parent for street-trees and trees-with-species)
-  - ["urban-trees","natural=tree;natural=tree_row","nature","TreePine"]
-  # Street-focused arborization (child of urban-trees)
-  - ["street-trees","natural=tree_row","nature","TreeDeciduous","urban-trees"]
+  - ["trees","natural=tree;natural=tree_row;natural=tree_group","nature","oval_broadleaved_tree"]
   # Managed green spaces (planned landscaping)
-  - ["managed-green","leisure=park;leisure=garden;landuse=orchard","nature","Leaf"]
+  - ["managed-green","leisure=park;leisure=garden;landuse=orchard","nature","leaf"]
   # Natural / spontaneous vegetation
-  - ["natural-vegetation","natural=wood;natural=grassland;landuse=forest","nature","Trees"]
+  - ["natural-vegetation","natural=wood;natural=grassland;landuse=forest","nature","oval_broadleaved_tree_beside_oval_broadleaved_tree"]
 
-  - ["forests","landuse=forest","nature","Trees"]
-  - ["woods","natural=wood","nature","TreePine"]
-  - ["orchards","landuse=orchard","nature","Apple"]
-  - ["grasslands","natural=grassland","nature","Sprout"]
-  - ["wetlands","natural=wetland","nature","Droplets"]
-  - ["beaches","natural=beach","nature","Waves"]
-  - ["peaks","natural=peak","nature","Mountain"]
-  - ["cliffs","natural=cliff","nature","Mountain"]
-  - ["caves","natural=cave_entrance","nature","Mountain"]
-  - ["water","natural=water;natural=lake;natural=pond","nature","Droplet"]
-  - ["coastlines","natural=coastline","nature","Waves"]
-  - ["springs","natural=spring","nature","Droplets"]
-  - ["hot-springs","natural=hot_spring","nature","ThermometerSun"]
-  - ["geyser","natural=geyser","nature","Droplets"]
-  - ["glaciers","natural=glacier","nature","MountainSnow"]
-  - ["natural-surfaces","natural=scrub;natural=heath;natural=moor;natural=fell;natural=rock;natural=stone;natural=sand;natural=shingle;natural=mud","nature","Mountain"]
-  - ["scrub","natural=scrub","nature","Shrub"]
-  - ["heath","natural=heath","nature","Leaf"]
-  - ["fell","natural=fell","nature","Mountain"]
-  - ["rock","natural=rock","nature","Mountain"]
-  - ["stone","natural=stone","nature","Mountain"]
-  - ["sand","natural=sand","nature","Mountain"]
-  - ["shingle","natural=shingle","nature","Mountain"]
-  - ["mud","natural=mud","nature","Droplets"]
+  - ["forests","landuse=forest","nature","conifer_tree"]
+  - ["woods","natural=wood","nature","conifer_tree_beside_oval_broadleaved_tree"]
+  - ["orchards","landuse=orchard","nature","apple"]
+  - ["grasslands","natural=grassland","nature","grass"]
+  - ["wetlands","natural=wetland","nature","grass_in_water"]
+  - ["beaches","natural=beach","nature","beach_umbrella_in_ground"]
+  - ["peaks","natural=peak","nature","snowcapped_mountain"]
+  - ["cliffs","natural=cliff","nature","cliff_with_rocks"]
+  - ["caves","natural=cave_entrance","nature","cave"]
+  - ["nature-reserves","leisure=nature_reserve","nature","broadleaved_tree"]
+  - ["water","natural=water;natural=lake;natural=pond","nature","droplet"]
+  - ["coastlines","natural=coastline","nature","waters_meeting_shore"]
+  - ["springs","natural=spring","nature","droplet_above_water"]
+  - ["hot-springs","natural=hot_spring","nature","jp_hot_spring"]
+  - ["geyser","natural=geyser","nature","geyser_from_ground"]
+  - ["glaciers","natural=glacier","nature","snowflake"]
+  - ["natural-surfaces","natural=scrub;natural=heath;natural=moor;natural=fell;natural=rock;natural=stone;natural=sand;natural=shingle;natural=mud","nature","squat_rock"]
+  - ["scrub","natural=scrub","nature","shrub"]
+  - ["heath","natural=heath","nature","low_shrub"]
+  - ["fell","natural=fell","nature","mountain"]
+  - ["rock","natural=rock","nature","pointy_rock"]
+  - ["stone","natural=stone","nature","trapezoidal_rock"]
+  - ["sand","natural=sand","nature","sandbox"]
+  - ["shingle","natural=shingle","nature","round_rock"]
+  - ["mud","natural=mud","nature","waters"]
 # Infrastructure
-  - ["street-lamps","highway=street_lamp","infrastructure","Lightbulb"]
-  - ["surveillance","man_made=surveillance","infrastructure","Cctv"]
-  - ["tailings-pond","man_made=tailings_pond","infrastructure","Factory"]
-  - ["tower","man_made=tower","infrastructure","RadioTower"]
-  - ["communications-tower","man_made=communications_tower","infrastructure","Antenna"]
-  - ["water-tower","man_made=water_tower","infrastructure","Droplet"]
-  - ["storage-tanks","man_made=storage_tank","infrastructure","Cylinder"]
-  - ["chimney","man_made=chimney","infrastructure","Factory"]
-  - ["pipeline","man_made=pipeline","infrastructure","Cable"]
-  - ["mast","man_made=mast","infrastructure","Antenna"]
-  - ["water-works","man_made=water_works","infrastructure","Droplets"]
-  - ["wastewater-plant","man_made=wastewater_plant","infrastructure","Factory"]
-  - ["pumping-station","man_made=pumping_station","infrastructure","Gauge"]
-  - ["utility-pole","man_made=utility_pole","infrastructure","Cable"]
+  - ["street-lamps","highway=street_lamp","infrastructure","street_lamp_arm"]
+  - ["surveillance","man_made=surveillance","infrastructure","wallmounted_surveillance_camera"]
+  - ["tailings-pond","man_made=tailings_pond","infrastructure","droplet_from_pipes"]
+  - ["tower","man_made=tower","infrastructure","lattice_tower_with_observation_deck"]
+  - ["communications-tower","man_made=communications_tower","infrastructure","lattice_tower_with_ball_tip_antenna_on_ground_with_beams"]
+  - ["water-tower","man_made=water_tower","infrastructure","water_tower"]
+  - ["storage-tanks","man_made=storage_tank","infrastructure","cylinder"]
+  - ["chimney","man_made=chimney","infrastructure","chimney_with_smoke"]
+  - ["pipeline","man_made=pipeline","infrastructure","water_pipe_return_bend_with_handle"]
+  - ["mast","man_made=mast","infrastructure","guyed_mast"]
+  - ["water-works","man_made=water_works","infrastructure","utility_valve_with_droplet"]
+  - ["wastewater-plant","man_made=wastewater_plant","infrastructure","sewage_pipe_cross_section"]
+  - ["pumping-station","man_made=pumping_station","infrastructure","water_pipe_return_bend_with_motor_and_handle"]
+  - ["utility-pole","man_made=utility_pole","infrastructure","utility_pole"]
 # Large-footprint key-presence templates (tiles-only in most cities: rendered
 # from PMTiles, geojson never stored — #487/#489)
-  - ["buildings","building","infrastructure","Building"]
+  - ["buildings","building","infrastructure","town_buildings"]
 # Mobility: roads, pedestrian, cycling
-  - ["roads","highway=motorway;highway=trunk;highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=unclassified","roads","Route"]
-  - ["highways","highway","roads","Waypoints"]
-  - ["footways","highway=footway;highway=path","pedestrian","Footprints"]
-  - ["cycleways","highway=cycleway","cycling","Bike"]
-  - ["bridges","man_made=bridge","roads","Waypoints"]
-  - ["tunnels","tunnel=yes;tunnel=building_passage","roads","Route"]
-  - ["crossings","highway=crossing","pedestrian","Footprints"]
+  - ["roads","highway=motorway;highway=trunk;highway=primary;highway=secondary;highway=tertiary;highway=residential;highway=living_street;highway=unclassified","roads","sedan"]
+  - ["footways","highway=footway;highway=path;highway=pedestrian","pedestrian","person_walking"]
+  # living_street and track left out: motor vehicles circulate on them
+  - ["car-free-paths","highway=footway;highway=path;highway=cycleway;highway=pedestrian;highway=steps;highway=bridleway","pedestrian","person_walking_and_person_riding_bicycle"]
+  - ["cycling-infrastructure","highway=cycleway;cycleway=lane;cycleway=track;cycleway=shared_lane;cycleway=share_busway;cycleway=opposite_lane;cycleway=opposite_track;cycleway:left=lane;cycleway:left=track;cycleway:left=shared_lane;cycleway:left=share_busway;cycleway:left=opposite_lane;cycleway:left=opposite_track;cycleway:right=lane;cycleway:right=track;cycleway:right=shared_lane;cycleway:right=share_busway;cycleway:right=opposite_lane;cycleway:right=opposite_track;cycleway:both=lane;cycleway:both=track;cycleway:both=shared_lane;cycleway:both=share_busway;cycleway:both=opposite_lane;cycleway:both=opposite_track","cycling","bicycle"]
+  - ["cycleways","highway=cycleway","cycling","person_riding_bicycle","cycling-infrastructure"]
+  # Explicit values: cycleway=no and =separate are mapped absences
+  - ["cycle-lanes","cycleway=lane;cycleway=track;cycleway=shared_lane;cycleway=share_busway;cycleway=opposite_lane;cycleway=opposite_track;cycleway:left=lane;cycleway:left=track;cycleway:left=shared_lane;cycleway:left=share_busway;cycleway:left=opposite_lane;cycleway:left=opposite_track;cycleway:right=lane;cycleway:right=track;cycleway:right=shared_lane;cycleway:right=share_busway;cycleway:right=opposite_lane;cycleway:right=opposite_track;cycleway:both=lane;cycleway:both=track;cycleway:both=shared_lane;cycleway:both=share_busway;cycleway:both=opposite_lane;cycleway:both=opposite_track","cycling","bicycle_in_rectangle_outline","cycling-infrastructure"]
+  - ["bridges","man_made=bridge","roads","bridge_tied_arch"]
+  - ["tunnels","tunnel=yes;tunnel=building_passage","roads","tunnel"]
+  - ["crossings","highway=crossing","pedestrian","person_walking_on_crosswalk"]
+  - ["steps","highway=steps","pedestrian","stairs"]
+  - ["kerbs","barrier=kerb","pedestrian","lowered_curb_under_shoe"]
+  # Explicit values: sidewalk=no and =none are mapped absences
+  - ["sidewalks","sidewalk=both;sidewalk=left;sidewalk=right;sidewalk=yes;sidewalk=separate;sidewalk:both=yes;sidewalk:both=separate;sidewalk:left=yes;sidewalk:left=separate;sidewalk:right=yes;sidewalk:right=separate","pedestrian","sign_beside_person_walking"]
 # Mobility: traffic
-  - ["traffic-signs","traffic_sign=*","traffic","Signpost"]
-  - ["traffic-lights","highway=traffic_signals","traffic","Lightbulb"]
-  - ["speed-cameras","highway=speed_camera","traffic","Camera"]
-  - ["traffic-calming","traffic_calming=*","traffic","TrafficCone"]
+  - ["traffic-signs","traffic_sign=*","traffic","sign"]
+  - ["traffic-lights","highway=traffic_signals","traffic","three_dots_up_down_in_tall_rounded_rectangle"]
+  - ["speed-cameras","highway=speed_camera","traffic","wallmounted_surveillance_camera"]
+  - ["traffic-calming","traffic_calming=*","traffic","speed_bump"]
 # Housing
-  - ["apartments","building=apartments","housing","Building2"]
+  - ["apartments","building=apartments","housing","lowrise_apartment_building"]
   # building=residential left out: generic fallback that also covers apartment blocks
-  - ["houses","building=house;building=detached;building=semidetached_house;building=terrace;building=bungalow","housing","Home"]
-  - ["residential","landuse=residential","housing","Building2"]
-  - ["dormitories","building=dormitory","housing","Building"]
-  - ["hotel-guesthouse","tourism=guest_house;tourism=hostel","housing","BedDouble"]
+  - ["houses","building=house;building=detached;building=semidetached_house;building=terrace;building=bungalow","housing","house_with_chimney"]
+  - ["residential","landuse=residential","housing","lowrise_building_beside_lollipop_tree_on_ground"]
+  - ["dormitories","building=dormitory","housing","people_sleeping_in_bunkbeds"]
+  - ["hotel-guesthouse","tourism=guest_house;tourism=hostel","housing","person_sleeping_in_bed"]
 # Sports facilities
-  - ["football","sport=soccer","sports","Volleyball"]
-  - ["basketball","sport=basketball","sports","CircleDot"]
-  - ["tennis","sport=tennis","sports","Trophy"]
-  - ["swimming","sport=swimming","sports","Waves"]
-  - ["golf","sport=golf","sports","LandPlot"]
-  - ["skiing","sport=skiing","sports","MountainSnow"]
-  - ["baseball","sport=baseball","sports","Diamond"]
-  - ["athletics","sport=athletics","sports","Medal"]
-  - ["gymnasiums","sport=gymnastics","sports","BicepsFlexed"]
-  - ["shooting","sport=shooting","sports","Target"]
-  - ["archery","sport=archery","sports","Crosshair"]
-  - ["climbing","sport=climbing","sports","Mountain"]
-  - ["equestrian","sport=equestrian","sports","Ribbon"]
+  - ["football","sport=soccer","sports","soccer_ball"]
+  - ["basketball","sport=basketball","sports","basketball"]
+  - ["tennis","sport=tennis","sports","tennis_ball"]
+  - ["swimming","sport=swimming","sports","person_swimming_in_waters"]
+  - ["golf","sport=golf","sports","person_swinging_golf_club"]
+  - ["skiing","sport=skiing","sports","person_skiing_downhill"]
+  - ["baseball","sport=baseball","sports","baseball"]
+  - ["athletics","sport=athletics","sports","racetrack_oval_with_dashes"]
+  - ["gymnasiums","sport=gymnastics","sports","person_balancing_on_low_mounted_beam"]
+  - ["shooting","sport=shooting","sports","target"]
+  - ["archery","sport=archery","sports","target_with_archery_arrow_at_bullseye"]
+  - ["climbing","sport=climbing","sports","climbing_wall"]
+  - ["equestrian","sport=equestrian","sports","person_riding_horse"]
 # Misc facilities (fountains, clocks, wayfinding)
-  - ["fountains","amenity=fountain","amenities","Droplets"]
-  - ["clocks","amenity=clock","services","Clock"]
+  - ["fountains","amenity=fountain","amenities","fountain_from_water"]
+  - ["clocks","amenity=clock","amenities","clock_face"]
   # Consolidated: tourism=information covers guideposts/boards/maps/route markers via
   # the information= sub-tag (color-by). Replaces the former guideposts + markers
   # templates, which were dead/redundant (guideposts alone returns 0 features in most
   # cities - real guidepost data lives under tourism=information&information=guidepost).
-  - ["information-boards","tourism=information","services","Info"]
+  - ["information-boards","tourism=information","amenities","info_i"]
 # Religion
   # Single worship template; the former church/mosque/synagogue/temple/shrine
   # value-templates queried loose religion=* selectors (matching cemeteries,
   # schools, etc.) and are replaced by the `religion` color-by filter below.
-  - ["places-of-worship","amenity=place_of_worship","religion","Landmark"]
+  - ["places-of-worship","amenity=place_of_worship","religion","place_of_worship_building"]
+  - ["cemeteries","landuse=cemetery;amenity=grave_yard","religion","memorial_stone"]
+  - ["shrines","historic=wayside_shrine","religion","column_shrine"]
 # Barriers
-  - ["walls","barrier=wall","barriers","BrickWall"]
-  - ["fences","barrier=fence","barriers","Fence"]
-  - ["hedges","barrier=hedge","barriers","Shrub"]
-  - ["gates","barrier=gate","barriers","DoorOpen"]
+  - ["walls","barrier=wall","barriers","stone_wall"]
+  - ["fences","barrier=fence","barriers","picket_fence"]
+  - ["hedges","barrier=hedge","barriers","shrub"]
+  - ["gates","barrier=gate","barriers","tall_gate"]
 # =========================
   # Agricultural and agro-industrial infrastructure
   # =========================
@@ -274,48 +291,21 @@ templates:
   # They do not characterize pollution, contamination, or environmental impact.
   # Naming aligns with OpenStreetMap wiki documentation.
 
-  # Agricultural land use
-  - ["farmland","landuse=farmland","agriculture","Wheat"]
-  - ["farmyards","landuse=farmyard","agriculture","Tractor"]
-  - ["meadows","landuse=meadow","agriculture","Leaf"]
-  - ["animal-keeping","landuse=animal_keeping","agriculture","Fence"]
-  # Specialized farmyard types (feedlots, stockyards, poultry, dairy)
-  - ["feedlots","farmyard=feedlot","agriculture","Fence"]
-  - ["stockyards","farmyard=stockyard","agriculture","Fence"]
-  - ["poultry-yards","farmyard=poultry","agriculture","Egg"]
-  - ["dairy-yards","farmyard=dairy","agriculture","Milk"]
+  # Agricultural land use. Farmyard subtypes (farmyard=dairy etc.) sit on landuse=farmyard areas
+  - ["farmland","landuse=farmland","agriculture","corn_cob"]
+  - ["farmyards","landuse=farmyard","agriculture","barn_and_silo"]
+  - ["meadows","landuse=meadow","agriculture","grass"]
   # Agricultural buildings
-  - ["barns","building=barn","agriculture","Warehouse"]
-  - ["farm-auxiliary","building=farm_auxiliary;building=agricultural","agriculture","Wrench"]
-  - ["greenhouses","building=greenhouse","agriculture","Sprout"]
-  # Livestock housing
-  - ["livestock-buildings","building=livestock;building=cowshed;building=stable;building=sty;building=barn","agriculture","Warehouse"]
-  - ["cowsheds","building=cowshed","agriculture","Warehouse"]
-  - ["pig-sties","building=sty","agriculture","Warehouse"]
-  - ["stables","building=stable","agriculture","Warehouse"]
+  - ["barns","building=barn","agriculture","barn"]
+  - ["farm-auxiliary","building=farm_auxiliary;building=agricultural","agriculture","barn_and_silo"]
+  - ["greenhouses","building=greenhouse","agriculture","greenhouse"]
+  - ["livestock-buildings","building=livestock;building=cowshed;building=stable;building=sty","agriculture","horse_in_shelter"]
   # Agricultural storage
-  - ["silos","building=silo;man_made=silo","agriculture","Warehouse"]
-  - ["bunker-silos","man_made=bunker_silo","agriculture","Warehouse"]
-  - ["agricultural-tanks","man_made=storage_tank","agriculture","Cylinder"]
-  # Organic fertilizer storage (slurry/manure infrastructure)
-  - ["slurry-basins","man_made=slurry_basin","agriculture","Container"]
-  - ["slurry-tanks","building=slurry_tank;man_made=slurry_tank","agriculture","Cylinder"]
-  - ["manure-storage","man_made=storage_tank&content=manure","agriculture","Package"]
+  - ["silos","building=silo;man_made=silo;man_made=bunker_silo","agriculture","silo"]
+  - ["agricultural-tanks","man_made=storage_tank&content=silage;man_made=storage_tank&content=slurry;man_made=storage_tank&content=feed;man_made=storage_tank&content=manure;man_made=slurry_basin;building=slurry_tank;man_made=slurry_tank","agriculture","cylinder"]
   # Horticulture and plant production
-  - ["greenhouse-horticulture","landuse=greenhouse_horticulture","agriculture","Sprout"]
-  - ["plant-nurseries","landuse=plant_nursery","agriculture","Sprout"]
-# =========================
-  # Advanced landscaping datasets
-  # =========================
-  # Trees with species information (advanced)
-  - ["trees-with-species","natural=tree&species=*","nature","Leaf","urban-trees"]
-  # Irrigated green areas (where mapped)
-  - ["irrigated-green","irrigation=yes","nature","Droplet"]
-# =========================
-  # Climate / emergency context
-  # =========================
-  # Vegetation requiring attention during extreme weather events
-  - ["vegetation-risk-context","natural=tree;natural=tree_row;natural=wood","emergency","TriangleAlert"]
+  - ["greenhouse-horticulture","landuse=greenhouse_horticulture","agriculture","greenhouse"]
+  - ["plant-nurseries","landuse=plant_nursery","agriculture","plant"]
 # Per-template filterable-tag allow-list.
 # Curated OSM tag keys that become interactive-legend views for a template.
 # Templates absent here show the age ("Recent edits") view only.
@@ -397,11 +387,17 @@ filterableTags:
   parking:          [parking, access, fee, capacity, surface]
   rail-tracks:      [railway, electrified, usage, service]
   busways:          [surface]
-  roads:            [surface, maxspeed, lit, sidewalk]
-  highways:         [highway, surface, lit]
+  roads:            [surface, maxspeed, lit, sidewalk, highway]
   buildings:        [building]
   footways:         [footway, surface, lit, smoothness]
+  car-free-paths:   [highway, footway, surface, lit]
   cycleways:        [surface, lit, oneway, smoothness]
+  # surface and oneway describe the road here, not the lane (own track surfaces, contraflow lanes)
+  cycle-lanes:      [lit]
+  cycling-infrastructure: [lit]
+  steps:            [handrail, ramp, lit]
+  kerbs:            [kerb, tactile_paving]
+  sidewalks:        [sidewalk, lit]
   traffic-calming:  [traffic_calming]
   speed-cameras:    [maxspeed]
   schools:          [operator, operator:type, wheelchair, isced:level]
@@ -423,7 +419,13 @@ filterableTags:
   cinemas:          [brand, operator, wheelchair]
   arts-centre:      [operator, wheelchair]
   gallery:          [operator, fee, wheelchair]
+  artwork:          [artwork_type]
+  # Heritage
   memorials:        [memorial]
+  heritage-sites:   [heritage]
+  archaeological-sites: [archaeological_site]
+  # castle_type 51%: filter only, too sparse for the default view
+  castles:          [castle_type]
   # Government
   government-office: [government, operator, admin_level, wheelchair]
   courts:           [operator, wheelchair]
@@ -433,8 +435,13 @@ filterableTags:
   ambulance-stations: [operator]
   fire-hydrants:    [fire_hydrant:type, fire_hydrant:position, fire_hydrant:diameter, fire_hydrant:pressure]
   defibrillators:   [access, indoor]
+  sirens:           [siren:purpose, siren:type, operator]
+  emergency-shelters: [emergency:shelter_type, wheelchair]
   # Religion (replaces the deprecated per-religion value templates)
   places-of-worship: [religion, denomination, wheelchair]
+  # religion on 21% of cemeteries: filter only, too sparse for the default view
+  cemeteries:       [religion, denomination]
+  shrines:          [religion, denomination]
   # Markets: age-view only — operator/organic near-absent (Barcelona 6%/2%, Sao Paulo 13%/1%)
   # Shops (wheelchair = transversal equity signal; brand/operator = chain vs independent)
   supermarkets:     [brand, operator, organic, wheelchair]
@@ -474,6 +481,8 @@ filterableTags:
   # Full untouched-template review (epic #245 closure): measured colorable keys with
   # real coverage. Nature/agriculture: orchards trees 29-33%, beaches surface 26-91%.
   orchards:         [trees]
+  # species left out: too many values for a legend
+  trees:            [natural, leaf_type, leaf_cycle, denotation, genus]
   beaches:          [surface]
   dog-parks:        [access]
   # Infrastructure "type" keys, strong coverage (Berlin/Munich/London 61-89%)
@@ -481,21 +490,70 @@ filterableTags:
   surveillance:     [surveillance:type, surveillance]
   pipeline:         [substance]
   storage-tanks:    [content]
+  agricultural-tanks: [content]
   # Per-sport courts (subsets of pitches): surface/lit like the pitches template
   football:         [surface, lit]
   basketball:       [surface, lit]
   tennis:           [surface, lit]
 
+# One of the template's filterableTags; absent opens on "Last edited".
+defaultView:
+  buildings: building
+  roads: highway
+  rail-tracks: railway
+  railway-stations: station
+  footways: footway
+  car-free-paths: highway
+  crossings: crossing
+  kerbs: kerb
+  traffic-calming: traffic_calming
+  parking: parking
+  bicycle-parking: bicycle_parking
+  bicycle-rental: bicycle_rental
+  fire-hydrants: fire_hydrant:type
+  sirens: siren:type
+  emergency-shelters: emergency:shelter_type
+  pitches: sport
+  sports-centres: sport
+  stadiums: sport
+  tracks: sport
+  restaurants: cuisine
+  cafes: cuisine
+  fast-food: cuisine
+  places-of-worship: religion
+  shrines: religion
+  artwork: artwork_type
+  heritage-sites: heritage
+  archaeological-sites: archaeological_site
+  water: water
+  wetlands: wetland
+  forests: leaf_type
+  woods: leaf_type
+  social-facility: social_facility
+  museums: museum
+  memorials: memorial
+  benches: backrest
+  recycling: recycling_type
+  bottle-return: operator
+  clocks: display
+  information-boards: information
+
 # The area hub's "Common datasets" grid, in this order. Sync fails on a missing
-# or deprecated id.
+# or deprecated id. Picked for good OSM coverage worldwide; keep it at 12 so the
+# 2- and 3-column grid fills evenly.
 commonTemplates:
   - bus-stops
-  - schools
-  - clinics
-  - pharmacies
-  - buildings
+  - roads
   - footways
-  - cycleways
+  - schools
+  - hospitals
+  - pharmacies
+  - parks
+  - playgrounds
+  - buildings
+  - supermarkets
+  - restaurants
+  - places-of-worship
 
 # Replacements for removed templates (old-id: new-id).
 # The old id leaves the templates list above and deprecates as usual; its report
@@ -503,6 +561,21 @@ commonTemplates:
 # the old id is still listed or the new id is missing or deprecated.
 replacedBy:
   agricultural-buildings: farm-auxiliary
+  feedlots: farmyards
+  stockyards: farmyards
+  poultry-yards: farmyards
+  dairy-yards: farmyards
+  cowsheds: livestock-buildings
+  pig-sties: livestock-buildings
+  stables: livestock-buildings
+  bunker-silos: silos
+  slurry-basins: agricultural-tanks
+  slurry-tanks: agricultural-tanks
+  manure-storage: agricultural-tanks
+  urban-trees: trees
+  street-trees: trees
+  trees-with-species: trees
+  vegetation-risk-context: trees
 
 # Curated demonstrator cities per template (OSM relation ids).
 # Cities whose real data best shows the template in the dashboard. Curation-only:
@@ -809,10 +882,19 @@ demonstrators:
     - { area: 62428,   note: "Munich, DE - surface 72%, lit 46%, smoothness 25% across a dense path network" }
     - { area: 419203,  note: "Utrecht, NL - thorough footway surface/lit tagging" }
     - { area: 54517,   note: "Rennes, FR - well-maintained pedestrian-path attributes" }
+  car-free-paths:
+    - { area: 419211,  note: "Houten, NL - city planned around cycleways and footpaths, cars kept to a ring road" }
+    - { area: 5400890, note: "Lisbon, PT - sidewalks and crossings drawn as their own ways, shown by the footway view" }
+    - { area: 419203,  note: "Utrecht, NL - cycleway and footway layers at city scale, many pedestrian streets" }
   cycleways:
     - { area: 419203,  note: "Utrecht, NL - cycling capital, near-complete surface/lit/oneway/smoothness" }
     - { area: 62428,   note: "Munich, DE - surface 89%, oneway/lit/smoothness all strong" }
     - { area: 271110,  note: "Amsterdam, NL - dense cycleway network, rich attributes" }
+  cycle-lanes:
+    - { area: 62422,   note: "Berlin, DE - largest network, lanes and kerb-separated tracks, lit near-universal" }
+    - { area: 175905,  note: "New York, US - several times more on-road lanes than separate cycleways" }
+    - { area: 298285,  note: "Sao Paulo, BR - ciclofaixas on avenues, many contraflow" }
+    - { area: 7444,    note: "Paris, FR - mix of painted lanes, bus-shared lanes and tracks" }
   traffic-calming:
     - { area: 298285,  note: "Sao Paulo, BR - 7k+ features, varied values (hump/bump/table/island/dip)" }
     - { area: 2697338, note: "Rio de Janeiro, BR - heavy lombada tagging, good value spread" }
@@ -932,6 +1014,21 @@ demonstrators:
     - { area: 71525,   note: "Paris, FR - highest volume, strong access variance" }
     - { area: 62422,   note: "Berlin, DE - best access coverage, high indoor coverage" }
     - { area: 62428,   note: "Munich, DE - solid secondary EU sample, good access/indoor spread" }
+  assembly-points:
+    - { area: 1293250, note: "Taipei, TW - largest sample, mostly school grounds" }
+    - { area: 62422,   note: "Berlin, DE - largest EU sample, building evacuation points" }
+    - { area: 62428,   note: "Munich, DE - secondary EU sample" }
+  sirens:
+    - { area: 435514,  note: "Prague, CZ - best all-around purpose/type/operator coverage, real type variance" }
+    - { area: 62782,   note: "Hamburg, DE - strong purpose/type/operator, electronic and mechanical mix" }
+    - { area: 109166,  note: "Vienna, AT - largest sample, near-complete purpose, type mostly missing" }
+  firefighting-water-sources:
+    - { area: 62782,   note: "Hamburg, DE - largest sample, all three source types" }
+    - { area: 62428,   note: "Munich, DE - all three types, best volume tagging" }
+    - { area: 62422,   note: "Berlin, DE - suction-point heavy, complements the tank-heavy cities" }
+  emergency-shelters:
+    - { area: 1293250, note: "Taipei, TW - municipal shelter import, near-complete hazard type" }
+    - { area: 106569,  note: "Quezon City, PH - Philippine sample, thin but tagged for displaced people" }
   supermarkets:
     - { area: 62422,   note: "Berlin, DE - best across all four keys, many chains, real wheelchair spread" }
     - { area: 347950,  note: "Barcelona, ES - Iberian brand mix, Southern-Europe spread" }
@@ -1029,6 +1126,10 @@ demonstrators:
   beaches:
     - { area: 347950,  note: "Barcelona, ES - near-complete surface (sand/pebbles) tagging" }
     - { area: 79604,   note: "Cape Town, ZA - larger sample, real surface variance" }
+  trees:
+    - { area: 164609,  note: "Santiago, CL - 7k trees, every filter tag used (leaf_type 37%, leaf_cycle 30%, denotation 42%, genus 24%)" }
+    - { area: 71525,   note: "Paris, FR - 162k trees, leaf_type 86%, genus 86%, denotation 53%" }
+    - { area: 62422,   note: "Berlin, DE - 286k trees, leaf_type 71%, leaf_cycle 60%" }
   dog-parks:
     - { area: 175905,  note: "New York City, US - strongest access coverage (~37%)" }
     - { area: 62422,   note: "Berlin, DE - solid access coverage, European representative" }
@@ -1060,24 +1161,27 @@ demonstrators:
 # fallback for templates without one.
 categories:
   buildings-infrastructure: { icon: Building2 }
-  infrastructure: { icon: Gauge, parent: buildings-infrastructure }
-  housing: { icon: Building2, parent: buildings-infrastructure }
-  barriers: { icon: Square, parent: buildings-infrastructure }
+  infrastructure: { icon: UtilityPole, parent: buildings-infrastructure }
+  housing: { icon: House, parent: buildings-infrastructure }
+  barriers: { icon: Fence, parent: buildings-infrastructure }
 
-  education-culture: { icon: School }
-  education: { icon: School, parent: education-culture }
-  culture: { icon: Palette, parent: education-culture }
-  religion: { icon: Landmark, parent: education-culture }
+  education: { icon: School }
 
-  health: { icon: Hospital }
+  culture-religion: { icon: Amphora }
+  culture: { icon: Palette, parent: culture-religion }
+  heritage: { icon: Castle, parent: culture-religion }
+  religion: { icon: Building, parent: culture-religion }
+
+  health: { icon: HeartPulse }
   healthcare: { icon: Hospital, parent: health }
 
-  leisure-sports: { icon: Trophy }
-  leisure: { icon: TreePine, parent: leisure-sports }
-  sports: { icon: Trophy, parent: leisure-sports }
-  tourism: { icon: Camera, parent: leisure-sports }
+  leisure-sports: { icon: PersonStanding }
+  leisure: { icon: FerrisWheel, parent: leisure-sports }
+  sports: { icon: Volleyball, parent: leisure-sports }
 
-  mobility: { icon: Car }
+  tourism: { icon: Camera }
+
+  mobility: { icon: BusFront }
   bus: { icon: Bus, parent: mobility }
   rail: { icon: Train, parent: mobility }
   cycling: { icon: Bike, parent: mobility }
@@ -1086,18 +1190,22 @@ categories:
   traffic: { icon: TrafficCone, parent: mobility }
 
   nature-environment: { icon: Leaf }
-  nature: { icon: Leaf, parent: nature-environment }
-  environment: { icon: Leaf, parent: nature-environment }
+  nature: { icon: Trees, parent: nature-environment }
+  environment: { icon: Droplets, parent: nature-environment }
   agriculture: { icon: Wheat, parent: nature-environment }
 
-  public-services: { icon: Shield }
-  emergency: { icon: ShieldAlert, parent: public-services }
-  government: { icon: Shield, parent: public-services }
-  social: { icon: Users, parent: public-services }
-  amenities: { icon: Heart, parent: public-services }
+  emergency: { icon: Siren }
+  medical-rescue: { icon: Ambulance, parent: emergency }
+  firefighting: { icon: FireExtinguisher, parent: emergency }
+  civil-protection: { icon: Megaphone, parent: emergency }
+
+  public-services: { icon: Landmark }
+  government: { icon: Gavel, parent: public-services }
+  social: { icon: HeartHandshake, parent: public-services }
+  amenities: { icon: Sofa, parent: public-services }
+  waste: { icon: Trash2, parent: public-services }
 
   shops-services: { icon: ShoppingBag }
   shops: { icon: ShoppingBag, parent: shops-services }
   food: { icon: Utensils, parent: shops-services }
-  services: { icon: Wrench, parent: shops-services }
-  financial: { icon: DollarSign, parent: shops-services }
+  financial: { icon: Banknote, parent: shops-services }

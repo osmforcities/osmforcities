@@ -2,6 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import type { AreaTemplate } from "@/lib/area-templates";
+import { getCategoryIcon } from "@/lib/category-icons";
 import { useCategoryLabel } from "@/lib/category-label";
 import { areaBrowsePath, countTemplatesByTopic } from "@/lib/template-topics";
 import { CollapsingPicker } from "./collapsing-picker";
@@ -23,6 +24,7 @@ export function TopicNav({ templates, areaId, activeTopicSlug }: TopicNavProps) 
       key: topicSlug,
       href: areaBrowsePath(areaId, topicSlug),
       label: categoryLabel(topicSlug),
+      icon: getCategoryIcon(topicSlug),
       count,
       isActive: topicSlug === activeTopicSlug,
     }))

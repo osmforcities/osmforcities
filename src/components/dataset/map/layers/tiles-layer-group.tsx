@@ -15,7 +15,7 @@ import {
   POINT_LAYER_ID,
 } from "./layer-ids";
 import type { CuratedTheme } from "@/lib/curated-themes";
-import type { Dataset } from "@/schemas/dataset";
+import { BASEMAP_LABELS_ANCHOR } from "@/lib/map-tiles";
 import { buildCuratedColorExpression } from "@/lib/curated-themes";
 
 const TILES_SOURCE_ID = "dataset-tiles";
@@ -33,14 +33,6 @@ function geometryFilter(
   return (
     visibilityFilter ? ["all", geom, visibilityFilter] : geom
   ) as FilterSpecification;
-}
-
-// No client-side features here; stats without geometryMix fall back to dataCount.
-export function tilesPointCount(dataset: {
-  dataCount: number;
-  stats: Pick<NonNullable<Dataset["stats"]>, "geometryMix"> | null;
-}): number {
-  return dataset.stats?.geometryMix?.points ?? dataset.dataCount;
 }
 
 type TilesLayerGroupProps = {
@@ -91,6 +83,7 @@ export function TilesLayerGroup({
       <Layer
         id={POLYGON_LAYER_ID}
         source-layer={SOURCE_LAYER}
+        beforeId={BASEMAP_LABELS_ANCHOR}
         type="fill"
         filter={geometryFilter("Polygon", visibilityFilter)}
         paint={fillPaint}
@@ -98,6 +91,7 @@ export function TilesLayerGroup({
       <Layer
         id={POLYGON_STROKE_LAYER_ID}
         source-layer={SOURCE_LAYER}
+        beforeId={BASEMAP_LABELS_ANCHOR}
         type="line"
         filter={geometryFilter("Polygon", visibilityFilter)}
         paint={strokePaint}
@@ -105,6 +99,7 @@ export function TilesLayerGroup({
       <Layer
         id={LINE_LAYER_ID}
         source-layer={SOURCE_LAYER}
+        beforeId={BASEMAP_LABELS_ANCHOR}
         type="line"
         filter={geometryFilter("LineString", visibilityFilter)}
         paint={linePaint}
@@ -113,6 +108,7 @@ export function TilesLayerGroup({
       <Layer
         id={POINT_LAYER_ID}
         source-layer={SOURCE_LAYER}
+        beforeId={BASEMAP_LABELS_ANCHOR}
         type="circle"
         filter={geometryFilter("Point", visibilityFilter)}
         paint={pointPaint}

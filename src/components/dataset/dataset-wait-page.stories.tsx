@@ -6,6 +6,10 @@ import { NotifyWhenReadyButton } from "./notify-when-ready-button";
 import { DatasetTooLargeState } from "@/components/ui/dataset-error-states";
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { withAppFrame } from "../../../.storybook/with-app-frame";
+import rotterdam from "./__fixtures__/boundary-324431.json";
+import saoPaulo from "./__fixtures__/boundary-298285.json";
+import osasco from "./__fixtures__/boundary-298470.json";
+import tokyo from "./__fixtures__/boundary-1543125.json";
 
 /**
  * The component polls the tiles-status route, which Storybook does not serve.
@@ -13,16 +17,38 @@ import { withAppFrame } from "../../../.storybook/with-app-frame";
  * still and the copy is what gets reviewed.
  */
 function serveTilesStatus(status: Record<string, unknown>) {
+  return serveRoute("/tiles-status", () => status);
+}
+
+/** Answers one app route and leaves every other request (the basemap) alone. */
+function serveRoute(route: string, answer: (url: string) => unknown) {
   return () => {
     const realFetch = window.fetch;
-    window.fetch = async () =>
-      new Response(JSON.stringify(status), {
+    window.fetch = async (...request: Parameters<typeof fetch>) => {
+      const url = String(
+        request[0] instanceof Request ? request[0].url : request[0]
+      );
+      if (!url.includes(route)) return realFetch(...request);
+      return new Response(JSON.stringify(answer(url)), {
         headers: { "Content-Type": "application/json" },
       });
+    };
     return () => {
       window.fetch = realFetch;
     };
   };
+}
+
+/** The areas' real OSM boundaries, simplified hard to stay small. */
+const BOUNDARIES: Record<string, unknown> = {
+  "324431": rotterdam,
+  "298285": saoPaulo,
+  "298470": osasco,
+  "1543125": tokyo,
+};
+
+function storedBoundary(url: string) {
+  return BOUNDARIES[url.match(/areas\/(\d+)\/boundary/)?.[1] ?? ""] ?? null;
 }
 
 /** The route's empty branch with its real keys, so the locale toolbar applies. */
@@ -39,7 +65,7 @@ function EmptyPage({
   return (
     <DatasetNoMapPage
       areaId={areaId}
-      backLabel={t("backToAreaLabel", { area: areaName })}
+      categoryHref="/area/1/topics/mobility"
       title={t("datasetInArea", { dataset: templateName, area: areaName })}
       lead={t("stateNoData")}
       description={t("emptyDescription")}
@@ -53,6 +79,8 @@ const meta = {
   component: DatasetWaitPage,
   parameters: { layout: "fullscreen", a11y: { test: "error" } },
   decorators: [withAppFrame],
+  beforeEach: serveRoute("/boundary", storedBoundary),
+  args: { categoryHref: "/area/1/topics/mobility" },
 } satisfies Meta<typeof DatasetWaitPage>;
 
 export default meta;
@@ -61,22 +89,22 @@ type Story = StoryObj<typeof meta>;
 const notify = <NotifyWhenReadyButton />;
 
 /**
- * Step 1: the app's own count probe, before any bake and before any row
- * exists. Nothing to poll, nothing to save yet, so no offer.
+ * The count with the tiles-only lane off: it runs inside the request, before
+ * any row exists, and the map follows it directly. Nothing to poll, nothing to
+ * save yet, so no offer.
  */
 export const CountingWarm: Story = {
   args: {
     templateName: "Buildings",
-    areaName: "Delft",
+    areaName: "Rotterdam",
     areaId: 324431,
     mood: "counting",
   },
   play: async ({ canvas }) => {
     await expect(
-      canvas.getByRole("heading", { name: "Buildings in Delft" })
+      canvas.getByRole("heading", { name: "Buildings in Rotterdam" })
     ).toBeInTheDocument();
-    await expect(canvas.getByText("Calculating size")).toBeInTheDocument();
-    await expect(canvas.getByText("Step 1 of 5")).toBeInTheDocument();
+    await expect(canvas.getByText("Checking the data size")).toBeInTheDocument();
     await expect(canvas.getByRole("progressbar")).not.toHaveAttribute(
       "aria-valuenow"
     );
@@ -97,38 +125,73 @@ export const CountingCold: Story = {
   },
   play: async ({ canvas }) => {
     await expect(
-      await canvas.findByText("Still calculating size, large area")
+      await canvas.findByText("Still checking, large area")
     ).toBeInTheDocument();
-    await expect(canvas.queryByText("Calculating size")).not.toBeInTheDocument();
-    await expect(canvas.getByText("Step 1 of 5")).toBeInTheDocument();
+    await expect(canvas.queryByText("Checking the data size")).not.toBeInTheDocument();
   },
 };
 
-/** Step 2: submitted, waiting for the tiler to pick it up. The bar sweeps. */
+/**
+ * Counting on the tiles-only lane: the row exists while the probe runs after
+ * the response, so the page polls and offers saving from the start.
+ */
+export const CountingWithRow: Story = {
+  args: {
+    datasetId: "ds-sao-paulo-buildings",
+    templateName: "Buildings",
+    areaName: "São Paulo",
+    areaId: 298285,
+    mood: "counting",
+    notify,
+  },
+  beforeEach: serveTilesStatus({ state: "pending", stage: "counting" }),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText("Checking the data size")).toBeInTheDocument();
+    await expect(
+      canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
+    ).toBeInTheDocument();
+  },
+};
+
+/** Submitted, waiting for the tiler to pick it up. The bar sweeps. */
 export const BakingQueued: Story = {
   args: {
-    datasetId: "ds-delft-buildings",
+    datasetId: "ds-rotterdam-buildings",
     templateName: "Buildings",
-    areaName: "Delft",
+    areaName: "Rotterdam",
     areaId: 324431,
     mood: "baking",
     notify,
   },
   beforeEach: serveTilesStatus({ state: "pending", stage: "queued" }),
-  play: async ({ canvas }) => {
+  play: async ({ canvas, canvasElement }) => {
     await expect(
-      canvas.getByRole("heading", { name: "Buildings in Delft" })
+      canvas.getByRole("heading", { name: "Buildings in Rotterdam" })
     ).toBeInTheDocument();
     await expect(
-      await canvas.findByText("Waiting for a free slot")
+      await canvas.findByText("Waiting in line")
     ).toBeInTheDocument();
-    await expect(canvas.getByText("Step 2 of 5")).toBeInTheDocument();
+    // The outline is served, so the basemap mounts on it.
+    await waitFor(() =>
+      expect(canvasElement.querySelector(".maplibregl-map")).not.toBeNull()
+    );
     await expect(canvas.getByRole("progressbar")).not.toHaveAttribute(
       "aria-valuenow"
     );
     await expect(
-      canvas.getByRole("button", { name: /Save and email me when it's ready/ })
+      canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeInTheDocument();
+  },
+};
+
+/** An area with no outline has nowhere to frame a map: the place stays an
+ * empty well. */
+export const NoOutline: Story = {
+  args: { ...BakingQueued.args, areaId: 1 },
+  beforeEach: BakingQueued.beforeEach,
+  play: async ({ canvas, canvasElement }) => {
+    await expect(await canvas.findByText("Waiting in line")).toBeInTheDocument();
+    await expect(canvasElement.querySelector(".maplibregl-map")).toBeNull();
   },
 };
 
@@ -136,8 +199,8 @@ export const BakingQueued: Story = {
  * fetch ends, so the bar keeps sweeping. */
 export const BakingFetching: Story = {
   args: {
-    datasetId: "ds-sp-highways",
-    templateName: "Highways",
+    datasetId: "ds-sp-roads",
+    templateName: "Streets and roads",
     areaName: "São Paulo",
     areaId: 298285,
     mood: "baking",
@@ -151,12 +214,28 @@ export const BakingFetching: Story = {
   play: async ({ canvas }) => {
     // The stage arrives with the first poll, so it needs the retrying query.
     await expect(
-      await canvas.findByText("Fetching data (84 MB)")
+      await canvas.findByText("Downloading OpenStreetMap data")
     ).toBeInTheDocument();
-    await expect(canvas.getByText("Step 3 of 5")).toBeInTheDocument();
+    await expect(
+      canvas.getByText(/84 MB so far. The total is only known when the download ends/)
+    ).toBeInTheDocument();
     await expect(canvas.getByRole("progressbar")).not.toHaveAttribute(
       "aria-valuenow"
     );
+  },
+};
+
+/** Most fetches finish before a megabyte lands, so no size is shown until one does. */
+export const BakingFetchingFirstMegabyte: Story = {
+  args: { ...BakingFetching.args },
+  beforeEach: serveTilesStatus({
+    state: "pending",
+    stage: "fetching",
+    progress: { bytes: 0 },
+  }),
+  play: async ({ canvas }) => {
+    await expect(await canvas.findByText("Downloading OpenStreetMap data")).toBeInTheDocument();
+    await expect(canvas.queryByText(/MB/)).not.toBeInTheDocument();
   },
 };
 
@@ -177,9 +256,9 @@ export const BakingConverting: Story = {
   }),
   play: async ({ canvas }) => {
     await expect(
-      await canvas.findByText("Converting features (37%)")
+      await canvas.findByText("Preparing the data")
     ).toBeInTheDocument();
-    await expect(canvas.getByText("Step 4 of 5")).toBeInTheDocument();
+    await expect(canvas.getByText("37%")).toBeInTheDocument();
     await waitFor(() =>
       expect(canvas.getByRole("progressbar")).toHaveAttribute(
         "aria-valuenow",
@@ -201,9 +280,11 @@ export const BakingTiles: Story = {
   }),
   play: async ({ canvas }) => {
     await expect(
-      await canvas.findByText("Baking map tiles (62%)")
+      await canvas.findByText("Building the map")
     ).toBeInTheDocument();
-    await expect(canvas.getByText("Step 5 of 5")).toBeInTheDocument();
+    await expect(canvas.getByText("62%")).toBeInTheDocument();
+    // No step count: an interrupted bake starts over, so "N of 5" would go backwards
+    await expect(canvas.queryByText(/Step \d of/)).not.toBeInTheDocument();
     // The bar starts indeterminate and gains its value on the first poll, so
     // the assertion has to retry rather than the query.
     await waitFor(() =>
@@ -212,6 +293,48 @@ export const BakingTiles: Story = {
         "62"
       )
     );
+  },
+};
+
+/** Baking before its first percentage: the bar fills from zero, it does not sweep. */
+export const BakingBeforeFirstPercentage: Story = {
+  args: { ...BakingConverting.args },
+  beforeEach: serveTilesStatus({ state: "pending", stage: "baking" }),
+  play: async ({ canvas }) => {
+    await expect(
+      await canvas.findByText("Building the map")
+    ).toBeInTheDocument();
+    await expect(canvas.getByText("0%")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(canvas.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "0")
+    );
+  },
+};
+
+/** The bake is done while the app pulls its archive: still the last stage, full. */
+export const BakeLandedArchivePulling: Story = {
+  args: { ...BakingConverting.args },
+  beforeEach: serveTilesStatus({ state: "pending", stage: "done" }),
+  play: async ({ canvas }) => {
+    await expect(
+      await canvas.findByText("Building the map")
+    ).toBeInTheDocument();
+    await expect(canvas.getByText("100%")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(canvas.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "100")
+    );
+  },
+};
+
+/** Done, while the refresh to the map is in flight: still the last stage, full. */
+export const BakeDoneMapLoading: Story = {
+  args: { ...BakingConverting.args },
+  beforeEach: serveTilesStatus({ state: "done" }),
+  play: async ({ canvas }) => {
+    await expect(
+      await canvas.findByText("Building the map")
+    ).toBeInTheDocument();
+    await expect(canvas.getByText("100%")).toBeInTheDocument();
   },
 };
 
@@ -226,9 +349,9 @@ export const NotifyConfirmed: Story = {
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole("status")
-    ).toHaveTextContent("Saved. You'll get an email when the map is ready.");
+    ).toHaveTextContent(/You'll get an email when the map is ready/);
     await expect(
-      canvas.queryByRole("button", { name: /email me/i })
+      canvas.queryByRole("button", { name: /Save it and get an email/ })
     ).not.toBeInTheDocument();
   },
 };
@@ -239,7 +362,7 @@ export const FailedNotReady: Story = {
     datasetId: "ds-osasco-buildings",
     templateName: "Buildings",
     areaName: "Osasco",
-    areaId: 298584,
+    areaId: 298470,
     mood: "failed",
     notify,
   },
@@ -254,19 +377,20 @@ export const FailedNotReady: Story = {
     await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     await expect(canvas.queryByText(/^Step /)).not.toBeInTheDocument();
     await expect(
-      canvas.getByRole("button", { name: /Save and email me when it's ready/ })
+      canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeInTheDocument();
-    await expect(
-      canvas.getByRole("link", { name: "Back to Osasco" })
-    ).toBeInTheDocument();
+    await expect(canvas.getByRole("link", { name: "Back" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("/area/1/topics/mobility")
+    );
   },
 };
 
 /**
- * Overpass gave up before any row existed, on the count probe or on the
- * feature fetch after it. Load is usually the cause, and the timed-out verdict
- * is remembered for a short while, so the person retries later. No row, so no
- * offer.
+ * With the tiles-only lane off, Overpass gave up before any row existed, on
+ * the count probe or on the feature fetch after it. Load is usually the
+ * cause, and the timed-out verdict is remembered for a short while, so the
+ * person retries later. No row, so no offer.
  */
 export const FailedTimedOut: Story = {
   args: {
@@ -286,8 +410,32 @@ export const FailedTimedOut: Story = {
       canvas.getByText(/Try again in at most 30 minutes/)
     ).toBeInTheDocument();
     await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await expect(canvas.getByRole("link", { name: "Back" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("/area/1/topics/mobility")
+    );
+  },
+};
+
+/**
+ * On the tiles-only lane the row outlives a timed-out probe, so saving keeps
+ * it on the retry schedule.
+ */
+export const FailedTimedOutWithRow: Story = {
+  args: {
+    datasetId: "ds-sao-paulo-buildings",
+    templateName: "Buildings",
+    areaName: "São Paulo",
+    areaId: 298285,
+    mood: "timedOut",
+    notify,
+  },
+  play: async ({ canvas }) => {
     await expect(
-      canvas.getByRole("link", { name: "Back to São Paulo" })
+      canvas.getByText("The data took too long to load.")
+    ).toBeInTheDocument();
+    await expect(
+      canvas.getByRole("button", { name: /Save it and get an email when it's ready/ })
     ).toBeInTheDocument();
   },
 };
@@ -309,6 +457,7 @@ export const FailedTooLarge: Story = {
     <DatasetTooLargeState
       templateName={args.templateName}
       areaName={args.areaName}
+      categoryHref={args.categoryHref}
       areaId={args.areaId}
       notify={<NotifyWhenReadyButton offer="available" />}
     />
@@ -323,7 +472,7 @@ export const FailedTooLarge: Story = {
     ).toBeInTheDocument();
     await expect(
       canvas.getByRole("button", {
-        name: /Save and email me if it becomes available/,
+        name: /Save it and get an email if it becomes available/,
       })
     ).toBeInTheDocument();
   },
@@ -344,6 +493,7 @@ export const FailedTooLargeAtCount: Story = {
     <DatasetTooLargeState
       templateName={args.templateName}
       areaName={args.areaName}
+      categoryHref={args.categoryHref}
       areaId={args.areaId}
     />
   ),
@@ -353,11 +503,12 @@ export const FailedTooLargeAtCount: Story = {
     ).toBeInTheDocument();
     await expect(canvas.getByText("Too large to bake.")).toBeInTheDocument();
     await expect(
-      canvas.queryByRole("button", { name: /email me/i })
+      canvas.queryByRole("button", { name: /Save it and get an email/ })
     ).not.toBeInTheDocument();
-    await expect(
-      canvas.getByRole("link", { name: "Back to Tokyo" })
-    ).toBeInTheDocument();
+    await expect(canvas.getByRole("link", { name: "Back" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("/area/1/topics/mobility")
+    );
   },
 };
 
@@ -385,7 +536,7 @@ export const Empty: Story = {
       canvas.getByText(/nobody has mapped them/)
     ).toBeInTheDocument();
     await expect(
-      canvas.getByRole("button", { name: "Save and email me if it gets mapped" })
+      canvas.getByRole("button", { name: /Save it and get an email if it gets mapped/ })
     ).toBeInTheDocument();
   },
 };

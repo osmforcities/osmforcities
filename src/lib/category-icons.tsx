@@ -1,176 +1,304 @@
 import {
-  Accessibility,
   Ambulance,
-  Anchor,
-  Antenna,
-  Apple,
-  Armchair,
-  Baby,
-  Backpack,
+  Amphora,
   Banknote,
-  BedDouble,
-  BedSingle,
-  Beef,
-  Beer,
-  BicepsFlexed,
   Bike,
-  Binoculars,
-  BookOpen,
-  BrickWall,
   Building,
   Building2,
   Bus,
   BusFront,
-  Cable,
   Camera,
-  Car,
-  CarTaxiFront,
-  Caravan,
-  Carrot,
-  Cctv,
-  ChefHat,
-  CircleDot,
-  Clock,
-  Coffee,
-  Container,
-  Croissant,
-  Cross,
-  Crosshair,
-  CupSoda,
-  Cylinder,
-  Diamond,
-  Dog,
-  DollarSign,
-  DoorOpen,
-  Droplet,
+  Castle,
   Droplets,
-  Dumbbell,
-  Egg,
-  Eye,
-  Factory,
   Fence,
-  Film,
+  FerrisWheel,
   FireExtinguisher,
-  Flame,
-  FlaskConical,
-  Flower2,
   Footprints,
-  Fuel,
-  Gauge,
-  Gem,
-  Gift,
-  Glasses,
-  Goal,
-  GraduationCap,
-  Hammer,
-  Heart,
+  Gavel,
   HeartHandshake,
   HeartPulse,
-  Home,
   Hospital,
-  Hotel,
-  IceCreamCone,
-  Images,
-  Info,
-  LandPlot,
+  House,
   Landmark,
-  Languages,
-  LayoutGrid,
   Leaf,
-  LibraryBig,
-  Lightbulb,
-  Luggage,
-  Mail,
-  Mailbox,
   MapPin,
-  Martini,
-  Medal,
-  MessageCircle,
-  MessagesSquare,
-  Microscope,
-  Milestone,
-  Milk,
-  Mountain,
-  MountainSnow,
-  Music,
-  Package,
+  Megaphone,
   Palette,
-  PawPrint,
   PersonStanding,
-  Phone,
-  Pill,
-  Puzzle,
-  RadioTower,
-  RailSymbol,
-  Recycle,
-  Ribbon,
-  RockingChair,
   Route,
-  Sandwich,
-  Scale,
   School,
-  Shield,
-  ShieldAlert,
-  Ship,
-  Shirt,
   ShoppingBag,
-  ShoppingBasket,
-  ShoppingCart,
-  ShowerHead,
-  Shrub,
-  Signpost,
   Siren,
-  Smartphone,
-  SmilePlus,
-  Snowflake,
   Sofa,
-  Sprout,
-  Square,
-  SquareParking,
-  Star,
-  Stethoscope,
-  Store,
-  Target,
-  Tent,
-  Theater,
-  ThermometerSun,
-  Ticket,
-  Toilet,
-  ToyBrick,
-  Tractor,
   TrafficCone,
   Train,
-  TrainFrontTunnel,
-  TrainTrack,
-  TramFront,
-  Trash,
   Trash2,
-  TreeDeciduous,
-  TreePine,
   Trees,
-  TriangleAlert,
-  Trophy,
-  Tv,
-  Undo2,
-  Users,
   Utensils,
-  UtensilsCrossed,
+  UtilityPole,
   Volleyball,
-  Warehouse,
-  Waves,
-  Waypoints,
-  Wheat,
-  Wrench,
-  Zap
+  Wheat
 } from "lucide-react";
 
 /**
  * Icon lookups for dataset templates and categories
  *
  * AUTO-GENERATED from prisma/templates.yml - DO NOT EDIT DIRECTLY
- * Generated: 2026-11-02T20:25:05.277Z
+ * Generated: 2026-11-09T22:47:42.322Z
  * Regenerate with: pnpm generate-icons
  */
+
+/**
+ * Template icons are Pinhead map icons (CC0, https://pinhead.ink) in one
+ * static sprite, so their paths stay out of the client bundle.
+ */
+const TEMPLATE_ICON_SPRITE = "/template-icons/648bad291f70.svg";
+
+const TEMPLATE_ICONS = new Map<string, string>([
+  ["agricultural-tanks", "cylinder"],
+  ["alpine-huts", "person_walking_with_hiking_pole_wearing_backpack_in_gable_roofed_shelter"],
+  ["alternative-medicine", "lotus_flower"],
+  ["ambulance-stations", "compact_box_truck_with_greek_cross"],
+  ["apartments", "lowrise_apartment_building"],
+  ["archaeological-sites", "amphora"],
+  ["archery", "target_with_archery_arrow_at_bullseye"],
+  ["arts-centre", "palette"],
+  ["artwork", "paintbrush"],
+  ["assembly-points", "crowd_of_people"],
+  ["athletics", "racetrack_oval_with_dashes"],
+  ["atms", "banknote_in_slot"],
+  ["attractions", "star"],
+  ["bakeries", "loaf_of_bread"],
+  ["banks", "banknote"],
+  ["barns", "barn"],
+  ["bars", "cocktail"],
+  ["baseball", "baseball"],
+  ["basketball", "basketball"],
+  ["beaches", "beach_umbrella_in_ground"],
+  ["benches", "bench_with_backrest"],
+  ["bicycle-parking", "wide_p_with_bicycle"],
+  ["bicycle-rental", "bicycle_and_arrow_right_above_arrow_left"],
+  ["bicycle-shop", "bicycle_and_tag"],
+  ["blood-donation", "droplet_with_greek_cross"],
+  ["bottle-return", "wheelie_bin_and_drink_bottle_and_can"],
+  ["bridges", "bridge_tied_arch"],
+  ["buildings", "town_buildings"],
+  ["bus-lanes", "bus"],
+  ["bus-stops", "bus_with_destination_display"],
+  ["busways", "bus_within_guideway"],
+  ["butchers", "cleaver"],
+  ["cafes", "handled_teacup_and_saucer"],
+  ["campsites", "campsite"],
+  ["car-free-paths", "person_walking_and_person_riding_bicycle"],
+  ["caravan-sites", "camper_trailer"],
+  ["castles", "castle"],
+  ["caves", "cave"],
+  ["cemeteries", "memorial_stone"],
+  ["chalets", "cabin"],
+  ["chemist", "tube_and_toothbrush"],
+  ["childcare", "baby"],
+  ["chimney", "chimney_with_smoke"],
+  ["cinemas", "film_movie_projector"],
+  ["cliffs", "cliff_with_rocks"],
+  ["climbing", "climbing_wall"],
+  ["clinics", "stethoscope"],
+  ["clocks", "clock_face"],
+  ["clothes", "vneck_tshirt"],
+  ["coastlines", "waters_meeting_shore"],
+  ["college", "square_academic_cap"],
+  ["communications-tower", "lattice_tower_with_ball_tip_antenna_on_ground_with_beams"],
+  ["community-centre", "house_with_flag"],
+  ["convenience", "milk_carton_and_apple"],
+  ["counselling-services", "speech_bubbles"],
+  ["courts", "balance_scales"],
+  ["crossings", "person_walking_on_crosswalk"],
+  ["cycle-lanes", "bicycle_in_rectangle_outline"],
+  ["cycleways", "person_riding_bicycle"],
+  ["cycling-infrastructure", "bicycle"],
+  ["dam", "dam"],
+  ["defibrillators", "heart_with_ecg_line"],
+  ["dentists", "molar_tooth"],
+  ["department-stores", "shopping_bag"],
+  ["dialysis-centres", "kidneys"],
+  ["diy", "wrench_and_hammer"],
+  ["doctors", "stethoscope"],
+  ["dog-parks", "dog_wearing_collar"],
+  ["dormitories", "people_sleeping_in_bunkbeds"],
+  ["drinking-water", "water_tap_with_drinking_glass"],
+  ["driving-school", "people_in_car"],
+  ["electronics", "plug"],
+  ["emergency-phones", "phone_top_right_and_greek_cross"],
+  ["emergency-shelters", "gable_roofed_shelter"],
+  ["equestrian", "person_riding_horse"],
+  ["ev-charging", "charging_station_with_bolt"],
+  ["farm-auxiliary", "barn_and_silo"],
+  ["farmland", "corn_cob"],
+  ["farmyards", "barn_and_silo"],
+  ["fast-food", "burger"],
+  ["fell", "mountain"],
+  ["fences", "picket_fence"],
+  ["ferry-terminals", "ferryboat"],
+  ["fire-hydrants", "hydrant"],
+  ["fire-stations", "badge_shield_with_fire"],
+  ["firefighting-water-sources", "storage_tank"],
+  ["fitness-centers", "dumbbell"],
+  ["fitness-stations", "person_hanging_from_pull_up_bar"],
+  ["food-court", "spoon_and_chefs_knife_and_pot"],
+  ["food-vending", "vending_machine_with_drink_can"],
+  ["football", "soccer_ball"],
+  ["footways", "person_walking"],
+  ["forests", "conifer_tree"],
+  ["fountains", "fountain_from_water"],
+  ["fuel", "gasoline_pump"],
+  ["furniture", "club_chair"],
+  ["gallery", "wall_hanging_with_mountains_and_sun"],
+  ["gardens", "tulip"],
+  ["gates", "tall_gate"],
+  ["geyser", "geyser_from_ground"],
+  ["give-box", "giftwrapped_box"],
+  ["glaciers", "snowflake"],
+  ["golf", "person_swinging_golf_club"],
+  ["golf-courses", "person_swinging_golf_club"],
+  ["government-office", "classical_building_with_flag"],
+  ["grasslands", "grass"],
+  ["greengrocers", "banana_and_apple"],
+  ["greenhouse-horticulture", "greenhouse"],
+  ["greenhouses", "greenhouse"],
+  ["gymnasiums", "person_balancing_on_low_mounted_beam"],
+  ["hardware", "wrench_and_hammer"],
+  ["health-post", "greek_cross"],
+  ["heath", "low_shrub"],
+  ["hedges", "shrub"],
+  ["heritage-sites", "plaque"],
+  ["hospitals", "hospital_h"],
+  ["hot-springs", "jp_hot_spring"],
+  ["hotel-guesthouse", "person_sleeping_in_bed"],
+  ["hotels", "bed"],
+  ["houses", "house_with_chimney"],
+  ["ice-cream", "ice_cream_on_cone"],
+  ["ice-rinks", "ice_skate"],
+  ["information-boards", "info_i"],
+  ["jewelry", "ring_with_jewel"],
+  ["kerbs", "lowered_curb_under_shoe"],
+  ["kindergarten", "rocking_horse"],
+  ["language-school", "graticule_globe"],
+  ["libraries", "open_book"],
+  ["livestock-buildings", "horse_in_shelter"],
+  ["luggage-lockers", "suitcase_under_key"],
+  ["managed-green", "leaf"],
+  ["marinas", "sailboat"],
+  ["markets", "market_stall"],
+  ["mast", "guyed_mast"],
+  ["meadows", "grass"],
+  ["medical-laboratories", "microscope"],
+  ["memorials", "memorial_stone_with_inscription"],
+  ["midwives", "pregnant_person_standing"],
+  ["mobile-phone", "mobile_phone_with_touchscreen_and_antenna"],
+  ["monuments", "obelisk_on_plinth"],
+  ["motels", "car_beside_person_sleeping_in_bed"],
+  ["mud", "waters"],
+  ["museums", "classical_building"],
+  ["music-school", "eighth_notes"],
+  ["natural-surfaces", "squat_rock"],
+  ["natural-vegetation", "oval_broadleaved_tree_beside_oval_broadleaved_tree"],
+  ["nature-reserves", "broadleaved_tree"],
+  ["nursing-home", "person_standing_holding_cane"],
+  ["occupational-therapists", "puzzle_piece"],
+  ["opticians", "eyeglasses"],
+  ["optometrists", "eye"],
+  ["orchards", "apple"],
+  ["parcel-lockers", "lockers_terminal"],
+  ["parking", "car_on_parking_line"],
+  ["parks", "tree_beside_bench_with_backrest"],
+  ["peaks", "snowcapped_mountain"],
+  ["pharmacies", "circular_pill_and_capsule_pill"],
+  ["physiotherapists", "person_squatting_beside_person_standing_reaching_up"],
+  ["pipeline", "water_pipe_return_bend_with_handle"],
+  ["pitches", "person_running"],
+  ["places-of-worship", "place_of_worship_building"],
+  ["plant-nurseries", "plant"],
+  ["playgrounds", "person_sitting_on_swing"],
+  ["podiatrists", "foot"],
+  ["police-stations", "police_officer"],
+  ["post-boxes", "post_box"],
+  ["post-offices", "envelope"],
+  ["prisons", "barred_door"],
+  ["psychotherapists", "human_head"],
+  ["public-bookcase", "open_book_under_roof"],
+  ["public-toilets", "sitting_tank_toilet"],
+  ["public-transit", "transit_vehicle_with_destination_display"],
+  ["pubs", "pint_glass"],
+  ["pumping-station", "water_pipe_return_bend_with_motor_and_handle"],
+  ["rail-tracks", "railway_track"],
+  ["railway-stations", "transit_vehicle_on_railway_track"],
+  ["recycling", "recycling_symbol"],
+  ["rehabilitation-centres", "person_walking_holding_railing"],
+  ["research-institute", "book_with_square_academic_cap"],
+  ["residential", "lowrise_building_beside_lollipop_tree_on_ground"],
+  ["restaurants", "fork_beside_table_knife"],
+  ["roads", "sedan"],
+  ["rock", "pointy_rock"],
+  ["ruins", "megalith"],
+  ["sand", "sandbox"],
+  ["schools", "paper_and_pencil"],
+  ["scrub", "shrub"],
+  ["senior-centers", "person_standing_wearing_dress_holding_cane"],
+  ["shingle", "round_rock"],
+  ["shoes", "shoe"],
+  ["shooting", "target"],
+  ["shopping-malls", "person_carrying_shopping_bags"],
+  ["shower", "showerhead_with_spray"],
+  ["shrines", "column_shrine"],
+  ["sidewalks", "sign_beside_person_walking"],
+  ["silos", "silo"],
+  ["sirens", "megaphone"],
+  ["skiing", "person_skiing_downhill"],
+  ["social-facility", "heart_above_outstretched_hand"],
+  ["speech-therapists", "speech_bubble"],
+  ["speed-cameras", "wallmounted_surveillance_camera"],
+  ["sports-centres", "people_running"],
+  ["springs", "droplet_above_water"],
+  ["stadiums", "bleachers"],
+  ["steps", "stairs"],
+  ["stone", "trapezoidal_rock"],
+  ["storage-tanks", "cylinder"],
+  ["street-lamps", "street_lamp_arm"],
+  ["subway-entrances", "transit_vehicle_with_destination_display_on_railway_track_in_tunnel"],
+  ["supermarkets", "shopping_cart"],
+  ["surveillance", "wallmounted_surveillance_camera"],
+  ["swimming", "person_swimming_in_waters"],
+  ["swimming-pools", "person_swimming_in_water"],
+  ["tailings-pond", "droplet_from_pipes"],
+  ["taxi-ranks", "taxi"],
+  ["telephones", "phone_top_right"],
+  ["tennis", "tennis_ball"],
+  ["theatres", "comedy_mask_and_tragedy_mask"],
+  ["tower", "lattice_tower_with_observation_deck"],
+  ["town-halls", "classical_building_with_flag"],
+  ["tracks", "racetrack_oval_with_dashes"],
+  ["traffic-calming", "speed_bump"],
+  ["traffic-lights", "three_dots_up_down_in_tall_rounded_rectangle"],
+  ["traffic-signs", "sign"],
+  ["tram-stops", "tram_with_destination_display_and_pantograph_on_tram_track"],
+  ["transit-platforms", "person_boarding_transit_vehicle_with_destination_display"],
+  ["trees", "oval_broadleaved_tree"],
+  ["tunnels", "tunnel"],
+  ["universities", "square_academic_cap"],
+  ["utility-pole", "utility_pole"],
+  ["veterinary", "pawprint_with_greek_cross"],
+  ["viewpoints", "person_using_mounted_binoculars"],
+  ["walls", "stone_wall"],
+  ["waste-basket", "trash_can"],
+  ["waste-disposal", "wheelie_bin"],
+  ["wastewater-plant", "sewage_pipe_cross_section"],
+  ["water", "droplet"],
+  ["water-tower", "water_tower"],
+  ["water-works", "utility_valve_with_droplet"],
+  ["waterfall", "waterfall"],
+  ["wetlands", "grass_in_water"],
+  ["wilderness-huts", "cabin"],
+  ["woods", "conifer_tree_beside_oval_broadleaved_tree"],
+]);
 
 /**
  * Get the icon for a category (case-insensitive)
@@ -183,73 +311,81 @@ export function getCategoryIcon(category: string) {
     case "agriculture":
       return <Wheat className="w-5 h-5" />;
     case "amenities":
-      return <Heart className="w-5 h-5" />;
+      return <Sofa className="w-5 h-5" />;
     case "barriers":
-      return <Square className="w-5 h-5" />;
+      return <Fence className="w-5 h-5" />;
     case "buildings-infrastructure":
       return <Building2 className="w-5 h-5" />;
     case "bus":
       return <Bus className="w-5 h-5" />;
+    case "civil-protection":
+      return <Megaphone className="w-5 h-5" />;
     case "culture":
       return <Palette className="w-5 h-5" />;
+    case "culture-religion":
+      return <Amphora className="w-5 h-5" />;
     case "cycling":
       return <Bike className="w-5 h-5" />;
     case "education":
       return <School className="w-5 h-5" />;
-    case "education-culture":
-      return <School className="w-5 h-5" />;
     case "emergency":
-      return <ShieldAlert className="w-5 h-5" />;
+      return <Siren className="w-5 h-5" />;
     case "environment":
-      return <Leaf className="w-5 h-5" />;
+      return <Droplets className="w-5 h-5" />;
     case "financial":
-      return <DollarSign className="w-5 h-5" />;
+      return <Banknote className="w-5 h-5" />;
+    case "firefighting":
+      return <FireExtinguisher className="w-5 h-5" />;
     case "food":
       return <Utensils className="w-5 h-5" />;
     case "government":
-      return <Shield className="w-5 h-5" />;
+      return <Gavel className="w-5 h-5" />;
     case "health":
-      return <Hospital className="w-5 h-5" />;
+      return <HeartPulse className="w-5 h-5" />;
     case "healthcare":
       return <Hospital className="w-5 h-5" />;
+    case "heritage":
+      return <Castle className="w-5 h-5" />;
     case "housing":
-      return <Building2 className="w-5 h-5" />;
+      return <House className="w-5 h-5" />;
     case "infrastructure":
-      return <Gauge className="w-5 h-5" />;
+      return <UtilityPole className="w-5 h-5" />;
     case "leisure":
-      return <TreePine className="w-5 h-5" />;
+      return <FerrisWheel className="w-5 h-5" />;
     case "leisure-sports":
-      return <Trophy className="w-5 h-5" />;
+      return <PersonStanding className="w-5 h-5" />;
+    case "medical-rescue":
+      return <Ambulance className="w-5 h-5" />;
     case "mobility":
-      return <Car className="w-5 h-5" />;
+      return <BusFront className="w-5 h-5" />;
     case "nature":
-      return <Leaf className="w-5 h-5" />;
+      return <Trees className="w-5 h-5" />;
     case "nature-environment":
       return <Leaf className="w-5 h-5" />;
     case "pedestrian":
       return <Footprints className="w-5 h-5" />;
     case "public-services":
-      return <Shield className="w-5 h-5" />;
+      return <Landmark className="w-5 h-5" />;
     case "rail":
       return <Train className="w-5 h-5" />;
     case "religion":
-      return <Landmark className="w-5 h-5" />;
+      return <Building className="w-5 h-5" />;
     case "roads":
       return <Route className="w-5 h-5" />;
-    case "services":
-      return <Wrench className="w-5 h-5" />;
     case "shops":
       return <ShoppingBag className="w-5 h-5" />;
     case "shops-services":
       return <ShoppingBag className="w-5 h-5" />;
     case "social":
-      return <Users className="w-5 h-5" />;
+      return <HeartHandshake className="w-5 h-5" />;
     case "sports":
-      return <Trophy className="w-5 h-5" />;
+      return <Volleyball className="w-5 h-5" />;
     case "tourism":
       return <Camera className="w-5 h-5" />;
     case "traffic":
       return <TrafficCone className="w-5 h-5" />;
+    case "waste":
+      return <Trash2 className="w-5 h-5" />;
     default:
       return <MapPin className="w-5 h-5" />;
   }
@@ -260,497 +396,14 @@ export function getCategoryIcon(category: string) {
  * falling back to the template's category icon
  *
  * @example
- * getTemplateIcon("drinking-water", "amenities"); // Returns Droplet icon
+ * getTemplateIcon("drinking-water", "amenities"); // Returns the water tap icon
  */
 export function getTemplateIcon(templateId: string, category: string) {
-  switch (templateId.toLowerCase()) {
-    case "agricultural-tanks":
-      return <Cylinder className="w-5 h-5" />;
-    case "alpine-huts":
-      return <Mountain className="w-5 h-5" />;
-    case "alternative-medicine":
-      return <Leaf className="w-5 h-5" />;
-    case "ambulance-stations":
-      return <Ambulance className="w-5 h-5" />;
-    case "animal-keeping":
-      return <Fence className="w-5 h-5" />;
-    case "apartments":
-      return <Building2 className="w-5 h-5" />;
-    case "archery":
-      return <Crosshair className="w-5 h-5" />;
-    case "arts-centre":
-      return <Palette className="w-5 h-5" />;
-    case "athletics":
-      return <Medal className="w-5 h-5" />;
-    case "atms":
-      return <Banknote className="w-5 h-5" />;
-    case "attractions":
-      return <Star className="w-5 h-5" />;
-    case "bakeries":
-      return <Croissant className="w-5 h-5" />;
-    case "banks":
-      return <Landmark className="w-5 h-5" />;
-    case "barns":
-      return <Warehouse className="w-5 h-5" />;
-    case "bars":
-      return <Martini className="w-5 h-5" />;
-    case "baseball":
-      return <Diamond className="w-5 h-5" />;
-    case "basketball":
-      return <CircleDot className="w-5 h-5" />;
-    case "beaches":
-      return <Waves className="w-5 h-5" />;
-    case "benches":
-      return <RockingChair className="w-5 h-5" />;
-    case "bicycle-parking":
-      return <Bike className="w-5 h-5" />;
-    case "bicycle-rental":
-      return <Bike className="w-5 h-5" />;
-    case "bicycle-shop":
-      return <Store className="w-5 h-5" />;
-    case "blood-donation":
-      return <Droplet className="w-5 h-5" />;
-    case "bottle-return":
-      return <Undo2 className="w-5 h-5" />;
-    case "bridges":
-      return <Waypoints className="w-5 h-5" />;
-    case "buildings":
-      return <Building className="w-5 h-5" />;
-    case "bunker-silos":
-      return <Warehouse className="w-5 h-5" />;
-    case "bus-lanes":
-      return <Milestone className="w-5 h-5" />;
-    case "bus-stops":
-      return <Bus className="w-5 h-5" />;
-    case "busways":
-      return <BusFront className="w-5 h-5" />;
-    case "butchers":
-      return <Beef className="w-5 h-5" />;
-    case "cafes":
-      return <Coffee className="w-5 h-5" />;
-    case "campsites":
-      return <Tent className="w-5 h-5" />;
-    case "caravan-sites":
-      return <Caravan className="w-5 h-5" />;
-    case "caves":
-      return <Mountain className="w-5 h-5" />;
-    case "chalets":
-      return <Home className="w-5 h-5" />;
-    case "chemist":
-      return <Pill className="w-5 h-5" />;
-    case "childcare":
-      return <Backpack className="w-5 h-5" />;
-    case "chimney":
-      return <Factory className="w-5 h-5" />;
-    case "cinemas":
-      return <Film className="w-5 h-5" />;
-    case "cliffs":
-      return <Mountain className="w-5 h-5" />;
-    case "climbing":
-      return <Mountain className="w-5 h-5" />;
-    case "clinics":
-      return <Stethoscope className="w-5 h-5" />;
-    case "clocks":
-      return <Clock className="w-5 h-5" />;
-    case "clothes":
-      return <Shirt className="w-5 h-5" />;
-    case "coastlines":
-      return <Waves className="w-5 h-5" />;
-    case "college":
-      return <GraduationCap className="w-5 h-5" />;
-    case "communications-tower":
-      return <Antenna className="w-5 h-5" />;
-    case "community-centre":
-      return <Users className="w-5 h-5" />;
-    case "convenience":
-      return <Store className="w-5 h-5" />;
-    case "counselling-services":
-      return <MessagesSquare className="w-5 h-5" />;
-    case "courts":
-      return <Scale className="w-5 h-5" />;
-    case "cowsheds":
-      return <Warehouse className="w-5 h-5" />;
-    case "crossings":
-      return <Footprints className="w-5 h-5" />;
-    case "cycleways":
-      return <Bike className="w-5 h-5" />;
-    case "dairy-yards":
-      return <Milk className="w-5 h-5" />;
-    case "dam":
-      return <BrickWall className="w-5 h-5" />;
-    case "defibrillators":
-      return <HeartPulse className="w-5 h-5" />;
-    case "dentists":
-      return <SmilePlus className="w-5 h-5" />;
-    case "department-stores":
-      return <Store className="w-5 h-5" />;
-    case "dialysis-centres":
-      return <Droplets className="w-5 h-5" />;
-    case "diy":
-      return <Wrench className="w-5 h-5" />;
-    case "doctors":
-      return <Stethoscope className="w-5 h-5" />;
-    case "dog-parks":
-      return <Dog className="w-5 h-5" />;
-    case "dormitories":
-      return <Building className="w-5 h-5" />;
-    case "drinking-water":
-      return <Droplet className="w-5 h-5" />;
-    case "driving-school":
-      return <Car className="w-5 h-5" />;
-    case "electronics":
-      return <Tv className="w-5 h-5" />;
-    case "emergency-phones":
-      return <Phone className="w-5 h-5" />;
-    case "equestrian":
-      return <Ribbon className="w-5 h-5" />;
-    case "ev-charging":
-      return <Zap className="w-5 h-5" />;
-    case "farm-auxiliary":
-      return <Wrench className="w-5 h-5" />;
-    case "farmland":
-      return <Wheat className="w-5 h-5" />;
-    case "farmyards":
-      return <Tractor className="w-5 h-5" />;
-    case "fast-food":
-      return <Sandwich className="w-5 h-5" />;
-    case "feedlots":
-      return <Fence className="w-5 h-5" />;
-    case "fell":
-      return <Mountain className="w-5 h-5" />;
-    case "fences":
-      return <Fence className="w-5 h-5" />;
-    case "ferry-terminals":
-      return <Ship className="w-5 h-5" />;
-    case "fire-hydrants":
-      return <Flame className="w-5 h-5" />;
-    case "fire-stations":
-      return <FireExtinguisher className="w-5 h-5" />;
-    case "fitness-centers":
-      return <Dumbbell className="w-5 h-5" />;
-    case "fitness-stations":
-      return <PersonStanding className="w-5 h-5" />;
-    case "food-court":
-      return <ChefHat className="w-5 h-5" />;
-    case "food-vending":
-      return <CupSoda className="w-5 h-5" />;
-    case "football":
-      return <Volleyball className="w-5 h-5" />;
-    case "footways":
-      return <Footprints className="w-5 h-5" />;
-    case "forests":
-      return <Trees className="w-5 h-5" />;
-    case "fountains":
-      return <Droplets className="w-5 h-5" />;
-    case "fuel":
-      return <Fuel className="w-5 h-5" />;
-    case "furniture":
-      return <Sofa className="w-5 h-5" />;
-    case "gallery":
-      return <Images className="w-5 h-5" />;
-    case "gardens":
-      return <Flower2 className="w-5 h-5" />;
-    case "gates":
-      return <DoorOpen className="w-5 h-5" />;
-    case "geyser":
-      return <Droplets className="w-5 h-5" />;
-    case "give-box":
-      return <Gift className="w-5 h-5" />;
-    case "glaciers":
-      return <MountainSnow className="w-5 h-5" />;
-    case "golf":
-      return <LandPlot className="w-5 h-5" />;
-    case "golf-courses":
-      return <LandPlot className="w-5 h-5" />;
-    case "government-office":
-      return <Landmark className="w-5 h-5" />;
-    case "grasslands":
-      return <Sprout className="w-5 h-5" />;
-    case "greengrocers":
-      return <Carrot className="w-5 h-5" />;
-    case "greenhouse-horticulture":
-      return <Sprout className="w-5 h-5" />;
-    case "greenhouses":
-      return <Sprout className="w-5 h-5" />;
-    case "gymnasiums":
-      return <BicepsFlexed className="w-5 h-5" />;
-    case "hardware":
-      return <Hammer className="w-5 h-5" />;
-    case "health-post":
-      return <Cross className="w-5 h-5" />;
-    case "heath":
-      return <Leaf className="w-5 h-5" />;
-    case "hedges":
-      return <Shrub className="w-5 h-5" />;
-    case "highways":
-      return <Waypoints className="w-5 h-5" />;
-    case "hospitals":
-      return <Hospital className="w-5 h-5" />;
-    case "hot-springs":
-      return <ThermometerSun className="w-5 h-5" />;
-    case "hotel-guesthouse":
-      return <BedDouble className="w-5 h-5" />;
-    case "hotels":
-      return <Hotel className="w-5 h-5" />;
-    case "houses":
-      return <Home className="w-5 h-5" />;
-    case "ice-cream":
-      return <IceCreamCone className="w-5 h-5" />;
-    case "ice-rinks":
-      return <Snowflake className="w-5 h-5" />;
-    case "information-boards":
-      return <Info className="w-5 h-5" />;
-    case "irrigated-green":
-      return <Droplet className="w-5 h-5" />;
-    case "jewelry":
-      return <Gem className="w-5 h-5" />;
-    case "kindergarten":
-      return <Baby className="w-5 h-5" />;
-    case "language-school":
-      return <Languages className="w-5 h-5" />;
-    case "libraries":
-      return <LibraryBig className="w-5 h-5" />;
-    case "livestock-buildings":
-      return <Warehouse className="w-5 h-5" />;
-    case "luggage-lockers":
-      return <Luggage className="w-5 h-5" />;
-    case "managed-green":
-      return <Leaf className="w-5 h-5" />;
-    case "manure-storage":
-      return <Package className="w-5 h-5" />;
-    case "marinas":
-      return <Anchor className="w-5 h-5" />;
-    case "markets":
-      return <ShoppingBasket className="w-5 h-5" />;
-    case "mast":
-      return <Antenna className="w-5 h-5" />;
-    case "meadows":
-      return <Leaf className="w-5 h-5" />;
-    case "medical-laboratories":
-      return <FlaskConical className="w-5 h-5" />;
-    case "memorials":
-      return <Landmark className="w-5 h-5" />;
-    case "midwives":
-      return <Baby className="w-5 h-5" />;
-    case "mobile-phone":
-      return <Smartphone className="w-5 h-5" />;
-    case "monuments":
-      return <Landmark className="w-5 h-5" />;
-    case "motels":
-      return <BedSingle className="w-5 h-5" />;
-    case "mud":
-      return <Droplets className="w-5 h-5" />;
-    case "museums":
-      return <Landmark className="w-5 h-5" />;
-    case "music-school":
-      return <Music className="w-5 h-5" />;
-    case "natural-surfaces":
-      return <Mountain className="w-5 h-5" />;
-    case "natural-vegetation":
-      return <Trees className="w-5 h-5" />;
-    case "nature-reserves":
-      return <Trees className="w-5 h-5" />;
-    case "nursing-home":
-      return <BedDouble className="w-5 h-5" />;
-    case "occupational-therapists":
-      return <Puzzle className="w-5 h-5" />;
-    case "opticians":
-      return <Glasses className="w-5 h-5" />;
-    case "optometrists":
-      return <Eye className="w-5 h-5" />;
-    case "orchards":
-      return <Apple className="w-5 h-5" />;
-    case "parcel-lockers":
-      return <Package className="w-5 h-5" />;
-    case "parking":
-      return <SquareParking className="w-5 h-5" />;
-    case "parks":
-      return <TreePine className="w-5 h-5" />;
-    case "peaks":
-      return <Mountain className="w-5 h-5" />;
-    case "pharmacies":
-      return <Pill className="w-5 h-5" />;
-    case "physiotherapists":
-      return <Dumbbell className="w-5 h-5" />;
-    case "pig-sties":
-      return <Warehouse className="w-5 h-5" />;
-    case "pipeline":
-      return <Cable className="w-5 h-5" />;
-    case "pitches":
-      return <Goal className="w-5 h-5" />;
-    case "places-of-worship":
-      return <Landmark className="w-5 h-5" />;
-    case "plant-nurseries":
-      return <Sprout className="w-5 h-5" />;
-    case "playgrounds":
-      return <ToyBrick className="w-5 h-5" />;
-    case "podiatrists":
-      return <Footprints className="w-5 h-5" />;
-    case "police-stations":
-      return <Siren className="w-5 h-5" />;
-    case "post-boxes":
-      return <Mailbox className="w-5 h-5" />;
-    case "post-offices":
-      return <Mail className="w-5 h-5" />;
-    case "poultry-yards":
-      return <Egg className="w-5 h-5" />;
-    case "prisons":
-      return <Building className="w-5 h-5" />;
-    case "psychotherapists":
-      return <Armchair className="w-5 h-5" />;
-    case "public-bookcase":
-      return <BookOpen className="w-5 h-5" />;
-    case "public-toilets":
-      return <Toilet className="w-5 h-5" />;
-    case "public-transit":
-      return <Train className="w-5 h-5" />;
-    case "pubs":
-      return <Beer className="w-5 h-5" />;
-    case "pumping-station":
-      return <Gauge className="w-5 h-5" />;
-    case "rail-tracks":
-      return <TrainTrack className="w-5 h-5" />;
-    case "railway-stations":
-      return <Train className="w-5 h-5" />;
-    case "recycling":
-      return <Recycle className="w-5 h-5" />;
-    case "rehabilitation-centres":
-      return <PersonStanding className="w-5 h-5" />;
-    case "research-institute":
-      return <Microscope className="w-5 h-5" />;
-    case "residential":
-      return <Building2 className="w-5 h-5" />;
-    case "restaurants":
-      return <UtensilsCrossed className="w-5 h-5" />;
-    case "roads":
-      return <Route className="w-5 h-5" />;
-    case "rock":
-      return <Mountain className="w-5 h-5" />;
-    case "sand":
-      return <Mountain className="w-5 h-5" />;
-    case "schools":
-      return <School className="w-5 h-5" />;
-    case "scrub":
-      return <Shrub className="w-5 h-5" />;
-    case "senior-centers":
-      return <Accessibility className="w-5 h-5" />;
-    case "shingle":
-      return <Mountain className="w-5 h-5" />;
-    case "shoes":
-      return <Footprints className="w-5 h-5" />;
-    case "shooting":
-      return <Target className="w-5 h-5" />;
-    case "shopping-malls":
-      return <ShoppingBag className="w-5 h-5" />;
-    case "shower":
-      return <ShowerHead className="w-5 h-5" />;
-    case "silos":
-      return <Warehouse className="w-5 h-5" />;
-    case "skiing":
-      return <MountainSnow className="w-5 h-5" />;
-    case "slurry-basins":
-      return <Container className="w-5 h-5" />;
-    case "slurry-tanks":
-      return <Cylinder className="w-5 h-5" />;
-    case "social-facility":
-      return <HeartHandshake className="w-5 h-5" />;
-    case "speech-therapists":
-      return <MessageCircle className="w-5 h-5" />;
-    case "speed-cameras":
-      return <Camera className="w-5 h-5" />;
-    case "sports-centres":
-      return <LayoutGrid className="w-5 h-5" />;
-    case "springs":
-      return <Droplets className="w-5 h-5" />;
-    case "stables":
-      return <Warehouse className="w-5 h-5" />;
-    case "stadiums":
-      return <Ticket className="w-5 h-5" />;
-    case "stockyards":
-      return <Fence className="w-5 h-5" />;
-    case "stone":
-      return <Mountain className="w-5 h-5" />;
-    case "storage-tanks":
-      return <Cylinder className="w-5 h-5" />;
-    case "street-lamps":
-      return <Lightbulb className="w-5 h-5" />;
-    case "street-trees":
-      return <TreeDeciduous className="w-5 h-5" />;
-    case "subway-entrances":
-      return <TrainFrontTunnel className="w-5 h-5" />;
-    case "supermarkets":
-      return <ShoppingCart className="w-5 h-5" />;
-    case "surveillance":
-      return <Cctv className="w-5 h-5" />;
-    case "swimming":
-      return <Waves className="w-5 h-5" />;
-    case "swimming-pools":
-      return <Waves className="w-5 h-5" />;
-    case "tailings-pond":
-      return <Factory className="w-5 h-5" />;
-    case "taxi-ranks":
-      return <CarTaxiFront className="w-5 h-5" />;
-    case "telephones":
-      return <Phone className="w-5 h-5" />;
-    case "tennis":
-      return <Trophy className="w-5 h-5" />;
-    case "theatres":
-      return <Theater className="w-5 h-5" />;
-    case "tower":
-      return <RadioTower className="w-5 h-5" />;
-    case "town-halls":
-      return <Landmark className="w-5 h-5" />;
-    case "tracks":
-      return <Route className="w-5 h-5" />;
-    case "traffic-calming":
-      return <TrafficCone className="w-5 h-5" />;
-    case "traffic-lights":
-      return <Lightbulb className="w-5 h-5" />;
-    case "traffic-signs":
-      return <Signpost className="w-5 h-5" />;
-    case "tram-stops":
-      return <TramFront className="w-5 h-5" />;
-    case "transit-platforms":
-      return <RailSymbol className="w-5 h-5" />;
-    case "trees-with-species":
-      return <Leaf className="w-5 h-5" />;
-    case "tunnels":
-      return <Route className="w-5 h-5" />;
-    case "universities":
-      return <GraduationCap className="w-5 h-5" />;
-    case "urban-trees":
-      return <TreePine className="w-5 h-5" />;
-    case "utility-pole":
-      return <Cable className="w-5 h-5" />;
-    case "vegetation-risk-context":
-      return <TriangleAlert className="w-5 h-5" />;
-    case "veterinary":
-      return <PawPrint className="w-5 h-5" />;
-    case "viewpoints":
-      return <Binoculars className="w-5 h-5" />;
-    case "walls":
-      return <BrickWall className="w-5 h-5" />;
-    case "waste-basket":
-      return <Trash className="w-5 h-5" />;
-    case "waste-disposal":
-      return <Trash2 className="w-5 h-5" />;
-    case "wastewater-plant":
-      return <Factory className="w-5 h-5" />;
-    case "water":
-      return <Droplet className="w-5 h-5" />;
-    case "water-tower":
-      return <Droplet className="w-5 h-5" />;
-    case "water-works":
-      return <Droplets className="w-5 h-5" />;
-    case "waterfall":
-      return <Waves className="w-5 h-5" />;
-    case "wetlands":
-      return <Droplets className="w-5 h-5" />;
-    case "wilderness-huts":
-      return <Tent className="w-5 h-5" />;
-    case "woods":
-      return <TreePine className="w-5 h-5" />;
-    default:
-      return getCategoryIcon(category);
-  }
+  const icon = TEMPLATE_ICONS.get(templateId.toLowerCase());
+  if (!icon) return getCategoryIcon(category);
+  return (
+    <svg viewBox="0 0 15 15" fill="currentColor" aria-hidden="true" className="w-5 h-5">
+      <use href={`${TEMPLATE_ICON_SPRITE}#${icon}`} />
+    </svg>
+  );
 }

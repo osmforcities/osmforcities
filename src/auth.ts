@@ -1,21 +1,9 @@
-/**
- * NextAuth configuration
- *
- * IMPORTANT: Post-login redirects are handled client-side in src/hooks/use-auth.ts
- * The login flow uses `signIn()` with `redirect: false`, then does `window.location.href`.
- * Do NOT add a `redirect` callback here - it won't be used by our current login flow.
- *
- * Test auth: uses test-auth-session cookie (see test utils)
- * Production auth: uses magic links (email) or password
- */
-
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
 import type { JWT } from "next-auth/jwt";
 import type { Session } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
 import { refreshTokenClaims } from "@/lib/auth-token";
 import { MAGIC_LINK_TOKEN_TTL_MS } from "@/lib/magic-link-ttl";
 import { isTestAuthEnabled } from "@/lib/test-auth";
@@ -44,23 +32,6 @@ function createUserObject(user: DatabaseUser) {
     name: user.name,
     isAdmin: user.isAdmin,
     language: user.language || "en",
-  };
-}
-
-/** Creates a test user object for test authentication */
-function createTestUserObject(
-  id: string,
-  email: string,
-  name: string,
-  isAdmin = false,
-  language = "en"
-) {
-  return {
-    id,
-    email,
-    name,
-    isAdmin,
-    language,
   };
 }
 
@@ -114,60 +85,6 @@ const {
         return result ? createUserObject(result.user) : null;
       },
     }),
-    ...(isTestAuthEnabled()
-      ? [
-          Credentials({
-            id: "test-password",
-            name: "Test Password",
-            credentials: {
-              password: { label: "Password", type: "password" },
-            },
-            async authorize(credentials) {
-              if (credentials?.password === "test-password") {
-                return createTestUserObject(
-                  "test-user-id",
-                  "test@example.com",
-                  "Test User"
-                );
-              }
-              return null;
-            },
-          }),
-          Credentials({
-            id: "password",
-            name: "Password",
-            credentials: {
-              email: { label: "Email", type: "email" },
-              password: { label: "Password", type: "password" },
-            },
-            async authorize(credentials) {
-              if (!credentials?.email || !credentials?.password) {
-                return null;
-              }
-
-              const user = await prisma.user.findUnique({
-                where: { email: credentials.email as string },
-              });
-
-              if (!user) {
-                return null;
-              }
-
-              const hashedPassword = (user as { password?: string }).password;
-              if (
-                hashedPassword &&
-                credentials.password &&
-                typeof credentials.password === "string" &&
-                (await bcrypt.compare(credentials.password, hashedPassword))
-              ) {
-                return createUserObject(user);
-              }
-
-              return null;
-            },
-          }),
-        ]
-      : []),
   ],
 
   callbacks: {

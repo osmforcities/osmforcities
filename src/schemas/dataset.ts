@@ -75,11 +75,6 @@ export const DatasetStatsSchema = z.object({
   filterDimensions: z.array(FilterDimensionSchema).optional(),
 });
 
-export const CreateDatasetSchema = z.object({
-  templateId: z.string(),
-  osmRelationId: z.number(),
-});
-
 export const SaveDatasetSchema = z.object({
   datasetId: z.string(),
   notifyWhenReady: z.boolean().default(false),
@@ -121,6 +116,7 @@ export const DatasetSchema = z.object({
     }).nullable(),
     description: z.string().nullable(),
     filterableTags: z.array(z.string()).optional(),
+    defaultView: z.string().nullable().optional(),
     // Query criteria (e.g. ["highway=bus_stop"]); their keys are excluded from
     // the Most-used-tags list since they are ~100% by definition.
     tags: z.array(z.string()).optional(),
@@ -163,6 +159,5 @@ export const DatasetSchema = z.object({
 });
 
 export type Dataset = z.infer<typeof DatasetSchema>;
-export type CreateDatasetInput = z.infer<typeof CreateDatasetSchema>;
 export type SaveDatasetInput = z.infer<typeof SaveDatasetSchema>;
 export type UnsaveDatasetInput = z.infer<typeof UnsaveDatasetSchema>;

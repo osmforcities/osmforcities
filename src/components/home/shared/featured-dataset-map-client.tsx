@@ -6,7 +6,7 @@ import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Link } from "react-aria-components";
 import { ArrowRight } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { FeatureCollection } from "geojson";
 import { mapStyle } from "@/lib/map-tiles";
 import { MapZoomControl } from "@/components/ui/map-zoom-control";
@@ -16,9 +16,25 @@ import type { InitialViewState } from "@/lib/utils";
 import type { ProcessedDatasetStats } from "@/lib/dataset-stats";
 import { DatasetStatsRow } from "@/components/ui/dataset-stats-row";
 import { MapLayers } from "@/components/dataset/map/layers";
+import { TilesLayerGroup } from "@/components/dataset/map/layers/tiles-layer-group";
+import { ensurePmtilesProtocol } from "@/lib/pmtiles-protocol";
+import type { HeroTiles } from "@/lib/featured-hero";
+import type { Bbox } from "@/types/geojson";
 import { AoiBoundaryLayer } from "@/components/dataset/map/aoi-boundary-layer";
-import { AgeLegendCompact } from "@/components/dataset/map/age-legend";
+import { CompactLegend } from "@/components/dataset/map/compact-legend";
+import { ageLegendRow } from "@/components/dataset/map/layers/map-style";
 import { processOSMFeaturesForVisualization } from "@/lib/osm-data-processor";
+import {
+  buildCuratedThemes,
+  buildCuratedThemesFromDimensions,
+  buildLegendRows,
+  findOpeningTheme,
+} from "@/lib/curated-themes";
+import { tagLabel, tagValue, type MessageResolver } from "@/lib/tag-i18n";
+import { AGE_CATEGORY_ORDER } from "@/lib/feature-age";
+import { useAreaBoundary } from "@/hooks/useAreaBoundary";
+
+ensurePmtilesProtocol();
 
 function applyViewState(map: MapRef | null, viewState: InitialViewState) {
   if (!map) return;
@@ -50,6 +66,8 @@ type FeaturedDatasetMapClientProps = {
   category: string;
   /** Template slug for the template-specific icon */
   templateId: string;
+  defaultView: string | null;
+  tiles: HeroTiles | null;
   stats: ProcessedDatasetStats;
   href: string;
 };
@@ -61,45 +79,74 @@ export function FeaturedDatasetMapClient({
   title,
   category,
   templateId,
+  defaultView,
+  tiles,
   stats,
   href,
 }: FeaturedDatasetMapClientProps) {
   const t = useTranslations("Home.featuredDataset");
+  const tMap = useTranslations("DatasetMap");
+  const tTagLabel = useTranslations("TagLabel") as unknown as MessageResolver;
+  const tTagValue = useTranslations("TagValue") as unknown as MessageResolver;
+  const locale = useLocale();
   const mapRef = useRef<MapRef | null>(null);
   const [geojson, setGeojson] = useState<FeatureCollection | null>(null);
-  const [boundary, setBoundary] = useState<FeatureCollection | null>(null);
+  const boundary = useAreaBoundary(areaId);
 
   useEffect(() => {
     setGeojson(null);
-    setBoundary(null);
 
     const controller = new AbortController();
     // Marketing page: on failure keep the basemap + card, no error UI.
     // slim returns truncated geometry + @timestamp only (no OSM tags).
-    fetch(`/api/datasets/${datasetId}/geojson?slim`, {
-      signal: controller.signal,
-    })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data: FeatureCollection | null) => {
-        if (data && !controller.signal.aborted) setGeojson(data);
+    if (!tiles?.url) {
+      fetch(`/api/datasets/${datasetId}/geojson?slim`, {
+        signal: controller.signal,
       })
-      .catch(() => {});
-
-    fetch(`/api/areas/${areaId}/boundary`, { signal: controller.signal })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data: FeatureCollection | null) => {
-        if (data && !controller.signal.aborted) setBoundary(data);
-      })
-      .catch(() => {});
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data: FeatureCollection | null) => {
+          if (data && !controller.signal.aborted) setGeojson(data);
+        })
+        .catch(() => {});
+    }
 
     return () => controller.abort();
-  }, [datasetId, areaId]);
+  }, [datasetId, tiles?.url]);
 
   // Same processing as the dataset page so rendering matches it
   const processedData = useMemo(
     () => (geojson ? processOSMFeaturesForVisualization(geojson) : null),
     [geojson]
   );
+
+  const storedDimensions = tiles?.filterDimensions;
+  const openingTheme = useMemo(() => {
+    if (!defaultView) return null;
+    const themes = storedDimensions
+      ? buildCuratedThemesFromDimensions(storedDimensions)
+      : processedData
+        ? buildCuratedThemes(processedData.features, [defaultView])
+        : [];
+    return findOpeningTheme(themes, defaultView);
+  }, [processedData, storedDimensions, defaultView]);
+
+  const legend = openingTheme
+    ? {
+        title: tagLabel(tTagLabel, openingTheme.field),
+        rows: buildLegendRows(openingTheme, {
+          localizeValue: (value) =>
+            tagValue(tTagValue, openingTheme.field, value),
+          locale,
+          otherLabel: tMap("legendOther"),
+          missingLabel: tMap("legendMissing"),
+        }),
+      }
+    : {
+        title: tMap("lastEditedLegend"),
+        rows: AGE_CATEGORY_ORDER.map((category) =>
+          ageLegendRow(category, tMap)
+        ),
+      };
 
   // Client-side navigation swaps props without remounting the Map, so
   // initialViewState alone would keep the old view. area is read via
@@ -113,19 +160,22 @@ export function FeaturedDatasetMapClient({
     applyViewState(mapRef.current, computeInitialViewState(areaRef.current, null));
   }, [datasetId]);
 
-  // The far-center guard and the no-bounds fallback both need the data bbox,
-  // which only exists once the geojson arrives. Refit only when it changes
-  // the outcome, so the common case never jumps.
+  // The far-center guard and the no-bounds fallback both need the data bbox.
+  // Refit only when it changes the outcome, so the common case never jumps.
+  // Keyed by value: every server render sends a new bbox array
+  const storedBboxKey = tiles?.bbox?.join(",");
+  const dataBounds = useMemo(() => {
+    if (storedBboxKey) return storedBboxKey.split(",").map(Number) as Bbox;
+    return geojson ? calculateBbox(geojson) : null;
+  }, [storedBboxKey, geojson]);
   useEffect(() => {
-    if (!geojson) return;
-    const dataBounds = calculateBbox(geojson);
     if (!dataBounds) return;
     const withData = computeInitialViewState(areaRef.current, dataBounds);
     const withoutData = computeInitialViewState(areaRef.current, null);
     if (JSON.stringify(withData) !== JSON.stringify(withoutData)) {
       applyViewState(mapRef.current, withData);
     }
-  }, [geojson]);
+  }, [dataBounds]);
 
   const statItems = [
     { type: "features" as const, label: t("stats.features"), value: stats.features },
@@ -149,17 +199,28 @@ export function FeaturedDatasetMapClient({
         style={{ width: "100%", height: "100%" }}
       >
         {boundary && <AoiBoundaryLayer boundary={boundary} />}
-        {processedData && (
-          <MapLayers geoJSONData={processedData} curatedTheme={null} />
+        {tiles ? (
+          <TilesLayerGroup
+            tilesUrl={tiles.url}
+            pointCount={tiles.pointCount}
+            curatedTheme={openingTheme}
+          />
+        ) : (
+          processedData && (
+            <MapLayers
+              geoJSONData={processedData}
+              curatedTheme={openingTheme}
+            />
+          )
         )}
         <MapZoomControl />
       </Map>
 
       {/* Bottom is owned by the info card on small screens, so the legend moves
           to the top-right corner there (top-left holds the shared zoom control) */}
-      {processedData && (
+      {(tiles || processedData) && (
         <div className="absolute end-3 top-3 sm:end-auto sm:start-4 sm:top-auto sm:bottom-4">
-          <AgeLegendCompact />
+          <CompactLegend title={legend.title} rows={legend.rows} />
         </div>
       )}
 

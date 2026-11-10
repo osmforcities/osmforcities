@@ -121,6 +121,18 @@ export function buildCuratedThemesFromDimensions(
     });
 }
 
+// Skips an all-missing theme, which would open on an empty legend
+export function findOpeningTheme(
+  themes: CuratedTheme[],
+  defaultView: string | null | undefined
+): CuratedTheme | null {
+  return (
+    themes.find(
+      (theme) => theme.field === defaultView && theme.topValues.length > 0
+    ) ?? null
+  );
+}
+
 /**
  * Assemble the legend rows for a curated tag theme: one localized, colored row
  * per top value, sorted by localized label unless the theme is presorted

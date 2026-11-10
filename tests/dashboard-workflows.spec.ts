@@ -1,11 +1,16 @@
 import { test, expect } from "./test-setup";
-import { createTestUser, cleanupTestUser } from "./utils/auth";
+import {
+  createTestUser,
+  cleanupTestUser,
+  setupAuthenticationWithLogin,
+  type TestUser,
+} from "./utils/auth";
 import { PrismaClient } from "@prisma/client";
 import { getLocalizedPath } from "./config";
 import enMessages from "../messages/en.json";
 
 test.describe("Dashboard Page - Essential Workflows", () => {
-  let testUser: { id: string; email: string; password?: string };
+  let testUser: TestUser;
 
   test.beforeEach(async ({ page }) => {
     // Create test user
@@ -13,12 +18,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     testUser = await createTestUser(prisma);
     await prisma.$disconnect();
 
-    // Login
-    await page.goto("http://localhost:3000/en/login");
-    await page.fill('input[name="email"]', testUser.email);
-    await page.fill('input[name="password"]', testUser.password!);
-    await page.click('button[type="submit"]');
-    await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
+    await setupAuthenticationWithLogin(page, testUser, "/en/dashboard");
   });
 
   test.afterEach(async () => {
@@ -456,18 +456,14 @@ test.describe("Dashboard Page - Essential Workflows", () => {
 });
 
 test.describe("Dashboard - Seamless Discovery Integration", () => {
-  let testUser: { id: string; email: string; password?: string };
+  let testUser: TestUser;
 
   test.beforeEach(async ({ page }) => {
     const prisma = new PrismaClient();
     testUser = await createTestUser(prisma);
     await prisma.$disconnect();
 
-    await page.goto("http://localhost:3000/en/login");
-    await page.fill('input[name="email"]', testUser.email);
-    await page.fill('input[name="password"]', testUser.password!);
-    await page.click('button[type="submit"]');
-    await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
+    await setupAuthenticationWithLogin(page, testUser, "/en/dashboard");
   });
 
   test.afterEach(async () => {

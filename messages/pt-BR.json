@@ -116,38 +116,35 @@
   "EnterPage": {
     "metaTitle": "Entrar - OSM for Cities",
     "metaDescription": "Entre para monitorar conjuntos de dados do OpenStreetMap",
-    "signIn": "Entrar",
-    "notFound": "Não Encontrado",
-    "testAuthNotEnabled": "A autenticação de teste não está habilitada.",
-    "signInWithEmailPassword": "Entre com seu e-mail e senha",
-    "createAccount": "Criar Conta",
-    "signupForTesting": "Cadastre-se para fins de teste",
-    "testEnvOnly": "Esta página está disponível apenas no ambiente de teste."
+    "signIn": "Entrar"
   },
   "DatasetPage": {
-    "tilesStageQueued": "Aguardando vaga no servidor",
-    "tilesStageFetching": "Buscando dados ({mb, number} MB)",
-    "tilesStageConverting": "Convertendo elementos ({pct, number}%)",
-    "tilesStageBaking": "Gerando tiles do mapa ({pct, number}%)",
-    "tilesStageCounting": "Calculando o tamanho",
-    "tilesStageCountingCold": "Ainda calculando o tamanho, área grande",
-    "stepLine": "Etapa {step} de {total}",
+    "tilesStageQueued": "Aguardando na fila",
+    "tilesNoteQueued": "Outros mapas estão sendo gerados antes. Este começa assim que houver vaga.",
+    "tilesStageFetching": "Baixando dados do OpenStreetMap",
+    "tilesNoteFetching": "{mb, plural, =0 {} other {# MB até agora. }}O total só é conhecido quando o download termina, então áreas grandes podem demorar.",
+    "tilesStageConverting": "Preparando os dados",
+    "tilesNoteConverting": "Transformando o download em formas que o mapa consegue desenhar.",
+    "tilesStageBaking": "Montando o mapa",
+    "tilesNoteBaking": "Quase lá. O mapa abre sozinho quando terminar.",
+    "tilesStageCounting": "Verificando o tamanho dos dados",
+    "tilesStageCountingCold": "Ainda verificando, área grande",
+    "tilesNoteCounting": "Contando quantos elementos há nesta área.",
     "datasetInArea": "{dataset} em {area}",
     "stateBakeFailed": "Falha na geração.",
     "stateTooLarge": "Grande demais para gerar.",
     "stateNoData": "Ainda sem dados.",
     "stateCountTimedOut": "Os dados demoraram demais para carregar.",
-    "notifyCta": "Salvar e me avisar por e-mail quando estiver pronto",
-    "notifyCtaIfAvailable": "Salvar e me avisar por e-mail se ficar disponível",
-    "notifyCtaIfMapped": "Salvar e me avisar por e-mail se for mapeado",
-    "notifyConfirmed": "Salvo. Você receberá um e-mail quando o mapa estiver pronto.",
-    "savedConfirmed": "Salvo.",
+    "notifySub": "Salvar e receber e-mail quando ficar pronto",
+    "notifySubIfAvailable": "Salvar e receber e-mail se ficar disponível",
+    "notifySubIfMapped": "Salvar e receber e-mail se for mapeado",
+    "savedTitle": "Salvo",
+    "notifyConfirmedSub": "Você receberá um e-mail quando ficar pronto.",
     "tilesFailedDescription": "Abra esta página mais tarde para tentar de novo.",
     "countTimedOutDescription": "A área pode ser muito grande ou o servidor estar ocupado. Tente novamente em até {minutes, plural, one {# minuto} other {# minutos}}.",
     "backToHome": "Voltar ao Início",
     "emptyDescription": "Podem não existir aqui, ou ninguém os mapeou ainda no OpenStreetMap.",
     "tooLargeDescription": "Este conjunto de dados excede a capacidade atual do servidor, o que é esperado em grandes regiões metropolitanas ou com geometrias muito detalhadas.",
-    "backToAreaLabel": "Voltar para {area}",
     "categoryFacetLabel": "Categoria: {category}. Ver todos os conjuntos de dados de {category} em {area}.",
     "categoryUncategorized": "Outros",
     "back": "Voltar",
@@ -190,7 +187,6 @@
     "fetchCadence": "Os conjuntos de dados são sincronizados uma vez por dia no OSM for Cities; este é o atraso atual em relação ao OpenStreetMap.",
     "downloadData": "Baixar Dados",
     "download": "Baixar",
-    "datasetTitle": "{template}",
     "invalidData": "Dados Inválidos",
     "invalidDataMessage": "O conjunto de dados contém dados GeoJSON inválidos.",
     "value": "Valor",
@@ -264,6 +260,17 @@
     "noSearchResults": "Nenhum conjunto de dados corresponde a \"{query}\"",
     "noSearchResultsHint": "Tente outra palavra ou confira a ortografia.",
     "clearSearch": "Limpar busca"
+  },
+  "AreaFacts": {
+    "capitalCity": "Capital",
+    "population": "Pop. {count, number, ::compact-short .#}",
+    "populationWithYear": "Pop. {count, number, ::compact-short .#} ({year})",
+    "elevation": "Alt. {elevation, number} m",
+    "links": "Links",
+    "website": "Site",
+    "openStreetMap": "OpenStreetMap",
+    "wikipedia": "Wikipedia",
+    "wikidata": "Wikidata"
   },
   "CategoryCards": {
     "title": "Encontrar dados em {area}",
@@ -366,12 +373,12 @@
     "title": "Preferências",
     "language": "Idioma",
     "languageDescription": "Usado em todo o site e nos e-mails que você recebe.",
-    "reports": "Relatórios por e-mail",
-    "reportsDescription": "Receba atualizações por e-mail quando seus conjuntos de dados salvos tiverem alterações."
+    "emails": "E-mails",
+    "emailsDescription": "Receba um e-mail quando um mapa que você pediu estiver pronto, e um relatório das mudanças nos seus conjuntos de dados salvos."
   },
   "PreferencesForm": {
-    "enableReports": "Habilitar relatórios",
-    "frequency": "Frequência:",
+    "enableEmails": "Me envie e-mails sobre meus conjuntos de dados salvos",
+    "reportFrequency": "Frequência do relatório",
     "daily": "Diário",
     "weekly": "Semanal",
     "language": "Idioma"
@@ -425,8 +432,10 @@
     "key": "Chave",
     "value": "Valor",
     "lastEditedBy": "Última edição por <link>{user}</link>",
+    "lastEditedOn": "Última edição em {date}",
     "mapLabel": "Mapa interativo mostrando conjunto de dados",
     "fullScreenMapLabel": "Mapa interativo em tela cheia mostrando conjunto de dados",
+    "areaBasemapLabel": "Mapa da área, ainda sem dados",
     "loadingMap": "Carregando mapa...",
     "noDataAvailable": "Nenhum dado disponível. Os dados serão atualizados automaticamente quando você visitar esta página.",
     "noGeographicData": "Nenhum dado geográfico encontrado nos resultados do conjunto de dados.",
@@ -441,7 +450,7 @@
     "veryOldChanges": "> 90 dias atrás",
     "legendViewLabel": "Colorir por",
     "legendOther": "Outros",
-    "legendMissing": "Sem valor",
+    "legendMissing": "Não informado",
     "collapseLegend": "Ocultar legenda",
     "expandLegend": "Mostrar legenda"
   },
@@ -727,17 +736,17 @@
     }
   },
   "CategoryLabel": {
-    "buildings-infrastructure": "Edificações e infraestrutura",
+    "buildings-infrastructure": "Edificações e Infraestrutura",
     "infrastructure": "Infraestrutura",
     "housing": "Moradia",
     "barriers": "Barreiras",
-    "education-culture": "Educação e cultura",
+    "culture-religion": "Cultura e Religião",
     "education": "Educação",
     "culture": "Cultura",
     "religion": "Religião",
     "health": "Saúde",
-    "healthcare": "Atendimento médico",
-    "leisure-sports": "Lazer e esportes",
+    "healthcare": "Atendimento Médico",
+    "leisure-sports": "Lazer e Esportes",
     "leisure": "Lazer",
     "sports": "Esportes",
     "tourism": "Turismo",
@@ -746,22 +755,26 @@
     "rail": "Ferrovia",
     "cycling": "Bicicleta",
     "pedestrian": "Pedestres",
-    "roads": "Ruas e estradas",
+    "roads": "Vias",
     "traffic": "Trânsito",
     "nature-environment": "Natureza",
-    "nature": "Elementos naturais",
-    "environment": "Meio ambiente",
+    "nature": "Elementos Naturais",
+    "environment": "Meio Ambiente",
     "agriculture": "Agricultura",
-    "public-services": "Serviços públicos",
+    "public-services": "Serviços Públicos",
     "emergency": "Emergência",
+    "medical-rescue": "Resgate Médico",
+    "firefighting": "Combate a Incêndio",
+    "civil-protection": "Defesa Civil",
     "government": "Governo",
     "social": "Social",
-    "amenities": "Equipamentos urbanos",
-    "shops-services": "Comércio e serviços",
+    "amenities": "Equipamentos Urbanos",
+    "waste": "Resíduos",
+    "shops-services": "Comércio e Serviços",
     "shops": "Lojas",
-    "food": "Comida e bebida",
-    "services": "Serviços",
-    "financial": "Finanças"
+    "food": "Comida e Bebida",
+    "financial": "Finanças",
+    "heritage": "Patrimônio"
   },
   "TagLabel": {
     "highway": "Tipo de via",
@@ -846,7 +859,11 @@
     "organic": "Orgânico",
     "clothes": "Tipo de roupa",
     "garden:type": "Tipo de jardim",
+    "natural": "Tipo",
     "leaf_type": "Tipo de folha",
+    "leaf_cycle": "Ciclo foliar",
+    "denotation": "Função da árvore",
+    "genus": "Gênero",
     "water": "Tipo de corpo d'água",
     "wetland": "Tipo de área úmida",
     "trees": "Árvores cultivadas",
@@ -861,7 +878,17 @@
     "fire_hydrant:pressure": "Pressão",
     "cash_in": "Depósito em dinheiro",
     "indoor": "Interno",
-    "sport": "Esporte"
+    "sport": "Esporte",
+    "siren:purpose": "Finalidade da sirene",
+    "siren:type": "Tipo de sirene",
+    "emergency:shelter_type": "Tipo de risco",
+    "artwork_type": "Tipo de obra",
+    "archaeological_site": "Tipo de sítio",
+    "castle_type": "Tipo de castelo",
+    "heritage": "Nível de proteção",
+    "kerb": "Meio-fio",
+    "handrail": "Corrimão",
+    "ramp": "Rampa"
   },
   "TagValue": {
     "__common__": {
@@ -869,6 +896,26 @@
       "no": "Não",
       "limited": "Limitado",
       "unknown": "Desconhecido"
+    },
+    "lit": {
+      "24/7": "24 horas",
+      "automatic": "Com sensor de presença"
+    },
+    "highway": {
+      "motorway": "Via expressa",
+      "trunk": "Via troncal",
+      "primary": "Via primária",
+      "secondary": "Via secundária",
+      "tertiary": "Via terciária",
+      "residential": "Rua residencial",
+      "living_street": "Rua compartilhada",
+      "unclassified": "Via não classificada",
+      "footway": "Via de pedestres",
+      "path": "Trilha",
+      "cycleway": "Ciclovia",
+      "pedestrian": "Calçadão",
+      "steps": "Escada",
+      "bridleway": "Caminho para cavalos"
     },
     "healthcare:speciality": {
       "general": "Clínica geral",
@@ -951,11 +998,33 @@
       "sculpture": "Escultura",
       "stele": "Estela"
     },
+    "natural": {
+      "tree": "Árvore",
+      "tree_row": "Fileira de árvores",
+      "tree_group": "Grupo de árvores"
+    },
     "leaf_type": {
       "broadleaved": "Folhas largas",
       "needleleaved": "Aciculifoliadas",
       "mixed": "Misto",
       "leafless": "Sem folhas"
+    },
+    "leaf_cycle": {
+      "evergreen": "Perene",
+      "deciduous": "Caducifólia",
+      "semi_evergreen": "Semiperene",
+      "semi_deciduous": "Semicaducifólia",
+      "mixed": "Misto"
+    },
+    "denotation": {
+      "urban": "Árvore urbana",
+      "avenue": "Árvore de rua",
+      "park": "Árvore de parque",
+      "garden": "Árvore de jardim",
+      "agricultural": "Agrícola",
+      "landmark": "Marco",
+      "natural_monument": "Monumento natural",
+      "windbreak": "Quebra-vento"
     },
     "fitness_station": {
       "horizontal_bar": "Barra horizontal",
@@ -1110,7 +1179,9 @@
       "crossing": "Travessia",
       "traffic_island": "Ilha de refúgio",
       "access_aisle": "Faixa de acesso",
-      "link": "Conexão"
+      "link": "Conexão",
+      "alley": "Viela",
+      "steps": "Escada"
     },
     "sidewalk": {
       "both": "Ambos os lados",
@@ -1156,6 +1227,55 @@
     "internet_access": {
       "wlan": "Wi-Fi",
       "terminal": "Terminal"
+    },
+    "siren:purpose": {
+      "civil_defense": "Defesa civil",
+      "fire": "Bombeiros",
+      "tornado": "Tornado",
+      "air_raid": "Ataque aéreo",
+      "tsunami": "Tsunami"
+    },
+    "siren:type": {
+      "electronic": "Eletrônica",
+      "mechanical": "Mecânica",
+      "electromechanical": "Eletromecânica",
+      "pneumatic": "Pneumática"
+    },
+    "artwork_type": {
+      "sculpture": "Escultura",
+      "statue": "Estátua",
+      "mural": "Mural",
+      "installation": "Instalação",
+      "graffiti": "Grafite",
+      "bust": "Busto",
+      "mosaic": "Mosaico"
+    },
+    "archaeological_site": {
+      "tumulus": "Montículo funerário",
+      "fortification": "Fortificação",
+      "megalith": "Megálito",
+      "settlement": "Assentamento",
+      "mineral_extraction": "Mineração antiga",
+      "petroglyph": "Petróglifo"
+    },
+    "castle_type": {
+      "stately": "Casa senhorial",
+      "manor": "Solar",
+      "defensive": "Castelo defensivo",
+      "palace": "Palácio",
+      "fortress": "Fortaleza"
+    },
+    "heritage": {
+      "1": "Patrimônio Mundial",
+      "2": "Nacional",
+      "4": "Regional",
+      "8": "Municipal"
+    },
+    "kerb": {
+      "lowered": "Rebaixado",
+      "flush": "Nivelado",
+      "raised": "Elevado",
+      "rolled": "Arredondado"
     }
   }
 }

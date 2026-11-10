@@ -2,6 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import type { AreaTemplate } from "@/lib/area-templates";
+import { getCategoryIcon } from "@/lib/category-icons";
 import { useCategoryLabel } from "@/lib/category-label";
 import { areaBrowsePath, groupTopicByCategory } from "@/lib/template-topics";
 import { CollapsingPicker } from "./collapsing-picker";
@@ -33,6 +34,7 @@ export function CategoryNav({
       key: categorySlug,
       href: areaBrowsePath(areaId, topicSlug, categorySlug),
       label: isOther(categorySlug) ? t("otherCategory") : categoryLabel(categorySlug),
+      icon: getCategoryIcon(categorySlug),
       count: groupTemplates.length,
       isActive: categorySlug === activeCategorySlug,
     }))

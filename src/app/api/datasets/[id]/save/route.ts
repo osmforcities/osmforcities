@@ -5,6 +5,7 @@ import { SaveDatasetSchema, UnsaveDatasetSchema } from "@/schemas/dataset";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { MAX_SAVES_PER_USER } from "@/lib/constants";
+import { awaitsFirstMap } from "@/lib/dataset-tiles";
 
 export async function POST(
   request: NextRequest,
@@ -25,7 +26,7 @@ export async function POST(
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
-    const { notifyWhenReady } = parsed.data;
+    const { notifyWhenReady: notifyRequested } = parsed.data;
 
     const dataset = await prisma.dataset.findUnique({
       where: { id: datasetId },
@@ -44,11 +45,16 @@ export async function POST(
       },
     });
 
-    if (existingSave && notifyWhenReady) {
-      const save = await prisma.datasetSave.update({
-        where: { id: existingSave.id },
-        data: { notifyWhenReady: true },
-      });
+    const hasNoMap = dataset.dataCount === 0 || awaitsFirstMap(dataset);
+    const notifyWhenReady = notifyRequested && hasNoMap;
+
+    if (existingSave && notifyRequested) {
+      const save = notifyWhenReady
+        ? await prisma.datasetSave.update({
+            where: { id: existingSave.id },
+            data: { notifyWhenReady: true },
+          })
+        : existingSave;
       return NextResponse.json({ success: true, save });
     }
 

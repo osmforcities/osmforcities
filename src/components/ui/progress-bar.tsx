@@ -1,6 +1,9 @@
 "use client";
 
+import { useLayoutEffect, useRef } from "react";
 import { ProgressBar as AriaProgressBar } from "react-aria-components";
+
+const SWEEP_ONE_WAY_MS = 1600;
 
 type ProgressBarProps = {
   /**
@@ -20,22 +23,35 @@ type ProgressBarProps = {
 export function ProgressBar({ value, label }: ProgressBarProps) {
   const determinate = typeof value === "number";
   const percent = determinate ? Math.min(100, Math.max(0, value)) : 0;
+  const sweep = useRef<HTMLDivElement>(null);
+
+  // A re-mounted sweep would restart at the left edge. Starting it on the
+  // page's clock puts it where the previous one was.
+  useLayoutEffect(() => {
+    if (!sweep.current) return;
+    const thereAndBackMs = 2 * SWEEP_ONE_WAY_MS;
+    sweep.current.style.animationDuration = `${SWEEP_ONE_WAY_MS}ms`;
+    sweep.current.style.animationDelay = `-${performance.now() % thereAndBackMs}ms`;
+  }, [determinate]);
 
   return (
     <AriaProgressBar
       aria-label={label}
       value={Math.round(percent)}
       isIndeterminate={!determinate}
-      className="h-2 w-full overflow-hidden rounded bg-gray-200"
+      className="h-3 w-full overflow-hidden rounded-full bg-gray-100"
     >
       {determinate ? (
         <div
-          className="h-full rounded bg-olive-500 transition-all duration-500"
+          className="h-full rounded bg-olive-400 transition-all duration-500"
           // A sliver stays visible at 0% so the bar reads as started.
           style={{ width: `${Math.max(2, percent)}%` }}
         />
       ) : (
-        <div className="h-full w-1/3 rounded bg-olive-500 animate-progress-sweep motion-reduce:animate-none" />
+        <div
+          ref={sweep}
+          className="h-full w-1/3 rounded bg-olive-400 animate-progress-sweep motion-reduce:animate-none"
+        />
       )}
     </AriaProgressBar>
   );

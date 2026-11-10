@@ -22,15 +22,15 @@ const savePreferences = (
     body: JSON.stringify(body),
   });
 
-type ReportsFormProps = {
+type EmailsFormProps = {
   initialReportsEnabled: boolean;
   initialReportsFrequency: ReportFrequency;
 };
 
-export function ReportsForm({
+export function EmailsForm({
   initialReportsEnabled,
   initialReportsFrequency,
-}: ReportsFormProps) {
+}: EmailsFormProps) {
   const t = useTranslations("PreferencesForm");
   const [reportsEnabled, setReportsEnabled] = useState(initialReportsEnabled);
   const [reportsFrequency, setReportsFrequency] = useState(
@@ -71,13 +71,13 @@ export function ReportsForm({
           className="mr-2"
           disabled={saving}
         />
-        {t("enableReports")}
+        {t("enableEmails")}
       </label>
 
       {reportsEnabled && (
         <div className="ml-6">
           <Select
-            label={t("frequency")}
+            label={t("reportFrequency")}
             options={[
               { id: "DAILY", label: t("daily") },
               { id: "WEEKLY", label: t("weekly") },

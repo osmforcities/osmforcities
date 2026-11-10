@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { setTimeout } from "node:timers/promises";
 import { NextRequest, NextResponse } from "next/server";
 import { mockOverpassResponse } from "@/lib/mocks/overpass";
 import { mockTilerState } from "@/lib/mocks/tiler";
@@ -35,6 +36,7 @@ export async function POST(req: NextRequest) {
   if (decodeURIComponent(body).includes("out count;")) {
     const state = mockTilerState();
     state.countProbes++;
+    while (mockTilerState().countHeld) await setTimeout(200);
     if (state.countTimesOut) return new NextResponse(null, { status: 504 });
     return countResponse();
   }

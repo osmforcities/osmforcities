@@ -1,8 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import type { FeatureCollection } from "geojson";
+import { tilesPointCount } from "../dataset-tiles";
 
-// TILES_ENABLED is read from the env at module load, so every test stubs the
-// flag first and imports the modules fresh.
+// TILES_ENABLED is read from the env at module load, so every flag-dependent
+// test stubs the flag first and imports the modules fresh.
 async function loadWithFlag(enabled: boolean) {
   vi.stubEnv("NEXT_PUBLIC_TILES_ENABLED", enabled ? "true" : "");
   vi.resetModules();
@@ -62,6 +63,11 @@ describe("awaitsFirstMap", () => {
     const { awaitsFirstMap } = await loadWithFlag(true);
     expect(awaitsFirstMap(firstBake)).toBe(true);
     expect(awaitsFirstMap({ ...firstBake, tilesState: "failed" })).toBe(true);
+  });
+
+  it("holds while the count probe runs, before any count is stored", async () => {
+    const { awaitsFirstMap } = await loadWithFlag(true);
+    expect(awaitsFirstMap({ ...firstBake, dataCount: 0, tilesState: "counting" })).toBe(true);
   });
 
   it("lets a rebuild keep its served archive", async () => {
@@ -162,5 +168,22 @@ describe("transformDataset geojson stripping", () => {
       "en"
     );
     expect(dataset.geojson).toEqual(geojson);
+  });
+});
+
+describe("tilesPointCount", () => {
+  it("sizes points from the stored point count of a mixed dataset", () => {
+    const dataset = {
+      dataCount: 500,
+      stats: {
+        geometryMix: { points: 12, lines: 0, areas: 488, lineKm: 0, areaKm2: 3 },
+      },
+    };
+    expect(tilesPointCount(dataset)).toBe(12);
+  });
+
+  it("falls back to dataCount when stats lack geometryMix", () => {
+    expect(tilesPointCount({ dataCount: 500, stats: {} })).toBe(500);
+    expect(tilesPointCount({ dataCount: 500, stats: null })).toBe(500);
   });
 });

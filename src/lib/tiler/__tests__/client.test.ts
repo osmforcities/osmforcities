@@ -16,8 +16,14 @@ import {
   LARGE_JOB_TIMEOUT_SECONDS,
 } from "@/lib/tiler/client";
 
+const tilerLog = vi.hoisted(() => ({ error: vi.fn(), warn: vi.fn() }));
+vi.mock("@/lib/logger", () => ({
+  createLogger: (context: string) => (context === "tiler" ? tilerLog : { error: vi.fn(), warn: vi.fn() }),
+}));
+
 beforeEach(() => {
   vi.stubEnv("TILER_URL", "http://127.0.0.1:8099");
+  tilerLog.error.mockClear();
 });
 
 afterEach(() => {
@@ -244,9 +250,8 @@ describe("pruneTileArchives", () => {
 
   it("is a silent no-op when the tiles dir does not exist", async () => {
     vi.stubEnv("TILES_DIR", path.join(dir, "missing"));
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     await expect(pruneTileArchives("d1")).resolves.toBeUndefined();
-    expect(errorSpy).not.toHaveBeenCalled();
+    expect(tilerLog.error).not.toHaveBeenCalled();
   });
 
   it("logs (but does not throw) on non-ENOENT readdir errors", async () => {
@@ -254,8 +259,7 @@ describe("pruneTileArchives", () => {
     const notADir = path.join(dir, "not-a-dir");
     await writeFile(notADir, "x");
     vi.stubEnv("TILES_DIR", notADir);
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     await expect(pruneTileArchives("d1")).resolves.toBeUndefined();
-    expect(errorSpy).toHaveBeenCalledOnce();
+    expect(tilerLog.error).toHaveBeenCalledOnce();
   });
 });

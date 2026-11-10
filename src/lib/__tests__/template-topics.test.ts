@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import type { AreaTemplate } from "@/lib/area-templates";
 import {
   categoryBrowsePath,
+  categoryPagePath,
   countTemplatesByTopic,
   findTopicOfCategory,
   groupTopicByCategory,
@@ -29,7 +30,7 @@ const tpl = (
 describe("listCommonTemplates", () => {
   it("keeps only ranked templates, in rank order", () => {
     const common = listCommonTemplates([
-      tpl("schools", "Schools", "education", "education-culture", { commonRank: 1 }),
+      tpl("schools", "Schools", "education", "education", { commonRank: 1 }),
       tpl("benches", "Benches"),
       tpl("stops", "Bus stops", "bus", "mobility", { commonRank: 0 }),
     ]);
@@ -117,5 +118,19 @@ describe("categoryBrowsePath", () => {
   it("falls back to the hub for a missing or unknown category", () => {
     expect(categoryBrowsePath("42", templates, undefined)).toBe("/area/42");
     expect(categoryBrowsePath("42", templates, "nope")).toBe("/area/42");
+  });
+});
+
+describe("categoryPagePath", () => {
+  it("points a child category at its own page under the topic", () => {
+    expect(categoryPagePath(42, { slug: "bus", parent: { slug: "mobility" } })).toBe(
+      "/area/42/topics/mobility/bus"
+    );
+  });
+
+  it("points a topic at its topic page", () => {
+    expect(categoryPagePath(42, { slug: "mobility", parent: null })).toBe(
+      "/area/42/topics/mobility"
+    );
   });
 });

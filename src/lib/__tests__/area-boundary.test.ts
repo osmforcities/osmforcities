@@ -4,7 +4,7 @@ vi.mock("@/lib/db", () => ({
   prisma: {
     area: {
       findUnique: vi.fn(),
-      update: vi.fn(),
+      updateMany: vi.fn(),
     },
   },
 }));
@@ -26,6 +26,7 @@ vi.mock("next/cache", () => ({
 
 import { fetchOsmRelationData, getAreaBoundary } from "@/lib/area-boundary";
 import { prisma } from "@/lib/db";
+import { revalidateTag } from "next/cache";
 import {
   executeOverpassQuery,
   convertOverpassToGeoJSON,
@@ -34,7 +35,7 @@ import {
 const mockExecuteOverpassQuery = vi.mocked(executeOverpassQuery);
 const mockConvert = vi.mocked(convertOverpassToGeoJSON);
 const mockFindUnique = vi.mocked(prisma.area.findUnique);
-const mockUpdate = vi.mocked(prisma.area.update);
+const mockUpdate = vi.mocked(prisma.area.updateMany);
 
 /** A real boundary: >5 points in the outer ring. */
 const storedPolygon = {
@@ -173,6 +174,7 @@ describe("fetchOsmRelationData", () => {
 describe("getAreaBoundary", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUpdate.mockResolvedValue({ count: 1 });
     mockConvert.mockReturnValue({ type: "FeatureCollection", features: [] });
   });
 
@@ -218,7 +220,32 @@ describe("getAreaBoundary", () => {
     expect(mockExecuteOverpassQuery).toHaveBeenCalledOnce();
     // The freshly fetched boundary is written back for the next caller.
     expect(mockUpdate).toHaveBeenCalledOnce();
+    expect(revalidateTag).toHaveBeenCalledOnce();
     expect(result?.features).toHaveLength(1);
+  });
+
+  it("returns the Overpass boundary when the area has no row yet", async () => {
+    mockFindUnique.mockResolvedValueOnce(null);
+    mockExecuteOverpassQuery.mockResolvedValueOnce({ elements: [] } as never);
+    mockConvert.mockReturnValueOnce({
+      type: "FeatureCollection",
+      features: [
+        {
+          id: "relation/1802546",
+          type: "Feature",
+          properties: {},
+          geometry: storedPolygon.features[0].geometry,
+        },
+      ],
+    } as never);
+    // The wait page asks before the row exists: nothing to write to.
+    mockUpdate.mockResolvedValueOnce({ count: 0 });
+
+    const result = await getAreaBoundary(1802546);
+
+    expect(result?.features).toHaveLength(1);
+    // Nothing was stored, so every other area keeps its cached boundary.
+    expect(revalidateTag).not.toHaveBeenCalled();
   });
 
   it("falls back to Overpass when nothing is stored", async () => {

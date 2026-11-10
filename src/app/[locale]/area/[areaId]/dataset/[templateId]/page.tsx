@@ -1,4 +1,7 @@
-import { Suspense } from "react";
+import type { Metadata } from "next";
+import type { Locale } from "@/i18n/routing";
+import { DEFAULT_SEO, getLocalizedMetadata } from "@/lib/metadata";
+import { Suspense, cache } from "react";
 import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
 import { getTranslations, getLocale } from "next-intl/server";
@@ -6,11 +9,13 @@ import { transformDataset } from "@/lib/dataset/transform";
 import { DatasetInteractiveSection } from "@/components/dataset/dataset-interactive-section";
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { SaveAndNotifyButton } from "@/components/dataset/save-and-notify-button";
+import { NotifyWhenReadyButton } from "@/components/dataset/notify-when-ready-button";
 import { tilerEnabled } from "@/lib/tiler/client";
 import { retryFailedBake, tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
 import { isTooLarge } from "@/lib/dataset-retry";
 import { awaitsFirstMap } from "@/lib/dataset-tiles";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
+import { resumeCountProbeIfDue } from "@/lib/dataset-count-probe";
 import {
   DatasetSizeCheckTimeoutError,
   DatasetTooLargeError,
@@ -22,6 +27,7 @@ import {
   resolveTemplate,
 } from "@/lib/template-resolver";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
+import { categoryPagePath } from "@/lib/template-topics";
 import type { Area } from "@/types/area";
 import { DatasetLoadingSkeleton } from "@/components/ui/dataset-loading-skeleton";
 import { DatasetWaitPage } from "@/components/dataset/dataset-wait-page";
@@ -38,8 +44,12 @@ import { TrackView } from "@/components/analytics/track-view";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { getAreaBoundary } from "@/lib/area-boundary";
 import { MAX_SAVES_PER_USER } from "@/lib/constants";
+import { getDatasetPath } from "@/lib/urls";
 
 export const revalidate = 3600;
+
+// One lookup per request, shared by the page and its metadata
+const resolveTemplateOnce = cache(resolveTemplate);
 
 type DatasetPageProps = {
   params: Promise<{
@@ -63,7 +73,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
   const locale = await getLocale();
   const [session, template, areaInfo] = await Promise.all([
     auth(),
-    resolveTemplate(templateId),
+    resolveTemplateOnce(templateId),
     getAreaDetailsById(osmRelationId, locale),
   ]);
 
@@ -78,6 +88,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
 
   // Known before the dataset exists, so the wait screens can name it
   const templateName = resolveTemplateForLocale(template, locale).name;
+  const categoryHref = categoryPagePath(osmRelationId, template.category);
   const areaName = areaInfo
     ? resolveAreaName(areaInfo, locale)
     : String(osmRelationId);
@@ -90,6 +101,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
   const view = (
     <AreaTemplateDatasetView
       areaId={osmRelationId}
+      categoryHref={categoryHref}
       templateId={templateId}
       templateName={templateName}
       areaInfo={areaInfo}
@@ -120,13 +132,16 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
           datasetName={templateName}
           areaName={areaName}
           areaId={areaId}
+          returnTo={getDatasetPath({ locale, areaId: osmRelationId, templateId })}
         />
       </>
     );
   }
 
-  // A missing row means the view counts elements before creating it, which
-  // can take a while: show the counting screen instead of a skeleton.
+  // A missing row takes a while to create (the whole count with the tiles-only
+  // lane off), so the counting screen shows meanwhile. On the lane the disabled
+  // button keeps the screen from shifting when the real one arrives.
+  const tilesLane = tilesOnlyLaneEnabled();
   return (
     <Suspense
       fallback={
@@ -137,7 +152,11 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
             mood="counting"
             templateName={templateName}
             areaName={areaName}
+            categoryHref={categoryHref}
             areaId={osmRelationId}
+            notify={
+              tilesLane && <NotifyWhenReadyButton offer="ready" disabled />
+            }
           />
         )
       }
@@ -147,8 +166,14 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
   );
 }
 
+function waitPageMood(tilesState: string | null, probeRunning: boolean) {
+  if (tilesState === "counting") return probeRunning ? "counting" : "timedOut";
+  return tilesState === "pending" ? "baking" : "failed";
+}
+
 async function AreaTemplateDatasetView({
   areaId,
+  categoryHref,
   templateId,
   templateName,
   areaInfo,
@@ -157,6 +182,7 @@ async function AreaTemplateDatasetView({
   session,
 }: {
   areaId: number;
+  categoryHref: string;
   templateId: string;
   templateName: string;
   areaInfo: Area | null;
@@ -199,6 +225,8 @@ async function AreaTemplateDatasetView({
       if (!result.wasCreated) {
         row = { ...row, ...(await retryFailedBake(row)) };
       }
+      const probeRunning =
+        row.tilesState === "counting" && (await resumeCountProbeIfDue(row));
       // Saving needs a session; anonymous visitors reach here on featured pages
       const notify = (offer: "ready" | "available") =>
         session?.user && (
@@ -214,6 +242,7 @@ async function AreaTemplateDatasetView({
           <DatasetTooLargeState
             templateName={templateName}
             areaName={fallbackAreaName}
+            categoryHref={categoryHref}
             areaId={areaId}
             notify={notify("available")}
           />
@@ -222,9 +251,10 @@ async function AreaTemplateDatasetView({
       return (
         <DatasetWaitPage
           datasetId={row.id}
-          mood={row.tilesState === "pending" ? "baking" : "failed"}
+          mood={waitPageMood(row.tilesState, probeRunning)}
           templateName={templateName}
           areaName={fallbackAreaName}
+          categoryHref={categoryHref}
           areaId={areaId}
           notify={notify("ready")}
         />
@@ -251,8 +281,8 @@ async function AreaTemplateDatasetView({
         <>
           {trackDetailView}
           <DatasetNoMapPage
+            categoryHref={categoryHref}
             areaId={areaId}
-            backLabel={datasetT("backToAreaLabel", { area: areaName })}
             title={datasetT("datasetInArea", {
               dataset: dataset.template.name,
               area: areaName,
@@ -280,7 +310,7 @@ async function AreaTemplateDatasetView({
     return (
       <div className="bg-gray-50 lg:h-[calc(100dvh_-_var(--nav-height))] lg:flex lg:overflow-hidden">
         {trackDetailView}
-        <DatasetInteractiveSection dataset={dataset} boundary={boundary} areaName={areaName} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
+        <DatasetInteractiveSection dataset={dataset} boundary={boundary} areaName={areaName} categoryHref={categoryHref} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
       </div>
     );
   } catch (error) {
@@ -289,6 +319,7 @@ async function AreaTemplateDatasetView({
         <DatasetTooLargeState
           templateName={templateName}
           areaName={fallbackAreaName}
+          categoryHref={categoryHref}
           areaId={areaId}
         />
       );
@@ -300,6 +331,7 @@ async function AreaTemplateDatasetView({
           mood="timedOut"
           templateName={templateName}
           areaName={fallbackAreaName}
+          categoryHref={categoryHref}
           areaId={areaId}
         />
       );
@@ -340,11 +372,26 @@ async function AreaTemplateDatasetView({
   }
 }
 
-export async function generateMetadata({ params }: DatasetPageProps) {
+export async function generateMetadata({ params }: DatasetPageProps): Promise<Metadata> {
   const { areaId, templateId } = await params;
+  const osmRelationId = parseInt(areaId, 10);
+  if (isNaN(osmRelationId) || osmRelationId <= 0 || !isValidTemplateIdentifier(templateId)) {
+    return {};
+  }
 
-  return {
-    title: `${templateId} Dataset in Area ${areaId} | OSM for Cities`,
-    description: `Explore ${templateId} dataset for area ${areaId} with interactive maps and data analysis tools.`,
-  };
+  const locale = await getLocale();
+  const [template, areaInfo, t] = await Promise.all([
+    // The layout defaults stand in for a page that can't be named
+    resolveTemplateOnce(templateId).catch(() => null),
+    getAreaDetailsById(osmRelationId, locale),
+    getTranslations("DatasetPage"),
+  ]);
+  if (!template?.isActive || !areaInfo) return {};
+
+  const { name, description } = resolveTemplateForLocale(template, locale);
+  return getLocalizedMetadata(locale as Locale, {
+    title: t("datasetInArea", { dataset: name, area: resolveAreaName(areaInfo, locale) }),
+    description: description ?? DEFAULT_SEO.description,
+    path: `/area/${osmRelationId}/dataset/${templateId}`,
+  });
 }

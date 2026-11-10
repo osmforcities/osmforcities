@@ -15,10 +15,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useTranslations, useLocale } from "next-intl";
 import type { Dataset } from "@/schemas/dataset";
 import { MapLayers } from "./map/layers";
-import {
-  TilesLayerGroup,
-  tilesPointCount,
-} from "./map/layers/tiles-layer-group";
+import { TilesLayerGroup } from "./map/layers/tiles-layer-group";
+import { tilesPointCount } from "@/lib/dataset-tiles";
 import { ensurePmtilesProtocol } from "@/lib/pmtiles-protocol";
 import { AoiBoundaryLayer } from "./map/aoi-boundary-layer";
 import {
@@ -32,13 +30,15 @@ import { INTERACTIVE_LAYER_IDS } from "./map/layers/layer-ids";
 import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
 import { MapZoomControl } from "@/components/ui/map-zoom-control";
-import { mapStyle } from "@/lib/map-tiles";
-import { AGE_COLORS } from "./map/layers/map-style";
+import { mapStyle, BASEMAP_LABELS_ANCHOR } from "@/lib/map-tiles";
+import { ageLegendRow } from "./map/layers/map-style";
+import type { AgeCategory } from "@/lib/feature-age";
 import {
   buildCuratedThemesFromDimensions,
   buildAgeVisibilityFilter,
   buildTagVisibilityFilter,
   buildLegendRows,
+  findOpeningTheme,
 } from "@/lib/curated-themes";
 import { resolveFilterDimensions } from "@/lib/filter-dimensions";
 import { tagLabel, tagValue, type MessageResolver } from "@/lib/tag-i18n";
@@ -57,13 +57,6 @@ const AGE_VIEW_ID = "age";
 
 // Stable reference: a fresh [] each render would churn the click handler
 const NO_FEATURES: Feature[] = [];
-
-const AGE_LABEL_KEYS = {
-  recent: "recentChanges",
-  medium: "mediumChanges",
-  older: "olderChanges",
-  "very-old": "veryOldChanges",
-} as const;
 
 // Only memoize heavy components that actually benefit from it
 const MemoizedMapLayers = React.memo(MapLayers);
@@ -138,7 +131,11 @@ export const DatasetFullMap = forwardRef<
   );
 
   // Legend state: which view colors the map, which categories are hidden
-  const [activeViewId, setActiveViewId] = useState(AGE_VIEW_ID);
+  const [activeViewId, setActiveViewId] = useState(
+    () =>
+      findOpeningTheme(curatedThemes, dataset.template.defaultView)?.field ??
+      AGE_VIEW_ID
+  );
   const [hiddenIds, setHiddenIds] = useState<ReadonlySet<string>>(new Set());
 
   const activeTheme = useMemo(
@@ -169,9 +166,7 @@ export const DatasetFullMap = forwardRef<
   const categories: LegendCategory[] = useMemo(() => {
     if (!activeTheme) {
       return (ageDimension?.values ?? []).map(({ value, count }) => ({
-        id: value,
-        label: t(AGE_LABEL_KEYS[value as keyof typeof AGE_LABEL_KEYS]),
-        color: AGE_COLORS[value as keyof typeof AGE_COLORS],
+        ...ageLegendRow(value as AgeCategory, t),
         count,
       }));
     }
@@ -290,6 +285,7 @@ export const DatasetFullMap = forwardRef<
                 <Layer
                   id="highlight-fill"
                   type="fill"
+                  beforeId={BASEMAP_LABELS_ANCHOR}
                   filter={["==", "$type", "Polygon"]}
                   paint={{
                     "fill-color": "#0b4ad8",
@@ -299,6 +295,7 @@ export const DatasetFullMap = forwardRef<
                 <Layer
                   id="highlight-stroke"
                   type="line"
+                  beforeId={BASEMAP_LABELS_ANCHOR}
                   filter={["!=", "$type", "Point"]}
                   paint={{
                     "line-color": "#0b4ad8",
@@ -311,6 +308,7 @@ export const DatasetFullMap = forwardRef<
                 <Layer
                   id="highlight-point"
                   type="circle"
+                  beforeId={BASEMAP_LABELS_ANCHOR}
                   filter={["==", "$type", "Point"]}
                   paint={{
                     "circle-radius": 6,

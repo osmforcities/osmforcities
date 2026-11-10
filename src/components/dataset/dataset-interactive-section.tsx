@@ -21,6 +21,7 @@ type DatasetInteractiveSectionProps = {
   // stays consistent with the rest of the page even when the stored
   // dataset.area.names map lacks the current locale.
   areaName: string;
+  categoryHref: string;
   savedCount?: number;
   saveLimit?: number;
 };
@@ -29,6 +30,7 @@ export function DatasetInteractiveSection({
   dataset,
   boundary,
   areaName,
+  categoryHref,
   savedCount = 0,
   saveLimit,
 }: DatasetInteractiveSectionProps) {
@@ -69,22 +71,21 @@ export function DatasetInteractiveSection({
                 timestamps (surfaced up top as decision-relevant provenance).
                 Fixed at top, never scrolls. */}
             <div className="shrink-0">
-              {/* Back link to the area — its own row, the single nav control. */}
+              {/* Back to the category the dataset was picked from. */}
               <div className="mb-2 flex">
                 <Link
-                  href={`/area/${dataset.area.id}`}
-                  aria-label={t("backToAreaLabel", { area: areaName })}
-                  className="inline-flex min-w-0 items-center gap-1 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+                  href={categoryHref}
+                  className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
                 >
                   <ArrowLeft className="size-3.5 flex-shrink-0" aria-hidden />
-                  <span className="truncate">{areaName}</span>
+                  {t("back")}
                 </Link>
               </div>
-              <DatasetInfoPanel dataset={dataset} />
+              <DatasetInfoPanel dataset={dataset} areaName={areaName} />
               {/* Metadata chip row: category facet (olive) + freshness chips
                   (edited, fetched) sharing one line below the title. */}
               <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                <CategoryFacet dataset={dataset} areaName={areaName} />
+                <CategoryFacet dataset={dataset} areaName={areaName} categoryHref={categoryHref} />
                 <DatasetTimestamps dataset={dataset} lastChecked={lastChecked} />
               </div>
             </div>

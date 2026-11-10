@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { setupAuthenticationWithSignup, cleanupTestUser } from "./utils/auth";
+import { signInAsNewTestUser, cleanupTestUser } from "./utils/auth";
 
 test.describe("Route Protection", () => {
   test("should allow access to public routes without authentication", async ({ page }) => {
@@ -12,7 +12,6 @@ test.describe("Route Protection", () => {
     await expect(page).toHaveURL("/en/about");
     await expect(page.locator("h1")).toContainText("About");
 
-    // Test login/signup pages
     await page.goto("/en/enter");
     await expect(page).toHaveURL("/en/enter");
 
@@ -68,7 +67,7 @@ test.describe("Route Protection", () => {
 
   test("should allow access to protected routes when authenticated", async ({ page }) => {
     // Create and authenticate a test user
-    const user = await setupAuthenticationWithSignup(page, {
+    const user = await signInAsNewTestUser(page, {
       email: `route-protection-test-${Date.now()}@example.com`,
     });
 

@@ -57,7 +57,12 @@ test.describe.serial("Featured datasets", () => {
   });
 
   test("homepage hero links to the featured dataset (logged out)", async ({ page }) => {
+    // Tiles lane off: the hero draws the stored geojson
+    const slimGeojson = page.waitForResponse((response) =>
+      response.url().includes("/geojson?slim")
+    );
     await page.goto("/en");
+    expect((await slimGeojson).ok()).toBe(true);
     await page.getByRole("link", { name: /— View dataset$/ }).click();
 
     await expect(page).toHaveURL(new RegExp(`${FEATURED_PATH}$`));
@@ -69,6 +74,38 @@ test.describe.serial("Featured datasets", () => {
     await page.goto(NON_FEATURED_PATH);
 
     await expect(page.getByRole("heading", UPSELL_HEADING)).toBeVisible();
+  });
+
+  test("magic-link sign-in from the upsell returns to the dataset", async ({ page }) => {
+    const prisma = new PrismaClient();
+    const user = await createTestUser(prisma);
+
+    try {
+      await page.goto(NON_FEATURED_PATH);
+      await page.getByRole("link", { name: "Continue with email" }).click();
+      await expect(page).toHaveURL(/\/en\/enter\?returnTo=/);
+
+      await page.getByPlaceholder("Email").fill(user.email);
+      const sent = page.waitForResponse("**/api/auth/send-magic-link");
+      await page.getByRole("button", { name: "Continue" }).click();
+      expect(JSON.parse((await sent).request().postData()!)).toMatchObject({
+        returnTo: NON_FEATURED_PATH,
+      });
+      await expect(page.getByText("Check your email")).toBeVisible();
+
+      // Email is off in e2e: rebuild the link the send route mails
+      const { token } = await prisma.verificationToken.findFirstOrThrow({
+        where: { identifier: user.email },
+      });
+      const link = new URLSearchParams({ token, returnTo: NON_FEATURED_PATH });
+      await page.goto(`/api/auth/verify?${link}`);
+
+      await expect(page).toHaveURL(new RegExp(`${NON_FEATURED_PATH}$`));
+      await expect(page.locator(DATASET_VIEW)).toBeVisible();
+    } finally {
+      await prisma.$disconnect();
+      await cleanupTestUser(user.id);
+    }
   });
 
   test("non-featured dataset is fully accessible (logged in)", async ({ page }) => {

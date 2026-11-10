@@ -1,3 +1,5 @@
+import type { GeometryMix } from "@/lib/dataset-geometry";
+
 /**
  * Client-side decision: does this dataset render from PMTiles?
  * Opt-in via NEXT_PUBLIC_TILES_ENABLED while #489 is being proven; unset (or
@@ -18,10 +20,18 @@ export function datasetTilesPath(dataset: {
   return `/api/tiles/${dataset.tilesServedJobId}.pmtiles`;
 }
 
+// Tiles mode holds no client-side features to count.
+export function tilesPointCount(dataset: {
+  dataCount: number;
+  stats: { geometryMix?: Pick<GeometryMix, "points"> } | null;
+}): number {
+  return dataset.stats?.geometryMix?.points ?? dataset.dataCount;
+}
+
 /**
- * True while a dataset has never had a map: its first bake is pending or
- * failed. A rebuild keeps its served archive, and an empty count keeps the
- * empty screen.
+ * True while a dataset has never had a map: its count probe is running, or
+ * its first bake is pending or failed. A rebuild keeps its served archive,
+ * and an empty count keeps the empty screen.
  */
 export function awaitsFirstMap(dataset: {
   dataCount: number;
@@ -29,6 +39,7 @@ export function awaitsFirstMap(dataset: {
   tilesServedJobId: string | null;
   tilesState: string | null;
 }): boolean {
+  if (dataset.tilesState === "counting") return true;
   return (
     dataset.dataCount !== 0 &&
     !dataset.geojson &&

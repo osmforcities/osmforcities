@@ -15,9 +15,10 @@ How code in this repo should be written. Reviewers (human and agent) check chang
 - One term per glossary concept, per locale. Dataset: es _conjunto de datos_, pt-BR _conjunto de dados_, fr _jeu de données_, de _Datensatz_. Template: _plantilla_, _modelo_, _modèle_, _Vorlage_. Area: _área_, _área_, _zone_, _Gebiet_. Save: _guardar_, _salvar_, _enregistrer_, _speichern_. Feature: _elemento_, _elemento_, _élément_, _Objekt_.
 - One address form per locale: es _tú_, pt-BR _você_, fr _vous_, de _du_.
 - Spanish is Latin American neutral, Portuguese is Brazilian. No regional slang, no English left untranslated. Run `pnpm i18n:review` after changing translations.
-- English headings, buttons and labels use sentence case. Other locales never copy English title case.
+- English headings, buttons and labels use sentence case. Other locales never copy English title case, except pt-BR in the next rule.
+- Title case exception, in en and pt-BR only: topic and category labels (`CategoryLabel`) and visible nav items (`Navigation`, Sign In and Sign Out included) use title case. Small words stay lowercase unless first: en `and`, `or`, `of`, `for`, `in`, `on`, `the`, `a`, `to`; pt-BR `e`, `ou`, `de`, `do`, `da`, `dos`, `das`, `em`, `no`, `na`, `para`, `o`, `a`. Template names, buttons, headings, descriptions and accessible names (`mainMenu`, `breadcrumbLabel`) keep sentence case. Spanish and French stay sentence case, German capitalizes nouns as usual.
 - Full sentences end with a period; headings, labels and buttons do not.
-- No punctuation or symbols as keys or baked into labels (`✕`, `(`, `:`, trailing colons, `→`). Components render icons and separators.
+- No punctuation or symbols as keys or baked into labels (`✕`, `(`, `:`, trailing colons, `→`). Components render icons and separators. Exception: parentheses around a value that qualifies a figure in the same message, such as its year (`"Pop. {count} ({year})"`).
 - Use ICU placeholders and plurals (`{count, plural, ...}`), never concatenated fragments.
 - Plain, accurate copy: no pipeline jargon, no promises the app does not keep, no description repeating its heading.
 - Group controls under a heading that names what they affect.

@@ -228,11 +228,13 @@ export function DatasetTooLargeState({
   templateName,
   areaName,
   areaId,
+  categoryHref,
   notify,
 }: {
   templateName: string;
   areaName: string;
   areaId: number;
+  categoryHref: string;
   /** The save-and-email button, worded "if it becomes available". */
   notify?: ReactNode;
 }) {
@@ -240,8 +242,8 @@ export function DatasetTooLargeState({
 
   return (
     <DatasetNoMapPage
+      categoryHref={categoryHref}
       areaId={areaId}
-      backLabel={t("backToAreaLabel", { area: areaName })}
       tone="error"
       // The lead carries the reason and the paragraph the way out. A refusal
       // is retried only weekly, so the offer below says "if", not "when".

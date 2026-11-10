@@ -20,7 +20,6 @@ model User {
   reportsFrequency ReportFrequency @default(DAILY)
   language         String        @default("en")
   emailVerified    DateTime?
-  password         String?
   savedDatasets    DatasetSave[]
   datasets         Dataset[]
   sessions         Session[]
@@ -74,6 +73,7 @@ model Template {
   children      Template[]            @relation("TemplateHierarchy")
   tags          String[]
   filterableTags String[]             @default([])
+  defaultView   String?
   isActive      Boolean               @default(true)
   deprecatesAt  DateTime?
   commonRank    Int?

@@ -63,6 +63,7 @@ export interface LogicConfig {
   // Raw for the same reason, see validateReplacedBy
   replacedBy?: unknown;
   commonTemplates?: unknown;
+  defaultView?: unknown;
 }
 
 /**
@@ -102,6 +103,7 @@ export interface ParsedTemplate {
   category: string;
   tags: string[];
   filterableTags: string[];
+  defaultView: string | null;
   parent?: string;
 }
 
@@ -335,6 +337,7 @@ export function buildTemplate(config: TemplateConfig): ParsedTemplate {
     category,
     tags,
     filterableTags: filterableTags ?? [],
+    defaultView: null,
     parent,
   };
 }
@@ -348,6 +351,7 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
   demonstrators: unknown;
   replacedBy: unknown;
   commonTemplates: unknown;
+  defaultView: unknown;
 } {
   const filePath = join(basePath, LOGIC_FILE);
   try {
@@ -359,6 +363,7 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
       demonstrators?: unknown;
       replacedBy?: unknown;
       commonTemplates?: unknown;
+      defaultView?: unknown;
     };
 
     if (!config?.templates || !Array.isArray(config.templates)) {
@@ -425,6 +430,7 @@ export function loadTemplatesLogic(basePath: string = DEFAULT_PRISMA): {
       demonstrators: config.demonstrators ?? {},
       replacedBy: config.replacedBy ?? {},
       commonTemplates: config.commonTemplates,
+      defaultView: config.defaultView,
     };
   } catch (error) {
     if (error instanceof Error) {
@@ -470,7 +476,7 @@ export function loadTemplatesI18n(
 export function loadTemplatesYaml(
   basePath: string = DEFAULT_PRISMA,
 ): LogicConfig {
-  const { entries, categories, demonstrators, replacedBy, commonTemplates } =
+  const { entries, categories, demonstrators, replacedBy, commonTemplates, defaultView } =
     loadTemplatesLogic(basePath);
   const templates: Record<string, TemplateLogic> = {};
   for (const entry of entries) {
@@ -482,7 +488,7 @@ export function loadTemplatesYaml(
       filterableTags: entry.filterableTags,
     };
   }
-  return { templates, categories, demonstrators, replacedBy, commonTemplates };
+  return { templates, categories, demonstrators, replacedBy, commonTemplates, defaultView };
 }
 
 /**
@@ -621,6 +627,39 @@ export function validateCommonTemplates(
   };
 }
 
+export function validateDefaultView(
+  defaultView: unknown,
+  templates: ParsedTemplate[],
+): { defaultView: Record<string, string>; errors: ValidationError[] } {
+  const errors: ValidationError[] = [];
+  const map: Record<string, string> = {};
+  if (defaultView === undefined || defaultView === null) return { defaultView: map, errors };
+  if (typeof defaultView !== "object" || Array.isArray(defaultView)) {
+    errors.push({ field: "defaultView", message: "defaultView must be a map keyed by template id" });
+    return { defaultView: map, errors };
+  }
+
+  const byId = new Map(templates.map((t) => [t.id, t]));
+  for (const [templateId, tag] of Object.entries(defaultView)) {
+    const template = byId.get(templateId);
+    if (!template) {
+      errors.push({
+        field: "defaultView",
+        message: `defaultView references unknown template id: "${templateId}"`,
+      });
+    } else if (typeof tag !== "string" || !template.filterableTags.includes(tag)) {
+      errors.push({
+        field: "defaultView",
+        message: `defaultView["${templateId}"]: "${String(tag)}" is not in its filterableTags`,
+      });
+    } else {
+      map[templateId] = tag;
+    }
+  }
+
+  return { defaultView: map, errors };
+}
+
 /**
  * Validate the `categories:` tree: each entry is `{ icon, parent? }` and a
  * parent is always a topic, so the tree is at most topic -> child. That one
@@ -733,6 +772,15 @@ export function parseTemplates(config: LogicConfig): ParseResult {
   }
 
   errors.push(...validateDemonstrators(config.demonstrators, parsedIds));
+
+  const { defaultView, errors: defaultViewErrors } = validateDefaultView(
+    config.defaultView,
+    templates,
+  );
+  errors.push(...defaultViewErrors);
+  for (const template of templates) {
+    template.defaultView = defaultView[template.id] ?? null;
+  }
 
   const { replacedBy, errors: replacedByErrors } = validateReplacedBy(
     config.replacedBy,

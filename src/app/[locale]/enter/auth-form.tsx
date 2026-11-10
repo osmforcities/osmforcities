@@ -18,6 +18,11 @@ function readLastEmail(): string {
   }
 }
 
+// Read at submit, not via useSearchParams: the page is statically rendered.
+function readReturnTo(): string | undefined {
+  return new URLSearchParams(window.location.search).get("returnTo") ?? undefined;
+}
+
 export default function AuthForm() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +52,11 @@ export default function AuthForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, remember }),
+        body: JSON.stringify({
+          email,
+          remember,
+          returnTo: readReturnTo(),
+        }),
       });
 
       if (response.status === 400) {

@@ -19,6 +19,8 @@ type AreaBrowseProps = {
   areaName: string;
   /** Places above the area, never the area itself. */
   parentBreadcrumb: BreadcrumbItem[];
+  facts?: ReactNode;
+  flag?: ReactNode;
   templates: AreaTemplate[];
   children: ReactNode;
 };
@@ -28,6 +30,8 @@ export function AreaBrowse({
   areaId,
   areaName,
   parentBreadcrumb,
+  facts,
+  flag,
   templates,
   children,
 }: AreaBrowseProps) {
@@ -60,9 +64,15 @@ export function AreaBrowse({
     <AreaFrame>
       <header className="mb-2 flex flex-col gap-4 lg:mb-4">
         <BreadcrumbNav items={parentBreadcrumb} />
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 lg:text-5xl">
-          {areaName}
-        </h1>
+        <div className="flex justify-between gap-4">
+          <div className="flex min-w-0 flex-col gap-4">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 lg:text-5xl">
+              {areaName}
+            </h1>
+            {facts}
+          </div>
+          {flag}
+        </div>
       </header>
       <DatasetSearchField
         label={t("searchLabel", { area: areaName })}

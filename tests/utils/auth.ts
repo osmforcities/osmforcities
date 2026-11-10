@@ -1,19 +1,10 @@
 import { Page } from "@playwright/test";
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
-
-/**
- * Authentication utilities for testing
- *
- * This provides utilities for testing authentication-related functionality.
- * Supports both the legacy test-auth approach and the new signup/login workflow.
- */
 
 export interface TestUser {
   id: string;
   email: string;
   name?: string;
-  password?: string;
   isAdmin?: boolean;
   language?: string;
   reportsEnabled?: boolean;
@@ -30,15 +21,10 @@ export async function createTestUser(
   const timestamp = Date.now();
   const random = Math.random().toString(36).substring(7);
 
-  // Hash password for secure storage
-  const plainPassword = userData.password || `test-password-${random}`;
-  const hashedPassword = await bcrypt.hash(plainPassword, 12);
-
   const user = await prisma.user.create({
     data: {
       email: userData.email || `test-${timestamp}-${random}@example.com`,
       name: userData.name || "Test User",
-      password: hashedPassword, // Store hashed password
       isAdmin: userData.isAdmin || false,
       language: userData.language || "en",
       reportsEnabled: userData.reportsEnabled ?? true,
@@ -52,7 +38,6 @@ export async function createTestUser(
     id: user.id,
     email: user.email,
     name: user.name,
-    password: plainPassword, // Return plain password for test login
     isAdmin: user.isAdmin,
     language: user.language,
     reportsEnabled: user.reportsEnabled,
@@ -98,45 +83,23 @@ export async function cleanupTestUser(userId: string) {
   }
 }
 
-/**
- * Sets up authentication using the new signup/login workflow
- * This creates a real user account and logs them in
- */
-export async function setupAuthenticationWithSignup(
+export async function signInAsNewTestUser(
   page: Page,
   userData: Partial<TestUser> = {}
 ): Promise<TestUser> {
-  const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(7);
-
-  const user = {
-    email: userData.email || `test-${timestamp}-${random}@example.com`,
-    name: userData.name || "Test User",
-    password: userData.password || `test-password-${random}`,
-    language: userData.language,
-    isAdmin: userData.isAdmin,
-    reportsEnabled: userData.reportsEnabled,
-    reportsFrequency: userData.reportsFrequency,
-  };
-
-  // First, create the user in the database to get the ID
   const prisma = new PrismaClient();
-  const createdUser = await createTestUser(prisma, user);
+  const createdUser = await createTestUser(prisma, userData);
   await prisma.$disconnect();
 
-  // Now just login with the existing user
   return await setupAuthenticationWithLogin(page, createdUser);
 }
 
-/**
- * Sets up authentication using direct login (when user already exists)
- * Uses fast API-based authentication for tests
- */
 export async function setupAuthenticationWithLogin(
   page: Page,
-  user: TestUser
+  user: TestUser,
+  // The user's own locale by default, or the middleware redirects to it
+  landingPath = `/${user.language || "en"}`
 ): Promise<TestUser> {
-  // Use fast API-based authentication for tests
   const response = await page.request.post("/api/auth/test-signin", {
     data: { email: user.email },
   });
@@ -147,10 +110,7 @@ export async function setupAuthenticationWithLogin(
     );
   }
 
-  // The API endpoint sets the session cookie automatically
-  // Navigate to user's preferred locale to avoid middleware redirect
-  const locale = user.language || "en";
-  await page.goto(`/${locale}`);
+  await page.goto(landingPath);
   await page.waitForLoadState("domcontentloaded");
 
   return user;

@@ -26,6 +26,8 @@ import {
   validateCommonTemplates,
   validateCategories,
 } from "../template-parser";
+import { AVAILABLE_LOCALES } from "../../../src/i18n/constants";
+import { YML_LOCALE_MAP } from "../../../src/lib/constants";
 
 describe("template-parser", () => {
   describe("isValidKv", () => {
@@ -424,6 +426,23 @@ describe("template-parser", () => {
   });
 
   describe("loadTemplatesLogic", () => {
+    it("gives every parent template a query that covers each child's selectors", () => {
+      const { entries } = loadTemplatesLogic("./prisma");
+      const queryById = new Map(entries.map((e) => [e.id, e.query]));
+      const uncovered = entries
+        .filter((child) => child.parent)
+        .flatMap((child) => {
+          const parentSelectors = queryById.get(child.parent!)!.split(";");
+          const isCovered = (selector: string) =>
+            parentSelectors.some((p) => selector === p || selector.startsWith(`${p}&`));
+          return child.query
+            .split(";")
+            .filter((selector) => !isCovered(selector))
+            .map((selector) => `${child.parent} misses ${child.id}: ${selector}`);
+        });
+      expect(uncovered).toEqual([]);
+    });
+
     it("loads templates.yml array format and returns entries + categories", () => {
       const { entries, categories } = loadTemplatesLogic("./prisma");
       expect(entries.length).toBeGreaterThan(0);
@@ -432,7 +451,7 @@ describe("template-parser", () => {
         id: "bicycle-parking",
         query: "amenity=bicycle_parking",
         category: "cycling",
-        icon: "Bike",
+        icon: "wide_p_with_bicycle",
         filterableTags: [
           "bicycle_parking",
           "covered",
@@ -444,7 +463,7 @@ describe("template-parser", () => {
       // parent parsing (5th element) is still exercised by public-transit children
       expect(byId.get("bus-stops")?.parent).toBe("public-transit");
       expect(categories).toMatchObject({
-        mobility: { icon: "Car" },
+        mobility: { icon: "BusFront" },
         agriculture: { icon: "Wheat", parent: "nature-environment" },
       });
     });
@@ -463,6 +482,29 @@ describe("template-parser", () => {
       ]);
       // Uncurated templates have no list (age-only in the legend)
       expect(byId.get("golf-courses")?.filterableTags).toBeUndefined();
+    });
+
+    it("matches roads with a sidewalk, never roads mapped without one", () => {
+      const result = parseTemplates(loadTemplatesYaml("./prisma"));
+      const query = result.templates.find((t) => t.id === "sidewalks")?.overpassQuery;
+      expect(query).toContain('way["sidewalk"="both"]');
+      expect(query).toContain('way["sidewalk:right"="separate"]');
+      expect(query).not.toMatch(/"sidewalk(:\w+)?"\]/);
+      expect(query).not.toMatch(/"sidewalk(:\w+)?"="(no|none)"/);
+    });
+
+    it("folds the old tree templates into one trees template", () => {
+      const result = parseTemplates(loadTemplatesYaml("./prisma"));
+      const trees = result.templates.find((t) => t.id === "trees");
+      expect(trees?.category).toBe("nature");
+      expect(trees?.filterableTags).toEqual(["natural", "leaf_type", "leaf_cycle", "denotation", "genus"]);
+      expect(trees?.overpassQuery).toContain('"natural"="tree_group"');
+      expect(result.replacedBy).toMatchObject({
+        "urban-trees": "trees",
+        "street-trees": "trees",
+        "trees-with-species": "trees",
+        "vegetation-risk-context": "trees",
+      });
     });
   });
 
@@ -490,6 +532,44 @@ describe("template-parser", () => {
       const clashes = [...idsByLocaleName].filter(([, ids]) => ids.length > 1);
       expect(clashes).toEqual([]);
     });
+
+    it("gives every template in a described topic a short desc distinct from its name in every locale", () => {
+      const MAX_DESC_LENGTH = 60;
+      const DESCRIBED_TOPICS = [
+        "mobility",
+        "health",
+        "leisure-sports",
+        "tourism",
+        "nature-environment",
+        "emergency",
+        "education",
+        "culture-religion",
+        "shops-services",
+        "public-services",
+        "buildings-infrastructure",
+      ];
+      const { templates, categories } = parseTemplates(loadTemplatesYaml("./prisma"));
+      const describedCategorySlugs = categories
+        .filter((c) => DESCRIBED_TOPICS.includes(c.parent ?? c.slug))
+        .map((c) => c.slug);
+      const i18n = loadTemplatesI18n("./prisma").templates;
+      const problems = templates
+        .filter((t) => describedCategorySlugs.includes(t.category))
+        .flatMap((t) =>
+          AVAILABLE_LOCALES.map((locale) => {
+            const ymlLocale = YML_LOCALE_MAP[locale] ?? locale;
+            const name = i18n[t.id]?.name?.[ymlLocale];
+            const desc = i18n[t.id]?.desc?.[ymlLocale];
+            if (!name || !desc) return `${t.id} ${ymlLocale}: missing`;
+            if (desc === name) return `${t.id} ${ymlLocale}: desc equals name`;
+            if (desc.length > MAX_DESC_LENGTH)
+              return `${t.id} ${ymlLocale}: desc over ${MAX_DESC_LENGTH} chars`;
+            return null;
+          }),
+        )
+        .filter(Boolean);
+      expect(problems).toEqual([]);
+    });
   });
 
   describe("loadTemplatesYaml", () => {
@@ -508,23 +588,44 @@ describe("template-parser", () => {
       expect(first.overpassQuery).toContain("area.searchArea");
     });
 
-    it("declares the 8 topics and puts fuel under mobility", () => {
+    it("declares the 11 topics and puts fuel under mobility", () => {
       const result = parseTemplates(loadTemplatesYaml("./prisma"));
       const topics = result.categories.filter((c) => !c.parent).map((c) => c.slug);
       expect(topics.sort()).toEqual([
         "buildings-infrastructure",
-        "education-culture",
+        "culture-religion",
+        "education",
+        "emergency",
         "health",
         "leisure-sports",
         "mobility",
         "nature-environment",
         "public-services",
         "shops-services",
+        "tourism",
       ]);
       const slugs = result.categories.map((c) => c.slug);
       expect(slugs).not.toContain("transport");
       expect(slugs).not.toContain("other");
       expect(result.templates.find((t) => t.id === "fuel")?.category).toBe("mobility");
+    });
+
+    it("keeps historic places under heritage and burial places under religion", () => {
+      const result = parseTemplates(loadTemplatesYaml("./prisma"));
+      const idsIn = (category: string) =>
+        result.templates.filter((t) => t.category === category).map((t) => t.id).sort();
+      expect(result.categories.find((c) => c.slug === "heritage")?.parent).toBe(
+        "culture-religion",
+      );
+      expect(idsIn("heritage")).toEqual([
+        "archaeological-sites",
+        "castles",
+        "heritage-sites",
+        "memorials",
+        "monuments",
+        "ruins",
+      ]);
+      expect(idsIn("religion")).toEqual(["cemeteries", "places-of-worship", "shrines"]);
     });
 
     it("exposes the demonstrators section keyed by template id", () => {
@@ -747,17 +848,82 @@ describe("template-parser", () => {
     });
   });
 
+  describe("parseTemplates defaultView", () => {
+    const templates = {
+      buildings: { query: "building", category: "infrastructure", filterableTags: ["building"] },
+      streets: { query: "highway=residential", category: "infrastructure" },
+    };
+    const categories = { infrastructure: { icon: "Gauge" } };
+    const defaultViewOf = (result: ReturnType<typeof parseTemplates>, id: string) =>
+      result.templates.find((t) => t.id === id)?.defaultView;
+
+    it("sets the view on the named template and null elsewhere", () => {
+      const result = parseTemplates({ templates, categories, defaultView: { buildings: "building" } });
+      expect(result.errors).toEqual([]);
+      expect(defaultViewOf(result, "buildings")).toBe("building");
+      expect(defaultViewOf(result, "streets")).toBeNull();
+    });
+
+    it("errors on an unknown template id", () => {
+      const result = parseTemplates({ templates, categories, defaultView: { nope: "building" } });
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].message).toContain('unknown template id: "nope"');
+    });
+
+    it("errors on a tag outside the template's filterableTags", () => {
+      const result = parseTemplates({ templates, categories, defaultView: { buildings: "roof:shape" } });
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].message).toContain('"roof:shape" is not in its filterableTags');
+      expect(defaultViewOf(result, "buildings")).toBeNull();
+    });
+
+    it("errors on a non-map section", () => {
+      const result = parseTemplates({ templates, categories, defaultView: ["building"] });
+      expect(result.errors).toHaveLength(1);
+    });
+  });
+
+  it("templates.yml opens buildings on the building type view", () => {
+    const result = parseTemplates(loadTemplatesYaml("./prisma"));
+    expect(result.templates.find((t) => t.id === "buildings")?.defaultView).toBe("building");
+  });
+
+  it("templates.yml makes car-free-paths a standalone pedestrian template that opens on the way type view", () => {
+    const result = parseTemplates(loadTemplatesYaml("./prisma"));
+    const carFreePaths = result.templates.find((t) => t.id === "car-free-paths");
+    for (const wayType of ["footway", "path", "cycleway", "pedestrian", "steps", "bridleway"]) {
+      expect(carFreePaths?.overpassQuery).toContain(`way["highway"="${wayType}"]`);
+    }
+    expect(carFreePaths?.overpassQuery).not.toMatch(/"highway"="(living_street|track)"/);
+    expect(carFreePaths?.category).toBe("pedestrian");
+    expect(carFreePaths?.parent).toBeUndefined();
+    expect(carFreePaths?.filterableTags[0]).toBe("highway");
+    expect(carFreePaths?.defaultView).toBe("highway");
+  });
+
+  it("templates.yml includes pedestrian streets in footways, cycleways stay out", () => {
+    const result = parseTemplates(loadTemplatesYaml("./prisma"));
+    const query = result.templates.find((t) => t.id === "footways")?.overpassQuery;
+    expect(query).toContain('way["highway"="pedestrian"]');
+    expect(query).not.toContain('"highway"="cycleway"');
+  });
+
   it("templates.yml lists valid common templates", () => {
     const result = parseTemplates(loadTemplatesYaml("./prisma"));
     expect(result.errors).toEqual([]);
     expect(result.commonTemplates).toEqual([
       "bus-stops",
-      "schools",
-      "clinics",
-      "pharmacies",
-      "buildings",
+      "roads",
       "footways",
-      "cycleways",
+      "schools",
+      "hospitals",
+      "pharmacies",
+      "parks",
+      "playgrounds",
+      "buildings",
+      "supermarkets",
+      "restaurants",
+      "places-of-worship",
     ]);
   });
 });

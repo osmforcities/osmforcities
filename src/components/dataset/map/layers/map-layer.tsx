@@ -1,6 +1,7 @@
 import { Source, Layer } from "react-map-gl/maplibre";
 import type { FilterSpecification } from "maplibre-gl";
 import type { Feature } from "geojson";
+import { BASEMAP_LABELS_ANCHOR } from "@/lib/map-tiles";
 
 type MapLayerProps = {
   id: string;
@@ -36,6 +37,7 @@ export function MapLayer({
       <Layer
         id={id}
         type={layerType}
+        beforeId={BASEMAP_LABELS_ANCHOR}
         paint={paint}
         {...(layout && { layout })}
         {...filterProps}
@@ -44,6 +46,7 @@ export function MapLayer({
         <Layer
           id={strokeLayer.id}
           type={strokeLayer.type}
+          beforeId={BASEMAP_LABELS_ANCHOR}
           paint={strokeLayer.paint}
           {...(strokeLayer.layout && { layout: strokeLayer.layout })}
           {...filterProps}

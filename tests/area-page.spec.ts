@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { getLocalizedPath } from "./config";
 import {
-  setupAuthenticationWithSignup,
+  signInAsNewTestUser,
   cleanupTestUser,
   TestUser,
 } from "./utils/auth";
@@ -10,7 +10,7 @@ test.describe("Area Page", () => {
   let testUser: TestUser;
 
   test.beforeEach(async ({ page }) => {
-    testUser = await setupAuthenticationWithSignup(page);
+    testUser = await signInAsNewTestUser(page);
   });
 
   test.afterEach(async () => {
@@ -37,9 +37,9 @@ test.describe("Area Page", () => {
     const topicChip = page.getByRole("link", { name: "Clear Mobility" });
     await expect(topicChip).toBeVisible();
 
-    await page.getByRole("link", { name: /^Cycling \d+$/ }).click();
+    await page.getByRole("link", { name: /^Bicycle \d+$/ }).click();
     await expect(page).toHaveURL(/\/topics\/mobility\/cycling$/);
-    await expect(page.getByRole("link", { name: "Clear Cycling" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Clear Bicycle" })).toBeVisible();
 
     await topicChip.click();
     await expect(page).toHaveURL(/\/area\/298470$/);
@@ -82,12 +82,21 @@ test.describe("Area Page", () => {
     await expect(page.getByRole("link", { name: /^Bakeries/ })).toBeVisible();
   });
 
+  test("the retired education-culture topic leads to the area page", async ({ page }) => {
+    await page.goto(getLocalizedPath("/area/298470/topics/education-culture"));
+    await expect(page).toHaveURL(/\/area\/298470$/);
+    await expect(page.getByRole("heading", { name: "Pick a topic" })).toBeVisible();
+
+    await page.goto(getLocalizedPath("/area/298470/topics/education-culture/heritage"));
+    await expect(page).toHaveURL(/\/area\/298470$/);
+  });
+
   // Invalid area ID 404 handling is covered by dataset-page.spec.ts.
   // pt-BR template rendering is covered by dataset-translations.spec.ts.
 
   test("should display templates in Portuguese (pt-BR)", async ({ page }) => {
     // Create user with pt-BR language and authenticate
-    testUser = await setupAuthenticationWithSignup(page, { language: "pt-BR" });
+    testUser = await signInAsNewTestUser(page, { language: "pt-BR" });
 
     // Navigate to pt-BR locale - the middleware will redirect from /en to /pt-BR
     // due to user's language preference, so we go directly to the area page

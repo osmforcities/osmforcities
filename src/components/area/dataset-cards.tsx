@@ -25,7 +25,7 @@ export function DatasetCards({ templates, areaId }: DatasetCardsProps) {
 export function DatasetCardsSkeleton() {
   return (
     <ul aria-busy className={datasetGridClassName}>
-      {Array.from({ length: 6 }, (_, index) => (
+      {Array.from({ length: 12 }, (_, index) => (
         <li
           key={index}
           className="h-20 animate-pulse rounded-xl border border-gray-200 bg-white"

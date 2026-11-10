@@ -116,38 +116,35 @@
   "EnterPage": {
     "metaTitle": "Anmelden - OSM for Cities",
     "metaDescription": "Melde dich an, um OpenStreetMap-Datensätze zu beobachten",
-    "signIn": "Anmelden",
-    "notFound": "Nicht gefunden",
-    "testAuthNotEnabled": "Die Test-Authentifizierung ist nicht aktiviert.",
-    "signInWithEmailPassword": "Melde dich mit E-Mail-Adresse und Passwort an",
-    "createAccount": "Konto erstellen",
-    "signupForTesting": "Registrierung zu Testzwecken",
-    "testEnvOnly": "Diese Seite ist nur in der Testumgebung verfügbar."
+    "signIn": "Anmelden"
   },
   "DatasetPage": {
-    "tilesStageQueued": "Wartet auf einen freien Platz",
-    "tilesStageFetching": "Daten werden geladen ({mb, number} MB)",
-    "tilesStageConverting": "Objekte werden konvertiert ({pct, number} %)",
-    "tilesStageBaking": "Kartenkacheln werden erstellt ({pct, number} %)",
-    "tilesStageCounting": "Größe wird berechnet",
-    "tilesStageCountingCold": "Größe wird noch berechnet, großes Gebiet",
-    "stepLine": "Schritt {step} von {total}",
+    "tilesStageQueued": "In der Warteschlange",
+    "tilesNoteQueued": "Andere Karten werden zuerst erstellt. Diese startet, sobald Platz frei ist.",
+    "tilesStageFetching": "Daten werden heruntergeladen",
+    "tilesNoteFetching": "{mb, plural, =0 {Von OpenStreetMap. } other {Bisher # MB von OpenStreetMap. }}Die Gesamtgröße steht erst nach dem Download fest, große Gebiete können daher eine Weile dauern.",
+    "tilesStageConverting": "Daten werden aufbereitet",
+    "tilesNoteConverting": "Der Download wird in Formen umgewandelt, die die Karte zeichnen kann.",
+    "tilesStageBaking": "Karte wird erstellt",
+    "tilesNoteBaking": "Fast fertig. Die Karte öffnet sich von selbst, sobald dies abgeschlossen ist.",
+    "tilesStageCounting": "Datenmenge wird geprüft",
+    "tilesStageCountingCold": "Prüfung läuft noch, großes Gebiet",
+    "tilesNoteCounting": "Es wird gezählt, wie viele Objekte es in diesem Gebiet gibt.",
     "datasetInArea": "{dataset} in {area}",
     "stateBakeFailed": "Erstellung fehlgeschlagen.",
     "stateTooLarge": "Zu groß zum Erstellen.",
     "stateNoData": "Noch keine Daten.",
     "stateCountTimedOut": "Das Laden der Daten hat zu lange gedauert.",
-    "notifyCta": "Speichern und mich per E-Mail benachrichtigen, wenn es fertig ist",
-    "notifyCtaIfAvailable": "Speichern und mich per E-Mail benachrichtigen, falls es verfügbar wird",
-    "notifyCtaIfMapped": "Speichern und mich per E-Mail benachrichtigen, falls es kartiert wird",
-    "notifyConfirmed": "Gespeichert. Du erhältst eine E-Mail, sobald die Karte fertig ist.",
-    "savedConfirmed": "Gespeichert.",
+    "notifySub": "Speichern, E-Mail erhalten, sobald es fertig ist",
+    "notifySubIfAvailable": "Speichern, E-Mail erhalten, falls verfügbar",
+    "notifySubIfMapped": "Speichern, E-Mail erhalten, falls es kartiert wird",
+    "savedTitle": "Gespeichert",
+    "notifyConfirmedSub": "Du bekommst eine E-Mail, sobald es fertig ist.",
     "tilesFailedDescription": "Öffne diese Seite später, um es erneut zu versuchen.",
     "countTimedOutDescription": "Das Gebiet ist vielleicht sehr groß oder der Server ausgelastet. Versuche es in spätestens {minutes, plural, one {# Minute} other {# Minuten}} erneut.",
     "backToHome": "Zurück zur Startseite",
     "emptyDescription": "Vielleicht gibt es sie hier nicht, oder niemand hat sie bisher in OpenStreetMap erfasst.",
     "tooLargeDescription": "Dieser Datensatz übersteigt die aktuelle Serverkapazität, was bei großen Metropolregionen oder sehr detaillierten Geometrien zu erwarten ist.",
-    "backToAreaLabel": "Zurück zu {area}",
     "categoryFacetLabel": "Kategorie: {category}. Alle Datensätze der Kategorie {category} in {area} anzeigen.",
     "categoryUncategorized": "Sonstige",
     "back": "Zurück",
@@ -190,7 +187,6 @@
     "fetchCadence": "Datensätze werden in OSM for Cities einmal täglich synchronisiert; dies ist die aktuelle Verzögerung gegenüber OpenStreetMap.",
     "downloadData": "Daten herunterladen",
     "download": "Herunterladen",
-    "datasetTitle": "{template}",
     "invalidData": "Ungültige Daten",
     "invalidDataMessage": "Der Datensatz enthält ungültige GeoJSON-Daten.",
     "value": "Wert",
@@ -264,6 +260,17 @@
     "noSearchResults": "Kein Datensatz passt zu „{query}“",
     "noSearchResultsHint": "Probier ein anderes Wort oder prüf die Schreibweise.",
     "clearSearch": "Suche löschen"
+  },
+  "AreaFacts": {
+    "capitalCity": "Hauptstadt",
+    "population": "Einw. {count, number, ::compact-short .#}",
+    "populationWithYear": "Einw. {count, number, ::compact-short .#} ({year})",
+    "elevation": "Höhe {elevation, number} m",
+    "links": "Links",
+    "website": "Website",
+    "openStreetMap": "OpenStreetMap",
+    "wikipedia": "Wikipedia",
+    "wikidata": "Wikidata"
   },
   "CategoryCards": {
     "title": "Daten in {area} finden",
@@ -366,12 +373,12 @@
     "title": "Einstellungen",
     "language": "Sprache",
     "languageDescription": "Gilt für die gesamte Website und für die E-Mails, die du erhältst.",
-    "reports": "E-Mail-Berichte",
-    "reportsDescription": "Erhalte E-Mail-Benachrichtigungen, wenn sich deine gespeicherten Datensätze ändern."
+    "emails": "E-Mails",
+    "emailsDescription": "Erhalte eine E-Mail, wenn eine angeforderte Karte fertig ist, und einen Bericht über die Änderungen an deinen gespeicherten Datensätzen."
   },
   "PreferencesForm": {
-    "enableReports": "Berichte aktivieren",
-    "frequency": "Häufigkeit:",
+    "enableEmails": "Schick mir E-Mails zu meinen gespeicherten Datensätzen",
+    "reportFrequency": "Häufigkeit des Berichts",
     "daily": "Täglich",
     "weekly": "Wöchentlich",
     "language": "Sprache"
@@ -425,8 +432,10 @@
     "key": "Schlüssel",
     "value": "Wert",
     "lastEditedBy": "Zuletzt bearbeitet von <link>{user}</link>",
+    "lastEditedOn": "Zuletzt bearbeitet am {date}",
     "mapLabel": "Interaktive Karte des Datensatzes",
     "fullScreenMapLabel": "Interaktive Vollbildkarte des Datensatzes",
+    "areaBasemapLabel": "Karte des Gebiets, noch ohne Daten",
     "loadingMap": "Karte wird geladen...",
     "noDataAvailable": "Keine Daten verfügbar. Die Daten werden automatisch aktualisiert, wenn du diese Seite besuchst.",
     "noGeographicData": "Keine geografischen Daten in den Ergebnissen des Datensatzes gefunden.",
@@ -441,7 +450,7 @@
     "veryOldChanges": "vor > 90 Tagen",
     "legendViewLabel": "Färben nach",
     "legendOther": "Sonstige",
-    "legendMissing": "Fehlend",
+    "legendMissing": "Nicht angegeben",
     "collapseLegend": "Legende ausblenden",
     "expandLegend": "Legende anzeigen"
   },
@@ -722,7 +731,7 @@
     "infrastructure": "Infrastruktur",
     "housing": "Wohnen",
     "barriers": "Barrieren",
-    "education-culture": "Bildung und Kultur",
+    "culture-religion": "Kultur und Religion",
     "education": "Bildung",
     "culture": "Kultur",
     "religion": "Religion",
@@ -737,7 +746,7 @@
     "rail": "Schiene",
     "cycling": "Radverkehr",
     "pedestrian": "Fußverkehr",
-    "roads": "Straßen",
+    "roads": "Kfz-Verkehr",
     "traffic": "Verkehr",
     "nature-environment": "Natur",
     "nature": "Naturelemente",
@@ -745,14 +754,18 @@
     "agriculture": "Landwirtschaft",
     "public-services": "Öffentliche Dienste",
     "emergency": "Notfall",
+    "medical-rescue": "Rettungsdienst",
+    "firefighting": "Brandschutz",
+    "civil-protection": "Katastrophenschutz",
     "government": "Verwaltung",
     "social": "Soziales",
     "amenities": "Ausstattung",
+    "waste": "Abfall",
     "shops-services": "Geschäfte und Dienstleistungen",
     "shops": "Geschäfte",
     "food": "Essen und Trinken",
-    "services": "Dienstleistungen",
-    "financial": "Finanzen"
+    "financial": "Finanzen",
+    "heritage": "Kulturerbe"
   },
   "TagLabel": {
     "highway": "Straßentyp",
@@ -837,7 +850,11 @@
     "organic": "Bio",
     "clothes": "Kleidungsart",
     "garden:type": "Gartentyp",
+    "natural": "Typ",
     "leaf_type": "Blattart",
+    "leaf_cycle": "Laubwechsel",
+    "denotation": "Baumfunktion",
+    "genus": "Gattung",
     "water": "Gewässertyp",
     "wetland": "Feuchtgebietstyp",
     "trees": "Angebaute Bäume",
@@ -852,7 +869,17 @@
     "fire_hydrant:pressure": "Druck",
     "cash_in": "Bareinzahlung",
     "indoor": "Innenbereich",
-    "sport": "Sportart"
+    "sport": "Sportart",
+    "siren:purpose": "Sirenenzweck",
+    "siren:type": "Sirenentyp",
+    "emergency:shelter_type": "Gefahrenart",
+    "artwork_type": "Kunstwerkart",
+    "archaeological_site": "Fundstättentyp",
+    "castle_type": "Burgtyp",
+    "heritage": "Schutzebene",
+    "kerb": "Bordstein",
+    "handrail": "Geländer",
+    "ramp": "Rampe"
   },
   "TagValue": {
     "__common__": {
@@ -860,6 +887,26 @@
       "no": "Nein",
       "limited": "Eingeschränkt",
       "unknown": "Unbekannt"
+    },
+    "lit": {
+      "24/7": "Rund um die Uhr",
+      "automatic": "Mit Bewegungsmelder"
+    },
+    "highway": {
+      "motorway": "Autobahn",
+      "trunk": "Schnellstraße",
+      "primary": "Hauptverbindungsstraße",
+      "secondary": "Landesstraße",
+      "tertiary": "Verbindungsstraße",
+      "residential": "Wohnstraße",
+      "living_street": "Spielstraße",
+      "unclassified": "Nebenstraße",
+      "footway": "Fußweg",
+      "path": "Pfad",
+      "cycleway": "Radweg",
+      "pedestrian": "Fußgängerzone",
+      "steps": "Treppe",
+      "bridleway": "Reitweg"
     },
     "healthcare:speciality": {
       "general": "Allgemeinmedizin",
@@ -942,11 +989,33 @@
       "sculpture": "Skulptur",
       "stele": "Stele"
     },
+    "natural": {
+      "tree": "Baum",
+      "tree_row": "Baumreihe",
+      "tree_group": "Baumgruppe"
+    },
     "leaf_type": {
       "broadleaved": "Laubbäume",
       "needleleaved": "Nadelbäume",
       "mixed": "Gemischt",
       "leafless": "Blattlos"
+    },
+    "leaf_cycle": {
+      "evergreen": "Immergrün",
+      "deciduous": "Laubabwerfend",
+      "semi_evergreen": "Halbimmergrün",
+      "semi_deciduous": "Halblaubabwerfend",
+      "mixed": "Gemischt"
+    },
+    "denotation": {
+      "urban": "Stadtbaum",
+      "avenue": "Straßenbaum",
+      "park": "Parkbaum",
+      "garden": "Gartenbaum",
+      "agricultural": "Landwirtschaftlich",
+      "landmark": "Wahrzeichen",
+      "natural_monument": "Naturdenkmal",
+      "windbreak": "Windschutz"
     },
     "fitness_station": {
       "horizontal_bar": "Reck",
@@ -1101,7 +1170,9 @@
       "crossing": "Überweg",
       "traffic_island": "Verkehrsinsel",
       "access_aisle": "Zugangsstreifen",
-      "link": "Verbindung"
+      "link": "Verbindung",
+      "alley": "Gasse",
+      "steps": "Treppe"
     },
     "sidewalk": {
       "both": "Beide Seiten",
@@ -1147,6 +1218,55 @@
     "internet_access": {
       "wlan": "WLAN",
       "terminal": "Terminal"
+    },
+    "siren:purpose": {
+      "civil_defense": "Zivilschutz",
+      "fire": "Feuerwehr",
+      "tornado": "Tornado",
+      "air_raid": "Luftalarm",
+      "tsunami": "Tsunami"
+    },
+    "siren:type": {
+      "electronic": "Elektronisch",
+      "mechanical": "Mechanisch",
+      "electromechanical": "Elektromechanisch",
+      "pneumatic": "Pneumatisch"
+    },
+    "artwork_type": {
+      "sculpture": "Skulptur",
+      "statue": "Statue",
+      "mural": "Wandbild",
+      "installation": "Installation",
+      "graffiti": "Graffiti",
+      "bust": "Büste",
+      "mosaic": "Mosaik"
+    },
+    "archaeological_site": {
+      "tumulus": "Grabhügel",
+      "fortification": "Befestigung",
+      "megalith": "Megalith",
+      "settlement": "Siedlung",
+      "mineral_extraction": "Historischer Bergbau",
+      "petroglyph": "Petroglyphe"
+    },
+    "castle_type": {
+      "stately": "Schloss",
+      "manor": "Herrenhaus",
+      "defensive": "Burg",
+      "palace": "Palast",
+      "fortress": "Festung"
+    },
+    "heritage": {
+      "1": "Welterbe",
+      "2": "National",
+      "4": "Regional",
+      "8": "Kommunal"
+    },
+    "kerb": {
+      "lowered": "Abgesenkt",
+      "flush": "Bündig",
+      "raised": "Erhöht",
+      "rolled": "Abgerundet"
     }
   }
 }
