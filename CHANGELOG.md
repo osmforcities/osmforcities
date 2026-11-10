@@ -14,7 +14,7 @@
 
 - The basemap is OpenFreeMap Positron, with place and street labels above the data [#743]
 - Template icons come from the Pinhead map icon set [#721], [#733]
-- Area pages have 11 topics: Emergency, Tourism, Education and Culture and Religion are topics of their own. Some old topic links return 404 [#697], [#703], [#713], [#724]
+- Area pages have 11 topics: Emergency, Tourism, Education, and Culture and Religion are topics of their own. Some old topic links return 404 [#697], [#703], [#713], [#724]
 - Common datasets are 12 templates picked for worldwide coverage [#715]
 - Template consolidation: one Trees template replaces four, Highways is removed and Roads is now Streets and roads, agriculture goes from 24 templates to 11. Merged templates redirect to their replacement, and saved datasets of removed ones are deleted after 30 days [#694], [#695], [#716]
 - Footways and paths includes pedestrian streets, and legends say "Not specified" instead of "Missing" [#744]
