@@ -6,6 +6,9 @@ import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import type { Dataset } from "@prisma/client";
 import { AGE_BUCKET_DAYS } from "@/lib/feature-age";
+import { createLogger } from "@/lib/logger";
+
+const log = createLogger("tiler");
 
 /**
  * Client for the overpass-pmtiler service (see overpass-pmtiler/API.md).
@@ -277,7 +280,7 @@ export async function pruneTileArchives(datasetId: string): Promise<void> {
     // Missing dir just means nothing to prune; anything else (permissions,
     // I/O) is worth a log line now that this runs on the cron loop.
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
-      console.error(`Tile archive prune failed to read ${tilesDir()}:`, error);
+      log.error("Tile archive prune failed to read tiles dir", { tilesDir: tilesDir(), error });
     }
     return;
   }
@@ -314,7 +317,7 @@ export async function submitTilesColumns(
     return { tilesJobId: id, tilesState: "pending", tilesError: null };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    console.error(`Tiler submit failed for dataset ${datasetId}: ${message}`);
+    log.error("Bake submit failed", { datasetId, error: message });
     return { tilesState: "failed", tilesError: message };
   }
 }
