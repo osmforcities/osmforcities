@@ -28,7 +28,7 @@ Single source of truth: `src/components/dataset/map/layers/map-style.ts` (`DEFAU
 
 ## Test datasets
 
-Verify zoom/style changes on BOTH the dataset page and the home featured card. Populate via `POST /api/datasets {templateId, osmRelationId}` (never SQL), feature via the dataset page admin button.
+Verify zoom/style changes on BOTH the dataset page and the home featured card. Populate by opening `/en/area/<areaId>/dataset/<templateId>`, which creates the dataset (never SQL), feature via the dataset page admin button.
 
 | Dataset | Relation | Exercises |
 | --- | --- | --- |
