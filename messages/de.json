@@ -438,6 +438,7 @@
     "key": "Schlüssel",
     "value": "Wert",
     "lastEditedBy": "Zuletzt bearbeitet von <link>{user}</link>",
+    "lastEditedOn": "Zuletzt bearbeitet am {date}",
     "mapLabel": "Interaktive Karte des Datensatzes",
     "fullScreenMapLabel": "Interaktive Vollbildkarte des Datensatzes",
     "areaBasemapLabel": "Karte des Gebiets, noch ohne Daten",

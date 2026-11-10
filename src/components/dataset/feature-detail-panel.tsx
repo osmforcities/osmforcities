@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import type { Feature } from "geojson";
-import { AGE_TS_KEY } from "@/lib/feature-age";
+import { AGE_TS_KEY, featureTs } from "@/lib/feature-age";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -44,12 +44,9 @@ export function FeatureDetailPanel({
       ? osmFeatureId.split("/")
       : [undefined, undefined];
 
-  // Tiler geojson carries "@user" / "@timestamp", osmtogeojson the bare keys
-  const userValue = properties["@user"] ?? properties.user;
-  const osmUser = userValue == null ? undefined : String(userValue);
-  const editedAt = new Date(
-    properties["@timestamp"] ?? properties.timestamp ?? NaN
-  );
+  const osmUser = properties.user == null ? undefined : String(properties.user);
+  // Tiles carry no editor name, only _ts; bare member nodes carry _ts 0
+  const editedTs = featureTs(feature);
 
   let name: string | undefined;
   const displayTags: [string, string][] = [];
@@ -77,9 +74,9 @@ export function FeatureDetailPanel({
     ? `https://www.openstreetmap.org/user/${encodeURIComponent(osmUser)}`
     : null;
 
-  const formattedDate = isNaN(editedAt.getTime())
-    ? null
-    : DATE_FORMATTER.format(editedAt);
+  const formattedDate = editedTs
+    ? DATE_FORMATTER.format(new Date(editedTs * 1000))
+    : null;
 
   return (
     <div className="flex flex-col h-full" data-testid="feature-detail-panel">
@@ -147,8 +144,8 @@ export function FeatureDetailPanel({
                     </a>
                   ),
                 })
-              : null}
-            {formattedDate ? ` · ${formattedDate}` : null}
+              : formattedDate && t("lastEditedOn", { date: formattedDate })}
+            {osmUser && formattedDate ? ` · ${formattedDate}` : null}
           </p>
         )}
       </div>

@@ -22,23 +22,24 @@ const bicycleParkingFeature: Feature = {
   },
 };
 
-// Selection copies "@id" onto "id", the rest stays as the tiler wrote it
-const TILER_TIMESTAMP = "2026-06-15T12:00:00Z";
+const TILE_TS = 1781524800;
 
-const tilerFeature: Feature = {
+// Archives keep no editor metadata; selection copies "@id" onto "id"
+const tileFeature: Feature = {
   type: "Feature",
   geometry: { type: "Point", coordinates: [4.9, 52.37] },
   properties: {
     id: "node/1",
     "@id": "node/1",
-    "@user": "alice",
-    "@uid": 4242,
-    "@timestamp": TILER_TIMESTAMP,
-    "@version": 2,
-    "@changeset": 13579,
     amenity: "bench",
-    _ts: 1781524800,
+    _ts: TILE_TS,
   },
+};
+
+const memberNodeFeature: Feature = {
+  type: "Feature",
+  geometry: { type: "Point", coordinates: [4.9, 52.37] },
+  properties: { id: "node/2", "@id": "node/2", _ts: 0 },
 };
 
 const noNameFeature: Feature = {
@@ -108,23 +109,30 @@ export const NoName: Story = {
   },
 };
 
-export const FromTiler: Story = {
+export const FromTile: Story = {
   args: {
-    feature: tilerFeature,
+    feature: tileFeature,
     onBack: fn(),
   },
   play: async ({ canvas }) => {
-    await expect(canvas.getByText(/Last edited by/i)).toBeInTheDocument();
-    await expect(canvas.getByRole("link", { name: "alice" })).toHaveAttribute(
-      "href",
-      "https://www.openstreetmap.org/user/alice"
-    );
     const editedOn = new Intl.DateTimeFormat(undefined, {
       dateStyle: "medium",
-    }).format(new Date(TILER_TIMESTAMP));
-    await expect(canvas.getByText(new RegExp(editedOn))).toBeInTheDocument();
-    await expect(canvas.queryByText("4242")).not.toBeInTheDocument();
+    }).format(new Date(TILE_TS * 1000));
+    await expect(
+      canvas.getByText(`Last edited ${editedOn}`)
+    ).toBeInTheDocument();
+    await expect(canvas.queryByText(/Last edited by/i)).not.toBeInTheDocument();
     await expect(canvas.getByText("bench")).toBeInTheDocument();
+  },
+};
+
+export const MemberNode: Story = {
+  args: {
+    feature: memberNodeFeature,
+    onBack: fn(),
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.queryByText(/Last edited/i)).not.toBeInTheDocument();
   },
 };
 
