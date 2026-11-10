@@ -377,12 +377,12 @@
     "title": "Preferências",
     "language": "Idioma",
     "languageDescription": "Usado em todo o site e nos e-mails que você recebe.",
-    "reports": "Relatórios por e-mail",
-    "reportsDescription": "Receba atualizações por e-mail quando seus conjuntos de dados salvos tiverem alterações."
+    "emails": "E-mails",
+    "emailsDescription": "Receba um e-mail quando um mapa que você pediu estiver pronto, e um relatório das mudanças nos seus conjuntos de dados salvos."
   },
   "PreferencesForm": {
-    "enableReports": "Habilitar relatórios",
-    "frequency": "Frequência:",
+    "enableEmails": "Me envie e-mails sobre meus conjuntos de dados salvos",
+    "reportFrequency": "Frequência do relatório",
     "daily": "Diário",
     "weekly": "Semanal",
     "language": "Idioma"

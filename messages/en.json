@@ -377,12 +377,12 @@
     "title": "Preferences",
     "language": "Language",
     "languageDescription": "Used across the site and in the emails you receive.",
-    "reports": "Email reports",
-    "reportsDescription": "Receive email updates when your saved datasets have changes."
+    "emails": "Emails",
+    "emailsDescription": "Get an email when a map you asked for is ready, and a report of changes to your saved datasets."
   },
   "PreferencesForm": {
-    "enableReports": "Enable reports",
-    "frequency": "Frequency:",
+    "enableEmails": "Email me about my saved datasets",
+    "reportFrequency": "Report frequency",
     "daily": "Daily",
     "weekly": "Weekly",
     "language": "Language"

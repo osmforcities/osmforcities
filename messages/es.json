@@ -377,12 +377,12 @@
     "title": "Preferencias",
     "language": "Idioma",
     "languageDescription": "Se usa en todo el sitio y en los correos electrónicos que recibes.",
-    "reports": "Reportes por correo electrónico",
-    "reportsDescription": "Recibe actualizaciones por correo electrónico cuando tus conjuntos de datos guardados tengan cambios."
+    "emails": "Correos electrónicos",
+    "emailsDescription": "Recibe un correo electrónico cuando un mapa que pediste esté listo, y un reporte de los cambios en tus conjuntos de datos guardados."
   },
   "PreferencesForm": {
-    "enableReports": "Habilitar reportes",
-    "frequency": "Frecuencia:",
+    "enableEmails": "Envíame correos sobre mis conjuntos de datos guardados",
+    "reportFrequency": "Frecuencia del reporte",
     "daily": "Diario",
     "weekly": "Semanal",
     "language": "Idioma"

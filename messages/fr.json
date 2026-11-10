@@ -377,12 +377,12 @@
     "title": "Préférences",
     "language": "Langue",
     "languageDescription": "Utilisée sur tout le site et dans les e-mails que vous recevez.",
-    "reports": "Rapports par e-mail",
-    "reportsDescription": "Recevez des e-mails lorsque vos jeux de données enregistrés changent."
+    "emails": "E-mails",
+    "emailsDescription": "Recevez un e-mail quand une carte que vous avez demandée est prête, et un rapport des modifications apportées à vos jeux de données enregistrés."
   },
   "PreferencesForm": {
-    "enableReports": "Activer les rapports",
-    "frequency": "Fréquence :",
+    "enableEmails": "M'envoyer des e-mails sur mes jeux de données enregistrés",
+    "reportFrequency": "Fréquence du rapport",
     "daily": "Quotidien",
     "weekly": "Hebdomadaire",
     "language": "Langue"
