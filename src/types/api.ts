@@ -11,8 +11,6 @@ const ApiResponseSchema = z.object({
   details: z.string().optional(),
 });
 
-const DatasetsResponseSchema = z.array(DatasetSchema);
-
 const DatasetResponseSchema = DatasetSchema;
 
 const SaveResponseSchema = z.object({
@@ -40,7 +38,6 @@ const UpdateDatasetResponseSchema = ApiResponseSchema;
 
 export type ApiResponse = z.infer<typeof ApiResponseSchema>;
 export type DatasetResponse = z.infer<typeof DatasetResponseSchema>;
-export type DatasetsResponse = z.infer<typeof DatasetsResponseSchema>;
 export type SaveResponse = z.infer<typeof SaveResponseSchema>;
 export type RefreshResponse = z.infer<typeof RefreshResponseSchema>;
 export type UpdateDatasetInput = z.infer<typeof UpdateDatasetSchema>;
@@ -49,7 +46,6 @@ export type UpdateDatasetResponse = z.infer<typeof UpdateDatasetResponseSchema>;
 export {
   ApiResponseSchema,
   DatasetResponseSchema,
-  DatasetsResponseSchema,
   SaveResponseSchema,
   RefreshResponseSchema,
   UpdateDatasetSchema,
