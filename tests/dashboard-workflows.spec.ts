@@ -18,8 +18,7 @@ test.describe("Dashboard Page - Essential Workflows", () => {
     testUser = await createTestUser(prisma);
     await prisma.$disconnect();
 
-    await setupAuthenticationWithLogin(page, testUser);
-    await page.goto("/en/dashboard");
+    await setupAuthenticationWithLogin(page, testUser, "/en/dashboard");
   });
 
   test.afterEach(async () => {
@@ -464,8 +463,7 @@ test.describe("Dashboard - Seamless Discovery Integration", () => {
     testUser = await createTestUser(prisma);
     await prisma.$disconnect();
 
-    await setupAuthenticationWithLogin(page, testUser);
-    await page.goto("/en/dashboard");
+    await setupAuthenticationWithLogin(page, testUser, "/en/dashboard");
   });
 
   test.afterEach(async () => {

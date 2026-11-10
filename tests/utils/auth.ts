@@ -87,20 +87,8 @@ export async function signInAsNewTestUser(
   page: Page,
   userData: Partial<TestUser> = {}
 ): Promise<TestUser> {
-  const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(7);
-
-  const user = {
-    email: userData.email || `test-${timestamp}-${random}@example.com`,
-    name: userData.name || "Test User",
-    language: userData.language,
-    isAdmin: userData.isAdmin,
-    reportsEnabled: userData.reportsEnabled,
-    reportsFrequency: userData.reportsFrequency,
-  };
-
   const prisma = new PrismaClient();
-  const createdUser = await createTestUser(prisma, user);
+  const createdUser = await createTestUser(prisma, userData);
   await prisma.$disconnect();
 
   return await setupAuthenticationWithLogin(page, createdUser);
@@ -108,7 +96,9 @@ export async function signInAsNewTestUser(
 
 export async function setupAuthenticationWithLogin(
   page: Page,
-  user: TestUser
+  user: TestUser,
+  // The user's own locale by default, or the middleware redirects to it
+  landingPath = `/${user.language || "en"}`
 ): Promise<TestUser> {
   const response = await page.request.post("/api/auth/test-signin", {
     data: { email: user.email },
@@ -120,9 +110,7 @@ export async function setupAuthenticationWithLogin(
     );
   }
 
-  // The user's own locale, or the middleware redirects to it
-  const locale = user.language || "en";
-  await page.goto(`/${locale}`);
+  await page.goto(landingPath);
   await page.waitForLoadState("domcontentloaded");
 
   return user;
