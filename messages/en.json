@@ -132,7 +132,7 @@
     "tilesStageConverting": "Preparing the data",
     "tilesNoteConverting": "Turning the download into shapes the map can draw.",
     "tilesStageBaking": "Building the map",
-    "tilesStageProgress": "({pct, number}%)",
+    "tilesStageWithProgress": "<live>{stage}</live> ({pct, number}%)",
     "tilesNoteBaking": "Almost there. The map opens by itself when this finishes.",
     "tilesStageCounting": "Checking the data size",
     "tilesStageCountingCold": "Still checking, large area",

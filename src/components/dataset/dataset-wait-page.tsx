@@ -25,26 +25,22 @@ const POLL_MS = 4000;
  * before the tiler has a job at all; the rest are the tiler's stages. No step
  * count is shown: a bake can be interrupted and start over.
  */
-const STAGE_NOTE = {
-  counting: "tilesNoteCounting",
-  queued: "tilesNoteQueued",
-  fetching: "tilesNoteFetching",
-  converting: "tilesNoteConverting",
-  baking: "tilesNoteBaking",
+const STAGES = {
+  counting: { name: "tilesStageCounting", note: "tilesNoteCounting" },
+  queued: { name: "tilesStageQueued", note: "tilesNoteQueued" },
+  fetching: { name: "tilesStageFetching", note: "tilesNoteFetching" },
+  converting: { name: "tilesStageConverting", note: "tilesNoteConverting" },
+  baking: { name: "tilesStageBaking", note: "tilesNoteBaking" },
 } as const;
-type Stage = keyof typeof STAGE_NOTE;
-
-const STAGE_NAME = {
-  counting: "tilesStageCounting",
-  queued: "tilesStageQueued",
-  fetching: "tilesStageFetching",
-  converting: "tilesStageConverting",
-  baking: "tilesStageBaking",
-} as const satisfies Record<Stage, string>;
+type Stage = keyof typeof STAGES;
 
 function isStage(value: unknown): value is Stage {
-  return typeof value === "string" && value in STAGE_NOTE;
+  return typeof value === "string" && value in STAGES;
 }
+
+// Only the stage name is announced. The percentage and the note's megabytes
+// change on every poll, and the bar already carries the percentage.
+const live = (chunks: ReactNode) => <span aria-live="polite">{chunks}</span>;
 
 type DatasetWaitPageProps = {
   /**
@@ -145,16 +141,20 @@ export function DatasetWaitPage({
     : null;
 
   const stageName = t(
-    stage === "counting" && cold ? "tilesStageCountingCold" : STAGE_NAME[stage]
+    stage === "counting" && cold ? "tilesStageCountingCold" : STAGES[stage].name
   );
-  const stageProgress =
+  const stageTitle =
     stage === "converting" || stage === "baking"
-      ? t("tilesStageProgress", { pct: Math.round(pct ?? 0) })
-      : null;
+      ? t.rich("tilesStageWithProgress", {
+          stage: stageName,
+          pct: Math.round(pct ?? 0),
+          live,
+        })
+      : live(stageName);
 
   // One plain sentence on what the stage does. The megabytes live here, not
   // in the label, so the label stays one short line.
-  const stageNote = t(STAGE_NOTE[stage], { mb: mb ?? 0 });
+  const stageNote = t(STAGES[stage].note, { mb: mb ?? 0 });
 
   const failure =
     mood === "timedOut"
@@ -180,12 +180,8 @@ export function DatasetWaitPage({
           !failure && (
             <div className="space-y-3">
               <ProgressBar value={pct} label={stageName} />
-              {/* Only the stage name is announced. The percentage and the
-                  note's megabytes change on every poll, and the bar already
-                  carries the percentage. */}
               <p className="text-lg font-semibold text-gray-900 tabular-nums">
-                <span aria-live="polite">{stageName}</span>
-                {stageProgress && ` ${stageProgress}`}
+                {stageTitle}
               </p>
               <p className="text-sm text-gray-600 tabular-nums">{stageNote}</p>
             </div>

@@ -3,7 +3,7 @@ import type { FeatureCollection } from "geojson";
 
 /** The area's outline, or undefined while loading or when it has none. */
 export function useAreaBoundary(areaId: number) {
-  const { data } = useQuery<FeatureCollection | null>({
+  const { data } = useQuery<FeatureCollection>({
     queryKey: ["area-boundary", areaId],
     queryFn: async () => {
       const response = await fetch(`/api/areas/${areaId}/boundary`);
@@ -16,5 +16,5 @@ export function useAreaBoundary(areaId: number) {
     // Each try can cost an Overpass geometry query.
     retry: 1,
   });
-  return data ?? undefined;
+  return data;
 }
