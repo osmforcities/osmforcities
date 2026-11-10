@@ -2,9 +2,8 @@
 
 import Map from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import type { FeatureCollection } from "geojson";
+import { useAreaBoundary } from "@/hooks/useAreaBoundary";
 import { AoiBoundaryLayer } from "./map/aoi-boundary-layer";
 import { MapZoomControl } from "@/components/ui/map-zoom-control";
 import { mapStyle } from "@/lib/map-tiles";
@@ -17,19 +16,7 @@ import { calculateBbox } from "@/lib/utils";
  */
 export function AreaBasemap({ areaId }: { areaId: number }) {
   const t = useTranslations("DatasetMap");
-  const { data: boundary } = useQuery<FeatureCollection | null>({
-    queryKey: ["area-boundary", areaId],
-    queryFn: async () => {
-      const response = await fetch(`/api/areas/${areaId}/boundary`);
-      // The route answers 404 for "no outline" and for an Overpass failure
-      // alike, so a failure gets one more try before the place stays empty.
-      if (!response.ok) throw new Error(String(response.status));
-      return response.json();
-    },
-    staleTime: Infinity,
-    // Each try can cost an Overpass geometry query.
-    retry: 1,
-  });
+  const boundary = useAreaBoundary(areaId);
   const bounds = boundary ? calculateBbox(boundary) : null;
 
   // Without an outline there is nowhere to frame the map, so the place stays

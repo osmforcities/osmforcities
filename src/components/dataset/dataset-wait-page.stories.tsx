@@ -256,8 +256,9 @@ export const BakingConverting: Story = {
   }),
   play: async ({ canvas }) => {
     await expect(
-      await canvas.findByText("Preparing the data (37%)")
+      await canvas.findByText("Preparing the data")
     ).toBeInTheDocument();
+    await expect(canvas.getByText("(37%)")).toBeInTheDocument();
     await waitFor(() =>
       expect(canvas.getByRole("progressbar")).toHaveAttribute(
         "aria-valuenow",
@@ -279,8 +280,9 @@ export const BakingTiles: Story = {
   }),
   play: async ({ canvas }) => {
     await expect(
-      await canvas.findByText("Building the map (62%)")
+      await canvas.findByText("Building the map")
     ).toBeInTheDocument();
+    await expect(canvas.getByText("(62%)")).toBeInTheDocument();
     // No step count: an interrupted bake starts over, so "N of 5" would go backwards
     await expect(canvas.queryByText(/Step \d of/)).not.toBeInTheDocument();
     // The bar starts indeterminate and gains its value on the first poll, so
@@ -300,8 +302,9 @@ export const BakingBeforeFirstPercentage: Story = {
   beforeEach: serveTilesStatus({ state: "pending", stage: "baking" }),
   play: async ({ canvas }) => {
     await expect(
-      await canvas.findByText("Building the map (0%)")
+      await canvas.findByText("Building the map")
     ).toBeInTheDocument();
+    await expect(canvas.getByText("(0%)")).toBeInTheDocument();
     await waitFor(() =>
       expect(canvas.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "0")
     );
@@ -314,8 +317,9 @@ export const BakeLandedArchivePulling: Story = {
   beforeEach: serveTilesStatus({ state: "pending", stage: "done" }),
   play: async ({ canvas }) => {
     await expect(
-      await canvas.findByText("Building the map (100%)")
+      await canvas.findByText("Building the map")
     ).toBeInTheDocument();
+    await expect(canvas.getByText("(100%)")).toBeInTheDocument();
     await waitFor(() =>
       expect(canvas.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "100")
     );
@@ -328,8 +332,9 @@ export const BakeDoneMapLoading: Story = {
   beforeEach: serveTilesStatus({ state: "done" }),
   play: async ({ canvas }) => {
     await expect(
-      await canvas.findByText("Building the map (100%)")
+      await canvas.findByText("Building the map")
     ).toBeInTheDocument();
+    await expect(canvas.getByText("(100%)")).toBeInTheDocument();
   },
 };
 

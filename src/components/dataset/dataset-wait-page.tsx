@@ -34,6 +34,14 @@ const STAGE_NOTE = {
 } as const;
 type Stage = keyof typeof STAGE_NOTE;
 
+const STAGE_NAME = {
+  counting: "tilesStageCounting",
+  queued: "tilesStageQueued",
+  fetching: "tilesStageFetching",
+  converting: "tilesStageConverting",
+  baking: "tilesStageBaking",
+} as const satisfies Record<Stage, string>;
+
 function isStage(value: unknown): value is Stage {
   return typeof value === "string" && value in STAGE_NOTE;
 }
@@ -136,16 +144,13 @@ export function DatasetWaitPage({
     ? Math.round(status.progress.bytes / (1024 * 1024))
     : null;
 
-  const stageLabel =
-    stage === "counting"
-      ? t(cold ? "tilesStageCountingCold" : "tilesStageCounting")
-      : stage === "fetching"
-        ? t("tilesStageFetching")
-        : stage === "converting"
-          ? t("tilesStageConverting", { pct: Math.round(pct ?? 0) })
-          : stage === "baking"
-            ? t("tilesStageBaking", { pct: Math.round(pct ?? 0) })
-            : t("tilesStageQueued");
+  const stageName = t(
+    stage === "counting" && cold ? "tilesStageCountingCold" : STAGE_NAME[stage]
+  );
+  const stageProgress =
+    stage === "converting" || stage === "baking"
+      ? t("tilesStageProgress", { pct: Math.round(pct ?? 0) })
+      : null;
 
   // One plain sentence on what the stage does. The megabytes live here, not
   // in the label, so the label stays one short line.
@@ -174,14 +179,13 @@ export function DatasetWaitPage({
         progress={
           !failure && (
             <div className="space-y-3">
-              <ProgressBar value={pct} label={stageLabel} />
-              {/* The label is announced, the long note is not: its megabytes
-                  change on every poll and would be read out in full each time. */}
-              <p
-                aria-live="polite"
-                className="text-lg font-semibold text-gray-900 tabular-nums"
-              >
-                {stageLabel}
+              <ProgressBar value={pct} label={stageName} />
+              {/* Only the stage name is announced. The percentage and the
+                  note's megabytes change on every poll, and the bar already
+                  carries the percentage. */}
+              <p className="text-lg font-semibold text-gray-900 tabular-nums">
+                <span aria-live="polite">{stageName}</span>
+                {stageProgress && ` ${stageProgress}`}
               </p>
               <p className="text-sm text-gray-600 tabular-nums">{stageNote}</p>
             </div>
