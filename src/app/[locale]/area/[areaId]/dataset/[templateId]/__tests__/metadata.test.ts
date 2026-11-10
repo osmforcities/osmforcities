@@ -22,16 +22,18 @@ vi.mock("next-intl/server", () => ({
 const lisbon = { name: "Lisboa", names: { en: "Lisbon", pt: "Lisboa" } } as unknown as Area;
 const pharmacies = {
   name: "Pharmacies",
+  isActive: true,
   description: "Shops where pharmacists sell medicines",
   translations: [{ locale: "pt-BR", name: "Farmácias", description: "Lojas que vendem medicamentos" }],
 };
 
-function metadataFor(templateId = "pharmacies") {
-  return generateMetadata({ params: Promise.resolve({ areaId: "5400890", templateId }) });
+function metadataFor(templateId = "pharmacies", areaId = "5400890") {
+  return generateMetadata({ params: Promise.resolve({ areaId, templateId }) });
 }
 
 describe("dataset page metadata", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.mocked(getAreaDetailsById).mockResolvedValue(lisbon);
     vi.mocked(resolveTemplate).mockResolvedValue(pharmacies as never);
   });
@@ -51,6 +53,12 @@ describe("dataset page metadata", () => {
   });
 
   it("leaves the layout defaults for an unknown template or area", async () => {
+    expect(await metadataFor("pharmacies", "-1")).toEqual({});
+    expect(getAreaDetailsById).not.toHaveBeenCalled();
+
+    vi.mocked(resolveTemplate).mockResolvedValue({ ...pharmacies, isActive: false } as never);
+    expect(await metadataFor()).toEqual({});
+
     vi.mocked(resolveTemplate).mockResolvedValue(null);
     expect(await metadataFor("not-a-template")).toEqual({});
 
