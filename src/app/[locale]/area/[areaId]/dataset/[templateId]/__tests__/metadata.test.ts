@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { ResolvingMetadata } from "next";
 import { resolveTemplate } from "@/lib/template-resolver";
 import { getAreaDetailsById } from "@/lib/nominatim";
+import { DEFAULT_SEO } from "@/lib/metadata";
 import type { Area } from "@/types/area";
 import { generateMetadata } from "../page";
 
@@ -25,15 +25,9 @@ const pharmacies = {
   description: "Shops where pharmacists sell medicines",
   translations: [{ locale: "pt-BR", name: "Farmácias", description: "Lojas que vendem medicamentos" }],
 };
-const layoutOpenGraph = {
-  openGraph: { images: [{ url: "/og-image.png" }], description: "Layout default" },
-};
 
 function metadataFor(templateId = "pharmacies") {
-  return generateMetadata(
-    { params: Promise.resolve({ areaId: "5400890", templateId }) },
-    Promise.resolve(layoutOpenGraph) as unknown as ResolvingMetadata
-  );
+  return generateMetadata({ params: Promise.resolve({ areaId: "5400890", templateId }) });
 }
 
 describe("dataset page metadata", () => {
@@ -43,22 +37,17 @@ describe("dataset page metadata", () => {
   });
 
   it("names the template and area in the locale, for the tab and the link preview", async () => {
-    expect(await metadataFor()).toEqual({
+    expect(await metadataFor()).toMatchObject({
       title: "Farmácias em Lisboa",
       description: "Lojas que vendem medicamentos",
-      openGraph: {
-        images: [{ url: "/og-image.png" }],
-        title: "Farmácias em Lisboa",
-        description: "Lojas que vendem medicamentos",
-      },
+      alternates: { canonical: expect.stringMatching(/\/pt-BR\/area\/5400890\/dataset\/pharmacies$/) },
+      openGraph: { title: "Farmácias em Lisboa", description: "Lojas que vendem medicamentos" },
     });
   });
 
-  it("keeps the layout description when the template has none", async () => {
+  it("uses the site description when the template has none", async () => {
     vi.mocked(resolveTemplate).mockResolvedValue({ ...pharmacies, description: null, translations: [] } as never);
-    const metadata = await metadataFor();
-    expect(metadata).not.toHaveProperty("description");
-    expect(metadata.openGraph?.description).toBe("Layout default");
+    expect((await metadataFor()).description).toBe(DEFAULT_SEO.description);
   });
 
   it("leaves the layout defaults for an unknown template or area", async () => {

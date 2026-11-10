@@ -1,4 +1,6 @@
-import type { Metadata, ResolvingMetadata } from "next";
+import type { Metadata } from "next";
+import type { Locale } from "@/i18n/routing";
+import { DEFAULT_SEO, getLocalizedMetadata } from "@/lib/metadata";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
@@ -367,10 +369,7 @@ async function AreaTemplateDatasetView({
   }
 }
 
-export async function generateMetadata(
-  { params }: DatasetPageProps,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
+export async function generateMetadata({ params }: DatasetPageProps): Promise<Metadata> {
   const { areaId, templateId } = await params;
   const osmRelationId = parseInt(areaId, 10);
   if (isNaN(osmRelationId) || !isValidTemplateIdentifier(templateId)) return {};
@@ -385,16 +384,9 @@ export async function generateMetadata(
   if (!template || !areaInfo) return {};
 
   const { name, description } = resolveTemplateForLocale(template, locale);
-  const title = t("datasetInArea", { dataset: name, area: resolveAreaName(areaInfo, locale) });
-  // A child openGraph replaces the layout's whole block, so its defaults are carried over
-  const { openGraph } = await parent;
-  return {
-    title,
-    ...(description && { description }),
-    openGraph: {
-      images: openGraph?.images,
-      title,
-      description: description ?? openGraph?.description ?? undefined,
-    },
-  };
+  return getLocalizedMetadata(locale as Locale, {
+    title: t("datasetInArea", { dataset: name, area: resolveAreaName(areaInfo, locale) }),
+    description: description ?? DEFAULT_SEO.description,
+    path: `/area/${osmRelationId}/dataset/${templateId}`,
+  });
 }
