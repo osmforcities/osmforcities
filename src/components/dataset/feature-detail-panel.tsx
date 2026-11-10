@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import type { Feature } from "geojson";
 import { AGE_TS_KEY, featureTs } from "@/lib/feature-age";
@@ -14,10 +14,6 @@ import {
   Column,
 } from "react-aria-components";
 
-const DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
-  dateStyle: "medium",
-});
-
 const KEY_CELL_CLASSES =
   "py-1.5 pr-3 text-sm font-medium text-gray-500 align-top whitespace-nowrap";
 const VALUE_CELL_CLASSES = "py-1.5 text-sm text-gray-800 break-all";
@@ -27,14 +23,22 @@ type FeatureDetailPanelProps = {
   onBack: () => void;
 };
 
-const INTERNAL_KEYS = new Set([AGE_TS_KEY, "uid"]);
-const METADATA_KEYS = new Set(["user", "timestamp", "version", "changeset"]);
+const HIDDEN_KEYS = new Set([
+  "id",
+  AGE_TS_KEY,
+  "uid",
+  "user",
+  "timestamp",
+  "version",
+  "changeset",
+]);
 
 export function FeatureDetailPanel({
   feature,
   onBack,
 }: FeatureDetailPanelProps) {
   const t = useTranslations("DatasetMap");
+  const format = useFormatter();
   const properties = feature.properties || {};
 
   // osmtogeojson outputs a combined "id" field like "node/12345" or "way/67890"
@@ -54,13 +58,7 @@ export function FeatureDetailPanel({
   Object.entries(properties)
     .sort(([a], [b]) => a.localeCompare(b))
     .forEach(([key, value]) => {
-      if (
-        key === "id" ||
-        key.startsWith("@") ||
-        INTERNAL_KEYS.has(key) ||
-        METADATA_KEYS.has(key)
-      )
-        return;
+      if (key.startsWith("@") || HIDDEN_KEYS.has(key)) return;
       if (key === "name") { name = String(value); return; }
       displayTags.push([key, String(value)]);
     });
@@ -75,7 +73,7 @@ export function FeatureDetailPanel({
     : null;
 
   const formattedDate = editedTs
-    ? DATE_FORMATTER.format(new Date(editedTs * 1000))
+    ? format.dateTime(new Date(editedTs * 1000), { dateStyle: "medium" })
     : null;
 
   return (

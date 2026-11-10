@@ -115,11 +115,8 @@ export const FromTile: Story = {
     onBack: fn(),
   },
   play: async ({ canvas }) => {
-    const editedOn = new Intl.DateTimeFormat(undefined, {
-      dateStyle: "medium",
-    }).format(new Date(TILE_TS * 1000));
     await expect(
-      canvas.getByText(`Last edited ${editedOn}`)
+      canvas.getByText("Last edited Jun 15, 2026")
     ).toBeInTheDocument();
     await expect(canvas.queryByText(/Last edited by/i)).not.toBeInTheDocument();
     await expect(canvas.getByText("bench")).toBeInTheDocument();
