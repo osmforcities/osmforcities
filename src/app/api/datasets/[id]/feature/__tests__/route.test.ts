@@ -1,95 +1,88 @@
-import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { trackEvent } from "@/lib/umami";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
-vi.mock("@/auth", () => ({
-  auth: vi.fn().mockResolvedValue({
-    user: { id: "test-admin", email: "admin@test.com", isAdmin: true },
-  }),
+vi.mock("@/auth", () => ({ auth: vi.fn() }));
+vi.mock("@/lib/db", () => ({ prisma: { $queryRaw: vi.fn() } }));
+vi.mock("@/lib/umami", () => ({
+  trackEvent: vi.fn(),
+  getClientInfo: vi.fn(),
 }));
 
 import { PUT } from "../route";
 
-// Skipped: reads real rows from the Playwright test DB (port 5433, seeded by
-// its global-setup), which the unit CI job does not have.
-describe.skip("PUT /api/datasets/[id]/feature", () => {
-  let testDatasetId: string;
-  let originalIsFeaturedValue: boolean | undefined;
+const isFeaturedById = new Map<string, boolean>();
 
-  beforeAll(async () => {
-    const datasets = await prisma.dataset.findMany({
-      take: 1,
-      select: { id: true, isFeatured: true },
-    });
+function toggleIsFeatured(_sql: TemplateStringsArray, id: string) {
+  if (!isFeaturedById.has(id)) return Promise.resolve([]);
+  isFeaturedById.set(id, !isFeaturedById.get(id));
+  return Promise.resolve([{ id, isFeatured: isFeaturedById.get(id) }]);
+}
 
-    if (datasets.length === 0) {
-      throw new Error("No datasets found in test database");
-    }
+const signInAs = (isAdmin: boolean) =>
+  vi.mocked(auth).mockResolvedValue({
+    user: { id: "user-1", email: "user@test.com", isAdmin },
+  } as never);
 
-    testDatasetId = datasets[0].id;
-    originalIsFeaturedValue = datasets[0].isFeatured;
+const call = (id: string) =>
+  PUT(
+    new NextRequest(`http://localhost:3000/api/datasets/${id}/feature`, {
+      method: "PUT",
+    }),
+    { params: Promise.resolve({ id }) }
+  );
+
+describe("PUT /api/datasets/[id]/feature", () => {
+  beforeEach(() => {
+    isFeaturedById.clear();
+    isFeaturedById.set("ds-1", false);
+    vi.mocked(prisma.$queryRaw).mockImplementation(toggleIsFeatured as never);
   });
 
-  afterAll(async () => {
-    if (testDatasetId && originalIsFeaturedValue !== undefined) {
-      await prisma.dataset.update({
-        where: { id: testDatasetId },
-        data: { isFeatured: originalIsFeaturedValue },
-      });
-    }
+  it("returns 403 for a non-admin and leaves the flag unchanged", async () => {
+    signInAs(false);
+
+    const res = await call("ds-1");
+
+    expect(res.status).toBe(403);
+    expect((await res.json()).error).toBe("Forbidden");
+    expect(isFeaturedById.get("ds-1")).toBe(false);
   });
 
-  it("should return 403 for non-admin users", async () => {
-    const { auth } = await import("@/auth");
-    vi.mocked(auth).mockResolvedValueOnce(null);
+  it("returns 403 when signed out", async () => {
+    vi.mocked(auth).mockResolvedValue(null as never);
 
-    const request = new NextRequest(
-      "http://localhost:3000/api/datasets/" + testDatasetId + "/feature",
-      { method: "PUT" }
+    const res = await call("ds-1");
+
+    expect(res.status).toBe(403);
+  });
+
+  it("returns 404 for a missing dataset", async () => {
+    signInAs(true);
+
+    const res = await call("missing");
+
+    expect(res.status).toBe(404);
+    expect((await res.json()).error).toBe("Dataset not found");
+  });
+
+  it("flips the flag for an admin, both ways", async () => {
+    signInAs(true);
+
+    const featured = await call("ds-1");
+    expect(featured.status).toBe(200);
+    expect(await featured.json()).toEqual({ id: "ds-1", isFeatured: true });
+    expect(vi.mocked(trackEvent).mock.lastCall?.[0]).toBe(
+      ANALYTICS_EVENTS.DATASET_FEATURED
     );
 
-    const response = await PUT(request, {
-      params: Promise.resolve({ id: testDatasetId }),
-    });
-
-    expect(response.status).toBe(403);
-    const body = await response.json();
-    expect(body.error).toBe("Forbidden");
-  });
-
-  it("should return 404 for non-existent dataset", async () => {
-    const request = new NextRequest(
-      "http://localhost:3000/api/datasets/invalid-id/feature",
-      { method: "PUT" }
+    const unfeatured = await call("ds-1");
+    expect(await unfeatured.json()).toEqual({ id: "ds-1", isFeatured: false });
+    expect(vi.mocked(trackEvent).mock.lastCall?.[0]).toBe(
+      ANALYTICS_EVENTS.DATASET_UNFEATURED
     );
-
-    const response = await PUT(request, {
-      params: Promise.resolve({ id: "invalid-id" }),
-    });
-
-    expect(response.status).toBe(404);
-    const body = await response.json();
-    expect(body.error).toBe("Dataset not found");
-  });
-
-  it("should toggle isFeatured field successfully", async () => {
-    const beforeUpdate = await prisma.dataset.findUnique({
-      where: { id: testDatasetId },
-      select: { isFeatured: true },
-    });
-
-    const request = new NextRequest(
-      "http://localhost:3000/api/datasets/" + testDatasetId + "/feature",
-      { method: "PUT" }
-    );
-
-    const response = await PUT(request, {
-      params: Promise.resolve({ id: testDatasetId }),
-    });
-
-    expect(response.status).toBe(200);
-    const body = await response.json();
-    expect(body.isFeatured).toBe(!beforeUpdate?.isFeatured);
-    expect(body.id).toBe(testDatasetId);
   });
 });
