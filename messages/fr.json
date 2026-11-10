@@ -438,6 +438,7 @@
     "key": "Clé",
     "value": "Valeur",
     "lastEditedBy": "Dernière modification par <link>{user}</link>",
+    "lastEditedOn": "Dernière modification le {date}",
     "mapLabel": "Carte interactive du jeu de données",
     "fullScreenMapLabel": "Carte interactive en plein écran du jeu de données",
     "areaBasemapLabel": "Carte de la zone, encore sans données",

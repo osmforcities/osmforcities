@@ -438,6 +438,7 @@
     "key": "Key",
     "value": "Value",
     "lastEditedBy": "Last edited by <link>{user}</link>",
+    "lastEditedOn": "Last edited {date}",
     "mapLabel": "Interactive map showing dataset",
     "fullScreenMapLabel": "Full screen interactive map showing dataset",
     "areaBasemapLabel": "Map of the area, with no data on it yet",

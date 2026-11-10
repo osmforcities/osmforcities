@@ -438,6 +438,7 @@
     "key": "Chave",
     "value": "Valor",
     "lastEditedBy": "Última edição por <link>{user}</link>",
+    "lastEditedOn": "Última edição em {date}",
     "mapLabel": "Mapa interativo mostrando conjunto de dados",
     "fullScreenMapLabel": "Mapa interativo em tela cheia mostrando conjunto de dados",
     "areaBasemapLabel": "Mapa da área, ainda sem dados",
