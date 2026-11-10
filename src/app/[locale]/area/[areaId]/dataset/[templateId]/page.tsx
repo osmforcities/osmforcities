@@ -1,3 +1,4 @@
+import type { Metadata, ResolvingMetadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
@@ -366,11 +367,34 @@ async function AreaTemplateDatasetView({
   }
 }
 
-export async function generateMetadata({ params }: DatasetPageProps) {
+export async function generateMetadata(
+  { params }: DatasetPageProps,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
   const { areaId, templateId } = await params;
+  const osmRelationId = parseInt(areaId, 10);
+  if (isNaN(osmRelationId) || !isValidTemplateIdentifier(templateId)) return {};
 
+  const locale = await getLocale();
+  const [template, areaInfo, t] = await Promise.all([
+    // The layout defaults stand in for a page that can't be named
+    resolveTemplate(templateId).catch(() => null),
+    getAreaDetailsById(osmRelationId, locale),
+    getTranslations("DatasetPage"),
+  ]);
+  if (!template || !areaInfo) return {};
+
+  const { name, description } = resolveTemplateForLocale(template, locale);
+  const title = t("datasetInArea", { dataset: name, area: resolveAreaName(areaInfo, locale) });
+  // A child openGraph replaces the layout's whole block, so its defaults are carried over
+  const { openGraph } = await parent;
   return {
-    title: `${templateId} Dataset in Area ${areaId} | OSM for Cities`,
-    description: `Explore ${templateId} dataset for area ${areaId} with interactive maps and data analysis tools.`,
+    title,
+    ...(description && { description }),
+    openGraph: {
+      images: openGraph?.images,
+      title,
+      description: description ?? openGraph?.description ?? undefined,
+    },
   };
 }
