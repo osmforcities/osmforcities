@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getTileJob, tilerEnabled } from "@/lib/tiler/client";
 import { reconcileDataset } from "@/lib/tiler/poll";
-import { isTooLarge } from "@/lib/dataset-retry";
 import { resumeCountProbeIfDue } from "@/lib/dataset-count-probe";
 
 /**
@@ -13,7 +12,7 @@ import { resumeCountProbeIfDue } from "@/lib/dataset-count-probe";
  * the cron: see reconcileDataset).
  *
  * Response: { state: "pending"|"done"|"failed"|"none",
- *             stage?, progress?, error?, tooLarge? }
+ *             stage?, progress? }
  */
 export async function GET(
   _request: NextRequest,
@@ -26,7 +25,6 @@ export async function GET(
       id: true,
       tilesJobId: true,
       tilesState: true,
-      tilesError: true,
       lastAttempted: true,
       consecutiveFailures: true,
     },
@@ -35,23 +33,18 @@ export async function GET(
     return NextResponse.json({ error: "Dataset not found" }, { status: 404 });
   }
 
-  const failedBody = (error: string | null) => ({
-    state: "failed" as const,
-    error,
-    tooLarge: isTooLarge(error),
-  });
+  // Raw tiler errors stay operator-only: the page reads them server-side.
+  const failedBody = { state: "failed" as const };
 
   if (dataset.tilesState === "counting") {
     return NextResponse.json(
       (await resumeCountProbeIfDue(dataset))
         ? { state: "pending", stage: "counting" }
-        : failedBody(null)
+        : failedBody
     );
   }
   if (dataset.tilesState === "done") return NextResponse.json({ state: "done" });
-  if (dataset.tilesState === "failed") {
-    return NextResponse.json(failedBody(dataset.tilesError));
-  }
+  if (dataset.tilesState === "failed") return NextResponse.json(failedBody);
   if (dataset.tilesState !== "pending" || !dataset.tilesJobId) {
     return NextResponse.json({ state: "none" });
   }
@@ -69,7 +62,7 @@ export async function GET(
       return NextResponse.json({ state: "done" });
     }
     if (result.outcome === "failed") {
-      return NextResponse.json(failedBody(result.error ?? null));
+      return NextResponse.json(failedBody);
     }
     return NextResponse.json({
       state: "pending",
