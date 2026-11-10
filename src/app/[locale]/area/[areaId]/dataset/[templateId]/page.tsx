@@ -41,6 +41,7 @@ import { TrackView } from "@/components/analytics/track-view";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { getAreaBoundary } from "@/lib/area-boundary";
 import { MAX_SAVES_PER_USER } from "@/lib/constants";
+import { getDatasetPath } from "@/lib/urls";
 
 export const revalidate = 3600;
 
@@ -125,6 +126,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
           datasetName={templateName}
           areaName={areaName}
           areaId={areaId}
+          returnTo={getDatasetPath({ locale, areaId: osmRelationId, templateId })}
         />
       </>
     );

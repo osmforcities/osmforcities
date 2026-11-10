@@ -7,6 +7,7 @@ import { getBaseUrl } from "@/lib/utils";
 import { type Locale } from "@/lib/email-i18n";
 import { buildMagicLinkEmail } from "@/lib/magic-link-email";
 import { EmailSchema } from "@/schemas/auth";
+import { safeReturnPath } from "@/lib/return-path";
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,7 +40,11 @@ export async function POST(request: NextRequest) {
     const verificationToken = await createVerificationToken(email);
 
     const baseUrl = getBaseUrl(request);
-    const magicLink = `${baseUrl}/api/auth/verify?token=${verificationToken.token}`;
+    const magicLinkUrl = new URL("/api/auth/verify", baseUrl);
+    magicLinkUrl.searchParams.set("token", verificationToken.token);
+    const returnTo = safeReturnPath(body?.returnTo);
+    if (returnTo !== "/") magicLinkUrl.searchParams.set("returnTo", returnTo);
+    const magicLink = magicLinkUrl.toString();
 
     // Get user's language preference, default to 'en'
     const userLocale = (user.language || "en") as Locale;
