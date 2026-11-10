@@ -3,9 +3,9 @@ import winston from "winston";
 const logLevel = process.env.LOG_LEVEL || (process.env.NODE_ENV === "production" ? "info" : "debug");
 
 // JSON serializes an Error as {}.
-const errorsInMetaAsStack = winston.format((info) => {
+const errorsInMetaAsPlainObjects = winston.format((info) => {
   for (const [key, value] of Object.entries(info)) {
-    if (value instanceof Error) info[key] = value.stack ?? value.message;
+    if (value instanceof Error) info[key] = { ...value, stack: value.stack ?? value.message };
   }
   return info;
 });
@@ -13,7 +13,7 @@ const errorsInMetaAsStack = winston.format((info) => {
 const logFormat = winston.format.combine(
   winston.format.timestamp({ format: "YYYY-MM-DDTHH:mm:ss.SSSZ" }),
   winston.format.errors({ stack: true }),
-  errorsInMetaAsStack(),
+  errorsInMetaAsPlainObjects(),
   process.env.NODE_ENV === "production"
     ? winston.format.json()
     : winston.format.combine(

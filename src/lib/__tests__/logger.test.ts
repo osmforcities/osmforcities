@@ -28,4 +28,13 @@ describe("createLogger", () => {
     expect(lines[0]).toContain("Error: boom");
     expect(lines[0]).toContain("logger.test.ts");
   });
+
+  it("keeps an Error's own fields, such as a Prisma code", () => {
+    logger.add(capture);
+    const error = Object.assign(new Error("Record not found"), { code: "P2025" });
+    createLogger("tiler").error("Bake ack failed", { error });
+
+    expect(lines[0]).toContain('"code":"P2025"');
+    expect(lines[0]).toContain("Error: Record not found");
+  });
 });
