@@ -1,5 +1,3 @@
-/** Sign-in is magic-link only; test auth reads the test-auth-session cookie (see test utils). */
-
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
