@@ -14,12 +14,12 @@ vi.mock("@/lib/umami", () => ({
 
 import { PUT } from "../route";
 
-const isFeaturedById = new Map<string, boolean>();
+let isFeatured: boolean;
 
 function toggleIsFeatured(_sql: TemplateStringsArray, id: string) {
-  if (!isFeaturedById.has(id)) return Promise.resolve([]);
-  isFeaturedById.set(id, !isFeaturedById.get(id));
-  return Promise.resolve([{ id, isFeatured: isFeaturedById.get(id) }]);
+  if (id !== "ds-1") return Promise.resolve([]);
+  isFeatured = !isFeatured;
+  return Promise.resolve([{ id, isFeatured }]);
 }
 
 const signInAs = (isAdmin: boolean) =>
@@ -37,8 +37,7 @@ const call = (id: string) =>
 
 describe("PUT /api/datasets/[id]/feature", () => {
   beforeEach(() => {
-    isFeaturedById.clear();
-    isFeaturedById.set("ds-1", false);
+    isFeatured = false;
     vi.mocked(prisma.$queryRaw).mockImplementation(toggleIsFeatured as never);
   });
 
@@ -49,7 +48,7 @@ describe("PUT /api/datasets/[id]/feature", () => {
 
     expect(res.status).toBe(403);
     expect((await res.json()).error).toBe("Forbidden");
-    expect(isFeaturedById.get("ds-1")).toBe(false);
+    expect(isFeatured).toBe(false);
   });
 
   it("returns 403 when signed out", async () => {
