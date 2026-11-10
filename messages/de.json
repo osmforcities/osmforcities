@@ -377,12 +377,12 @@
     "title": "Einstellungen",
     "language": "Sprache",
     "languageDescription": "Gilt für die gesamte Website und für die E-Mails, die du erhältst.",
-    "reports": "E-Mail-Berichte",
-    "reportsDescription": "Erhalte E-Mail-Benachrichtigungen, wenn sich deine gespeicherten Datensätze ändern."
+    "emails": "E-Mails",
+    "emailsDescription": "Erhalte eine E-Mail, wenn eine angeforderte Karte fertig ist, und einen Bericht über die Änderungen an deinen gespeicherten Datensätzen."
   },
   "PreferencesForm": {
-    "enableReports": "Berichte aktivieren",
-    "frequency": "Häufigkeit:",
+    "enableEmails": "Schick mir E-Mails zu meinen gespeicherten Datensätzen",
+    "reportFrequency": "Häufigkeit des Berichts",
     "daily": "Täglich",
     "weekly": "Wöchentlich",
     "language": "Sprache"

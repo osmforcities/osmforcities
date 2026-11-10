@@ -9,12 +9,14 @@ interface DatasetUpsellPageProps {
   datasetName: string;
   areaName: string;
   areaId: string;
+  returnTo: string;
 }
 
 export function DatasetUpsellPage({
   datasetName,
   areaName,
   areaId,
+  returnTo,
 }: DatasetUpsellPageProps) {
   const t = useTranslations("DatasetUpsell");
 
@@ -44,7 +46,9 @@ export function DatasetUpsellPage({
             })}
           </p>
 
-          <Link href="/enter" className="w-full">
+          <Link
+            href={{ pathname: "/enter", query: { returnTo } }}
+            className="w-full">
             <Button variant="primary" size="lg" className="w-full">
               {t("continueWithEmail")}
             </Button>
