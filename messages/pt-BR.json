@@ -119,19 +119,22 @@
     "signIn": "Entrar"
   },
   "DatasetPage": {
-    "tilesStageQueued": "Aguardando vaga no servidor",
-    "tilesStageFetching": "Buscando dados{mb, plural, =0 {} other { (# MB)}}",
-    "tilesStageConverting": "Convertendo elementos ({pct, number}%)",
-    "tilesStageBaking": "Gerando tiles do mapa ({pct, number}%)",
-    "tilesStageCounting": "Calculando o tamanho",
-    "tilesStageCountingCold": "Ainda calculando o tamanho, área grande",
-    "stepLine": "Etapa {step} de {total}",
+    "tilesStageQueued": "Aguardando na fila",
+    "tilesNoteQueued": "Outros mapas estão sendo gerados antes. Este começa assim que houver vaga.",
+    "tilesStageFetching": "Baixando dados do OpenStreetMap",
+    "tilesNoteFetching": "{mb, plural, =0 {} other {# MB até agora. }}O total só é conhecido quando o download termina, então áreas grandes podem demorar.",
+    "tilesStageConverting": "Preparando os dados",
+    "tilesNoteConverting": "Transformando o download em formas que o mapa consegue desenhar.",
+    "tilesStageBaking": "Montando o mapa",
+    "tilesNoteBaking": "Quase lá. O mapa abre sozinho quando terminar.",
+    "tilesStageCounting": "Verificando o tamanho dos dados",
+    "tilesStageCountingCold": "Ainda verificando, área grande",
+    "tilesNoteCounting": "Contando quantos elementos há nesta área.",
     "datasetInArea": "{dataset} em {area}",
     "stateBakeFailed": "Falha na geração.",
     "stateTooLarge": "Grande demais para gerar.",
     "stateNoData": "Ainda sem dados.",
     "stateCountTimedOut": "Os dados demoraram demais para carregar.",
-    "notifyTitle": "Me avisar por e-mail",
     "notifySub": "Salvar e receber e-mail quando ficar pronto",
     "notifySubIfAvailable": "Salvar e receber e-mail se ficar disponível",
     "notifySubIfMapped": "Salvar e receber e-mail se for mapeado",
@@ -184,7 +187,6 @@
     "fetchCadence": "Os conjuntos de dados são sincronizados uma vez por dia no OSM for Cities; este é o atraso atual em relação ao OpenStreetMap.",
     "downloadData": "Baixar Dados",
     "download": "Baixar",
-    "datasetTitle": "{template}",
     "invalidData": "Dados Inválidos",
     "invalidDataMessage": "O conjunto de dados contém dados GeoJSON inválidos.",
     "value": "Valor",
@@ -371,12 +373,12 @@
     "title": "Preferências",
     "language": "Idioma",
     "languageDescription": "Usado em todo o site e nos e-mails que você recebe.",
-    "reports": "Relatórios por e-mail",
-    "reportsDescription": "Receba atualizações por e-mail quando seus conjuntos de dados salvos tiverem alterações."
+    "emails": "E-mails",
+    "emailsDescription": "Receba um e-mail quando um mapa que você pediu estiver pronto, e um relatório das mudanças nos seus conjuntos de dados salvos."
   },
   "PreferencesForm": {
-    "enableReports": "Habilitar relatórios",
-    "frequency": "Frequência:",
+    "enableEmails": "Me envie e-mails sobre meus conjuntos de dados salvos",
+    "reportFrequency": "Frequência do relatório",
     "daily": "Diário",
     "weekly": "Semanal",
     "language": "Idioma"
@@ -432,6 +434,7 @@
     "lastEditedBy": "Última edição por <link>{user}</link>",
     "mapLabel": "Mapa interativo mostrando conjunto de dados",
     "fullScreenMapLabel": "Mapa interativo em tela cheia mostrando conjunto de dados",
+    "areaBasemapLabel": "Mapa da área, ainda sem dados",
     "loadingMap": "Carregando mapa...",
     "noDataAvailable": "Nenhum dado disponível. Os dados serão atualizados automaticamente quando você visitar esta página.",
     "noGeographicData": "Nenhum dado geográfico encontrado nos resultados do conjunto de dados.",
@@ -446,7 +449,7 @@
     "veryOldChanges": "> 90 dias atrás",
     "legendViewLabel": "Colorir por",
     "legendOther": "Outros",
-    "legendMissing": "Sem valor",
+    "legendMissing": "Não informado",
     "collapseLegend": "Ocultar legenda",
     "expandLegend": "Mostrar legenda"
   },
@@ -893,6 +896,10 @@
       "limited": "Limitado",
       "unknown": "Desconhecido"
     },
+    "lit": {
+      "24/7": "24 horas",
+      "automatic": "Com sensor de presença"
+    },
     "highway": {
       "motorway": "Via expressa",
       "trunk": "Via troncal",
@@ -901,7 +908,13 @@
       "tertiary": "Via terciária",
       "residential": "Rua residencial",
       "living_street": "Rua compartilhada",
-      "unclassified": "Via não classificada"
+      "unclassified": "Via não classificada",
+      "footway": "Via de pedestres",
+      "path": "Trilha",
+      "cycleway": "Ciclovia",
+      "pedestrian": "Calçadão",
+      "steps": "Escada",
+      "bridleway": "Caminho para cavalos"
     },
     "healthcare:speciality": {
       "general": "Clínica geral",
@@ -1165,7 +1178,9 @@
       "crossing": "Travessia",
       "traffic_island": "Ilha de refúgio",
       "access_aisle": "Faixa de acesso",
-      "link": "Conexão"
+      "link": "Conexão",
+      "alley": "Viela",
+      "steps": "Escada"
     },
     "sidewalk": {
       "both": "Ambos os lados",

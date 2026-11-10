@@ -30,7 +30,7 @@ import { INTERACTIVE_LAYER_IDS } from "./map/layers/layer-ids";
 import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
 import { MapZoomControl } from "@/components/ui/map-zoom-control";
-import { mapStyle } from "@/lib/map-tiles";
+import { mapStyle, BASEMAP_LABELS_ANCHOR } from "@/lib/map-tiles";
 import { ageLegendRow } from "./map/layers/map-style";
 import type { AgeCategory } from "@/lib/feature-age";
 import {
@@ -285,6 +285,7 @@ export const DatasetFullMap = forwardRef<
                 <Layer
                   id="highlight-fill"
                   type="fill"
+                  beforeId={BASEMAP_LABELS_ANCHOR}
                   filter={["==", "$type", "Polygon"]}
                   paint={{
                     "fill-color": "#0b4ad8",
@@ -294,6 +295,7 @@ export const DatasetFullMap = forwardRef<
                 <Layer
                   id="highlight-stroke"
                   type="line"
+                  beforeId={BASEMAP_LABELS_ANCHOR}
                   filter={["!=", "$type", "Point"]}
                   paint={{
                     "line-color": "#0b4ad8",
@@ -306,6 +308,7 @@ export const DatasetFullMap = forwardRef<
                 <Layer
                   id="highlight-point"
                   type="circle"
+                  beforeId={BASEMAP_LABELS_ANCHOR}
                   filter={["==", "$type", "Point"]}
                   paint={{
                     "circle-radius": 6,

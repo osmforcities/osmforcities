@@ -39,7 +39,7 @@ export function ProgressBar({ value, label }: ProgressBarProps) {
       aria-label={label}
       value={Math.round(percent)}
       isIndeterminate={!determinate}
-      className="h-2 w-full overflow-hidden rounded bg-gray-100"
+      className="h-3 w-full overflow-hidden rounded-full bg-gray-100"
     >
       {determinate ? (
         <div

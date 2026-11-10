@@ -66,26 +66,11 @@ describe("GET /api/datasets/[id]/tiles-status", () => {
     expect(getTileJob).not.toHaveBeenCalled();
   });
 
-  it("returns failed with tooLarge for a too_large-prefixed error", async () => {
+  it("returns failed without the operator-only tiler error", async () => {
     vi.mocked(prisma.dataset.findUnique).mockResolvedValue(
       row({ tilesState: "failed", tilesError: "too_large: out of memory" }) as never
     );
-    expect(await (await get()).json()).toEqual({
-      state: "failed",
-      error: "too_large: out of memory",
-      tooLarge: true,
-    });
-  });
-
-  it("returns failed without tooLarge for other errors", async () => {
-    vi.mocked(prisma.dataset.findUnique).mockResolvedValue(
-      row({ tilesState: "failed", tilesError: "boom" }) as never
-    );
-    expect(await (await get()).json()).toEqual({
-      state: "failed",
-      error: "boom",
-      tooLarge: false,
-    });
+    expect(await (await get()).json()).toEqual({ state: "failed" });
   });
 
   it("returns none when no tile job exists", async () => {
@@ -113,11 +98,7 @@ describe("GET /api/datasets/[id]/tiles-status", () => {
     it("reports a failed probe so the page swaps to the timed-out screen", async () => {
       vi.mocked(prisma.dataset.findUnique).mockResolvedValue(counting as never);
       vi.mocked(resumeCountProbeIfDue).mockResolvedValueOnce(false);
-      expect(await (await get()).json()).toEqual({
-        state: "failed",
-        error: null,
-        tooLarge: false,
-      });
+      expect(await (await get()).json()).toEqual({ state: "failed" });
     });
   });
 
@@ -140,7 +121,7 @@ describe("GET /api/datasets/[id]/tiles-status", () => {
     );
   });
 
-  it("reports the reconcile's error when it fails the job", async () => {
+  it("reports failed without the reconcile's error when it fails the job", async () => {
     vi.mocked(prisma.dataset.findUnique).mockResolvedValue(row() as never);
     vi.mocked(getTileJob).mockResolvedValue({
       id: "ds-1-100",
@@ -151,11 +132,7 @@ describe("GET /api/datasets/[id]/tiles-status", () => {
       error: "too_large: refused",
     });
 
-    expect(await (await get()).json()).toEqual({
-      state: "failed",
-      error: "too_large: refused",
-      tooLarge: true,
-    });
+    expect(await (await get()).json()).toEqual({ state: "failed" });
   });
 
   it("passes stage and progress through for a running job", async () => {

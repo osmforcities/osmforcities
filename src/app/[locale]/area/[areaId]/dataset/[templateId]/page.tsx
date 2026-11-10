@@ -41,6 +41,7 @@ import { TrackView } from "@/components/analytics/track-view";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { getAreaBoundary } from "@/lib/area-boundary";
 import { MAX_SAVES_PER_USER } from "@/lib/constants";
+import { getDatasetPath } from "@/lib/urls";
 
 export const revalidate = 3600;
 
@@ -125,6 +126,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
           datasetName={templateName}
           areaName={areaName}
           areaId={areaId}
+          returnTo={getDatasetPath({ locale, areaId: osmRelationId, templateId })}
         />
       </>
     );
@@ -145,10 +147,10 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
             templateName={templateName}
             areaName={areaName}
             categoryHref={categoryHref}
+            areaId={osmRelationId}
             notify={
               tilesLane && <NotifyWhenReadyButton offer="ready" disabled />
             }
-            stepsShown={tilesLane}
           />
         )
       }
@@ -235,6 +237,7 @@ async function AreaTemplateDatasetView({
             templateName={templateName}
             areaName={fallbackAreaName}
             categoryHref={categoryHref}
+            areaId={areaId}
             notify={notify("available")}
           />
         );
@@ -246,6 +249,7 @@ async function AreaTemplateDatasetView({
           templateName={templateName}
           areaName={fallbackAreaName}
           categoryHref={categoryHref}
+          areaId={areaId}
           notify={notify("ready")}
         />
       );
@@ -272,6 +276,7 @@ async function AreaTemplateDatasetView({
           {trackDetailView}
           <DatasetNoMapPage
             categoryHref={categoryHref}
+            areaId={areaId}
             title={datasetT("datasetInArea", {
               dataset: dataset.template.name,
               area: areaName,
@@ -309,6 +314,7 @@ async function AreaTemplateDatasetView({
           templateName={templateName}
           areaName={fallbackAreaName}
           categoryHref={categoryHref}
+          areaId={areaId}
         />
       );
     }
@@ -320,6 +326,7 @@ async function AreaTemplateDatasetView({
           templateName={templateName}
           areaName={fallbackAreaName}
           categoryHref={categoryHref}
+          areaId={areaId}
         />
       );
     }

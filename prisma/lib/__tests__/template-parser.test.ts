@@ -888,6 +888,26 @@ describe("template-parser", () => {
     expect(result.templates.find((t) => t.id === "buildings")?.defaultView).toBe("building");
   });
 
+  it("templates.yml makes car-free-paths a standalone pedestrian template that opens on the way type view", () => {
+    const result = parseTemplates(loadTemplatesYaml("./prisma"));
+    const carFreePaths = result.templates.find((t) => t.id === "car-free-paths");
+    for (const wayType of ["footway", "path", "cycleway", "pedestrian", "steps", "bridleway"]) {
+      expect(carFreePaths?.overpassQuery).toContain(`way["highway"="${wayType}"]`);
+    }
+    expect(carFreePaths?.overpassQuery).not.toMatch(/"highway"="(living_street|track)"/);
+    expect(carFreePaths?.category).toBe("pedestrian");
+    expect(carFreePaths?.parent).toBeUndefined();
+    expect(carFreePaths?.filterableTags[0]).toBe("highway");
+    expect(carFreePaths?.defaultView).toBe("highway");
+  });
+
+  it("templates.yml includes pedestrian streets in footways, cycleways stay out", () => {
+    const result = parseTemplates(loadTemplatesYaml("./prisma"));
+    const query = result.templates.find((t) => t.id === "footways")?.overpassQuery;
+    expect(query).toContain('way["highway"="pedestrian"]');
+    expect(query).not.toContain('"highway"="cycleway"');
+  });
+
   it("templates.yml lists valid common templates", () => {
     const result = parseTemplates(loadTemplatesYaml("./prisma"));
     expect(result.errors).toEqual([]);

@@ -19,6 +19,12 @@ vi.mock("@/lib/dataset-snapshot", async (importOriginal) => ({
   fetchDatasetSnapshot: vi.fn(),
 }));
 
+const tilerLog = vi.hoisted(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn() }));
+vi.mock("@/lib/logger", () => ({
+  createLogger: (context: string) =>
+    context === "tiler" ? tilerLog : { error: vi.fn(), warn: vi.fn(), info: vi.fn() },
+}));
+
 vi.mock("@/lib/umami", () => ({
   trackEvent: vi.fn().mockResolvedValue(undefined),
 }));
@@ -194,19 +200,16 @@ describe("POST /api/tasks/update-datasets", () => {
   it("skips the tick without touching any counter when the tiler is down", async () => {
     vi.mocked(tilerEnabled).mockReturnValue(true);
     vi.mocked(pingTiler).mockResolvedValue(false);
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-
     const res = await call();
     const body = await res.json();
 
     expect(res.status).toBe(200);
     expect(body.data.tilerUnreachable).toBe(true);
-    expect(warn).toHaveBeenCalledOnce();
+    expect(tilerLog.warn).toHaveBeenCalledOnce();
     expect(fetchDatasetSnapshot).not.toHaveBeenCalled();
     expect(prisma.dataset.update).not.toHaveBeenCalled();
     // Reconcile of already-pending bakes still runs.
     expect(pollPendingTileJobs).toHaveBeenCalledOnce();
-    warn.mockRestore();
   });
 
   it("still yields the slot when the size check times out", async () => {

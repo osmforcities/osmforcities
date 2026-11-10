@@ -42,7 +42,7 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 **Tiler**: The service that turns a Template into a map archive. The only thing that fetches full Datasets from Overpass. Code: [osmforcities/overpass-pmtiler](https://github.com/osmforcities/overpass-pmtiler). _Avoid:_ baker, pmtiler, tile server.
 
-**Bake**: One run of the tiler for one Dataset: queued, fetching, converting, baking, then done or failed. _Avoid:_ job (in prose), processing, build.
+**Bake**: One run of the tiler for one Dataset: queued, fetching, converting, baking, then done or failed. _Avoid:_ job (in prose), processing, build. Exception: UI copy shown to visitors may say "building the map", since "bake" is jargon to them. Code, docs and commits keep "bake".
 
 **Archive**: The single map file a bake produces. Browsers read only the part they are looking at. _Avoid:_ tiles file, PMTiles (the format, not the thing), tileset.
 

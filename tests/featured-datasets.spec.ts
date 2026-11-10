@@ -76,6 +76,38 @@ test.describe.serial("Featured datasets", () => {
     await expect(page.getByRole("heading", UPSELL_HEADING)).toBeVisible();
   });
 
+  test("magic-link sign-in from the upsell returns to the dataset", async ({ page }) => {
+    const prisma = new PrismaClient();
+    const user = await createTestUser(prisma);
+
+    try {
+      await page.goto(NON_FEATURED_PATH);
+      await page.getByRole("link", { name: "Continue with email" }).click();
+      await expect(page).toHaveURL(/\/en\/enter\?returnTo=/);
+
+      await page.getByPlaceholder("Email").fill(user.email);
+      const sent = page.waitForResponse("**/api/auth/send-magic-link");
+      await page.getByRole("button", { name: "Continue" }).click();
+      expect(JSON.parse((await sent).request().postData()!)).toMatchObject({
+        returnTo: NON_FEATURED_PATH,
+      });
+      await expect(page.getByText("Check your email")).toBeVisible();
+
+      // Email is off in e2e: rebuild the link the send route mails
+      const { token } = await prisma.verificationToken.findFirstOrThrow({
+        where: { identifier: user.email },
+      });
+      const link = new URLSearchParams({ token, returnTo: NON_FEATURED_PATH });
+      await page.goto(`/api/auth/verify?${link}`);
+
+      await expect(page).toHaveURL(new RegExp(`${NON_FEATURED_PATH}$`));
+      await expect(page.locator(DATASET_VIEW)).toBeVisible();
+    } finally {
+      await prisma.$disconnect();
+      await cleanupTestUser(user.id);
+    }
+  });
+
   test("non-featured dataset is fully accessible (logged in)", async ({ page }) => {
     const prisma = new PrismaClient();
     const user = await createTestUser(prisma);

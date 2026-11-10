@@ -119,19 +119,22 @@
     "signIn": "Sign In"
   },
   "DatasetPage": {
-    "tilesStageQueued": "Waiting for a free slot",
-    "tilesStageFetching": "Fetching data{mb, plural, =0 {} other { (# MB)}}",
-    "tilesStageConverting": "Converting features ({pct, number}%)",
-    "tilesStageBaking": "Baking map tiles ({pct, number}%)",
-    "tilesStageCounting": "Calculating size",
-    "tilesStageCountingCold": "Still calculating size, large area",
-    "stepLine": "Step {step} of {total}",
+    "tilesStageQueued": "Waiting in line",
+    "tilesNoteQueued": "Other maps are being built first. This one starts as soon as there is room.",
+    "tilesStageFetching": "Downloading OpenStreetMap data",
+    "tilesNoteFetching": "{mb, plural, =0 {} other {# MB so far. }}The total is only known when the download ends, so large areas can take a while.",
+    "tilesStageConverting": "Preparing the data",
+    "tilesNoteConverting": "Turning the download into shapes the map can draw.",
+    "tilesStageBaking": "Building the map",
+    "tilesNoteBaking": "Almost there. The map opens by itself when this finishes.",
+    "tilesStageCounting": "Checking the data size",
+    "tilesStageCountingCold": "Still checking, large area",
+    "tilesNoteCounting": "Counting how many features this area has.",
     "datasetInArea": "{dataset} in {area}",
     "stateBakeFailed": "Bake failed.",
     "stateTooLarge": "Too large to bake.",
     "stateNoData": "No data yet.",
     "stateCountTimedOut": "The data took too long to load.",
-    "notifyTitle": "Notify me by email",
     "notifySub": "Save it and get an email when it's ready",
     "notifySubIfAvailable": "Save it and get an email if it becomes available",
     "notifySubIfMapped": "Save it and get an email if it gets mapped",
@@ -184,7 +187,6 @@
     "fetchCadence": "Datasets are synced once a day in OSM for Cities; this is the current delay relative to OpenStreetMap.",
     "downloadData": "Download Data",
     "download": "Download",
-    "datasetTitle": "{template}",
     "invalidData": "Invalid Data",
     "invalidDataMessage": "The dataset contains invalid GeoJSON data.",
     "value": "Value",
@@ -371,12 +373,12 @@
     "title": "Preferences",
     "language": "Language",
     "languageDescription": "Used across the site and in the emails you receive.",
-    "reports": "Email reports",
-    "reportsDescription": "Receive email updates when your saved datasets have changes."
+    "emails": "Emails",
+    "emailsDescription": "Get an email when a map you asked for is ready, and a report of changes to your saved datasets."
   },
   "PreferencesForm": {
-    "enableReports": "Enable reports",
-    "frequency": "Frequency:",
+    "enableEmails": "Email me about my saved datasets",
+    "reportFrequency": "Report frequency",
     "daily": "Daily",
     "weekly": "Weekly",
     "language": "Language"
@@ -432,6 +434,7 @@
     "lastEditedBy": "Last edited by <link>{user}</link>",
     "mapLabel": "Interactive map showing dataset",
     "fullScreenMapLabel": "Full screen interactive map showing dataset",
+    "areaBasemapLabel": "Map of the area, with no data on it yet",
     "loadingMap": "Loading map...",
     "noDataAvailable": "No data available. Data will be automatically refreshed when you visit this page.",
     "noGeographicData": "No geographic data found in the dataset results.",
@@ -446,7 +449,7 @@
     "veryOldChanges": "> 90 days ago",
     "legendViewLabel": "Color by",
     "legendOther": "Other",
-    "legendMissing": "Missing",
+    "legendMissing": "Not specified",
     "collapseLegend": "Hide legend",
     "expandLegend": "Show legend"
   },
@@ -884,6 +887,10 @@
       "limited": "Limited",
       "unknown": "Unknown"
     },
+    "lit": {
+      "24/7": "24 hours",
+      "automatic": "Motion-activated"
+    },
     "highway": {
       "motorway": "Motorway",
       "trunk": "Trunk road",
@@ -892,7 +899,13 @@
       "tertiary": "Tertiary road",
       "residential": "Residential street",
       "living_street": "Living street",
-      "unclassified": "Unclassified road"
+      "unclassified": "Unclassified road",
+      "footway": "Footway",
+      "path": "Path",
+      "cycleway": "Cycleway",
+      "pedestrian": "Pedestrian street",
+      "steps": "Steps",
+      "bridleway": "Bridleway"
     },
     "healthcare:speciality": {
       "general": "General practice",
@@ -1156,7 +1169,9 @@
       "crossing": "Crossing",
       "traffic_island": "Traffic island",
       "access_aisle": "Access aisle",
-      "link": "Link"
+      "link": "Link",
+      "alley": "Alley",
+      "steps": "Steps"
     },
     "sidewalk": {
       "both": "Both sides",

@@ -94,3 +94,28 @@ export const ShowsTranslatedError: Story = {
     await expect(await canvas.findByText('Enter a valid email address.')).toBeInTheDocument();
   },
 };
+
+export const SendsReturnPath: Story = {
+  beforeEach: () => {
+    clearCookie();
+    const original = window.location.href;
+    const url = new URL(original);
+    url.searchParams.set('returnTo', '/en/area/271110/dataset/drinking-water');
+    window.history.replaceState(null, '', url);
+    const restoreFetch = stubFetch(200, { message: 'ok' });
+    return () => {
+      restoreFetch();
+      window.history.replaceState(null, '', original);
+    };
+  },
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.type(canvas.getByPlaceholderText('Email'), 'new@example.com');
+    await userEvent.click(canvas.getByRole('button', { name: 'Continue' }));
+    await expect(await canvas.findByText('Check your email')).toBeInTheDocument();
+    await expect(sentBody()).toEqual({
+      email: 'new@example.com',
+      remember: false,
+      returnTo: '/en/area/271110/dataset/drinking-water',
+    });
+  },
+};

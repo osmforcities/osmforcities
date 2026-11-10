@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { ProgressBar } from "@/components/ui/progress-bar";
@@ -21,21 +21,21 @@ type TilesStatus = {
 const POLL_MS = 4000;
 
 /**
- * The steps a person waits through, in order. Counting is the app's own size
- * probe, before the tiler has a job at all; the rest are the tiler's stages.
+ * The stages a person waits through. Counting is the app's own size probe,
+ * before the tiler has a job at all; the rest are the tiler's stages. No step
+ * count is shown: a bake can be interrupted and start over.
  */
-const STEPS = {
-  counting: 1,
-  queued: 2,
-  fetching: 3,
-  converting: 4,
-  baking: 5,
+const STAGES = {
+  counting: { name: "tilesStageCounting", note: "tilesNoteCounting" },
+  queued: { name: "tilesStageQueued", note: "tilesNoteQueued" },
+  fetching: { name: "tilesStageFetching", note: "tilesNoteFetching" },
+  converting: { name: "tilesStageConverting", note: "tilesNoteConverting" },
+  baking: { name: "tilesStageBaking", note: "tilesNoteBaking" },
 } as const;
-type Stage = keyof typeof STEPS;
-const TOTAL_STEPS = 5;
+type Stage = keyof typeof STAGES;
 
 function isStage(value: unknown): value is Stage {
-  return typeof value === "string" && value in STEPS;
+  return typeof value === "string" && value in STAGES;
 }
 
 type DatasetWaitPageProps = {
@@ -46,6 +46,7 @@ type DatasetWaitPageProps = {
   datasetId?: string;
   templateName: string;
   areaName: string;
+  areaId: number;
   categoryHref: string;
   /**
    * Counting is the probe before any bake; baking polls the tiler.
@@ -58,8 +59,6 @@ type DatasetWaitPageProps = {
   coldAfterMs?: number;
   /** The save-and-email button. Nothing renders in its place without it. */
   notify?: ReactNode;
-  /** Off the tiles-only lane the count is the only step, so there are no steps to number. */
-  stepsShown?: boolean;
 };
 
 /**
@@ -73,13 +72,14 @@ export function DatasetWaitPage({
   datasetId,
   templateName,
   areaName,
+  areaId,
   categoryHref,
   mood,
   coldAfterMs = COUNT_REQUEST_TIMEOUT_MS,
   notify,
-  stepsShown = true,
 }: DatasetWaitPageProps) {
   const t = useTranslations("DatasetPage");
+  const format = useFormatter();
   const router = useRouter();
   const baking = mood === "baking";
   const [cold, setCold] = useState(false);
@@ -137,16 +137,17 @@ export function DatasetWaitPage({
     ? Math.round(status.progress.bytes / (1024 * 1024))
     : null;
 
-  const stageLabel =
-    stage === "counting"
-      ? t(cold ? "tilesStageCountingCold" : "tilesStageCounting")
-      : stage === "fetching"
-        ? t("tilesStageFetching", { mb: mb ?? 0 })
-        : stage === "converting"
-          ? t("tilesStageConverting", { pct: Math.round(pct ?? 0) })
-          : stage === "baking"
-            ? t("tilesStageBaking", { pct: Math.round(pct ?? 0) })
-            : t("tilesStageQueued");
+  const stageName = t(
+    stage === "counting" && cold ? "tilesStageCountingCold" : STAGES[stage].name
+  );
+  const stagePercent =
+    stage === "converting" || stage === "baking"
+      ? format.number(Math.round(pct ?? 0) / 100, { style: "percent" })
+      : null;
+
+  // One plain sentence on what the stage does. The megabytes live here, not
+  // in the label, so the label stays one short line.
+  const stageNote = t(STAGES[stage].note, { mb: mb ?? 0 });
 
   const failure =
     mood === "timedOut"
@@ -164,24 +165,25 @@ export function DatasetWaitPage({
     <div data-testid={`dataset-${mood}-page`}>
       <DatasetNoMapPage
         categoryHref={categoryHref}
-        tone={failure ? "warning" : "processing"}
+        areaId={areaId}
+        tone={failure ? "warning" : "neutral"}
         title={t("datasetInArea", { dataset: templateName, area: areaName })}
         lead={failure?.lead}
-        // The stage label and step say everything a waiting person needs;
-        // a sentence under them only repeated it.
         progress={
           !failure && (
-            <div className="space-y-2" aria-live="polite">
-              <p className="text-sm text-gray-900">{stageLabel}</p>
-              <ProgressBar value={pct} label={stageLabel} />
-              {stepsShown && (
-                <p className="text-sm text-gray-500">
-                  {t("stepLine", {
-                    step: String(STEPS[stage]),
-                    total: String(TOTAL_STEPS),
-                  })}
-                </p>
-              )}
+            <div className="space-y-3">
+              <ProgressBar value={pct} label={stageName} />
+              {/* Only the stage name is announced. The percentage and the
+                  note's megabytes change on every poll, and the bar already
+                  carries the percentage. The live span stays mounted across
+                  stages, a freshly mounted one is not announced. */}
+              <p className="text-lg font-semibold text-gray-900 tabular-nums">
+                <span aria-live="polite">{stageName}</span>
+                {stagePercent && (
+                  <span className="ms-2 text-gray-500">{stagePercent}</span>
+                )}
+              </p>
+              <p className="text-sm text-gray-600 tabular-nums">{stageNote}</p>
             </div>
           )
         }

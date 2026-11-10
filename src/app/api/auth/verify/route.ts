@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { findTokenUser, signIn } from "@/auth";
 import { getBaseUrl } from "@/lib/utils";
+import { safeReturnPath } from "@/lib/return-path";
 import { prisma } from "@/lib/db";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
@@ -37,8 +38,8 @@ export async function GET(request: NextRequest) {
 
     await signIn("magic-link", { token, redirect: false });
 
-    const redirectUrl = new URL("/", baseUrl);
-    return NextResponse.redirect(redirectUrl);
+    const returnTo = safeReturnPath(searchParams.get("returnTo"));
+    return NextResponse.redirect(new URL(returnTo, baseUrl));
   } catch {
     // Use baseUrl for error redirect as well
     return NextResponse.redirect(

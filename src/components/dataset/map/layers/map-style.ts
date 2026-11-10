@@ -14,8 +14,8 @@ export type MapStyleKnobs = {
   // Exponential interpolation base; 1.5 approximates ground scaling (true
   // scale doubles per zoom, base 2 gets comically fat at z18)
   base: number;
-  // Translucent white wash over the raster basemap so data layers stay the
-  // most saturated thing on screen (ciclomapa-style figure/ground)
+  // Translucent white wash over the basemap so data layers stay the most
+  // saturated thing on screen (ciclomapa-style figure/ground)
   basemapWashOpacity: number;
   colors: AgeCategoryColors;
   point: {
@@ -47,7 +47,7 @@ export type MapStyleKnobs = {
 
 export const DEFAULT_STYLE_KNOBS: MapStyleKnobs = {
   base: 1.5,
-  basemapWashOpacity: 0.4,
+  basemapWashOpacity: 0.1,
   // Viridis picks, dark end = recent. Multi-hue and colorblind safe; every
   // step keeps full chroma so no category washes into the muted basemap.
   // Chosen over single-hue ramps (BluGrn/teal) whose pale light end made

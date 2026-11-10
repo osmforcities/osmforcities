@@ -5,9 +5,7 @@ import {
   ApiResponse,
   RefreshResponse,
   UpdateDatasetResponse,
-  DatasetsResponse,
   DatasetResponse,
-  DatasetsResponseSchema,
   DatasetResponseSchema,
   SaveResponseSchema,
   RefreshResponseSchema,
@@ -22,16 +20,8 @@ export function useDatasetActions() {
   const [isLoading, setIsLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const getDatasets = async (): Promise<DatasetsResponse> => {
-    return apiClient.get("/api/datasets", DatasetsResponseSchema);
-  };
-
   const getDataset = async (id: string): Promise<DatasetResponse> => {
     return apiClient.get(`/api/datasets/${id}`, DatasetResponseSchema);
-  };
-
-  const getPublicDatasets = async (): Promise<DatasetsResponse> => {
-    return apiClient.get("/api/datasets/public", DatasetsResponseSchema);
   };
 
   const saveDataset = async (
@@ -194,9 +184,7 @@ export function useDatasetActions() {
   };
 
   return {
-    getDatasets,
     getDataset,
-    getPublicDatasets,
 
     saveDataset,
     unsaveDataset,

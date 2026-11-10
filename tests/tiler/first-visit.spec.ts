@@ -40,7 +40,7 @@ test.describe("First visit to a dataset on the tiles-only lane", () => {
     await page.goto(PAGE);
 
     const counting = page.getByTestId("dataset-counting-page");
-    await expect(counting).toContainText("Calculating size");
+    await expect(counting).toContainText("Checking the data size");
     await counting
       .getByRole("button", { name: /Save it and get an email when it's ready/ })
       .click();
@@ -73,7 +73,7 @@ test.describe("First visit to a dataset on the tiles-only lane", () => {
     page.on("load", () => (reloaded = true));
     await mockTilerControl(page, { countHeld: false });
     const baking = page.getByTestId("dataset-baking-page");
-    await expect(baking).toContainText("Waiting for a free slot");
+    await expect(baking).toContainText("Waiting in line");
     await expect(page.getByRole("status")).toContainText(CONFIRMED);
 
     const { tilesJobId } = await readDataset();

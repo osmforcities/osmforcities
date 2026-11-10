@@ -29,6 +29,9 @@ export default defineConfig({
             storybookScript: 'pnpm storybook --ci',
           }),
         ],
+        // Found late on a cold cache, this makes Vite reload mid-run and fail
+        // every story in the file that first imports it.
+        optimizeDeps: { include: ['react-map-gl/maplibre'] },
         test: {
           name: 'storybook',
           browser: {

@@ -81,7 +81,7 @@ export function DatasetInteractiveSection({
                   {t("back")}
                 </Link>
               </div>
-              <DatasetInfoPanel dataset={dataset} />
+              <DatasetInfoPanel dataset={dataset} areaName={areaName} />
               {/* Metadata chip row: category facet (olive) + freshness chips
                   (edited, fetched) sharing one line below the title. */}
               <div className="mt-2 flex flex-wrap items-center gap-1.5">

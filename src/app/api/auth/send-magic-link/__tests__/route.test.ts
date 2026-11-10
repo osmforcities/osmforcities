@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { sendEmail } from "@/lib/email";
 import { isMagicLinkRateLimited } from "@/lib/magic-link-rate-limit";
 import { LAST_EMAIL_COOKIE } from "@/lib/last-email-cookie";
+import { buildMagicLinkEmail } from "@/lib/magic-link-email";
 
 vi.mock("@/auth", () => ({
   findUserByEmail: vi.fn().mockResolvedValue({ id: "user-1", language: "en" }),
@@ -92,4 +93,39 @@ describe("POST /api/auth/send-magic-link last-email cookie", () => {
       expect(res.status).toBe(400);
     }
   });
+});
+
+describe("POST /api/auth/send-magic-link return path", () => {
+  beforeEach(() => {
+    vi.mocked(isMagicLinkRateLimited).mockResolvedValue(false);
+    vi.mocked(sendEmail).mockResolvedValue(undefined as never);
+    vi.mocked(buildMagicLinkEmail).mockClear();
+  });
+
+  const sentLink = async (returnTo: unknown) => {
+    await POST(
+      new NextRequest("http://localhost:3000/api/auth/send-magic-link", {
+        method: "POST",
+        body: JSON.stringify({ email: "user@example.com", returnTo }),
+      })
+    );
+    return new URL(vi.mocked(buildMagicLinkEmail).mock.calls[0][1]);
+  };
+
+  it("carries a same-site path in the magic link", async () => {
+    const link = await sentLink("/pt-BR/area/1/dataset/bus-stops");
+    expect(link.pathname).toBe("/api/auth/verify");
+    expect(link.searchParams.get("token")).toBe("tok");
+    expect(link.searchParams.get("returnTo")).toBe(
+      "/pt-BR/area/1/dataset/bus-stops"
+    );
+  });
+
+  it.each([undefined, "//evil.com", "https://evil.com"])(
+    "leaves the return path out for %j",
+    async (returnTo) => {
+      const link = await sentLink(returnTo);
+      expect(link.searchParams.has("returnTo")).toBe(false);
+    }
+  );
 });

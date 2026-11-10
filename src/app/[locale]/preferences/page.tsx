@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "@/i18n/navigation";
-import { LanguageForm, ReportsForm } from "./preferences-form";
+import { LanguageForm, EmailsForm } from "./preferences-form";
 import { getTranslations, getLocale } from "next-intl/server";
 import { prisma } from "@/lib/db";
 
@@ -41,10 +41,10 @@ export default async function PreferencesPage() {
         </section>
 
         <section className="border rounded-lg p-6">
-          <h2 className="text-lg font-semibold mb-4">{t("reports")}</h2>
-          <p className="text-gray-600 mb-4">{t("reportsDescription")}</p>
+          <h2 className="text-lg font-semibold mb-4">{t("emails")}</h2>
+          <p className="text-gray-600 mb-4">{t("emailsDescription")}</p>
 
-          <ReportsForm
+          <EmailsForm
             initialReportsEnabled={userPreferences.reportsEnabled}
             initialReportsFrequency={userPreferences.reportsFrequency}
           />

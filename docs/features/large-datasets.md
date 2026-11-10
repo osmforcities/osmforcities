@@ -165,8 +165,7 @@ carries the Overpass error text through.
 
 **Not yet:** the backfill + flag flip ([#501]).
 
-Main real work item: relation/multipolygon assembly in the convert stage —
-the spike skipped relations (15,783 in SP buildings).
+Relation/multipolygon assembly in the convert stage, skipped by the spike (15,783 relations in SP buildings), is done ([overpass-pmtiler#6]).
 
 Open (measure before build): query-latency impact on live Overpass while a
 bake runs (checklist item that still needs a probe).
@@ -192,8 +191,7 @@ bake runs (checklist item that still needs a probe).
    alongside it (only remaining pre-build measurement).
 4. Rewrite [#490] (and touch up [#487]) to the settled design; service work items
    tracked in the [tiler repo].
-5. Then: app-side work ([#489] protocol + vector source) in a worktree, behind a
-   flag, landed as a draft PR first.
+5. ~~app-side work ([#489] protocol + vector source)~~ **LANDED** behind `NEXT_PUBLIC_TILES_ENABLED`; see Implemented above.
 
 [glossary]: ../glossary.md
 [ADR 0001]: ../adr/0001-tiler-is-the-only-overpass-data-client.md
@@ -205,3 +203,4 @@ bake runs (checklist item that still needs a probe).
 [#490]: https://github.com/osmforcities/osmforcities/issues/490
 [#501]: https://github.com/osmforcities/osmforcities/issues/501
 [tiler repo]: https://github.com/osmforcities/overpass-pmtiler
+[overpass-pmtiler#6]: https://github.com/osmforcities/overpass-pmtiler/issues/6
