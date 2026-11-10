@@ -8,11 +8,12 @@ import {
   createTestUser,
   cleanupTestUser,
   setupAuthenticationWithLogin,
+  type TestUser,
 } from "./utils/auth";
 
 test.describe("Template Deprecation", () => {
   test.describe.configure({ mode: "serial" });
-  let testUser: { id: string; email: string; password?: string };
+  let testUser: TestUser;
 
   test.afterEach(async () => {
     if (testUser) {

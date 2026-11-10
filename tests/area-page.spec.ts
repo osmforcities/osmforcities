@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { getLocalizedPath } from "./config";
 import {
-  setupAuthenticationWithSignup,
+  signInAsNewTestUser,
   cleanupTestUser,
   TestUser,
 } from "./utils/auth";
@@ -10,7 +10,7 @@ test.describe("Area Page", () => {
   let testUser: TestUser;
 
   test.beforeEach(async ({ page }) => {
-    testUser = await setupAuthenticationWithSignup(page);
+    testUser = await signInAsNewTestUser(page);
   });
 
   test.afterEach(async () => {
@@ -96,7 +96,7 @@ test.describe("Area Page", () => {
 
   test("should display templates in Portuguese (pt-BR)", async ({ page }) => {
     // Create user with pt-BR language and authenticate
-    testUser = await setupAuthenticationWithSignup(page, { language: "pt-BR" });
+    testUser = await signInAsNewTestUser(page, { language: "pt-BR" });
 
     // Navigate to pt-BR locale - the middleware will redirect from /en to /pt-BR
     // due to user's language preference, so we go directly to the area page
