@@ -1,10 +1,10 @@
 import { test, expect } from "@playwright/test";
-import { setupAuthenticationWithSignup } from "./utils/auth";
+import { signInAsNewTestUser } from "./utils/auth";
 import { getLocalizedPath } from "./config";
 
 test.describe("User Dashboard", () => {
   test.beforeEach(async ({ page }) => {
-    await setupAuthenticationWithSignup(page);
+    await signInAsNewTestUser(page);
   });
 
   test("should display welcome message and user name", async ({ page }) => {

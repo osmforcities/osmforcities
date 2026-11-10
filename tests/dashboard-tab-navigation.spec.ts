@@ -3,12 +3,14 @@ import {
   createTestUser,
   createAdminTestUser,
   cleanupTestUser,
+  setupAuthenticationWithLogin,
+  type TestUser,
 } from "./utils/auth";
 import { PrismaClient } from "@prisma/client";
 
 test.describe("Dashboard Tab Navigation", () => {
-  let regularUser: { id: string; email: string; password?: string };
-  let adminUser: { id: string; email: string; password?: string };
+  let regularUser: TestUser;
+  let adminUser: TestUser;
 
   test.beforeEach(async () => {
     const prisma = new PrismaClient();
@@ -30,12 +32,7 @@ test.describe("Dashboard Tab Navigation", () => {
     test("should show only Following tab for regular users", async ({
       page,
     }) => {
-      // Login as regular user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', regularUser.email);
-      await page.fill('input[name="password"]', regularUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
+      await setupAuthenticationWithLogin(page, regularUser, "/en/dashboard");
 
       // Check that only Following tab is visible
       await expect(page.getByTestId("tab-saved")).toBeVisible();
@@ -46,12 +43,7 @@ test.describe("Dashboard Tab Navigation", () => {
     test("should show all three tabs for admin users on dashboard", async ({
       page,
     }) => {
-      // Login as admin user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', adminUser.email);
-      await page.fill('input[name="password"]', adminUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
+      await setupAuthenticationWithLogin(page, adminUser, "/en/dashboard");
 
       // Check that all three tabs are visible
       await expect(page.getByTestId("tab-saved")).toBeVisible();
@@ -62,12 +54,7 @@ test.describe("Dashboard Tab Navigation", () => {
     test("should show Users and Templates tabs with icons for admin users", async ({
       page,
     }) => {
-      // Login as admin user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', adminUser.email);
-      await page.fill('input[name="password"]', adminUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
+      await setupAuthenticationWithLogin(page, adminUser, "/en/dashboard");
 
       // Check that Users tab has an icon
       const usersTab = page.getByTestId("tab-users");
@@ -85,12 +72,7 @@ test.describe("Dashboard Tab Navigation", () => {
     test("should navigate to users and templates pages via admin tabs", async ({
       page,
     }) => {
-      // Login as admin user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', adminUser.email);
-      await page.fill('input[name="password"]', adminUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
+      await setupAuthenticationWithLogin(page, adminUser, "/en/dashboard");
 
       // Click Users tab — should navigate + render DashboardTabs on the page
       await page.getByTestId("tab-users").click();
@@ -107,12 +89,7 @@ test.describe("Dashboard Tab Navigation", () => {
     test("should navigate back to dashboard from an admin page", async ({
       page,
     }) => {
-      // Login as admin user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', adminUser.email);
-      await page.fill('input[name="password"]', adminUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
+      await setupAuthenticationWithLogin(page, adminUser, "/en/dashboard");
 
       // Click Users tab
       await page.getByTestId("tab-users").click();
@@ -133,12 +110,7 @@ test.describe("Dashboard Tab Navigation", () => {
     test("should preserve existing dashboard functionality", async ({
       page,
     }) => {
-      // Login as regular user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', regularUser.email);
-      await page.fill('input[name="password"]', regularUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
+      await setupAuthenticationWithLogin(page, regularUser, "/en/dashboard");
 
       // Check welcome message
       await expect(page.getByTestId("dashboard-welcome-message")).toBeVisible();
@@ -201,12 +173,7 @@ test.describe("Dashboard Tab Navigation", () => {
 
       await prisma.$disconnect();
 
-      // Login as regular user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', regularUser.email);
-      await page.fill('input[name="password"]', regularUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
+      await setupAuthenticationWithLogin(page, regularUser, "/en/dashboard");
 
       // Check for dataset grid
       const datasetGrid = page.getByTestId("saved-datasets-grid");
@@ -221,12 +188,7 @@ test.describe("Dashboard Tab Navigation", () => {
 
   test.describe("Responsive Design", () => {
     test("should display tabs correctly on mobile", async ({ page }) => {
-      // Login as admin user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', adminUser.email);
-      await page.fill('input[name="password"]', adminUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
+      await setupAuthenticationWithLogin(page, adminUser, "/en/dashboard");
 
       // Set mobile viewport
       await page.setViewportSize({ width: 375, height: 667 });
@@ -241,12 +203,7 @@ test.describe("Dashboard Tab Navigation", () => {
     });
 
     test("should display tabs correctly on tablet", async ({ page }) => {
-      // Login as admin user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', adminUser.email);
-      await page.fill('input[name="password"]', adminUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
+      await setupAuthenticationWithLogin(page, adminUser, "/en/dashboard");
 
       // Set tablet viewport
       await page.setViewportSize({ width: 768, height: 1024 });
@@ -263,12 +220,7 @@ test.describe("Dashboard Tab Navigation", () => {
 
   test.describe("Accessibility", () => {
     test("should support keyboard navigation for all tabs", async ({ page }) => {
-      // Login as admin user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', adminUser.email);
-      await page.fill('input[name="password"]', adminUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
+      await setupAuthenticationWithLogin(page, adminUser, "/en/dashboard");
 
       // Wait for all tabs to be visible
       await expect(page.getByTestId("tab-templates")).toBeVisible();
@@ -294,12 +246,7 @@ test.describe("Dashboard Tab Navigation", () => {
     });
 
     test("should have proper ARIA attributes for all tabs", async ({ page }) => {
-      // Login as admin user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', adminUser.email);
-      await page.fill('input[name="password"]', adminUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
+      await setupAuthenticationWithLogin(page, adminUser, "/en/dashboard");
 
       // Check for proper tablist role
       const tabsList = page.locator('[role="tablist"]');
@@ -327,12 +274,7 @@ test.describe("Dashboard Tab Navigation", () => {
 
   test.describe("Error Handling", () => {
     test("should handle failed navigation gracefully", async ({ page }) => {
-      // Login as admin user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', adminUser.email);
-      await page.fill('input[name="password"]', adminUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
+      await setupAuthenticationWithLogin(page, adminUser, "/en/dashboard");
 
       // Mock network failure for navigation
       await page.route("**/users", (route) => route.abort());
@@ -346,12 +288,7 @@ test.describe("Dashboard Tab Navigation", () => {
     });
 
     test("should handle rapid tab clicks", async ({ page }) => {
-      // Login as admin user
-      await page.goto("http://localhost:3000/en/login");
-      await page.fill('input[name="email"]', adminUser.email);
-      await page.fill('input[name="password"]', adminUser.password!);
-      await page.click('button[type="submit"]');
-      await page.waitForURL("http://localhost:3000/en/dashboard", { timeout: 10000 });
+      await setupAuthenticationWithLogin(page, adminUser, "/en/dashboard");
 
       // Wait for dashboard tabs to be visible
       await expect(page.getByTestId("dashboard-tabs")).toBeVisible();

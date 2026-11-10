@@ -116,13 +116,7 @@
   "EnterPage": {
     "metaTitle": "Sign In - OSM for Cities",
     "metaDescription": "Sign in to monitor OpenStreetMap datasets",
-    "signIn": "Sign In",
-    "notFound": "Not Found",
-    "testAuthNotEnabled": "Test authentication is not enabled.",
-    "signInWithEmailPassword": "Sign in with your email and password",
-    "createAccount": "Create Account",
-    "signupForTesting": "Sign up for testing purposes",
-    "testEnvOnly": "This page is only available in test environment."
+    "signIn": "Sign In"
   },
   "DatasetPage": {
     "tilesStageQueued": "Waiting in line",

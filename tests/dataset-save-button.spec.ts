@@ -3,6 +3,7 @@ import {
   createTestUser,
   cleanupTestUser,
   setupAuthenticationWithLogin,
+  type TestUser,
 } from "./utils/auth";
 import { PrismaClient } from "@prisma/client";
 import { getLocalizedPath } from "./config";
@@ -12,7 +13,7 @@ test.describe("Dataset Save Button", () => {
   // Note: per-describe retries removed — redundant with the global
   // `retries: 2` already set in playwright.config.ts for CI runs.
 
-  let testUser: { id: string; email: string; password?: string };
+  let testUser: TestUser;
   let testDataset: {
     id: string;
     template: { id: string; name: string };

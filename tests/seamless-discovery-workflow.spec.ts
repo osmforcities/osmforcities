@@ -3,6 +3,7 @@ import {
   createTestUser,
   cleanupTestUser,
   setupAuthenticationWithLogin,
+  type TestUser,
 } from "./utils/auth";
 import { PrismaClient } from "@prisma/client";
 import { getLocalizedPath } from "./config";
@@ -16,7 +17,7 @@ import { getLocalizedPath } from "./config";
 // reliably by dataset-save-button.spec, navbar.spec, and area-page.spec.
 
 test.describe("Seamless Discovery Workflow", () => {
-  let testUser: { id: string; email: string; password?: string };
+  let testUser: TestUser;
 
   test.beforeEach(async ({ page }) => {
     const prisma = new PrismaClient();

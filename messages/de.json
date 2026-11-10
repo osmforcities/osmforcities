@@ -116,13 +116,7 @@
   "EnterPage": {
     "metaTitle": "Anmelden - OSM for Cities",
     "metaDescription": "Melde dich an, um OpenStreetMap-Datensätze zu beobachten",
-    "signIn": "Anmelden",
-    "notFound": "Nicht gefunden",
-    "testAuthNotEnabled": "Die Test-Authentifizierung ist nicht aktiviert.",
-    "signInWithEmailPassword": "Melde dich mit E-Mail-Adresse und Passwort an",
-    "createAccount": "Konto erstellen",
-    "signupForTesting": "Registrierung zu Testzwecken",
-    "testEnvOnly": "Diese Seite ist nur in der Testumgebung verfügbar."
+    "signIn": "Anmelden"
   },
   "DatasetPage": {
     "tilesStageQueued": "In der Warteschlange",

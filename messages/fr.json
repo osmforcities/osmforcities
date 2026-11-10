@@ -116,13 +116,7 @@
   "EnterPage": {
     "metaTitle": "Connexion - OSM for Cities",
     "metaDescription": "Connectez-vous pour suivre les jeux de données OpenStreetMap",
-    "signIn": "Se connecter",
-    "notFound": "Introuvable",
-    "testAuthNotEnabled": "L'authentification de test n'est pas activée.",
-    "signInWithEmailPassword": "Connectez-vous avec votre e-mail et votre mot de passe",
-    "createAccount": "Créer un compte",
-    "signupForTesting": "Inscription à des fins de test",
-    "testEnvOnly": "Cette page n'est disponible qu'en environnement de test."
+    "signIn": "Se connecter"
   },
   "DatasetPage": {
     "tilesStageQueued": "En file d'attente",

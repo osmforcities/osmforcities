@@ -10,8 +10,6 @@ export const PUBLIC_ROUTES = [
   "/",
   "/about",
   "/enter",
-  "/login",
-  "/signup",
 ] as const;
 
 export type ProtectedRoute = typeof PROTECTED_ROUTES[number];

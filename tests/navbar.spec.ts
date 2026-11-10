@@ -1,7 +1,7 @@
 import { test, expect } from "./test-setup";
 import { getLocalizedPath } from "./config";
 import {
-  setupAuthenticationWithSignup,
+  signInAsNewTestUser,
   cleanupTestUser,
   TestUser,
 } from "./utils/auth";
@@ -36,7 +36,7 @@ test.describe("Navbar", () => {
 
   test("shows correct content for authenticated users", async ({ page }) => {
     // Set up authentication
-    const user = await setupAuthenticationWithSignup(page, {
+    const user = await signInAsNewTestUser(page, {
       email: `navbar-test-${Date.now()}@example.com`,
       name: "Navbar Test User",
     });
@@ -62,7 +62,7 @@ test.describe("Navbar", () => {
     test.beforeEach(async ({ page }) => {
       // Set up authentication with unique email for each test
       const uniqueId = Date.now() + Math.random();
-      testUser = await setupAuthenticationWithSignup(page, {
+      testUser = await signInAsNewTestUser(page, {
         email: `search-test-${uniqueId}@example.com`,
         name: "Search Test User",
       });

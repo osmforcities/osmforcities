@@ -116,13 +116,7 @@
   "EnterPage": {
     "metaTitle": "Iniciar Sesión - OSM for Cities",
     "metaDescription": "Inicia sesión para monitorear conjuntos de datos de OpenStreetMap",
-    "signIn": "Iniciar Sesión",
-    "notFound": "No Encontrado",
-    "testAuthNotEnabled": "La autenticación de prueba no está habilitada.",
-    "signInWithEmailPassword": "Inicia sesión con tu correo electrónico y contraseña",
-    "createAccount": "Crear Cuenta",
-    "signupForTesting": "Regístrate para propósitos de prueba",
-    "testEnvOnly": "Esta página solo está disponible en el entorno de prueba."
+    "signIn": "Iniciar Sesión"
   },
   "DatasetPage": {
     "tilesStageQueued": "Esperando en la cola",
