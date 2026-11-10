@@ -47,7 +47,9 @@ export function FeatureDetailPanel({
   // Tiler geojson carries "@user" / "@timestamp", osmtogeojson the bare keys
   const userValue = properties["@user"] ?? properties.user;
   const osmUser = userValue == null ? undefined : String(userValue);
-  const editedAt = new Date(properties["@timestamp"] ?? properties.timestamp);
+  const editedAt = new Date(
+    properties["@timestamp"] ?? properties.timestamp ?? NaN
+  );
 
   let name: string | undefined;
   const displayTags: [string, string][] = [];
@@ -55,8 +57,13 @@ export function FeatureDetailPanel({
   Object.entries(properties)
     .sort(([a], [b]) => a.localeCompare(b))
     .forEach(([key, value]) => {
-      if (key === "id" || key.startsWith("@") || INTERNAL_KEYS.has(key)) return;
-      if (METADATA_KEYS.has(key)) return;
+      if (
+        key === "id" ||
+        key.startsWith("@") ||
+        INTERNAL_KEYS.has(key) ||
+        METADATA_KEYS.has(key)
+      )
+        return;
       if (key === "name") { name = String(value); return; }
       displayTags.push([key, String(value)]);
     });
