@@ -455,7 +455,7 @@
     "veryOldChanges": "> 90 dias atrás",
     "legendViewLabel": "Colorir por",
     "legendOther": "Outros",
-    "legendMissing": "Sem valor",
+    "legendMissing": "Não informado",
     "collapseLegend": "Ocultar legenda",
     "expandLegend": "Mostrar legenda"
   },
@@ -902,6 +902,10 @@
       "limited": "Limitado",
       "unknown": "Desconhecido"
     },
+    "lit": {
+      "24/7": "24 horas",
+      "automatic": "Com sensor de presença"
+    },
     "highway": {
       "motorway": "Via expressa",
       "trunk": "Via troncal",
@@ -910,7 +914,13 @@
       "tertiary": "Via terciária",
       "residential": "Rua residencial",
       "living_street": "Rua compartilhada",
-      "unclassified": "Via não classificada"
+      "unclassified": "Via não classificada",
+      "footway": "Via de pedestres",
+      "path": "Trilha",
+      "cycleway": "Ciclovia",
+      "pedestrian": "Calçadão",
+      "steps": "Escada",
+      "bridleway": "Caminho para cavalos"
     },
     "healthcare:speciality": {
       "general": "Clínica geral",
@@ -1174,7 +1184,9 @@
       "crossing": "Travessia",
       "traffic_island": "Ilha de refúgio",
       "access_aisle": "Faixa de acesso",
-      "link": "Conexão"
+      "link": "Conexão",
+      "alley": "Viela",
+      "steps": "Escada"
     },
     "sidewalk": {
       "both": "Ambos os lados",

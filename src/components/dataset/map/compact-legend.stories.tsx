@@ -38,14 +38,14 @@ export const TagViewWithOtherAndMissing: Story = {
       { id: "apartments", label: "apartments", color: PALETTES.categorical.tableau10[0] },
       { id: "house", label: "house", color: PALETTES.categorical.tableau10[1] },
       { id: OTHER_CATEGORY, label: "Other", color: PALETTES.categorical.other },
-      { id: MISSING_CATEGORY, label: "Missing", color: PALETTES.categorical.missing },
+      { id: MISSING_CATEGORY, label: "Not specified", color: PALETTES.categorical.missing },
     ],
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByText("Building type")).toBeVisible();
     await expect(canvas.getByText("apartments")).toBeVisible();
-    await expect(canvas.getByText("Missing")).toBeVisible();
+    await expect(canvas.getByText("Not specified")).toBeVisible();
     await expect(canvas.queryByText("Last Edited")).toBeNull();
   },
 };
