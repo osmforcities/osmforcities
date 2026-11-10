@@ -147,10 +147,10 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
             templateName={templateName}
             areaName={areaName}
             categoryHref={categoryHref}
+            areaId={osmRelationId}
             notify={
               tilesLane && <NotifyWhenReadyButton offer="ready" disabled />
             }
-            stepsShown={tilesLane}
           />
         )
       }
@@ -237,6 +237,7 @@ async function AreaTemplateDatasetView({
             templateName={templateName}
             areaName={fallbackAreaName}
             categoryHref={categoryHref}
+            areaId={areaId}
             notify={notify("available")}
           />
         );
@@ -248,6 +249,7 @@ async function AreaTemplateDatasetView({
           templateName={templateName}
           areaName={fallbackAreaName}
           categoryHref={categoryHref}
+          areaId={areaId}
           notify={notify("ready")}
         />
       );
@@ -274,6 +276,7 @@ async function AreaTemplateDatasetView({
           {trackDetailView}
           <DatasetNoMapPage
             categoryHref={categoryHref}
+            areaId={areaId}
             title={datasetT("datasetInArea", {
               dataset: dataset.template.name,
               area: areaName,
@@ -311,6 +314,7 @@ async function AreaTemplateDatasetView({
           templateName={templateName}
           areaName={fallbackAreaName}
           categoryHref={categoryHref}
+          areaId={areaId}
         />
       );
     }
@@ -322,6 +326,7 @@ async function AreaTemplateDatasetView({
           templateName={templateName}
           areaName={fallbackAreaName}
           categoryHref={categoryHref}
+          areaId={areaId}
         />
       );
     }

@@ -32,6 +32,7 @@ import {
 } from "@/lib/curated-themes";
 import { tagLabel, tagValue, type MessageResolver } from "@/lib/tag-i18n";
 import { AGE_CATEGORY_ORDER } from "@/lib/feature-age";
+import { useAreaBoundary } from "@/hooks/useAreaBoundary";
 
 ensurePmtilesProtocol();
 
@@ -90,11 +91,10 @@ export function FeaturedDatasetMapClient({
   const locale = useLocale();
   const mapRef = useRef<MapRef | null>(null);
   const [geojson, setGeojson] = useState<FeatureCollection | null>(null);
-  const [boundary, setBoundary] = useState<FeatureCollection | null>(null);
+  const boundary = useAreaBoundary(areaId);
 
   useEffect(() => {
     setGeojson(null);
-    setBoundary(null);
 
     const controller = new AbortController();
     // Marketing page: on failure keep the basemap + card, no error UI.
@@ -110,15 +110,8 @@ export function FeaturedDatasetMapClient({
         .catch(() => {});
     }
 
-    fetch(`/api/areas/${areaId}/boundary`, { signal: controller.signal })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data: FeatureCollection | null) => {
-        if (data && !controller.signal.aborted) setBoundary(data);
-      })
-      .catch(() => {});
-
     return () => controller.abort();
-  }, [datasetId, areaId, tiles?.url]);
+  }, [datasetId, tiles?.url]);
 
   // Same processing as the dataset page so rendering matches it
   const processedData = useMemo(

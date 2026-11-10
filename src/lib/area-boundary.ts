@@ -94,7 +94,9 @@ export async function getAreaBoundary(areaId: number): Promise<FeatureCollection
     features: [relationFeature],
   };
 
-  await prisma.area.update({
+  // updateMany, not update: the wait page asks for the outline before the
+  // area row exists, and a missing row must not fail the answer.
+  const { count: rowsWritten } = await prisma.area.updateMany({
     where: { id: areaId },
     data: { geojson: JSON.parse(JSON.stringify(featureCollection)) },
   });
@@ -102,10 +104,13 @@ export async function getAreaBoundary(areaId: number): Promise<FeatureCollection
   // getStoredBoundary has this cached as absent. Only lands from a Route Handler
   // (/api/areas/[id]/boundary); from a page render it always throws and the
   // short TTL above is what clears the stale null instead. Busts every area, not
-  // just this one — unstable_cache tags are static per function.
-  try {
-    revalidateTag(AREA_BOUNDARY_TAG);
-  } catch {}
+  // just this one — unstable_cache tags are static per function. So it runs
+  // only when something was stored.
+  if (rowsWritten > 0) {
+    try {
+      revalidateTag(AREA_BOUNDARY_TAG);
+    } catch {}
+  }
 
   return simplify(featureCollection, { tolerance: BOUNDARY_SIMPLIFICATION_TOLERANCE, highQuality: false });
 }
