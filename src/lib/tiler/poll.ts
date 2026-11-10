@@ -18,6 +18,9 @@ import {
   MAX_DATASET_BYTES,
   OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
 } from "@/lib/constants";
+import { createLogger } from "@/lib/logger";
+
+const log = createLogger("tiler");
 
 export type TileFailureKind = "bake" | "too_large" | "reconcile";
 
@@ -117,7 +120,7 @@ async function featureFill(
       ) as unknown as Prisma.InputJsonValue,
     };
   } catch (error) {
-    console.error(`Feature fill failed for bake ${jobId}:`, error);
+    log.error("Feature fill failed", { jobId, error });
     return {};
   }
 }
@@ -180,10 +183,7 @@ export async function reconcileDataset(
           }
         } catch (error) {
           // Losing the stats must not also lose the archive.
-          console.error(
-            `Stats fill from tiler failed for dataset ${dataset.id}:`,
-            error
-          );
+          log.error("Stats fill from tiler failed", { datasetId: dataset.id, error });
         }
       }
 
@@ -204,7 +204,7 @@ export async function reconcileDataset(
     // Best-effort housekeeping: a failed ack just leaves the job for the
     // tiler's own sweep. Prune never rejects (it logs internally).
     await ackTileJob(dataset.tilesJobId).catch((error) => {
-      console.error(`Tile job ack failed for ${dataset.tilesJobId}:`, error);
+      log.error("Bake ack failed", { jobId: dataset.tilesJobId, error });
     });
     await pruneTileArchives(dataset.id);
     await notifyDatasetReady(dataset.id, dataCount);
@@ -246,7 +246,7 @@ export async function pollPendingTileJobs(): Promise<TilePollResults> {
     });
   } catch (error) {
     // A DB blip here must not fail the surrounding cron tick.
-    console.error("Tile poll: failed to list pending datasets:", error);
+    log.error("Reconcile failed to list pending datasets", { error });
     return results;
   }
 
@@ -271,7 +271,7 @@ export async function pollPendingTileJobs(): Promise<TilePollResults> {
     } catch (error) {
       // Lookup or archive download hiccup: transient, so the counter is not
       // charged.
-      console.error(`Tile job poll failed for dataset ${dataset.id}:`, error);
+      log.error("Reconcile failed", { datasetId: dataset.id, error });
       results.stillPending++;
       results.errors.push({
         datasetId: dataset.id,

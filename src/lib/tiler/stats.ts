@@ -6,6 +6,9 @@ import { DatasetStatsSchema } from "@/schemas/dataset";
 import { AGE_CATEGORY_ORDER } from "@/lib/feature-age";
 import { ageDimensionFromCounts } from "@/lib/filter-dimensions";
 import { tilesDir } from "./client";
+import { createLogger } from "@/lib/logger";
+
+const log = createLogger("tiler");
 
 const TILER_STATS_SCHEMA_VERSION = 1;
 
@@ -37,9 +40,7 @@ export function tilerStatsToDatasetColumns(raw: unknown) {
 
   // The tiler bumps this only on removals and meaning changes.
   if (schemaVersion !== TILER_STATS_SCHEMA_VERSION) {
-    console.error(
-      `Unusable tiler stats (schemaVersion ${schemaVersion}); skipping stats fill`
-    );
+    log.error("Unusable tiler stats, skipping stats fill", { schemaVersion });
     return null;
   }
 
@@ -47,10 +48,9 @@ export function tilerStatsToDatasetColumns(raw: unknown) {
   // to fail here instead of there. Parsing also drops the tiler-only fields.
   const parsed = TilerStatsSchema.safeParse(raw);
   if (!parsed.success) {
-    console.error(
-      "Tiler stats failed validation; skipping stats fill:",
-      parsed.error.issues
-    );
+    log.error("Tiler stats failed validation, skipping stats fill", {
+      issues: parsed.error.issues,
+    });
     return null;
   }
 

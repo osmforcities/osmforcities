@@ -17,6 +17,10 @@ import {
   CATALOG_FILTER,
   UNCATALOGED_FILTER,
 } from "@/lib/dataset-catalog-filter";
+import { createLogger } from "@/lib/logger";
+
+const log = createLogger("update-datasets");
+const tilerLog = createLogger("tiler");
 
 // Uncataloged cache rows survive this long after creation so a visitor has time
 // to save; deleted rows are recreated on the next visit (#482).
@@ -52,10 +56,10 @@ async function deleteUnattendedDatasets(): Promise<number> {
   const { count } = await prisma.dataset.deleteMany({
     where: { id: { in: stale.map((d) => d.id) }, ...UNCATALOGED_FILTER },
   });
-  console.log(
-    `Cleanup: deleted ${count} uncataloged cache datasets: ` +
-      stale.map((d) => `${d.id} (${d.cityName})`).join(", ")
-  );
+  log.info("Cleanup deleted uncataloged cache datasets", {
+    count,
+    datasets: stale.map((d) => `${d.id} (${d.cityName})`),
+  });
   return count;
 }
 
@@ -73,7 +77,7 @@ export async function POST(req: NextRequest) {
   const expectedSecret = process.env.CRON_ROUTE_SECRET;
 
   if (!expectedSecret) {
-    console.error("CRON_ROUTE_SECRET environment variable not set");
+    log.error("CRON_ROUTE_SECRET environment variable not set");
     return NextResponse.json(
       { error: "Server configuration error" },
       { status: 500 }
@@ -94,7 +98,7 @@ export async function POST(req: NextRequest) {
     const tilesLane = tilesOnlyLaneEnabled();
     const tilerUnreachable = tilerOn && !(await pingTiler());
     if (tilerUnreachable) {
-      console.warn("Tiler unreachable, skipping dataset refresh this tick");
+      tilerLog.warn("Tiler unreachable, skipping dataset refresh this tick");
     }
 
     // Scheduling is driven by lastAttempted (advanced on every attempt), not lastChecked
@@ -147,7 +151,7 @@ export async function POST(req: NextRequest) {
         });
         return true;
       } catch (claimError) {
-        console.error(`Failed to claim dataset ${id} (skipping this run):`, claimError);
+        log.error("Failed to claim dataset, skipping this run", { datasetId: id, error: claimError });
         return false;
       }
     };
@@ -165,7 +169,7 @@ export async function POST(req: NextRequest) {
           data: { consecutiveFailures: { increment: 1 }, lastError: message, ...extra },
         });
       } catch (recordError) {
-        console.error(`Failed to record failure for dataset ${id}:`, recordError);
+        log.error("Failed to record dataset failure", { datasetId: id, error: recordError });
       }
     };
 
@@ -222,27 +226,28 @@ export async function POST(req: NextRequest) {
         results.successful++;
       } catch (error) {
         if (error instanceof DatasetTooLargeError) {
-          console.warn(
-            `Dataset ${dataset.id} deactivated (grew past size cap): ${error.message}`
-          );
+          log.warn("Dataset deactivated, grew past the cap", {
+            datasetId: dataset.id,
+            error: error.message,
+          });
           await recordFailure(dataset.id, error.message, { isActive: false });
           fail(dataset.id, "too_large", error.message);
           continue;
         }
         if (error instanceof DatasetSizeCheckTimeoutError) {
-          console.warn(
-            `Dataset ${dataset.id} skipped (size check timed out), will retry next run`
-          );
+          log.warn("Dataset skipped, count probe timed out, will retry next run", {
+            datasetId: dataset.id,
+          });
           await recordFailure(dataset.id, error.message);
           fail(dataset.id, "snapshot", error.message);
           continue;
         }
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error";
-        console.error(
-          `❌ Failed to update dataset ${dataset.id}:`,
-          errorMessage
-        );
+        log.error("Dataset refresh failed", {
+          datasetId: dataset.id,
+          error: errorMessage,
+        });
         await recordFailure(dataset.id, errorMessage);
         fail(dataset.id, "snapshot", errorMessage);
       }
@@ -268,7 +273,7 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error in update-datasets task:", error);
+    log.error("update-datasets task failed", { error });
     return NextResponse.json(
       {
         error: "Failed to execute update-datasets task",

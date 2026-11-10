@@ -13,6 +13,9 @@ import {
 import { TILES_ENABLED } from "@/lib/dataset-tiles";
 import { isRetryDue } from "@/lib/dataset-retry";
 import { UNCATALOGED_FILTER } from "@/lib/dataset-catalog-filter";
+import { createLogger } from "@/lib/logger";
+
+const log = createLogger("tiler");
 
 /**
  * The tiles-only lane: the tiler is the data source. Creation stores only the
@@ -119,7 +122,7 @@ export async function submitTilesForDataset(
     }
     return columns;
   } catch (error) {
-    console.error(`Tiles submit for dataset ${datasetId} failed:`, error);
+    log.error("Failed to record bake submit", { datasetId, error });
     return {};
   }
 }
@@ -142,7 +145,7 @@ export async function recordFailedSubmit(
       },
     });
   } catch (error) {
-    console.error(`Recording failed submit for dataset ${datasetId} failed:`, error);
+    log.error("Failed to record failed bake submit", { datasetId, error });
   }
 }
 
@@ -181,7 +184,7 @@ export async function retryFailedBake(row: {
     }
     return columns;
   } catch (error) {
-    console.error(`Bake retry for dataset ${row.id} failed:`, error);
+    log.error("Bake retry failed", { datasetId: row.id, error });
     return {};
   }
 }
