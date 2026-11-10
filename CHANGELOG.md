@@ -1,5 +1,82 @@
 # osmforcities
 
+## 1.22.0
+
+### Added
+
+- Templates have a one-line description in every language, shown on area cards and the dataset page [#691], [#699], [#702], [#707], [#708], [#709], [#710], [#711], [#712], [#713], [#714], [#718]
+- New templates for disaster preparedness, heritage and religion, cycle lanes and cycling infrastructure, steps, kerbs, sidewalks and car-free paths [#697], [#719], [#720], [#725], [#726], [#744]
+- Area pages show facts and links: capital, population, elevation, website, Wikipedia, Wikidata and the flag [#696]
+- Maps open on the template's type view (Building type, Road type) instead of "Last edited" where the data has it [#698], [#702], [#703], [#718]
+- Icons on the topic and category pickers [#703]
+
+### Changed
+
+- The basemap is OpenFreeMap Positron, with place and street labels above the data [#743]
+- Template icons come from the Pinhead map icon set [#721], [#733]
+- Area pages have 11 topics: Emergency, Tourism, Education and Culture and Religion are topics of their own. Some old topic links return 404 [#697], [#703], [#713], [#724]
+- Common datasets are 12 templates picked for worldwide coverage [#715]
+- Template consolidation: one Trees template replaces four, Highways is removed and Roads is now Streets and roads, agriculture goes from 24 templates to 11. Merged templates redirect to their replacement, and saved datasets of removed ones are deleted after 30 days [#694], [#695], [#716]
+- Footways and paths includes pedestrian streets, and legends say "Not specified" instead of "Missing" [#744]
+- Topic and category names use title case in English and Portuguese [#728]
+- Dataset screens without a map (counting, too large, no data) keep the map page layout [#734], [#741]
+- More vector tiles groundwork behind the tiles flag (off in production) [#689], [#692], [#732], [#735], [#753], [#758]
+
+### Removed
+
+- The unused password sign-in (`/login`, `/signup`) [#754]
+
+### Fixed
+
+- Signing in from a dataset page returns to that dataset, not the home page [#752]
+- Back on a dataset page opens the category page without a flash of the full area page [#740]
+- Preferences says the email checkbox covers the map-ready email and reports [#750]
+- Dataset pages have a localized browser title and link preview ("Pharmacies in Lisbon") instead of raw ids [#759]
+
+[#689]: https://github.com/osmforcities/osmforcities/pull/689
+[#691]: https://github.com/osmforcities/osmforcities/pull/691
+[#692]: https://github.com/osmforcities/osmforcities/pull/692
+[#694]: https://github.com/osmforcities/osmforcities/pull/694
+[#695]: https://github.com/osmforcities/osmforcities/pull/695
+[#696]: https://github.com/osmforcities/osmforcities/pull/696
+[#697]: https://github.com/osmforcities/osmforcities/pull/697
+[#698]: https://github.com/osmforcities/osmforcities/pull/698
+[#699]: https://github.com/osmforcities/osmforcities/pull/699
+[#702]: https://github.com/osmforcities/osmforcities/pull/702
+[#703]: https://github.com/osmforcities/osmforcities/pull/703
+[#707]: https://github.com/osmforcities/osmforcities/pull/707
+[#708]: https://github.com/osmforcities/osmforcities/pull/708
+[#709]: https://github.com/osmforcities/osmforcities/pull/709
+[#710]: https://github.com/osmforcities/osmforcities/pull/710
+[#711]: https://github.com/osmforcities/osmforcities/pull/711
+[#712]: https://github.com/osmforcities/osmforcities/pull/712
+[#713]: https://github.com/osmforcities/osmforcities/pull/713
+[#714]: https://github.com/osmforcities/osmforcities/pull/714
+[#715]: https://github.com/osmforcities/osmforcities/pull/715
+[#716]: https://github.com/osmforcities/osmforcities/pull/716
+[#718]: https://github.com/osmforcities/osmforcities/pull/718
+[#719]: https://github.com/osmforcities/osmforcities/pull/719
+[#720]: https://github.com/osmforcities/osmforcities/pull/720
+[#721]: https://github.com/osmforcities/osmforcities/pull/721
+[#724]: https://github.com/osmforcities/osmforcities/pull/724
+[#725]: https://github.com/osmforcities/osmforcities/pull/725
+[#726]: https://github.com/osmforcities/osmforcities/pull/726
+[#728]: https://github.com/osmforcities/osmforcities/pull/728
+[#732]: https://github.com/osmforcities/osmforcities/pull/732
+[#733]: https://github.com/osmforcities/osmforcities/pull/733
+[#734]: https://github.com/osmforcities/osmforcities/pull/734
+[#735]: https://github.com/osmforcities/osmforcities/pull/735
+[#740]: https://github.com/osmforcities/osmforcities/pull/740
+[#741]: https://github.com/osmforcities/osmforcities/pull/741
+[#743]: https://github.com/osmforcities/osmforcities/pull/743
+[#744]: https://github.com/osmforcities/osmforcities/pull/744
+[#750]: https://github.com/osmforcities/osmforcities/pull/750
+[#752]: https://github.com/osmforcities/osmforcities/pull/752
+[#753]: https://github.com/osmforcities/osmforcities/pull/753
+[#754]: https://github.com/osmforcities/osmforcities/pull/754
+[#758]: https://github.com/osmforcities/osmforcities/pull/758
+[#759]: https://github.com/osmforcities/osmforcities/pull/759
+
 ## 1.21.0
 
 ### Added
