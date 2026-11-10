@@ -1,4 +1,7 @@
-import { Suspense } from "react";
+import type { Metadata } from "next";
+import type { Locale } from "@/i18n/routing";
+import { DEFAULT_SEO, getLocalizedMetadata } from "@/lib/metadata";
+import { Suspense, cache } from "react";
 import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
 import { getTranslations, getLocale } from "next-intl/server";
@@ -45,6 +48,9 @@ import { getDatasetPath } from "@/lib/urls";
 
 export const revalidate = 3600;
 
+// One lookup per request, shared by the page and its metadata
+const resolveTemplateOnce = cache(resolveTemplate);
+
 type DatasetPageProps = {
   params: Promise<{
     areaId: string;
@@ -67,7 +73,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
   const locale = await getLocale();
   const [session, template, areaInfo] = await Promise.all([
     auth(),
-    resolveTemplate(templateId),
+    resolveTemplateOnce(templateId),
     getAreaDetailsById(osmRelationId, locale),
   ]);
 
@@ -366,11 +372,26 @@ async function AreaTemplateDatasetView({
   }
 }
 
-export async function generateMetadata({ params }: DatasetPageProps) {
+export async function generateMetadata({ params }: DatasetPageProps): Promise<Metadata> {
   const { areaId, templateId } = await params;
+  const osmRelationId = parseInt(areaId, 10);
+  if (isNaN(osmRelationId) || osmRelationId <= 0 || !isValidTemplateIdentifier(templateId)) {
+    return {};
+  }
 
-  return {
-    title: `${templateId} Dataset in Area ${areaId} | OSM for Cities`,
-    description: `Explore ${templateId} dataset for area ${areaId} with interactive maps and data analysis tools.`,
-  };
+  const locale = await getLocale();
+  const [template, areaInfo, t] = await Promise.all([
+    // The layout defaults stand in for a page that can't be named
+    resolveTemplateOnce(templateId).catch(() => null),
+    getAreaDetailsById(osmRelationId, locale),
+    getTranslations("DatasetPage"),
+  ]);
+  if (!template?.isActive || !areaInfo) return {};
+
+  const { name, description } = resolveTemplateForLocale(template, locale);
+  return getLocalizedMetadata(locale as Locale, {
+    title: t("datasetInArea", { dataset: name, area: resolveAreaName(areaInfo, locale) }),
+    description: description ?? DEFAULT_SEO.description,
+    path: `/area/${osmRelationId}/dataset/${templateId}`,
+  });
 }
