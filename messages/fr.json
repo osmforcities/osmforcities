@@ -132,7 +132,6 @@
     "tilesStageConverting": "Préparation des données",
     "tilesNoteConverting": "Transformation du téléchargement en formes que la carte peut dessiner.",
     "tilesStageBaking": "Construction de la carte",
-    "tilesStageWithProgress": "<live>{stage}</live> ({pct, number} %)",
     "tilesNoteBaking": "Presque fini. La carte s'ouvre toute seule à la fin.",
     "tilesStageCounting": "Vérification de la taille",
     "tilesStageCountingCold": "Vérification en cours, grande zone",

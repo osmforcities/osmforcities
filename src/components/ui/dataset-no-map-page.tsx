@@ -7,7 +7,6 @@ import { AreaBasemap } from "@/components/dataset/area-basemap";
 
 const LEAD_TONE = {
   neutral: "text-gray-900",
-  processing: "text-gray-900",
   warning: "text-orange-600",
   error: "text-red-600",
 } as const;

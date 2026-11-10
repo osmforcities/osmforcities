@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { ProgressBar } from "@/components/ui/progress-bar";
@@ -37,10 +37,6 @@ type Stage = keyof typeof STAGES;
 function isStage(value: unknown): value is Stage {
   return typeof value === "string" && value in STAGES;
 }
-
-// Only the stage name is announced. The percentage and the note's megabytes
-// change on every poll, and the bar already carries the percentage.
-const live = (chunks: ReactNode) => <span aria-live="polite">{chunks}</span>;
 
 type DatasetWaitPageProps = {
   /**
@@ -83,6 +79,7 @@ export function DatasetWaitPage({
   notify,
 }: DatasetWaitPageProps) {
   const t = useTranslations("DatasetPage");
+  const format = useFormatter();
   const router = useRouter();
   const baking = mood === "baking";
   const [cold, setCold] = useState(false);
@@ -143,14 +140,10 @@ export function DatasetWaitPage({
   const stageName = t(
     stage === "counting" && cold ? "tilesStageCountingCold" : STAGES[stage].name
   );
-  const stageTitle =
+  const stagePercent =
     stage === "converting" || stage === "baking"
-      ? t.rich("tilesStageWithProgress", {
-          stage: stageName,
-          pct: Math.round(pct ?? 0),
-          live,
-        })
-      : live(stageName);
+      ? format.number(Math.round(pct ?? 0) / 100, { style: "percent" })
+      : null;
 
   // One plain sentence on what the stage does. The megabytes live here, not
   // in the label, so the label stays one short line.
@@ -173,15 +166,22 @@ export function DatasetWaitPage({
       <DatasetNoMapPage
         categoryHref={categoryHref}
         areaId={areaId}
-        tone={failure ? "warning" : "processing"}
+        tone={failure ? "warning" : "neutral"}
         title={t("datasetInArea", { dataset: templateName, area: areaName })}
         lead={failure?.lead}
         progress={
           !failure && (
             <div className="space-y-3">
               <ProgressBar value={pct} label={stageName} />
+              {/* Only the stage name is announced. The percentage and the
+                  note's megabytes change on every poll, and the bar already
+                  carries the percentage. The live span stays mounted across
+                  stages, a freshly mounted one is not announced. */}
               <p className="text-lg font-semibold text-gray-900 tabular-nums">
-                {stageTitle}
+                <span aria-live="polite">{stageName}</span>
+                {stagePercent && (
+                  <span className="ms-2 text-gray-500">{stagePercent}</span>
+                )}
               </p>
               <p className="text-sm text-gray-600 tabular-nums">{stageNote}</p>
             </div>
