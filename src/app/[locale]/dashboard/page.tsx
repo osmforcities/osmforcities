@@ -12,7 +12,7 @@ import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
 import { TrackView } from "@/components/analytics/track-view";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
-import { MAX_SAVES_PER_USER } from "@/lib/constants";
+import { getSaveLimit } from "@/lib/save-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -53,7 +53,10 @@ export default async function Dashboard() {
   }
 
   const tabT = await getTranslations("TabLayout");
-  const savedDatasets = await getSavedDatasets(user.id);
+  const [savedDatasets, saveLimit] = await Promise.all([
+    getSavedDatasets(user.id),
+    getSaveLimit(user.id),
+  ]);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
@@ -82,7 +85,7 @@ export default async function Dashboard() {
           />
 
           <div className="bg-white rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-8">
-            <DashboardGrid datasets={savedDatasets} saveLimit={MAX_SAVES_PER_USER} />
+            <DashboardGrid datasets={savedDatasets} saveLimit={saveLimit} />
           </div>
         </div>
       </div>

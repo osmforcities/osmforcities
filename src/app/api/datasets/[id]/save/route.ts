@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { SaveDatasetSchema, UnsaveDatasetSchema } from "@/schemas/dataset";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
-import { MAX_SAVES_PER_USER } from "@/lib/constants";
+import { getSaveLimit } from "@/lib/save-limit";
 import { awaitsFirstMap } from "@/lib/dataset-tiles";
 
 export async function POST(
@@ -65,23 +65,25 @@ export async function POST(
       );
     }
 
-    const save = await prisma.$transaction(async (tx) => {
-      const count = await tx.datasetSave.count({
-        where: { userId: user.id },
-      });
-      if (count >= MAX_SAVES_PER_USER) return null;
-      return tx.datasetSave.create({
+    const { save, limit } = await prisma.$transaction(async (tx) => {
+      const [count, limit] = await Promise.all([
+        tx.datasetSave.count({ where: { userId: user.id } }),
+        getSaveLimit(user.id, tx),
+      ]);
+      if (count >= limit) return { save: null, limit };
+      const save = await tx.datasetSave.create({
         data: {
           userId: user.id,
           datasetId,
           notifyWhenReady,
         },
       });
+      return { save, limit };
     });
 
     if (!save) {
       return NextResponse.json(
-        { error: "save_limit_reached", limit: MAX_SAVES_PER_USER },
+        { error: "save_limit_reached", limit },
         { status: 403 },
       );
     }
