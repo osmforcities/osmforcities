@@ -113,7 +113,12 @@ export default async function UsersPage() {
                           </p>
                         </div>
                         <UserEditDialog
-                          user={userItem}
+                          user={{
+                            id: userItem.id,
+                            email: userItem.email,
+                            isAdmin: userItem.isAdmin,
+                            saveLimit: userItem.saveLimit,
+                          }}
                           isSelf={userItem.id === user.id}
                           defaultSaveLimit={MAX_SAVES_PER_USER}
                         />

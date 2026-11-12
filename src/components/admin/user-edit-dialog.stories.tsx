@@ -68,7 +68,7 @@ export const OwnAdminLocked: Story = {
   play: async ({ canvas, userEvent }) => {
     const dialog = await openDialog(canvas, userEvent);
     await expect(dialog.getByRole("checkbox", { name: "Admin" })).toBeDisabled();
-    await expect(dialog.getByText("You can't remove your own admin access")).toBeInTheDocument();
+    await expect(dialog.getByText("You can't remove your own admin access.")).toBeInTheDocument();
   },
 };
 
@@ -77,6 +77,6 @@ export const ShowsFailure: Story = {
   play: async ({ canvas, userEvent }) => {
     const dialog = await openDialog(canvas, userEvent);
     await userEvent.click(dialog.getByRole("button", { name: "Update user" }));
-    await expect(await dialog.findByRole("alert")).toHaveTextContent("Could not update the user");
+    await expect(await dialog.findByRole("alert")).toHaveTextContent("Could not update the user.");
   },
 };
