@@ -1,163 +1,38 @@
 import { Page, Route } from "@playwright/test";
-// Real Nominatim response: Paris commune and département share wikidata Q90.
-import mockNominatimSearchParisResponse from "../../src/lib/__tests__/fixtures/nominatim-search-paris.json";
+import {
+  mockNominatimLookup,
+  mockNominatimSearch,
+  type MockNominatimResponse,
+} from "../../src/lib/mocks/nominatim";
 
-export const mockNominatimSearchResponse = [
-  {
-    place_id: 123456,
-    osm_type: "relation",
-    osm_id: 54321,
-    display_name: "São Paulo, State of São Paulo, Brazil",
-    name: "São Paulo",
-    class: "place",
-    type: "city",
-    boundingbox: ["-23.8", "-23.3", "-46.8", "-46.1"],
-    lat: "-23.5",
-    lon: "-46.6",
-    address: {
-      country_code: "br",
-      country: "Brazil",
-      state: "State of São Paulo",
-      type: "city",
-    },
-  },
-  {
-    place_id: 789012,
-    osm_type: "relation",
-    osm_id: 67890,
-    display_name: "São Paulo, São Paulo, Brazil",
-    name: "São Paulo",
-    class: "place",
-    type: "city",
-    boundingbox: ["-23.8", "-23.3", "-46.8", "-46.1"],
-    lat: "-23.5",
-    lon: "-46.6",
-    address: {
-      country_code: "br",
-      country: "Brazil",
-      state: "São Paulo",
-      type: "city",
-    },
-  },
-];
+const fulfill = (route: Route, { status, body }: MockNominatimResponse) =>
+  route.fulfill({
+    status,
+    contentType: "application/json",
+    body: JSON.stringify(body),
+  });
 
-export const mockNominatimLookupResponse = [
-  {
-    place_id: 123456,
-    osm_type: "relation",
-    osm_id: 54321,
-    display_name: "São Paulo, State of São Paulo, Brazil",
-    name: "São Paulo",
-    class: "place",
-    type: "city",
-    boundingbox: ["-23.8", "-23.3", "-46.8", "-46.1"],
-    lat: "-23.5",
-    lon: "-46.6",
-    address: {
-      country_code: "br",
-      country: "Brazil",
-      state: "State of São Paulo",
-      type: "city",
-    },
-    extratags: {
-      population: "12396372",
-      "ISO3166-2": "BR-SP",
-    },
-  },
-];
-
-export { mockOverpassResponse } from "../../src/lib/mocks/overpass";
-
-export const mockEmptySearchResponse: unknown[] = [];
-
-export const mockErrorResponse = {
-  error: "Internal Server Error",
-  message: "Something went wrong",
-};
-
+// The nav search calls Nominatim from the browser, which the server's
+// NOMINATIM_API_URL does not reach
 export function setupGlobalApiMocks(page: Page) {
-  page.route("**/nominatim.openstreetmap.org/search*", async (route: Route) => {
+  page.route("**/nominatim.openstreetmap.org/search*", (route: Route) => {
     const url = new URL(route.request().url());
-    const query = url.searchParams.get("q");
-
-    if (query?.toLowerCase().includes("paris")) {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(mockNominatimSearchParisResponse),
-      });
-    } else if (query?.includes("são") || query?.includes("sao")) {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(mockNominatimSearchResponse),
-      });
-    } else if (query?.includes("xyz") || query?.includes("nonexistent")) {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(mockEmptySearchResponse),
-      });
-    } else if (query?.includes("error")) {
-      await route.fulfill({
-        status: 500,
-        contentType: "application/json",
-        body: JSON.stringify(mockErrorResponse),
-      });
-    } else {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(mockNominatimSearchResponse),
-      });
-    }
+    return fulfill(route, mockNominatimSearch(url.searchParams.get("q") ?? ""));
   });
 
-  page.route("**/nominatim.openstreetmap.org/lookup*", async (route: Route) => {
+  page.route("**/nominatim.openstreetmap.org/lookup*", (route: Route) => {
     const url = new URL(route.request().url());
-    const osmIds = url.searchParams.get("osm_ids");
-
-    if (osmIds?.includes("R54321")) {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(mockNominatimLookupResponse),
-      });
-    } else {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify([]),
-      });
-    }
+    return fulfill(
+      route,
+      mockNominatimLookup(url.searchParams.get("osm_ids") ?? "")
+    );
   });
 
-  page.route("**/tiles.openfreemap.org/**", async (route: Route) => {
-    await route.fulfill({
+  page.route("**/tiles.openfreemap.org/**", (route: Route) =>
+    route.fulfill({
       status: 200,
       contentType: "application/json",
       body: JSON.stringify({}),
-    });
-  });
-}
-
-export function preventExternalCallsInTests() {
-  if (process.env.NODE_ENV === "test") {
-    const originalFetch = global.fetch;
-    global.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
-      const url = typeof input === "string" ? input : input.toString();
-
-      if (
-        url.startsWith("http://localhost") ||
-        url.startsWith("http://127.0.0.1")
-      ) {
-        return originalFetch(input, init);
-      }
-
-      console.error(`🚫 External API call blocked in test mode: ${url}`);
-      throw new Error(
-        `External API calls are not allowed in test mode. Attempted to call: ${url}`
-      );
-    };
-  }
+    })
+  );
 }

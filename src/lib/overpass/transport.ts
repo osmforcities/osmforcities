@@ -53,7 +53,7 @@ export function getUserAgent(): string {
   return `OSMForCities (+https://${url})`;
 }
 
-function isLocalOverpass(url: string | undefined): boolean {
+function isLocalUrl(url: string | undefined): boolean {
   if (!url) return false;
   try {
     const parsed = new URL(url);
@@ -67,8 +67,8 @@ function isLocalOverpass(url: string | undefined): boolean {
   }
 }
 
-export function preventExternalCallsInTests(): void {
-  if (process.env.NODE_ENV === "test" && !isLocalOverpass(OVERPASS_API_URL)) {
+export function assertLocalInTests(url: string | undefined): void {
+  if (process.env.NODE_ENV === "test" && !isLocalUrl(url)) {
     throw new Error(
       "External API calls are not allowed in test mode. Use mocked responses instead."
     );
@@ -78,7 +78,7 @@ export function preventExternalCallsInTests(): void {
 export async function executeOverpassQuery(
   queryString: string
 ): Promise<OverpassResponse> {
-  preventExternalCallsInTests();
+  assertLocalInTests(OVERPASS_API_URL);
 
   const response = await fetch(OVERPASS_API_URL, {
     method: "POST",
@@ -132,7 +132,7 @@ export async function countOverpassElements(
   query: string,
   timeoutMs: number = COUNT_REQUEST_TIMEOUT_MS
 ): Promise<number> {
-  preventExternalCallsInTests();
+  assertLocalInTests(OVERPASS_API_URL);
 
   // Only the output statement changes — the template's own [timeout:N] is kept.
   // Capping the count at a lower value made Overpass abort (HTTP 200 + remark)
@@ -193,7 +193,7 @@ export async function executeOverpassQueryWithByteLimit(
   queryString: string,
   maxBytes: number
 ): Promise<OverpassResponse> {
-  preventExternalCallsInTests();
+  assertLocalInTests(OVERPASS_API_URL);
 
   const controller = new AbortController();
   const timeoutSignal = AbortSignal.timeout(FETCH_REQUEST_TIMEOUT_MS);
