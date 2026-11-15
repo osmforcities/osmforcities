@@ -110,6 +110,7 @@ export function mockNominatimSearch(query: string): MockNominatimResponse {
 export function mockNominatimLookup(osmIds: string): MockNominatimResponse {
   const body = osmIds
     .split(",")
-    .flatMap((id) => (lookupAreasByOsmId[id] ? [lookupAreasByOsmId[id]] : []));
+    .map((id) => lookupAreasByOsmId[id])
+    .filter(Boolean);
   return { status: 200, body };
 }

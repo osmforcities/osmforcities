@@ -13,13 +13,13 @@ const toResponse = ({ status, body }: MockNominatimResponse) =>
 
 export async function GET(request: NextRequest, { params }: Context) {
   if (!isTestAuthEnabled()) return new NextResponse(null, { status: 404 });
-  const [endpoint, ...rest] = (await params).path;
   const query = request.nextUrl.searchParams;
-  if (endpoint === "search" && !rest.length) {
-    return toResponse(mockNominatimSearch(query.get("q") ?? ""));
+  switch ((await params).path.join("/")) {
+    case "search":
+      return toResponse(mockNominatimSearch(query.get("q") ?? ""));
+    case "lookup":
+      return toResponse(mockNominatimLookup(query.get("osm_ids") ?? ""));
+    default:
+      return new NextResponse(null, { status: 404 });
   }
-  if (endpoint === "lookup" && !rest.length) {
-    return toResponse(mockNominatimLookup(query.get("osm_ids") ?? ""));
-  }
-  return new NextResponse(null, { status: 404 });
 }

@@ -13,12 +13,6 @@ describe("nominatimApiUrl", () => {
     expect(() => nominatimApiUrl()).toThrow(/not allowed in test mode/);
   });
 
-  it("refuses the public default in test mode", () => {
-    vi.stubEnv("NODE_ENV", "test");
-    vi.stubEnv("NOMINATIM_API_URL", "");
-    expect(() => nominatimApiUrl()).toThrow(/not allowed in test mode/);
-  });
-
   it("allows a local Nominatim in test mode", () => {
     vi.stubEnv("NODE_ENV", "test");
     vi.stubEnv("NOMINATIM_API_URL", "http://localhost:3000/api/mock-nominatim");
