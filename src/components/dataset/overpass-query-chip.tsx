@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Code, ExternalLink } from "lucide-react";
-import { Button, Dialog, DialogTrigger, Popover } from "react-aria-components";
+import { Button, Dialog, DialogTrigger, Heading, Popover } from "react-aria-components";
 import { PILL_BUTTON_CLASS } from "@/components/dataset/dataset-timestamps";
 
 export function OverpassQueryChip({ query }: { query: string }) {
@@ -30,10 +30,11 @@ export function OverpassQueryChip({ query }: { query: string }) {
       </Button>
       <Popover offset={6} className="outline-none">
         <Dialog
-          aria-label={t("queryTitle")}
           className="w-[min(28rem,calc(100vw-2rem))] rounded-md bg-gray-900 px-3 py-2 text-xs text-white shadow-lg outline-none"
         >
-          <p className="font-medium">{t("queryTitle")}</p>
+          <Heading slot="title" className="font-medium">
+            {t("queryTitle")}
+          </Heading>
           <p className="mt-0.5 text-gray-300">{t("queryHelp")}</p>
           <pre className="mt-2 max-h-64 overflow-auto rounded bg-white/10 p-2 font-mono text-[11px] leading-snug text-gray-100">
             {query}

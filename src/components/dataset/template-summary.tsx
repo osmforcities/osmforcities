@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { OverpassQueryChip } from "@/components/dataset/overpass-query-chip";
 import { CategoryFacet } from "@/components/dataset/category-facet";
 import { PendingTimestamps } from "@/components/dataset/dataset-timestamps";
@@ -24,12 +25,14 @@ export function TemplateSummary({
   category,
   areaName,
   categoryHref,
+  timestamps = <PendingTimestamps />,
 }: {
   description: string | null;
   query: string;
   category: { slug: string } | null;
   areaName: string;
   categoryHref: string;
+  timestamps?: ReactNode;
 }) {
   return (
     <>
@@ -40,7 +43,7 @@ export function TemplateSummary({
           areaName={areaName}
           categoryHref={categoryHref}
         />
-        <PendingTimestamps />
+        {timestamps}
         <OverpassQueryChip query={query} />
       </div>
     </>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { Locale } from "@/i18n/routing";
 import { DEFAULT_SEO, getLocalizedMetadata } from "@/lib/metadata";
-import { Suspense, cache, type ReactNode } from "react";
+import { Suspense, cache, type ComponentProps } from "react";
 import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
 import { getTranslations, getLocale } from "next-intl/server";
@@ -33,6 +33,7 @@ import {
 import { categoryPagePath } from "@/lib/template-topics";
 import type { Area } from "@/types/area";
 import { TemplateSummary } from "@/components/dataset/template-summary";
+import { DatasetTimestamps } from "@/components/dataset/dataset-timestamps";
 import { fillAreaQuery } from "@/lib/overpass/area-query";
 import { DatasetWaitPage } from "@/components/dataset/dataset-wait-page";
 import {
@@ -94,20 +95,18 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
   // Known before the dataset exists, so every stage can name and describe it
   const localized = resolveTemplateForLocale(template, locale);
   const templateName = localized.name;
-  const query = fillAreaQuery(template.overpassQuery, osmRelationId);
   const categoryHref = categoryPagePath(osmRelationId, template.category);
   const areaName = areaInfo
     ? resolveAreaName(areaInfo, locale)
     : String(osmRelationId);
-  const summary = (
-    <TemplateSummary
-      description={shownDescription(localized)}
-      query={query}
-      category={template.category}
-      areaName={areaName}
-      categoryHref={categoryHref}
-    />
-  );
+  const summaryProps: ComponentProps<typeof TemplateSummary> = {
+    description: shownDescription(localized),
+    query: fillAreaQuery(template.overpassQuery, osmRelationId),
+    category: template.category,
+    areaName,
+    categoryHref,
+  };
+  const summary = <TemplateSummary {...summaryProps} />;
   const t = await getTranslations("DatasetPage");
   const fallbackPage = (
     <DatasetNoMapPage
@@ -129,8 +128,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
       categoryHref={categoryHref}
       templateId={templateId}
       templateName={templateName}
-      summary={summary}
-      query={query}
+      summaryProps={summaryProps}
       areaInfo={areaInfo}
       areaName={areaName}
       locale={locale}
@@ -204,8 +202,7 @@ async function AreaTemplateDatasetView({
   categoryHref,
   templateId,
   templateName,
-  summary,
-  query,
+  summaryProps,
   areaInfo,
   areaName: fallbackAreaName,
   locale,
@@ -215,14 +212,14 @@ async function AreaTemplateDatasetView({
   categoryHref: string;
   templateId: string;
   templateName: string;
-  summary: ReactNode;
-  query: string;
+  summaryProps: ComponentProps<typeof TemplateSummary>;
   areaInfo: Area | null;
   /** Shown on failure screens, before any dataset row can name the area */
   areaName: string;
   locale: string;
   session: Awaited<ReturnType<typeof auth>> | null;
 }) {
+  const summary = <TemplateSummary {...summaryProps} />;
   try {
     const result = await getOrCreateDataset(areaId, templateId, locale, {
       allowCreate: !!session?.user,
@@ -320,7 +317,17 @@ async function AreaTemplateDatasetView({
           <DatasetNoMapPage
             categoryHref={categoryHref}
             areaId={areaId}
-            summary={summary}
+            summary={
+              <TemplateSummary
+                {...summaryProps}
+                timestamps={
+                  <DatasetTimestamps
+                    dataset={dataset}
+                    lastChecked={dataset.lastChecked}
+                  />
+                }
+              />
+            }
             title={datasetT("datasetInArea", {
               dataset: dataset.template.name,
               area: areaName,
@@ -348,7 +355,7 @@ async function AreaTemplateDatasetView({
     return (
       <div className="bg-gray-50 lg:h-[calc(100dvh_-_var(--nav-height))] lg:flex lg:overflow-hidden">
         {trackDetailView}
-        <DatasetInteractiveSection dataset={dataset} boundary={boundary} areaName={areaName} categoryHref={categoryHref} query={query} savedCount={savedCount} saveLimit={saveLimit} />
+        <DatasetInteractiveSection dataset={dataset} boundary={boundary} areaName={areaName} categoryHref={categoryHref} query={summaryProps.query} savedCount={savedCount} saveLimit={saveLimit} />
       </div>
     );
   } catch (error) {
