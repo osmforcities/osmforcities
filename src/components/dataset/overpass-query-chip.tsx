@@ -51,10 +51,10 @@ export function OverpassQueryChip({ query }: { query: string }) {
               href={`${OVERPASS_TURBO_URL}?Q=${encodeURIComponent(query)}`}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={t("queryOpenInTurboNewTab")}
               className="inline-flex items-center gap-1 font-medium text-olive-700 hover:underline"
             >
               {t("queryOpenInTurbo")}
-              <span className="sr-only">{` ${t("queryOpensNewTab")}`}</span>
               <ExternalLink className="size-3" aria-hidden />
             </a>
           </div>

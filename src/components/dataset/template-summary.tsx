@@ -17,7 +17,7 @@ export function TemplateSummary({
           {description}
         </p>
       )}
-      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+      <div className="mt-2">
         <OverpassQueryChip query={query} />
       </div>
     </>
