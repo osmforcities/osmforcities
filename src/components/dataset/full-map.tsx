@@ -10,7 +10,7 @@ import React, {
   useState,
 } from "react";
 import Map, { Source, Layer } from "react-map-gl/maplibre";
-import type { MapRef } from "react-map-gl/maplibre";
+import type { MapRef, ViewState } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useTranslations, useLocale } from "next-intl";
 import type { Dataset } from "@/schemas/dataset";
@@ -47,10 +47,14 @@ export interface DatasetFullMapHandle {
   deselectFeature: () => void;
 }
 
+export type MapPosition = Pick<ViewState, "longitude" | "latitude" | "zoom">;
+
 type DatasetFullMapProps = {
   dataset: Dataset;
   boundary: FeatureCollection | null;
   onFeatureSelect?: (feature: Feature | null) => void;
+  initialPosition?: MapPosition;
+  onPositionChange?: (position: MapPosition) => void;
 };
 
 const AGE_VIEW_ID = "age";
@@ -67,7 +71,7 @@ ensurePmtilesProtocol();
 export const DatasetFullMap = forwardRef<
   DatasetFullMapHandle,
   DatasetFullMapProps
->(({ dataset, boundary, onFeatureSelect }, ref) => {
+>(({ dataset, boundary, onFeatureSelect, initialPosition, onPositionChange }, ref) => {
   const t = useTranslations("DatasetMap");
   // next-intl types message keys as literals; tag keys/values are dynamic (OSM
   // data), so widen the translator to the loose MessageResolver shape.
@@ -234,7 +238,8 @@ export const DatasetFullMap = forwardRef<
             ref={mapRef}
             mapStyle={mapStyle}
             aria-label={t("fullScreenMapLabel")}
-            initialViewState={initialViewState}
+            initialViewState={initialPosition ?? initialViewState}
+            onMoveEnd={onPositionChange && ((e) => onPositionChange(e.viewState))}
             style={{ width: "100%", height: "100%" }}
             cursor={cursor}
             onClick={handleFeatureClick}

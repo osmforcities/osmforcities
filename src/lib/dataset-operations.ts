@@ -145,7 +145,7 @@ const DATASET_DETAIL_SELECT = {
   },
 } as const;
 
-async function getDatasetWithDetails(areaId: number, templateId: string, locale: string) {
+export async function getDatasetWithDetails(areaId: number, templateId: string, locale: string) {
   const dataset = await prisma.dataset.findFirst({
     where: {
       areaId,

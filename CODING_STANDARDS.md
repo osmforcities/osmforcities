@@ -7,6 +7,7 @@ How code in this repo should be written. Reviewers (human and agent) check chang
 - All user-visible text goes through `useTranslations()` / `getTranslations()`. No string literals in JSX, including bare expressions like `{"some text"}` or template literals.
 - Every new key exists in `messages/en.json`. Other locales may lag on new keys; English is the source.
 - If `pnpm type-check` fails with `NamespacedMessageKeys` errors after adding keys, delete the stale generated `messages/en.d.json.ts`.
+- Exception: dev-only UI that renders nothing outside `NODE_ENV === "development"` (Tune panel, map gallery) may use untranslated English constants, marked `// Dev-only UI, intentionally not translated`. The i18n and Copy rules and the React Aria rule in UI components do not apply to it. Glossary _Avoid_ lists still do.
 
 ### Copy
 
