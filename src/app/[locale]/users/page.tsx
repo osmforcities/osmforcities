@@ -120,7 +120,6 @@ export default async function UsersPage() {
                             saveLimit: userItem.saveLimit,
                           }}
                           isSelf={userItem.id === user.id}
-                          defaultSaveLimit={MAX_SAVES_PER_USER}
                         />
                       </CardHeader>
                       <CardContent className="space-y-3">

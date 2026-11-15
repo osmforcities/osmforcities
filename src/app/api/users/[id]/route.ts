@@ -6,7 +6,7 @@ import { prisma } from "@/lib/db";
 const UserUpdateSchema = z
   .object({
     isAdmin: z.boolean(),
-    saveLimit: z.number().int().positive().nullable(),
+    saveLimit: z.number().int().positive().max(2147483647).nullable(),
   })
   .partial()
   .strict();

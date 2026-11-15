@@ -96,6 +96,7 @@ describe("PATCH /api/users/[id]", () => {
     { saveLimit: 0 },
     { saveLimit: -1 },
     { saveLimit: 2.5 },
+    { saveLimit: 2147483648 },
     { saveLimit: "30" },
     { isAdmin: "yes" },
     { email: "x@example.com" },

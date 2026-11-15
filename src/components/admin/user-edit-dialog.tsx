@@ -17,14 +17,14 @@ import {
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button";
+import { MAX_SAVES_PER_USER } from "@/lib/constants";
 
 type UserEditDialogProps = {
   user: { id: string; email: string; isAdmin: boolean; saveLimit: number | null };
   isSelf: boolean;
-  defaultSaveLimit: number;
 };
 
-export function UserEditDialog({ user, isSelf, defaultSaveLimit }: UserEditDialogProps) {
+export function UserEditDialog({ user, isSelf }: UserEditDialogProps) {
   const t = useTranslations("UsersPage");
 
   return (
@@ -45,7 +45,6 @@ export function UserEditDialog({ user, isSelf, defaultSaveLimit }: UserEditDialo
               <UserEditForm
                 user={user}
                 isSelf={isSelf}
-                defaultSaveLimit={defaultSaveLimit}
                 onDone={close}
               />
             )}
@@ -59,7 +58,6 @@ export function UserEditDialog({ user, isSelf, defaultSaveLimit }: UserEditDialo
 function UserEditForm({
   user,
   isSelf,
-  defaultSaveLimit,
   onDone,
 }: UserEditDialogProps & { onDone: () => void }) {
   const t = useTranslations("UsersPage");
@@ -122,11 +120,11 @@ function UserEditForm({
       >
         <Label className="text-sm font-medium text-black dark:text-white">{t("saveLimit")}</Label>
         <Input
-          placeholder={t("saveLimitDefault", { limit: defaultSaveLimit })}
+          placeholder={t("saveLimitDefault", { limit: MAX_SAVES_PER_USER })}
           className="w-full rounded-md border border-gray-300 px-3 py-2 text-black dark:border-gray-600 dark:bg-gray-900 dark:text-white"
         />
         <Text slot="description" className="text-sm text-gray-500 dark:text-gray-400">
-          {t("saveLimitHint", { limit: defaultSaveLimit })}
+          {t("saveLimitHint", { limit: MAX_SAVES_PER_USER })}
         </Text>
       </NumberField>
 

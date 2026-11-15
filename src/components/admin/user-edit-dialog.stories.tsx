@@ -21,7 +21,6 @@ const meta: Meta<typeof UserEditDialog> = {
   args: {
     user: { id: "u2", email: "importer@example.com", isAdmin: false, saveLimit: null },
     isSelf: false,
-    defaultSaveLimit: 10,
   },
 };
 
