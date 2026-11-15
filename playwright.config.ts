@@ -66,6 +66,7 @@ export default defineConfig({
       stderr: "pipe" as const,
       env: {
         OVERPASS_API_URL: "http://localhost:3000/api/mock-overpass",
+        NOMINATIM_API_URL: "http://localhost:3000/api/mock-nominatim",
       },
     }]),
     ...(e2eProject === "chromium" ? [] : [{
@@ -81,6 +82,7 @@ export default defineConfig({
       env: {
         NEXT_DIST_DIR: ".next-tiler",
         OVERPASS_API_URL: "http://localhost:3100/api/mock-overpass",
+        NOMINATIM_API_URL: "http://localhost:3100/api/mock-nominatim",
         TILER_URL: pmtilerSmoke
           ? `http://127.0.0.1:${PMTILER_SMOKE_PORT}`
           : "http://localhost:3100/api/mock-tiler",
