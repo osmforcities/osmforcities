@@ -10,7 +10,7 @@ import React, {
   useState,
 } from "react";
 import Map, { Source, Layer } from "react-map-gl/maplibre";
-import type { MapRef } from "react-map-gl/maplibre";
+import type { MapRef, ViewState } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useTranslations, useLocale } from "next-intl";
 import type { Dataset } from "@/schemas/dataset";
@@ -47,7 +47,7 @@ export interface DatasetFullMapHandle {
   deselectFeature: () => void;
 }
 
-export type MapPosition = { longitude: number; latitude: number; zoom: number };
+export type MapPosition = Pick<ViewState, "longitude" | "latitude" | "zoom">;
 
 type DatasetFullMapProps = {
   dataset: Dataset;
@@ -239,11 +239,7 @@ export const DatasetFullMap = forwardRef<
             mapStyle={mapStyle}
             aria-label={t("fullScreenMapLabel")}
             initialViewState={initialPosition ?? initialViewState}
-            onMoveEnd={
-              onPositionChange &&
-              (({ viewState: { longitude, latitude, zoom } }) =>
-                onPositionChange({ longitude, latitude, zoom }))
-            }
+            onMoveEnd={onPositionChange && ((e) => onPositionChange(e.viewState))}
             style={{ width: "100%", height: "100%" }}
             cursor={cursor}
             onClick={handleFeatureClick}

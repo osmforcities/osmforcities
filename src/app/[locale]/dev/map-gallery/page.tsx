@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { FeatureCollection } from "geojson";
 import { getDatasetWithDetails } from "@/lib/dataset-operations";
 import { transformDataset } from "@/lib/dataset/transform";
 import { datasetTilesPath, tilesPointCount } from "@/lib/dataset-tiles";
@@ -32,13 +33,15 @@ export default async function MapGalleryPage({
       const dataset = transformDataset(raw, null, locale, {
         skipTemplateResolution: true,
       });
+      // transformDataset drops geojson when an archive is served; the gallery needs both
+      const geojson = raw.geojson as FeatureCollection | null;
       const bbox = BboxSchema.safeParse(dataset.bbox);
       const tilesPath = datasetTilesPath(dataset);
       return {
         galleryCase,
         dataset: {
-          detail: dataset,
-          renderModes: galleryRenderModes({ geojson: dataset.geojson, tilesPath }),
+          detail: { ...dataset, geojson },
+          renderModes: galleryRenderModes({ geojson, tilesPath }),
           center: galleryCenter(dataset.area, bbox.success ? bbox.data : null),
           tilesPath,
           pointCount: tilesPointCount(dataset),

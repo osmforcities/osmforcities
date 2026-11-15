@@ -38,13 +38,6 @@ export type GalleryRow = {
   dataset: GalleryDataset | null;
 };
 
-type CellSource = {
-  center: [number, number];
-  features: FeatureCollection | null;
-  tilesPath: string | null;
-  pointCount: number;
-};
-
 type GalleryCell = {
   rowIndex: number;
   captureOrder: number;
@@ -57,9 +50,6 @@ type Selection = {
   renderMode: GalleryRenderMode;
   position: MapPosition;
 };
-
-// A data URL, or null when the cell timed out
-type Capture = string | null;
 
 const CELL_SIZE = 112;
 const OPENING_ZOOM = 12;
@@ -94,18 +84,6 @@ function toVisualFeatures(geojson: unknown): FeatureCollection | null {
   return processOSMFeaturesForVisualization(parsed.data as FeatureCollection);
 }
 
-function toCellSource(dataset: GalleryDataset | null): CellSource | null {
-  if (!dataset?.center) return null;
-  return {
-    center: dataset.center,
-    features: dataset.renderModes.includes("geojson")
-      ? toVisualFeatures(dataset.detail.geojson)
-      : null,
-    tilesPath: dataset.tilesPath,
-    pointCount: dataset.pointCount,
-  };
-}
-
 function openingSelection(rows: GalleryRow[]): Selection | null {
   const rowIndex = rows.findIndex(({ dataset }) => dataset?.center && dataset.renderModes.length);
   const dataset = rows[rowIndex]?.dataset;
@@ -120,19 +98,24 @@ function openingSelection(rows: GalleryRow[]): Selection | null {
 
 // Picker cells are captured images, one live map at a time: browsers cap live WebGL contexts at about 16, the grid holds up to 64
 export function MapGallery({ rows }: { rows: GalleryRow[] }) {
-  const [captures, setCaptures] = useState<Capture[]>([]);
+  const [captures, setCaptures] = useState<(string | null)[]>([]);
   const [selection, setSelection] = useState(() => openingSelection(rows));
   const [mapVersion, setMapVersion] = useState(0);
 
-  const cellSources = useMemo(
-    () => rows.map(({ dataset }) => toCellSource(dataset)),
+  const featuresByRow = useMemo(
+    () =>
+      rows.map(({ dataset }) =>
+        dataset?.renderModes.includes("geojson")
+          ? toVisualFeatures(dataset.detail.geojson)
+          : null
+      ),
     [rows]
   );
 
   const renderGroupsByRow = useMemo(() => {
     let captureOrder = 0;
     return rows.map(({ dataset }, rowIndex) => {
-      if (!cellSources[rowIndex] || !dataset) return [];
+      if (!dataset?.center) return [];
       return dataset.renderModes.map((renderMode) => ({
         renderMode,
         cells: GALLERY_ZOOMS.map(
@@ -145,11 +128,11 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
         ),
       }));
     });
-  }, [rows, cellSources]);
+  }, [rows]);
 
   // The timeout and the idle event can both fire before a re-render; only the first one counts
   const addCapture = useCallback(
-    (captureOrder: number, capture: Capture) =>
+    (captureOrder: number, capture: string | null) =>
       setCaptures((prev) =>
         prev.length === captureOrder ? [...prev, capture] : prev
       ),
@@ -158,9 +141,9 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
 
   const openCell = useCallback(
     (cell: GalleryCell) => {
-      const source = cellSources[cell.rowIndex];
-      if (!source) return;
-      const [longitude, latitude] = source.center;
+      const center = rows[cell.rowIndex].dataset?.center;
+      if (!center) return;
+      const [longitude, latitude] = center;
       setSelection({
         rowIndex: cell.rowIndex,
         renderMode: cell.renderMode,
@@ -168,7 +151,7 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
       });
       setMapVersion((v) => v + 1);
     },
-    [cellSources]
+    [rows]
   );
 
   const keepPosition = useCallback(
@@ -230,7 +213,7 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
           {!TILES_ENABLED && <Placeholder>{TEXT.tilesOff}</Placeholder>}
         </header>
         {rows.map(({ galleryCase, dataset }, rowIndex) => {
-          const source = cellSources[rowIndex];
+          const center = dataset?.center;
           return (
             <section key={`${galleryCase.templateId}/${galleryCase.osmRelationId}`}>
               <h2 className="text-sm font-medium">{TEXT.heading(galleryCase)}</h2>
@@ -245,7 +228,7 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
                     {TEXT.createLink}
                   </Link>
                 </Placeholder>
-              ) : !source || renderGroupsByRow[rowIndex].length === 0 ? (
+              ) : !center || renderGroupsByRow[rowIndex].length === 0 ? (
                 <Placeholder>{TEXT.nothingToRender}</Placeholder>
               ) : (
                 renderGroupsByRow[rowIndex].map(({ renderMode, cells }) => (
@@ -261,7 +244,9 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
                         >
                           <GalleryCellView
                             cell={cell}
-                            source={source}
+                            center={center}
+                            dataset={dataset}
+                            features={featuresByRow[rowIndex]}
                             capture={captures[cell.captureOrder]}
                             isLive={cell.captureOrder === captures.length}
                             onCapture={addCapture}
@@ -297,16 +282,20 @@ function Placeholder({ children }: { children: React.ReactNode }) {
 
 function GalleryCellView({
   cell,
-  source,
+  center,
+  dataset,
+  features,
   capture,
   isLive,
   onCapture,
 }: {
   cell: GalleryCell;
-  source: CellSource;
-  capture: Capture | undefined;
+  center: [number, number];
+  dataset: GalleryDataset;
+  features: FeatureCollection | null;
+  capture: string | null | undefined;
   isLive: boolean;
-  onCapture: (captureOrder: number, capture: Capture) => void;
+  onCapture: (captureOrder: number, capture: string | null) => void;
 }) {
   const box = { width: CELL_SIZE, height: CELL_SIZE };
 
@@ -332,7 +321,7 @@ function GalleryCellView({
   }
   if (!isLive) return <div style={box} className="bg-gray-100" />;
 
-  const [longitude, latitude] = source.center;
+  const [longitude, latitude] = center;
   return (
     <div style={box}>
       <Map
@@ -348,14 +337,14 @@ function GalleryCellView({
           )
         }
       >
-        {cell.renderMode === "tiles" && source.tilesPath ? (
+        {cell.renderMode === "tiles" && dataset.tilesPath ? (
           <TilesLayerGroup
-            tilesUrl={`pmtiles://${source.tilesPath}`}
-            pointCount={source.pointCount}
+            tilesUrl={`pmtiles://${dataset.tilesPath}`}
+            pointCount={dataset.pointCount}
             curatedTheme={null}
           />
         ) : (
-          source.features && <MapLayers geoJSONData={source.features} curatedTheme={null} />
+          features && <MapLayers geoJSONData={features} curatedTheme={null} />
         )}
       </Map>
     </div>
