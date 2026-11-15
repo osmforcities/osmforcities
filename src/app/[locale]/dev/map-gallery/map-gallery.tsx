@@ -48,7 +48,11 @@ const CAPTURE_TIMEOUT_MS = 20_000;
 // Dev-only UI, intentionally not translated
 const TEXT = {
   title: "Map style gallery",
-  intro: `Cases live in src/lib/map-gallery.ts. Zooms ${GALLERY_ZOOMS.join(", ")}, same center per row.`,
+  intro: [
+    `Use this page to check a map style change on many kinds of data at once. Each row is a real dataset from the local database, drawn at zooms ${GALLERY_ZOOMS.join(", ")} around the same spot.`,
+    "Change a style, reload, and compare. A row marked missing needs its dataset first: open the link it shows while signed in.",
+    "To add a case, add one line in src/lib/map-gallery.ts.",
+  ],
   heading: (c: GalleryCase) =>
     `${c.label}: ${c.templateId} in ${c.areaName} (relation ${c.osmRelationId})`,
   missing: (c: GalleryCase) =>
@@ -108,7 +112,11 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
     <main className="p-6 space-y-8">
       <header>
         <h1 className="text-2xl font-semibold">{TEXT.title}</h1>
-        <p className="text-sm text-gray-600">{TEXT.intro}</p>
+        {TEXT.intro.map((line) => (
+          <p key={line} className="text-sm text-gray-600 max-w-prose mt-1">
+            {line}
+          </p>
+        ))}
       </header>
       {rows.map(({ galleryCase, dataset }, rowIndex) => (
         <section key={`${galleryCase.templateId}/${galleryCase.osmRelationId}`}>
