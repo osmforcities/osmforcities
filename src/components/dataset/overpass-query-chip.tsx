@@ -6,8 +6,6 @@ import { Code, ExternalLink } from "lucide-react";
 import { Button, Dialog, DialogTrigger, Popover } from "react-aria-components";
 import { PILL_BUTTON_CLASS } from "@/components/dataset/pill-class";
 
-const OVERPASS_TURBO_URL = "https://overpass-turbo.eu/";
-
 export function OverpassQueryChip({ query }: { query: string }) {
   const t = useTranslations("DatasetPage");
   const [copyLabel, setCopyLabel] = useState<
@@ -48,7 +46,7 @@ export function OverpassQueryChip({ query }: { query: string }) {
               <span aria-live="polite">{t(copyLabel)}</span>
             </Button>
             <a
-              href={`${OVERPASS_TURBO_URL}?Q=${encodeURIComponent(query)}`}
+              href={`https://overpass-turbo.eu/?Q=${encodeURIComponent(query)}`}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={t("queryOpenInTurboNewTab")}
