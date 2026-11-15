@@ -11,9 +11,10 @@ import { useTranslations } from "next-intl";
 type QuotaIndicatorProps = {
   used: number;
   limit: number;
+  showInfo?: boolean;
 };
 
-export function QuotaIndicator({ used, limit }: QuotaIndicatorProps) {
+export function QuotaIndicator({ used, limit, showInfo = true }: QuotaIndicatorProps) {
   const t = useTranslations("TabLayout");
 
   const ratio = limit > 0 ? used / limit : 0;
@@ -62,7 +63,7 @@ export function QuotaIndicator({ used, limit }: QuotaIndicatorProps) {
         )}
       </span>
 
-      <TooltipTrigger>
+      {showInfo && <TooltipTrigger>
         <Button
           aria-label={t("quotaInfoButtonLabel")}
           className={`inline-flex items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 dark:focus-visible:ring-gray-500 ${iconColor}`}
@@ -85,7 +86,7 @@ export function QuotaIndicator({ used, limit }: QuotaIndicatorProps) {
         <Tooltip className="max-w-xs rounded-md bg-gray-900 dark:bg-gray-100 px-3 py-2 text-xs text-white dark:text-gray-900 shadow-lg">
           {t("quotaInfoTooltip", { limit })}
         </Tooltip>
-      </TooltipTrigger>
+      </TooltipTrigger>}
     </div>
   );
 }

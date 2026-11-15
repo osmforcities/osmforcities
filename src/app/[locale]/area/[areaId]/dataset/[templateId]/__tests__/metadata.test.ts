@@ -59,6 +59,9 @@ describe("dataset page metadata", () => {
     vi.mocked(resolveTemplate).mockResolvedValue({ ...pharmacies, isActive: false } as never);
     expect(await metadataFor()).toEqual({});
 
+    vi.mocked(resolveTemplate).mockResolvedValue({ ...pharmacies, deprecatesAt: new Date() } as never);
+    expect(await metadataFor()).toEqual({});
+
     vi.mocked(resolveTemplate).mockResolvedValue(null);
     expect(await metadataFor("not-a-template")).toEqual({});
 

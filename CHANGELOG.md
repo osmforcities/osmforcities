@@ -1,5 +1,18 @@
 # osmforcities
 
+## 1.23.0
+
+### Added
+
+- Admins can set a save limit per user and change admin status from the Users page, now laid out as cards [#767]
+
+### Fixed
+
+- Deprecated templates without a replacement no longer get a named browser title and link preview [#762]
+
+[#762]: https://github.com/osmforcities/osmforcities/pull/762
+[#767]: https://github.com/osmforcities/osmforcities/pull/767
+
 ## 1.22.0
 
 ### Added
