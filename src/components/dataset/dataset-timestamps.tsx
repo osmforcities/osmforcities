@@ -93,7 +93,7 @@ export function PendingTimestamps() {
       {labels.map((label) => (
         <span
           key={label}
-          className="h-[22px] w-16 flex-none animate-pulse rounded-full bg-gray-200"
+          className="h-5.5 w-16 flex-none animate-pulse rounded-full bg-gray-200"
         >
           <span className="sr-only">{t("timestampPending", { label })}</span>
         </span>
