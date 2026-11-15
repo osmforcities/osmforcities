@@ -386,7 +386,7 @@ export async function generateMetadata({ params }: DatasetPageProps): Promise<Me
     getAreaDetailsById(osmRelationId, locale),
     getTranslations("DatasetPage"),
   ]);
-  if (!template?.isActive || !areaInfo) return {};
+  if (!template?.isActive || template.deprecatesAt || !areaInfo) return {};
 
   const { name, description } = resolveTemplateForLocale(template, locale);
   return getLocalizedMetadata(locale as Locale, {
