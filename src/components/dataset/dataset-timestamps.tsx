@@ -84,6 +84,29 @@ export function DatasetTimestamps({
   );
 }
 
+export function PendingTimestamps() {
+  const t = useTranslations("DatasetPage");
+  const pills = [
+    { icon: Pencil, label: t("lastEdited") },
+    { icon: RefreshCw, label: t("lastCheckedLabel") },
+  ];
+
+  return (
+    <>
+      {pills.map(({ icon: Icon, label }) => (
+        <span key={label} className={PILL_CLASS}>
+          <Icon className="size-3 flex-shrink-0 text-gray-400" aria-hidden />
+          <span className="sr-only">{t("timestampPending", { label })}</span>
+          <span
+            className="h-2 w-6 animate-pulse rounded-full bg-gray-200"
+            aria-hidden
+          />
+        </span>
+      ))}
+    </>
+  );
+}
+
 function TimestampPill({
   icon: Icon,
   label,

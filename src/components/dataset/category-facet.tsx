@@ -1,12 +1,11 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { Dataset } from "@/schemas/dataset";
 import { Link } from "@/i18n/navigation";
 import { useCategoryLabel } from "@/lib/category-label";
 
 type CategoryFacetProps = {
-  dataset: Dataset;
+  category: { slug: string } | null | undefined;
   areaName: string;
   categoryHref: string;
 };
@@ -19,10 +18,9 @@ const chipClasses =
  * links to the area's browse page for that category, with an accessible label.
  * Uncategorized templates fall back to a static "Other" chip (no link).
  */
-export function CategoryFacet({ dataset, areaName, categoryHref }: CategoryFacetProps) {
+export function CategoryFacet({ category, areaName, categoryHref }: CategoryFacetProps) {
   const t = useTranslations("DatasetPage");
   const categoryLabel = useCategoryLabel();
-  const category = dataset.template.category;
 
   if (!category) {
     return <span className={chipClasses}>{t("categoryUncategorized")}</span>;

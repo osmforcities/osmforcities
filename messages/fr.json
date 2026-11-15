@@ -192,6 +192,7 @@
     "queryOpenInTurbo": "Ouvrir dans Overpass Turbo",
     "queryOpenInTurboNewTab": "Ouvrir dans Overpass Turbo, s'ouvre dans un nouvel onglet",
     "timestampDescription": "{label} {relative}",
+    "timestampPending": "{label}, pas encore disponible",
     "fetchCadence": "Les jeux de données sont synchronisés une fois par jour dans OSM for Cities ; ceci est le délai actuel par rapport à OpenStreetMap.",
     "downloadData": "Télécharger les données",
     "download": "Télécharger",

@@ -86,7 +86,7 @@ export function DatasetInteractiveSection({
               </div>
               <DatasetInfoPanel dataset={dataset} areaName={areaName} />
               <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                <CategoryFacet dataset={dataset} areaName={areaName} categoryHref={categoryHref} />
+                <CategoryFacet category={dataset.template.category} areaName={areaName} categoryHref={categoryHref} />
                 <DatasetTimestamps dataset={dataset} lastChecked={lastChecked} />
                 <OverpassQueryChip query={query} />
               </div>

@@ -95,13 +95,19 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
   const localized = resolveTemplateForLocale(template, locale);
   const templateName = localized.name;
   const query = fillAreaQuery(template.overpassQuery, osmRelationId);
-  const summary = (
-    <TemplateSummary description={shownDescription(localized)} query={query} />
-  );
   const categoryHref = categoryPagePath(osmRelationId, template.category);
   const areaName = areaInfo
     ? resolveAreaName(areaInfo, locale)
     : String(osmRelationId);
+  const summary = (
+    <TemplateSummary
+      description={shownDescription(localized)}
+      query={query}
+      category={template.category}
+      areaName={areaName}
+      categoryHref={categoryHref}
+    />
+  );
   const t = await getTranslations("DatasetPage");
   const fallbackPage = (
     <DatasetNoMapPage

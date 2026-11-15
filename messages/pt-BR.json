@@ -192,6 +192,7 @@
     "queryOpenInTurbo": "Abrir no Overpass Turbo",
     "queryOpenInTurboNewTab": "Abrir no Overpass Turbo, abre em uma nova aba",
     "timestampDescription": "{label} {relative}",
+    "timestampPending": "{label}, ainda indisponível",
     "fetchCadence": "Os conjuntos de dados são sincronizados uma vez por dia no OSM for Cities; este é o atraso atual em relação ao OpenStreetMap.",
     "downloadData": "Baixar Dados",
     "download": "Baixar",

@@ -120,6 +120,9 @@ export const CountingWithSummary: Story = {
       <TemplateSummary
         description="Buildings of every kind, mapped as outlines"
         query={'[out:json];\nrel(324431);\nmap_to_area -> .searchArea;\nnwr["building"](area.searchArea);\nout geom meta;'}
+        category={{ slug: "buildings" }}
+        areaName="Rotterdam"
+        categoryHref="/area/324431/topics/built-environment/buildings"
       />
     ),
   },
@@ -127,6 +130,11 @@ export const CountingWithSummary: Story = {
     await expect(
       canvas.getByText("Buildings of every kind, mapped as outlines")
     ).toBeVisible();
+    await expect(
+      canvas.getByRole("link", { name: /Rotterdam/ })
+    ).toBeVisible();
+    await expect(canvas.getByText("Edited, not available yet")).toBeInTheDocument();
+    await expect(canvas.getByText("Fetched, not available yet")).toBeInTheDocument();
     await expect(canvas.getByRole("button", { name: "Query" })).toBeVisible();
   },
 };
