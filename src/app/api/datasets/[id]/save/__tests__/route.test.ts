@@ -15,6 +15,7 @@ vi.mock("@/lib/umami", () => ({
 
 const tx = {
   datasetSave: { count: vi.fn(), create: vi.fn() },
+  user: { findUnique: vi.fn() },
 };
 
 vi.mock("@/lib/db", () => ({
@@ -51,6 +52,7 @@ beforeEach(() => {
   vi.mocked(prisma.datasetSave.findUnique).mockResolvedValue(null);
   tx.datasetSave.count.mockResolvedValue(0);
   tx.datasetSave.create.mockResolvedValue(save);
+  tx.user.findUnique.mockResolvedValue({ saveLimit: null });
   vi.mocked(prisma.datasetSave.update).mockResolvedValue(save as never);
 });
 
@@ -145,6 +147,20 @@ describe("POST /api/datasets/[id]/save", () => {
     const res = await post({ notifyWhenReady: true });
 
     expect(res.status).toBe(403);
+    expect(await res.json()).toEqual({ error: "save_limit_reached", limit: MAX_SAVES_PER_USER });
     expect(tx.datasetSave.create).not.toHaveBeenCalled();
+  });
+
+  it("a user's own save limit replaces the default", async () => {
+    tx.datasetSave.count.mockResolvedValue(MAX_SAVES_PER_USER);
+    tx.user.findUnique.mockResolvedValue({ saveLimit: 30 });
+
+    const res = await post();
+    expect(res.status).toBe(200);
+
+    tx.datasetSave.count.mockResolvedValue(30);
+    const full = await post();
+    expect(full.status).toBe(403);
+    expect(await full.json()).toEqual({ error: "save_limit_reached", limit: 30 });
   });
 });

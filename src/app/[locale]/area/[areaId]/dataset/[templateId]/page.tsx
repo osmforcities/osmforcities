@@ -44,6 +44,7 @@ import { TrackView } from "@/components/analytics/track-view";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { getAreaBoundary } from "@/lib/area-boundary";
 import { MAX_SAVES_PER_USER } from "@/lib/constants";
+import { getSaveLimit } from "@/lib/save-limit";
 import { getDatasetPath } from "@/lib/urls";
 
 export const revalidate = 3600;
@@ -200,8 +201,9 @@ async function AreaTemplateDatasetView({
     let isSaved = false;
     let notifyRequested = false;
     let savedCount = 0;
+    let saveLimit = MAX_SAVES_PER_USER;
     if (session?.user?.id) {
-      const [saveRecord, count] = await Promise.all([
+      const [saveRecord, count, userSaveLimit] = await Promise.all([
         prisma.datasetSave.findUnique({
           where: {
             userId_datasetId: {
@@ -211,10 +213,12 @@ async function AreaTemplateDatasetView({
           },
         }),
         prisma.datasetSave.count({ where: { userId: session.user.id } }),
+        getSaveLimit(session.user.id),
       ]);
       isSaved = !!saveRecord;
       notifyRequested = !!saveRecord?.notifyWhenReady;
       savedCount = count;
+      saveLimit = userSaveLimit;
     }
 
     // No detail-view tracker: the flip to the map remounts the page and would
@@ -310,7 +314,7 @@ async function AreaTemplateDatasetView({
     return (
       <div className="bg-gray-50 lg:h-[calc(100dvh_-_var(--nav-height))] lg:flex lg:overflow-hidden">
         {trackDetailView}
-        <DatasetInteractiveSection dataset={dataset} boundary={boundary} areaName={areaName} categoryHref={categoryHref} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
+        <DatasetInteractiveSection dataset={dataset} boundary={boundary} areaName={areaName} categoryHref={categoryHref} savedCount={savedCount} saveLimit={saveLimit} />
       </div>
     );
   } catch (error) {
