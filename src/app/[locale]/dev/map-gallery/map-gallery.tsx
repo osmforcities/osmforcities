@@ -10,6 +10,7 @@ import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 import { processOSMFeaturesForVisualization } from "@/lib/osm-data-processor";
 import { MapLayers } from "@/components/dataset/map/layers";
 import { Link } from "@/i18n/navigation";
+import { TILES_ENABLED } from "@/lib/dataset-tiles";
 import { TilesLayerGroup } from "@/components/dataset/map/layers/tiles-layer-group";
 import {
   GALLERY_ZOOMS,
@@ -59,6 +60,8 @@ const TEXT = {
   missing: (c: GalleryCase) =>
     `Missing locally: ${c.templateId} in relation ${c.osmRelationId}.`,
   createLink: "Open the dataset page to create it",
+  tilesOff:
+    "Tiles are off. Large cases like Amsterdam buildings can't be created until the local tiler runs. Setup is in docs/features/large-datasets.md.",
   nothingToRender:
     "Nothing to render: no stored geojson, no served archive (tiles-only lane off?) or no center.",
   zoom: (zoom: number) => `z${zoom}`,
@@ -119,6 +122,7 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
             {line}
           </p>
         ))}
+        {!TILES_ENABLED && <Placeholder>{TEXT.tilesOff}</Placeholder>}
       </header>
       {rows.map(({ galleryCase, dataset }, rowIndex) => (
         <section key={`${galleryCase.templateId}/${galleryCase.osmRelationId}`}>
