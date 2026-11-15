@@ -31,17 +31,17 @@ export function OverpassQueryChip({ query }: { query: string }) {
       <Popover offset={6} className="outline-none">
         <Dialog
           aria-label={t("queryTitle")}
-          className="w-[min(28rem,calc(100vw-2rem))] rounded-md border border-gray-200 bg-white p-3 text-xs text-gray-700 shadow-lg outline-none"
+          className="w-[min(28rem,calc(100vw-2rem))] rounded-md bg-gray-900 px-3 py-2 text-xs text-white shadow-lg outline-none"
         >
-          <p className="font-medium text-gray-900">{t("queryTitle")}</p>
-          <p className="mt-0.5 text-gray-600">{t("queryHelp")}</p>
-          <pre className="mt-2 max-h-64 overflow-auto rounded bg-gray-50 p-2 font-mono text-[11px] leading-snug text-gray-800">
+          <p className="font-medium">{t("queryTitle")}</p>
+          <p className="mt-0.5 text-gray-300">{t("queryHelp")}</p>
+          <pre className="mt-2 max-h-64 overflow-auto rounded bg-white/10 p-2 font-mono text-[11px] leading-snug text-gray-100">
             {query}
           </pre>
-          <div className="mt-2 flex items-center justify-between gap-2">
+          <div className="mt-1.5 flex items-center justify-between gap-2 border-t border-white/15 pt-1.5">
             <Button
               onPress={copy}
-              className="rounded border border-gray-200 px-2 py-1 font-medium hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-olive-500"
+              className="rounded border border-white/20 px-2 py-1 font-medium hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-olive-300"
             >
               <span aria-live="polite">{t(copyLabel)}</span>
             </Button>
@@ -50,7 +50,7 @@ export function OverpassQueryChip({ query }: { query: string }) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={t("queryOpenInTurboNewTab")}
-              className="inline-flex items-center gap-1 font-medium text-olive-700 hover:underline"
+              className="inline-flex items-center gap-1 font-medium text-olive-300 hover:underline"
             >
               {t("queryOpenInTurbo")}
               <ExternalLink className="size-3" aria-hidden />
