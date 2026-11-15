@@ -6,6 +6,7 @@ import {
   OverpassTimeoutError,
   OverpassResponseTooLargeError,
 } from "@/lib/overpass/transport";
+import { fillAreaQuery } from "@/lib/overpass/area-query";
 import type { OverpassData } from "@/types/overpass";
 import { calculateBbox } from "@/lib/utils";
 import { computeRecencyBands } from "@/lib/dataset-recency";
@@ -339,10 +340,7 @@ export async function fetchDatasetSnapshot(
   rawQuery: string,
   templateId: string
 ): Promise<DatasetSnapshot> {
-  const queryString = rawQuery.replace(
-    /\{OSM_RELATION_ID\}/g,
-    areaId.toString()
-  );
+  const queryString = fillAreaQuery(rawQuery, areaId);
 
   // With the lane on, size is no refusal: every dataset is baked, so a
   // cached too_large verdict must not block the count probe.

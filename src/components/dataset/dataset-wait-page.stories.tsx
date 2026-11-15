@@ -3,6 +3,7 @@ import { expect, waitFor } from "storybook/test";
 import { useTranslations } from "next-intl";
 import { DatasetWaitPage } from "./dataset-wait-page";
 import { NotifyWhenReadyButton } from "./notify-when-ready-button";
+import { TemplateSummary } from "./template-summary";
 import { DatasetTooLargeState } from "@/components/ui/dataset-error-states";
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { withAppFrame } from "../../../.storybook/with-app-frame";
@@ -108,6 +109,25 @@ export const CountingWarm: Story = {
     await expect(canvas.getByRole("progressbar")).not.toHaveAttribute(
       "aria-valuenow"
     );
+  },
+};
+
+/** Every stage names what the dataset holds and how it is selected. */
+export const CountingWithSummary: Story = {
+  args: {
+    ...CountingWarm.args,
+    summary: (
+      <TemplateSummary
+        description="Buildings of every kind, mapped as outlines"
+        query={'[out:json];\nrel(324431);\nmap_to_area -> .searchArea;\nnwr["building"](area.searchArea);\nout geom meta;'}
+      />
+    ),
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByText("Buildings of every kind, mapped as outlines")
+    ).toBeVisible();
+    await expect(canvas.getByRole("button", { name: "Query" })).toBeVisible();
   },
 };
 

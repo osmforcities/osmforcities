@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { Locale } from "@/i18n/routing";
 import { DEFAULT_SEO, getLocalizedMetadata } from "@/lib/metadata";
-import { Suspense, cache } from "react";
+import { Suspense, cache, type ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
 import { getTranslations, getLocale } from "next-intl/server";
@@ -26,10 +26,14 @@ import {
   isValidTemplateIdentifier,
   resolveTemplate,
 } from "@/lib/template-resolver";
-import { resolveTemplateForLocale } from "@/lib/template-locale";
+import {
+  resolveTemplateForLocale,
+  shownDescription,
+} from "@/lib/template-locale";
 import { categoryPagePath } from "@/lib/template-topics";
 import type { Area } from "@/types/area";
-import { DatasetLoadingSkeleton } from "@/components/ui/dataset-loading-skeleton";
+import { TemplateSummary } from "@/components/dataset/template-summary";
+import { fillAreaQuery } from "@/lib/overpass/area-query";
 import { DatasetWaitPage } from "@/components/dataset/dataset-wait-page";
 import {
   TemplateNotFoundError,
@@ -86,12 +90,26 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
     redirect({ href: `/area/${osmRelationId}/dataset/${template.replacedById}`, locale });
   }
 
-  // Known before the dataset exists, so the wait screens can name it
-  const templateName = resolveTemplateForLocale(template, locale).name;
+  // Known before the dataset exists, so every stage can name and describe it
+  const localized = resolveTemplateForLocale(template, locale);
+  const templateName = localized.name;
+  const query = fillAreaQuery(template.overpassQuery, osmRelationId);
+  const summary = (
+    <TemplateSummary description={shownDescription(localized)} query={query} />
+  );
   const categoryHref = categoryPagePath(osmRelationId, template.category);
   const areaName = areaInfo
     ? resolveAreaName(areaInfo, locale)
     : String(osmRelationId);
+  const t = await getTranslations("DatasetPage");
+  const fallbackPage = (
+    <DatasetNoMapPage
+      areaId={osmRelationId}
+      categoryHref={categoryHref}
+      title={t("datasetInArea", { dataset: templateName, area: areaName })}
+      summary={summary}
+    />
+  );
 
   const existing = await prisma.dataset.findFirst({
     where: { areaId: osmRelationId, templateId: template.id, isActive: true },
@@ -104,6 +122,8 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
       categoryHref={categoryHref}
       templateId={templateId}
       templateName={templateName}
+      summary={summary}
+      query={query}
       areaInfo={areaInfo}
       areaName={areaName}
       locale={locale}
@@ -119,7 +139,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
     // Featured datasets are public: render the full view without a session.
     // Anonymous visits must not create datasets.
     if (existing?.isFeatured) {
-      return <Suspense fallback={<DatasetLoadingSkeleton />}>{view}</Suspense>;
+      return <Suspense fallback={fallbackPage}>{view}</Suspense>;
     }
 
     return (
@@ -146,13 +166,14 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
     <Suspense
       fallback={
         existing ? (
-          <DatasetLoadingSkeleton />
+          fallbackPage
         ) : (
           <DatasetWaitPage
             mood="counting"
             templateName={templateName}
             areaName={areaName}
             categoryHref={categoryHref}
+            summary={summary}
             areaId={osmRelationId}
             notify={
               tilesLane && <NotifyWhenReadyButton offer="ready" disabled />
@@ -176,6 +197,8 @@ async function AreaTemplateDatasetView({
   categoryHref,
   templateId,
   templateName,
+  summary,
+  query,
   areaInfo,
   areaName: fallbackAreaName,
   locale,
@@ -185,6 +208,8 @@ async function AreaTemplateDatasetView({
   categoryHref: string;
   templateId: string;
   templateName: string;
+  summary: ReactNode;
+  query: string;
   areaInfo: Area | null;
   /** Shown on failure screens, before any dataset row can name the area */
   areaName: string;
@@ -243,6 +268,7 @@ async function AreaTemplateDatasetView({
             templateName={templateName}
             areaName={fallbackAreaName}
             categoryHref={categoryHref}
+            summary={summary}
             areaId={areaId}
             notify={notify("available")}
           />
@@ -255,6 +281,7 @@ async function AreaTemplateDatasetView({
           templateName={templateName}
           areaName={fallbackAreaName}
           categoryHref={categoryHref}
+          summary={summary}
           areaId={areaId}
           notify={notify("ready")}
         />
@@ -283,6 +310,7 @@ async function AreaTemplateDatasetView({
           <DatasetNoMapPage
             categoryHref={categoryHref}
             areaId={areaId}
+            summary={summary}
             title={datasetT("datasetInArea", {
               dataset: dataset.template.name,
               area: areaName,
@@ -310,7 +338,7 @@ async function AreaTemplateDatasetView({
     return (
       <div className="bg-gray-50 lg:h-[calc(100dvh_-_var(--nav-height))] lg:flex lg:overflow-hidden">
         {trackDetailView}
-        <DatasetInteractiveSection dataset={dataset} boundary={boundary} areaName={areaName} categoryHref={categoryHref} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
+        <DatasetInteractiveSection dataset={dataset} boundary={boundary} areaName={areaName} categoryHref={categoryHref} query={query} savedCount={savedCount} saveLimit={MAX_SAVES_PER_USER} />
       </div>
     );
   } catch (error) {
@@ -320,6 +348,7 @@ async function AreaTemplateDatasetView({
           templateName={templateName}
           areaName={fallbackAreaName}
           categoryHref={categoryHref}
+          summary={summary}
           areaId={areaId}
         />
       );
@@ -332,6 +361,7 @@ async function AreaTemplateDatasetView({
           templateName={templateName}
           areaName={fallbackAreaName}
           categoryHref={categoryHref}
+          summary={summary}
           areaId={areaId}
         />
       );

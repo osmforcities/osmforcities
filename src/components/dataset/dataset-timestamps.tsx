@@ -6,6 +6,7 @@ import { Pencil, RefreshCw } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button, Dialog, DialogTrigger, Popover } from "react-aria-components";
 import { formatRelativeTime } from "@/lib/dataset-stats";
+import { PILL_BUTTON_CLASS, PILL_CLASS } from "@/components/dataset/pill-class";
 
 type DatasetTimestampsProps = {
   dataset: Dataset;
@@ -20,8 +21,6 @@ type PillTimes = {
   exact: string | null;
 };
 
-const PILL_CLASS =
-  "inline-flex flex-none items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[11px] text-gray-600";
 
 function toDate(timestamp: Timestamp): Date | null {
   if (!timestamp) return null;
@@ -122,7 +121,7 @@ function TimestampPill({
   return (
     <DialogTrigger>
       <Button
-        className={`${PILL_CLASS} cursor-pointer hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive-500`}
+        className={PILL_BUTTON_CLASS}
       >
         {content}
       </Button>

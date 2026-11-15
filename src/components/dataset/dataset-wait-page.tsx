@@ -48,6 +48,7 @@ type DatasetWaitPageProps = {
   areaName: string;
   areaId: number;
   categoryHref: string;
+  summary?: ReactNode;
   /**
    * Counting is the probe before any bake; baking polls the tiler.
    * Failed is retried by a later visit (or tick, once saved); timedOut is
@@ -74,6 +75,7 @@ export function DatasetWaitPage({
   areaName,
   areaId,
   categoryHref,
+  summary,
   mood,
   coldAfterMs = COUNT_REQUEST_TIMEOUT_MS,
   notify,
@@ -168,6 +170,7 @@ export function DatasetWaitPage({
         areaId={areaId}
         tone={failure ? "warning" : "neutral"}
         title={t("datasetInArea", { dataset: templateName, area: areaName })}
+        summary={summary}
         lead={failure?.lead}
         progress={
           !failure && (

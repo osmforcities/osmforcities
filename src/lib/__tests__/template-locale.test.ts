@@ -1,7 +1,27 @@
 import { describe, it, expect } from "vitest";
-import { resolveTemplateForLocale, mapAppLocaleToDb } from "../template-locale";
+import {
+  resolveTemplateForLocale,
+  mapAppLocaleToDb,
+  shownDescription,
+} from "../template-locale";
 
 describe("template-locale", () => {
+  describe("shownDescription", () => {
+    it("keeps a description that says more than the name", () => {
+      expect(shownDescription({ name: "Bus stops", description: "Where buses stop" })).toBe(
+        "Where buses stop"
+      );
+    });
+
+    it("drops a description that repeats the name", () => {
+      expect(shownDescription({ name: "Bus stops", description: "Bus stops" })).toBeNull();
+    });
+
+    it("drops a missing description", () => {
+      expect(shownDescription({ name: "Bus stops", description: null })).toBeNull();
+    });
+  });
+
   describe("mapAppLocaleToDb", () => {
     it("maps app locale to db locale directly", () => {
       expect(mapAppLocaleToDb("en")).toBe("en");
