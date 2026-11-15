@@ -4,6 +4,7 @@ import type { Dataset } from "@/schemas/dataset";
 import { useTranslations } from "next-intl";
 import { Star } from "lucide-react";
 import { shownDescription } from "@/lib/template-locale";
+import { TemplateDescription } from "@/components/dataset/template-summary";
 
 type DatasetInfoPanelProps = {
   dataset: Dataset;
@@ -13,7 +14,6 @@ type DatasetInfoPanelProps = {
 export function DatasetInfoPanel({ dataset, areaName }: DatasetInfoPanelProps) {
   const t = useTranslations("DatasetPage");
   const { name } = dataset.template;
-  const description = shownDescription(dataset.template);
 
   return (
     // The title names the area: the back link above only says "Back", and the
@@ -36,14 +36,9 @@ export function DatasetInfoPanel({ dataset, areaName }: DatasetInfoPanelProps) {
           </span>
         )}
       </h2>
-      {description && (
-        <p
-          className="mt-1 text-sm text-gray-600"
-          data-testid="dataset-template-description"
-        >
-          {description}
-        </p>
-      )}
+      <TemplateDescription
+        description={shownDescription(dataset.template)}
+      />
     </>
   );
 }

@@ -59,7 +59,7 @@ export const RevealAndCopy: Story = {
     });
     await expect(turbo).toHaveAttribute(
       "href",
-      `https://overpass-turbo.eu/?Q=${encodeURIComponent(query)}`
+      `https://overpass-turbo.eu/?Q=${encodeURIComponent(query)}&R`
     );
 
     await userEvent.click(within(dialog).getByRole("button", { name: "Copy" }));
