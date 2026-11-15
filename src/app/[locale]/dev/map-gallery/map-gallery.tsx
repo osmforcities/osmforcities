@@ -95,8 +95,12 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
     });
   }, [rows]);
 
+  // The timeout and the idle event can both fire before a re-render; only the first one counts
   const addCapture = useCallback(
-    (capture: Capture) => setCaptures((prev) => [...prev, capture]),
+    (captureOrder: number, capture: Capture) =>
+      setCaptures((prev) =>
+        prev.length === captureOrder ? [...prev, capture] : prev
+      ),
     []
   );
 
@@ -156,15 +160,18 @@ function GalleryCellView({
   cell: GalleryCell;
   capture: Capture | undefined;
   isLive: boolean;
-  onCapture: (capture: Capture) => void;
+  onCapture: (captureOrder: number, capture: Capture) => void;
 }) {
   const box = { width: CELL_SIZE, height: CELL_SIZE };
 
   useEffect(() => {
     if (!isLive) return;
-    const timer = setTimeout(() => onCapture("timed-out"), CAPTURE_TIMEOUT_MS);
+    const timer = setTimeout(
+      () => onCapture(cell.captureOrder, "timed-out"),
+      CAPTURE_TIMEOUT_MS
+    );
     return () => clearTimeout(timer);
-  }, [isLive, onCapture]);
+  }, [isLive, onCapture, cell.captureOrder]);
 
   if (capture === "timed-out") {
     return (
@@ -190,7 +197,9 @@ function GalleryCellView({
         attributionControl={false}
         canvasContextAttributes={{ preserveDrawingBuffer: true }}
         onLoad={({ target }) =>
-          target.once("idle", () => onCapture(target.getCanvas().toDataURL()))
+          target.once("idle", () =>
+            onCapture(cell.captureOrder, target.getCanvas().toDataURL())
+          )
         }
       >
         {cell.renderMode === "tiles" && cell.tilesPath ? (
