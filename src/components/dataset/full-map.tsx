@@ -47,10 +47,14 @@ export interface DatasetFullMapHandle {
   deselectFeature: () => void;
 }
 
+export type MapPosition = { longitude: number; latitude: number; zoom: number };
+
 type DatasetFullMapProps = {
   dataset: Dataset;
   boundary: FeatureCollection | null;
   onFeatureSelect?: (feature: Feature | null) => void;
+  initialPosition?: MapPosition;
+  onPositionChange?: (position: MapPosition) => void;
 };
 
 const AGE_VIEW_ID = "age";
@@ -67,7 +71,7 @@ ensurePmtilesProtocol();
 export const DatasetFullMap = forwardRef<
   DatasetFullMapHandle,
   DatasetFullMapProps
->(({ dataset, boundary, onFeatureSelect }, ref) => {
+>(({ dataset, boundary, onFeatureSelect, initialPosition, onPositionChange }, ref) => {
   const t = useTranslations("DatasetMap");
   // next-intl types message keys as literals; tag keys/values are dynamic (OSM
   // data), so widen the translator to the loose MessageResolver shape.
@@ -234,7 +238,12 @@ export const DatasetFullMap = forwardRef<
             ref={mapRef}
             mapStyle={mapStyle}
             aria-label={t("fullScreenMapLabel")}
-            initialViewState={initialViewState}
+            initialViewState={initialPosition ?? initialViewState}
+            onMoveEnd={
+              onPositionChange &&
+              (({ viewState: { longitude, latitude, zoom } }) =>
+                onPositionChange({ longitude, latitude, zoom }))
+            }
             style={{ width: "100%", height: "100%" }}
             cursor={cursor}
             onClick={handleFeatureClick}

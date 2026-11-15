@@ -30,6 +30,8 @@ Single source of truth: `src/components/dataset/map/layers/map-style.ts` (`DEFAU
 
 Verify style changes on the dev-only gallery at `/en/dev/map-gallery` (404 outside `next dev`). It renders each case in `src/lib/map-gallery.ts` at z11, z12, z14 and z16 around the same center, in the mode the dataset ships in: geojson, tiles, or both side by side when the dataset has stored geojson and a served archive. Fixed zooms are the point, so the gallery skips `computeInitialViewState`.
 
+The grid is the picker. Clicking a cell opens that case at that zoom in a big live map, which is the dataset page's `DatasetFullMap` with its legend and view switch, so curated tag views can be checked too. Cases with both geojson and tiles get a switch that keeps the position.
+
 - Add a case: one line in `GALLERY_CASES` (label, template id, OSM relation id).
 - Create each case's dataset locally by opening `/en/area/<osmRelationId>/dataset/<templateId>` while signed in. A missing one shows a placeholder.
 - Tiles rows need the tiles-only lane (`TILER_URL` plus `NEXT_PUBLIC_TILES_ENABLED=true`, see [large-datasets.md](large-datasets.md)). With both on, the feature fill keeps geojson for under-cap datasets, so they render as a pair. The gallery 404s in production but still ships in the build, like the Tune panel.

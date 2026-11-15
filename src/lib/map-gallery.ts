@@ -33,7 +33,7 @@ export function galleryRenderModes(dataset: {
 }
 
 export function galleryCenter(
-  area: { centerLat: number | null; centerLon: number | null },
+  area: { centerLat?: number | null; centerLon?: number | null },
   bbox: Bbox | null
 ): [number, number] | null {
   if (area.centerLat != null && area.centerLon != null) {
