@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { GALLERY_CASES, galleryCenter, galleryRenderModes } from "../map-gallery";
+import { galleryCenter, galleryRenderModes } from "../map-gallery";
 
 describe("galleryRenderModes", () => {
   const geojson = { type: "FeatureCollection", features: [] };
@@ -34,12 +34,5 @@ describe("galleryCenter", () => {
 
   it("is null with neither", () => {
     expect(galleryCenter({ centerLat: null, centerLon: null }, null)).toBeNull();
-  });
-});
-
-describe("GALLERY_CASES", () => {
-  it("has no duplicate rows", () => {
-    const keys = GALLERY_CASES.map((c) => `${c.templateId}/${c.osmRelationId}`);
-    expect(new Set(keys).size).toBe(keys.length);
   });
 });

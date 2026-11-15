@@ -25,15 +25,24 @@ import {
 
 ensurePmtilesProtocol();
 
+type GalleryDataset = {
+  detail: Dataset;
+  renderModes: GalleryRenderMode[];
+  center: [number, number] | null;
+  tilesPath: string | null;
+  pointCount: number;
+};
+
 export type GalleryRow = {
   galleryCase: GalleryCase;
-  dataset: {
-    detail: Dataset;
-    renderModes: GalleryRenderMode[];
-    center: [number, number] | null;
-    tilesPath: string | null;
-    pointCount: number;
-  } | null;
+  dataset: GalleryDataset | null;
+};
+
+type CellSource = {
+  center: [number, number];
+  features: FeatureCollection | null;
+  tilesPath: string | null;
+  pointCount: number;
 };
 
 type GalleryCell = {
@@ -41,10 +50,6 @@ type GalleryCell = {
   captureOrder: number;
   zoom: number;
   renderMode: GalleryRenderMode;
-  center: [number, number];
-  features: FeatureCollection | null;
-  tilesPath: string | null;
-  pointCount: number;
 };
 
 type Selection = {
@@ -53,7 +58,8 @@ type Selection = {
   position: MapPosition;
 };
 
-type Capture = string | "timed-out";
+// A data URL, or null when the cell timed out
+type Capture = string | null;
 
 const CELL_SIZE = 112;
 const OPENING_ZOOM = 12;
@@ -73,7 +79,7 @@ const TEXT = {
     `Missing locally: ${c.templateId} in relation ${c.osmRelationId}.`,
   createLink: "Open the dataset page to create it",
   tilesOff:
-    "Tiles are off. Large cases like Amsterdam buildings can't be created until the local tiler runs. Setup is in docs/features/large-datasets.md.",
+    "Tiles are off. Over-cap cases like Amsterdam buildings can't be created until the local tiler runs. Setup is in docs/features/large-datasets.md.",
   nothingToRender:
     "Nothing to render: no stored geojson, no served archive (tiles-only lane off?) or no center.",
   nothingSelected: "No local dataset to show yet.",
@@ -86,6 +92,18 @@ function toVisualFeatures(geojson: unknown): FeatureCollection | null {
   const parsed = GeoJSONFeatureCollectionSchema.safeParse(geojson);
   if (!parsed.success) return null;
   return processOSMFeaturesForVisualization(parsed.data as FeatureCollection);
+}
+
+function toCellSource(dataset: GalleryDataset | null): CellSource | null {
+  if (!dataset?.center) return null;
+  return {
+    center: dataset.center,
+    features: dataset.renderModes.includes("geojson")
+      ? toVisualFeatures(dataset.detail.geojson)
+      : null,
+    tilesPath: dataset.tilesPath,
+    pointCount: dataset.pointCount,
+  };
 }
 
 function openingSelection(rows: GalleryRow[]): Selection | null {
@@ -106,14 +124,15 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
   const [selection, setSelection] = useState(() => openingSelection(rows));
   const [mapVersion, setMapVersion] = useState(0);
 
+  const cellSources = useMemo(
+    () => rows.map(({ dataset }) => toCellSource(dataset)),
+    [rows]
+  );
+
   const renderGroupsByRow = useMemo(() => {
     let captureOrder = 0;
     return rows.map(({ dataset }, rowIndex) => {
-      if (!dataset?.center) return [];
-      const center = dataset.center;
-      const features = dataset.renderModes.includes("geojson")
-        ? toVisualFeatures(dataset.detail.geojson)
-        : null;
+      if (!cellSources[rowIndex] || !dataset) return [];
       return dataset.renderModes.map((renderMode) => ({
         renderMode,
         cells: GALLERY_ZOOMS.map(
@@ -122,15 +141,11 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
             captureOrder: captureOrder++,
             zoom,
             renderMode,
-            center,
-            features,
-            tilesPath: dataset.tilesPath,
-            pointCount: dataset.pointCount,
           })
         ),
       }));
     });
-  }, [rows]);
+  }, [rows, cellSources]);
 
   // The timeout and the idle event can both fire before a re-render; only the first one counts
   const addCapture = useCallback(
@@ -141,15 +156,20 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
     []
   );
 
-  const openCell = useCallback((cell: GalleryCell) => {
-    const [longitude, latitude] = cell.center;
-    setSelection({
-      rowIndex: cell.rowIndex,
-      renderMode: cell.renderMode,
-      position: { longitude, latitude, zoom: cell.zoom },
-    });
-    setMapVersion((v) => v + 1);
-  }, []);
+  const openCell = useCallback(
+    (cell: GalleryCell) => {
+      const source = cellSources[cell.rowIndex];
+      if (!source) return;
+      const [longitude, latitude] = source.center;
+      setSelection({
+        rowIndex: cell.rowIndex,
+        renderMode: cell.renderMode,
+        position: { longitude, latitude, zoom: cell.zoom },
+      });
+      setMapVersion((v) => v + 1);
+    },
+    [cellSources]
+  );
 
   const keepPosition = useCallback(
     (position: MapPosition) =>
@@ -209,51 +229,55 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
           ))}
           {!TILES_ENABLED && <Placeholder>{TEXT.tilesOff}</Placeholder>}
         </header>
-        {rows.map(({ galleryCase, dataset }, rowIndex) => (
-          <section key={`${galleryCase.templateId}/${galleryCase.osmRelationId}`}>
-            <h2 className="text-sm font-medium">{TEXT.heading(galleryCase)}</h2>
-            {!dataset ? (
-              <Placeholder>
-                {TEXT.missing(galleryCase)}
-                <Link
-                  href={`/area/${galleryCase.osmRelationId}/dataset/${galleryCase.templateId}`}
-                  target="_blank"
-                  className="ml-1 underline"
-                >
-                  {TEXT.createLink}
-                </Link>
-              </Placeholder>
-            ) : renderGroupsByRow[rowIndex].length === 0 ? (
-              <Placeholder>{TEXT.nothingToRender}</Placeholder>
-            ) : (
-              renderGroupsByRow[rowIndex].map(({ renderMode, cells }) => (
-                <div key={renderMode} className="flex items-center gap-1 mt-1">
-                  <span className="w-12 text-xs text-gray-600">{renderMode}</span>
-                  {cells.map((cell) => (
-                    <figure key={cell.zoom} style={{ width: CELL_SIZE }}>
-                      <button
-                        type="button"
-                        aria-label={TEXT.cellLabel(cell)}
-                        onClick={() => openCell(cell)}
-                        className="block hover:ring-2 hover:ring-gray-900"
-                      >
-                        <GalleryCellView
-                          cell={cell}
-                          capture={captures[cell.captureOrder]}
-                          isLive={cell.captureOrder === captures.length}
-                          onCapture={addCapture}
-                        />
-                      </button>
-                      <figcaption className="text-xs text-gray-600">
-                        {TEXT.zoom(cell.zoom)}
-                      </figcaption>
-                    </figure>
-                  ))}
-                </div>
-              ))
-            )}
-          </section>
-        ))}
+        {rows.map(({ galleryCase, dataset }, rowIndex) => {
+          const source = cellSources[rowIndex];
+          return (
+            <section key={`${galleryCase.templateId}/${galleryCase.osmRelationId}`}>
+              <h2 className="text-sm font-medium">{TEXT.heading(galleryCase)}</h2>
+              {!dataset ? (
+                <Placeholder>
+                  {TEXT.missing(galleryCase)}
+                  <Link
+                    href={`/area/${galleryCase.osmRelationId}/dataset/${galleryCase.templateId}`}
+                    target="_blank"
+                    className="ml-1 underline"
+                  >
+                    {TEXT.createLink}
+                  </Link>
+                </Placeholder>
+              ) : !source || renderGroupsByRow[rowIndex].length === 0 ? (
+                <Placeholder>{TEXT.nothingToRender}</Placeholder>
+              ) : (
+                renderGroupsByRow[rowIndex].map(({ renderMode, cells }) => (
+                  <div key={renderMode} className="flex items-center gap-1 mt-1">
+                    <span className="w-12 text-xs text-gray-600">{renderMode}</span>
+                    {cells.map((cell) => (
+                      <figure key={cell.zoom} style={{ width: CELL_SIZE }}>
+                        <button
+                          type="button"
+                          aria-label={TEXT.cellLabel(cell)}
+                          onClick={() => openCell(cell)}
+                          className="block hover:ring-2 hover:ring-gray-900"
+                        >
+                          <GalleryCellView
+                            cell={cell}
+                            source={source}
+                            capture={captures[cell.captureOrder]}
+                            isLive={cell.captureOrder === captures.length}
+                            onCapture={addCapture}
+                          />
+                        </button>
+                        <figcaption className="text-xs text-gray-600">
+                          {TEXT.zoom(cell.zoom)}
+                        </figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                ))
+              )}
+            </section>
+          );
+        })}
       </aside>
     </main>
   );
@@ -273,11 +297,13 @@ function Placeholder({ children }: { children: React.ReactNode }) {
 
 function GalleryCellView({
   cell,
+  source,
   capture,
   isLive,
   onCapture,
 }: {
   cell: GalleryCell;
+  source: CellSource;
   capture: Capture | undefined;
   isLive: boolean;
   onCapture: (captureOrder: number, capture: Capture) => void;
@@ -287,13 +313,13 @@ function GalleryCellView({
   useEffect(() => {
     if (!isLive) return;
     const timer = setTimeout(
-      () => onCapture(cell.captureOrder, "timed-out"),
+      () => onCapture(cell.captureOrder, null),
       CAPTURE_TIMEOUT_MS
     );
     return () => clearTimeout(timer);
   }, [isLive, onCapture, cell.captureOrder]);
 
-  if (capture === "timed-out") {
+  if (capture === null) {
     return (
       <div style={box} className="grid place-items-center bg-gray-100 text-xs">
         {TEXT.timedOut}
@@ -306,7 +332,7 @@ function GalleryCellView({
   }
   if (!isLive) return <div style={box} className="bg-gray-100" />;
 
-  const [longitude, latitude] = cell.center;
+  const [longitude, latitude] = source.center;
   return (
     <div style={box}>
       <Map
@@ -322,14 +348,14 @@ function GalleryCellView({
           )
         }
       >
-        {cell.renderMode === "tiles" && cell.tilesPath ? (
+        {cell.renderMode === "tiles" && source.tilesPath ? (
           <TilesLayerGroup
-            tilesUrl={`pmtiles://${cell.tilesPath}`}
-            pointCount={cell.pointCount}
+            tilesUrl={`pmtiles://${source.tilesPath}`}
+            pointCount={source.pointCount}
             curatedTheme={null}
           />
         ) : (
-          cell.features && <MapLayers geoJSONData={cell.features} curatedTheme={null} />
+          source.features && <MapLayers geoJSONData={source.features} curatedTheme={null} />
         )}
       </Map>
     </div>
