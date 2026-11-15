@@ -16,6 +16,17 @@ export type TemplateWithTranslations = {
   }>;
 } & Record<string, unknown>;
 
+// Most templates still repeat the name as description
+export function shownDescription({
+  name,
+  description,
+}: {
+  name: string;
+  description: string | null;
+}): string | null {
+  return description && description !== name ? description : null;
+}
+
 /**
  * Resolve name and description for a template for the given app locale.
  * Returns template with name/description overridden from translation when available.

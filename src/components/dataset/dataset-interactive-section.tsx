@@ -11,6 +11,7 @@ import { CategoryFacet } from "@/components/dataset/category-facet";
 import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
 import { DatasetPanelStats } from "@/components/dataset/dataset-panel-stats";
 import { DatasetTimestamps } from "@/components/dataset/dataset-timestamps";
+import { OverpassQueryChip } from "@/components/dataset/overpass-query-chip";
 import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
 import { FeatureDetailPanel } from "@/components/dataset/feature-detail-panel";
 
@@ -22,6 +23,7 @@ type DatasetInteractiveSectionProps = {
   // dataset.area.names map lacks the current locale.
   areaName: string;
   categoryHref: string;
+  query: string;
   savedCount?: number;
   saveLimit?: number;
 };
@@ -31,6 +33,7 @@ export function DatasetInteractiveSection({
   boundary,
   areaName,
   categoryHref,
+  query,
   savedCount = 0,
   saveLimit,
 }: DatasetInteractiveSectionProps) {
@@ -82,11 +85,10 @@ export function DatasetInteractiveSection({
                 </Link>
               </div>
               <DatasetInfoPanel dataset={dataset} areaName={areaName} />
-              {/* Metadata chip row: category facet (olive) + freshness chips
-                  (edited, fetched) sharing one line below the title. */}
               <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                <CategoryFacet dataset={dataset} areaName={areaName} categoryHref={categoryHref} />
+                <CategoryFacet category={dataset.template.category} areaName={areaName} categoryHref={categoryHref} />
                 <DatasetTimestamps dataset={dataset} lastChecked={lastChecked} />
+                <OverpassQueryChip query={query} />
               </div>
             </div>
 
