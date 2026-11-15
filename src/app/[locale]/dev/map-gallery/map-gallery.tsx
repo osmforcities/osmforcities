@@ -9,6 +9,7 @@ import { ensurePmtilesProtocol } from "@/lib/pmtiles-protocol";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 import { processOSMFeaturesForVisualization } from "@/lib/osm-data-processor";
 import { MapLayers } from "@/components/dataset/map/layers";
+import { Link } from "@/i18n/navigation";
 import { TilesLayerGroup } from "@/components/dataset/map/layers/tiles-layer-group";
 import {
   GALLERY_ZOOMS,
@@ -50,13 +51,14 @@ const TEXT = {
   title: "Map style gallery",
   intro: [
     `Use this page to check a map style change on many kinds of data at once. Each row is a real dataset from the local database, drawn at zooms ${GALLERY_ZOOMS.join(", ")} around the same spot.`,
-    "Change a style, reload, and compare. A row marked missing needs its dataset first: open the link it shows while signed in.",
+    "Change a style, reload, and compare. A row marked missing needs its dataset first: sign in, open its link, then reload this page.",
     "To add a case, add one line in src/lib/map-gallery.ts.",
   ],
   heading: (c: GalleryCase) =>
     `${c.label}: ${c.templateId} in ${c.areaName} (relation ${c.osmRelationId})`,
   missing: (c: GalleryCase) =>
-    `Missing locally: ${c.templateId} in relation ${c.osmRelationId}. Open /en/area/${c.osmRelationId}/dataset/${c.templateId} to create it.`,
+    `Missing locally: ${c.templateId} in relation ${c.osmRelationId}.`,
+  createLink: "Open the dataset page to create it",
   nothingToRender:
     "Nothing to render: no stored geojson, no served archive (tiles-only lane off?) or no center.",
   zoom: (zoom: number) => `z${zoom}`,
@@ -122,7 +124,16 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
         <section key={`${galleryCase.templateId}/${galleryCase.osmRelationId}`}>
           <h2 className="font-medium">{TEXT.heading(galleryCase)}</h2>
           {!dataset ? (
-            <Placeholder>{TEXT.missing(galleryCase)}</Placeholder>
+            <Placeholder>
+              {TEXT.missing(galleryCase)}
+              <Link
+                href={`/area/${galleryCase.osmRelationId}/dataset/${galleryCase.templateId}`}
+                target="_blank"
+                className="ml-1 underline"
+              >
+                {TEXT.createLink}
+              </Link>
+            </Placeholder>
           ) : renderGroupsByRow[rowIndex].length === 0 ? (
             <Placeholder>{TEXT.nothingToRender}</Placeholder>
           ) : (
