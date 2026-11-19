@@ -20,20 +20,52 @@ export function fullTagsTile(lng: number, lat: number) {
   };
 }
 
-// Null when the tile lacks the feature: a line clicked across a tile edge,
-// or a feature dropped from a dense tile
-export async function readFullTags(
+// Half a grid step of the coarsest drawn-keys tiles (z9, 1024 units): a
+// point rounded onto a z14 tile edge may sit in the tile on either side
+const EDGE_SLACK_DEGREES = 0.0004;
+
+function candidateTiles({ lng, lat }: { lng: number; lat: number }) {
+  const tiles = [
+    fullTagsTile(lng, lat),
+    fullTagsTile(lng - EDGE_SLACK_DEGREES, lat),
+    fullTagsTile(lng + EDGE_SLACK_DEGREES, lat),
+    fullTagsTile(lng, lat - EDGE_SLACK_DEGREES),
+    fullTagsTile(lng, lat + EDGE_SLACK_DEGREES),
+  ];
+  const seen = new Set<string>();
+  return tiles.filter(({ x, y }) => {
+    const key = `${x}/${y}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+async function findInTile(
   archive: Archive,
-  lngLat: { lng: number; lat: number },
+  { x, y }: { x: number; y: number },
   osmId: string
 ): Promise<Record<string, unknown> | null> {
-  const { x, y } = fullTagsTile(lngLat.lng, lngLat.lat);
   const tile = await archive.getZxy(FULL_TAGS_ZOOM, x, y);
   if (!tile) return null;
   const layer = new VectorTile(new Pbf(tile.data)).layers[TILES_SOURCE_LAYER];
   for (let i = 0; i < (layer?.length ?? 0); i++) {
     const { properties } = layer.feature(i);
     if (properties["@id"] === osmId) return properties;
+  }
+  return null;
+}
+
+// Null when no nearby tile holds the feature: a line clicked far across a
+// tile edge, or a feature dropped from a dense tile
+export async function readFullTags(
+  archive: Archive,
+  lngLat: { lng: number; lat: number },
+  osmId: string
+): Promise<Record<string, unknown> | null> {
+  for (const tile of candidateTiles(lngLat)) {
+    const tags = await findInTile(archive, tile, osmId);
+    if (tags) return tags;
   }
   return null;
 }

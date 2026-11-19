@@ -137,13 +137,11 @@ export function FeatureDetailPanel({
                     ))}
               </TableBody>
             </Table>
-            {loading && (
-              <span role="status" className="sr-only">
-                {t("loadingFullTags")}
-              </span>
-            )}
           </div>
         )}
+        <span role="status" className="sr-only">
+          {loading ? t("loadingFullTags") : ""}
+        </span>
         {tagSet === "drawn" && (
           <p className="text-sm text-gray-500">{t("zoomInForFullTags")}</p>
         )}

@@ -54,6 +54,20 @@ describe("readFullTags", () => {
     ).toBeNull();
   });
 
+  it("tries the next tile when a point sits just past an edge", async () => {
+    const archive = {
+      getZxy: vi.fn(async (_z: number, x: number) =>
+        x === 8413 ? { data: fixtureBytes() } : undefined
+      ),
+    };
+    const pastEastEdge = { lng: 4.87794, lat: parking.lat };
+
+    const tags = await readFullTags(archive, pastEastEdge, "node/12104088569");
+
+    expect(archive.getZxy).toHaveBeenNthCalledWith(1, 14, 8414, 5383);
+    expect(tags).toMatchObject({ amenity: "bicycle_parking" });
+  });
+
   it("is null when the archive has no tile there", async () => {
     expect(
       await readFullTags(archiveWith(undefined), parking, "node/12104088569")

@@ -122,7 +122,7 @@ export const FromTile: Story = {
     await expect(canvas.queryByText(/Last edited by/i)).not.toBeInTheDocument();
     await expect(canvas.getByText("bench")).toBeInTheDocument();
     await expect(canvas.queryByText(/Zoom in/i)).not.toBeInTheDocument();
-    await expect(canvas.queryByRole("status")).not.toBeInTheDocument();
+    await expect(canvas.getByRole("status")).toBeEmptyDOMElement();
   },
 };
 
@@ -151,7 +151,7 @@ export const DrawnTagsOnly: Story = {
     await expect(
       canvas.getByText("Zoom in and select it again to see all tags.")
     ).toBeInTheDocument();
-    await expect(canvas.queryByRole("status")).not.toBeInTheDocument();
+    await expect(canvas.getByRole("status")).toBeEmptyDOMElement();
   },
 };
 
