@@ -16,11 +16,10 @@ import {
 } from "./layer-ids";
 import type { CuratedTheme } from "@/lib/curated-themes";
 import { BASEMAP_LABELS_ANCHOR } from "@/lib/map-tiles";
+import { TILES_SOURCE_LAYER } from "@/lib/dataset-tiles";
 import { buildCuratedColorExpression } from "@/lib/curated-themes";
 
 const TILES_SOURCE_ID = "dataset-tiles";
-// The tiler bakes everything into one layer named "features" (see API.md).
-const SOURCE_LAYER = "features";
 
 // ["geometry-type"] folds Multi* into the base type, so three filters cover
 // every feature. The JS geometry split of the geojson path becomes layer
@@ -82,7 +81,7 @@ export function TilesLayerGroup({
     <Source id={TILES_SOURCE_ID} type="vector" url={tilesUrl}>
       <Layer
         id={POLYGON_LAYER_ID}
-        source-layer={SOURCE_LAYER}
+        source-layer={TILES_SOURCE_LAYER}
         beforeId={BASEMAP_LABELS_ANCHOR}
         type="fill"
         filter={geometryFilter("Polygon", visibilityFilter)}
@@ -90,7 +89,7 @@ export function TilesLayerGroup({
       />
       <Layer
         id={POLYGON_STROKE_LAYER_ID}
-        source-layer={SOURCE_LAYER}
+        source-layer={TILES_SOURCE_LAYER}
         beforeId={BASEMAP_LABELS_ANCHOR}
         type="line"
         filter={geometryFilter("Polygon", visibilityFilter)}
@@ -98,7 +97,7 @@ export function TilesLayerGroup({
       />
       <Layer
         id={LINE_LAYER_ID}
-        source-layer={SOURCE_LAYER}
+        source-layer={TILES_SOURCE_LAYER}
         beforeId={BASEMAP_LABELS_ANCHOR}
         type="line"
         filter={geometryFilter("LineString", visibilityFilter)}
@@ -107,7 +106,7 @@ export function TilesLayerGroup({
       />
       <Layer
         id={POINT_LAYER_ID}
-        source-layer={SOURCE_LAYER}
+        source-layer={TILES_SOURCE_LAYER}
         beforeId={BASEMAP_LABELS_ANCHOR}
         type="circle"
         filter={geometryFilter("Point", visibilityFilter)}

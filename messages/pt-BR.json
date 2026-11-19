@@ -455,6 +455,7 @@
     "openInOsm": "Abrir no OpenStreetMap",
     "key": "Chave",
     "value": "Valor",
+    "loadingAllTags": "Carregando todas as tags...",
     "zoomInForAllTags": "Aproxime o mapa e selecione o elemento de novo para ver todas as tags.",
     "lastEditedBy": "Última edição por <link>{user}</link>",
     "lastEditedOn": "Última edição em {date}",

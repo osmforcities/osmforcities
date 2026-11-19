@@ -1,5 +1,8 @@
 import type { GeometryMix } from "@/lib/dataset-geometry";
 
+// The tiler bakes everything into one layer named "features" (see API.md).
+export const TILES_SOURCE_LAYER = "features";
+
 /**
  * Client-side decision: does this dataset render from PMTiles?
  * Opt-in via NEXT_PUBLIC_TILES_ENABLED while #489 is being proven; unset (or
@@ -76,7 +79,7 @@ export function hasDownloadableGeojson(dataset: {
 // Mirrors the tiler's split bake: an archive reaching z14 keeps only the drawn
 // keys (filterableTags, _ts, @id) at z9-z13.
 const PARTIAL_TAGS_MIN_ZOOM = 9;
-const FULL_TAGS_ZOOM = 14;
+export const FULL_TAGS_ZOOM = 14;
 
 export function hasPartialTags(
   zoom: number,

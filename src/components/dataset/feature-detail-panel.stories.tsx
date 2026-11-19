@@ -121,19 +121,35 @@ export const FromTile: Story = {
     await expect(canvas.queryByText(/Last edited by/i)).not.toBeInTheDocument();
     await expect(canvas.getByText("bench")).toBeInTheDocument();
     await expect(canvas.queryByText(/Zoom in/i)).not.toBeInTheDocument();
+    await expect(canvas.queryByRole("status")).not.toBeInTheDocument();
   },
 };
 
-export const PartialTagsTile: Story = {
+export const LoadingAllTags: Story = {
   args: {
     feature: tileFeature,
-    partialTags: true,
+    tagSet: "loading",
+    onBack: fn(),
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("status")).toHaveTextContent(
+      "Loading all tags..."
+    );
+    await expect(canvas.getByText("bench")).toBeInTheDocument();
+  },
+};
+
+export const DrawnTagsOnly: Story = {
+  args: {
+    feature: tileFeature,
+    tagSet: "drawn",
     onBack: fn(),
   },
   play: async ({ canvas }) => {
     await expect(
       canvas.getByText("Zoom in and select it again to see all tags.")
     ).toBeInTheDocument();
+    await expect(canvas.queryByRole("status")).not.toBeInTheDocument();
   },
 };
 

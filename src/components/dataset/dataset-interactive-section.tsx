@@ -14,7 +14,10 @@ import { DatasetTimestamps } from "@/components/dataset/dataset-timestamps";
 import { OverpassQueryChip } from "@/components/dataset/overpass-query-chip";
 import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
 import { FeatureDetailPanel } from "@/components/dataset/feature-detail-panel";
-import type { FeatureSelectHandler } from "@/components/dataset/map/hooks";
+import type {
+  FeatureSelectHandler,
+  TagSet,
+} from "@/components/dataset/map/hooks";
 
 type DatasetInteractiveSectionProps = {
   dataset: Dataset;
@@ -40,11 +43,10 @@ export function DatasetInteractiveSection({
 }: DatasetInteractiveSectionProps) {
   const [selection, setSelection] = useState<{
     feature: Feature;
-    partialTags: boolean;
+    tagSet: TagSet;
   } | null>(null);
   const selectFeature: FeatureSelectHandler = useCallback(
-    (feature, partialTags = false) =>
-      setSelection(feature && { feature, partialTags }),
+    (feature, tagSet = "all") => setSelection(feature && { feature, tagSet }),
     []
   );
   const [lastChecked, setLastChecked] = useState(dataset.lastChecked);
@@ -69,7 +71,7 @@ export function DatasetInteractiveSection({
         {selection ? (
           <FeatureDetailPanel
             feature={selection.feature}
-            partialTags={selection.partialTags}
+            tagSet={selection.tagSet}
             onBack={() => {
               setSelection(null);
               mapRef.current?.deselectFeature();

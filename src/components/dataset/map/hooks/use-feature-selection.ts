@@ -1,9 +1,11 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import type { MapLayerMouseEvent } from "react-map-gl/maplibre";
 import type { MapGeoJSONFeature } from "maplibre-gl";
 import type { Feature } from "geojson";
 import { resolveProxyFeature } from "../layers/polygon-proxy-points";
 import { hasPartialTags } from "@/lib/dataset-tiles";
+import { openedArchive } from "@/lib/pmtiles-protocol";
+import { withFullTags } from "@/lib/tiles-full-tags";
 
 export function toSelectedFeature(
   hit: MapGeoJSONFeature,
@@ -25,9 +27,12 @@ export function toSelectedFeature(
   return feature;
 }
 
+/** "loading" while the z14 tile is read, "drawn" when that read found nothing. */
+export type TagSet = "all" | "loading" | "drawn";
+
 export type FeatureSelectHandler = (
   feature: Feature | null,
-  partialTags?: boolean
+  tagSet?: TagSet
 ) => void;
 
 export function useFeatureSelection(
@@ -36,22 +41,32 @@ export function useFeatureSelection(
 ) {
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
   const [cursor, setCursor] = useState<string>("grab");
+  const latestClick = useRef(0);
 
   const handleFeatureClick = useCallback(
-    (event: MapLayerMouseEvent) => {
+    async (event: MapLayerMouseEvent) => {
+      const click = ++latestClick.current;
       const hit = event.features?.[0];
-      if (hit) {
-        const feature = toSelectedFeature(hit, sourceFeatures);
-        const map = event.target;
-        setSelectedFeature(feature);
-        onFeatureSelect?.(
-          feature,
-          hasPartialTags(map.getZoom(), map.getSource(hit.source))
-        );
-      } else {
+      if (!hit) {
         setSelectedFeature(null);
         onFeatureSelect?.(null);
+        return;
       }
+      const feature = toSelectedFeature(hit, sourceFeatures);
+      setSelectedFeature(feature);
+      const map = event.target;
+      const source = map.getSource(hit.source);
+      if (!hasPartialTags(map.getZoom(), source)) {
+        onFeatureSelect?.(feature, "all");
+        return;
+      }
+      onFeatureSelect?.(feature, "loading");
+      const archive = openedArchive(
+        source && "url" in source ? (source.url as string) : undefined
+      );
+      const full = await withFullTags(feature, archive, event.lngLat);
+      if (click !== latestClick.current) return;
+      onFeatureSelect?.(full ?? feature, full ? "all" : "drawn");
     },
     [onFeatureSelect, sourceFeatures]
   );
@@ -60,6 +75,7 @@ export function useFeatureSelection(
   const handleMouseLeave = useCallback(() => setCursor("grab"), []);
 
   const handleDeselect = useCallback(() => {
+    latestClick.current++;
     setSelectedFeature(null);
     onFeatureSelect?.(null);
   }, [onFeatureSelect]);

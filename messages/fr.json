@@ -455,6 +455,7 @@
     "openInOsm": "Ouvrir dans OpenStreetMap",
     "key": "Clé",
     "value": "Valeur",
+    "loadingAllTags": "Chargement de tous les attributs...",
     "zoomInForAllTags": "Zoomez sur la carte et sélectionnez de nouveau l'élément pour voir tous les attributs.",
     "lastEditedBy": "Dernière modification par <link>{user}</link>",
     "lastEditedOn": "Dernière modification le {date}",

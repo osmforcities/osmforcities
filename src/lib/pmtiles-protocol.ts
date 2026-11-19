@@ -2,6 +2,8 @@ import maplibregl from "maplibre-gl";
 import { Protocol } from "pmtiles";
 import { TILES_ENABLED } from "@/lib/dataset-tiles";
 
+const SCHEME = "pmtiles://";
+const protocol = new Protocol();
 let registered = false;
 
 /**
@@ -12,6 +14,12 @@ let registered = false;
  */
 export function ensurePmtilesProtocol(): void {
   if (!TILES_ENABLED || registered || typeof window === "undefined") return;
-  maplibregl.addProtocol("pmtiles", new Protocol().tile);
+  maplibregl.addProtocol("pmtiles", protocol.tile);
   registered = true;
+}
+
+/** The archive MapLibre already opened for a pmtiles:// source url. */
+export function openedArchive(sourceUrl: string | undefined) {
+  if (!sourceUrl?.startsWith(SCHEME)) return null;
+  return protocol.get(sourceUrl.slice(SCHEME.length)) ?? null;
 }

@@ -4,6 +4,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import type { Feature } from "geojson";
 import { AGE_TS_KEY, featureTs } from "@/lib/feature-age";
+import type { TagSet } from "@/components/dataset/map/hooks";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -20,7 +21,7 @@ const VALUE_CELL_CLASSES = "py-1.5 text-sm text-gray-800 break-all";
 
 type FeatureDetailPanelProps = {
   feature: Feature;
-  partialTags?: boolean;
+  tagSet?: TagSet;
   onBack: () => void;
 };
 
@@ -36,7 +37,7 @@ const HIDDEN_KEYS = new Set([
 
 export function FeatureDetailPanel({
   feature,
-  partialTags = false,
+  tagSet = "all",
   onBack,
 }: FeatureDetailPanelProps) {
   const t = useTranslations("DatasetMap");
@@ -128,7 +129,12 @@ export function FeatureDetailPanel({
           </div>
         )}
 
-        {partialTags && (
+        {tagSet === "loading" && (
+          <p role="status" className="text-sm text-gray-500">
+            {t("loadingAllTags")}
+          </p>
+        )}
+        {tagSet === "drawn" && (
           <p className="text-sm text-gray-500">{t("zoomInForAllTags")}</p>
         )}
 
