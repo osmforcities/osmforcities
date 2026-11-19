@@ -94,7 +94,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to view th
 
 Dataset maps come from [overpass-pmtiler](https://github.com/osmforcities/overpass-pmtiler). The tiler fetches, computes stats and bakes. The app runs the count probe and submits the bake. See [ADR 0001](docs/adr/0001-tiler-is-the-only-overpass-data-client.md).
 
-- Overpass: app and tiler need the same instance, with area support. Public option: `https://overpass-api.de/api/interpreter`, keep test areas small. Unset `OVERPASS_API_URL` falls back to the instance in `.env.example`.
+- Overpass: app and tiler need the same instance, with area support. Run a dedicated one ([install guide](https://wiki.openstreetmap.org/wiki/Overpass_API/Installation)) and set `OVERPASS_API_URL` to it. Public instances are shared and not sized for bakes.
 - Tiler: install and start per its [README](https://github.com/osmforcities/overpass-pmtiler#readme), with `PMTILER_OVERPASS` set to the app's Overpass. Self-signed tunnel: add `PMTILER_INSECURE=1`.
 - App, in `.env.local`:
 
