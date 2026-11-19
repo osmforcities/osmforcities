@@ -1,5 +1,4 @@
-import { YML_LOCALE_MAP } from "@/lib/constants";
-import { DEFAULT_LOCALE } from "@/i18n/constants";
+import { DEFAULT_LOCALE, LOCALES, type AvailableLocale } from "@/i18n/constants";
 
 // Keyed by OSM language subtag (en, es, pt, ...), plus a `default` key = the local `name` tag.
 export type AreaNames = Record<string, string>;
@@ -32,12 +31,10 @@ export function toStoredNames(map: AreaNames): AreaNames | undefined {
   return Object.keys(map).length > 0 ? map : undefined;
 }
 
-// pt-BR → ["pt-BR", "pt"] because OSM tags Portuguese as name:pt, not name:pt-BR.
 export function localeToNameKeys(appLocale: string): string[] {
-  const keys = [appLocale];
-  const mapped = YML_LOCALE_MAP[appLocale];
-  if (mapped && mapped !== appLocale) keys.push(mapped);
-  return keys;
+  return Object.hasOwn(LOCALES, appLocale)
+    ? [...LOCALES[appLocale as AvailableLocale].osmNameKeys]
+    : [appLocale];
 }
 
 export function resolveAreaName(

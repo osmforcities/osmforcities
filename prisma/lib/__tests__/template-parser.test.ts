@@ -26,8 +26,7 @@ import {
   validateCommonTemplates,
   validateCategories,
 } from "../template-parser";
-import { AVAILABLE_LOCALES } from "../../../src/i18n/constants";
-import { YML_LOCALE_MAP } from "../../../src/lib/constants";
+import { AVAILABLE_LOCALES, YML_LOCALE_MAP } from "../../../src/i18n/constants";
 
 describe("template-parser", () => {
   describe("isValidKv", () => {
@@ -557,7 +556,7 @@ describe("template-parser", () => {
         .filter((t) => describedCategorySlugs.includes(t.category))
         .flatMap((t) =>
           AVAILABLE_LOCALES.map((locale) => {
-            const ymlLocale = YML_LOCALE_MAP[locale] ?? locale;
+            const ymlLocale = YML_LOCALE_MAP[locale];
             const name = i18n[t.id]?.name?.[ymlLocale];
             const desc = i18n[t.id]?.desc?.[ymlLocale];
             if (!name || !desc) return `${t.id} ${ymlLocale}: missing`;

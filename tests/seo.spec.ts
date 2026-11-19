@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { AVAILABLE_LOCALES } from "../src/i18n/constants";
 
 test.describe("SEO Implementation", () => {
   test.describe("English Locale (en)", () => {
@@ -17,17 +18,12 @@ test.describe("SEO Implementation", () => {
       expect(canonical).toMatch(/https:\/\/osmforcities\.org\/en\/?/);
 
       // Hreflang links for all locales
-      const enHreflang = await page.locator('link[rel="alternate"][hreflang="en"]').getAttribute("href");
-      const ptBrHreflang = await page.locator('link[rel="alternate"][hreflang="pt-BR"]').getAttribute("href");
-      const esHreflang = await page.locator('link[rel="alternate"][hreflang="es"]').getAttribute("href");
-      const frHreflang = await page.locator('link[rel="alternate"][hreflang="fr"]').getAttribute("href");
-      const deHreflang = await page.locator('link[rel="alternate"][hreflang="de"]').getAttribute("href");
-
-      expect(enHreflang).toMatch(/https:\/\/osmforcities\.org\/en\/?/);
-      expect(ptBrHreflang).toMatch(/https:\/\/osmforcities\.org\/pt-BR\/?/);
-      expect(esHreflang).toMatch(/https:\/\/osmforcities\.org\/es\/?/);
-      expect(frHreflang).toMatch(/https:\/\/osmforcities\.org\/fr\/?/);
-      expect(deHreflang).toMatch(/https:\/\/osmforcities\.org\/de\/?/);
+      for (const locale of AVAILABLE_LOCALES) {
+        const hreflang = await page
+          .locator(`link[rel="alternate"][hreflang="${locale}"]`)
+          .getAttribute("href");
+        expect(hreflang).toMatch(new RegExp(`https://osmforcities\\.org/${locale}/?`));
+      }
     });
 
     test("should have structured data (JSON-LD) on home page", async ({ page }) => {
