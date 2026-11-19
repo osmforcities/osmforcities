@@ -18,8 +18,8 @@ export function ensurePmtilesProtocol(): void {
   registered = true;
 }
 
-/** The archive MapLibre already opened for a pmtiles:// source url. */
-export function openedArchive(sourceUrl: string | undefined) {
-  if (!sourceUrl?.startsWith(SCHEME)) return null;
-  return protocol.get(sourceUrl.slice(SCHEME.length)) ?? null;
+export function openedArchive(source: object | undefined) {
+  const url = source && "url" in source ? source.url : undefined;
+  if (typeof url !== "string" || !url.startsWith(SCHEME)) return null;
+  return protocol.get(url.slice(SCHEME.length)) ?? null;
 }

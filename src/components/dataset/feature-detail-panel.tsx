@@ -4,7 +4,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import type { Feature } from "geojson";
 import { AGE_TS_KEY, featureTs } from "@/lib/feature-age";
-import type { TagSet } from "@/components/dataset/map/hooks";
+import type { TagSet } from "@/lib/tiles-full-tags";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -18,10 +18,12 @@ import {
 const KEY_CELL_CLASSES =
   "py-1.5 pr-3 text-sm font-medium text-gray-500 align-top whitespace-nowrap";
 const VALUE_CELL_CLASSES = "py-1.5 text-sm text-gray-800 break-all";
+const ROW_CLASSES = "border-b border-gray-200 last:border-b-0";
+const SKELETON_ROWS = ["a", "b", "c", "d", "e"];
 
 type FeatureDetailPanelProps = {
   feature: Feature;
-  tagSet?: TagSet;
+  tagSet: TagSet;
   onBack: () => void;
 };
 
@@ -37,12 +39,13 @@ const HIDDEN_KEYS = new Set([
 
 export function FeatureDetailPanel({
   feature,
-  tagSet = "all",
+  tagSet,
   onBack,
 }: FeatureDetailPanelProps) {
   const t = useTranslations("DatasetMap");
   const format = useFormatter();
   const properties = feature.properties || {};
+  const loading = tagSet === "loading";
 
   // osmtogeojson outputs a combined "id" field like "node/12345" or "way/67890"
   const osmFeatureId = properties["id"];
@@ -102,7 +105,7 @@ export function FeatureDetailPanel({
           )}
         </div>
 
-        {displayTags.length > 0 && (
+        {(displayTags.length > 0 || loading) && (
           <div className="space-y-2">
             <h3 className="text-sm font-semibold text-gray-900">{t("tags")}</h3>
             <Table aria-label={t("tags")} className="w-full">
@@ -115,27 +118,34 @@ export function FeatureDetailPanel({
                 </Column>
               </TableHeader>
               <TableBody>
-                {displayTags.map(([key, value]) => (
-                  <Row
-                    key={key}
-                    className="border-b border-gray-200 last:border-b-0"
-                  >
-                    <Cell className={KEY_CELL_CLASSES}>{key}</Cell>
-                    <Cell className={VALUE_CELL_CLASSES}>{value}</Cell>
-                  </Row>
-                ))}
+                {loading
+                  ? SKELETON_ROWS.map((row) => (
+                      <Row key={row} className={ROW_CLASSES}>
+                        <Cell className={KEY_CELL_CLASSES}>
+                          <span className="block h-5 w-3/4 animate-pulse rounded bg-gray-200" />
+                        </Cell>
+                        <Cell className={VALUE_CELL_CLASSES}>
+                          <span className="block h-5 w-2/3 animate-pulse rounded bg-gray-200" />
+                        </Cell>
+                      </Row>
+                    ))
+                  : displayTags.map(([key, value]) => (
+                      <Row key={key} className={ROW_CLASSES}>
+                        <Cell className={KEY_CELL_CLASSES}>{key}</Cell>
+                        <Cell className={VALUE_CELL_CLASSES}>{value}</Cell>
+                      </Row>
+                    ))}
               </TableBody>
             </Table>
+            {loading && (
+              <span role="status" className="sr-only">
+                {t("loadingFullTags")}
+              </span>
+            )}
           </div>
         )}
-
-        {tagSet === "loading" && (
-          <p role="status" className="text-sm text-gray-500">
-            {t("loadingAllTags")}
-          </p>
-        )}
         {tagSet === "drawn" && (
-          <p className="text-sm text-gray-500">{t("zoomInForAllTags")}</p>
+          <p className="text-sm text-gray-500">{t("zoomInForFullTags")}</p>
         )}
 
         {(osmUser || formattedDate) && (

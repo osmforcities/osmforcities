@@ -3,9 +3,9 @@ import type { MapLayerMouseEvent } from "react-map-gl/maplibre";
 import type { MapGeoJSONFeature } from "maplibre-gl";
 import type { Feature } from "geojson";
 import { resolveProxyFeature } from "../layers/polygon-proxy-points";
-import { hasPartialTags } from "@/lib/dataset-tiles";
+import { hasDrawnTagsOnly } from "@/lib/dataset-tiles";
 import { openedArchive } from "@/lib/pmtiles-protocol";
-import { withFullTags } from "@/lib/tiles-full-tags";
+import { withFullTags, type TagSet } from "@/lib/tiles-full-tags";
 
 export function toSelectedFeature(
   hit: MapGeoJSONFeature,
@@ -27,13 +27,22 @@ export function toSelectedFeature(
   return feature;
 }
 
-/** "loading" while the z14 tile is read, "drawn" when that read found nothing. */
-export type TagSet = "all" | "loading" | "drawn";
-
 export type FeatureSelectHandler = (
   feature: Feature | null,
   tagSet?: TagSet
 ) => void;
+
+export async function selectFromTiles(
+  feature: Feature,
+  readFull: () => Promise<Feature | null>,
+  select: FeatureSelectHandler,
+  isLatestClick: () => boolean
+): Promise<void> {
+  select(feature, "loading");
+  const full = await readFull();
+  if (!isLatestClick()) return;
+  select(full ?? feature, full ? "full" : "drawn");
+}
 
 export function useFeatureSelection(
   onFeatureSelect?: FeatureSelectHandler,
@@ -56,17 +65,16 @@ export function useFeatureSelection(
       setSelectedFeature(feature);
       const map = event.target;
       const source = map.getSource(hit.source);
-      if (!hasPartialTags(map.getZoom(), source)) {
-        onFeatureSelect?.(feature, "all");
+      if (!hasDrawnTagsOnly(map.getZoom(), source)) {
+        onFeatureSelect?.(feature, "full");
         return;
       }
-      onFeatureSelect?.(feature, "loading");
-      const archive = openedArchive(
-        source && "url" in source ? (source.url as string) : undefined
+      await selectFromTiles(
+        feature,
+        () => withFullTags(feature, openedArchive(source), event.lngLat),
+        (selected, tagSet) => onFeatureSelect?.(selected, tagSet),
+        () => click === latestClick.current
       );
-      const full = await withFullTags(feature, archive, event.lngLat);
-      if (click !== latestClick.current) return;
-      onFeatureSelect?.(full ?? feature, full ? "all" : "drawn");
     },
     [onFeatureSelect, sourceFeatures]
   );

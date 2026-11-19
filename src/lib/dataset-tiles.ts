@@ -1,6 +1,6 @@
 import type { GeometryMix } from "@/lib/dataset-geometry";
 
-// The tiler bakes everything into one layer named "features" (see API.md).
+// The tiler bakes everything into one layer named "features" (overpass-pmtiler API.md).
 export const TILES_SOURCE_LAYER = "features";
 
 /**
@@ -81,7 +81,7 @@ export function hasDownloadableGeojson(dataset: {
 const PARTIAL_TAGS_MIN_ZOOM = 9;
 export const FULL_TAGS_ZOOM = 14;
 
-export function hasPartialTags(
+export function hasDrawnTagsOnly(
   zoom: number,
   source: { type: string; maxzoom: number } | undefined
 ): boolean {

@@ -1,15 +1,12 @@
 import { VectorTile } from "@mapbox/vector-tile";
 import type { Feature } from "geojson";
 import Pbf from "pbf";
+import type { PMTiles } from "pmtiles";
 import { FULL_TAGS_ZOOM, TILES_SOURCE_LAYER } from "@/lib/dataset-tiles";
 
-type Archive = {
-  getZxy(
-    z: number,
-    x: number,
-    y: number
-  ): Promise<{ data: ArrayBuffer } | undefined>;
-};
+type Archive = Pick<PMTiles, "getZxy">;
+
+export type TagSet = "full" | "loading" | "drawn";
 
 export function fullTagsTile(lng: number, lat: number) {
   const n = 2 ** FULL_TAGS_ZOOM;
@@ -23,11 +20,8 @@ export function fullTagsTile(lng: number, lat: number) {
   };
 }
 
-/**
- * The tags of one feature from the archive's z14 tile under a point. Null
- * when the tile lacks it: a line clicked across a tile edge, or a feature
- * dropped from a dense tile.
- */
+// Null when the tile lacks the feature: a line clicked across a tile edge,
+// or a feature dropped from a dense tile
 export async function readFullTags(
   archive: Archive,
   lngLat: { lng: number; lat: number },
@@ -44,7 +38,6 @@ export async function readFullTags(
   return null;
 }
 
-/** The selected feature with the archive's full tags, or null to keep it. */
 export async function withFullTags(
   feature: Feature,
   archive: Archive | null,
@@ -52,7 +45,14 @@ export async function withFullTags(
 ): Promise<Feature | null> {
   const osmId = feature.properties?.["@id"];
   if (!archive || typeof osmId !== "string") return null;
-  const tags = await readFullTags(archive, lngLat, osmId).catch(() => null);
+  // A circle takes clicks a radius away from its centre, which at z9 can be
+  // the next z14 tile over
+  const { geometry } = feature;
+  const point =
+    geometry.type === "Point"
+      ? { lng: geometry.coordinates[0], lat: geometry.coordinates[1] }
+      : lngLat;
+  const tags = await readFullTags(archive, point, osmId).catch(() => null);
   if (!tags) return null;
   return {
     type: "Feature",

@@ -82,6 +82,16 @@ describe("withFullTags", () => {
     });
   });
 
+  it("reads a point's own tile when the click lands in the next one", async () => {
+    const archive = archiveWith(fixtureBytes());
+    const clickInNextTile = { lng: parking.lng + 0.03, lat: parking.lat };
+
+    const full = await withFullTags(drawn, archive, clickInNextTile);
+
+    expect(archive.getZxy).toHaveBeenCalledWith(14, 8413, 5383);
+    expect(full?.properties).toMatchObject({ amenity: "bicycle_parking" });
+  });
+
   it("is null without an archive", async () => {
     expect(await withFullTags(drawn, null, parking)).toBeNull();
   });

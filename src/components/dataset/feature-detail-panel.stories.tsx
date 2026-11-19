@@ -66,6 +66,7 @@ const noOsmIdFeature: Feature = {
 const meta: Meta<typeof FeatureDetailPanel> = {
   title: "Dataset/FeatureDetailPanel",
   component: FeatureDetailPanel,
+  args: { tagSet: "full" },
   parameters: {
     layout: "padded",
   },
@@ -135,7 +136,8 @@ export const LoadingAllTags: Story = {
     await expect(canvas.getByRole("status")).toHaveTextContent(
       "Loading all tags..."
     );
-    await expect(canvas.getByText("bench")).toBeInTheDocument();
+    await expect(canvas.getAllByRole("row")).toHaveLength(6);
+    await expect(canvas.queryByText("bench")).not.toBeInTheDocument();
   },
 };
 

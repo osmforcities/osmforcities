@@ -14,10 +14,8 @@ import { DatasetTimestamps } from "@/components/dataset/dataset-timestamps";
 import { OverpassQueryChip } from "@/components/dataset/overpass-query-chip";
 import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
 import { FeatureDetailPanel } from "@/components/dataset/feature-detail-panel";
-import type {
-  FeatureSelectHandler,
-  TagSet,
-} from "@/components/dataset/map/hooks";
+import type { FeatureSelectHandler } from "@/components/dataset/map/hooks";
+import type { TagSet } from "@/lib/tiles-full-tags";
 
 type DatasetInteractiveSectionProps = {
   dataset: Dataset;
@@ -46,7 +44,7 @@ export function DatasetInteractiveSection({
     tagSet: TagSet;
   } | null>(null);
   const selectFeature: FeatureSelectHandler = useCallback(
-    (feature, tagSet = "all") => setSelection(feature && { feature, tagSet }),
+    (feature, tagSet = "full") => setSelection(feature && { feature, tagSet }),
     []
   );
   const [lastChecked, setLastChecked] = useState(dataset.lastChecked);
