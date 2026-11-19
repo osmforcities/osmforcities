@@ -92,36 +92,11 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to view th
 
 ### Running the tiler
 
-Dataset maps come from [overpass-pmtiler](https://github.com/osmforcities/overpass-pmtiler), a separate service that fetches each dataset from Overpass, computes its stats and bakes its map archive. The app only runs the count probe and submits the bake. See [ADR 0001](docs/adr/0001-tiler-is-the-only-overpass-data-client.md).
+Dataset maps come from [overpass-pmtiler](https://github.com/osmforcities/overpass-pmtiler). The tiler fetches, computes stats and bakes. The app runs the count probe and submits the bake. See [ADR 0001](docs/adr/0001-tiler-is-the-only-overpass-data-client.md).
 
-Install:
-
-- Python 3 (no Python packages needed)
-- [tippecanoe](https://github.com/felt/tippecanoe), with `tile-join`, on `PATH`
-- An Overpass instance with area support, reachable from both the app and the tiler. The public `https://overpass-api.de/api/interpreter` has areas. Keep test areas small on a shared instance.
-
-Start the tiler from its own checkout:
-
-```bash
-git clone https://github.com/osmforcities/overpass-pmtiler.git
-cd overpass-pmtiler
-PMTILER_OVERPASS="<same interpreter URL as the app's OVERPASS_API_URL>" python3 pmtiler.py
-```
-
-Unset, the app's `OVERPASS_API_URL` falls back to the instance named in `.env.example`. An Overpass behind a tunnel with a self-signed certificate also needs `PMTILER_INSECURE=1`.
-
-Tiler settings, all optional, defaults in its `config.py`:
-
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `PMTILER_OVERPASS` | `http://localhost/api/interpreter` | Overpass interpreter URL |
-| `PMTILER_INSECURE` | unset | `1` accepts a self-signed certificate, e.g. a tunnel |
-| `PMTILER_PORT` | `8099` | Listen port |
-| `PMTILER_BIND` | `127.0.0.1` | Listen address. The tiler has no authentication: keep it on localhost |
-| `PMTILER_SPOOL` | `spool` | Bake working directory. A large bake can use about 3 GB |
-| `PMTILER_MAX_AGE_DAYS` | `7` | Bakes older than this are deleted from the spool |
-
-Then in the app's `.env.local`:
+- Overpass: app and tiler need the same instance, with area support. Public option: `https://overpass-api.de/api/interpreter`, keep test areas small. Unset `OVERPASS_API_URL` falls back to the instance in `.env.example`.
+- Tiler: install and start per its [README](https://github.com/osmforcities/overpass-pmtiler#readme), with `PMTILER_OVERPASS` set to the app's Overpass. Self-signed tunnel: add `PMTILER_INSECURE=1`.
+- App, in `.env.local`:
 
 ```bash
 TILER_URL="http://127.0.0.1:8099"
@@ -129,16 +104,14 @@ TILES_DIR="./data/tiles"        # archives the app reconciles and serves. data/ 
 NEXT_PUBLIC_TILES_ENABLED="true" # render maps from the archive
 ```
 
-Restart `pnpm dev` after changing these. `NEXT_PUBLIC_` values are inlined into the client bundle when it compiles. With `TILER_URL` and the flag both set, every dataset is created and refreshed through the tiler.
+Restart `pnpm dev` after changing these (`NEXT_PUBLIC_` is inlined at compile). Both `TILER_URL` and the flag set = every dataset created and refreshed through the tiler.
 
 Check a bake end to end:
 
-1. `curl http://127.0.0.1:8099/status` returns the tiler version and queue depth.
-2. In the app, open a dataset for a small area. The wait page shows the bake stage.
-3. [http://127.0.0.1:8099/](http://127.0.0.1:8099/) lists the bake and its stage.
-4. When the bake is done, the open wait page reconciles it: the archive lands in `TILES_DIR` and the map shows. With no page open, the `update-datasets` task reconciles it instead (see [Tasks API](#tasks-api)).
-
-The tiler's own options and API: its [README](https://github.com/osmforcities/overpass-pmtiler#readme) and [API.md](https://github.com/osmforcities/overpass-pmtiler/blob/main/API.md).
+1. `curl http://127.0.0.1:8099/status`: tiler version, queue depth.
+2. Open a dataset for a small area. Wait page shows the bake stage.
+3. `http://127.0.0.1:8099/` lists the bake.
+4. Bake done: the open wait page reconciles it, archive lands in `TILES_DIR`, map shows. No page open: the `update-datasets` task reconciles it ([Tasks API](#tasks-api)).
 
 ## Testing
 
