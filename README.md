@@ -170,7 +170,7 @@ The application includes a task-based API accessible at `/api/tasks`. Each task 
 ### Available Tasks
 
 - **send-user-reports**: Sends dataset status reports to users who haven't received one in the last 24 hours
-- **update-datasets**: Updates datasets that need refreshing (not yet implemented)
+- **update-datasets**: Refreshes datasets that are due and reconciles pending bakes
 
 ### Usage
 
