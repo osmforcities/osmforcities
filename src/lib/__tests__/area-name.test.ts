@@ -47,6 +47,10 @@ describe("localeToNameKeys", () => {
     expect(localeToNameKeys("en")).toEqual(["en"]);
     expect(localeToNameKeys("es")).toEqual(["es"]);
   });
+
+  it("returns [locale] for a locale outside the registry", () => {
+    expect(localeToNameKeys("ja")).toEqual(["ja"]);
+  });
 });
 
 describe("mergeAreaNames", () => {

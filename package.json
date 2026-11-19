@@ -112,7 +112,7 @@
       "eslint --fix"
     ],
     "messages/*.json": [
-      "i18n-check --locales messages --source en"
+      "i18n-check --locales messages --source en --only invalidKeys"
     ]
   },
   "prisma": {

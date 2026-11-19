@@ -6,21 +6,35 @@ This project uses [next-intl](https://next-intl.com/) for internationalization (
 
 ## Supported Languages
 
-- **English (en)** - Default language
-- **Spanish (es)** - Español
-- **Portuguese (pt-BR)** - Português Brasileiro
-- **French (fr)** - Français
+The locale registry, `LOCALES` in `src/i18n/constants.ts`, is the one list of supported languages. Each entry holds the display name, the key in `prisma/templates.i18n.yml`, and the OSM `name:*` keys read for area names. `AVAILABLE_LOCALES`, `LOCALE_DISPLAY_NAMES` and `YML_LOCALE_MAP` derive from it. English (`en`) is the default and the source.
 
 ## File Structure
 
 ```
 messages/
 ├── en.json          # English translations (source)
-├── es.json          # Spanish translations
-├── pt-BR.json       # Portuguese (Brazil) translations
-├── fr.json          # French translations
+├── <locale>.json    # one file per registry entry
 └── en.d.json.ts     # TypeScript definitions
 ```
+
+## Adding a Language
+
+Which:
+
+- An active OSM community (contributors per country in OSMstats).
+- iD preset translations at about 80% or more, so map-feature wording has a source ([#677]).
+
+How:
+
+1. Add one entry to `LOCALES` in `src/i18n/constants.ts`.
+2. Add `messages/<locale>.json`.
+3. Add the `<locale>` entries in `prisma/templates.i18n.yml`.
+
+One agent translates, a separate agent reviews. Template wording comes from iD presets and the OSM wiki in that language.
+
+- Place names come from OSM tags unchanged. Translations never rename, relabel or add names for places, countries or borders, and add no example places or regions that the English source does not have.
+- Right-to-left languages also need the RTL support from [#777].
+- After release, run `sync-templates` on production.
 
 ### ⚠️ Important: Reading Translation Files
 
@@ -49,7 +63,7 @@ head -10 messages/en.json
 ## Two Translation Systems
 
 ### UI Translations (next-intl)
-- Files: `messages/en.json`, `messages/pt-BR.json`, `messages/es.json`, `messages/fr.json`
+- Files: `messages/<locale>.json`, one per registry entry
 - Content: Interface text, labels, buttons, navigation
 - Usage: `getTranslations()`, `useTranslations()`
 
@@ -59,7 +73,7 @@ head -10 messages/en.json
 - Code: `src/lib/template-locale.ts` → `resolveTemplateForLocale()`
 - Content: Dataset template names and descriptions
 
-Both use the URL locale (`/en/...`, `/pt-BR/...`, `/es/...`, `/fr/...`).
+Both use the URL locale (`/<locale>/...`).
 
 ## Using Template Translations
 
@@ -176,9 +190,9 @@ First, add the new key to `messages/en.json`:
 }
 ```
 
-### 2. Add to Other Languages
+### 2. Add to Other Languages, Last
 
-Add the same key to all other language files:
+Translate last: once tests pass and the English is final, add the key to every other language file in one commit before review. The pre-commit hook checks only placeholders, so work-in-progress commits with English-only keys pass. CI still fails on a missing key, so a PR merges with every locale complete.
 
 **Spanish (`messages/es.json`):**
 
@@ -321,9 +335,9 @@ Before releasing features:
 
 ### 4. Keep Translations Synchronized
 
-- Always update all language files together
+- Translate every language file in one commit, once the English is final
 - Use the same key structure across languages
-- Run `pnpm i18n:check` before committing
+- Run `pnpm i18n:check` before opening a PR
 
 ## Troubleshooting
 
@@ -353,13 +367,16 @@ When adding new features:
 
 1. **Identify all text** that needs translation
 2. **Add keys to English** first (source of truth)
-3. **Add translations** to all other languages
-4. **Update components** to use translation keys
+3. **Update components** to use translation keys
+4. **Add translations** to all other languages, last, once the English is final
 5. **Test thoroughly** with all languages
-6. **Run i18n check** before committing
+6. **Run i18n check** before opening a PR
 
 ## Resources
 
 - [next-intl Documentation](https://next-intl.com/)
 - [ICU Message Format](https://unicode-org.github.io/icu/userguide/format_parse/messages/) (for interpolation)
 - [Translation Best Practices](https://next-intl.com/docs/usage/messages)
+
+[#677]: https://github.com/osmforcities/osmforcities/issues/677
+[#777]: https://github.com/osmforcities/osmforcities/issues/777

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { getLocalizedMetadata } from "../metadata";
 import type { Locale } from "@/i18n/routing";
+import { AVAILABLE_LOCALES } from "@/i18n/constants";
 
 // Mock DEFAULT_SEO to control siteUrl in tests
 vi.mock("../metadata", async () => {
@@ -63,13 +64,11 @@ describe("getLocalizedMetadata", () => {
         path: "/about",
       });
 
-      expect(metadata.alternates?.languages).toEqual({
-        en: `${siteUrl}/en/about`,
-        "pt-BR": `${siteUrl}/pt-BR/about`,
-        es: `${siteUrl}/es/about`,
-        fr: `${siteUrl}/fr/about`,
-        de: `${siteUrl}/de/about`,
-      });
+      expect(metadata.alternates?.languages).toEqual(
+        Object.fromEntries(
+          AVAILABLE_LOCALES.map((locale) => [locale, `${siteUrl}/${locale}/about`])
+        )
+      );
     });
   });
 });
