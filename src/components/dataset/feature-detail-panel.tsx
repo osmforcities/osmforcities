@@ -20,6 +20,7 @@ const VALUE_CELL_CLASSES = "py-1.5 text-sm text-gray-800 break-all";
 
 type FeatureDetailPanelProps = {
   feature: Feature;
+  partialTags?: boolean;
   onBack: () => void;
 };
 
@@ -35,6 +36,7 @@ const HIDDEN_KEYS = new Set([
 
 export function FeatureDetailPanel({
   feature,
+  partialTags = false,
   onBack,
 }: FeatureDetailPanelProps) {
   const t = useTranslations("DatasetMap");
@@ -124,6 +126,10 @@ export function FeatureDetailPanel({
               </TableBody>
             </Table>
           </div>
+        )}
+
+        {partialTags && (
+          <p className="text-sm text-gray-500">{t("zoomInForAllTags")}</p>
         )}
 
         {(osmUser || formattedDate) && (

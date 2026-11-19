@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowLeft } from "lucide-react";
 import type { Feature, FeatureCollection } from "geojson";
@@ -14,6 +14,7 @@ import { DatasetTimestamps } from "@/components/dataset/dataset-timestamps";
 import { OverpassQueryChip } from "@/components/dataset/overpass-query-chip";
 import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
 import { FeatureDetailPanel } from "@/components/dataset/feature-detail-panel";
+import type { FeatureSelectHandler } from "@/components/dataset/map/hooks";
 
 type DatasetInteractiveSectionProps = {
   dataset: Dataset;
@@ -37,7 +38,15 @@ export function DatasetInteractiveSection({
   savedCount = 0,
   saveLimit,
 }: DatasetInteractiveSectionProps) {
-  const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
+  const [selection, setSelection] = useState<{
+    feature: Feature;
+    partialTags: boolean;
+  } | null>(null);
+  const selectFeature: FeatureSelectHandler = useCallback(
+    (feature, partialTags = false) =>
+      setSelection(feature && { feature, partialTags }),
+    []
+  );
   const [lastChecked, setLastChecked] = useState(dataset.lastChecked);
   const mapRef = useRef<DatasetFullMapHandle>(null);
   const t = useTranslations("DatasetPage");
@@ -46,22 +55,23 @@ export function DatasetInteractiveSection({
     // Expose test hook in test mode or development
     if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "development") {
       (window as unknown as Record<string, unknown>).__triggerFeatureSelect =
-        setSelectedFeature;
+        selectFeature;
       return () => {
         delete (window as unknown as Record<string, unknown>).__triggerFeatureSelect;
       };
     }
-  }, []);
+  }, [selectFeature]);
 
   return (
     <div className="flex flex-col lg:flex-row lg:flex-1 lg:h-full lg:min-h-0 lg:overflow-hidden">
       {/* Side Panel */}
       <aside className="bg-white border-b lg:border-b-0 lg:border-r border-gray-200 px-6 py-4 flex flex-col lg:w-96 lg:flex-shrink-0 lg:h-full">
-        {selectedFeature ? (
+        {selection ? (
           <FeatureDetailPanel
-            feature={selectedFeature}
+            feature={selection.feature}
+            partialTags={selection.partialTags}
             onBack={() => {
-              setSelectedFeature(null);
+              setSelection(null);
               mapRef.current?.deselectFeature();
             }}
           />
@@ -125,7 +135,7 @@ export function DatasetInteractiveSection({
           ref={mapRef}
           dataset={dataset}
           boundary={boundary}
-          onFeatureSelect={setSelectedFeature}
+          onFeatureSelect={selectFeature}
         />
       </div>
     </div>

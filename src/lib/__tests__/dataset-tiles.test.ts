@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import type { FeatureCollection } from "geojson";
-import { tilesPointCount } from "../dataset-tiles";
+import { hasPartialTags, tilesPointCount } from "../dataset-tiles";
 
 // TILES_ENABLED is read from the env at module load, so every flag-dependent
 // test stubs the flag first and imports the modules fresh.
@@ -185,5 +185,29 @@ describe("tilesPointCount", () => {
   it("falls back to dataCount when stats lack geometryMix", () => {
     expect(tilesPointCount({ dataCount: 500, stats: {} })).toBe(500);
     expect(tilesPointCount({ dataCount: 500, stats: null })).toBe(500);
+  });
+});
+
+describe("hasPartialTags", () => {
+  const archive = (maxzoom: number) => ({ type: "vector", maxzoom });
+
+  it.each([9, 11.5, 13.9])("is true at z%s of a split archive", (zoom) => {
+    expect(hasPartialTags(zoom, archive(14))).toBe(true);
+  });
+
+  it.each([8.9, 14, 16])("is false at z%s, where tiles carry every tag", (zoom) => {
+    expect(hasPartialTags(zoom, archive(15))).toBe(false);
+  });
+
+  it("is false when the archive stops below z14 (no split)", () => {
+    expect(hasPartialTags(11, archive(13))).toBe(false);
+  });
+
+  it("is false for a geojson source", () => {
+    expect(hasPartialTags(11, { type: "geojson", maxzoom: 18 })).toBe(false);
+  });
+
+  it("is false without a source", () => {
+    expect(hasPartialTags(11, undefined)).toBe(false);
   });
 });

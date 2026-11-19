@@ -3,6 +3,7 @@ import type { MapLayerMouseEvent } from "react-map-gl/maplibre";
 import type { MapGeoJSONFeature } from "maplibre-gl";
 import type { Feature } from "geojson";
 import { resolveProxyFeature } from "../layers/polygon-proxy-points";
+import { hasPartialTags } from "@/lib/dataset-tiles";
 
 export function toSelectedFeature(
   hit: MapGeoJSONFeature,
@@ -24,8 +25,13 @@ export function toSelectedFeature(
   return feature;
 }
 
+export type FeatureSelectHandler = (
+  feature: Feature | null,
+  partialTags?: boolean
+) => void;
+
 export function useFeatureSelection(
-  onFeatureSelect?: (feature: Feature | null) => void,
+  onFeatureSelect?: FeatureSelectHandler,
   sourceFeatures: Feature[] = []
 ) {
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
@@ -36,8 +42,12 @@ export function useFeatureSelection(
       const hit = event.features?.[0];
       if (hit) {
         const feature = toSelectedFeature(hit, sourceFeatures);
+        const map = event.target;
         setSelectedFeature(feature);
-        onFeatureSelect?.(feature);
+        onFeatureSelect?.(
+          feature,
+          hasPartialTags(map.getZoom(), map.getSource(hit.source))
+        );
       } else {
         setSelectedFeature(null);
         onFeatureSelect?.(null);

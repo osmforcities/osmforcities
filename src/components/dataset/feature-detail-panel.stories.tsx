@@ -123,6 +123,31 @@ export const FromTile: Story = {
   },
 };
 
+export const PartialTagsTile: Story = {
+  args: {
+    feature: tileFeature,
+    partialTags: true,
+    onBack: fn(),
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByText("Zoom in on the map to see all tags.")
+    ).toBeInTheDocument();
+  },
+};
+
+export const FullTagsTile: Story = {
+  args: {
+    feature: tileFeature,
+    partialTags: false,
+    onBack: fn(),
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText("bench")).toBeInTheDocument();
+    await expect(canvas.queryByText(/Zoom in/i)).not.toBeInTheDocument();
+  },
+};
+
 export const MemberNode: Story = {
   args: {
     feature: memberNodeFeature,
