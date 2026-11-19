@@ -455,6 +455,8 @@
     "openInOsm": "Ouvrir dans OpenStreetMap",
     "key": "Clé",
     "value": "Valeur",
+    "loadingFullTags": "Chargement de tous les attributs...",
+    "zoomInForFullTags": "Zoomez sur la carte et sélectionnez de nouveau l'élément pour voir tous les attributs.",
     "lastEditedBy": "Dernière modification par <link>{user}</link>",
     "lastEditedOn": "Dernière modification le {date}",
     "mapLabel": "Carte interactive du jeu de données",

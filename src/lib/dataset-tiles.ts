@@ -1,5 +1,8 @@
 import type { GeometryMix } from "@/lib/dataset-geometry";
 
+// The tiler bakes everything into one layer named "features" (overpass-pmtiler API.md).
+export const TILES_SOURCE_LAYER = "features";
+
 /**
  * Client-side decision: does this dataset render from PMTiles?
  * Opt-in via NEXT_PUBLIC_TILES_ENABLED while #489 is being proven; unset (or
@@ -71,4 +74,18 @@ export function hasDownloadableGeojson(dataset: {
   geojson?: unknown;
 }): boolean {
   return dataset.hasGeojson ?? Boolean(dataset.geojson);
+}
+
+// Mirrors the tiler's split bake: an archive reaching z14 keeps only the drawn
+// keys (filterableTags, _ts, @id) at z9-z13.
+const PARTIAL_TAGS_MIN_ZOOM = 9;
+export const FULL_TAGS_ZOOM = 14;
+
+export function hasDrawnTagsOnly(
+  zoom: number,
+  source: { type: string; maxzoom: number } | undefined
+): boolean {
+  if (source?.type !== "vector" || source.maxzoom < FULL_TAGS_ZOOM) return false;
+  const tileZoom = Math.floor(zoom);
+  return tileZoom >= PARTIAL_TAGS_MIN_ZOOM && tileZoom < FULL_TAGS_ZOOM;
 }

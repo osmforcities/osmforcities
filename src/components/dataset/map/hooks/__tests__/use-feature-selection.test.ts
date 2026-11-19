@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import type { Feature, Point } from "geojson";
 import type { MapGeoJSONFeature } from "maplibre-gl";
-import { toSelectedFeature } from "../use-feature-selection";
+import { selectFromTiles, toSelectedFeature } from "../use-feature-selection";
 import { POINT_LAYER_ID } from "../../layers/layer-ids";
 
 const stop: Point = { type: "Point", coordinates: [-47.9, -15.79] };
@@ -46,5 +46,44 @@ describe("toSelectedFeature", () => {
     } as unknown as MapGeoJSONFeature;
 
     expect(toSelectedFeature(hit, [source])).toBe(hit);
+  });
+});
+
+describe("selectFromTiles", () => {
+  const drawn: Feature = {
+    type: "Feature",
+    geometry: stop,
+    properties: { id: "node/1", "@id": "node/1", highway: "bus_stop" },
+  };
+  const full: Feature = {
+    ...drawn,
+    properties: { ...drawn.properties, name: "Central" },
+  };
+
+  it("shows the drawn tags while loading, then the full ones", async () => {
+    const select = vi.fn();
+
+    await selectFromTiles(drawn, async () => full, select, () => true);
+
+    expect(select.mock.calls).toEqual([
+      [drawn, "loading"],
+      [full, "full"],
+    ]);
+  });
+
+  it("falls back to the drawn tags when the tile lacks the feature", async () => {
+    const select = vi.fn();
+
+    await selectFromTiles(drawn, async () => null, select, () => true);
+
+    expect(select).toHaveBeenLastCalledWith(drawn, "drawn");
+  });
+
+  it("drops the read when a newer click or a deselect came first", async () => {
+    const select = vi.fn();
+
+    await selectFromTiles(drawn, async () => full, select, () => false);
+
+    expect(select.mock.calls).toEqual([[drawn, "loading"]]);
   });
 });

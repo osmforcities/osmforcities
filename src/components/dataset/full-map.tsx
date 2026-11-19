@@ -25,7 +25,11 @@ import {
   type LegendViewOption,
 } from "./map/interactive-legend";
 import { StyleTuningPanel } from "./map/style-tuning-panel";
-import { useMapData, useFeatureSelection } from "./map/hooks";
+import {
+  useMapData,
+  useFeatureSelection,
+  type FeatureSelectHandler,
+} from "./map/hooks";
 import { INTERACTIVE_LAYER_IDS } from "./map/layers/layer-ids";
 import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
@@ -52,7 +56,7 @@ export type MapPosition = Pick<ViewState, "longitude" | "latitude" | "zoom">;
 type DatasetFullMapProps = {
   dataset: Dataset;
   boundary: FeatureCollection | null;
-  onFeatureSelect?: (feature: Feature | null) => void;
+  onFeatureSelect?: FeatureSelectHandler;
   initialPosition?: MapPosition;
   onPositionChange?: (position: MapPosition) => void;
 };
