@@ -455,7 +455,7 @@
     "openInOsm": "Open in OpenStreetMap",
     "key": "Key",
     "value": "Value",
-    "zoomInForAllTags": "Zoom in on the map to see all tags.",
+    "zoomInForAllTags": "Zoom in and select it again to see all tags.",
     "lastEditedBy": "Last edited by <link>{user}</link>",
     "lastEditedOn": "Last edited {date}",
     "mapLabel": "Interactive map showing dataset",

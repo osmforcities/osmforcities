@@ -120,6 +120,7 @@ export const FromTile: Story = {
     ).toBeInTheDocument();
     await expect(canvas.queryByText(/Last edited by/i)).not.toBeInTheDocument();
     await expect(canvas.getByText("bench")).toBeInTheDocument();
+    await expect(canvas.queryByText(/Zoom in/i)).not.toBeInTheDocument();
   },
 };
 
@@ -131,20 +132,8 @@ export const PartialTagsTile: Story = {
   },
   play: async ({ canvas }) => {
     await expect(
-      canvas.getByText("Zoom in on the map to see all tags.")
+      canvas.getByText("Zoom in and select it again to see all tags.")
     ).toBeInTheDocument();
-  },
-};
-
-export const FullTagsTile: Story = {
-  args: {
-    feature: tileFeature,
-    partialTags: false,
-    onBack: fn(),
-  },
-  play: async ({ canvas }) => {
-    await expect(canvas.getByText("bench")).toBeInTheDocument();
-    await expect(canvas.queryByText(/Zoom in/i)).not.toBeInTheDocument();
   },
 };
 
