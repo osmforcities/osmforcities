@@ -370,6 +370,76 @@ describe("user-report email generation", () => {
     expect(text.match(/Removed from the catalog/g)).toHaveLength(1);
   });
 
+  describe("a retiring dataset with no change in the period", () => {
+    const unchangedRetiring = {
+      ...mockDataset,
+      stats: { mostRecentElement: "2026-09-01T00:00:00Z" },
+      template: { ...mockDataset.template, deprecatesAt: new Date("2026-11-10T12:00:00Z") },
+    };
+
+    beforeEach(() => {
+      vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
+      mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+    });
+
+    it("still gets its deletion warning", async () => {
+      mockPrisma.dataset.findMany.mockResolvedValue([unchangedRetiring]);
+
+      const result = await generateNextUserReport();
+
+      expect(result?.emailContent.html).toContain("This dataset will be deleted after November 10, 2026.");
+      expect(result?.emailContent.subject).toBe("1 saved dataset will be deleted");
+      expect(result?.reportData.latestChangeDate).toBeNull();
+    });
+
+    it("gets its warning without stats, with no last edit line", async () => {
+      mockPrisma.dataset.findMany.mockResolvedValue([{ ...unchangedRetiring, stats: null }]);
+
+      const result = await generateNextUserReport();
+
+      expect(result?.emailContent.html).toContain("Removed from the catalog");
+      expect(result?.emailContent.text).not.toContain("Last edit");
+    });
+
+    it("leaves out an unchanged dataset that is not retiring", async () => {
+      mockPrisma.dataset.findMany.mockResolvedValue([
+        unchangedRetiring,
+        { ...mockDataset, id: "ds-2", templateId: "parks", stats: { mostRecentElement: "2026-09-01T00:00:00Z" } },
+      ]);
+
+      const result = await generateNextUserReport();
+
+      expect(result?.emailContent.text).not.toContain("dataset/parks");
+    });
+
+    it("is never hidden by the cap, which counts only changed datasets", async () => {
+      const retiring = Array.from({ length: 6 }, (_, i) => ({
+        ...unchangedRetiring,
+        id: `r-${i}`,
+        templateId: `r-${i}`,
+      }));
+      const changed = [1, 2].map((i) => ({ ...mockDataset, id: `c-${i}`, templateId: `c-${i}` }));
+      mockPrisma.dataset.findMany.mockResolvedValue([...changed, ...retiring]);
+
+      const { text } = (await generateNextUserReport())!.emailContent;
+
+      expect(text.match(/Removed from the catalog/g)).toHaveLength(6);
+      expect(text).toContain("2 more datasets changed.");
+    });
+
+    it("is not counted as changed next to a dataset that did change", async () => {
+      mockPrisma.dataset.findMany.mockResolvedValue([
+        unchangedRetiring,
+        { ...mockDataset, id: "ds-2", templateId: "parks" },
+      ]);
+
+      const result = await generateNextUserReport();
+
+      expect(result?.emailContent.subject).toBe("1 dataset changed in the last week");
+      expect(result?.emailContent.html).toContain("Removed from the catalog");
+    });
+  });
+
   it("returns null when no user due for report", async () => {
     mockPrisma.user.findFirst.mockResolvedValue(null);
     const result = await generateNextUserReport();

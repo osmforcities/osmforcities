@@ -670,6 +670,7 @@
     "reportOpen": "Abrir",
     "reportMore": "{count, plural, one {Mais # conjunto de dados mudou.} other {Mais # conjuntos de dados mudaram.}}",
     "reportGoToDashboard": "Ir para o seu painel",
+    "reportSubjectRetiring": "{count, plural, one {# conjunto de dados salvo será excluído} other {# conjuntos de dados salvos serão excluídos}}",
     "reportRetiredTitle": "Removido do catálogo",
     "reportRetiredBody": "{template} não faz mais parte do catálogo e a página não está mais disponível. {date, select, soon {Este conjunto de dados será excluído em breve.} other {Este conjunto de dados será excluído após {date}.}}",
     "reportReplacedBody": "{template} não faz mais parte do catálogo. Use {replacement} no lugar. {date, select, soon {Este conjunto de dados será excluído em breve.} other {Este conjunto de dados será excluído após {date}.}}"
