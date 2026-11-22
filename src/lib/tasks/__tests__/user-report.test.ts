@@ -428,8 +428,6 @@ describe("user-report email generation", () => {
     });
 
     it("is not counted as changed next to a dataset that did change", async () => {
-      vi.mocked(resolveTemplateForLocale).mockReturnValue({ name: "Schools", description: "Schools" });
-      mockPrisma.user.findFirst.mockResolvedValue(mockUser);
       mockPrisma.dataset.findMany.mockResolvedValue([
         unchangedRetiring,
         { ...mockDataset, id: "ds-2", templateId: "parks" },
