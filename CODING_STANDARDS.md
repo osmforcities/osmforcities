@@ -60,9 +60,9 @@ How code in this repo should be written. Reviewers (human and agent) check chang
 Default is no comment. Names, types, tests and ADRs carry meaning; comments rot. Before writing one, classify it:
 
 - Tautology (repeats what the code shows): don't write it. Rename until the code says it.
-- Excuse (explains a hack, shortcut, "for now", "temporary", TODO, FIXME): don't write it. Fix the code, or keep it and file an issue.
+- Excuse (explains a hack in our code, shortcut, "for now", "temporary", TODO, FIXME): don't write it. Fix the code, or keep it and file an issue. A workaround for an outside bug is a constraint, not an excuse (see below).
 - Decision record (a choice that spans files or outlives one change, and its why): write an ADR in [docs/adr/](docs/adr/), not a comment.
-- Stale (describes code, behavior or history that no longer holds): delete on sight.
+- Stale (describes code, behavior or history that no longer holds): delete it when your change touches it.
 
 Allowed, one line each:
 
@@ -70,9 +70,9 @@ Allowed, one line each:
 - The why on code a reasonable reader would otherwise "fix" (an odd order, value or extra step). Prefer a test that fails when it is "fixed"; comment only when that test is not cheap.
 - Tool directives (`eslint-disable-next-line`, `@ts-expect-error`) with the reason on the same line, the `test.fail()` bug note (see Tests), and the dev-only i18n marker (see i18n).
 
-Never: commented-out code, section banners, JSDoc that restates the signature, changelog-style history ("was X, now Y"). A PR that touches a comment in a banned category deletes or moves it.
+Never: commented-out code, section banners, JSDoc that restates the signature, changelog-style history ("was X, now Y"), bare issue or PR refs (`#512`, `see #490`: they don't resolve where code is read; use a full URL only if the ticket adds something the comment can't).
 
-- No bare issue or PR refs (`#512`, `see #490`): they don't resolve where code is read. State the reason; use a full URL only if the ticket adds something the comment can't.
+Forward-only: existing comments are not swept. A PR that touches a comment in a banned category deletes or moves it.
 
 ## Tests
 
