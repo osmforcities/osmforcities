@@ -162,7 +162,7 @@ export type DatasetSnapshot =
       bbox: null;
       // The probe's element count, never a feature count: the tiler submit
       // derives raised budgets from it on the scale the count probe caps on.
-      dataCount: number;
+      dataCount: number | "unknown";
     };
 
 /**
@@ -178,7 +178,7 @@ export function snapshotDatasetColumns(snapshot: DatasetSnapshot) {
     // written here too: a null lastChecked drops the row out of health
     // freshness checks while the first bake runs.
     return {
-      dataCount: snapshot.dataCount,
+      ...(snapshot.dataCount !== "unknown" && { dataCount: snapshot.dataCount }),
       lastChecked: new Date(),
     };
   }
@@ -194,7 +194,7 @@ export function snapshotDatasetColumns(snapshot: DatasetSnapshot) {
   };
 }
 
-function tilesOnlySnapshot(dataCount: number): DatasetSnapshot {
+function tilesOnlySnapshot(dataCount: number | "unknown"): DatasetSnapshot {
   return { tilesOnly: true, geojson: null, stats: null, bbox: null, dataCount };
 }
 
@@ -349,7 +349,11 @@ export async function fetchDatasetSnapshot(
   try {
     await assertNoFreshNegativeVerdict(areaId, templateId);
   } catch (error) {
-    if (!(tilesLane && error instanceof DatasetTooLargeError)) throw error;
+    if (!tilesLane) throw error;
+    if (error instanceof DatasetSizeCheckTimeoutError) {
+      return tilesOnlySnapshot("unknown");
+    }
+    if (!(error instanceof DatasetTooLargeError)) throw error;
   }
 
   // Cheap pre-flight: reject before Overpass serializes anything if the
@@ -371,7 +375,7 @@ export async function fetchDatasetSnapshot(
     } catch (retryError) {
       if (!(retryError instanceof OverpassTimeoutError)) throw retryError;
       await recordSizeCheck(areaId, templateId, "timeout");
-      throw new DatasetSizeCheckTimeoutError();
+      return tilesOnlySnapshot("unknown");
     }
   }
   // The tiler fetches the features, whatever the size

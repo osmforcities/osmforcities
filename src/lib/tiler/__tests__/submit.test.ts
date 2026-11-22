@@ -127,6 +127,23 @@ describe("submitTilesForDataset", () => {
     );
   });
 
+  it("passes raised budgets when the count probe gave no count, even over a stored zero", async () => {
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+      ...row,
+      dataCount: 0,
+    } as never);
+    vi.mocked(submitTilesColumns).mockResolvedValue({});
+
+    await submitTilesForDataset("ds-1", "unknown");
+
+    expect(submitTilesColumns).toHaveBeenCalledWith(
+      "ds-1",
+      "[out:json];rel(47798);out geom meta;",
+      ["surface"],
+      { maxsize: LARGE_JOB_MAXSIZE_BYTES, timeout: LARGE_JOB_TIMEOUT_SECONDS }
+    );
+  });
+
   it("never submits an empty dataset and clears a stuck failed bake", async () => {
     // Stored count from creation; the lane's refresh never stored the zero
     await submitTilesForDataset("ds-1", 0);
@@ -230,10 +247,32 @@ describe("retryFailedBake", () => {
     lastAttempted: null,
     consecutiveFailures: 1,
     tilesError: "Tiler submit failed: 500",
+    dataCount: 100,
   };
 
   beforeEach(() => {
     vi.mocked(prisma.dataset.updateMany).mockResolvedValue({ count: 1 });
+  });
+
+  it("resubmits on over-cap budgets when the count probe never stored a count", async () => {
+    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
+      ...row,
+      dataCount: 0,
+    } as never);
+    vi.mocked(submitTilesColumns).mockResolvedValue({
+      tilesJobId: "ds-1-200",
+      tilesState: "pending",
+      tilesError: null,
+    });
+
+    await retryFailedBake({ ...failed, dataCount: 0 });
+
+    expect(submitTilesColumns).toHaveBeenCalledWith(
+      "ds-1",
+      "[out:json];rel(47798);out geom meta;",
+      ["surface"],
+      { maxsize: LARGE_JOB_MAXSIZE_BYTES, timeout: LARGE_JOB_TIMEOUT_SECONDS }
+    );
   });
 
   it("leaves a bake that has not failed alone", async () => {

@@ -48,7 +48,7 @@ export function tilesOnlyLaneEnabled(): boolean {
  */
 export async function submitTilesForDataset(
   datasetId: string,
-  elementCount?: number
+  elementCount?: number | "unknown"
 ): Promise<TilesColumns> {
   if (!tilerEnabled()) return {};
   try {
@@ -95,6 +95,7 @@ export async function submitTilesForDataset(
     // count probe's element count is the signal, the same number creation
     // caps on.
     const isOverCap =
+      count === "unknown" ||
       count * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE > MAX_DATASET_BYTES;
     const columns = await submitTilesColumns(
       datasetId,
@@ -162,6 +163,7 @@ export async function retryFailedBake(row: {
   lastAttempted: Date | null;
   consecutiveFailures: number;
   tilesError: string | null;
+  dataCount: number;
 }): Promise<TilesColumns> {
   if (row.tilesState !== "failed" || !isRetryDue(row, new Date())) return {};
   // Any error leaves the failed screen as it was
@@ -177,7 +179,11 @@ export async function retryFailedBake(row: {
     });
     if (count === 0) return {};
 
-    const columns = await submitTilesForDataset(row.id);
+    // An empty dataset never reaches a bake, so a stored 0 here never got a count
+    const columns = await submitTilesForDataset(
+      row.id,
+      row.dataCount || "unknown"
+    );
     if (columns.tilesState === "failed") {
       await recordFailedSubmit(row.id, columns.tilesError);
     }

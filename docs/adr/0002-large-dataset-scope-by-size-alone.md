@@ -1,12 +1,12 @@
 # Large datasets are limited by size alone, not by kind of area
 
-The tiles-only lane is for cities, including the largest, and not for metro regions or states. That scope is not encoded as a rule about area type. The only limit is what the pipeline can count and bake: an area whose count probe fails even on raised budgets is refused, everything else is allowed.
+The tiles-only lane is for cities, including the largest, and not for metro regions or states. That scope is not encoded as a rule about area type. The only limit is what the pipeline can bake: an area the tiler refuses as too large is refused, everything else is allowed. A count probe that fails even on raised budgets is no refusal: the bake goes to the tiler on over-cap budgets and the tiler decides.
 
 ## Why not an area-type rule
 
 - Nominatim calls Tokyo Metropolis a city, so a rule by type would admit the exact case it was written to exclude.
 - There is no clean numeric line either: São Paulo the city and São Paulo the state differ by about a quarter in element count.
-- Tokyo excludes itself by being too big to even count, which is the intended behaviour.
+- Tokyo excludes itself by being too big to bake, which is the intended behaviour.
 
 ## Consequences
 

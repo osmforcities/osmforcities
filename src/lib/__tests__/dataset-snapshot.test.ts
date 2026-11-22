@@ -453,12 +453,16 @@ describe("fetchDatasetSnapshot — tiles-only lane", () => {
     expect(vi.mocked(fetch)).not.toHaveBeenCalled();
   });
 
-  it("still honours a fresh timeout verdict", async () => {
-    // Unlike too_large, the lane does not bypass it: no probe, no retry.
+  it("routes a fresh timeout verdict to the tiler with an unknown count, no probe", async () => {
     findUnique.mockResolvedValue({ ...freshTooLarge, status: "timeout" } as never);
-    await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
-      DatasetSizeCheckTimeoutError
-    );
+    const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+    expect(snapshot).toEqual({
+      tilesOnly: true,
+      geojson: null,
+      stats: null,
+      bbox: null,
+      dataCount: "unknown",
+    });
     expect(vi.mocked(fetch)).not.toHaveBeenCalled();
   });
 
@@ -631,13 +635,14 @@ describe("fetchDatasetSnapshot — count-probe retry", () => {
   });
 
   describe("retry fails", () => {
-    it("records a timeout verdict when the retry also times out", async () => {
+    // The tiler's own too_large refusal is the only size verdict left
+    it("routes to the tiler with an unknown count when the retry also times out", async () => {
       const fetchMock = vi.fn().mockResolvedValue(timedOut);
       vi.stubGlobal("fetch", fetchMock);
 
-      await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
-        DatasetSizeCheckTimeoutError
-      );
+      const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
+
+      expect(snapshot).toMatchObject({ tilesOnly: true, dataCount: "unknown" });
       expect(fetchMock).toHaveBeenCalledTimes(2);
       expectTimeoutVerdict();
     });
@@ -762,5 +767,16 @@ describe("snapshotDatasetColumns", () => {
     expect(Object.keys(cols).sort()).toEqual(["dataCount", "lastChecked"]);
     expect(cols.dataCount).toBe(overCapCount);
     expect(cols.lastChecked).toBeInstanceOf(Date);
+  });
+
+  it("keeps the stored count when the probe gave no count", () => {
+    const cols = snapshotDatasetColumns({
+      tilesOnly: true,
+      geojson: null,
+      stats: null,
+      bbox: null,
+      dataCount: "unknown",
+    });
+    expect(Object.keys(cols)).toEqual(["lastChecked"]);
   });
 });
