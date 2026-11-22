@@ -3,7 +3,7 @@ import {
   type NominatimResult,
 } from "@/schemas/nominatim";
 import { dedupeAreas, rankByScale } from "@/lib/area-search";
-import { preventExternalCallsInTests } from "@/lib/nominatim";
+import { nominatimApiUrl } from "@/lib/nominatim";
 import { getUserAgent } from "@/lib/overpass/transport";
 
 // Nominatim usage policy: an absolute maximum of 1 request per second. Search
@@ -54,12 +54,12 @@ export async function searchAreasWithNominatim(
     return [];
   }
 
-  preventExternalCallsInTests();
+  const baseUrl = nominatimApiUrl();
   await waitForSearchSlot(signal);
 
   try {
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+      `${baseUrl}/search?q=${encodeURIComponent(
         searchTerm
       )}&format=json&addressdetails=1&extratags=1&limit=10&accept-language=${encodeURIComponent(
         language

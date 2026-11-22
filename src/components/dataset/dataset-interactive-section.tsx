@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowLeft } from "lucide-react";
 import type { Feature, FeatureCollection } from "geojson";
@@ -11,8 +11,11 @@ import { CategoryFacet } from "@/components/dataset/category-facet";
 import { DatasetInfoPanel } from "@/components/dataset/dataset-info-panel";
 import { DatasetPanelStats } from "@/components/dataset/dataset-panel-stats";
 import { DatasetTimestamps } from "@/components/dataset/dataset-timestamps";
+import { OverpassQueryChip } from "@/components/dataset/overpass-query-chip";
 import { DatasetActionsSection } from "@/components/dataset/dataset-actions-section";
 import { FeatureDetailPanel } from "@/components/dataset/feature-detail-panel";
+import type { FeatureSelectHandler } from "@/components/dataset/map/hooks";
+import type { TagSet } from "@/lib/tiles-full-tags";
 
 type DatasetInteractiveSectionProps = {
   dataset: Dataset;
@@ -22,6 +25,7 @@ type DatasetInteractiveSectionProps = {
   // dataset.area.names map lacks the current locale.
   areaName: string;
   categoryHref: string;
+  query: string;
   savedCount?: number;
   saveLimit?: number;
 };
@@ -31,10 +35,18 @@ export function DatasetInteractiveSection({
   boundary,
   areaName,
   categoryHref,
+  query,
   savedCount = 0,
   saveLimit,
 }: DatasetInteractiveSectionProps) {
-  const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
+  const [selection, setSelection] = useState<{
+    feature: Feature;
+    tagSet: TagSet;
+  } | null>(null);
+  const selectFeature: FeatureSelectHandler = useCallback(
+    (feature, tagSet = "full") => setSelection(feature && { feature, tagSet }),
+    []
+  );
   const [lastChecked, setLastChecked] = useState(dataset.lastChecked);
   const mapRef = useRef<DatasetFullMapHandle>(null);
   const t = useTranslations("DatasetPage");
@@ -43,22 +55,23 @@ export function DatasetInteractiveSection({
     // Expose test hook in test mode or development
     if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "development") {
       (window as unknown as Record<string, unknown>).__triggerFeatureSelect =
-        setSelectedFeature;
+        selectFeature;
       return () => {
         delete (window as unknown as Record<string, unknown>).__triggerFeatureSelect;
       };
     }
-  }, []);
+  }, [selectFeature]);
 
   return (
     <div className="flex flex-col lg:flex-row lg:flex-1 lg:h-full lg:min-h-0 lg:overflow-hidden">
       {/* Side Panel */}
       <aside className="bg-white border-b lg:border-b-0 lg:border-r border-gray-200 px-6 py-4 flex flex-col lg:w-96 lg:flex-shrink-0 lg:h-full">
-        {selectedFeature ? (
+        {selection ? (
           <FeatureDetailPanel
-            feature={selectedFeature}
+            feature={selection.feature}
+            tagSet={selection.tagSet}
             onBack={() => {
-              setSelectedFeature(null);
+              setSelection(null);
               mapRef.current?.deselectFeature();
             }}
           />
@@ -82,11 +95,10 @@ export function DatasetInteractiveSection({
                 </Link>
               </div>
               <DatasetInfoPanel dataset={dataset} areaName={areaName} />
-              {/* Metadata chip row: category facet (olive) + freshness chips
-                  (edited, fetched) sharing one line below the title. */}
               <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                <CategoryFacet dataset={dataset} areaName={areaName} categoryHref={categoryHref} />
+                <CategoryFacet category={dataset.template.category} areaName={areaName} categoryHref={categoryHref} />
                 <DatasetTimestamps dataset={dataset} lastChecked={lastChecked} />
+                <OverpassQueryChip query={query} />
               </div>
             </div>
 
@@ -123,7 +135,7 @@ export function DatasetInteractiveSection({
           ref={mapRef}
           dataset={dataset}
           boundary={boundary}
-          onFeatureSelect={setSelectedFeature}
+          onFeatureSelect={selectFeature}
         />
       </div>
     </div>

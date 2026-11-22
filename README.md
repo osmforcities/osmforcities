@@ -90,6 +90,29 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to view the application.
 
+### Running the tiler
+
+Dataset maps come from [overpass-pmtiler](https://github.com/osmforcities/overpass-pmtiler). The tiler fetches, computes stats and bakes. The app runs the count probe and submits the bake. See [ADR 0001](docs/adr/0001-tiler-is-the-only-overpass-data-client.md).
+
+- Overpass: app and tiler need the same instance, with area support. Run a dedicated one ([install guide](https://wiki.openstreetmap.org/wiki/Overpass_API/Installation)) and set `OVERPASS_API_URL` to it. Public instances are shared and not sized for bakes.
+- Tiler: install and start per its [README](https://github.com/osmforcities/overpass-pmtiler#readme), with `PMTILER_OVERPASS` set to the app's Overpass. Self-signed tunnel: add `PMTILER_INSECURE=1`.
+- App, in `.env.local`:
+
+```bash
+TILER_URL="http://127.0.0.1:8099"
+TILES_DIR="./data/tiles"        # archives the app reconciles and serves. data/ is gitignored
+NEXT_PUBLIC_TILES_ENABLED="true" # render maps from the archive
+```
+
+Restart `pnpm dev` after changing these (`NEXT_PUBLIC_` is inlined at compile). Both `TILER_URL` and the flag set = every dataset created and refreshed through the tiler.
+
+Check a bake end to end:
+
+1. `curl http://127.0.0.1:8099/status`: tiler version, queue depth.
+2. Open a dataset for a small area. Wait page shows the bake stage.
+3. `http://127.0.0.1:8099/` lists the bake.
+4. Bake done: the open wait page reconciles it, archive lands in `TILES_DIR`, map shows. No page open: the `update-datasets` task reconciles it ([Tasks API](#tasks-api)).
+
 ## Testing
 
 ### Where e2e specs go
@@ -120,7 +143,7 @@ The application includes a task-based API accessible at `/api/tasks`. Each task 
 ### Available Tasks
 
 - **send-user-reports**: Sends dataset status reports to users who haven't received one in the last 24 hours
-- **update-datasets**: Updates datasets that need refreshing (not yet implemented)
+- **update-datasets**: Refreshes datasets that are due and reconciles pending bakes
 
 ### Usage
 

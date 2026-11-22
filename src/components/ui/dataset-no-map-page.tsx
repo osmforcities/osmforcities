@@ -17,6 +17,7 @@ type DatasetNoMapPageProps = {
   categoryHref: string;
   /** The subject only, "{dataset} in {area}". It never changes while the page waits. */
   title: string;
+  summary?: ReactNode;
   /** The state, tinted by tone: "Bake failed.", "No data yet.". The waiting
    *  screens leave it out; their progress block says it. */
   lead?: string;
@@ -41,6 +42,7 @@ export function DatasetNoMapPage({
   areaId,
   categoryHref,
   title,
+  summary,
   lead,
   progress,
   description,
@@ -60,6 +62,7 @@ export function DatasetNoMapPage({
             {t("back")}
           </Link>
           <h1 className="text-2xl font-semibold leading-tight">{title}</h1>
+          {summary}
         </div>
         {/* The state owns the whole tinted well, where the stats will be. */}
         <div className="-mx-6 my-3 flex min-h-0 flex-1 flex-col justify-center border-y border-gray-200 bg-gray-50 px-6 py-8 text-center lg:overflow-y-auto">

@@ -1,15 +1,15 @@
 import { NominatimSearchResponseSchema } from "@/schemas/nominatim";
 import { fromNominatim } from "@/lib/area-conversion";
-import { getUserAgent } from "@/lib/overpass/transport";
+import { assertLocalInTests, getUserAgent } from "@/lib/overpass/transport";
 import type { Area } from "@/types/area";
 
-// Safeguard to prevent external API calls in test mode
-export function preventExternalCallsInTests() {
-  if (process.env.NODE_ENV === "test") {
-    throw new Error(
-      "External API calls are not allowed in test mode. Use mocked responses instead."
-    );
-  }
+const PUBLIC_NOMINATIM_API_URL = "https://nominatim.openstreetmap.org";
+
+/** Read per call: the browser bundle has no NOMINATIM_API_URL and keeps the public host */
+export function nominatimApiUrl(): string {
+  const url = process.env.NOMINATIM_API_URL || PUBLIC_NOMINATIM_API_URL;
+  assertLocalInTests(url);
+  return url;
 }
 
 /**
@@ -22,11 +22,11 @@ export async function getAreaDetailsById(
   osmRelationId: number,
   language: string = "en"
 ): Promise<Area | null> {
-  preventExternalCallsInTests();
+  const baseUrl = nominatimApiUrl();
 
   try {
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/lookup?osm_ids=R${osmRelationId}&format=json&addressdetails=1&extratags=1&namedetails=1&accept-language=${language}`,
+      `${baseUrl}/lookup?osm_ids=R${osmRelationId}&format=json&addressdetails=1&extratags=1&namedetails=1&accept-language=${language}`,
       {
         next: { revalidate: 86400 }, // 24 hours
         headers: {

@@ -66,6 +66,7 @@ const noOsmIdFeature: Feature = {
 const meta: Meta<typeof FeatureDetailPanel> = {
   title: "Dataset/FeatureDetailPanel",
   component: FeatureDetailPanel,
+  args: { tagSet: "full" },
   parameters: {
     layout: "padded",
   },
@@ -120,6 +121,37 @@ export const FromTile: Story = {
     ).toBeInTheDocument();
     await expect(canvas.queryByText(/Last edited by/i)).not.toBeInTheDocument();
     await expect(canvas.getByText("bench")).toBeInTheDocument();
+    await expect(canvas.queryByText(/Zoom in/i)).not.toBeInTheDocument();
+    await expect(canvas.getByRole("status")).toBeEmptyDOMElement();
+  },
+};
+
+export const LoadingAllTags: Story = {
+  args: {
+    feature: tileFeature,
+    tagSet: "loading",
+    onBack: fn(),
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("status")).toHaveTextContent(
+      "Loading all tags..."
+    );
+    await expect(canvas.getAllByRole("row")).toHaveLength(6);
+    await expect(canvas.queryByText("bench")).not.toBeInTheDocument();
+  },
+};
+
+export const DrawnTagsOnly: Story = {
+  args: {
+    feature: tileFeature,
+    tagSet: "drawn",
+    onBack: fn(),
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByText("Zoom in and select it again to see all tags.")
+    ).toBeInTheDocument();
+    await expect(canvas.getByRole("status")).toBeEmptyDOMElement();
   },
 };
 

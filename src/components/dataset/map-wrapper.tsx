@@ -3,12 +3,13 @@
 import { forwardRef } from "react";
 import { DatasetFullMap, type DatasetFullMapHandle } from "@/components/dataset/full-map";
 import type { Dataset } from "@/schemas/dataset";
-import type { Feature, FeatureCollection } from "geojson";
+import type { FeatureCollection } from "geojson";
+import type { FeatureSelectHandler } from "@/components/dataset/map/hooks";
 
 type DatasetMapWrapperProps = {
   dataset: Dataset;
   boundary: FeatureCollection | null;
-  onFeatureSelect?: (feature: Feature | null) => void;
+  onFeatureSelect?: FeatureSelectHandler;
 };
 
 export type { DatasetFullMapHandle };

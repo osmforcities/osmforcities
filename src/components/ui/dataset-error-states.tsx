@@ -229,12 +229,14 @@ export function DatasetTooLargeState({
   areaName,
   areaId,
   categoryHref,
+  summary,
   notify,
 }: {
   templateName: string;
   areaName: string;
   areaId: number;
   categoryHref: string;
+  summary?: ReactNode;
   /** The save-and-email button, worded "if it becomes available". */
   notify?: ReactNode;
 }) {
@@ -248,6 +250,7 @@ export function DatasetTooLargeState({
       // The lead carries the reason and the paragraph the way out. A refusal
       // is retried only weekly, so the offer below says "if", not "when".
       title={t("datasetInArea", { dataset: templateName, area: areaName })}
+      summary={summary}
       lead={t("stateTooLarge")}
       description={t("tooLargeDescription")}
       action={notify}

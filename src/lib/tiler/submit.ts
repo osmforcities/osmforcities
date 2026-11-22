@@ -11,6 +11,7 @@ import {
   OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
 } from "@/lib/constants";
 import { TILES_ENABLED } from "@/lib/dataset-tiles";
+import { fillAreaQuery } from "@/lib/overpass/area-query";
 import { isRetryDue } from "@/lib/dataset-retry";
 import { UNCATALOGED_FILTER } from "@/lib/dataset-catalog-filter";
 import { createLogger } from "@/lib/logger";
@@ -86,11 +87,9 @@ export async function submitTilesForDataset(
       return columns;
     }
 
-    // Same area interpolation fetchDatasetSnapshot applies — the tiler runs
-    // the exact query the app just ran.
-    const query = dataset.template.overpassQuery.replace(
-      /\{OSM_RELATION_ID\}/g,
-      dataset.areaId.toString()
+    const query = fillAreaQuery(
+      dataset.template.overpassQuery,
+      dataset.areaId
     );
     // Over-cap bakes need budgets the default per-query settings refuse. The
     // count probe's element count is the signal, the same number creation

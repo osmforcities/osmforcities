@@ -1,5 +1,18 @@
 # osmforcities
 
+## 1.24.0
+
+### Added
+
+- Dataset pages show the Overpass query behind the data, with Copy and an Overpass Turbo link, and the template description on every screen, including while the data loads [#774]
+
+### Changed
+
+- More vector tiles groundwork behind the tiles flag (off in production): clicking a feature on a zoomed-out map shows all its tags [#799]
+
+[#774]: https://github.com/osmforcities/osmforcities/pull/774
+[#799]: https://github.com/osmforcities/osmforcities/pull/799
+
 ## 1.23.0
 
 ### Added

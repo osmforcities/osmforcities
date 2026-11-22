@@ -3,6 +3,9 @@ import { expect, waitFor } from "storybook/test";
 import { useTranslations } from "next-intl";
 import { DatasetWaitPage } from "./dataset-wait-page";
 import { NotifyWhenReadyButton } from "./notify-when-ready-button";
+import { TemplateSummary } from "./template-summary";
+import { DatasetTimestamps } from "./dataset-timestamps";
+import type { Dataset } from "@/schemas/dataset";
 import { DatasetTooLargeState } from "@/components/ui/dataset-error-states";
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { withAppFrame } from "../../../.storybook/with-app-frame";
@@ -108,6 +111,59 @@ export const CountingWarm: Story = {
     await expect(canvas.getByRole("progressbar")).not.toHaveAttribute(
       "aria-valuenow"
     );
+  },
+};
+
+/** Every stage names what the dataset holds and how it is selected. */
+const rotterdamSummary = {
+  description: "Buildings of every kind, mapped as outlines",
+  query:
+    '[out:json];\nrel(324431);\nmap_to_area -> .searchArea;\nnwr["building"](area.searchArea);\nout geom meta;',
+  category: { slug: "buildings" },
+  areaName: "Rotterdam",
+  categoryHref: "/area/324431/topics/built-environment/buildings",
+};
+
+export const CountingWithSummary: Story = {
+  args: {
+    ...CountingWarm.args,
+    summary: <TemplateSummary {...rotterdamSummary} />,
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByText("Buildings of every kind, mapped as outlines")
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole("link", { name: /Rotterdam/ })
+    ).toBeVisible();
+    await expect(canvas.getByText("Edited, not available yet")).toBeInTheDocument();
+    await expect(canvas.getByText("Fetched, not available yet")).toBeInTheDocument();
+    await expect(canvas.getByRole("button", { name: "Query" })).toBeVisible();
+  },
+};
+
+export const SummaryWithKnownTimestamps: Story = {
+  args: {
+    ...CountingWithSummary.args,
+    summary: (
+      <TemplateSummary
+        {...rotterdamSummary}
+        timestamps={
+          <DatasetTimestamps
+            dataset={{ stats: null } as unknown as Dataset}
+            lastChecked={new Date(Date.now() - 1000)}
+          />
+        }
+      />
+    ),
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole("button", { name: /^Fetched \d+ seconds? ago$/ })
+    ).toBeVisible();
+    await expect(
+      canvas.queryByText("Fetched, not available yet")
+    ).not.toBeInTheDocument();
   },
 };
 
