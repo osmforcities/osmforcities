@@ -60,7 +60,7 @@ describe("selectFromTiles", () => {
     properties: { ...drawn.properties, name: "Central" },
   };
 
-  it("shows the drawn tags while loading, then the full ones", async () => {
+  it("selects as loading, then with the full tags", async () => {
     const select = vi.fn();
 
     await selectFromTiles(drawn, async () => full, select, () => true);
