@@ -112,6 +112,8 @@ export async function POST(req: NextRequest) {
         // Only cataloged datasets (featured or saved) are worth refreshing —
         // uncataloged cache rows serve nobody and were ~91% of Overpass load (#482).
         ...CATALOG_FILTER,
+        // A retired template's datasets can no longer be opened.
+        template: { deprecatesAt: null },
       },
       include: {
         template: true,

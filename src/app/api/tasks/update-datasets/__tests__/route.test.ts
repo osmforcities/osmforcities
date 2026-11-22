@@ -260,6 +260,14 @@ describe("POST /api/tasks/update-datasets", () => {
     expect(refreshWhere).toEqual(expect.objectContaining(CATALOG_FILTER));
   });
 
+  it("skips datasets on retired templates", async () => {
+    await call();
+
+    const refreshWhere = vi.mocked(prisma.dataset.findMany).mock.calls[0][0]
+      ?.where;
+    expect(refreshWhere).toMatchObject({ template: { deprecatesAt: null } });
+  });
+
   it("deletes stale uncataloged datasets past the grace period", async () => {
     vi.mocked(prisma.dataset.findMany)
       .mockResolvedValueOnce([] as never) // refresh pass
