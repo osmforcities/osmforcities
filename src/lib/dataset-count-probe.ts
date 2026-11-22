@@ -40,7 +40,10 @@ export async function runCountProbe(
       data: snapshotDatasetColumns(snapshot),
     });
     if (count === 0) return;
-    const { tilesState, tilesError } = await submitTilesForDataset(datasetId);
+    const { tilesState, tilesError } = await submitTilesForDataset(
+      datasetId,
+      snapshot.dataCount
+    );
     if (tilesState === "failed") await recordFailedSubmit(datasetId, tilesError);
   } catch (error) {
     const failedAt = new Date();

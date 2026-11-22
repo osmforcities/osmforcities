@@ -33,18 +33,16 @@ export function tilesPointCount(dataset: {
 
 /**
  * True while a dataset has never had a map: its count probe is running, or
- * its first bake is pending or failed. A rebuild keeps its served archive,
- * and an empty count keeps the empty screen.
+ * its first bake is pending or failed. A rebuild keeps its served archive.
+ * An empty count never reaches a bake, so no count check is needed here.
  */
 export function awaitsFirstMap(dataset: {
-  dataCount: number;
   geojson: unknown;
   tilesServedJobId: string | null;
   tilesState: string | null;
 }): boolean {
   if (dataset.tilesState === "counting") return true;
   return (
-    dataset.dataCount !== 0 &&
     !dataset.geojson &&
     !dataset.tilesServedJobId &&
     (dataset.tilesState === "pending" || dataset.tilesState === "failed")

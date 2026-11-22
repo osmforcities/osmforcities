@@ -33,7 +33,7 @@ vi.mock("@/lib/tiler/submit", () => ({
 const MINUTE_MS = 60 * 1000;
 const claimedAt = new Date("2026-11-05T12:00:00Z");
 const stillClaimed = { id: "ds-1", tilesState: "counting", lastAttempted: claimedAt };
-const countedSnapshot = (dataCount: number) => ({
+const countedSnapshot = (dataCount: number | "unknown") => ({
   tilesOnly: true as const,
   geojson: null,
   stats: null,
@@ -67,8 +67,25 @@ describe("runCountProbe", () => {
       where: stillClaimed,
       data: { dataCount: 1_200_000, lastChecked: expect.any(Date) },
     });
-    expect(submitTilesForDataset).toHaveBeenCalledWith("ds-1");
+    expect(submitTilesForDataset).toHaveBeenCalledWith("ds-1", 1_200_000);
     expect(recordFailedSubmit).not.toHaveBeenCalled();
+  });
+
+  it("submits on over-cap budgets when the probe gave no count", async () => {
+    vi.mocked(fetchDatasetSnapshot).mockResolvedValue(countedSnapshot("unknown"));
+    vi.mocked(submitTilesForDataset).mockResolvedValue({
+      tilesJobId: "ds-1-1",
+      tilesState: "pending",
+      tilesError: null,
+    });
+
+    await runCountProbe("ds-1", claimedAt);
+
+    expect(prisma.dataset.updateMany).toHaveBeenCalledWith({
+      where: stillClaimed,
+      data: { lastChecked: expect.any(Date) },
+    });
+    expect(submitTilesForDataset).toHaveBeenCalledWith("ds-1", "unknown");
   });
 
   it("submits nothing once a newer probe holds the claim", async () => {

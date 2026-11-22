@@ -53,7 +53,6 @@ describe("datasetTilesPath", () => {
 
 describe("awaitsFirstMap", () => {
   const firstBake = {
-    dataCount: 100,
     geojson: null,
     tilesServedJobId: null,
     tilesState: "pending",
@@ -65,9 +64,9 @@ describe("awaitsFirstMap", () => {
     expect(awaitsFirstMap({ ...firstBake, tilesState: "failed" })).toBe(true);
   });
 
-  it("holds while the count probe runs, before any count is stored", async () => {
+  it("holds while the count probe runs", async () => {
     const { awaitsFirstMap } = await loadWithFlag(true);
-    expect(awaitsFirstMap({ ...firstBake, dataCount: 0, tilesState: "counting" })).toBe(true);
+    expect(awaitsFirstMap({ ...firstBake, tilesState: "counting" })).toBe(true);
   });
 
   it("lets a rebuild keep its served archive", async () => {
@@ -75,10 +74,9 @@ describe("awaitsFirstMap", () => {
     expect(awaitsFirstMap({ ...firstBake, tilesServedJobId: "ds-1-3" })).toBe(false);
   });
 
-  it("lets stored features, an empty count or no bake render as before", async () => {
+  it("lets stored features or no bake render as before", async () => {
     const { awaitsFirstMap } = await loadWithFlag(true);
     expect(awaitsFirstMap({ ...firstBake, geojson: { type: "FeatureCollection" } })).toBe(false);
-    expect(awaitsFirstMap({ ...firstBake, dataCount: 0 })).toBe(false);
     expect(awaitsFirstMap({ ...firstBake, tilesState: null })).toBe(false);
   });
 });
