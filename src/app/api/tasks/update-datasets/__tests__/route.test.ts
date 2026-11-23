@@ -55,6 +55,7 @@ import {
   CATALOG_FILTER,
   UNCATALOGED_FILTER,
 } from "@/lib/dataset-catalog-filter";
+import { NOT_TOO_LARGE } from "@/lib/dataset-retry";
 
 const dataset = {
   id: "ds-1",
@@ -279,19 +280,43 @@ describe("POST /api/tasks/update-datasets", () => {
 
     const cleanupWhere = vi.mocked(prisma.dataset.findMany).mock.calls[1][0]
       ?.where as Record<string, unknown>;
-    expect(cleanupWhere).toMatchObject({
+    expect(cleanupWhere).toEqual({
       ...UNCATALOGED_FILTER,
-      createdAt: { lt: expect.any(Date) },
+      OR: [{ createdAt: { lt: expect.any(Date) } }],
     });
-    // The delete re-checks the mutable predicates so a save landing between the
-    // two queries wins.
     expect(prisma.dataset.deleteMany).toHaveBeenCalledWith({
-      where: {
-        id: { in: ["stale-1"] },
-        ...UNCATALOGED_FILTER,
-      },
+      where: { id: { in: ["stale-1"] }, ...cleanupWhere },
     });
     expect(body.data.cleanup.deleted).toBe(1);
+  });
+
+  it("with the tiler on, also deletes uncataloged rows left without a map", async () => {
+    vi.mocked(tilerEnabled).mockReturnValue(true);
+    vi.mocked(prisma.dataset.findMany)
+      .mockResolvedValueOnce([] as never)
+      .mockResolvedValueOnce([{ id: "no-map-1", cityName: "X" }] as never);
+
+    await call();
+
+    const cleanupWhere = vi.mocked(prisma.dataset.findMany).mock.calls[1][0]
+      ?.where as Record<string, unknown>;
+    expect(cleanupWhere).toEqual({
+      ...UNCATALOGED_FILTER,
+      OR: [
+        { createdAt: { lt: expect.any(Date) } },
+        {
+          tilesServedJobId: null,
+          AND: [NOT_TOO_LARGE],
+          OR: [
+            { tilesState: "failed" },
+            { tilesState: null, dataCount: { gt: 0 } },
+          ],
+        },
+      ],
+    });
+    expect(prisma.dataset.deleteMany).toHaveBeenCalledWith({
+      where: { id: { in: ["no-map-1"] }, ...cleanupWhere },
+    });
   });
 
   it("skips the delete when nothing is stale", async () => {
