@@ -27,15 +27,7 @@ type FeatureDetailPanelProps = {
   onBack: () => void;
 };
 
-const HIDDEN_KEYS = new Set([
-  "id",
-  AGE_TS_KEY,
-  "uid",
-  "user",
-  "timestamp",
-  "version",
-  "changeset",
-]);
+const HIDDEN_KEYS = new Set(["id", AGE_TS_KEY]);
 
 export function FeatureDetailPanel({
   feature,
@@ -54,8 +46,7 @@ export function FeatureDetailPanel({
       ? osmFeatureId.split("/")
       : [undefined, undefined];
 
-  const osmUser = properties.user == null ? undefined : String(properties.user);
-  // Tiles carry no editor name, only _ts; bare member nodes carry _ts 0
+  // Bare member nodes carry _ts 0
   const editedTs = featureTs(feature);
 
   let name: string | undefined;
@@ -73,10 +64,6 @@ export function FeatureDetailPanel({
     osmType && osmId
       ? `https://www.openstreetmap.org/${osmType}/${osmId}`
       : null;
-
-  const osmUserUrl = osmUser
-    ? `https://www.openstreetmap.org/user/${encodeURIComponent(osmUser)}`
-    : null;
 
   const formattedDate = editedTs
     ? format.dateTime(new Date(editedTs * 1000), { dateStyle: "medium" })
@@ -146,24 +133,9 @@ export function FeatureDetailPanel({
           <p className="text-sm text-gray-500">{t("zoomInForFullTags")}</p>
         )}
 
-        {(osmUser || formattedDate) && (
+        {formattedDate && (
           <p className="text-xs text-gray-400">
-            {osmUser && osmUserUrl
-              ? t.rich("lastEditedBy", {
-                  user: osmUser,
-                  link: (chunks) => (
-                    <a
-                      href={osmUserUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-400 hover:underline"
-                    >
-                      {chunks}
-                    </a>
-                  ),
-                })
-              : formattedDate && t("lastEditedOn", { date: formattedDate })}
-            {osmUser && formattedDate ? ` · ${formattedDate}` : null}
+            {t("lastEditedOn", { date: formattedDate })}
           </p>
         )}
       </div>
