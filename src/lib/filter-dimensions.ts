@@ -111,8 +111,8 @@ function dominantCasing(casing: Map<string, number>): string {
  * timestamp count as "very-old", mirroring the map's paint fallback (ageStep
  * coerces missing `_ts` to 0), so `missing` is always 0.
  *
- * Reads through featureTs, so this works on both the client's stamped `_ts`
- * features and raw snapshot features carrying only the OSM meta timestamp.
+ * Reads through featureTs, so snapshot features carrying only the OSM meta
+ * timestamp bucket too.
  */
 function computeAgeDimension(features: Feature[]): FilterDimension {
   const now = Date.now();
@@ -192,20 +192,10 @@ function sameTagKeys(
 }
 
 /**
- * Filter dimensions for the map legend, preferring the ones computed at
- * snapshot time (#499) over a client-side pass across every feature.
- *
- * Stored tag dimensions are used when their keys still match the template's
- * current `filterableTags`; a retuned template, or a dataset not yet
- * re-snapshotted, falls back to computing from features.
- *
- * Age counts stay live while the client holds the features, so they share one
- * `now` with the paint expressions. With no features — the vector-tile case
- * (#489), where the client only ever holds the viewport — the stored counts
- * are used instead and are frozen at snapshot time.
+ * The map legend's dimensions, from the stored ones. A template retuned since
+ * the last snapshot gets one empty dimension per current tag until the next.
  */
 export function resolveFilterDimensions(
-  features: Feature[],
   filterableTags: readonly string[],
   stored?: FilterDimension[]
 ): FilterDimension[] {
@@ -213,11 +203,10 @@ export function resolveFilterDimensions(
   const tagDimensions =
     storedTags && sameTagKeys(storedTags, filterableTags)
       ? storedTags
-      : computeTagDimensions(features, filterableTags, true);
+      : computeTagDimensions([], filterableTags, true);
 
-  const storedAge = stored?.find((d) => d.kind === "age");
-  const ageDimension =
-    features.length === 0 && storedAge ? storedAge : computeAgeDimension(features);
-
-  return [...tagDimensions, ageDimension];
+  return [
+    ...tagDimensions,
+    stored?.find((d) => d.kind === "age") ?? ageDimensionFromCounts([]),
+  ];
 }

@@ -1,21 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import Map from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Link } from "react-aria-components";
 import { ArrowRight } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import type { FeatureCollection } from "geojson";
 import { mapStyle } from "@/lib/map-tiles";
 import { MapZoomControl } from "@/components/ui/map-zoom-control";
 import { getTemplateIcon } from "@/lib/category-icons";
-import { calculateBbox, computeInitialViewState } from "@/lib/utils";
+import { computeInitialViewState } from "@/lib/utils";
 import type { InitialViewState } from "@/lib/utils";
 import type { ProcessedDatasetStats } from "@/lib/dataset-stats";
 import { DatasetStatsRow } from "@/components/ui/dataset-stats-row";
-import { MapLayers } from "@/components/dataset/map/layers";
 import { TilesLayerGroup } from "@/components/dataset/map/layers/tiles-layer-group";
 import { ensurePmtilesProtocol } from "@/lib/pmtiles-protocol";
 import type { HeroTiles } from "@/lib/featured-hero";
@@ -23,9 +21,7 @@ import type { Bbox } from "@/types/geojson";
 import { AoiBoundaryLayer } from "@/components/dataset/map/aoi-boundary-layer";
 import { CompactLegend } from "@/components/dataset/map/compact-legend";
 import { ageLegendRow } from "@/components/dataset/map/layers/map-style";
-import { processOSMFeaturesForVisualization } from "@/lib/osm-data-processor";
 import {
-  buildCuratedThemes,
   buildCuratedThemesFromDimensions,
   buildLegendRows,
   findOpeningTheme,
@@ -90,45 +86,16 @@ export function FeaturedDatasetMapClient({
   const tTagValue = useTranslations("TagValue") as unknown as MessageResolver;
   const locale = useLocale();
   const mapRef = useRef<MapRef | null>(null);
-  const [geojson, setGeojson] = useState<FeatureCollection | null>(null);
   const boundary = useAreaBoundary(areaId);
-
-  useEffect(() => {
-    setGeojson(null);
-
-    const controller = new AbortController();
-    // Marketing page: on failure keep the basemap + card, no error UI.
-    // slim returns truncated geometry + @timestamp only (no OSM tags).
-    if (!tiles?.url) {
-      fetch(`/api/datasets/${datasetId}/geojson?slim`, {
-        signal: controller.signal,
-      })
-        .then((response) => (response.ok ? response.json() : null))
-        .then((data: FeatureCollection | null) => {
-          if (data && !controller.signal.aborted) setGeojson(data);
-        })
-        .catch(() => {});
-    }
-
-    return () => controller.abort();
-  }, [datasetId, tiles?.url]);
-
-  // Same processing as the dataset page so rendering matches it
-  const processedData = useMemo(
-    () => (geojson ? processOSMFeaturesForVisualization(geojson) : null),
-    [geojson]
-  );
 
   const storedDimensions = tiles?.filterDimensions;
   const openingTheme = useMemo(() => {
-    if (!defaultView) return null;
-    const themes = storedDimensions
-      ? buildCuratedThemesFromDimensions(storedDimensions)
-      : processedData
-        ? buildCuratedThemes(processedData.features, [defaultView])
-        : [];
-    return findOpeningTheme(themes, defaultView);
-  }, [processedData, storedDimensions, defaultView]);
+    if (!defaultView || !storedDimensions) return null;
+    return findOpeningTheme(
+      buildCuratedThemesFromDimensions(storedDimensions),
+      defaultView
+    );
+  }, [storedDimensions, defaultView]);
 
   const legend = openingTheme
     ? {
@@ -164,10 +131,10 @@ export function FeaturedDatasetMapClient({
   // Refit only when it changes the outcome, so the common case never jumps.
   // Keyed by value: every server render sends a new bbox array
   const storedBboxKey = tiles?.bbox?.join(",");
-  const dataBounds = useMemo(() => {
-    if (storedBboxKey) return storedBboxKey.split(",").map(Number) as Bbox;
-    return geojson ? calculateBbox(geojson) : null;
-  }, [storedBboxKey, geojson]);
+  const dataBounds = useMemo(
+    () => (storedBboxKey ? (storedBboxKey.split(",").map(Number) as Bbox) : null),
+    [storedBboxKey]
+  );
   useEffect(() => {
     if (!dataBounds) return;
     const withData = computeInitialViewState(areaRef.current, dataBounds);
@@ -199,26 +166,19 @@ export function FeaturedDatasetMapClient({
         style={{ width: "100%", height: "100%" }}
       >
         {boundary && <AoiBoundaryLayer boundary={boundary} />}
-        {tiles ? (
+        {tiles && (
           <TilesLayerGroup
             tilesUrl={tiles.url}
             pointCount={tiles.pointCount}
             curatedTheme={openingTheme}
           />
-        ) : (
-          processedData && (
-            <MapLayers
-              geoJSONData={processedData}
-              curatedTheme={openingTheme}
-            />
-          )
         )}
         <MapZoomControl />
       </Map>
 
       {/* Bottom is owned by the info card on small screens, so the legend moves
           to the top-right corner there (top-left holds the shared zoom control) */}
-      {(tiles || processedData) && (
+      {tiles && (
         <div className="absolute end-3 top-3 sm:end-auto sm:start-4 sm:top-auto sm:bottom-4">
           <CompactLegend title={legend.title} rows={legend.rows} />
         </div>

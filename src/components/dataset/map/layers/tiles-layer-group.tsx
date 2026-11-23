@@ -1,13 +1,16 @@
 import { useMemo } from "react";
 import { Source, Layer } from "react-map-gl/maplibre";
 import type { FilterSpecification } from "maplibre-gl";
-import { AGE_SORT_KEY } from "./map-style";
 import {
-  buildThemePointPaint,
-  buildThemePolygonFillPaint,
-  buildThemePolygonStrokePaint,
-  buildThemeLinePaint,
-} from "./detailed-features-layer-group";
+  POLYGON_STYLE,
+  LINE_STYLE,
+  POINT_STYLE,
+  AGE_SORT_KEY,
+  buildPointRadiusForCount,
+  buildPolygonStrokeWidth,
+  buildLineWidth,
+  DEFAULT_STYLE_KNOBS,
+} from "./map-style";
 import {
   POLYGON_LAYER_ID,
   POLYGON_STROKE_LAYER_ID,
@@ -18,12 +21,50 @@ import type { CuratedTheme } from "@/lib/curated-themes";
 import { BASEMAP_LABELS_ANCHOR } from "@/lib/map-tiles";
 import { TILES_SOURCE_LAYER } from "@/lib/dataset-tiles";
 import { buildCuratedColorExpression } from "@/lib/curated-themes";
+import { PALETTES } from "@/lib/map-palettes";
 
 const TILES_SOURCE_ID = "dataset-tiles";
 
+function buildThemePointPaint(themeColor: unknown[] | null, count: number) {
+  return {
+    ...POINT_STYLE,
+    "circle-radius": themeColor ? 4 : buildPointRadiusForCount(count),
+    "circle-color": themeColor ?? POINT_STYLE["circle-color"],
+    "circle-stroke-color": themeColor
+      ? PALETTES.categorical.stroke
+      : POINT_STYLE["circle-stroke-color"],
+    "circle-stroke-width": themeColor ? 1 : POINT_STYLE["circle-stroke-width"],
+  };
+}
+
+function buildThemePolygonFillPaint(themeColor: unknown[] | null) {
+  return themeColor
+    ? { "fill-color": themeColor, "fill-opacity": 0.7 }
+    : POLYGON_STYLE.fill;
+}
+
+function buildThemePolygonStrokePaint(themeColor: unknown[] | null) {
+  return themeColor
+    ? {
+        "line-color": themeColor,
+        "line-width": buildPolygonStrokeWidth(DEFAULT_STYLE_KNOBS),
+        "line-opacity": 0.9,
+      }
+    : POLYGON_STYLE.stroke;
+}
+
+function buildThemeLinePaint(themeColor: unknown[] | null) {
+  return themeColor
+    ? {
+        "line-color": themeColor,
+        "line-width": buildLineWidth(DEFAULT_STYLE_KNOBS),
+        "line-opacity": 0.9,
+      }
+    : LINE_STYLE;
+}
+
 // ["geometry-type"] folds Multi* into the base type, so three filters cover
-// every feature. The JS geometry split of the geojson path becomes layer
-// filters here — that is the whole difference between the two groups.
+// every feature.
 function geometryFilter(
   type: "Polygon" | "LineString" | "Point",
   visibilityFilter?: FilterSpecification
@@ -43,12 +84,7 @@ type TilesLayerGroupProps = {
   visibilityFilter?: FilterSpecification;
 };
 
-/**
- * Vector-source twin of DetailedFeaturesLayerGroup: same layer ids (selection
- * and highlight code is shared), same paint builders (all property-driven, so
- * they run unchanged against the tile source). No polygon-proxy layer —
- * tippecanoe's own low-zoom simplification covers small polygons.
- */
+// tippecanoe's own low-zoom simplification covers small polygons
 export function TilesLayerGroup({
   tilesUrl,
   pointCount,
@@ -60,8 +96,8 @@ export function TilesLayerGroup({
     [curatedTheme]
   );
 
-  // Same loose paint typing as MapLayer: the builders emit expression arrays
-  // that MapLibre's strict literal types reject at compile time.
+  // Loose paint typing: the builders emit expression arrays that MapLibre's
+  // strict literal types reject at compile time.
   const fillPaint: Record<string, unknown> = buildThemePolygonFillPaint(themeColor);
   const strokePaint: Record<string, unknown> =
     buildThemePolygonStrokePaint(themeColor);

@@ -1,13 +1,12 @@
 import type { Dataset } from "@/schemas/dataset";
 import { DatasetSchema } from "@/schemas/dataset";
-import { datasetTilesPath } from "@/lib/dataset-tiles";
 import { resolveTemplateForLocale } from "@/lib/template-locale";
 import type { FeatureCollection } from "geojson";
 import type { User } from "next-auth";
 
 type RawDataset = {
   [key: string]: unknown;
-  geojson?: unknown;
+  hasGeojson?: boolean;
   bbox?: unknown;
   template?: {
     translations?: Array<unknown>;
@@ -62,13 +61,6 @@ export function transformDataset(
   // If isSaved is explicitly provided, use it. Otherwise infer from savedBy array.
   const isSaved = options?.isSaved ?? (rawDataset.savedBy ? rawDataset.savedBy.length > 0 : false);
 
-  // When the map renders from tiles, the FeatureCollection has no client
-  // consumer — dropping it here keeps it out of the RSC payload (the #407
-  // failure class). hasGeojson preserves the export affordance.
-  const tilesRender =
-    datasetTilesPath(rawDataset as { tilesServedJobId?: string | null }) !==
-    null;
-
   return DatasetSchema.parse({
     ...rawDataset,
     // The transformed dataset is serialized to the client (public on
@@ -76,8 +68,7 @@ export function transformDataset(
     // the UI only needs isSaved/savedCount
     user: null,
     savedBy: undefined,
-    geojson: tilesRender ? null : (rawDataset.geojson as FeatureCollection | null),
-    hasGeojson: Boolean(rawDataset.geojson),
+    hasGeojson: rawDataset.hasGeojson ?? false,
     bbox: rawDataset.bbox as number[] | null,
     template: {
       ...resolvedTemplate,

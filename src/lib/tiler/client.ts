@@ -15,7 +15,7 @@ const log = createLogger("tiler");
  *
  * The tiler is the data source (the tiles-only lane). Every helper here
  * degrades gracefully when the tiler is unreachable. TILER_URL unset disables
- * the whole integration.
+ * the whole integration, and the app's own fetch stores datasets with no map.
  */
 
 export type TileJobState =

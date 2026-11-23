@@ -2,29 +2,23 @@ import { useState, useCallback, useRef } from "react";
 import type { MapLayerMouseEvent } from "react-map-gl/maplibre";
 import type { MapGeoJSONFeature } from "maplibre-gl";
 import type { Feature } from "geojson";
-import { resolveProxyFeature } from "../layers/polygon-proxy-points";
 import { hasDrawnTagsOnly } from "@/lib/dataset-tiles";
 import { openedArchive } from "@/lib/pmtiles-protocol";
 import { withFullTags, type TagSet } from "@/lib/tiles-full-tags";
 
-export function toSelectedFeature(
-  hit: MapGeoJSONFeature,
-  sourceFeatures: Feature[]
-): Feature {
-  const feature = resolveProxyFeature(hit, sourceFeatures);
-  // Vector tiles carry the OSM id as "@id" (raw-tag convention), while
-  // the geojson path and the detail panel use "id" — normalize the hit
-  // so the panel's OSM link works on both sources. No spread: a tile hit's
-  // geometry is a prototype getter, so a spread copy loses it (no highlight).
-  const props = feature.properties;
+export function toSelectedFeature(hit: MapGeoJSONFeature): Feature {
+  // Vector tiles carry the OSM id as "@id" (raw-tag convention), while the
+  // detail panel reads "id". No spread: a tile hit's geometry is a prototype
+  // getter, so a spread copy loses it (no highlight).
+  const props = hit.properties;
   if (props && !props.id && props["@id"]) {
     return {
       type: "Feature",
-      geometry: feature.geometry,
+      geometry: hit.geometry,
       properties: { ...props, id: props["@id"] },
     };
   }
-  return feature;
+  return hit;
 }
 
 export type FeatureSelectHandler = (
@@ -44,10 +38,7 @@ export async function selectFromTiles(
   select(full ?? feature, full ? "full" : "drawn");
 }
 
-export function useFeatureSelection(
-  onFeatureSelect?: FeatureSelectHandler,
-  sourceFeatures: Feature[] = []
-) {
+export function useFeatureSelection(onFeatureSelect?: FeatureSelectHandler) {
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
   const [cursor, setCursor] = useState<string>("grab");
   const latestClick = useRef(0);
@@ -61,7 +52,7 @@ export function useFeatureSelection(
         onFeatureSelect?.(null);
         return;
       }
-      const feature = toSelectedFeature(hit, sourceFeatures);
+      const feature = toSelectedFeature(hit);
       setSelectedFeature(feature);
       const map = event.target;
       const source = map.getSource(hit.source);
@@ -76,7 +67,7 @@ export function useFeatureSelection(
         () => click === latestClick.current
       );
     },
-    [onFeatureSelect, sourceFeatures]
+    [onFeatureSelect]
   );
 
   const handleMouseEnter = useCallback(() => setCursor("pointer"), []);

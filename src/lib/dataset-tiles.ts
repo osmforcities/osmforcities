@@ -4,7 +4,7 @@ import type { GeometryMix } from "@/lib/dataset-geometry";
 export const TILES_SOURCE_LAYER = "features";
 
 /**
- * Path to the served archive, or null when the geojson path should render.
+ * Path to the served archive, or null when the dataset has no map yet.
  * tilesServedJobId moves only when a bake lands (blue/green), so a pending or
  * failed rebuild keeps serving the previous archive. tilesState/tilesJobId
  * describe the bake in progress and play no part here.
@@ -16,7 +16,7 @@ export function datasetTilesPath(dataset: {
   return `/api/tiles/${dataset.tilesServedJobId}.pmtiles`;
 }
 
-// Tiles mode holds no client-side features to count.
+// The page holds no features to count, so the stored point count stands in.
 export function tilesPointCount(dataset: {
   dataCount: number;
   stats: { geometryMix?: Pick<GeometryMix, "points"> } | null;
@@ -30,13 +30,11 @@ export function tilesPointCount(dataset: {
  * An empty count never reaches a bake, so no count check is needed here.
  */
 export function awaitsFirstMap(dataset: {
-  geojson: unknown;
   tilesServedJobId: string | null;
   tilesState: string | null;
 }): boolean {
   if (dataset.tilesState === "counting") return true;
   return (
-    !dataset.geojson &&
     !dataset.tilesServedJobId &&
     (dataset.tilesState === "pending" || dataset.tilesState === "failed")
   );
@@ -53,18 +51,6 @@ export function refreshOutcome(result: {
 }): { queued: true } | { queued: false; lastChecked: Date } {
   if (result.tilesState === "pending") return { queued: true };
   return { queued: false, lastChecked: result.lastChecked ?? new Date() };
-}
-
-/**
- * Can this payload be downloaded as geojson? hasGeojson covers tiles-render
- * payloads whose FeatureCollection was stripped (the export API reads the DB
- * row); older payload shapes without the field fall back to the inline data.
- */
-export function hasDownloadableGeojson(dataset: {
-  hasGeojson?: boolean;
-  geojson?: unknown;
-}): boolean {
-  return dataset.hasGeojson ?? Boolean(dataset.geojson);
 }
 
 // Mirrors the tiler's split bake: an archive reaching z14 keeps only the drawn

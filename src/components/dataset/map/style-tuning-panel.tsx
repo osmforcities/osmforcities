@@ -1,8 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useMap } from "react-map-gl/maplibre";
-import type { Feature } from "geojson";
 import { ageStep, type AgeCategory } from "@/lib/feature-age";
 import { BASEMAP_WASH_LAYER_ID } from "@/lib/map-tiles";
 import {
@@ -14,13 +13,11 @@ import {
   type AgeCategoryColors,
   type MapStyleKnobs,
 } from "./layers/map-style";
-import { createSmallPolygonProxyPoints } from "./layers/polygon-proxy-points";
 import {
   POLYGON_LAYER_ID,
   POLYGON_STROKE_LAYER_ID,
   LINE_LAYER_ID,
   POINT_LAYER_ID,
-  PROXY_LAYER_ID,
 } from "./layers/layer-ids";
 
 const AGE_CATEGORIES: { key: AgeCategory; label: string }[] = [
@@ -138,7 +135,7 @@ const TEXT = {
 };
 
 type StyleTuningPanelProps = {
-  features: Feature[];
+  pointCount: number;
 };
 
 function Knob({
@@ -217,25 +214,12 @@ function Group({
   );
 }
 
-function StyleTuningPanelInner({ features }: StyleTuningPanelProps) {
+function StyleTuningPanelInner({ pointCount }: StyleTuningPanelProps) {
   const { current: mapRef } = useMap();
   const [open, setOpen] = useState(false);
   const [knobs, setKnobs] = useState<MapStyleKnobs>(DEFAULT_STYLE_KNOBS);
   const [zoom, setZoom] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
-
-  // Density-aware radius needs the same counts the baked layers use: point
-  // features for detailed-points, proxy centroids for polygon-proxy-points
-  const { pointCount, proxyPointCount } = useMemo(() => {
-    const polygonFeatures = features.filter(
-      (f) =>
-        f.geometry?.type === "Polygon" || f.geometry?.type === "MultiPolygon"
-    );
-    return {
-      pointCount: features.filter((f) => f.geometry?.type === "Point").length,
-      proxyPointCount: createSmallPolygonProxyPoints(polygonFeatures).length,
-    };
-  }, [features]);
 
   const update = useCallback((mutate: (draft: MapStyleKnobs) => void) => {
     setKnobs((prev) => {
@@ -288,20 +272,6 @@ function StyleTuningPanelInner({ features }: StyleTuningPanelProps) {
     );
     setPaint(POINT_LAYER_ID, "circle-stroke-color", knobs.point.strokeColor);
 
-    // Proxy circles share the point look; their fade opacity stays untouched
-    setPaint(
-      PROXY_LAYER_ID,
-      "circle-radius",
-      buildPointRadiusForCount(proxyPointCount, knobs)
-    );
-    setPaint(
-      PROXY_LAYER_ID,
-      "circle-stroke-width",
-      buildPointStrokeWidth(knobs)
-    );
-    setPaint(PROXY_LAYER_ID, "circle-stroke-color", knobs.point.strokeColor);
-    setPaint(PROXY_LAYER_ID, "circle-color", ageColor);
-
     setPaint(LINE_LAYER_ID, "line-color", ageColor);
     setPaint(LINE_LAYER_ID, "line-width", buildLineWidth(knobs));
 
@@ -316,7 +286,7 @@ function StyleTuningPanelInner({ features }: StyleTuningPanelProps) {
     setPaint("aoi-boundary", "line-color", knobs.boundary.color);
     setPaint("aoi-boundary", "line-width", knobs.boundary.width);
     setPaint("aoi-boundary", "line-opacity", knobs.boundary.opacity);
-  }, [mapRef, knobs, pointCount, proxyPointCount]);
+  }, [mapRef, knobs, pointCount]);
 
   const copyValues = () => {
     const payload = JSON.stringify(knobs, null, 2);

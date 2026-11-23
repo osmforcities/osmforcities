@@ -2,10 +2,9 @@
  * Feature edit-age buckets shared by the map paint expressions, the legend
  * counts, and the age visibility filter.
  *
- * Features carry a numeric `_ts` (epoch seconds, stamped by
- * osm-data-processor.ts); the 7/30/90-day buckets are computed at render time
- * against `now`, so colours stay live even when `_ts` is baked into vector
- * tiles (#489).
+ * Tile features carry a numeric `_ts` (epoch seconds, baked by the tiler); the
+ * 7/30/90-day buckets are computed at render time against `now`, so colours
+ * stay live.
  *
  * These are the map's buckets — deliberately distinct from the stats panel's
  * recency bands (dataset-recency.ts); do not unify them.
@@ -37,9 +36,9 @@ const DAY_S = 86_400;
 /**
  * Resolve a feature's edit timestamp to epoch seconds. Prefers the stamped
  * numeric `_ts`, falling back to the raw OSM meta timestamp, so the same
- * bucketing works on snapshot features (flat `timestamp` from osmtogeojson,
- * server side) and on the slim geojson payload (`@timestamp`). Absent or
- * unparsable timestamps return undefined, which buckets as "very-old".
+ * bucketing works on snapshot features (flat `timestamp` from osmtogeojson)
+ * and on tile hits (`@timestamp`). Absent or unparsable timestamps
+ * return undefined, which buckets as "very-old".
  */
 export function featureTs(feature: Feature): number | undefined {
   const stamped = feature.properties?.[AGE_TS_KEY];

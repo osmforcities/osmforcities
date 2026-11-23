@@ -41,7 +41,6 @@
     "@tanstack/react-query": "^5.80.7",
     "@turf/area": "^7.3.5",
     "@turf/bbox": "^7.2.0",
-    "@turf/centroid": "^7.2.0",
     "@turf/convex": "^7.3.5",
     "@turf/length": "^7.3.5",
     "@turf/simplify": "^7.3.4",

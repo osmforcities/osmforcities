@@ -20,7 +20,7 @@ A vector basemap is required for labels above the data (below), label language (
 
 Terms: attribution is required. MapLibre adds it from the source TileJSON (OpenFreeMap, OpenMapTiles, OpenStreetMap), so the attribution control stays. The public instance has no SLA; self-hosting the OpenFreeMap build is the fallback. Licences of the vendored style are in `src/lib/basemap/NOTICE.md`.
 
-**Basemap labels render above the dataset layers.** Every dataset layer (geojson and tiles groups, AOI boundary, selection highlight) mounts with `beforeId={BASEMAP_LABELS_ANCHOR}`, the style's first symbol layer. The wash sits just below that layer. A new data layer must pass the same `beforeId`, or MapLibre appends it on top of the labels.
+**Basemap labels render above the dataset layers.** Every dataset layer (tiles group, AOI boundary, selection highlight) mounts with `beforeId={BASEMAP_LABELS_ANCHOR}`, the style's first symbol layer. The wash sits just below that layer. A new data layer must pass the same `beforeId`, or MapLibre appends it on top of the labels.
 
 ## Style
 
@@ -28,13 +28,13 @@ Single source of truth: `src/components/dataset/map/layers/map-style.ts` (`DEFAU
 
 ## Style gallery
 
-Verify style changes on the dev-only gallery at `/en/dev/map-gallery` (404 outside `next dev`). It renders each case in `src/lib/map-gallery.ts` at z11, z12, z14 and z16 around the same center, in the mode the dataset ships in: geojson, tiles, or both side by side when the dataset has stored geojson and a served archive. Fixed zooms are the point, so the gallery skips `computeInitialViewState`.
+Verify style changes on the dev-only gallery at `/en/dev/map-gallery` (404 outside `next dev`). It renders each case in `src/lib/map-gallery.ts` at z11, z12, z14 and z16 around the same center, drawn from its served archive. Fixed zooms are the point, so the gallery skips `computeInitialViewState`.
 
-The grid is the picker. Clicking a cell opens that case at that zoom in a big live map, which is the dataset page's `DatasetFullMap` with its legend and view switch, so curated tag views can be checked too. Cases with both geojson and tiles get a switch that keeps the position.
+The grid is the picker. Clicking a cell opens that case at that zoom in a big live map, which is the dataset page's `DatasetFullMap` with its legend and view switch, so curated tag views can be checked too.
 
 - Add a case: one line in `GALLERY_CASES` (label, template id, OSM relation id).
 - Create each case's dataset locally by opening `/en/area/<osmRelationId>/dataset/<templateId>` while signed in. A missing one shows a placeholder.
-- Tiles rows need the local tiler (`TILER_URL`, see [large-datasets.md](large-datasets.md)). With it on, the feature fill keeps geojson for under-cap datasets, so they render as a pair. The gallery 404s in production but still ships in the build, like the Tune panel.
+- Rows need the local tiler (`TILER_URL`, see [large-datasets.md](large-datasets.md)). The gallery 404s in production but still ships in the build, like the Tune panel.
 - Out of scope: screenshots and visual diffs.
 
 ## Test datasets
