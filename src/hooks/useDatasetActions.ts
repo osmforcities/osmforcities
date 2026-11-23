@@ -5,8 +5,6 @@ import {
   ApiResponse,
   RefreshResponse,
   UpdateDatasetResponse,
-  DatasetResponse,
-  DatasetResponseSchema,
   SaveResponseSchema,
   RefreshResponseSchema,
   UpdateDatasetResponseSchema,
@@ -19,10 +17,6 @@ import {
 export function useDatasetActions() {
   const [isLoading, setIsLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  const getDataset = async (id: string): Promise<DatasetResponse> => {
-    return apiClient.get(`/api/datasets/${id}`, DatasetResponseSchema);
-  };
 
   const saveDataset = async (
     datasetId: string,
@@ -184,8 +178,6 @@ export function useDatasetActions() {
   };
 
   return {
-    getDataset,
-
     saveDataset,
     unsaveDataset,
     refreshDataset,

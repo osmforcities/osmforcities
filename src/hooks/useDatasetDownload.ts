@@ -7,9 +7,11 @@ export function useDatasetDownload() {
 
     const defaultFilename = `${dataset.template.name}-${dataset.cityName}.geojson`;
 
-    const response = await fetch(`/api/datasets/${dataset.id}/export`);
-    if (!response.ok) {
-      console.error(`Export API error: ${response.status}`);
+    const response = await fetch(`/api/datasets/${dataset.id}/export`).catch(
+      () => null
+    );
+    if (!response?.ok) {
+      console.error(`Export failed: ${response?.status ?? "network error"}`);
       return;
     }
 

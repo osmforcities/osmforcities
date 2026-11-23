@@ -30,6 +30,7 @@ export async function POST(
 
     const dataset = await prisma.dataset.findUnique({
       where: { id: datasetId },
+      select: { dataCount: true, tilesServedJobId: true, tilesState: true },
     });
 
     if (!dataset) {

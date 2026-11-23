@@ -203,7 +203,9 @@ export function resolveFilterDimensions(
   const tagDimensions =
     storedTags && sameTagKeys(storedTags, filterableTags)
       ? storedTags
-      : computeTagDimensions([], filterableTags, true);
+      : filterableTags.map(
+          (key): FilterDimension => ({ key, kind: "tag", values: [], missing: 0 })
+        );
 
   return [
     ...tagDimensions,
