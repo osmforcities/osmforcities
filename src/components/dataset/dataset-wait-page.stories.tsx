@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, waitFor } from "storybook/test";
+import { getRouter } from "@storybook/nextjs-vite/navigation.mock";
 import { useTranslations } from "next-intl";
 import { DatasetWaitPage } from "./dataset-wait-page";
 import { NotifyWhenReadyButton } from "./notify-when-ready-button";
@@ -391,6 +392,27 @@ export const BakeDoneMapLoading: Story = {
       await canvas.findByText("Building the map")
     ).toBeInTheDocument();
     await expect(canvas.getByText("100%")).toBeInTheDocument();
+  },
+};
+
+/** The cron deleted the row mid-bake: the refresh recreates it. */
+export const RowDeletedWhileBaking: Story = {
+  args: { ...BakingConverting.args },
+  beforeEach: () => {
+    const realFetch = window.fetch;
+    window.fetch = async (...request: Parameters<typeof fetch>) => {
+      const url = String(
+        request[0] instanceof Request ? request[0].url : request[0]
+      );
+      if (!url.includes("/tiles-status")) return realFetch(...request);
+      return new Response(null, { status: 404 });
+    };
+    return () => {
+      window.fetch = realFetch;
+    };
+  },
+  play: async () => {
+    await waitFor(() => expect(getRouter().refresh).toHaveBeenCalled());
   },
 };
 
