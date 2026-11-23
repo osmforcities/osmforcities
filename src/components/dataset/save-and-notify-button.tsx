@@ -25,7 +25,7 @@ export function SaveAndNotifyButton({
       onSave={async () => {
         const result = await saveDataset(datasetId, true);
         // The cron deleted the row: the refresh recreates it
-        if (result.status === 404) return router.refresh();
+        if (result.status === 404) router.refresh();
         if (!result.success) throw new Error(result.error);
       }}
       onUnsave={async () => {

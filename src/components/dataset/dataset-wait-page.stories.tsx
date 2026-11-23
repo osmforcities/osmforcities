@@ -10,6 +10,7 @@ import type { Dataset } from "@/schemas/dataset";
 import { DatasetTooLargeState } from "@/components/ui/dataset-error-states";
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { withAppFrame } from "../../../.storybook/with-app-frame";
+import { serveRoute } from "../../../.storybook/serve-route";
 import rotterdam from "./__fixtures__/boundary-324431.json";
 import saoPaulo from "./__fixtures__/boundary-298285.json";
 import osasco from "./__fixtures__/boundary-298470.json";
@@ -22,30 +23,6 @@ import tokyo from "./__fixtures__/boundary-1543125.json";
  */
 function serveTilesStatus(status: Record<string, unknown>) {
   return serveRoute("/tiles-status", () => status);
-}
-
-/** Answers one app route and leaves every other request (the basemap) alone. */
-function serveRoute(
-  route: string,
-  answer: (url: string) => unknown,
-  status = 200
-) {
-  return () => {
-    const realFetch = window.fetch;
-    window.fetch = async (...request: Parameters<typeof fetch>) => {
-      const url = String(
-        request[0] instanceof Request ? request[0].url : request[0]
-      );
-      if (!url.includes(route)) return realFetch(...request);
-      return new Response(JSON.stringify(answer(url)), {
-        status,
-        headers: { "Content-Type": "application/json" },
-      });
-    };
-    return () => {
-      window.fetch = realFetch;
-    };
-  };
 }
 
 /** The areas' real OSM boundaries, simplified hard to stay small. */
