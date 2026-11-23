@@ -118,10 +118,10 @@ Check a bake end to end:
 
 Playwright has two projects, each with its own dev server:
 
-- `tests/tiler/`: the `tiler` project, against `:3100` with tiles on, a mock tiler and a mock Overpass. Put specs here when they need the tiles lane.
+- `tests/tiler/`: the `tiler` project, against `:3100`. Put specs here when they drive bakes, the cron or the tiler's failures.
 - everything else under `tests/`: the `chromium` project, against `:3000`.
 
-Locally both servers start. In CI each job runs one project and starts only its server (`E2E_PROJECT`), so a spec that reaches the other project's server passes locally and fails in CI. The tiler specs run as one CI job, so a slow new tiler spec makes every PR wait longer.
+Each server has its own mock tiler and mock Overpass. Locally both servers start, and an already running server on either port is reused: stop your own `pnpm dev` on `:3000` first, or the `chromium` specs run against it without the mock tiler. In CI each job runs one project and starts only its server (`E2E_PROJECT`), so a spec that reaches the other project's server passes locally and fails in CI. The tiler specs run as one CI job, so a slow new tiler spec makes every PR wait longer.
 
 ### Real tiler smoke test
 
