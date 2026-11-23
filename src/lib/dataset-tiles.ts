@@ -4,13 +4,6 @@ import type { GeometryMix } from "@/lib/dataset-geometry";
 export const TILES_SOURCE_LAYER = "features";
 
 /**
- * Client-side decision: does this dataset render from PMTiles?
- * Opt-in via NEXT_PUBLIC_TILES_ENABLED while #489 is being proven; unset (or
- * anything but "true") keeps the geojson path — the kill switch.
- */
-export const TILES_ENABLED = process.env.NEXT_PUBLIC_TILES_ENABLED === "true";
-
-/**
  * Path to the served archive, or null when the geojson path should render.
  * tilesServedJobId moves only when a bake lands (blue/green), so a pending or
  * failed rebuild keeps serving the previous archive. tilesState/tilesJobId
@@ -19,7 +12,7 @@ export const TILES_ENABLED = process.env.NEXT_PUBLIC_TILES_ENABLED === "true";
 export function datasetTilesPath(dataset: {
   tilesServedJobId?: string | null;
 }): string | null {
-  if (!TILES_ENABLED || !dataset.tilesServedJobId) return null;
+  if (!dataset.tilesServedJobId) return null;
   return `/api/tiles/${dataset.tilesServedJobId}.pmtiles`;
 }
 

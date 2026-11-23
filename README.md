@@ -100,11 +100,10 @@ Dataset maps come from [overpass-pmtiler](https://github.com/osmforcities/overpa
 
 ```bash
 TILER_URL="http://127.0.0.1:8099"
-TILES_DIR="./data/tiles"        # archives the app reconciles and serves. data/ is gitignored
-NEXT_PUBLIC_TILES_ENABLED="true" # render maps from the archive
+TILES_DIR="./data/tiles" # archives the app reconciles and serves. data/ is gitignored
 ```
 
-Restart `pnpm dev` after changing these (`NEXT_PUBLIC_` is inlined at compile). Both `TILER_URL` and the flag set = every dataset created and refreshed through the tiler.
+Restart `pnpm dev` after changing these. With `TILER_URL` set, every dataset is created and refreshed through the tiler and its map is drawn from the archive.
 
 Check a bake end to end:
 

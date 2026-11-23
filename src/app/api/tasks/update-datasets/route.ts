@@ -7,7 +7,7 @@ import {
   DatasetTooLargeError,
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
-import { submitTilesForDataset, tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
+import { submitTilesForDataset } from "@/lib/tiler/submit";
 import { pollPendingTileJobs } from "@/lib/tiler/poll";
 import { pingTiler, tilerEnabled } from "@/lib/tiler/client";
 import { dueForRefreshWhere } from "@/lib/dataset-retry";
@@ -95,7 +95,6 @@ export async function POST(req: NextRequest) {
     // refresh (a snapshot without its bake would still spend the row's wait)
     // and let the reconcile below keep trying the bakes already pending.
     const tilerOn = tilerEnabled();
-    const tilesLane = tilesOnlyLaneEnabled();
     const tilerUnreachable = tilerOn && !(await pingTiler());
     if (tilerUnreachable) {
       tilerLog.warn("Tiler unreachable, skipping dataset refresh this tick");
@@ -193,7 +192,7 @@ export async function POST(req: NextRequest) {
         // the bake is the refresh: the row keeps serving its data until the
         // reconcile writes the bake's.
         const hasNoDataToKeep = dataset.tilesState === "counting";
-        if (!tilesLane || hasNoDataToKeep) {
+        if (!tilerOn || hasNoDataToKeep) {
           await prisma.dataset.update({
             where: { id: dataset.id },
             data: {

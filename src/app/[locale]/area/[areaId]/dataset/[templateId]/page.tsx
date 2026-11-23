@@ -11,7 +11,7 @@ import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { SaveAndNotifyButton } from "@/components/dataset/save-and-notify-button";
 import { NotifyWhenReadyButton } from "@/components/dataset/notify-when-ready-button";
 import { tilerEnabled } from "@/lib/tiler/client";
-import { retryFailedBake, tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
+import { retryFailedBake } from "@/lib/tiler/submit";
 import { isTooLarge } from "@/lib/dataset-retry";
 import { awaitsFirstMap } from "@/lib/dataset-tiles";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
@@ -166,7 +166,7 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
   // A missing row takes a while to create (the whole count with the tiles-only
   // lane off), so the counting screen shows meanwhile. On the lane the disabled
   // button keeps the screen from shifting when the real one arrives.
-  const tilesLane = tilesOnlyLaneEnabled();
+  const tilesLane = tilerEnabled();
   return (
     <Suspense
       fallback={
@@ -252,7 +252,7 @@ async function AreaTemplateDatasetView({
     // No detail-view tracker: the flip to the map remounts the page and would
     // count the view twice
     let row = result.dataset;
-    if (tilesOnlyLaneEnabled() && awaitsFirstMap(row)) {
+    if (tilerEnabled() && awaitsFirstMap(row)) {
       // A failed bake is retried by a later visit, not the creating one
       if (!result.wasCreated) {
         row = { ...row, ...(await retryFailedBake(row)) };

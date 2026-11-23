@@ -9,14 +9,6 @@ import {
 import { prisma } from "@/lib/db";
 import { MAX_DATASET_BYTES, OVERPASS_BYTES_PER_ELEMENT_ESTIMATE } from "@/lib/constants";
 
-// TILES_ENABLED is a module-load constant; a getter lets each test flip it.
-const flags = vi.hoisted(() => ({ tiles: false }));
-vi.mock("@/lib/dataset-tiles", () => ({
-  get TILES_ENABLED() {
-    return flags.tiles;
-  },
-}));
-
 vi.mock("@/lib/db", () => ({
   prisma: {
     areaSizeCheck: {
@@ -101,7 +93,6 @@ describe("fetchDatasetSnapshot", () => {
   beforeEach(() => {
     // Lane off: these tests cover the classic size-capped path.
     vi.stubEnv("TILER_URL", "");
-    flags.tiles = false;
     vi.stubGlobal("fetch", mockFetchImplementation(mockOverpassData));
     findUnique.mockReset();
     findUnique.mockResolvedValue(null);
@@ -391,7 +382,6 @@ describe("fetchDatasetSnapshot — tiles-only lane", () => {
 
   beforeEach(() => {
     vi.stubEnv("TILER_URL", "http://127.0.0.1:8099");
-    flags.tiles = true;
     vi.stubGlobal("fetch", mockFetchImplementation(mockOverpassData));
     findUnique.mockReset();
     findUnique.mockResolvedValue(null);
@@ -422,35 +412,12 @@ describe("fetchDatasetSnapshot — tiles-only lane", () => {
     expect(vi.mocked(fetch)).toHaveBeenCalledTimes(1);
   });
 
-  it("refuses over-cap when the tiler is on but the map does not render tiles", async () => {
-    // A geojson-less row would be permanently unviewable.
-    flags.tiles = false;
-    vi.stubGlobal("fetch", mockFetchImplementation(mockOverpassData, overCapCount));
-    await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
-      DatasetTooLargeError
-    );
-    expect(upsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        create: expect.objectContaining({ status: "too_large" }),
-      })
-    );
-  });
-
   it("ignores a fresh too_large verdict and re-probes", async () => {
     findUnique.mockResolvedValue(freshTooLarge as never);
     vi.stubGlobal("fetch", mockFetchImplementation(mockOverpassData, overCapCount));
     const snapshot = await fetchDatasetSnapshot(1, "query", "tpl-1");
     expect(snapshot.tilesOnly).toBe(true);
     expect(vi.mocked(fetch)).toHaveBeenCalledTimes(1);
-  });
-
-  it("still honours a fresh too_large verdict when the render flag is off", async () => {
-    flags.tiles = false;
-    findUnique.mockResolvedValue(freshTooLarge as never);
-    await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
-      DatasetTooLargeError
-    );
-    expect(vi.mocked(fetch)).not.toHaveBeenCalled();
   });
 
   it("routes a fresh timeout verdict to the tiler with an unknown count, no probe", async () => {
@@ -508,7 +475,6 @@ describe("fetchDatasetSnapshot — count-probe retry", () => {
 
   beforeEach(() => {
     vi.stubEnv("TILER_URL", "http://127.0.0.1:8099");
-    flags.tiles = true;
     findUnique.mockReset();
     findUnique.mockResolvedValue(null);
     upsert.mockReset();
@@ -674,20 +640,6 @@ describe("fetchDatasetSnapshot — count-probe retry", () => {
   describe("lane off: no retry", () => {
     it("records a timeout on the first failure when the tiler is disabled", async () => {
       vi.stubEnv("TILER_URL", "");
-      const fetchMock = vi.fn().mockResolvedValue(timedOut);
-      vi.stubGlobal("fetch", fetchMock);
-
-      await expect(fetchDatasetSnapshot(1, "query", "tpl-1")).rejects.toThrow(
-        DatasetSizeCheckTimeoutError
-      );
-      expect(fetchMock).toHaveBeenCalledTimes(1);
-      expectTimeoutVerdict();
-    });
-
-    // The tiler alone is not enough: a tiles-only row needs the map to render
-    // tiles, so the retry must not route anything while that flag is off.
-    it("records a timeout on the first failure when the map does not render tiles", async () => {
-      flags.tiles = false;
       const fetchMock = vi.fn().mockResolvedValue(timedOut);
       vi.stubGlobal("fetch", fetchMock);
 

@@ -12,11 +12,8 @@ import {
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
 import { Prisma } from "@prisma/client";
-import {
-  recordFailedSubmit,
-  submitTilesForDataset,
-  tilesOnlyLaneEnabled,
-} from "@/lib/tiler/submit";
+import { recordFailedSubmit, submitTilesForDataset } from "@/lib/tiler/submit";
+import { tilerEnabled } from "@/lib/tiler/client";
 import { startCountProbe } from "@/lib/dataset-count-probe";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
@@ -231,7 +228,7 @@ async function createDatasetOnDemand(
     }
   }
 
-  if (tilesOnlyLaneEnabled()) {
+  if (tilerEnabled()) {
     return createCountingDataset(area, template, locale);
   }
 

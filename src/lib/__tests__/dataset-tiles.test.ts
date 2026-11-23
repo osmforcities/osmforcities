@@ -1,48 +1,29 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import type { FeatureCollection } from "geojson";
-import { hasDrawnTagsOnly, tilesPointCount } from "../dataset-tiles";
-
-// TILES_ENABLED is read from the env at module load, so every flag-dependent
-// test stubs the flag first and imports the modules fresh.
-async function loadWithFlag(enabled: boolean) {
-  vi.stubEnv("NEXT_PUBLIC_TILES_ENABLED", enabled ? "true" : "");
-  vi.resetModules();
-  const tiles = await import("../dataset-tiles");
-  const transform = await import("../dataset/transform");
-  return { ...tiles, ...transform };
-}
-
-beforeEach(() => {
-  vi.resetModules();
-});
-
-afterEach(() => {
-  vi.unstubAllEnvs();
-});
+import {
+  awaitsFirstMap,
+  datasetTilesPath,
+  hasDrawnTagsOnly,
+  refreshOutcome,
+  tilesPointCount,
+} from "../dataset-tiles";
+import { transformDataset } from "../dataset/transform";
 
 describe("datasetTilesPath", () => {
   const served = { tilesState: "done", tilesServedJobId: "ds-1-3" };
 
-  it("is null when the flag is off, whatever the job state", async () => {
-    const { datasetTilesPath } = await loadWithFlag(false);
-    expect(datasetTilesPath(served)).toBeNull();
-  });
-
-  it("points at the served archive when the flag is on", async () => {
-    const { datasetTilesPath } = await loadWithFlag(true);
+  it("points at the served archive", () => {
     expect(datasetTilesPath(served)).toBe("/api/tiles/ds-1-3.pmtiles");
   });
 
-  it("keeps serving the previous archive while a rebuild is pending or failed", async () => {
-    const { datasetTilesPath } = await loadWithFlag(true);
+  it("keeps serving the previous archive while a rebuild is pending or failed", () => {
     for (const tilesState of ["pending", "failed"]) {
       const rebuilding = { tilesState, tilesJobId: "ds-1-9", tilesServedJobId: "ds-1-3" };
       expect(datasetTilesPath(rebuilding)).toBe("/api/tiles/ds-1-3.pmtiles");
     }
   });
 
-  it("is null until a first archive is served", async () => {
-    const { datasetTilesPath } = await loadWithFlag(true);
+  it("is null until a first archive is served", () => {
     const firstBake = { tilesState: "pending", tilesJobId: "j", tilesServedJobId: null };
     const doneNotServed = { tilesState: "done", tilesJobId: "j", tilesServedJobId: null };
     expect(datasetTilesPath(firstBake)).toBeNull();
@@ -58,24 +39,20 @@ describe("awaitsFirstMap", () => {
     tilesState: "pending",
   };
 
-  it("holds while a dataset that never had a map bakes or has failed", async () => {
-    const { awaitsFirstMap } = await loadWithFlag(true);
+  it("holds while a dataset that never had a map bakes or has failed", () => {
     expect(awaitsFirstMap(firstBake)).toBe(true);
     expect(awaitsFirstMap({ ...firstBake, tilesState: "failed" })).toBe(true);
   });
 
-  it("holds while the count probe runs", async () => {
-    const { awaitsFirstMap } = await loadWithFlag(true);
+  it("holds while the count probe runs", () => {
     expect(awaitsFirstMap({ ...firstBake, tilesState: "counting" })).toBe(true);
   });
 
-  it("lets a rebuild keep its served archive", async () => {
-    const { awaitsFirstMap } = await loadWithFlag(true);
+  it("lets a rebuild keep its served archive", () => {
     expect(awaitsFirstMap({ ...firstBake, tilesServedJobId: "ds-1-3" })).toBe(false);
   });
 
-  it("lets stored features or no bake render as before", async () => {
-    const { awaitsFirstMap } = await loadWithFlag(true);
+  it("lets stored features or no bake render as before", () => {
     expect(awaitsFirstMap({ ...firstBake, geojson: { type: "FeatureCollection" } })).toBe(false);
     expect(awaitsFirstMap({ ...firstBake, tilesState: null })).toBe(false);
   });
@@ -84,15 +61,13 @@ describe("awaitsFirstMap", () => {
 describe("refreshOutcome", () => {
   const lastChecked = new Date("2026-10-05T10:00:00Z");
 
-  it("reports a queued update and no new fetched time when the bake is pending", async () => {
-    const { refreshOutcome } = await loadWithFlag(true);
+  it("reports a queued update and no new fetched time when the bake is pending", () => {
     expect(refreshOutcome({ tilesState: "pending", lastChecked })).toEqual({
       queued: true,
     });
   });
 
-  it("keeps the synced path with the response's fetched time otherwise", async () => {
-    const { refreshOutcome } = await loadWithFlag(true);
+  it("keeps the synced path with the response's fetched time otherwise", () => {
     expect(refreshOutcome({ tilesState: "done", lastChecked })).toEqual({
       queued: false,
       lastChecked,
@@ -134,22 +109,13 @@ describe("transformDataset geojson stripping", () => {
     },
   };
 
-  it("keeps geojson in the payload when the flag is off", async () => {
-    const { transformDataset } = await loadWithFlag(false);
-    const dataset = transformDataset(raw, null, "en");
-    expect(dataset.geojson).toEqual(geojson);
-    expect(dataset.hasGeojson).toBe(true);
-  });
-
-  it("strips geojson but keeps hasGeojson when tiles render", async () => {
-    const { transformDataset } = await loadWithFlag(true);
+  it("strips geojson but keeps hasGeojson when tiles render", () => {
     const dataset = transformDataset(raw, null, "en");
     expect(dataset.geojson).toBeNull();
     expect(dataset.hasGeojson).toBe(true);
   });
 
-  it("keeps stripping while a rebuild is pending over a served archive", async () => {
-    const { transformDataset } = await loadWithFlag(true);
+  it("keeps stripping while a rebuild is pending over a served archive", () => {
     const dataset = transformDataset(
       { ...raw, tilesState: "pending", tilesJobId: "ds-1-9" },
       null,
@@ -158,8 +124,7 @@ describe("transformDataset geojson stripping", () => {
     expect(dataset.geojson).toBeNull();
   });
 
-  it("keeps geojson while the first bake is still pending, even with the flag on", async () => {
-    const { transformDataset } = await loadWithFlag(true);
+  it("keeps geojson while the first bake is still pending", () => {
     const dataset = transformDataset(
       { ...raw, tilesState: "pending", tilesServedJobId: null },
       null,

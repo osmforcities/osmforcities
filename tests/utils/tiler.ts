@@ -1,8 +1,8 @@
 import { expect, type Page } from "@playwright/test";
+import { PrismaClient } from "@prisma/client";
 
 export const AMSTERDAM = 271110;
-// Over the 25 MB cap at 500 B per element: the tiles-only lane when it is on,
-// the too-large screen when it is off
+// Over the 25 MB cap at 500 B per element
 export const OVER_CAP_COUNT = 60_000;
 
 export const mockTilerControl = (page: Page, data: object) =>
@@ -41,4 +41,40 @@ export async function waitPastJobSecond(jobId: string) {
   await expect
     .poll(() => Math.floor(Date.now() / 1000))
     .toBeGreaterThan(submittedAt);
+}
+
+/**
+ * Open a dataset page and land its first bake, so the page shows the map
+ * instead of the wait page. A dataset already served opens as is.
+ */
+export async function openMappedDataset(
+  page: Page,
+  areaId: number,
+  templateId: string,
+  locale = "en"
+) {
+  await page.goto(`/${locale}/area/${areaId}/dataset/${templateId}`);
+  const prisma = new PrismaClient();
+  try {
+    const where = { areaId, templateId, isActive: true };
+    const served = await prisma.dataset.findFirst({
+      where: { ...where, tilesServedJobId: { not: null } },
+    });
+    if (served) return;
+    let jobId: string | null = null;
+    await expect
+      .poll(async () => {
+        const row = await prisma.dataset.findFirst({
+          where,
+          select: { tilesJobId: true },
+        });
+        jobId = row?.tilesJobId ?? null;
+        return jobId;
+      })
+      .toBeTruthy();
+    await mockTilerControl(page, { jobId, state: "done" });
+    await expect(page.getByTestId("dataset-baking-page")).toBeHidden();
+  } finally {
+    await prisma.$disconnect();
+  }
 }
