@@ -43,10 +43,7 @@ export async function waitPastJobSecond(jobId: string) {
     .toBeGreaterThan(submittedAt);
 }
 
-/**
- * Open a dataset page and land its first bake, so the page shows the map
- * instead of the wait page. A dataset already served opens as is.
- */
+/** Lands the first mock bake so the page shows the map, not the wait page. */
 export async function openMappedDataset(
   page: Page,
   areaId: number,
@@ -65,7 +62,7 @@ export async function openMappedDataset(
     await expect
       .poll(async () => {
         const row = await prisma.dataset.findFirst({
-          where,
+          where: { ...where, tilesState: "pending" },
           select: { tilesJobId: true },
         });
         jobId = row?.tilesJobId ?? null;

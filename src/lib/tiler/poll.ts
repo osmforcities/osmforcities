@@ -67,9 +67,7 @@ async function commitOutcome(
 }
 
 
-// A failed bake is a failed refresh, counted like the cron counts one. It also
-// starts the retry wait: a first bake was never claimed, so without it a visit
-// would resubmit at once.
+// A first bake was never claimed: without lastAttempted a visit would resubmit at once
 async function failBake(
   dataset: { id: string; tilesJobId: string },
   error: string
@@ -84,12 +82,7 @@ async function failBake(
   return won ? { outcome: "failed", error } : { outcome: "pending" };
 }
 
-/**
- * The bake's features as stored geojson, so export keeps working. Over the
- * storage cap the column is JsonNull, as the app stores over-cap rows. A
- * failed pull returns nothing to write: the stored geojson stays until the
- * next bake.
- */
+// A failed pull writes nothing, so the stored geojson stays until the next bake
 async function featureFill(
   jobId: string,
   features: number
@@ -149,24 +142,22 @@ export async function reconcileDataset(
         select: { dataCount: true },
       });
       dataCount = row?.dataCount ?? 0;
-      if (row) {
-        try {
-          const mapped = tilerStatsToDatasetColumns(
-            await readPulledStats(dataset.tilesJobId)
-          );
-          if (mapped) {
-            statsColumns = {
-              ...mapped,
-              ...(await featureFill(dataset.tilesJobId, mapped.dataCount)),
-              lastChecked: new Date(),
-              lastError: null,
-            };
-            dataCount = mapped.dataCount;
-          }
-        } catch (error) {
-          // Losing the stats must not also lose the archive.
-          log.error("Stats fill from tiler failed", { datasetId: dataset.id, error });
+      try {
+        const mapped = tilerStatsToDatasetColumns(
+          await readPulledStats(dataset.tilesJobId)
+        );
+        if (mapped) {
+          statsColumns = {
+            ...mapped,
+            ...(await featureFill(dataset.tilesJobId, mapped.dataCount)),
+            lastChecked: new Date(),
+            lastError: null,
+          };
+          dataCount = mapped.dataCount;
         }
+      } catch (error) {
+        // Losing the stats must not also lose the archive.
+        log.error("Stats fill from tiler failed", { datasetId: dataset.id, error });
       }
 
       won = await commitOutcome(dataset, {
