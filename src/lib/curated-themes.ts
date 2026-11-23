@@ -64,10 +64,6 @@ export function sortForDisplay(
   return [...values].sort((a, b) => Number(a.value) - Number(b.value));
 }
 
-/**
- * Variant taking precomputed dimensions, so callers that also need the age
- * dimension can run computeFilterDimensions once and derive both from it.
- */
 export function buildCuratedThemesFromDimensions(
   dimensions: FilterDimension[]
 ): CuratedTheme[] {

@@ -6,7 +6,7 @@ import type { User } from "next-auth";
 
 type RawDataset = {
   [key: string]: unknown;
-  hasGeojson?: boolean;
+  hasGeojson: boolean;
   bbox?: unknown;
   template?: {
     translations?: Array<unknown>;
@@ -68,7 +68,7 @@ export function transformDataset(
     // the UI only needs isSaved/savedCount
     user: null,
     savedBy: undefined,
-    hasGeojson: rawDataset.hasGeojson ?? false,
+    hasGeojson: rawDataset.hasGeojson,
     bbox: rawDataset.bbox as number[] | null,
     template: {
       ...resolvedTemplate,

@@ -84,7 +84,6 @@ type TilesLayerGroupProps = {
   visibilityFilter?: FilterSpecification;
 };
 
-// tippecanoe's own low-zoom simplification covers small polygons
 export function TilesLayerGroup({
   tilesUrl,
   pointCount,

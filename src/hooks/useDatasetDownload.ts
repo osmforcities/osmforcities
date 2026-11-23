@@ -10,12 +10,12 @@ export function useDatasetDownload() {
     const response = await fetch(`/api/datasets/${dataset.id}/export`).catch(
       () => null
     );
-    if (!response?.ok) {
+    const blob = response?.ok ? await response.blob().catch(() => null) : null;
+    if (!response || !blob) {
       console.error(`Export failed: ${response?.status ?? "network error"}`);
       return;
     }
 
-    const blob = await response.blob();
     const contentDisposition = response.headers.get("Content-Disposition");
     const match = contentDisposition?.match(/filename="([^"]+)"/);
     const filename = match?.[1] ?? defaultFilename;
