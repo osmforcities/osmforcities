@@ -39,7 +39,7 @@ export function FeatureDetailPanel({
   const properties = feature.properties || {};
   const loading = tagSet === "loading";
 
-  // osmtogeojson outputs a combined "id" field like "node/12345" or "way/67890"
+  // Tile hits carry "id" as "node/12345" (copied from "@id" on selection)
   const osmFeatureId = properties["id"];
   const [osmType, osmId] =
     typeof osmFeatureId === "string" && osmFeatureId.includes("/")
