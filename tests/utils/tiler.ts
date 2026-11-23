@@ -69,7 +69,7 @@ export async function openMappedDataset(
         return jobId;
       })
       .toBeTruthy();
-    await mockTilerControl(page, { jobId, state: "done" });
+    expect((await mockTilerControl(page, { jobId, state: "done" })).ok()).toBe(true);
     await expect(page.getByTestId("dataset-baking-page")).toBeHidden();
   } finally {
     await prisma.$disconnect();
