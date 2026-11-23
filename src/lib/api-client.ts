@@ -1,5 +1,14 @@
 import { z } from "zod";
 
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    readonly status: number
+  ) {
+    super(message);
+  }
+}
+
 class ApiClient {
   private baseUrl: string;
 
@@ -28,7 +37,10 @@ class ApiClient {
       const error = await response
         .json()
         .catch(() => ({ error: "Unknown error" }));
-      throw new Error(error.error || `HTTP error! status: ${response.status}`);
+      throw new ApiError(
+        error.error || `HTTP error! status: ${response.status}`,
+        response.status
+      );
     }
 
     const data = await response.json();

@@ -25,7 +25,11 @@ function serveTilesStatus(status: Record<string, unknown>) {
 }
 
 /** Answers one app route and leaves every other request (the basemap) alone. */
-function serveRoute(route: string, answer: (url: string) => unknown) {
+function serveRoute(
+  route: string,
+  answer: (url: string) => unknown,
+  status = 200
+) {
   return () => {
     const realFetch = window.fetch;
     window.fetch = async (...request: Parameters<typeof fetch>) => {
@@ -34,6 +38,7 @@ function serveRoute(route: string, answer: (url: string) => unknown) {
       );
       if (!url.includes(route)) return realFetch(...request);
       return new Response(JSON.stringify(answer(url)), {
+        status,
         headers: { "Content-Type": "application/json" },
       });
     };
@@ -398,19 +403,7 @@ export const BakeDoneMapLoading: Story = {
 /** The cron deleted the row mid-bake: the refresh recreates it. */
 export const RowDeletedWhileBaking: Story = {
   args: { ...BakingConverting.args },
-  beforeEach: () => {
-    const realFetch = window.fetch;
-    window.fetch = async (...request: Parameters<typeof fetch>) => {
-      const url = String(
-        request[0] instanceof Request ? request[0].url : request[0]
-      );
-      if (!url.includes("/tiles-status")) return realFetch(...request);
-      return new Response(null, { status: 404 });
-    };
-    return () => {
-      window.fetch = realFetch;
-    };
-  },
+  beforeEach: serveRoute("/tiles-status", () => null, 404),
   play: async () => {
     await waitFor(() => expect(getRouter().refresh).toHaveBeenCalled());
   },

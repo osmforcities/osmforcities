@@ -26,8 +26,7 @@ const tilerLog = createLogger("tiler");
 // to save; deleted rows are recreated on the next visit (#482).
 const CLEANUP_GRACE_DAYS = 30;
 
-// Goes at any age; a visit recreates it. Kept: a bake or count probe in flight,
-// an empty dataset (nothing to map) and a too-large refusal (its week-long wait).
+// Kept: bake or probe in flight, empty, too-large (its week-long wait)
 const NO_MAP_WHERE: Prisma.DatasetWhereInput = {
   tilesServedJobId: null,
   AND: [NOT_TOO_LARGE],
@@ -63,8 +62,7 @@ async function deleteUnattendedDatasets(tilerOn: boolean): Promise<number> {
     return 0;
   }
 
-  // The filter is re-checked in the delete so a save or a bake landing between
-  // the two queries wins.
+  // Re-checked so a save or a bake landing between the two queries wins
   const { count } = await prisma.dataset.deleteMany({
     where: { id: { in: stale.map((d) => d.id) }, ...unattended },
   });
