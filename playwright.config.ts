@@ -12,8 +12,6 @@ if (pmtilerSmoke && !process.env.PMTILER_DIR) {
   throw new Error("PMTILER_SMOKE=1 needs PMTILER_DIR (an overpass-pmtiler checkout)");
 }
 
-// Headless Chromium has no GPU: without software WebGL the map never starts
-const SOFTWARE_WEBGL = { args: ["--enable-unsafe-swiftshader"] };
 
 // CI runs one project per job: skip the dev server the other project needs
 const e2eProject = process.env.E2E_PROJECT;
@@ -36,6 +34,8 @@ export default defineConfig({
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     baseURL: "http://localhost:3000",
+    // Headless Chromium has no GPU: without software WebGL the map never starts
+    launchOptions: { args: ["--enable-unsafe-swiftshader"] },
   },
   projects: [
     {
@@ -43,7 +43,6 @@ export default defineConfig({
       testIgnore: "tiler/**",
       use: {
         ...devices["Desktop Chrome"],
-        launchOptions: SOFTWARE_WEBGL,
       },
     },
     {
@@ -53,7 +52,6 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         baseURL: "http://localhost:3100",
-        launchOptions: SOFTWARE_WEBGL,
       },
     },
   ],
@@ -74,8 +72,7 @@ export default defineConfig({
       },
     }]),
     ...(e2eProject === "chromium" ? [] : [{
-      // Its own mock tiler and mock Overpass: mock state lives in this
-      // process's memory.
+      // Mock tiler and mock Overpass state live in this server's memory
       command: "NODE_ENV=test ENABLE_TEST_AUTH=true pnpm dev -p 3100",
       url: "http://localhost:3100",
       // A running :3100 points at the mock tiler
