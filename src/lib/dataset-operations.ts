@@ -63,7 +63,7 @@ export async function getOrCreateDataset(
   return { dataset, wasCreated: true };
 }
 
-// The detail-page shape (geojson payload included), used by both the read and
+// The detail-page shape, used by both the read and
 // the on-demand create below. Distinct from the card-select in
 // dataset-section-select and consumed only in this module.
 const DATASET_DETAIL_SELECT = {
@@ -71,7 +71,6 @@ const DATASET_DETAIL_SELECT = {
   templateId: true,
   areaId: true,
   cityName: true,
-  geojson: true,
   bbox: true,
   dataCount: true,
   lastChecked: true,
@@ -161,8 +160,17 @@ export async function getDatasetWithDetails(areaId: number, templateId: string, 
 
   return {
     ...dataset,
+    hasGeojson: await hasStoredGeojson(dataset.id),
     template: resolvedTemplate,
   };
+}
+
+// A null check, so the stored FeatureCollection is never read
+async function hasStoredGeojson(id: string): Promise<boolean> {
+  const count = await prisma.dataset.count({
+    where: { id, geojson: { not: Prisma.AnyNull } },
+  });
+  return count > 0;
 }
 
 async function createDatasetOnDemand(
@@ -266,6 +274,7 @@ async function createDatasetOnDemand(
       tilesState: tilesState ?? dataset.tilesState,
       tilesJobId: tilesJobId ?? dataset.tilesJobId,
       tilesError: tilesError ?? dataset.tilesError,
+      hasGeojson: snapshot.geojson !== null,
       template: resolvedTemplate,
     };
   } catch (error) {
@@ -334,6 +343,7 @@ async function createCountingDataset(
 
   return {
     ...dataset,
+    hasGeojson: false,
     template: resolveTemplateForLocale(dataset.template, locale),
   };
 }

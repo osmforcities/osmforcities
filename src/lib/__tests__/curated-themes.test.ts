@@ -3,7 +3,6 @@
 import { describe, it, expect } from "vitest";
 import type { Feature } from "geojson";
 import {
-  buildCuratedThemes,
   buildCuratedThemesFromDimensions,
   buildAgeVisibilityFilter,
   buildTagVisibilityFilter,
@@ -17,7 +16,12 @@ import {
   type CuratedTheme,
 } from "../curated-themes";
 import { PALETTES } from "../map-palettes";
-import { computeFilterDimensions } from "../filter-dimensions";
+import { computeFilterDimensions, FILTERABLE_TAGS } from "../filter-dimensions";
+
+const themesFromFeatures = (
+  features: Feature[],
+  filterableTags: readonly string[] = FILTERABLE_TAGS
+) => buildCuratedThemesFromDimensions(computeFilterDimensions(features, filterableTags));
 
 const feature = (properties: Record<string, unknown> | null): Feature =>
   ({ type: "Feature", geometry: null, properties } as unknown as Feature);
@@ -61,7 +65,7 @@ describe("sortForDisplay", () => {
   });
 });
 
-describe("buildCuratedThemes — numeric display order", () => {
+describe("themesFromFeatures — numeric display order", () => {
   it("selects top values by count but displays them ascending numerically", () => {
     const features = [
       feature({ capacity: "10" }),
@@ -72,7 +76,7 @@ describe("buildCuratedThemes — numeric display order", () => {
       feature({ capacity: "5" }),
     ];
 
-    const [theme] = buildCuratedThemes(features, ["capacity"]);
+    const [theme] = themesFromFeatures(features, ["capacity"]);
 
     expect(theme.topValues.map((v) => v.value)).toEqual(["2", "5", "10"]);
     // colors are assigned in the displayed (numeric) order
@@ -134,14 +138,14 @@ describe("buildLegendRows", () => {
   });
 });
 
-describe("buildCuratedThemes", () => {
+describe("themesFromFeatures", () => {
   it("builds one theme per allow-listed tag present, skipping absent tags", () => {
     const features = [
       feature({ surface: "asphalt" }),
       feature({ surface: "gravel", material: "wood" }),
     ];
 
-    const themes = buildCuratedThemes(features);
+    const themes = themesFromFeatures(features);
 
     expect(themes.map((t) => t.field).sort()).toEqual(["material", "surface"]);
   });
@@ -149,7 +153,7 @@ describe("buildCuratedThemes", () => {
   it("assigns palette colors to top values by count order", () => {
     const features = surfaceFeatures(["asphalt", "asphalt", "gravel"]);
 
-    const [theme] = buildCuratedThemes(features);
+    const [theme] = themesFromFeatures(features);
 
     expect(theme.topValues).toEqual([
       { value: "asphalt", count: 2 },
@@ -171,7 +175,7 @@ describe("buildCuratedThemes", () => {
     // value-0 twice so ordering is deterministic; the rest once each
     const features = surfaceFeatures(["value-0", ...values]);
 
-    const [theme] = buildCuratedThemes(features);
+    const [theme] = themesFromFeatures(features);
 
     expect(theme.topValues).toHaveLength(TOP_VALUES_COUNT);
     expect(theme.otherCount).toBe(2);
@@ -184,13 +188,13 @@ describe("buildCuratedThemes", () => {
       feature(null),
     ];
 
-    const [theme] = buildCuratedThemes(features);
+    const [theme] = themesFromFeatures(features);
 
     expect(theme.missingCount).toBe(2);
   });
 
   it("returns no themes for empty input", () => {
-    expect(buildCuratedThemes([])).toEqual([]);
+    expect(themesFromFeatures([])).toEqual([]);
   });
 });
 
@@ -225,7 +229,7 @@ describe("buildAgeVisibilityFilter", () => {
 });
 
 describe("buildTagVisibilityFilter", () => {
-  const theme = buildCuratedThemes(
+  const theme = themesFromFeatures(
     surfaceFeatures(["asphalt", "asphalt", "gravel"])
   )[0];
 
@@ -275,7 +279,7 @@ describe("buildTagVisibilityFilter", () => {
 
 describe("buildCuratedColorExpression", () => {
   it("colors top values, falls back to other, and grays out missing", () => {
-    const theme = buildCuratedThemes(
+    const theme = themesFromFeatures(
       surfaceFeatures(["asphalt", "asphalt", "gravel"])
     )[0];
 

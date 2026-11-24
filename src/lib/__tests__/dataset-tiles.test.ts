@@ -34,7 +34,6 @@ describe("datasetTilesPath", () => {
 
 describe("awaitsFirstMap", () => {
   const firstBake = {
-    geojson: null,
     tilesServedJobId: null,
     tilesState: "pending",
   };
@@ -52,8 +51,7 @@ describe("awaitsFirstMap", () => {
     expect(awaitsFirstMap({ ...firstBake, tilesServedJobId: "ds-1-3" })).toBe(false);
   });
 
-  it("lets stored features or no bake render as before", () => {
-    expect(awaitsFirstMap({ ...firstBake, geojson: { type: "FeatureCollection" } })).toBe(false);
+  it("lets a row with no bake through", () => {
     expect(awaitsFirstMap({ ...firstBake, tilesState: null })).toBe(false);
   });
 });
@@ -76,7 +74,7 @@ describe("refreshOutcome", () => {
   });
 });
 
-describe("transformDataset geojson stripping", () => {
+describe("transformDataset geojson", () => {
   const geojson: FeatureCollection = { type: "FeatureCollection", features: [] };
   const raw = {
     id: "ds-1",
@@ -88,6 +86,7 @@ describe("transformDataset geojson stripping", () => {
     createdAt: new Date(),
     updatedAt: new Date(),
     geojson,
+    hasGeojson: true,
     bbox: null,
     tilesState: "done",
     tilesJobId: "ds-1-3",
@@ -109,28 +108,17 @@ describe("transformDataset geojson stripping", () => {
     },
   };
 
-  it("strips geojson but keeps hasGeojson when tiles render", () => {
-    const dataset = transformDataset(raw, null, "en");
-    expect(dataset.geojson).toBeNull();
-    expect(dataset.hasGeojson).toBe(true);
+  it("never ships geojson to the page, but keeps hasGeojson for export", () => {
+    for (const tilesServedJobId of ["ds-1-3", null]) {
+      const dataset = transformDataset({ ...raw, tilesServedJobId }, null, "en");
+      expect(dataset).not.toHaveProperty("geojson");
+      expect(dataset.hasGeojson).toBe(true);
+    }
   });
 
-  it("keeps stripping while a rebuild is pending over a served archive", () => {
-    const dataset = transformDataset(
-      { ...raw, tilesState: "pending", tilesJobId: "ds-1-9" },
-      null,
-      "en"
-    );
-    expect(dataset.geojson).toBeNull();
-  });
-
-  it("keeps geojson while the first bake is still pending", () => {
-    const dataset = transformDataset(
-      { ...raw, tilesState: "pending", tilesServedJobId: null },
-      null,
-      "en"
-    );
-    expect(dataset.geojson).toEqual(geojson);
+  it("reports no geojson for a tiles-only row", () => {
+    const dataset = transformDataset({ ...raw, hasGeojson: false }, null, "en");
+    expect(dataset.hasGeojson).toBe(false);
   });
 });
 

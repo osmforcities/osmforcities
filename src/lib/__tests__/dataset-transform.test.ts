@@ -10,7 +10,7 @@ const baseRaw = {
   stats: null,
   createdAt: new Date(),
   updatedAt: new Date(),
-  geojson: null,
+  hasGeojson: false,
   bbox: null,
   template: {
     id: "tpl-1",

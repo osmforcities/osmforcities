@@ -103,7 +103,7 @@ TILER_URL="http://127.0.0.1:8099"
 TILES_DIR="./data/tiles" # archives the app reconciles and serves. data/ is gitignored
 ```
 
-Restart `pnpm dev` after changing these. With `TILER_URL` set, every dataset is created and refreshed through the tiler and its map is drawn from the archive.
+Restart `pnpm dev` after changing these. With `TILER_URL` set, every dataset is created and refreshed through the tiler and its map is drawn from the archive. Unset, datasets still store data but show no map.
 
 Check a bake end to end:
 

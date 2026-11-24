@@ -6,6 +6,7 @@ vi.mock("@/lib/db", () => ({
     dataset: {
       findFirst: vi.fn().mockResolvedValue(null),
       create: vi.fn(),
+      count: vi.fn().mockResolvedValue(0),
     },
     area: {
       findUnique: vi.fn().mockResolvedValue({
@@ -99,7 +100,6 @@ const existingDatasetRow = {
   templateId: "tmpl-1",
   areaId: 1,
   cityName: "Test City",
-  geojson: null,
   bbox: null,
   dataCount: 5,
   lastChecked: new Date(),
@@ -138,6 +138,24 @@ describe("getOrCreateDataset — isFeatured passthrough", () => {
     const selectArg = mockDatasetFindFirst.mock.calls[0]?.[0]?.select;
     expect(selectArg?.isFeatured).toBe(true);
     expect(dataset.isFeatured).toBe(true);
+  });
+});
+
+describe("getOrCreateDataset — stored geojson", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("reports stored geojson without reading it", async () => {
+    mockDatasetFindFirst.mockResolvedValueOnce(existingDatasetRow as never);
+    vi.mocked(prisma.dataset.count).mockResolvedValueOnce(1);
+
+    const { dataset } = await getOrCreateDataset(1, "test-template", "en");
+
+    expect(mockDatasetFindFirst.mock.calls[0]?.[0]?.select).not.toHaveProperty(
+      "geojson"
+    );
+    expect(dataset.hasGeojson).toBe(true);
   });
 });
 

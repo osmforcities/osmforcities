@@ -1,23 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { galleryCenter, galleryRenderModes } from "../map-gallery";
-
-describe("galleryRenderModes", () => {
-  const geojson = { type: "FeatureCollection", features: [] };
-  const tilesPath = "/api/tiles/ds-1-3.pmtiles";
-
-  it("pairs geojson with tiles when the dataset has both", () => {
-    expect(galleryRenderModes({ geojson, tilesPath })).toEqual(["geojson", "tiles"]);
-  });
-
-  it("shows only what the dataset ships in", () => {
-    expect(galleryRenderModes({ geojson: null, tilesPath })).toEqual(["tiles"]);
-    expect(galleryRenderModes({ geojson, tilesPath: null })).toEqual(["geojson"]);
-  });
-
-  it("is empty with neither", () => {
-    expect(galleryRenderModes({ geojson: null, tilesPath: null })).toEqual([]);
-  });
-});
+import { galleryCenter } from "../map-gallery";
 
 describe("galleryCenter", () => {
   it("uses the area center", () => {

@@ -1,13 +1,8 @@
-import type { Feature } from "geojson";
 import type {
   ExpressionSpecification,
   FilterSpecification,
 } from "maplibre-gl";
-import {
-  computeFilterDimensions,
-  FILTERABLE_TAGS,
-  type FilterDimension,
-} from "./filter-dimensions";
+import type { FilterDimension } from "./filter-dimensions";
 import { AGE_CATEGORY_ORDER, ageStep } from "./feature-age";
 import { PALETTES } from "./map-palettes";
 
@@ -47,20 +42,6 @@ export const MISSING_CATEGORY = "__missing__";
 /** Values per theme that get their own color + legend row. */
 export const TOP_VALUES_COUNT = 8;
 
-/**
- * Build curated categorical themes from the filterable-tag allow-list.
- * One theme per allow-listed tag present in the data; values beyond the top
- * N collapse into "Other". Pure — pass a custom allow-list to override.
- */
-export function buildCuratedThemes(
-  features: Feature[],
-  filterableTags: readonly string[] = FILTERABLE_TAGS
-): CuratedTheme[] {
-  return buildCuratedThemesFromDimensions(
-    computeFilterDimensions(features, filterableTags)
-  );
-}
-
 /** A value is numeric if it is an integer or decimal (e.g. capacity "12"). */
 const NUMERIC_VALUE = /^-?\d+(\.\d+)?$/;
 
@@ -83,10 +64,6 @@ export function sortForDisplay(
   return [...values].sort((a, b) => Number(a.value) - Number(b.value));
 }
 
-/**
- * Variant taking precomputed dimensions, so callers that also need the age
- * dimension can run computeFilterDimensions once and derive both from it.
- */
 export function buildCuratedThemesFromDimensions(
   dimensions: FilterDimension[]
 ): CuratedTheme[] {

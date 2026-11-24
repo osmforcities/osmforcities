@@ -13,7 +13,7 @@ const dataset: Dataset = {
   stats: null,
   createdAt: new Date("2026-09-01T10:00:00Z"),
   updatedAt: new Date("2026-10-05T10:00:00Z"),
-  geojson: null,
+  hasGeojson: false,
   bbox: null,
   template: {
     id: "tpl-1",

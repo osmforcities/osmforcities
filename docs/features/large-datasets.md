@@ -161,9 +161,9 @@ scheduler) -> pull outputs -> serve from app nginx. Dataset status maps from
 job state; "processing, check back later" is `state != done`. `failed`
 carries the Overpass error text through.
 
-**Implemented (as of 2026-09-18):** `Dataset` carries `tilesJobId/tilesState/tilesUpdatedAt/tilesError` for the job being built and `tilesServedJobId` for the served archive, which moves only when a bake lands (blue/green), so a pending or failed rebuild keeps the previous archive on the map; every successful snapshot submits a bake job (`src/lib/tiler/submit.ts`); the update-datasets cron reconciles pending jobs (`src/lib/tiler/poll.ts`) — pull to `TILES_DIR`, ack, keep current + previous archive (never the served one); `GET /api/tiles/{jobId}.pmtiles` serves with Range support. `TILER_URL` unset = kill switch. The map renders from the archive whenever one is served ([#489]). A live status route feeds the wait page and reconciles on demand. With `TILER_URL` set, every dataset takes the tiles-only lane: creation runs the count probe only (one retry for cold areas) and submits a bake, raised budgets when over the cap or when the retry also times out (the tiler then builds it or refuses it as too large); every refresh, cron or admin Sync, runs the count probe for the bake's budgets and submits, with no app-side fetch and no stored count until the bake lands. The reconcile is then the only writer of stats, counters and geojson (feature fill for under-cap rows). `TILER_URL` unset, creation and refresh fetch as before.
+**Implemented (as of 2026-09-18):** `Dataset` carries `tilesJobId/tilesState/tilesUpdatedAt/tilesError` for the job being built and `tilesServedJobId` for the served archive, which moves only when a bake lands (blue/green), so a pending or failed rebuild keeps the previous archive on the map; every successful snapshot submits a bake job (`src/lib/tiler/submit.ts`); the update-datasets cron reconciles pending jobs (`src/lib/tiler/poll.ts`) — pull to `TILES_DIR`, ack, keep current + previous archive (never the served one); `GET /api/tiles/{jobId}.pmtiles` serves with Range support. The map renders only from the archive ([#489], [#501]): the geojson render path and its flag are gone, and `Dataset.geojson` stays as the export artifact for under-cap rows. A live status route feeds the wait page and reconciles on demand. With `TILER_URL` set, every dataset takes the tiles-only lane: creation runs the count probe only (one retry for cold areas) and submits a bake, raised budgets when over the cap or when the retry also times out (the tiler then builds it or refuses it as too large); every refresh, cron or admin Sync, runs the count probe for the bake's budgets and submits, with no app-side fetch and no stored count until the bake lands. The reconcile is then the only writer of stats, counters and geojson (feature fill for under-cap rows). `TILER_URL` unset: creation and refresh fetch as before and the dataset shows no map ([#797] removes that path).
 
-**Not yet:** deleting the geojson render path ([#501]).
+**Not yet:** removing the app-side fetch ([#797]).
 
 Relation/multipolygon assembly in the convert stage, skipped by the spike (15,783 relations in SP buildings), is done ([overpass-pmtiler#6]).
 
@@ -191,7 +191,7 @@ bake runs (checklist item that still needs a probe).
    alongside it (only remaining pre-build measurement).
 4. Rewrite [#490] (and touch up [#487]) to the settled design; service work items
    tracked in the [tiler repo].
-5. ~~app-side work ([#489] protocol + vector source)~~ **LANDED**; see Implemented above.
+5. ~~app-side work ([#489] protocol + vector source)~~ **LANDED**, the only render path since [#501]; see Implemented above.
 
 [glossary]: ../glossary.md
 [ADR 0001]: ../adr/0001-tiler-is-the-only-overpass-data-client.md
@@ -202,5 +202,6 @@ bake runs (checklist item that still needs a probe).
 [#489]: https://github.com/osmforcities/osmforcities/issues/489
 [#490]: https://github.com/osmforcities/osmforcities/issues/490
 [#501]: https://github.com/osmforcities/osmforcities/issues/501
+[#797]: https://github.com/osmforcities/osmforcities/issues/797
 [tiler repo]: https://github.com/osmforcities/overpass-pmtiler
 [overpass-pmtiler#6]: https://github.com/osmforcities/overpass-pmtiler/issues/6
