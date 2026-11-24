@@ -1,10 +1,6 @@
 {
   "ignoreExports": [
-    { "file": "**/*", "exports": ["useRouter"] }
+    { "file": "src/i18n/navigation.ts", "exports": ["useRouter"] }
   ],
-  "ignorePatterns": [
-    "**/global.ts",
-    "**/*.stories.*",
-    ".storybook/**"
-  ]
+  "ignorePatterns": ["global.ts", "**/*.stories.*", ".storybook/**"]
 }
