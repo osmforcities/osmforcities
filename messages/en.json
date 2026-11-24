@@ -455,7 +455,6 @@
     "value": "Value",
     "loadingFullTags": "Loading all tags...",
     "zoomInForFullTags": "Zoom in and select it again to see all tags.",
-    "lastEditedBy": "Last edited by <link>{user}</link>",
     "lastEditedOn": "Last edited {date}",
     "mapLabel": "Interactive map showing dataset",
     "fullScreenMapLabel": "Full screen interactive map showing dataset",

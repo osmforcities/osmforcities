@@ -455,7 +455,6 @@
     "value": "Valor",
     "loadingFullTags": "Cargando todas las etiquetas...",
     "zoomInForFullTags": "Acerca el mapa y vuelve a seleccionar el elemento para ver todas las etiquetas.",
-    "lastEditedBy": "Última edición por <link>{user}</link>",
     "lastEditedOn": "Última edición el {date}",
     "mapLabel": "Mapa interactivo mostrando conjunto de datos",
     "fullScreenMapLabel": "Mapa interactivo en pantalla completa mostrando conjunto de datos",
