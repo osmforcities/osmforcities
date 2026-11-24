@@ -24,24 +24,14 @@ const RefreshResponseSchema = z.object({
   tilesState: z.string().nullable().optional(),
 });
 
-const UpdateDatasetSchema = z.object({
-  isActive: z.boolean().optional(),
-});
-
-const UpdateDatasetResponseSchema = ApiResponseSchema;
-
 export type ApiResponse = z.infer<typeof ApiResponseSchema>;
 export type SaveResponse = z.infer<typeof SaveResponseSchema>;
 export type RefreshResponse = z.infer<typeof RefreshResponseSchema>;
-export type UpdateDatasetInput = z.infer<typeof UpdateDatasetSchema>;
-export type UpdateDatasetResponse = z.infer<typeof UpdateDatasetResponseSchema>;
 
 export {
   ApiResponseSchema,
   SaveResponseSchema,
   RefreshResponseSchema,
-  UpdateDatasetSchema,
-  UpdateDatasetResponseSchema,
   SaveDatasetSchema,
   UnsaveDatasetSchema,
 };
