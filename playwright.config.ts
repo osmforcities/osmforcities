@@ -12,6 +12,7 @@ if (pmtilerSmoke && !process.env.PMTILER_DIR) {
   throw new Error("PMTILER_SMOKE=1 needs PMTILER_DIR (an overpass-pmtiler checkout)");
 }
 
+
 // CI runs one project per job: skip the dev server the other project needs
 const e2eProject = process.env.E2E_PROJECT;
 
@@ -33,6 +34,8 @@ export default defineConfig({
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     baseURL: "http://localhost:3000",
+    // Headless Chromium has no GPU: without software WebGL the map never starts
+    launchOptions: { args: ["--enable-unsafe-swiftshader"] },
   },
   projects: [
     {
@@ -43,16 +46,12 @@ export default defineConfig({
       },
     },
     {
-      // Specs that need the tiles lane, against the :3100 server below. Same
-      // test DB as chromium, so this relies on the 1 CI worker too.
+      // Same test DB as chromium, so this relies on the 1 CI worker too
       name: "tiler",
       testDir: "./tests/tiler",
       use: {
         ...devices["Desktop Chrome"],
         baseURL: "http://localhost:3100",
-        // Headless Chromium has no GPU: without software WebGL the map never
-        // starts, so it never requests tiles
-        launchOptions: { args: ["--enable-unsafe-swiftshader"] },
       },
     },
   ],
@@ -67,11 +66,13 @@ export default defineConfig({
       env: {
         OVERPASS_API_URL: "http://localhost:3000/api/mock-overpass",
         NOMINATIM_API_URL: "http://localhost:3000/api/mock-nominatim",
+        TILER_URL: "http://localhost:3000/api/mock-tiler",
+        TILES_DIR: "./data/tiles-test-chromium",
+        EMAIL_DISABLE: "true",
       },
     }]),
     ...(e2eProject === "chromium" ? [] : [{
-      // Tiles lane on, pointed at its own mock tiler and mock Overpass: mock
-      // state lives in this process's memory.
+      // Mock tiler and mock Overpass state live in this server's memory
       command: "NODE_ENV=test ENABLE_TEST_AUTH=true pnpm dev -p 3100",
       url: "http://localhost:3100",
       // A running :3100 points at the mock tiler
@@ -86,7 +87,6 @@ export default defineConfig({
         TILER_URL: pmtilerSmoke
           ? `http://127.0.0.1:${PMTILER_SMOKE_PORT}`
           : "http://localhost:3100/api/mock-tiler",
-        NEXT_PUBLIC_TILES_ENABLED: "true",
         TILES_DIR: "./data/tiles-test", // data/ is gitignored
         // next dev runs as development whatever NODE_ENV says, so sendEmail's
         // test no-op never applies: without this a map-ready mail throws

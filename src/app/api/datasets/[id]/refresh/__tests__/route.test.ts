@@ -5,8 +5,8 @@ import { prisma } from "@/lib/db";
 import {
   recordFailedSubmit,
   submitTilesForDataset,
-  tilesOnlyLaneEnabled,
 } from "@/lib/tiler/submit";
+import { tilerEnabled } from "@/lib/tiler/client";
 
 vi.mock("@/auth", () => ({
   auth: vi.fn(),
@@ -22,10 +22,13 @@ vi.mock("@/lib/dataset-snapshot", async (importOriginal) => ({
   snapshotDatasetColumns: vi.fn().mockReturnValue({}),
 }));
 
+vi.mock("@/lib/tiler/client", () => ({
+  tilerEnabled: vi.fn(() => false),
+}));
+
 vi.mock("@/lib/tiler/submit", () => ({
   recordFailedSubmit: vi.fn(),
   submitTilesForDataset: vi.fn(),
-  tilesOnlyLaneEnabled: vi.fn().mockReturnValue(false),
 }));
 
 vi.mock("@/lib/umami", () => ({
@@ -117,14 +120,14 @@ describe("POST /api/datasets/[id]/refresh", () => {
 
     describe("on the tiles-only lane", () => {
       beforeEach(() => {
-        vi.mocked(tilesOnlyLaneEnabled).mockReturnValue(true);
+        vi.mocked(tilerEnabled).mockReturnValue(true);
         vi.mocked(submitTilesForDataset).mockClear();
         vi.mocked(recordFailedSubmit).mockClear();
         vi.mocked(prisma.dataset.update).mockClear();
       });
 
       afterEach(() => {
-        vi.mocked(tilesOnlyLaneEnabled).mockReturnValue(false);
+        vi.mocked(tilerEnabled).mockReturnValue(false);
       });
 
       it("submits a bake sized by the probe and reports it queued", async () => {

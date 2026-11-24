@@ -46,10 +46,13 @@ vi.mock("@/lib/area-boundary", () => ({
   fetchOsmRelationData: vi.fn(),
 }));
 
+vi.mock("@/lib/tiler/client", () => ({
+  tilerEnabled: vi.fn(() => false),
+}));
+
 vi.mock("@/lib/tiler/submit", () => ({
   submitTilesForDataset: vi.fn().mockResolvedValue({}),
   recordFailedSubmit: vi.fn(),
-  tilesOnlyLaneEnabled: vi.fn(() => false),
 }));
 
 vi.mock("@/lib/dataset-count-probe", () => ({
@@ -82,8 +85,8 @@ import { refreshAreaInfoIfStale } from "@/lib/area-refresh";
 import {
   recordFailedSubmit,
   submitTilesForDataset,
-  tilesOnlyLaneEnabled,
 } from "@/lib/tiler/submit";
+import { tilerEnabled } from "@/lib/tiler/client";
 import { startCountProbe } from "@/lib/dataset-count-probe";
 import { prisma } from "@/lib/db";
 
@@ -258,11 +261,11 @@ describe("getOrCreateDataset — tiles columns on create", () => {
 describe("getOrCreateDataset — tiles-only lane", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(tilesOnlyLaneEnabled).mockReturnValue(true);
+    vi.mocked(tilerEnabled).mockReturnValue(true);
   });
 
   afterEach(() => {
-    vi.mocked(tilesOnlyLaneEnabled).mockReturnValue(false);
+    vi.mocked(tilerEnabled).mockReturnValue(false);
   });
 
   it("creates a counting row and leaves the count probe to after the response", async () => {

@@ -32,14 +32,6 @@ vi.mock("@/lib/tiler/client", async (importOriginal) => ({
   pruneTileArchives: vi.fn(),
 }));
 
-// TILES_ENABLED is a module-load constant; a getter lets each test flip it.
-const flags = vi.hoisted(() => ({ tilesEnabled: false }));
-vi.mock("@/lib/dataset-tiles", () => ({
-  get TILES_ENABLED() {
-    return flags.tilesEnabled;
-  },
-}));
-
 // Keep the mapper real; only the file read is stubbed.
 vi.mock("@/lib/tiler/stats", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/tiler/stats")>()),
@@ -84,6 +76,26 @@ const tilerStats = {
   peakRssMB: 120,
 };
 
+const ndjson = [
+  JSON.stringify({
+    type: "Feature",
+    geometry: { type: "Point", coordinates: [1, 2] },
+    properties: {
+      "@id": "node/1",
+      "@user": "alice",
+      "@timestamp": "2026-01-01T00:00:00Z",
+      _ts: 1767225600,
+      amenity: "bench",
+    },
+  }),
+  JSON.stringify({
+    type: "Feature",
+    geometry: { type: "Point", coordinates: [3, 4] },
+    properties: { "@id": "node/2", _ts: 0 },
+  }),
+  "",
+].join("\n");
+
 const updateData = (call: number) =>
   vi.mocked(prisma.dataset.updateMany).mock.calls[call][0].data as Record<
     string,
@@ -92,15 +104,14 @@ const updateData = (call: number) =>
 
 beforeEach(() => {
   vi.clearAllMocks();
-  flags.tilesEnabled = false;
   vi.stubEnv("TILER_URL", "http://127.0.0.1:8099");
   vi.mocked(prisma.dataset.findMany).mockResolvedValue([pendingRow] as never);
   vi.mocked(prisma.dataset.updateMany).mockResolvedValue({ count: 1 } as never);
-  // Non-null stored stats: the done branch skips the tiler stats fill.
   vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
-    stats: {},
     dataCount: 7,
   } as never);
+  vi.mocked(readPulledStats).mockResolvedValue(tilerStats);
+  vi.mocked(fetchTileNdjson).mockResolvedValue(ndjson);
   vi.mocked(downloadTileOutputs).mockResolvedValue(undefined);
   vi.mocked(ackTileJob).mockResolvedValue(undefined);
   vi.mocked(pruneTileArchives).mockResolvedValue(undefined);
@@ -140,14 +151,10 @@ describe("pollPendingTileJobs", () => {
     expect(updateData(0).tilesUpdatedAt).toBeInstanceOf(Date);
     // The served pointer moves only on a winning done
     expect(updateData(0).tilesServedJobId).toBe("ds-1-100");
-    // A dataset the app fetched keeps its own stats — the tiler's are ignored,
-    // even app stats older than filterDimensions.
-    expect(readPulledStats).not.toHaveBeenCalled();
-    expect(updateData(0).stats).toBeUndefined();
     expect(ackTileJob).toHaveBeenCalledWith("ds-1-100");
     expect(pruneTileArchives).toHaveBeenCalledWith("ds-1");
     expect(notifyDatasetReady).toHaveBeenCalledTimes(1);
-    expect(notifyDatasetReady).toHaveBeenCalledWith("ds-1", 7);
+    expect(notifyDatasetReady).toHaveBeenCalledWith("ds-1", 42);
   });
 
   it("fills stats from the tiler's stats.json for tiles-only datasets", async () => {
@@ -242,49 +249,6 @@ describe("pollPendingTileJobs", () => {
     expect(updateData(0).stats).toBeUndefined();
   });
 
-  it("refills tiles-only stats that predate the age dimension", async () => {
-    vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "done" });
-    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
-      stats: {
-        filterDimensions: [
-          { key: "roof:shape", kind: "tag", values: [], missing: 7 },
-        ],
-      },
-      dataCount: 7,
-    } as never);
-    vi.mocked(readPulledStats).mockResolvedValue({
-      ...tilerStats,
-      ageBands: [0, 0, 0, 42],
-    });
-
-    await pollPendingTileJobs();
-
-    expect(updateData(0).dataCount).toBe(42);
-    const stats = updateData(0).stats as { filterDimensions: unknown[] };
-    expect(stats.filterDimensions).toContainEqual({
-      key: "age",
-      kind: "age",
-      values: [{ value: "very-old", count: 42 }],
-      missing: 0,
-    });
-  });
-
-  it("leaves app-fetched stats with an age dimension alone", async () => {
-    vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "done" });
-    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
-      stats: {
-        filterDimensions: [{ key: "age", kind: "age", values: [], missing: 0 }],
-      },
-      dataCount: 7,
-    } as never);
-    vi.mocked(readPulledStats).mockResolvedValue(tilerStats);
-
-    await pollPendingTileJobs();
-
-    expect(readPulledStats).not.toHaveBeenCalled();
-    expect(updateData(0).stats).toBeUndefined();
-  });
-
   it("skips the stats fill on an unknown schemaVersion", async () => {
     vi.mocked(getTileJob).mockResolvedValue({ id: "ds-1-100", state: "done" });
     vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
@@ -362,6 +326,8 @@ describe("pollPendingTileJobs", () => {
       tilesState: "failed",
       tilesError: "too_large: runtime error: out of memory",
       consecutiveFailures: { increment: 1 },
+      lastError: "too_large: runtime error: out of memory",
+      lastAttempted: expect.any(Date),
     });
     expect(downloadTileOutputs).not.toHaveBeenCalled();
   });
@@ -384,6 +350,8 @@ describe("pollPendingTileJobs", () => {
       tilesState: "failed",
       tilesError: "job expired before pull",
       consecutiveFailures: { increment: 1 },
+      lastError: "job expired before pull",
+      lastAttempted: expect.any(Date),
     });
     expect(results.errors).toEqual([
       { datasetId: "ds-1", kind: "bake", error: "job expired before pull" },
@@ -489,40 +457,8 @@ describe("pollPendingTileJobs", () => {
   });
 });
 
-describe("reconcile with the tiles flag on", () => {
+describe("reconcile writes the bake's data", () => {
   const done = { id: "ds-1-100", state: "done" as const };
-  const ndjson = [
-    JSON.stringify({
-      type: "Feature",
-      geometry: { type: "Point", coordinates: [1, 2] },
-      properties: {
-        "@id": "node/1",
-        "@user": "alice",
-        "@timestamp": "2026-01-01T00:00:00Z",
-        _ts: 1767225600,
-        amenity: "bench",
-      },
-    }),
-    JSON.stringify({
-      type: "Feature",
-      geometry: { type: "Point", coordinates: [3, 4] },
-      properties: { "@id": "node/2", _ts: 0 },
-    }),
-    "",
-  ].join("\n");
-
-  beforeEach(() => {
-    flags.tilesEnabled = true;
-    // App-fetched stats with an age dimension: the flag-off gate would skip it
-    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
-      stats: {
-        filterDimensions: [{ key: "age", kind: "age", values: [], missing: 0 }],
-      },
-      dataCount: 7,
-    } as never);
-    vi.mocked(readPulledStats).mockResolvedValue(tilerStats);
-    vi.mocked(fetchTileNdjson).mockResolvedValue(ndjson);
-  });
 
   it("overwrites the stats on every bake", async () => {
     expect(await reconcileDataset(pendingRow, done)).toEqual({
@@ -631,33 +567,5 @@ describe("reconcile with the tiles flag on", () => {
 
     expect(updateData(0)).not.toHaveProperty("geojson");
     expect(updateData(0).dataCount).toBe(42);
-  });
-
-  it("a failed bake sets lastError next to the counter and starts the retry wait", async () => {
-    await reconcileDataset(pendingRow, {
-      id: "ds-1-100",
-      state: "failed",
-      error: "boom",
-    });
-
-    expect(updateData(0)).toEqual({
-      tilesState: "failed",
-      tilesError: "boom",
-      consecutiveFailures: { increment: 1 },
-      lastError: "boom",
-      lastAttempted: expect.any(Date),
-    });
-  });
-
-  it("an expired job sets lastError next to the counter", async () => {
-    await reconcileDataset(pendingRow, null);
-
-    expect(updateData(0)).toEqual({
-      tilesState: "failed",
-      tilesError: "job expired before pull",
-      consecutiveFailures: { increment: 1 },
-      lastError: "job expired before pull",
-      lastAttempted: expect.any(Date),
-    });
   });
 });

@@ -13,7 +13,6 @@ import { readPulledStats, tilerStatsToDatasetColumns } from "./stats";
 import { ndjsonToFeatureCollection } from "./features";
 import { isTooLarge } from "@/lib/dataset-retry";
 import { notifyDatasetReady } from "@/lib/tasks/notify-ready";
-import { tilesOnlyLaneEnabled } from "./submit";
 import {
   MAX_DATASET_BYTES,
   OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
@@ -68,9 +67,7 @@ async function commitOutcome(
 }
 
 
-// A failed bake is a failed refresh, counted like the cron counts one. On the
-// tiles-only lane it also starts the retry wait: a first bake was never
-// claimed, so without it a visit would resubmit at once.
+// A first bake was never claimed: without lastAttempted a visit would resubmit at once
 async function failBake(
   dataset: { id: string; tilesJobId: string },
   error: string
@@ -79,29 +76,13 @@ async function failBake(
     tilesState: "failed",
     tilesError: error,
     consecutiveFailures: { increment: 1 },
-    ...(tilesOnlyLaneEnabled() && { lastError: error, lastAttempted: new Date() }),
+    lastError: error,
+    lastAttempted: new Date(),
   });
   return won ? { outcome: "failed", error } : { outcome: "pending" };
 }
 
-/**
- * Flag-off fill gate: never-filled rows, plus tiles-only rows filled before
- * bakes carried age counts. App snapshots always store an age dimension, and
- * older ones store no filterDimensions at all, so neither matches.
- */
-function needsTilerStatsFill(stats: Prisma.JsonValue): boolean {
-  if (stats === null) return true;
-  const dimensions = (stats as { filterDimensions?: { kind: string }[] })
-    .filterDimensions;
-  return Array.isArray(dimensions) && !dimensions.some((d) => d.kind === "age");
-}
-
-/**
- * The bake's features as stored geojson, so export and the geojson fallback
- * keep working once creation stops fetching it. Over the storage cap the
- * column is JsonNull, as the app stores over-cap rows. A failed pull returns
- * nothing to write: the stored geojson stays until the next bake.
- */
+// A failed pull writes nothing, so the stored geojson stays until the next bake
 async function featureFill(
   jobId: string,
   features: number
@@ -158,33 +139,25 @@ export async function reconcileDataset(
       let statsColumns: Prisma.DatasetUpdateManyMutationInput = {};
       const row = await prisma.dataset.findUnique({
         where: { id: dataset.id },
-        select: { stats: true, dataCount: true },
+        select: { dataCount: true },
       });
       dataCount = row?.dataCount ?? 0;
-      // On the tiles-only lane every finished bake is the dataset's refresh:
-      // its stats replace the stored ones. Off, the tiler only fills empty
-      // stats.
-      const authoritative = tilesOnlyLaneEnabled();
-      if (row && (authoritative || needsTilerStatsFill(row.stats))) {
-        try {
-          const mapped = tilerStatsToDatasetColumns(
-            await readPulledStats(dataset.tilesJobId)
-          );
-          if (mapped) {
-            statsColumns = mapped;
-            dataCount = mapped.dataCount;
-            if (authoritative) {
-              Object.assign(
-                statsColumns,
-                await featureFill(dataset.tilesJobId, mapped.dataCount),
-                { lastChecked: new Date(), lastError: null }
-              );
-            }
-          }
-        } catch (error) {
-          // Losing the stats must not also lose the archive.
-          log.error("Stats fill from tiler failed", { datasetId: dataset.id, error });
+      try {
+        const mapped = tilerStatsToDatasetColumns(
+          await readPulledStats(dataset.tilesJobId)
+        );
+        if (mapped) {
+          statsColumns = {
+            ...mapped,
+            ...(await featureFill(dataset.tilesJobId, mapped.dataCount)),
+            lastChecked: new Date(),
+            lastError: null,
+          };
+          dataCount = mapped.dataCount;
         }
+      } catch (error) {
+        // Losing the stats must not also lose the archive.
+        log.error("Stats fill from tiler failed", { datasetId: dataset.id, error });
       }
 
       won = await commitOutcome(dataset, {

@@ -18,8 +18,7 @@ import {
 } from "@/lib/filter-dimensions";
 import type { Bbox } from "@/types/geojson";
 import { prisma } from "@/lib/db";
-import { LARGE_JOB_MAXSIZE_BYTES } from "@/lib/tiler/client";
-import { tilesOnlyLaneEnabled } from "@/lib/tiler/submit";
+import { LARGE_JOB_MAXSIZE_BYTES, tilerEnabled } from "@/lib/tiler/client";
 import {
   MAX_DATASET_BYTES,
   OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
@@ -344,7 +343,7 @@ export async function fetchDatasetSnapshot(
 
   // With the lane on, size is no refusal: every dataset is baked, so a
   // cached too_large verdict must not block the count probe.
-  const tilesLane = tilesOnlyLaneEnabled();
+  const tilesLane = tilerEnabled();
 
   try {
     await assertNoFreshNegativeVerdict(areaId, templateId);

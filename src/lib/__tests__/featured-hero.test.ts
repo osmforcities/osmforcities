@@ -1,17 +1,6 @@
-import { describe, it, expect, afterEach, vi } from "vitest";
+import { describe, it, expect } from "vitest";
+import { featuredHeroWhere, heroTiles } from "../featured-hero";
 import type { FilterDimension } from "../filter-dimensions";
-
-// TILES_ENABLED is read from the env at module load, so every test stubs the
-// flag first and imports the module fresh.
-async function loadWithFlag(enabled: boolean) {
-  vi.stubEnv("NEXT_PUBLIC_TILES_ENABLED", enabled ? "true" : "");
-  vi.resetModules();
-  return import("../featured-hero");
-}
-
-afterEach(() => {
-  vi.unstubAllEnvs();
-});
 
 const surfaceDimension: FilterDimension = {
   kind: "tag",
@@ -37,16 +26,7 @@ const servedRow = {
 };
 
 describe("featuredHeroWhere", () => {
-  it("picks any featured row with data when tiles are off", async () => {
-    const { featuredHeroWhere } = await loadWithFlag(false);
-    expect(featuredHeroWhere()).toEqual({
-      isFeatured: true,
-      dataCount: { gt: 0 },
-    });
-  });
-
-  it("picks only featured rows with a served archive when tiles are on", async () => {
-    const { featuredHeroWhere } = await loadWithFlag(true);
+  it("picks only featured rows with a served archive", () => {
     expect(featuredHeroWhere()).toEqual({
       isFeatured: true,
       dataCount: { gt: 0 },
@@ -56,18 +36,11 @@ describe("featuredHeroWhere", () => {
 });
 
 describe("heroTiles", () => {
-  it("is null when tiles are off, so the hero draws the geojson", async () => {
-    const { heroTiles } = await loadWithFlag(false);
-    expect(heroTiles(servedRow)).toBeNull();
-  });
-
-  it("is null for a row with no served archive", async () => {
-    const { heroTiles } = await loadWithFlag(true);
+  it("is null for a row with no served archive", () => {
     expect(heroTiles({ ...servedRow, tilesServedJobId: null })).toBeNull();
   });
 
-  it("points at the served archive with the stored point count, bbox and dimensions", async () => {
-    const { heroTiles } = await loadWithFlag(true);
+  it("points at the served archive with the stored point count, bbox and dimensions", () => {
     expect(heroTiles(servedRow)).toEqual({
       url: "pmtiles:///api/tiles/ds-1-3.pmtiles",
       pointCount: 12,
@@ -76,16 +49,14 @@ describe("heroTiles", () => {
     });
   });
 
-  it("falls back to dataCount and no dimensions when stats are missing", async () => {
-    const { heroTiles } = await loadWithFlag(true);
+  it("falls back to dataCount and no dimensions when stats are missing", () => {
     expect(heroTiles({ ...servedRow, stats: null })).toMatchObject({
       pointCount: 500,
       filterDimensions: [],
     });
   });
 
-  it("drops a malformed stored bbox", async () => {
-    const { heroTiles } = await loadWithFlag(true);
+  it("drops a malformed stored bbox", () => {
     expect(heroTiles({ ...servedRow, bbox: [1, 2] })?.bbox).toBeNull();
     expect(heroTiles({ ...servedRow, bbox: null })?.bbox).toBeNull();
   });

@@ -10,14 +10,7 @@ import { createLogger } from "@/lib/logger";
 
 const log = createLogger("tiler");
 
-/**
- * Client for the overpass-pmtiler service (see overpass-pmtiler/API.md).
- *
- * With the tiles flag on the tiler is the data source (the tiles-only lane, see
- * tilesOnlyLaneEnabled); off, it only adds archives to the app's own fetch.
- * Every helper here degrades gracefully when the tiler is unreachable.
- * TILER_URL unset disables the whole integration (the kill switch).
- */
+// Client for the overpass-pmtiler service (see overpass-pmtiler/API.md)
 
 export type TileJobState =
   | "queued"

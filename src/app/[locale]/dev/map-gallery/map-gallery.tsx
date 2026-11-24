@@ -10,7 +10,6 @@ import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 import { processOSMFeaturesForVisualization } from "@/lib/osm-data-processor";
 import { MapLayers } from "@/components/dataset/map/layers";
 import { Link } from "@/i18n/navigation";
-import { TILES_ENABLED } from "@/lib/dataset-tiles";
 import { TilesLayerGroup } from "@/components/dataset/map/layers/tiles-layer-group";
 import {
   DatasetFullMap,
@@ -63,15 +62,14 @@ const TEXT = {
     `Use this page to check a map style change on many kinds of data at once. Each row on the right is a real dataset from the local database, drawn at zooms ${GALLERY_ZOOMS.join(", ")} around the same spot.`,
     "Click a cell to open it in the big map, then pan, zoom and switch views from the legend like on the dataset page. Change a style, reload, and compare.",
     "A row marked missing needs its dataset first: sign in, open its link, then reload this page. To add a case, add one line in src/lib/map-gallery.ts.",
+    "Rows need the local tiler running. Over-cap cases like Amsterdam buildings can't be created without it. Setup is in docs/features/large-datasets.md.",
   ],
   heading: (c: GalleryCase) => `${c.label}: ${c.templateId} in ${c.areaName}`,
   missing: (c: GalleryCase) =>
     `Missing locally: ${c.templateId} in relation ${c.osmRelationId}.`,
   createLink: "Open the dataset page to create it",
-  tilesOff:
-    "Tiles are off. Over-cap cases like Amsterdam buildings can't be created until the local tiler runs. Setup is in docs/features/large-datasets.md.",
   nothingToRender:
-    "Nothing to render: no stored geojson, no served archive (tiles-only lane off?) or no center.",
+    "Nothing to render: no stored geojson, no served archive or no center.",
   nothingSelected: "No local dataset to show yet.",
   zoom: (zoom: number) => `z${zoom}`,
   cellLabel: (cell: GalleryCell) => `Open ${cell.renderMode} at z${cell.zoom}`,
@@ -210,7 +208,6 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
               {line}
             </p>
           ))}
-          {!TILES_ENABLED && <Placeholder>{TEXT.tilesOff}</Placeholder>}
         </header>
         {rows.map(({ galleryCase, dataset }, rowIndex) => {
           const center = dataset?.center;

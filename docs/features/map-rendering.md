@@ -34,7 +34,7 @@ The grid is the picker. Clicking a cell opens that case at that zoom in a big li
 
 - Add a case: one line in `GALLERY_CASES` (label, template id, OSM relation id).
 - Create each case's dataset locally by opening `/en/area/<osmRelationId>/dataset/<templateId>` while signed in. A missing one shows a placeholder.
-- Tiles rows need the tiles-only lane (`TILER_URL` plus `NEXT_PUBLIC_TILES_ENABLED=true`, see [large-datasets.md](large-datasets.md)). With both on, the feature fill keeps geojson for under-cap datasets, so they render as a pair. The gallery 404s in production but still ships in the build, like the Tune panel.
+- Tiles rows need the local tiler (`TILER_URL`, see [large-datasets.md](large-datasets.md)). With it on, the feature fill keeps geojson for under-cap datasets, so they render as a pair. The gallery 404s in production but still ships in the build, like the Tune panel.
 - Out of scope: screenshots and visual diffs.
 
 ## Test datasets

@@ -10,23 +10,12 @@ import {
   MAX_DATASET_BYTES,
   OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
 } from "@/lib/constants";
-import { TILES_ENABLED } from "@/lib/dataset-tiles";
 import { fillAreaQuery } from "@/lib/overpass/area-query";
 import { isRetryDue } from "@/lib/dataset-retry";
 import { UNCATALOGED_FILTER } from "@/lib/dataset-catalog-filter";
 import { createLogger } from "@/lib/logger";
 
 const log = createLogger("tiler");
-
-/**
- * The tiles-only lane: the tiler is the data source. Creation stores only the
- * count probe and every refresh submits a bake; the reconcile writes the
- * data. Both flags, since a row without geojson is only viewable when the map
- * renders tiles.
- */
-export function tilesOnlyLaneEnabled(): boolean {
-  return tilerEnabled() && TILES_ENABLED;
-}
 
 /**
  * Submit a bake for a dataset and record the outcome on the row

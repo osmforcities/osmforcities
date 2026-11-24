@@ -7,11 +7,8 @@ import {
   DatasetTooLargeError,
   DatasetSizeCheckTimeoutError,
 } from "@/lib/dataset-snapshot";
-import {
-  recordFailedSubmit,
-  submitTilesForDataset,
-  tilesOnlyLaneEnabled,
-} from "@/lib/tiler/submit";
+import { recordFailedSubmit, submitTilesForDataset } from "@/lib/tiler/submit";
+import { tilerEnabled } from "@/lib/tiler/client";
 import { trackEvent, getClientInfo } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
@@ -62,7 +59,7 @@ export async function POST(
       );
     }
 
-    const tilesLane = tilesOnlyLaneEnabled();
+    const tilesLane = tilerEnabled();
     if (tilesLane) {
       // Claims the slot before the probe, like the cron does, so a tick
       // meanwhile does not submit a second bake
