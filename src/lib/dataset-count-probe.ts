@@ -1,15 +1,23 @@
 import { after } from "next/server";
 import { prisma } from "@/lib/db";
 import {
-  fetchDatasetSnapshot,
-  snapshotDatasetColumns,
-} from "@/lib/dataset-snapshot";
+  probeElementCount,
+  type ElementCount,
+} from "@/lib/overpass/count-probe";
 import { recordFailedSubmit, submitTilesForDataset } from "@/lib/tiler/submit";
 import { isCountProbeDue, type CountProbeRow } from "@/lib/dataset-retry";
 import { UNCATALOGED_FILTER } from "@/lib/dataset-catalog-filter";
 import { createLogger } from "@/lib/logger";
 
 const logger = createLogger("dataset-count-probe");
+
+export function countProbeColumns(elementCount: ElementCount) {
+  return {
+    ...(elementCount !== "unknown" && { dataCount: elementCount }),
+    // A null lastChecked drops the row out of the health freshness checks while its first bake runs
+    lastChecked: new Date(),
+  };
+}
 
 export async function runCountProbe(
   datasetId: string,
@@ -30,19 +38,19 @@ export async function runCountProbe(
       },
     });
     if (!row) return;
-    const snapshot = await fetchDatasetSnapshot(
+    const elementCount = await probeElementCount(
       row.areaId,
       row.template.overpassQuery,
       row.templateId
     );
     const { count } = await prisma.dataset.updateMany({
       where: stillClaimed,
-      data: snapshotDatasetColumns(snapshot),
+      data: countProbeColumns(elementCount),
     });
     if (count === 0) return;
     const { tilesState, tilesError } = await submitTilesForDataset(
       datasetId,
-      snapshot.dataCount
+      elementCount
     );
     if (tilesState === "failed") await recordFailedSubmit(datasetId, tilesError);
   } catch (error) {

@@ -55,11 +55,7 @@ export const SyncQueuesRebuild: Story = {
   beforeEach: () => {
     const realFetch = globalThis.fetch;
     globalThis.fetch = async () =>
-      Response.json({
-        success: true,
-        lastChecked: "2026-10-05T12:00:00Z",
-        tilesState: "pending",
-      });
+      Response.json({ success: true, tilesState: "pending" });
     return () => {
       globalThis.fetch = realFetch;
     };

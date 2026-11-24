@@ -47,7 +47,7 @@ afterEach(() => {
 describe("submitTilesForDataset", () => {
   it("does nothing when the tiler is disabled", async () => {
     vi.stubEnv("TILER_URL", "");
-    await submitTilesForDataset("ds-1");
+    await submitTilesForDataset("ds-1", 100);
     expect(prisma.dataset.findUnique).not.toHaveBeenCalled();
   });
 
@@ -58,7 +58,7 @@ describe("submitTilesForDataset", () => {
       tilesError: null,
     });
 
-    await submitTilesForDataset("ds-1");
+    await submitTilesForDataset("ds-1", 100);
 
     expect(submitTilesColumns).toHaveBeenCalledWith(
       "ds-1",
@@ -84,7 +84,7 @@ describe("submitTilesForDataset", () => {
       tilesError: "Tiler submit failed: 500",
     });
 
-    await submitTilesForDataset("ds-1");
+    await submitTilesForDataset("ds-1", 100);
 
     expect(prisma.dataset.update).toHaveBeenCalledWith({
       where: { id: "ds-1" },
@@ -92,29 +92,7 @@ describe("submitTilesForDataset", () => {
     });
   });
 
-  it("passes raised budgets for an over-cap (tiles-only) dataset", async () => {
-    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
-      ...row,
-      dataCount: 10_000_000,
-    } as never);
-    vi.mocked(submitTilesColumns).mockResolvedValue({
-      tilesJobId: "ds-1-100",
-      tilesState: "pending",
-      tilesError: null,
-    });
-
-    await submitTilesForDataset("ds-1");
-
-    expect(submitTilesColumns).toHaveBeenCalledWith(
-      "ds-1",
-      "[out:json];rel(47798);out geom meta;",
-      ["surface"],
-      { maxsize: LARGE_JOB_MAXSIZE_BYTES, timeout: LARGE_JOB_TIMEOUT_SECONDS }
-    );
-  });
-
-  it("sizes budgets from a fresh count probe over the stored count", async () => {
-    // Stored count from an under-cap bake; the area has since grown past the cap
+  it("passes raised budgets for an over-cap count, whatever count is stored", async () => {
     vi.mocked(submitTilesColumns).mockResolvedValue({});
 
     await submitTilesForDataset("ds-1", 10_000_000);
@@ -145,7 +123,6 @@ describe("submitTilesForDataset", () => {
   });
 
   it("never submits an empty dataset and clears a stuck failed bake", async () => {
-    // Stored count from creation; the lane's refresh never stored the zero
     await submitTilesForDataset("ds-1", 0);
 
     expect(submitTilesColumns).not.toHaveBeenCalled();
@@ -177,22 +154,6 @@ describe("submitTilesForDataset", () => {
     );
   });
 
-  it("reads an empty dataset from the stored count without a fresh probe", async () => {
-    vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
-      ...row,
-      dataCount: 0,
-    } as never);
-
-    const columns = await submitTilesForDataset("ds-1");
-
-    expect(submitTilesColumns).not.toHaveBeenCalled();
-    expect(columns).toEqual({
-      tilesJobId: null,
-      tilesState: null,
-      tilesError: null,
-    });
-  });
-
   it("submits a dataset that gained features since it was stored empty", async () => {
     vi.mocked(prisma.dataset.findUnique).mockResolvedValue({
       ...row,
@@ -211,18 +172,18 @@ describe("submitTilesForDataset", () => {
 
   it("writes nothing for an unknown dataset or an empty column set", async () => {
     vi.mocked(prisma.dataset.findUnique).mockResolvedValue(null as never);
-    await submitTilesForDataset("gone");
+    await submitTilesForDataset("gone", 100);
 
     vi.mocked(prisma.dataset.findUnique).mockResolvedValue(row as never);
     vi.mocked(submitTilesColumns).mockResolvedValue({});
-    await submitTilesForDataset("ds-1");
+    await submitTilesForDataset("ds-1", 100);
 
     expect(prisma.dataset.update).not.toHaveBeenCalled();
   });
 
   it("never throws — a DB error is logged, not propagated", async () => {
     vi.mocked(prisma.dataset.findUnique).mockRejectedValue(new Error("db down"));
-    await expect(submitTilesForDataset("ds-1")).resolves.toEqual({});
+    await expect(submitTilesForDataset("ds-1", 100)).resolves.toEqual({});
   });
 
   it("returns the persisted columns so creation can render pending first paint", async () => {
@@ -232,7 +193,7 @@ describe("submitTilesForDataset", () => {
       tilesError: null,
     });
 
-    await expect(submitTilesForDataset("ds-1")).resolves.toEqual({
+    await expect(submitTilesForDataset("ds-1", 100)).resolves.toEqual({
       tilesJobId: "ds-1-100",
       tilesState: "pending",
       tilesError: null,

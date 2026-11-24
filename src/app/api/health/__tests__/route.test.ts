@@ -5,8 +5,11 @@ vi.mock("@/lib/db", () => ({
   prisma: { dataset: { findFirst: vi.fn(), count: vi.fn() } },
 }));
 
-vi.mock("@/lib/tiler/client", () => ({ tilerDownForMs: vi.fn() }));
-import { tilerDownForMs } from "@/lib/tiler/client";
+vi.mock("@/lib/tiler/client", () => ({
+  tilerDownForMs: vi.fn(),
+  tilerEnabled: vi.fn(),
+}));
+import { tilerDownForMs, tilerEnabled } from "@/lib/tiler/client";
 
 import { GET } from "../route";
 import { CATALOG_FILTER } from "@/lib/dataset-catalog-filter";
@@ -18,6 +21,7 @@ describe("GET /api/health", () => {
     vi.clearAllMocks();
     vi.mocked(prisma.dataset.count).mockResolvedValue(0);
     vi.mocked(tilerDownForMs).mockReturnValue(0);
+    vi.mocked(tilerEnabled).mockReturnValue(true);
   });
 
   const freshFleet = () =>
@@ -63,6 +67,18 @@ describe("GET /api/health", () => {
     freshFleet();
     vi.mocked(tilerDownForMs).mockReturnValue(29 * 60 * 1000);
     expect((await GET()).status).toBe(200);
+  });
+
+  it("degrades when no tiler is configured, even with a fresh fleet", async () => {
+    freshFleet();
+    vi.mocked(tilerEnabled).mockReturnValue(false);
+
+    const res = await GET();
+    expect(res.status).toBe(503);
+    expect(await res.json()).toMatchObject({
+      status: "degraded",
+      reason: "tiler not configured",
+    });
   });
 
   it("joins every reason that applies", async () => {

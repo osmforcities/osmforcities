@@ -74,8 +74,6 @@ export function useDatasetActions() {
   ): Promise<{
     success: boolean;
     error?: string;
-    dataCount?: number;
-    lastChecked?: Date;
     tilesState?: string | null;
   }> => {
     setIsLoading(true);
@@ -84,12 +82,7 @@ export function useDatasetActions() {
         `/api/datasets/${datasetId}/refresh`,
         RefreshResponseSchema
       );
-      return {
-        success: result.success,
-        dataCount: result.dataCount,
-        lastChecked: result.lastChecked,
-        tilesState: result.tilesState,
-      };
+      return { success: result.success, tilesState: result.tilesState };
     } catch (error) {
       console.error("Error refreshing dataset:", error);
       return {

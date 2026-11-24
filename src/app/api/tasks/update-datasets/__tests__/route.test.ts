@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
-import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
+import { probeElementCount } from "@/lib/overpass/count-probe";
 
 vi.mock("@/lib/db", () => ({
   prisma: {
@@ -14,9 +14,8 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 
-vi.mock("@/lib/dataset-snapshot", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/lib/dataset-snapshot")>()),
-  fetchDatasetSnapshot: vi.fn(),
+vi.mock("@/lib/overpass/count-probe", () => ({
+  probeElementCount: vi.fn(),
 }));
 
 const tilerLog = vi.hoisted(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn() }));
@@ -50,7 +49,6 @@ import { submitTilesForDataset } from "@/lib/tiler/submit";
 
 import { Prisma } from "@prisma/client";
 import { POST } from "../route";
-import { DatasetSizeCheckTimeoutError } from "@/lib/dataset-snapshot";
 import {
   CATALOG_FILTER,
   UNCATALOGED_FILTER,
@@ -65,16 +63,7 @@ const dataset = {
   area: {},
 };
 
-const snapshot = {
-  geojson: { type: "FeatureCollection", features: [] },
-  bbox: [0, 0, 1, 1],
-  stats: {
-    mostRecentElement: null,
-    editorsCount: 3,
-    recentActivity: { elementsEdited: 2 },
-  },
-  dataCount: 10,
-};
+const ELEMENT_COUNT = 60_000;
 
 const call = () =>
   POST(
@@ -106,12 +95,18 @@ describe("POST /api/tasks/update-datasets", () => {
       stillPending: 0,
       errors: [],
     });
-    vi.mocked(tilerEnabled).mockReturnValue(false);
+    vi.mocked(tilerEnabled).mockReturnValue(true);
     vi.mocked(pingTiler).mockResolvedValue(true);
+    vi.mocked(submitTilesForDataset).mockResolvedValue({
+      tilesJobId: "ds-1-100",
+      tilesState: "pending",
+      tilesError: null,
+    });
+    vi.mocked(probeElementCount).mockResolvedValue(ELEMENT_COUNT);
   });
 
   it("claims the slot upfront (advances lastAttempted) even when the refresh fails", async () => {
-    vi.mocked(fetchDatasetSnapshot).mockRejectedValueOnce(new Error("boom"));
+    vi.mocked(probeElementCount).mockRejectedValueOnce(new Error("boom"));
 
     const res = await call();
     const body = await res.json();
@@ -133,24 +128,6 @@ describe("POST /api/tasks/update-datasets", () => {
     ).toHaveLength(1);
   });
 
-  it("resets failure tracking on a successful refresh", async () => {
-    vi.mocked(fetchDatasetSnapshot).mockResolvedValueOnce(snapshot as never);
-
-    const res = await call();
-    const body = await res.json();
-    expect(body.data.successful).toBe(1);
-    expect(body.data.failed).toBe(0);
-
-    expect(
-      updateCallsMatching(
-        (d) =>
-          d.consecutiveFailures === 0 &&
-          d.lastError === null &&
-          d.lastChecked instanceof Date
-      )
-    ).toHaveLength(1);
-  });
-
   it("selects rows by the retry ladder, not a flat daily cutoff", async () => {
     await call();
 
@@ -164,19 +141,30 @@ describe("POST /api/tasks/update-datasets", () => {
     );
   });
 
-  it("with the tiler on, leaves the counter for the bake to reset", async () => {
-    vi.mocked(tilerEnabled).mockReturnValue(true);
-    vi.mocked(fetchDatasetSnapshot).mockResolvedValueOnce(snapshot as never);
+  it("submits a bake sized by the count probe, writing nothing but the claim", async () => {
+    const body = await (await call()).json();
+
+    expect(body.data.successful).toBe(1);
+    expect(submitTilesForDataset).toHaveBeenCalledWith("ds-1", ELEMENT_COUNT);
+    expect(prisma.dataset.update).toHaveBeenCalledOnce();
+    expect(
+      updateCallsMatching((d) => d.lastAttempted instanceof Date)
+    ).toHaveLength(1);
+  });
+
+  it("stores the count of a counting row whose probe was lost", async () => {
+    vi.mocked(prisma.dataset.findMany).mockResolvedValue([
+      { ...dataset, tilesState: "counting" },
+    ] as never);
 
     const body = await (await call()).json();
 
     expect(body.data.successful).toBe(1);
-    expect(updateCallsMatching((d) => "consecutiveFailures" in d)).toHaveLength(0);
+    expect(updateCallsMatching((d) => d.dataCount === ELEMENT_COUNT)).toHaveLength(1);
+    expect(submitTilesForDataset).toHaveBeenCalledWith("ds-1", ELEMENT_COUNT);
   });
 
   it("charges a failed bake submit to the counter, logged as kind submit", async () => {
-    vi.mocked(tilerEnabled).mockReturnValue(true);
-    vi.mocked(fetchDatasetSnapshot).mockResolvedValueOnce(snapshot as never);
     vi.mocked(submitTilesForDataset).mockResolvedValueOnce({
       tilesState: "failed",
       tilesError: "Tiler submit failed: 503",
@@ -196,39 +184,39 @@ describe("POST /api/tasks/update-datasets", () => {
     ).toHaveLength(1);
   });
 
+  it("skips the refresh and reports it when no tiler is configured", async () => {
+    vi.mocked(tilerEnabled).mockReturnValue(false);
+
+    const res = await call();
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.data).toMatchObject({
+      tilerConfigured: false,
+      tilerUnreachable: false,
+      totalFound: 0,
+    });
+    expect(tilerLog.warn).toHaveBeenCalledOnce();
+    expect(pingTiler).not.toHaveBeenCalled();
+    expect(probeElementCount).not.toHaveBeenCalled();
+    expect(prisma.dataset.update).not.toHaveBeenCalled();
+  });
+
   it("skips the tick without touching any counter when the tiler is down", async () => {
-    vi.mocked(tilerEnabled).mockReturnValue(true);
     vi.mocked(pingTiler).mockResolvedValue(false);
     const res = await call();
     const body = await res.json();
 
     expect(res.status).toBe(200);
-    expect(body.data.tilerUnreachable).toBe(true);
+    expect(body.data).toMatchObject({
+      tilerConfigured: true,
+      tilerUnreachable: true,
+    });
     expect(tilerLog.warn).toHaveBeenCalledOnce();
-    expect(fetchDatasetSnapshot).not.toHaveBeenCalled();
+    expect(probeElementCount).not.toHaveBeenCalled();
     expect(prisma.dataset.update).not.toHaveBeenCalled();
     // Reconcile of already-pending bakes still runs.
     expect(pollPendingTileJobs).toHaveBeenCalledOnce();
-  });
-
-  it("still yields the slot when the size check times out", async () => {
-    vi.mocked(fetchDatasetSnapshot).mockRejectedValueOnce(
-      new DatasetSizeCheckTimeoutError()
-    );
-
-    const res = await call();
-    const body = await res.json();
-    expect(body.data.failed).toBe(1);
-
-    expect(
-      updateCallsMatching((d) => d.lastAttempted instanceof Date && !("lastError" in d))
-    ).toHaveLength(1);
-    expect(
-      updateCallsMatching(
-        (d) =>
-          JSON.stringify(d.consecutiveFailures) === JSON.stringify({ increment: 1 })
-      )
-    ).toHaveLength(1);
   });
 
   it("skips only the affected dataset (not the whole batch) when the upfront claim write fails", async () => {
@@ -238,7 +226,6 @@ describe("POST /api/tasks/update-datasets", () => {
     vi.mocked(prisma.dataset.update)
       .mockRejectedValueOnce(new Error("db blip"))
       .mockResolvedValue({} as never);
-    vi.mocked(fetchDatasetSnapshot).mockResolvedValue(snapshot as never);
 
     const res = await call();
     const body = await res.json();
@@ -267,10 +254,11 @@ describe("POST /api/tasks/update-datasets", () => {
     expect(refreshWhere).toMatchObject({ template: { deprecatesAt: null } });
   });
 
-  it("deletes stale uncataloged datasets past the grace period", async () => {
-    vi.mocked(prisma.dataset.findMany)
-      .mockResolvedValueOnce([] as never) // refresh pass
-      .mockResolvedValueOnce([{ id: "stale-1", cityName: "X" }] as never); // cleanup pass
+  it("without a tiler, deletes only the uncataloged rows past the grace period", async () => {
+    vi.mocked(tilerEnabled).mockReturnValue(false);
+    vi.mocked(prisma.dataset.findMany).mockResolvedValueOnce([
+      { id: "stale-1", cityName: "X" },
+    ] as never);
     vi.mocked(prisma.dataset.deleteMany).mockResolvedValue({
       count: 1,
     } as never);
@@ -278,7 +266,7 @@ describe("POST /api/tasks/update-datasets", () => {
     const res = await call();
     const body = await res.json();
 
-    const cleanupWhere = vi.mocked(prisma.dataset.findMany).mock.calls[1][0]
+    const cleanupWhere = vi.mocked(prisma.dataset.findMany).mock.calls[0][0]
       ?.where as Record<string, unknown>;
     expect(cleanupWhere).toEqual({
       ...UNCATALOGED_FILTER,
@@ -290,8 +278,7 @@ describe("POST /api/tasks/update-datasets", () => {
     expect(body.data.cleanup.deleted).toBe(1);
   });
 
-  it("with the tiler on, also deletes uncataloged rows left without a map", async () => {
-    vi.mocked(tilerEnabled).mockReturnValue(true);
+  it("also deletes uncataloged rows left without a map", async () => {
     vi.mocked(prisma.dataset.findMany)
       .mockResolvedValueOnce([] as never)
       .mockResolvedValueOnce([{ id: "no-map-1", cityName: "X" }] as never);
@@ -366,63 +353,6 @@ describe("POST /api/tasks/update-datasets", () => {
       data: { geojson: Prisma.JsonNull },
     });
     expect(body.data.cleanup.geojsonCleared).toBe(2);
-  });
-
-  describe("on the tiles-only lane", () => {
-    beforeEach(() => {
-      vi.mocked(tilerEnabled).mockReturnValue(true);
-      vi.mocked(submitTilesForDataset).mockResolvedValue({
-        tilesJobId: "ds-1-100",
-        tilesState: "pending",
-        tilesError: null,
-      });
-      // The lane's snapshot is the count probe alone
-      vi.mocked(fetchDatasetSnapshot).mockResolvedValue({
-        tilesOnly: true,
-        geojson: null,
-        stats: null,
-        bbox: null,
-        dataCount: 60_000,
-      });
-    });
-
-    it("submits a bake sized by the probe, writing nothing but the claim", async () => {
-      const body = await (await call()).json();
-
-      expect(body.data.successful).toBe(1);
-      expect(submitTilesForDataset).toHaveBeenCalledWith("ds-1", 60_000);
-      // The served data, dataCount included, stays until the reconcile
-      // writes the bake's
-      expect(prisma.dataset.update).toHaveBeenCalledOnce();
-      expect(
-        updateCallsMatching((d) => d.lastAttempted instanceof Date)
-      ).toHaveLength(1);
-    });
-
-    it("stores the count of a counting row whose probe was lost", async () => {
-      vi.mocked(prisma.dataset.findMany).mockResolvedValue([
-        { ...dataset, tilesState: "counting" },
-      ] as never);
-
-      const body = await (await call()).json();
-
-      expect(body.data.successful).toBe(1);
-      expect(updateCallsMatching((d) => d.dataCount === 60_000)).toHaveLength(1);
-      expect(submitTilesForDataset).toHaveBeenCalledWith("ds-1", 60_000);
-    });
-
-    it("charges a failed submit to the counter", async () => {
-      vi.mocked(submitTilesForDataset).mockResolvedValueOnce({
-        tilesState: "failed",
-        tilesError: "Tiler submit failed: 503",
-      });
-
-      const body = await (await call()).json();
-
-      expect(body.data.errors).toEqual([
-        { datasetId: "ds-1", kind: "submit", error: "Tiler submit failed: 503" },
-      ]);
-    });
   });
 
   it("returns 401 without the cron secret", async () => {

@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import {
-  fetchDatasetSnapshot,
-  snapshotDatasetColumns,
-  DatasetTooLargeError,
-  DatasetSizeCheckTimeoutError,
-} from "@/lib/dataset-snapshot";
+import { probeElementCount } from "@/lib/overpass/count-probe";
 import { recordFailedSubmit, submitTilesForDataset } from "@/lib/tiler/submit";
 import { tilerEnabled } from "@/lib/tiler/client";
 import { trackEvent, getClientInfo } from "@/lib/umami";
@@ -33,18 +28,12 @@ export async function POST(
     const { id: datasetId } = await params;
 
     const dataset = await prisma.dataset.findUnique({
-      where: {
-        id: datasetId,
-      },
-      include: {
-        template: {
-          include: {
-            category: {
-              select: { id: true, name: true, slug: true },
-            },
-          },
-        },
-        area: true,
+      where: { id: datasetId },
+      select: {
+        isActive: true,
+        areaId: true,
+        templateId: true,
+        template: { select: { overpassQuery: true } },
       },
     });
 
@@ -59,91 +48,40 @@ export async function POST(
       );
     }
 
-    const tilesLane = tilerEnabled();
-    if (tilesLane) {
-      // Claims the slot before the probe, like the cron does, so a tick
-      // meanwhile does not submit a second bake
-      await prisma.dataset.update({
-        where: { id: datasetId },
-        data: { lastAttempted: new Date() },
-      });
+    if (!tilerEnabled()) {
+      return NextResponse.json(
+        { error: "Cannot refresh: no tiler is configured" },
+        { status: 503 }
+      );
     }
 
-    const snapshot = await fetchDatasetSnapshot(
+    // Claimed before the probe, like the cron, so a tick meanwhile submits no second bake
+    await prisma.dataset.update({
+      where: { id: datasetId },
+      data: { lastAttempted: new Date() },
+    });
+
+    const elementCount = await probeElementCount(
       dataset.areaId,
       dataset.template.overpassQuery,
       dataset.templateId
     );
 
-    // On the tiles-only lane the snapshot is the count probe alone: the Sync
-    // button queues a bake sized by it, and the reconcile writes the data.
-    if (tilesLane) {
-      const { tilesState, tilesError } = await submitTilesForDataset(
-        datasetId,
-        snapshot.dataCount
+    const { tilesState, tilesError } = await submitTilesForDataset(
+      datasetId,
+      elementCount
+    );
+    if (tilesState === "failed") await recordFailedSubmit(datasetId, tilesError);
+    // null: an empty dataset, nothing to bake, synced as it stands
+    if (tilesState !== "pending" && tilesState !== null) {
+      return NextResponse.json(
+        { error: "Failed to queue the map rebuild" },
+        { status: 502 }
       );
-      if (tilesState === "failed") await recordFailedSubmit(datasetId, tilesError);
-      // null: an empty dataset, nothing to bake, synced as it stands
-      if (tilesState !== "pending" && tilesState !== null) {
-        return NextResponse.json(
-          { error: "Failed to queue the map rebuild" },
-          { status: 502 }
-        );
-      }
-      await trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
-      return NextResponse.json({ success: true, tilesState });
     }
-
-    const updatedDataset = await prisma.dataset.update({
-      where: {
-        id: datasetId,
-      },
-      data: {
-        ...snapshotDatasetColumns(snapshot),
-        updatedAt: new Date(),
-        lastAttempted: new Date(),
-        consecutiveFailures: 0,
-        lastError: null,
-      },
-      include: {
-        template: {
-          include: {
-            category: {
-              select: { id: true, name: true, slug: true },
-            },
-          },
-        },
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-      },
-    });
-
-    // Empty when the tiler is off, so the stored tilesState stands. A
-    // "pending" here tells the client a rebuild was queued, not completed.
-    const tilesColumns = await submitTilesForDataset(datasetId);
-    const refreshedDataset = { ...updatedDataset, ...tilesColumns };
-
     await trackEvent(ANALYTICS_EVENTS.DATASET_REFRESH, `/datasets/${datasetId}/refresh`, getClientInfo(request));
-
-    return NextResponse.json({
-      success: true,
-      dataset: refreshedDataset,
-      dataCount: snapshot.dataCount,
-      lastChecked: refreshedDataset.lastChecked,
-      tilesState: refreshedDataset.tilesState,
-    });
+    return NextResponse.json({ success: true, tilesState });
   } catch (error) {
-    if (error instanceof DatasetTooLargeError) {
-      return NextResponse.json({ error: error.message }, { status: 422 });
-    }
-    if (error instanceof DatasetSizeCheckTimeoutError) {
-      return NextResponse.json({ error: error.message }, { status: 503 });
-    }
     console.error("Error refreshing dataset:", error);
     return NextResponse.json(
       { error: "Failed to refresh dataset data" },

@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { setTimeout } from "node:timers/promises";
 import { NextRequest, NextResponse } from "next/server";
 import { mockOverpassResponse } from "@/lib/mocks/overpass";
-import { mockTilerState } from "@/lib/mocks/tiler";
+import { featureFetchTally, mockTilerState } from "@/lib/mocks/tiler";
 
 const jsonResponse = (data: unknown) =>
   NextResponse.json(data, {
@@ -30,17 +30,19 @@ const countResponse = () => {
   });
 };
 
+// Template queries search inside the area; the app's area lookups ask for the relation itself
+const searchesInsideArea = (query: string) => query.includes("(area.");
+
 export async function POST(req: NextRequest) {
-  const body = await req.text();
-  // Size pre-flight queries end in "out count;" and expect a count payload
-  if (decodeURIComponent(body).includes("out count;")) {
+  const query = decodeURIComponent(await req.text());
+  if (query.includes("out count;")) {
     const state = mockTilerState();
     state.countProbes++;
     while (mockTilerState().countHeld) await setTimeout(200);
     if (state.countTimesOut) return new NextResponse(null, { status: 504 });
     return countResponse();
   }
-  mockTilerState().featureFetches++;
+  if (searchesInsideArea(query)) featureFetchTally.add();
   // A real Overpass result file, for a real tiler to bake (smoke runs only)
   const realData = process.env.MOCK_OVERPASS_DATA_FILE;
   if (realData) {
