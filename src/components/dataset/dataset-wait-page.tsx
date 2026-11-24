@@ -98,6 +98,8 @@ export function DatasetWaitPage({
     queryKey: ["tiles-status", datasetId],
     queryFn: async () => {
       const response = await fetch(`/api/datasets/${datasetId}/tiles-status`);
+      // The cron deleted the row: the refresh recreates it
+      if (response.status === 404) return { state: "failed" };
       if (!response.ok) throw new Error(String(response.status));
       return response.json();
     },

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { apiClient } from "@/lib/api-client";
+import { ApiError, apiClient } from "@/lib/api-client";
 import {
   SaveResponse,
   ApiResponse,
@@ -21,7 +21,7 @@ export function useDatasetActions() {
   const saveDataset = async (
     datasetId: string,
     notifyWhenReady?: boolean
-  ): Promise<{ success: boolean; error?: string }> => {
+  ): Promise<{ success: boolean; error?: string; status?: number }> => {
     setIsLoading(true);
     try {
       const validatedData = SaveDatasetSchema.parse({
@@ -39,6 +39,7 @@ export function useDatasetActions() {
       return {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
+        status: error instanceof ApiError ? error.status : undefined,
       };
     } finally {
       setIsLoading(false);

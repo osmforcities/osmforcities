@@ -10,7 +10,7 @@ import {
 import { submitTilesForDataset } from "@/lib/tiler/submit";
 import { pollPendingTileJobs } from "@/lib/tiler/poll";
 import { pingTiler, tilerEnabled } from "@/lib/tiler/client";
-import { dueForRefreshWhere } from "@/lib/dataset-retry";
+import { dueForRefreshWhere, NOT_TOO_LARGE } from "@/lib/dataset-retry";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import {
@@ -26,6 +26,13 @@ const tilerLog = createLogger("tiler");
 // to save; deleted rows are recreated on the next visit (#482).
 const CLEANUP_GRACE_DAYS = 30;
 
+// Kept: bake or probe in flight, empty, too-large (its week-long wait)
+const NO_MAP_WHERE: Prisma.DatasetWhereInput = {
+  tilesServedJobId: null,
+  AND: [NOT_TOO_LARGE],
+  OR: [{ tilesState: "failed" }, { tilesState: null, dataCount: { gt: 0 } }],
+};
+
 type FailureKind = "claim" | "snapshot" | "too_large" | "submit";
 
 // Deactivated rows never serve their geojson again — drop the payload. A sweep
@@ -39,22 +46,25 @@ async function clearGeojsonOfDeactivatedDatasets(): Promise<number> {
   return swept.count;
 }
 
-async function deleteUnattendedDatasets(): Promise<number> {
+async function deleteUnattendedDatasets(tilerOn: boolean): Promise<number> {
   const graceCutoff = new Date(
     Date.now() - CLEANUP_GRACE_DAYS * 24 * 60 * 60 * 1000
   );
+  const unattended: Prisma.DatasetWhereInput = {
+    ...UNCATALOGED_FILTER,
+    OR: [{ createdAt: { lt: graceCutoff } }, ...(tilerOn ? [NO_MAP_WHERE] : [])],
+  };
   const stale = await prisma.dataset.findMany({
-    where: { ...UNCATALOGED_FILTER, createdAt: { lt: graceCutoff } },
+    where: unattended,
     select: { id: true, cityName: true },
   });
   if (stale.length === 0) {
     return 0;
   }
 
-  // The filter is re-checked in the delete so a save landing between the two
-  // queries wins.
+  // Re-checked so a save or a bake landing between the two queries wins
   const { count } = await prisma.dataset.deleteMany({
-    where: { id: { in: stale.map((d) => d.id) }, ...UNCATALOGED_FILTER },
+    where: { id: { in: stale.map((d) => d.id) }, ...unattended },
   });
   log.info("Cleanup deleted uncataloged cache datasets", {
     count,
@@ -259,7 +269,7 @@ export async function POST(req: NextRequest) {
     const tiles = await pollPendingTileJobs();
 
     const geojsonCleared = await clearGeojsonOfDeactivatedDatasets();
-    const deleted = await deleteUnattendedDatasets();
+    const deleted = await deleteUnattendedDatasets(tilerOn);
 
     return NextResponse.json({
       success: true,
