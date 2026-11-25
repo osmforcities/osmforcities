@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./test-setup";
 import { signInAsNewTestUser, cleanupTestUser } from "./utils/auth";
 
 test.describe("Route Protection", () => {

@@ -2,7 +2,7 @@
  * E2E tests for template deprecation
  */
 
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./test-setup";
 import { PrismaClient } from "@prisma/client";
 import {
   createTestUser,
