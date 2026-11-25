@@ -2,7 +2,13 @@ import type { StyleSpecification, LayerSpecification } from "maplibre-gl";
 import positron from "./basemap/positron.json";
 import { DEFAULT_STYLE_KNOBS } from "@/components/dataset/map/layers/map-style";
 
-const positronStyle = positron as unknown as StyleSpecification;
+// Ad blockers' EasyPrivacy list blocks tiles.openfreemap.org; the edge proxy also rewrites the TileJSON
+const positronStyle = JSON.parse(
+  JSON.stringify(positron).replaceAll(
+    "https://tiles.openfreemap.org/",
+    "https://osmforcities.org/basemap/"
+  )
+) as StyleSpecification;
 
 const firstLabelIndex = positronStyle.layers.findIndex(
   (l) => l.type === "symbol"

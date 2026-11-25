@@ -14,7 +14,7 @@ New map surfaces must select `bounds`, `centerLat`, `centerLon` on the area and 
 
 ## Basemap
 
-**OpenFreeMap `positron`** (vector, OpenMapTiles schema) since [#737]. The style is vendored at `src/lib/basemap/positron.json` and wired in `src/lib/map-tiles.ts`. Tiles, glyphs and sprites load from OpenFreeMap; no API key.
+**OpenFreeMap `positron`** (vector, OpenMapTiles schema) since [#737]. The style is vendored at `src/lib/basemap/positron.json` and wired in `src/lib/map-tiles.ts`. Tiles, glyphs and sprites come from OpenFreeMap through a same-site edge proxy at `https://osmforcities.org/basemap/`, because ad blockers' EasyPrivacy list blocks `tiles.openfreemap.org`. `map-tiles.ts` swaps the host in the style; the proxy rewrites the tile URLs inside the TileJSON. No API key.
 
 A vector basemap is required for labels above the data (below), label language ([#361]) and a dark style ([#467]).
 
