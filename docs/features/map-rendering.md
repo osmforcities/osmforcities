@@ -14,7 +14,7 @@ New map surfaces must select `bounds`, `centerLat`, `centerLon` on the area and 
 
 ## Basemap
 
-**OpenFreeMap `positron`** (vector, OpenMapTiles schema) since [#737]. The style is vendored at `src/lib/basemap/positron.json` and wired in `src/lib/map-tiles.ts`. Tiles, glyphs and sprites load from OpenFreeMap; no API key.
+**OpenFreeMap `positron`** (vector, OpenMapTiles schema) since [#737]. The style is vendored at `src/lib/basemap/positron.json` and wired in `src/lib/map-tiles.ts`. Tiles, glyphs and sprites load from OpenFreeMap; no API key. `transformRequest` rewrites every `tiles.openfreemap.org` URL to same-site `/basemap/`, because Brave Shields blocks that host as a tracker. Prod and staging hosting serves `/basemap/`; elsewhere a Next.js rewrite proxies it.
 
 A vector basemap is required for labels above the data (below), label language ([#361]) and a dark style ([#467]).
 

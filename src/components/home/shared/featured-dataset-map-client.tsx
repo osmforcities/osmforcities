@@ -8,7 +8,7 @@ import { Link } from "react-aria-components";
 import { ArrowRight } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import type { FeatureCollection } from "geojson";
-import { mapStyle } from "@/lib/map-tiles";
+import { basemapProps } from "@/lib/map-tiles";
 import { MapZoomControl } from "@/components/ui/map-zoom-control";
 import { getTemplateIcon } from "@/lib/category-icons";
 import { calculateBbox, computeInitialViewState } from "@/lib/utils";
@@ -187,7 +187,7 @@ export function FeaturedDatasetMapClient({
     <div className="relative h-full min-h-[320px] bg-gray-100 dark:bg-gray-900">
       <Map
         ref={mapRef}
-        mapStyle={mapStyle}
+        {...basemapProps}
         initialViewState={computeInitialViewState(area, null)}
         dragPan
         scrollZoom={false}

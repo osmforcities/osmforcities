@@ -111,5 +111,5 @@ export default async function middleware(req: NextRequest) {
 export const runtime = "nodejs";
 
 export const config = {
-  matcher: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
+  matcher: "/((?!api|trpc|_next|_vercel|basemap/|.*\\..*).*)",
 };

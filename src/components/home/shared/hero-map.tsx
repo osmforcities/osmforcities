@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import Map from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { HERO_LOCATIONS } from "./hero-map-locations";
-import { mapStyle } from "@/lib/map-tiles";
+import { basemapProps } from "@/lib/map-tiles";
 import { MapZoomControl } from "@/components/ui/map-zoom-control";
 
 export function HeroMap() {
@@ -19,7 +19,7 @@ export function HeroMap() {
   return (
     <div className="relative h-full min-h-[320px] bg-gray-100 dark:bg-gray-900">
       <Map
-        mapStyle={mapStyle}
+        {...basemapProps}
         initialViewState={
           location ?? {
             longitude: 0,

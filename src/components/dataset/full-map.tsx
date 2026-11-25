@@ -34,7 +34,7 @@ import { INTERACTIVE_LAYER_IDS } from "./map/layers/layer-ids";
 import type { Feature, FeatureCollection } from "geojson";
 import { MapErrorState, MapNoDataState } from "./map/map-states";
 import { MapZoomControl } from "@/components/ui/map-zoom-control";
-import { mapStyle, BASEMAP_LABELS_ANCHOR } from "@/lib/map-tiles";
+import { basemapProps, BASEMAP_LABELS_ANCHOR } from "@/lib/map-tiles";
 import { ageLegendRow } from "./map/layers/map-style";
 import type { AgeCategory } from "@/lib/feature-age";
 import {
@@ -240,7 +240,7 @@ export const DatasetFullMap = forwardRef<
         {hasFilteredData ? (
           <Map
             ref={mapRef}
-            mapStyle={mapStyle}
+            {...basemapProps}
             aria-label={t("fullScreenMapLabel")}
             initialViewState={initialPosition ?? initialViewState}
             onMoveEnd={onPositionChange && ((e) => onPositionChange(e.viewState))}

@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useAreaBoundary } from "@/hooks/useAreaBoundary";
 import { AoiBoundaryLayer } from "./map/aoi-boundary-layer";
 import { MapZoomControl } from "@/components/ui/map-zoom-control";
-import { mapStyle } from "@/lib/map-tiles";
+import { basemapProps } from "@/lib/map-tiles";
 import { calculateBbox } from "@/lib/utils";
 
 /**
@@ -25,7 +25,7 @@ export function AreaBasemap({ areaId }: { areaId: number }) {
 
   return (
     <Map
-      mapStyle={mapStyle}
+      {...basemapProps}
       aria-label={t("areaBasemapLabel")}
       initialViewState={{ bounds, fitBoundsOptions: { padding: 40 } }}
       style={{ width: "100%", height: "100%" }}

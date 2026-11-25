@@ -28,6 +28,15 @@ const nextConfig = {
       },
     ];
   },
+  // Prod and staging hosting answers /basemap/ before Next, so this only serves dev and e2e
+  async rewrites() {
+    return [
+      {
+        source: "/basemap/:path*",
+        destination: "https://tiles.openfreemap.org/:path*",
+      },
+    ];
+  },
   async redirects() {
     return [
       // Retired topic, split into education and culture-religion

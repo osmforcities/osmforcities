@@ -28,7 +28,7 @@ export function setupGlobalApiMocks(page: Page) {
     );
   });
 
-  page.route("**/tiles.openfreemap.org/**", (route: Route) =>
+  page.route("**/basemap/**", (route: Route) =>
     route.fulfill({
       status: 200,
       contentType: "application/json",

@@ -1,8 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   mapStyle,
   BASEMAP_LABELS_ANCHOR,
   BASEMAP_WASH_LAYER_ID,
+  transformRequest,
 } from "../map-tiles";
 
 const layerIds = mapStyle.layers.map((l) => l.id);
@@ -21,5 +22,29 @@ describe("basemap style", () => {
 
   it("keeps the openmaptiles vector source after a re-vendor", () => {
     expect(mapStyle.sources.openmaptiles).toMatchObject({ type: "vector" });
+  });
+});
+
+describe("transformRequest", () => {
+  beforeEach(() => {
+    vi.stubGlobal("window", { location: { origin: "https://osmforcities.org" } });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("serves OpenFreeMap URLs from the same-site /basemap path", () => {
+    expect(
+      transformRequest("https://tiles.openfreemap.org/planet/20261119_001001_pt/14/1/2.pbf")
+    ).toEqual({
+      url: "https://osmforcities.org/basemap/planet/20261119_001001_pt/14/1/2.pbf",
+    });
+  });
+
+  it("leaves other URLs to MapLibre", () => {
+    expect(
+      transformRequest("https://osmforcities.org/api/tiles/abc.pmtiles")
+    ).toBeUndefined();
   });
 });

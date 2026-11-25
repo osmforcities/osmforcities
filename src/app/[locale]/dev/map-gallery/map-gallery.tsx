@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Map from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { FeatureCollection } from "geojson";
-import { mapStyle } from "@/lib/map-tiles";
+import { basemapProps } from "@/lib/map-tiles";
 import { ensurePmtilesProtocol } from "@/lib/pmtiles-protocol";
 import { GeoJSONFeatureCollectionSchema } from "@/types/geojson";
 import { processOSMFeaturesForVisualization } from "@/lib/osm-data-processor";
@@ -325,7 +325,7 @@ function GalleryCellView({
   return (
     <div style={box}>
       <Map
-        mapStyle={mapStyle}
+        {...basemapProps}
         initialViewState={{ longitude, latitude, zoom: cell.zoom }}
         style={box}
         interactive={false}
