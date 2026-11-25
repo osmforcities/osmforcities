@@ -2,7 +2,7 @@ import type { StyleSpecification, LayerSpecification } from "maplibre-gl";
 import positron from "./basemap/positron.json";
 import { DEFAULT_STYLE_KNOBS } from "@/components/dataset/map/layers/map-style";
 
-// Ad blockers' EasyPrivacy list blocks tiles.openfreemap.org; the edge proxy also rewrites the TileJSON
+// EasyPrivacy blocks tiles.openfreemap.org (https://github.com/easylist/easylist/issues/26522); the edge proxy also rewrites the TileJSON
 const positronStyle = JSON.parse(
   JSON.stringify(positron).replaceAll(
     "https://tiles.openfreemap.org/",
