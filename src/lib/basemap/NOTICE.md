@@ -1,6 +1,6 @@
 # Vendored basemap style
 
-`positron.json` is an unmodified copy of `https://tiles.openfreemap.org/styles/positron`, fetched 2026-11-09. The wash layer is inserted at runtime in `src/lib/map-tiles.ts`.
+`positron.json` is an unmodified copy of `https://tiles.openfreemap.org/styles/positron`, fetched 2026-11-09. At runtime `src/lib/map-tiles.ts` swaps the `tiles.openfreemap.org` host for the same-site edge proxy and inserts the wash layer.
 
 The copy is pinned so an upstream change cannot move the `beforeId` anchor that keeps basemap labels above the dataset layers. To update, refetch the URL and run the `map-tiles` unit test; the anchor is derived from the file, not hardcoded.
 
