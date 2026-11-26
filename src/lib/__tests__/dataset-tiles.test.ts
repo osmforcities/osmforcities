@@ -4,7 +4,6 @@ import {
   awaitsFirstMap,
   datasetTilesPath,
   hasDrawnTagsOnly,
-  refreshOutcome,
   tilesPointCount,
 } from "../dataset-tiles";
 import { transformDataset } from "../dataset/transform";
@@ -53,24 +52,6 @@ describe("awaitsFirstMap", () => {
 
   it("lets a row with no bake through", () => {
     expect(awaitsFirstMap({ ...firstBake, tilesState: null })).toBe(false);
-  });
-});
-
-describe("refreshOutcome", () => {
-  const lastChecked = new Date("2026-10-05T10:00:00Z");
-
-  it("reports a queued update and no new fetched time when the bake is pending", () => {
-    expect(refreshOutcome({ tilesState: "pending", lastChecked })).toEqual({
-      queued: true,
-    });
-  });
-
-  it("keeps the synced path with the response's fetched time otherwise", () => {
-    expect(refreshOutcome({ tilesState: "done", lastChecked })).toEqual({
-      queued: false,
-      lastChecked,
-    });
-    expect(refreshOutcome({ lastChecked })).toEqual({ queued: false, lastChecked });
   });
 });
 
