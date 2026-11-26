@@ -45,7 +45,7 @@ test.describe("Template Deprecation", () => {
           id: "test-deprecated",
           name: "Deprecated Template",
           description: "This template is deprecated",
-          overpassQuery: 'node["amenity"](area.searchArea);',
+          overpassQuery: '[out:json];node["amenity"](area.searchArea);out geom meta;',
           category: { connect: { id: testCategory.id } },
           tags: ["amenity"],
           isActive: true,
@@ -80,7 +80,7 @@ test.describe("Template Deprecation", () => {
         update: {},
       });
       const base = {
-        overpassQuery: 'node["amenity"](area.searchArea);',
+        overpassQuery: '[out:json];node["amenity"](area.searchArea);out geom meta;',
         category: { connect: { id: testCategory.id } },
         tags: ["amenity"],
         isActive: true,
@@ -131,7 +131,7 @@ test.describe("Template Deprecation", () => {
           id: "test-active",
           name: "Active Template",
           description: "This template is active",
-          overpassQuery: 'node["amenity"](area.searchArea);',
+          overpassQuery: '[out:json];node["amenity"](area.searchArea);out geom meta;',
           category: { connect: { id: testCategory.id } },
           tags: ["amenity"],
           isActive: true,
