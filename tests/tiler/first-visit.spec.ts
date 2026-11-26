@@ -7,7 +7,12 @@ import {
   setupAuthenticationWithLogin,
   TestUser,
 } from "../utils/auth";
-import { AMSTERDAM, mockTilerControl, OVER_CAP_COUNT } from "../utils/tiler";
+import {
+  AMSTERDAM,
+  countingWaitPage,
+  mockTilerControl,
+  OVER_CAP_COUNT,
+} from "../utils/tiler";
 
 // Not used by any other spec
 const TEMPLATE_ID = "post-boxes";
@@ -39,7 +44,7 @@ test.describe("First visit to a dataset on the tiles-only lane", () => {
     await setupAuthenticationWithLogin(page, user);
     await page.goto(PAGE);
 
-    const counting = page.getByTestId("dataset-counting-page");
+    const counting = countingWaitPage(page);
     await expect(counting).toContainText("Checking the data size");
     await counting
       .getByRole("button", { name: /Save it and get an email when it's ready/ })

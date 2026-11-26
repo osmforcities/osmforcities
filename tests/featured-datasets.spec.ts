@@ -7,7 +7,7 @@ import {
   cleanupTestUser,
   TestUser,
 } from "./utils/auth";
-import { openMappedDataset } from "./utils/tiler";
+import { countingWaitPage, openMappedDataset } from "./utils/tiler";
 
 /**
  * Featured dataset flow: featured datasets are public, everything else
@@ -103,7 +103,7 @@ test.describe.serial("Featured datasets", () => {
       await expect(page).toHaveURL(new RegExp(`${NON_FEATURED_PATH}$`));
       // The visit creates the dataset, so its first bake is still on its way
       await expect(
-        page.getByTestId("dataset-counting-page").or(page.getByTestId("dataset-baking-page"))
+        countingWaitPage(page).or(page.getByTestId("dataset-baking-page"))
       ).toBeVisible();
     } finally {
       await prisma.$disconnect();
