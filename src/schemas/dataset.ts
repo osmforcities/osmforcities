@@ -13,11 +13,14 @@ export const GeometryMixSchema = z.object({
   lineKm: z.number().nonnegative(),
   areaKm2: z.number().nonnegative(),
 });
+export type GeometryMix = z.infer<typeof GeometryMixSchema>;
 
+// Presence per tag key, whatever the template: the panel applies the template's keys, so a retuned template keeps its stored counts
 export const TagCountSchema = z.object({
   key: z.string(),
   count: z.number().int().nonnegative(),
 });
+export type TagCount = z.infer<typeof TagCountSchema>;
 
 export const FilterDimensionSchema = z.object({
   key: z.string(),
