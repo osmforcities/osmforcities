@@ -18,7 +18,8 @@ type TilesStatus = {
   progress?: { bytes?: number; pct?: number } | null;
 };
 
-const POLL_MS = 4000;
+// Overridable so the Playwright servers ask for the tiles status more often than a visitor's browser does
+const POLL_MS = Number(process.env.NEXT_PUBLIC_TILES_STATUS_INTERVAL_MS) || 4000;
 
 /**
  * The stages a person waits through. Counting is the app's own size probe,

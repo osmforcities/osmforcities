@@ -68,6 +68,7 @@ export default defineConfig({
         NOMINATIM_API_URL: "http://localhost:3000/api/mock-nominatim",
         TILER_URL: "http://localhost:3000/api/mock-tiler",
         TILES_DIR: "./data/tiles-test-chromium",
+        NEXT_PUBLIC_TILES_STATUS_INTERVAL_MS: "500",
         EMAIL_DISABLE: "true",
       },
     }]),
@@ -82,6 +83,7 @@ export default defineConfig({
       stderr: "pipe" as const,
       env: {
         NEXT_DIST_DIR: ".next-tiler",
+        NEXT_PUBLIC_TILES_STATUS_INTERVAL_MS: "500",
         OVERPASS_API_URL: "http://localhost:3100/api/mock-overpass",
         NOMINATIM_API_URL: "http://localhost:3100/api/mock-nominatim",
         TILER_URL: pmtilerSmoke
