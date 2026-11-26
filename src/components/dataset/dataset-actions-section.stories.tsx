@@ -72,6 +72,25 @@ export const SyncQueuesRebuild: Story = {
   },
 };
 
+export const SyncEmptyDataset: Story = {
+  args: { dataset, onRefreshed: fn() },
+  beforeEach: () => {
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = async () =>
+      Response.json({ success: true, tilesState: null });
+    return () => {
+      globalThis.fetch = realFetch;
+    };
+  },
+  play: async ({ canvas, args, userEvent }) => {
+    await userEvent.click(canvas.getByRole("button", { name: /Sync/ }));
+    await waitFor(() => expect(args.onRefreshed).toHaveBeenCalledOnce());
+    await expect(args.onRefreshed).toHaveBeenCalledWith(expect.any(Date));
+    await expect(canvas.getByRole("button", { name: /Sync/ })).toBeEnabled();
+    await expect(canvas.queryByText("Update queued")).not.toBeInTheDocument();
+  },
+};
+
 export const SyncWhileBakePending: Story = {
   args: { dataset: { ...dataset, tilesState: "pending" } },
   play: async ({ canvas }) => {

@@ -78,7 +78,7 @@ export function useDatasetActions() {
         `/api/datasets/${datasetId}/refresh`,
         RefreshResponseSchema
       );
-      return { success: result.success, tilesState: result.tilesState };
+      return result;
     } catch (error) {
       console.error("Error refreshing dataset:", error);
       return {
