@@ -36,8 +36,7 @@ export type TileJob = {
   };
 };
 
-/** Columns written next to snapshotDatasetColumns() at snapshot time —
- * Pick'd from the Prisma model so the type cannot drift from the schema. */
+/** Pick'd from the Prisma model so the type cannot drift from the schema. */
 export type TilesColumns = Partial<
   Pick<Dataset, "tilesJobId" | "tilesState" | "tilesError">
 >;
@@ -108,8 +107,7 @@ export async function submitTileJob(input: {
       ...input,
       // Stats then carry the legend's age counts (over-cap rows hold no features)
       ageBandsDays: AGE_BUCKET_DAYS,
-      // data.ndjson then carries user/timestamp, which the feature fill
-      // in reconcile stores like the app's snapshot
+      // data.ndjson then carries user/timestamp for the feature fill to store
       keepMeta: true,
     }),
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
@@ -291,12 +289,7 @@ export async function pruneTileArchives(datasetId: string): Promise<void> {
   }
 }
 
-/**
- * Submit a bake job for a fresh snapshot and return the Dataset columns to
- * persist alongside snapshotDatasetColumns(). Never throws: a tiler outage
- * must not fail the snapshot — the state lands in tilesState/tilesError and
- * the next snapshot resubmits.
- */
+/** Never throws: a tiler outage lands in the returned tilesState/tilesError and the next refresh resubmits. */
 export async function submitTilesColumns(
   datasetId: string,
   query: string,

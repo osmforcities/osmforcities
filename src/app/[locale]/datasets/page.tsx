@@ -179,7 +179,6 @@ export default async function DatasetsPage() {
             </div>
           </div>
 
-          {/* Like the rest of the tiler integration: invisible until TILER_URL is set. */}
           {tilerEnabled() && (
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-black dark:text-white">

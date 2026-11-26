@@ -113,5 +113,6 @@ export default defineConfig({
       : []),
   ],
   globalSetup: require.resolve("./tests/global-setup.ts"),
+  globalTeardown: require.resolve("./tests/global-teardown.ts"),
   testMatch: "**/*.spec.ts",
 });

@@ -1,5 +1,33 @@
 import { Dataset } from "@prisma/client";
-import type { StoredDatasetStats } from "@/lib/dataset-snapshot";
+import type { GeometryMix } from "@/lib/dataset-geometry";
+import type { TagCount } from "@/lib/dataset-tags";
+import type { FilterDimension } from "@/lib/filter-dimensions";
+
+export type StoredDatasetStats = {
+  editorsCount?: number;
+  elementVersionsCount?: number;
+  changesetsCount?: number;
+  oldestElement?: string | null;
+  mostRecentElement?: string | null;
+  averageElementAge?: number | null;
+  averageElementVersion?: number | null;
+  recentActivity?: {
+    elementsEdited: number;
+    changesets: number;
+    editors: number;
+  };
+  qualityMetrics?: {
+    staleElementsCount: number;
+    recentlyUpdatedElementsCount: number;
+    staleElementsPercentage: number;
+    recentlyUpdatedElementsPercentage: number;
+  };
+  editRecencyBands?: number[];
+  mapperRecencyBands?: number[];
+  geometryMix?: GeometryMix;
+  tagCounts?: TagCount[];
+  filterDimensions?: FilterDimension[];
+};
 
 export interface ProcessedDatasetStats {
   features: number;

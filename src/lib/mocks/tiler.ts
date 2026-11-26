@@ -20,15 +20,24 @@ type MockTilerState = {
   countHeld: boolean;
   /** Count probes received, so a spec can tell a stored verdict was reused. */
   countProbes: number;
-  /** Feature queries received, so a spec can tell the app fetched none. */
-  featureFetches: number;
   /** POST /jobs answers 500. */
   submitFails: boolean;
   /** GET /status answers 503. */
   tilerDown: boolean;
 };
 
-const store = globalThis as unknown as { mockTiler?: MockTilerState };
+const store = globalThis as unknown as {
+  mockTiler?: MockTilerState;
+  featureFetches?: number;
+};
+
+/** Outside the resettable state: a whole Playwright run must end on zero. */
+export const featureFetchTally = {
+  add: () => {
+    store.featureFetches = featureFetchTally.total() + 1;
+  },
+  total: () => store.featureFetches ?? 0,
+};
 
 export function mockTilerState(): MockTilerState {
   store.mockTiler ??= {
@@ -39,7 +48,6 @@ export function mockTilerState(): MockTilerState {
     countTimesOut: false,
     countHeld: false,
     countProbes: 0,
-    featureFetches: 0,
     submitFails: false,
     tilerDown: false,
   };

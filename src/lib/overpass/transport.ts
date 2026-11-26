@@ -13,8 +13,6 @@ const OVERPASS_API_URL =
   process.env.OVERPASS_API_URL ||
   "https://maps.mail.ru/osm/tools/overpass/api/interpreter";
 
-const FETCH_REQUEST_TIMEOUT_MS = 180_000;
-
 /**
  * Overpass request aborted because it exceeded the allowed time, or Overpass
  * gave up on the query itself (HTTP 200 + remark: timeout, out of memory)
@@ -23,16 +21,6 @@ export class OverpassTimeoutError extends Error {
   constructor(message = "Overpass request timed out") {
     super(message);
     this.name = "OverpassTimeoutError";
-  }
-}
-
-/** Overpass response aborted because it exceeded the byte limit */
-export class OverpassResponseTooLargeError extends Error {
-  constructor(public readonly bytesRead: number, maxBytes: number) {
-    super(
-      `Overpass response exceeded ${maxBytes} bytes (aborted after ${bytesRead} bytes)`
-    );
-    this.name = "OverpassResponseTooLargeError";
   }
 }
 
@@ -134,10 +122,7 @@ export async function countOverpassElements(
 ): Promise<number> {
   assertLocalInTests(OVERPASS_API_URL);
 
-  // Only the output statement changes — the template's own [timeout:N] is kept.
-  // Capping the count at a lower value made Overpass abort (HTTP 200 + remark)
-  // on queries the data fetch then served fine, and that false timeout verdict
-  // blocked the area+template for SIZE_CHECK_TTL_HOURS.
+  // The template's own [timeout:N] stays: on a lower one Overpass aborts counts that budget serves
   const countQuery = query.replace(/\bout(\s+[^;]+)?;\s*$/, "out count;");
 
   // The body read sits inside the try: Overpass sends the 200 headers at once
@@ -168,10 +153,7 @@ export async function countOverpassElements(
   }
   const total = data?.elements?.[0]?.tags?.total;
   if (total === undefined) {
-    // Overpass answers oversized/expensive count queries with HTTP 200 + a `remark`
-    // (query timed out / ran out of memory) instead of a count. Treat that as a timeout
-    // verdict so it flows through the size-check path (recorded + skipped) rather than a
-    // generic error that leaves the dataset re-failing forever (#431).
+    // Overpass answers a count that ran out of time or memory with HTTP 200 + a `remark`
     if (data?.remark) {
       throw new OverpassTimeoutError();
     }
@@ -182,82 +164,6 @@ export async function countOverpassElements(
     throw new Error(`Invalid element count from Overpass: "${total}"`);
   }
   return elementCount;
-}
-
-/**
- * Execute an Overpass query, aborting the download once the response
- * exceeds maxBytes. Aborting disconnects the socket, which causes
- * Overpass to kill the running query server-side.
- */
-export async function executeOverpassQueryWithByteLimit(
-  queryString: string,
-  maxBytes: number
-): Promise<OverpassResponse> {
-  assertLocalInTests(OVERPASS_API_URL);
-
-  const controller = new AbortController();
-  const timeoutSignal = AbortSignal.timeout(FETCH_REQUEST_TIMEOUT_MS);
-
-  let response: Response;
-  try {
-    response = await fetch(OVERPASS_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent": getUserAgent(),
-      },
-      body: `data=${encodeURIComponent(queryString)}`,
-      signal: AbortSignal.any([controller.signal, timeoutSignal]),
-    });
-  } catch (error) {
-    if (isTimeoutError(error)) throw new OverpassTimeoutError();
-    throw error;
-  }
-
-  if (response.status === 504) {
-    throw new OverpassTimeoutError();
-  }
-  if (!response.ok) {
-    throw new Error(`Overpass API error: ${response.status}`);
-  }
-
-  let text: string;
-  if (response.body) {
-    const reader = response.body.getReader();
-    const chunks: Uint8Array[] = [];
-    let bytesRead = 0;
-    try {
-      for (;;) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        bytesRead += value.byteLength;
-        if (bytesRead > maxBytes) {
-          controller.abort();
-          throw new OverpassResponseTooLargeError(bytesRead, maxBytes);
-        }
-        chunks.push(value);
-      }
-    } catch (error) {
-      if (error instanceof OverpassResponseTooLargeError) throw error;
-      if (isTimeoutError(error)) throw new OverpassTimeoutError();
-      throw error;
-    }
-    const combined = new Uint8Array(bytesRead);
-    let offset = 0;
-    for (const chunk of chunks) {
-      combined.set(chunk, offset);
-      offset += chunk.byteLength;
-    }
-    text = new TextDecoder().decode(combined);
-  } else {
-    // Environments without streaming bodies (e.g. mocked fetch in tests)
-    text = await response.text();
-    if (new TextEncoder().encode(text).byteLength > maxBytes) {
-      throw new OverpassResponseTooLargeError(text.length, maxBytes);
-    }
-  }
-
-  return parseOverpassBody(text);
 }
 
 export function convertOverpassToGeoJSON(

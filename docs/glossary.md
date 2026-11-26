@@ -28,15 +28,15 @@ One meaning per word. When two words exist for the same thing, the first wins an
 
 ## Size
 
-**Count probe**: The quick "how many elements are there?" question sent to Overpass before a Dataset's first bake. On the tiles-only lane it runs after the page response. _Avoid:_ pre-flight, size check, estimate.
+**Count probe**: The quick "how many elements are there?" question sent to Overpass before each bake, to size its budgets. On a first visit it runs after the page response. _Avoid:_ pre-flight, size check, estimate.
 
-**Verdict**: The remembered outcome of a count probe: ok, too large, or timed out. Saves asking the same expensive question again too soon. _Avoid:_ cache, size check result.
+**Verdict**: The remembered timeout of a count probe that failed even on raised budgets. For 30 minutes the next bake goes to the tiler without asking the same expensive question again. _Avoid:_ cache, size check result.
 
-**Cap**: The estimated size above which the app never fetches a Dataset's features itself. _Avoid:_ limit, threshold, max size.
+**Cap**: The estimated size above which the app stores none of a Dataset's features and a bake gets raised Overpass budgets. _Avoid:_ limit, threshold, max size.
 
 **Over-cap dataset**: A Dataset above the cap. The app stores none of its features; map and stats come from the archive. _Avoid:_ large, heavy, big, metro (metro describes an Area, not a Dataset).
 
-**Tiles-only lane**: The path every Dataset takes once the map renders archives: creation counts, then bakes, and every refresh bakes. The app never fetches the features itself. _Avoid:_ async lane, slow lane, large-dataset path.
+**Tiles-only lane**: The path every Dataset takes: creation counts, then bakes, and every refresh bakes. The app never fetches the features itself. _Avoid:_ async lane, slow lane, large-dataset path.
 
 ## Map building
 
