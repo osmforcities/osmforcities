@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
-import { MAX_DATASET_BYTES } from "@/lib/constants";
+import { DATASET_CAP_BYTES } from "@/lib/constants";
 import {
   getTileJob,
   downloadTileOutputs,
@@ -511,7 +511,7 @@ describe("reconcile writes the bake's data", () => {
   it("fills features from the bake's ndjson under the cap", async () => {
     await reconcileDataset(pendingRow, done);
 
-    expect(fetchTileNdjson).toHaveBeenCalledWith("ds-1-100", MAX_DATASET_BYTES);
+    expect(fetchTileNdjson).toHaveBeenCalledWith("ds-1-100", DATASET_CAP_BYTES);
     // Same flat shape the app's snapshot stores: unprefixed meta, no _ts
     expect(updateData(0).geojson).toEqual({
       type: "FeatureCollection",

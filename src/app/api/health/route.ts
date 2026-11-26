@@ -8,7 +8,7 @@ import {
 } from "@/lib/dataset-health";
 import { NOT_TOO_LARGE } from "@/lib/dataset-retry";
 import { CATALOG_FILTER } from "@/lib/dataset-catalog-filter";
-import { tilerDownForMs } from "@/lib/tiler/client";
+import { tilerDownForMs, tilerEnabled } from "@/lib/tiler/client";
 
 export async function GET() {
   try {
@@ -53,6 +53,7 @@ export async function GET() {
     const reasons = [
       !isFleetHealthy(reference) && "datasets not updating",
       stuckCount > MAX_STUCK_DATASETS && "datasets failing repeatedly",
+      !tilerEnabled() && "tiler not configured",
       tilerDownForMs() > TILER_DOWN_ALERT_MS && "tiler unreachable",
     ].filter(Boolean);
     const isDegraded = reasons.length > 0;

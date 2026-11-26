@@ -14,7 +14,7 @@ import { ndjsonToFeatureCollection } from "./features";
 import { isTooLarge } from "@/lib/dataset-retry";
 import { notifyDatasetReady } from "@/lib/tasks/notify-ready";
 import {
-  MAX_DATASET_BYTES,
+  DATASET_CAP_BYTES,
   OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
 } from "@/lib/constants";
 import { createLogger } from "@/lib/logger";
@@ -87,12 +87,12 @@ async function featureFill(
   jobId: string,
   features: number
 ): Promise<Pick<Prisma.DatasetUpdateManyMutationInput, "geojson">> {
-  if (features * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE > MAX_DATASET_BYTES) {
+  if (features * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE > DATASET_CAP_BYTES) {
     return { geojson: Prisma.JsonNull };
   }
   try {
     // The estimate is per element; the bytes are the real cap
-    const ndjson = await fetchTileNdjson(jobId, MAX_DATASET_BYTES);
+    const ndjson = await fetchTileNdjson(jobId, DATASET_CAP_BYTES);
     if (ndjson === null) return { geojson: Prisma.JsonNull };
     return {
       // Parsed JSON, so already JSON-safe (no Dates to serialize)

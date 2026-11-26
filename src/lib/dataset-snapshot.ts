@@ -24,7 +24,7 @@ import type { Bbox } from "@/types/geojson";
 import { prisma } from "@/lib/db";
 import { tilerEnabled } from "@/lib/tiler/client";
 import {
-  MAX_DATASET_BYTES,
+  DATASET_CAP_BYTES,
   OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
   TIMEOUT_VERDICT_TTL_MINUTES,
   SIZE_CHECK_TTL_HOURS,
@@ -37,7 +37,7 @@ function formatMb(bytes: number): string {
 export class DatasetTooLargeError extends Error {
   constructor(public readonly bytes: number, estimated: boolean) {
     super(
-      `Dataset too large: ${estimated ? "estimated " : ""}${formatMb(bytes)} of data (max ${formatMb(MAX_DATASET_BYTES)}). Try a smaller area.`
+      `Dataset too large: ${estimated ? "estimated " : ""}${formatMb(bytes)} of data (max ${formatMb(DATASET_CAP_BYTES)}). Try a smaller area.`
     );
     this.name = "DatasetTooLargeError";
   }
@@ -93,7 +93,7 @@ async function assertNoFreshNegativeVerdict(
 
   if (check.status === "too_large") {
     throw new DatasetTooLargeError(
-      check.actualBytes ?? check.estimatedBytes ?? MAX_DATASET_BYTES,
+      check.actualBytes ?? check.estimatedBytes ?? DATASET_CAP_BYTES,
       check.actualBytes === null
     );
   }
@@ -347,7 +347,7 @@ export async function fetchDatasetSnapshot(
   }
 
   const estimatedBytes = elementCount * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE;
-  if (estimatedBytes > MAX_DATASET_BYTES) {
+  if (estimatedBytes > DATASET_CAP_BYTES) {
     await recordSizeCheck(areaId, templateId, "too_large", { estimatedBytes });
     throw new DatasetTooLargeError(estimatedBytes, true);
   }
@@ -356,7 +356,7 @@ export async function fetchDatasetSnapshot(
   try {
     overpassData = await executeOverpassQueryWithByteLimit(
       queryString,
-      MAX_DATASET_BYTES
+      DATASET_CAP_BYTES
     );
   } catch (error) {
     if (error instanceof OverpassResponseTooLargeError) {

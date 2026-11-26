@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { probeElementCount } from "@/lib/overpass/count-probe";
 import { prisma } from "@/lib/db";
-import { MAX_DATASET_BYTES, OVERPASS_BYTES_PER_ELEMENT_ESTIMATE } from "@/lib/constants";
+import { DATASET_CAP_BYTES, OVERPASS_BYTES_PER_ELEMENT_ESTIMATE } from "@/lib/constants";
 
 vi.mock("@/lib/db", () => ({
   prisma: {
@@ -34,7 +34,7 @@ const findUnique = vi.mocked(prisma.areaSizeCheck.findUnique);
 const upsert = vi.mocked(prisma.areaSizeCheck.upsert);
 
 const overCapCount =
-  Math.ceil(MAX_DATASET_BYTES / OVERPASS_BYTES_PER_ELEMENT_ESTIMATE) + 1;
+  Math.ceil(DATASET_CAP_BYTES / OVERPASS_BYTES_PER_ELEMENT_ESTIMATE) + 1;
 
 const verdict = (status: string, checkedAt = new Date()) =>
   ({

@@ -12,7 +12,7 @@ export const DEPRECATION_DAYS = 30;
 export const BOUNDARY_SIMPLIFICATION_TOLERANCE = 0.00001;
 
 /** Maximum Overpass response size for a dataset, in bytes */
-export const MAX_DATASET_BYTES = 25 * 1024 * 1024;
+export const DATASET_CAP_BYTES = 25 * 1024 * 1024;
 
 /** Empirical average JSON bytes per Overpass element, used to pre-estimate payload size from an element count */
 export const OVERPASS_BYTES_PER_ELEMENT_ESTIMATE = 500;
