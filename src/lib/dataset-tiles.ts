@@ -1,4 +1,4 @@
-import type { GeometryMix } from "@/lib/dataset-geometry";
+import type { GeometryMix } from "@/lib/dataset-stats";
 
 // The tiler bakes everything into one layer named "features" (overpass-pmtiler API.md).
 export const TILES_SOURCE_LAYER = "features";

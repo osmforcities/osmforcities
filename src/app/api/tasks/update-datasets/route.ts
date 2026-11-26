@@ -132,8 +132,7 @@ export async function POST(req: NextRequest) {
       },
       take: limit,
       orderBy: [
-        // Postgres sorts NULLs last: a row never attempted waits behind every attempted one
-        { lastAttempted: "asc" },
+        { lastAttempted: { sort: "asc", nulls: "first" } },
         { updatedAt: "asc" },
       ],
     });
