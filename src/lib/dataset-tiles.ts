@@ -40,19 +40,6 @@ export function awaitsFirstMap(dataset: {
   );
 }
 
-/**
- * What a Sync click reports. A pending bake means the refresh only queued a
- * rebuild, so "fetched" stays put; anything else (including responses without
- * the field) is the synced path.
- */
-export function refreshOutcome(result: {
-  tilesState?: string | null;
-  lastChecked?: Date;
-}): { queued: true } | { queued: false; lastChecked: Date } {
-  if (result.tilesState === "pending") return { queued: true };
-  return { queued: false, lastChecked: result.lastChecked ?? new Date() };
-}
-
 // Mirrors the tiler's split bake: an archive reaching z14 keeps only the drawn
 // keys (filterableTags, _ts, @id) at z9-z13.
 const PARTIAL_TAGS_MIN_ZOOM = 9;

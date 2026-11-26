@@ -19,8 +19,6 @@ const SaveResponseSchema = z.object({
 
 const RefreshResponseSchema = z.object({
   success: z.boolean(),
-  dataCount: z.number().optional(),
-  lastChecked: z.coerce.date().optional(),
   tilesState: z.string().nullable().optional(),
 });
 
