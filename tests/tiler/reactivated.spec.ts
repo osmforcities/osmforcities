@@ -10,6 +10,7 @@ import {
 import {
   AMSTERDAM,
   archiveRequest,
+  countingWaitPage,
   mockTilerControl,
   OVER_CAP_COUNT,
   runCronCycle,
@@ -96,7 +97,7 @@ test.describe("A dataset the app deactivated for being over its size cap", () =>
     });
 
     await page.goto(PAGE);
-    await expect(page.getByTestId("dataset-counting-page")).toBeVisible();
+    await expect(countingWaitPage(page)).toBeVisible();
 
     await runCronCycle(page);
     const jobId = await tilesJobId();
