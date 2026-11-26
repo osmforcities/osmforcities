@@ -5,8 +5,13 @@ export const AMSTERDAM = 271110;
 // Over the 25 MB cap at 500 B per element
 export const OVER_CAP_COUNT = 60_000;
 
+// maxRetries only retries ECONNRESET, which CI hits on control requests sent from afterEach
 export const mockTilerControl = (page: Page, data: object) =>
-  page.request.post("/api/mock-tiler/control", { data });
+  page.request.post("/api/mock-tiler/control", { data, maxRetries: 2 });
+
+// The Suspense fallback is a counting wait page too, and both sit in the DOM while React swaps them
+export const countingWaitPage = (page: Page) =>
+  page.getByTestId("dataset-counting-page").filter({ visible: true });
 
 /** Queries the mock Overpass answered since the last reset. */
 const overpassCalls = async (
