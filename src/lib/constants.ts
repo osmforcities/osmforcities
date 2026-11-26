@@ -26,7 +26,7 @@ export const SIZE_CHECK_TTL_HOURS = 24;
  * timeout is usually transient Overpass load, and caching it for a day
  * blackholes the area+template long after the blip has passed.
  */
-export const SIZE_CHECK_TIMEOUT_TTL_MINUTES = 30;
+export const TIMEOUT_VERDICT_TTL_MINUTES = 30;
 
 /**
  * Milliseconds the first count probe waits for Overpass. The wait page
