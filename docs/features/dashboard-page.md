@@ -133,7 +133,7 @@ async function getOrCreateDataset(areaId: number, templateId: string) {
 
   if (!dataset) {
     // Create on-demand with loading state
-    dataset = await createDatasetOnDemand(areaId, templateId);
+    dataset = await createDatasetWithArea(areaId, templateId);
   }
 
   return dataset;

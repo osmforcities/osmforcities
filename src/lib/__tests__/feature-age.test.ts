@@ -1,34 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { AGE_TS_KEY, ageCategoryOfTs, ageStep } from "../feature-age";
+import { AGE_TS_KEY, ageStep } from "../feature-age";
 
 const DAY_S = 86_400;
 const NOW_MS = 1_700_000_000_000; // fixed reference, ms
 const NOW_S = NOW_MS / 1000;
 
 const tsDaysAgo = (days: number) => NOW_S - days * DAY_S;
-
-describe("ageCategoryOfTs", () => {
-  it("buckets each boundary inclusively (<=7, <=30, <=90 days)", () => {
-    expect(ageCategoryOfTs(tsDaysAgo(0), NOW_MS)).toBe("recent");
-    expect(ageCategoryOfTs(tsDaysAgo(7), NOW_MS)).toBe("recent");
-    expect(ageCategoryOfTs(tsDaysAgo(7.001), NOW_MS)).toBe("medium");
-    expect(ageCategoryOfTs(tsDaysAgo(30), NOW_MS)).toBe("medium");
-    expect(ageCategoryOfTs(tsDaysAgo(30.001), NOW_MS)).toBe("older");
-    expect(ageCategoryOfTs(tsDaysAgo(90), NOW_MS)).toBe("older");
-    expect(ageCategoryOfTs(tsDaysAgo(90.001), NOW_MS)).toBe("very-old");
-  });
-
-  it("treats a future timestamp as recent", () => {
-    expect(ageCategoryOfTs(tsDaysAgo(-1), NOW_MS)).toBe("recent");
-  });
-
-  it("falls back to very-old for missing or non-numeric values", () => {
-    expect(ageCategoryOfTs(undefined, NOW_MS)).toBe("very-old");
-    expect(ageCategoryOfTs(null, NOW_MS)).toBe("very-old");
-    expect(ageCategoryOfTs("2020-01-01", NOW_MS)).toBe("very-old");
-    expect(ageCategoryOfTs(NaN, NOW_MS)).toBe("very-old");
-  });
-});
 
 describe("ageStep", () => {
   const values = {
@@ -52,7 +29,7 @@ describe("ageStep", () => {
     ]);
   });
 
-  it("agrees with ageCategoryOfTs at every bucket boundary", () => {
+  it("buckets each boundary inclusively (<=7, <=30, <=90 days)", () => {
     // Evaluate the step expression by hand: last stop whose input <= ts wins
     const expr = ageStep(values, NOW_MS) as unknown[];
     const evaluate = (ts: number | undefined) => {
@@ -63,12 +40,12 @@ describe("ageStep", () => {
       }
       return result;
     };
-    const label = { recent: "r", medium: "m", older: "o", "very-old": "v" };
 
-    for (const days of [0, 7, 7.001, 30, 30.001, 90, 90.001, 400]) {
-      const ts = tsDaysAgo(days);
-      expect(evaluate(ts)).toBe(label[ageCategoryOfTs(ts, NOW_MS)]);
-    }
+    expect(
+      [-1, 0, 7, 7.001, 30, 30.001, 90, 90.001, 400].map((days) =>
+        evaluate(tsDaysAgo(days))
+      )
+    ).toEqual(["r", "r", "r", "m", "m", "o", "o", "v", "v"]);
     expect(evaluate(undefined)).toBe("v");
   });
 

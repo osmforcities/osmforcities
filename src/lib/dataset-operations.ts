@@ -56,7 +56,7 @@ export async function getOrCreateDataset(
     throw new Error("New datasets need a tiler, and none is configured.");
   }
 
-  dataset = await createDatasetOnDemand(areaId, template, locale);
+  dataset = await createDatasetWithArea(areaId, template, locale);
   return { dataset, wasCreated: true };
 }
 
@@ -170,7 +170,7 @@ async function hasStoredGeojson(id: string): Promise<boolean> {
   return count > 0;
 }
 
-async function createDatasetOnDemand(
+async function createDatasetWithArea(
   areaId: number,
   template: NonNullable<Awaited<ReturnType<typeof resolveTemplate>>>,
   locale: string

@@ -1,7 +1,6 @@
 // src/lib/__tests__/curated-themes.test.ts
 
 import { describe, it, expect } from "vitest";
-import type { Feature } from "geojson";
 import {
   buildCuratedThemesFromDimensions,
   buildAgeVisibilityFilter,
@@ -16,18 +15,26 @@ import {
   type CuratedTheme,
 } from "../curated-themes";
 import { PALETTES } from "../map-palettes";
-import { computeFilterDimensions, FILTERABLE_TAGS } from "../filter-dimensions";
+import type { FilterDimension } from "../filter-dimensions";
 
-const themesFromFeatures = (
-  features: Feature[],
-  filterableTags: readonly string[] = FILTERABLE_TAGS
-) => buildCuratedThemesFromDimensions(computeFilterDimensions(features, filterableTags));
+const tagDimension = (
+  key: string,
+  countDescValues: [value: string, count: number][],
+  missing = 0
+): FilterDimension => ({
+  key,
+  kind: "tag",
+  values: countDescValues.map(([value, count]) => ({ value, count })),
+  missing,
+});
 
-const feature = (properties: Record<string, unknown> | null): Feature =>
-  ({ type: "Feature", geometry: null, properties } as unknown as Feature);
-
-const surfaceFeatures = (values: string[]) =>
-  values.map((surface) => feature({ surface }));
+const surfaceTheme = () =>
+  buildCuratedThemesFromDimensions([
+    tagDimension("surface", [
+      ["asphalt", 2],
+      ["gravel", 1],
+    ]),
+  ])[0];
 
 describe("sortForDisplay", () => {
   it("sorts numeric values ascending", () => {
@@ -65,18 +72,15 @@ describe("sortForDisplay", () => {
   });
 });
 
-describe("themesFromFeatures — numeric display order", () => {
+describe("buildCuratedThemesFromDimensions — numeric display order", () => {
   it("selects top values by count but displays them ascending numerically", () => {
-    const features = [
-      feature({ capacity: "10" }),
-      feature({ capacity: "10" }),
-      feature({ capacity: "10" }),
-      feature({ capacity: "2" }),
-      feature({ capacity: "2" }),
-      feature({ capacity: "5" }),
-    ];
-
-    const [theme] = themesFromFeatures(features, ["capacity"]);
+    const [theme] = buildCuratedThemesFromDimensions([
+      tagDimension("capacity", [
+        ["10", 3],
+        ["2", 2],
+        ["5", 1],
+      ]),
+    ]);
 
     expect(theme.topValues.map((v) => v.value)).toEqual(["2", "5", "10"]);
     // colors are assigned in the displayed (numeric) order
@@ -138,22 +142,22 @@ describe("buildLegendRows", () => {
   });
 });
 
-describe("themesFromFeatures", () => {
-  it("builds one theme per allow-listed tag present, skipping absent tags", () => {
-    const features = [
-      feature({ surface: "asphalt" }),
-      feature({ surface: "gravel", material: "wood" }),
-    ];
+describe("buildCuratedThemesFromDimensions", () => {
+  it("builds one theme per tag dimension, skipping the age dimension", () => {
+    const themes = buildCuratedThemesFromDimensions([
+      tagDimension("surface", [
+        ["asphalt", 1],
+        ["gravel", 1],
+      ]),
+      tagDimension("material", [["wood", 1]], 1),
+      { key: "age", kind: "age", values: [{ value: "recent", count: 2 }], missing: 0 },
+    ]);
 
-    const themes = themesFromFeatures(features);
-
-    expect(themes.map((t) => t.field).sort()).toEqual(["material", "surface"]);
+    expect(themes.map((t) => t.field)).toEqual(["surface", "material"]);
   });
 
   it("assigns palette colors to top values by count order", () => {
-    const features = surfaceFeatures(["asphalt", "asphalt", "gravel"]);
-
-    const [theme] = themesFromFeatures(features);
+    const theme = surfaceTheme();
 
     expect(theme.topValues).toEqual([
       { value: "asphalt", count: 2 },
@@ -170,31 +174,27 @@ describe("themesFromFeatures", () => {
   it("collapses values beyond the top N into otherCount", () => {
     const values = Array.from(
       { length: TOP_VALUES_COUNT + 2 },
-      (_, i) => `value-${i}`
+      (_, i): [string, number] => [`value-${i}`, 1]
     );
-    // value-0 twice so ordering is deterministic; the rest once each
-    const features = surfaceFeatures(["value-0", ...values]);
 
-    const [theme] = themesFromFeatures(features);
+    const [theme] = buildCuratedThemesFromDimensions([
+      tagDimension("surface", values),
+    ]);
 
     expect(theme.topValues).toHaveLength(TOP_VALUES_COUNT);
     expect(theme.otherCount).toBe(2);
   });
 
-  it("counts features lacking the tag as missing", () => {
-    const features = [
-      feature({ surface: "asphalt" }),
-      feature({}),
-      feature(null),
-    ];
-
-    const [theme] = themesFromFeatures(features);
+  it("carries the dimension's missing count", () => {
+    const [theme] = buildCuratedThemesFromDimensions([
+      tagDimension("surface", [["asphalt", 1]], 2),
+    ]);
 
     expect(theme.missingCount).toBe(2);
   });
 
-  it("returns no themes for empty input", () => {
-    expect(themesFromFeatures([])).toEqual([]);
+  it("returns no themes for no dimensions", () => {
+    expect(buildCuratedThemesFromDimensions([])).toEqual([]);
   });
 });
 
@@ -229,9 +229,7 @@ describe("buildAgeVisibilityFilter", () => {
 });
 
 describe("buildTagVisibilityFilter", () => {
-  const theme = themesFromFeatures(
-    surfaceFeatures(["asphalt", "asphalt", "gravel"])
-  )[0];
+  const theme = surfaceTheme();
 
   it("returns undefined when nothing is hidden", () => {
     expect(buildTagVisibilityFilter(theme, new Set())).toBeUndefined();
@@ -279,11 +277,7 @@ describe("buildTagVisibilityFilter", () => {
 
 describe("buildCuratedColorExpression", () => {
   it("colors top values, falls back to other, and grays out missing", () => {
-    const theme = themesFromFeatures(
-      surfaceFeatures(["asphalt", "asphalt", "gravel"])
-    )[0];
-
-    expect(buildCuratedColorExpression(theme)).toEqual([
+    expect(buildCuratedColorExpression(surfaceTheme())).toEqual([
       "case",
       ["!", ["has", "surface"]],
       ["to-color", PALETTES.categorical.missing],
@@ -301,13 +295,13 @@ describe("buildCuratedColorExpression", () => {
 });
 
 describe("findOpeningTheme", () => {
-  const themes = buildCuratedThemesFromDimensions(
-    computeFilterDimensions(
-      [feature({ building: "house" }), feature({ building: "yes" })],
-      ["building", "roof:shape"],
-      { keepEmpty: true }
-    )
-  );
+  const themes = buildCuratedThemesFromDimensions([
+    tagDimension("building", [
+      ["house", 1],
+      ["yes", 1],
+    ]),
+    tagDimension("roof:shape", [], 2),
+  ]);
 
   it("returns the default view's theme when its tag has values", () => {
     expect(findOpeningTheme(themes, "building")?.field).toBe("building");

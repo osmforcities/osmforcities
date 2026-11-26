@@ -118,24 +118,15 @@ export function AreaNotFoundError({ areaId }: { areaId: string }) {
 }
 
 export function DatasetCreationError({
-  error,
   areaName,
   templateName,
   onRetry,
 }: {
-  error: string;
   areaName?: string;
   templateName?: string;
   onRetry?: () => void;
 }) {
   const t = useTranslations("DatasetErrors");
-  const isTimeout =
-    error.toLowerCase().includes("timeout") ||
-    error.toLowerCase().includes("timed out");
-  const isTooLarge =
-    !isTimeout &&
-    (error.toLowerCase().includes("too large") ||
-      error.toLowerCase().includes("memory"));
 
   return (
     <PageShell placement="center" data-testid="dataset-creation-error">
@@ -158,26 +149,16 @@ export function DatasetCreationError({
         </div>
 
         <h1 className="text-xl font-semibold text-gray-900 mb-3">
-          {isTimeout
-            ? t("requestTimedOutTitle")
-            : isTooLarge
-            ? t("datasetTooLargeTitle")
-            : t("datasetCreationFailedTitle")}
+          {t("datasetCreationFailedTitle")}
         </h1>
 
         <p className="text-gray-600 mb-6">
-          {isTimeout && t("timeoutDescription")}
-          {isTooLarge && t("tooLargeDescription")}
-          {!isTimeout && !isTooLarge && (
-            <>
-              {templateName && areaName
-                ? t("creationErrorDescriptionWithDetails", {
-                    templateName,
-                    areaName,
-                  })
-                : t("creationErrorDescription")}
-            </>
-          )}
+          {templateName && areaName
+            ? t("creationErrorDescriptionWithDetails", {
+                templateName,
+                areaName,
+              })
+            : t("creationErrorDescription")}
         </p>
 
         <div className="space-y-3">
@@ -186,7 +167,7 @@ export function DatasetCreationError({
               onClick={onRetry}
               className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
             >
-              {isTimeout ? t("tryAgain") : t("retryCreation")}
+              {t("retryCreation")}
             </button>
           )}
 
@@ -206,19 +187,6 @@ export function DatasetCreationError({
             {t("backToHome")}
           </Link>
         </div>
-
-        {isTooLarge && (
-          <div className="mt-6 text-left">
-            <h3 className="font-medium text-gray-900 mb-2">
-              {t("suggestions")}
-            </h3>
-            <ul className="text-sm text-gray-600 space-y-1 list-disc pl-4">
-              <li>{t("suggestionSmallerArea")}</li>
-              <li>{t("suggestionSpecificTemplate")}</li>
-              <li>{t("suggestionContactUs")}</li>
-            </ul>
-          </div>
-        )}
       </div>
     </PageShell>
   );

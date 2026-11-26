@@ -1,7 +1,6 @@
 import type { Feature, FeatureCollection } from "geojson";
 
-// The tiler's @-prefixed meta keys, onto the flat keys osmtogeojson's
-// flatProperties gives the app's snapshot
+// The tiler's @-prefixed meta keys, onto the flat keys stored geojson has always had (osmtogeojson's flatProperties)
 const META_KEYS: Record<string, string> = {
   "@id": "id",
   "@user": "user",
