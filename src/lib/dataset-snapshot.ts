@@ -7,6 +7,10 @@ import {
   OverpassResponseTooLargeError,
 } from "@/lib/overpass/transport";
 import { fillAreaQuery } from "@/lib/overpass/area-query";
+import {
+  probeElementCount,
+  type ElementCount,
+} from "@/lib/overpass/count-probe";
 import type { OverpassData } from "@/types/overpass";
 import { calculateBbox } from "@/lib/utils";
 import { computeRecencyBands } from "@/lib/dataset-recency";
@@ -18,11 +22,11 @@ import {
 } from "@/lib/filter-dimensions";
 import type { Bbox } from "@/types/geojson";
 import { prisma } from "@/lib/db";
-import { LARGE_JOB_MAXSIZE_BYTES, tilerEnabled } from "@/lib/tiler/client";
+import { tilerEnabled } from "@/lib/tiler/client";
 import {
   MAX_DATASET_BYTES,
   OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
-  SIZE_CHECK_TIMEOUT_TTL_MINUTES,
+  TIMEOUT_VERDICT_TTL_MINUTES,
   SIZE_CHECK_TTL_HOURS,
 } from "@/lib/constants";
 
@@ -83,7 +87,7 @@ async function assertNoFreshNegativeVerdict(
 
   const ttlMs =
     check.status === "timeout"
-      ? SIZE_CHECK_TIMEOUT_TTL_MINUTES * 60 * 1000
+      ? TIMEOUT_VERDICT_TTL_MINUTES * 60 * 1000
       : SIZE_CHECK_TTL_HOURS * 60 * 60 * 1000;
   if (Date.now() - check.checkedAt.getTime() > ttlMs) return;
 
@@ -193,26 +197,8 @@ export function snapshotDatasetColumns(snapshot: DatasetSnapshot) {
   };
 }
 
-function tilesOnlySnapshot(dataCount: number | "unknown"): DatasetSnapshot {
+function tilesOnlySnapshot(dataCount: ElementCount): DatasetSnapshot {
   return { tilesOnly: true, geojson: null, stats: null, bbox: null, dataCount };
-}
-
-// A timed-out count probe gets one retry on raised budgets while the lane is
-// on: metro-class counts outgrow the template's default timeout and memory,
-// and the first query against an area Overpass has not evaluated yet is slow
-// even when the result is small. Measured probe costs live in
-// docs/features/large-datasets.md.
-// Overpass [timeout:N], in seconds.
-const PROBE_RETRY_TIMEOUT_SECONDS = 180;
-// Client-side abort, in milliseconds. Longer than the server budget so
-// Overpass reports its own timeout before we hang up.
-const PROBE_RETRY_CLIENT_TIMEOUT_MS = 200_000;
-
-function withRaisedProbeBudgets(query: string): string {
-  const settings = `[timeout:${PROBE_RETRY_TIMEOUT_SECONDS}][maxsize:${LARGE_JOB_MAXSIZE_BYTES}]`;
-  return /\[timeout:\d+\]/.test(query)
-    ? query.replace(/\[timeout:\d+\]/, settings)
-    : query.replace("[out:json]", `[out:json]${settings}`);
 }
 
 function extractDatasetStats(overpassData: OverpassData): DatasetStats {
@@ -339,21 +325,15 @@ export async function fetchDatasetSnapshot(
   rawQuery: string,
   templateId: string
 ): Promise<DatasetSnapshot> {
-  const queryString = fillAreaQuery(rawQuery, areaId);
-
-  // With the lane on, size is no refusal: every dataset is baked, so a
-  // cached too_large verdict must not block the count probe.
-  const tilesLane = tilerEnabled();
-
-  try {
-    await assertNoFreshNegativeVerdict(areaId, templateId);
-  } catch (error) {
-    if (!tilesLane) throw error;
-    if (error instanceof DatasetSizeCheckTimeoutError) {
-      return tilesOnlySnapshot("unknown");
-    }
-    if (!(error instanceof DatasetTooLargeError)) throw error;
+  // The tiler fetches the features, whatever the size
+  if (tilerEnabled()) {
+    return tilesOnlySnapshot(
+      await probeElementCount(areaId, rawQuery, templateId)
+    );
   }
+
+  const queryString = fillAreaQuery(rawQuery, areaId);
+  await assertNoFreshNegativeVerdict(areaId, templateId);
 
   // Cheap pre-flight: reject before Overpass serializes anything if the
   // estimated payload already exceeds the cap
@@ -362,23 +342,9 @@ export async function fetchDatasetSnapshot(
     elementCount = await countOverpassElements(queryString);
   } catch (error) {
     if (!(error instanceof OverpassTimeoutError)) throw error;
-    if (!tilesLane) {
-      await recordSizeCheck(areaId, templateId, "timeout");
-      throw new DatasetSizeCheckTimeoutError();
-    }
-    try {
-      elementCount = await countOverpassElements(
-        withRaisedProbeBudgets(queryString),
-        PROBE_RETRY_CLIENT_TIMEOUT_MS
-      );
-    } catch (retryError) {
-      if (!(retryError instanceof OverpassTimeoutError)) throw retryError;
-      await recordSizeCheck(areaId, templateId, "timeout");
-      return tilesOnlySnapshot("unknown");
-    }
+    await recordSizeCheck(areaId, templateId, "timeout");
+    throw new DatasetSizeCheckTimeoutError();
   }
-  // The tiler fetches the features, whatever the size
-  if (tilesLane) return tilesOnlySnapshot(elementCount);
 
   const estimatedBytes = elementCount * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE;
   if (estimatedBytes > MAX_DATASET_BYTES) {

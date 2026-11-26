@@ -9,7 +9,7 @@ import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import {
   COUNT_REQUEST_TIMEOUT_MS,
-  SIZE_CHECK_TIMEOUT_TTL_MINUTES,
+  TIMEOUT_VERDICT_TTL_MINUTES,
 } from "@/lib/constants";
 
 type TilesStatus = {
@@ -158,7 +158,7 @@ export function DatasetWaitPage({
       ? {
           lead: t("stateCountTimedOut"),
           description: t("countTimedOutDescription", {
-            minutes: SIZE_CHECK_TIMEOUT_TTL_MINUTES,
+            minutes: TIMEOUT_VERDICT_TTL_MINUTES,
           }),
         }
       : mood === "failed"

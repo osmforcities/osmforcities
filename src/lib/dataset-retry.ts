@@ -1,5 +1,5 @@
 import { REFRESH_INTERVAL_HOURS } from "@/lib/dataset-health";
-import { SIZE_CHECK_TIMEOUT_TTL_MINUTES } from "@/lib/constants";
+import { TIMEOUT_VERDICT_TTL_MINUTES } from "@/lib/constants";
 
 // How long a dataset waits before the update task retries it, by consecutive
 // failures. Short first rungs absorb a blip; past them the daily floor is cheap
@@ -60,7 +60,7 @@ export function isCountProbeDue(
   if (!row.lastAttempted) return true;
   const waitMs =
     row.consecutiveFailures > 0
-      ? SIZE_CHECK_TIMEOUT_TTL_MINUTES * MINUTE_MS
+      ? TIMEOUT_VERDICT_TTL_MINUTES * MINUTE_MS
       : COUNT_PROBE_BUDGET_MS;
   return now.getTime() - row.lastAttempted.getTime() > waitMs;
 }
