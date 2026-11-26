@@ -36,7 +36,6 @@ async function hasFreshTimeoutVerdict(
   );
 }
 
-// Overpass [timeout:N], in seconds.
 const RAISED_TIMEOUT_SECONDS = 180;
 // Client-side abort, in milliseconds. Longer than the server budget so
 // Overpass reports its own timeout before we hang up.

@@ -39,10 +39,7 @@ function isStage(value: unknown): value is Stage {
 }
 
 type DatasetWaitPageProps = {
-  /**
-   * Absent only while counting with the tiles-only lane off, where the row
-   * does not exist until the count passes.
-   */
+  /** Absent on the fallback shown while the row is created: nothing to poll yet. */
   datasetId?: string;
   templateName: string;
   areaName: string;
@@ -52,8 +49,7 @@ type DatasetWaitPageProps = {
   /**
    * Counting is the probe before any bake; baking polls the tiler.
    * Failed is retried by a later visit (or tick, once saved); timedOut is
-   * Overpass giving up on the count (or, with the lane off, the feature
-   * fetch).
+   * Overpass giving up on the count.
    */
   mood: "counting" | "baking" | "failed" | "timedOut";
   /** Overrides when counting switches to the large-area label. */

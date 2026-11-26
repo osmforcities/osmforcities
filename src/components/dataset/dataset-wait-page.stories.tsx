@@ -74,11 +74,7 @@ type Story = StoryObj<typeof meta>;
 
 const notify = <NotifyWhenReadyButton />;
 
-/**
- * The count with the tiles-only lane off: it runs inside the request, before
- * any row exists, and the map follows it directly. Nothing to poll, nothing to
- * save yet, so no offer.
- */
+/** Signed out on a featured page: nobody to save for, so no offer. */
 export const CountingWarm: Story = {
   args: {
     templateName: "Buildings",
@@ -434,12 +430,7 @@ export const FailedNotReady: Story = {
   },
 };
 
-/**
- * With the tiles-only lane off, Overpass gave up before any row existed, on
- * the count probe or on the feature fetch after it. Load is usually the
- * cause, and the timed-out verdict is remembered for a short while, so the
- * person retries later. No row, so no offer.
- */
+/** Overpass gave up on the count probe, usually under load. Signed out, so no offer. */
 export const FailedTimedOut: Story = {
   args: {
     templateName: "Buildings",
@@ -465,10 +456,7 @@ export const FailedTimedOut: Story = {
   },
 };
 
-/**
- * On the tiles-only lane the row outlives a timed-out probe, so saving keeps
- * it on the retry schedule.
- */
+/** The row outlives a timed-out probe, so saving keeps it on the retry schedule. */
 export const FailedTimedOutWithRow: Story = {
   args: {
     datasetId: "ds-sao-paulo-buildings",
@@ -526,11 +514,8 @@ export const FailedTooLarge: Story = {
   },
 };
 
-/**
- * The count probe refused the area with the tiles-only lane off. Same screen
- * as the tiler refusal, but no row exists yet, so no offer.
- */
-export const FailedTooLargeAtCount: Story = {
+/** The tiler's refusal as a signed-out visitor sees it: no offer. */
+export const FailedTooLargeSignedOut: Story = {
   args: {
     templateName: "Buildings",
     areaName: "Tokyo",

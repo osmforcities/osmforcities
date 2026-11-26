@@ -38,22 +38,12 @@ vi.mock("@/lib/template-resolver", () => ({
   }),
 }));
 
-vi.mock("@/lib/dataset-snapshot", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/lib/dataset-snapshot")>()),
-  fetchDatasetSnapshot: vi.fn(),
-}));
-
 vi.mock("@/lib/area-boundary", () => ({
   fetchOsmRelationData: vi.fn(),
 }));
 
 vi.mock("@/lib/tiler/client", () => ({
-  tilerEnabled: vi.fn(() => false),
-}));
-
-vi.mock("@/lib/tiler/submit", () => ({
-  submitTilesForDataset: vi.fn().mockResolvedValue({}),
-  recordFailedSubmit: vi.fn(),
+  tilerEnabled: vi.fn(() => true),
 }));
 
 vi.mock("@/lib/dataset-count-probe", () => ({
@@ -81,17 +71,11 @@ vi.mock("@/lib/area-refresh", async (importOriginal) => {
 });
 
 import { getOrCreateDataset } from "@/lib/dataset-operations";
-import { fetchDatasetSnapshot } from "@/lib/dataset-snapshot";
 import { refreshAreaInfoIfStale } from "@/lib/area-refresh";
-import {
-  recordFailedSubmit,
-  submitTilesForDataset,
-} from "@/lib/tiler/submit";
 import { tilerEnabled } from "@/lib/tiler/client";
 import { startCountProbe } from "@/lib/dataset-count-probe";
 import { prisma } from "@/lib/db";
 
-const mockFetchDatasetSnapshot = vi.mocked(fetchDatasetSnapshot);
 const mockDatasetFindFirst = vi.mocked(prisma.dataset.findFirst);
 const mockRefreshAreaInfoIfStale = vi.mocked(refreshAreaInfoIfStale);
 
@@ -177,113 +161,13 @@ describe("getOrCreateDataset — area info refresh", () => {
   });
 });
 
-describe("getOrCreateDataset — error sanitization", () => {
+describe("getOrCreateDataset — creation", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  it("does not expose raw Overpass API errors to callers", async () => {
-    mockFetchDatasetSnapshot.mockRejectedValue(
-      new Error("Overpass API error: Database error: relation 12345 not found")
-    );
-
-    let caughtError: Error | null = null;
-    try {
-      await getOrCreateDataset(1, "test-template", "en");
-    } catch (e) {
-      caughtError = e as Error;
-    }
-
-    expect(caughtError).not.toBeNull();
-    expect(caughtError!.message).not.toContain("Database error");
-    expect(caughtError!.message).not.toContain("relation 12345");
-    expect(caughtError!.message).not.toContain("Overpass API error");
-  });
-
-  it("does not expose raw error messages from unknown failures", async () => {
-    mockFetchDatasetSnapshot.mockRejectedValue(
-      new Error("Internal server error: stack overflow in query parser")
-    );
-
-    let caughtError: Error | null = null;
-    try {
-      await getOrCreateDataset(1, "test-template", "en");
-    } catch (e) {
-      caughtError = e as Error;
-    }
-
-    expect(caughtError).not.toBeNull();
-    expect(caughtError!.message).not.toContain("stack overflow");
-    expect(caughtError!.message).not.toContain("query parser");
-  });
-
-  it("preserves timeout error as user-friendly message", async () => {
-    mockFetchDatasetSnapshot.mockRejectedValue(
-      new Error("Overpass API timeout exceeded")
-    );
-
-    await expect(getOrCreateDataset(1, "test-template", "en")).rejects.toThrow(
-      "Request timed out"
-    );
-  });
-
-  it("preserves too-large error as user-friendly message", async () => {
-    mockFetchDatasetSnapshot.mockRejectedValue(
-      new Error("Response too large for query")
-    );
-
-    await expect(getOrCreateDataset(1, "test-template", "en")).rejects.toThrow(
-      "Dataset too large"
-    );
-  });
-});
-
-describe("getOrCreateDataset — tiles columns on create", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("carries a failed submit's tilesError so the first render shows the failed screen", async () => {
-    mockFetchDatasetSnapshot.mockResolvedValue({
-      tilesOnly: true,
-      geojson: null,
-      stats: null,
-      bbox: null,
-      dataCount: 100,
-    } as never);
-    vi.mocked(prisma.dataset.create).mockResolvedValue({
-      ...existingDatasetRow,
-      tilesState: null,
-      tilesJobId: null,
-      tilesError: null,
-    } as never);
-    vi.mocked(submitTilesForDataset).mockResolvedValueOnce({
-      tilesState: "failed",
-      tilesError: "Tiler submit failed: 500",
-    });
-
-    const { dataset, wasCreated } = await getOrCreateDataset(1, "test-template", "en");
-
-    expect(wasCreated).toBe(true);
-    expect(dataset).toMatchObject({
-      tilesState: "failed",
-      tilesError: "Tiler submit failed: 500",
-    });
-    expect(recordFailedSubmit).toHaveBeenCalledWith(
-      dataset.id,
-      "Tiler submit failed: 500"
-    );
-  });
-});
-
-describe("getOrCreateDataset — tiles-only lane", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    vi.mocked(tilerEnabled).mockReturnValue(true);
   });
 
   afterEach(() => {
-    vi.mocked(tilerEnabled).mockReturnValue(false);
+    vi.mocked(tilerEnabled).mockReturnValue(true);
   });
 
   it("creates a counting row and leaves the count probe to after the response", async () => {
@@ -303,7 +187,30 @@ describe("getOrCreateDataset — tiles-only lane", () => {
     });
     const { lastAttempted } = vi.mocked(prisma.dataset.create).mock.calls[0][0].data;
     expect(startCountProbe).toHaveBeenCalledWith(dataset.id, lastAttempted);
-    expect(mockFetchDatasetSnapshot).not.toHaveBeenCalled();
-    expect(submitTilesForDataset).not.toHaveBeenCalled();
+  });
+
+  describe("without a tiler", () => {
+    beforeEach(() => {
+      vi.mocked(tilerEnabled).mockReturnValue(false);
+    });
+
+    it("refuses to create a dataset and writes no row", async () => {
+      await expect(getOrCreateDataset(1, "test-template", "en")).rejects.toThrow(
+        "New datasets need a tiler"
+      );
+
+      expect(prisma.dataset.create).not.toHaveBeenCalled();
+      expect(prisma.area.findUnique).not.toHaveBeenCalled();
+      expect(startCountProbe).not.toHaveBeenCalled();
+    });
+
+    it("still returns a dataset that exists", async () => {
+      mockDatasetFindFirst.mockResolvedValueOnce(existingDatasetRow as never);
+
+      const { dataset, wasCreated } = await getOrCreateDataset(1, "test-template", "en");
+
+      expect(wasCreated).toBe(false);
+      expect(dataset.id).toBe("ds-1");
+    });
   });
 });
