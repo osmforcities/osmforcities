@@ -31,8 +31,9 @@ jobs:
           - { project: chromium, shard: 1/3 }
           - { project: chromium, shard: 2/3 }
           - { project: chromium, shard: 3/3 }
-          - { project: tiler, shard: 1/2 }
-          - { project: tiler, shard: 2/2 }
+          - { project: tiler, shard: 1/3 }
+          - { project: tiler, shard: 2/3 }
+          - { project: tiler, shard: 3/3 }
     steps:
       - uses: actions/checkout@v7
 
