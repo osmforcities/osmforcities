@@ -21,7 +21,7 @@ jobs:
     # instead of waiting ~1.5 min for lint/types/build
     if: github.event.pull_request.draft == false
     timeout-minutes: 60
-    # Pinned: the Start PostgreSQL step relies on this image's bundled server
+    # Pinned: this image bundles the PostgreSQL server and the Chromium libraries that --with-deps would install
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -65,7 +65,7 @@ jobs:
         run: pnpm prisma generate
 
       - name: Install Playwright Browsers
-        run: pnpm playwright install chromium --with-deps
+        run: pnpm playwright install chromium --only-shell
 
       - name: Run Playwright tests
         run: pnpm exec playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }}
@@ -115,7 +115,7 @@ jobs:
         run: pnpm prisma generate
 
       - name: Install Playwright Browsers
-        run: pnpm playwright install chromium --with-deps
+        run: pnpm playwright install chromium --only-shell
 
       - name: Run Storybook tests
         run: pnpm test-storybook
