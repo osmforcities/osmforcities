@@ -16,10 +16,6 @@ import { isTooLarge } from "@/lib/dataset-retry";
 import { awaitsFirstMap } from "@/lib/dataset-tiles";
 import { getOrCreateDataset } from "@/lib/dataset-operations";
 import { resumeCountProbeIfDue } from "@/lib/dataset-count-probe";
-import {
-  DatasetSizeCheckTimeoutError,
-  DatasetTooLargeError,
-} from "@/lib/dataset-snapshot";
 import { getAreaDetailsById } from "@/lib/nominatim";
 import { resolveAreaName } from "@/lib/area-name";
 import {
@@ -163,16 +159,11 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
     );
   }
 
-  // A missing row takes a while to create (the whole count with the tiles-only
-  // lane off), so the counting screen shows meanwhile. On the lane the disabled
-  // button keeps the screen from shifting when the real one arrives.
-  const tilesLane = tilerEnabled();
+  const willStartCounting = !existing && tilerEnabled();
   return (
     <Suspense
       fallback={
-        existing ? (
-          fallbackPage
-        ) : (
+        willStartCounting ? (
           <DatasetWaitPage
             mood="counting"
             templateName={templateName}
@@ -180,10 +171,11 @@ export default async function DatasetPage({ params }: DatasetPageProps) {
             categoryHref={categoryHref}
             summary={summary}
             areaId={osmRelationId}
-            notify={
-              tilesLane && <NotifyWhenReadyButton offer="ready" disabled />
-            }
+            // Disabled, it keeps the screen from shifting when the real one arrives
+            notify={<NotifyWhenReadyButton offer="ready" disabled />}
           />
+        ) : (
+          fallbackPage
         )
       }
     >
@@ -359,31 +351,6 @@ async function AreaTemplateDatasetView({
       </div>
     );
   } catch (error) {
-    if (error instanceof DatasetTooLargeError) {
-      return (
-        <DatasetTooLargeState
-          templateName={templateName}
-          areaName={fallbackAreaName}
-          categoryHref={categoryHref}
-          summary={summary}
-          areaId={areaId}
-        />
-      );
-    }
-
-    if (error instanceof DatasetSizeCheckTimeoutError) {
-      return (
-        <DatasetWaitPage
-          mood="timedOut"
-          templateName={templateName}
-          areaName={fallbackAreaName}
-          categoryHref={categoryHref}
-          summary={summary}
-          areaId={areaId}
-        />
-      );
-    }
-
     if (error instanceof Error) {
       if (error.message.startsWith("Template not found:")) {
         return <TemplateNotFoundError templateId={templateId} />;
