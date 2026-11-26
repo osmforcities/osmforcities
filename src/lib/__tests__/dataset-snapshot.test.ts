@@ -7,7 +7,7 @@ import {
   type DatasetSnapshot,
 } from "@/lib/dataset-snapshot";
 import { prisma } from "@/lib/db";
-import { MAX_DATASET_BYTES, OVERPASS_BYTES_PER_ELEMENT_ESTIMATE } from "@/lib/constants";
+import { DATASET_CAP_BYTES, OVERPASS_BYTES_PER_ELEMENT_ESTIMATE } from "@/lib/constants";
 
 vi.mock("@/lib/db", () => ({
   prisma: {
@@ -78,7 +78,7 @@ const upsert = vi.mocked(prisma.areaSizeCheck.upsert);
 const templateFindUnique = vi.mocked(prisma.template.findUnique);
 
 const overCapCount =
-  Math.ceil(MAX_DATASET_BYTES / OVERPASS_BYTES_PER_ELEMENT_ESTIMATE) + 1;
+  Math.ceil(DATASET_CAP_BYTES / OVERPASS_BYTES_PER_ELEMENT_ESTIMATE) + 1;
 
 // Narrows the snapshot union for the full-fetch assertions below.
 async function fetchFullSnapshot(
@@ -232,7 +232,7 @@ describe("fetchDatasetSnapshot", () => {
 
   it("rejects when the count estimate exceeds the byte cap, recording too_large", async () => {
     const overCapCount =
-      Math.ceil(MAX_DATASET_BYTES / OVERPASS_BYTES_PER_ELEMENT_ESTIMATE) + 1;
+      Math.ceil(DATASET_CAP_BYTES / OVERPASS_BYTES_PER_ELEMENT_ESTIMATE) + 1;
     vi.stubGlobal(
       "fetch",
       mockFetchImplementation(mockOverpassData, overCapCount)

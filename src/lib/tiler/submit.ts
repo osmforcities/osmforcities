@@ -7,7 +7,7 @@ import {
   type TilesColumns,
 } from "./client";
 import {
-  MAX_DATASET_BYTES,
+  DATASET_CAP_BYTES,
   OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
 } from "@/lib/constants";
 import { fillAreaQuery } from "@/lib/overpass/area-query";
@@ -85,7 +85,7 @@ export async function submitTilesForDataset(
     // caps on.
     const isOverCap =
       count === "unknown" ||
-      count * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE > MAX_DATASET_BYTES;
+      count * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE > DATASET_CAP_BYTES;
     const columns = await submitTilesColumns(
       datasetId,
       query,
