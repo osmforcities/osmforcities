@@ -375,7 +375,6 @@ async function AreaTemplateDatasetView({
 
       return (
         <DatasetCreationError
-          error={error.message}
           areaName={undefined}
           templateName={undefined}
         />

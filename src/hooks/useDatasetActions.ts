@@ -67,18 +67,13 @@ export function useDatasetActions() {
 
   const refreshDataset = async (
     datasetId: string
-  ): Promise<{
-    success: boolean;
-    error?: string;
-    tilesState?: string | null;
-  }> => {
+  ): Promise<RefreshResponse & { error?: string }> => {
     setIsLoading(true);
     try {
-      const result: RefreshResponse = await apiClient.post(
+      return await apiClient.post(
         `/api/datasets/${datasetId}/refresh`,
         RefreshResponseSchema
       );
-      return result;
     } catch (error) {
       console.error("Error refreshing dataset:", error);
       return {

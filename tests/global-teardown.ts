@@ -21,7 +21,7 @@ async function globalTeardown() {
     const { featureFetches } = await response.json();
     if (featureFetches !== 0) {
       throw new Error(
-        `The app fetched dataset features from Overpass ${featureFetches} time(s) on ${server}. Only the tiler fetches features.`
+        `The app fetched dataset features from Overpass ${featureFetches} time(s) on ${server}. Only the tiler fetches features. A reused dev server keeps the count until it restarts.`
       );
     }
   }
