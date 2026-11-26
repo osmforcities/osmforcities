@@ -1,7 +1,6 @@
 import { Dataset } from "@prisma/client";
-import type { GeometryMix } from "@/lib/dataset-geometry";
-import type { TagCount } from "@/lib/dataset-tags";
 import type { FilterDimension } from "@/lib/filter-dimensions";
+import type { GeometryMix, TagCount } from "@/schemas/dataset";
 
 export type StoredDatasetStats = {
   editorsCount?: number;

@@ -1,17 +1,15 @@
-const SERVERS = {
-  chromium: "http://localhost:3000",
-  tiler: "http://localhost:3100",
-};
+import type { FullConfig } from "@playwright/test";
 
-async function globalTeardown() {
+async function globalTeardown(config: FullConfig) {
   // A real tiler fetches its features from the mock Overpass
   if (process.env.PMTILER_SMOKE === "1") return;
 
-  for (const [project, server] of Object.entries(SERVERS)) {
+  for (const project of config.projects) {
     const serverStarted =
-      !process.env.E2E_PROJECT || process.env.E2E_PROJECT === project;
+      !process.env.E2E_PROJECT || process.env.E2E_PROJECT === project.name;
     if (!serverStarted) continue;
 
+    const server = project.use.baseURL;
     const response = await fetch(`${server}/api/mock-tiler/control`);
     if (!response.ok) {
       throw new Error(

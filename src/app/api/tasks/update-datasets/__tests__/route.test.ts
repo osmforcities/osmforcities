@@ -105,6 +105,19 @@ describe("POST /api/tasks/update-datasets", () => {
     vi.mocked(probeElementCount).mockResolvedValue(ELEMENT_COUNT);
   });
 
+  it("refreshes a dataset never attempted before the ones already attempted", async () => {
+    await call();
+
+    expect(prisma.dataset.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        orderBy: [
+          { lastAttempted: { sort: "asc", nulls: "first" } },
+          { updatedAt: "asc" },
+        ],
+      })
+    );
+  });
+
   it("claims the slot upfront (advances lastAttempted) even when the refresh fails", async () => {
     vi.mocked(probeElementCount).mockRejectedValueOnce(new Error("boom"));
 
