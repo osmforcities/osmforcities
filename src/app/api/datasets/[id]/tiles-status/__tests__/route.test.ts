@@ -140,6 +140,7 @@ describe("GET /api/datasets/[id]/tiles-status", () => {
     vi.mocked(getTileJob).mockResolvedValue({
       id: "ds-1-100",
       state: "fetching",
+      startedAt: "2026-11-28T10:00:00Z",
       progress: { stage: "fetching", bytes: 1048576 },
     });
     vi.mocked(reconcileDataset).mockResolvedValue({ outcome: "pending" });
@@ -148,6 +149,7 @@ describe("GET /api/datasets/[id]/tiles-status", () => {
       state: "pending",
       stage: "fetching",
       progress: { stage: "fetching", bytes: 1048576 },
+      startedAt: "2026-11-28T10:00:00Z",
     });
   });
 

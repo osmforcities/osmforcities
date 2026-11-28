@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useFormatter, useTranslations } from "next-intl";
+import { useFormatter, useNow, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { ProgressBar } from "@/components/ui/progress-bar";
@@ -16,9 +16,12 @@ type TilesStatus = {
   state: "pending" | "done" | "failed" | "none";
   stage?: string;
   progress?: { bytes?: number; pct?: number } | null;
+  /** When the tiler accepted the job, ISO. */
+  startedAt?: string;
 };
 
 const POLL_MS = 4000;
+const MINUTE_MS = 60_000;
 
 /**
  * The stages a person waits through. Counting is the app's own size probe,
@@ -78,6 +81,7 @@ export function DatasetWaitPage({
 }: DatasetWaitPageProps) {
   const t = useTranslations("DatasetPage");
   const format = useFormatter();
+  const now = useNow({ updateInterval: MINUTE_MS / 2 });
   const router = useRouter();
   const baking = mood === "baking";
   const [cold, setCold] = useState(false);
@@ -126,13 +130,16 @@ export function DatasetWaitPage({
         : isStage(reported)
           ? reported
           : "queued";
-  // Fetching reports bytes, not a percentage: the total is unknown until the
-  // fetch ends, so only the last two stages give the bar a value.
+  // Fetching reports bytes with no total, and baking runs several tippecanoe
+  // passes that each restart from 0, so only converting gives the bar a value.
   const pct = bakeLanded
     ? 100
-    : stage === "converting" || stage === "baking"
+    : stage === "converting"
       ? (status?.progress?.pct ?? 0)
       : undefined;
+  const elapsedMinutes = status?.startedAt
+    ? Math.floor((now.getTime() - Date.parse(status.startedAt)) / MINUTE_MS)
+    : 0;
   const mb = status?.progress?.bytes
     ? Math.round(status.progress.bytes / (1024 * 1024))
     : null;
@@ -140,10 +147,12 @@ export function DatasetWaitPage({
   const stageName = t(
     stage === "counting" && cold ? "tilesStageCountingCold" : STAGES[stage].name
   );
-  const stagePercent =
-    stage === "converting" || stage === "baking"
-      ? format.number(Math.round(pct ?? 0) / 100, { style: "percent" })
-      : null;
+  const stageMeasure =
+    pct !== undefined
+      ? format.number(Math.round(pct) / 100, { style: "percent" })
+      : stage === "baking" && elapsedMinutes >= 1
+        ? format.number(elapsedMinutes, { style: "unit", unit: "minute" })
+        : null;
 
   // One plain sentence on what the stage does. The megabytes live here, not
   // in the label, so the label stays one short line.
@@ -174,14 +183,14 @@ export function DatasetWaitPage({
           !failure && (
             <div className="space-y-3">
               <ProgressBar value={pct} label={stageName} />
-              {/* Only the stage name is announced. The percentage and the
-                  note's megabytes change on every poll, and the bar already
-                  carries the percentage. The live span stays mounted across
-                  stages, a freshly mounted one is not announced. */}
+              {/* Only the stage name is announced. The percentage, minutes
+                  and the note's megabytes change on every poll, and the bar
+                  already carries the percentage. The live span stays mounted
+                  across stages, a freshly mounted one is not announced. */}
               <p className="text-lg font-semibold text-gray-900 tabular-nums">
                 <span aria-live="polite">{stageName}</span>
-                {stagePercent && (
-                  <span className="ms-2 text-gray-500">{stagePercent}</span>
+                {stageMeasure && (
+                  <span className="ms-2 text-gray-500">{stageMeasure}</span>
                 )}
               </p>
               <p className="text-sm text-gray-600 tabular-nums">{stageNote}</p>

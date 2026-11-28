@@ -126,7 +126,7 @@
     "tilesStageConverting": "Preparing the data",
     "tilesNoteConverting": "Turning the download into shapes the map can draw.",
     "tilesStageBaking": "Building the map",
-    "tilesNoteBaking": "Almost there. The map opens by itself when this finishes.",
+    "tilesNoteBaking": "The map opens by itself when this finishes. Large areas can take a while.",
     "tilesStageCounting": "Checking the data size",
     "tilesStageCountingCold": "Still checking, large area",
     "tilesNoteCounting": "Counting how many features this area has.",

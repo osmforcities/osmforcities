@@ -12,7 +12,7 @@ import { resumeCountProbeIfDue } from "@/lib/dataset-count-probe";
  * the cron: see reconcileDataset).
  *
  * Response: { state: "pending"|"done"|"failed"|"none",
- *             stage?, progress? }
+ *             stage?, progress?, startedAt? }
  */
 export async function GET(
   _request: NextRequest,
@@ -68,6 +68,7 @@ export async function GET(
       state: "pending",
       stage: job?.state,
       progress: job?.progress ?? null,
+      startedAt: job?.startedAt,
     });
   } catch (error) {
     // Tiler unreachable or pull hiccup: stay pending, the wait page keeps polling
