@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, waitFor } from "storybook/test";
+import { getRouter } from "@storybook/nextjs-vite/navigation.mock";
 import { useTranslations } from "next-intl";
 import { DatasetWaitPage } from "./dataset-wait-page";
 import { NotifyWhenReadyButton } from "./notify-when-ready-button";
@@ -9,6 +10,7 @@ import type { Dataset } from "@/schemas/dataset";
 import { DatasetTooLargeState } from "@/components/ui/dataset-error-states";
 import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { withAppFrame } from "../../../.storybook/with-app-frame";
+import { serveRoute } from "../../../.storybook/serve-route";
 import rotterdam from "./__fixtures__/boundary-324431.json";
 import saoPaulo from "./__fixtures__/boundary-298285.json";
 import osasco from "./__fixtures__/boundary-298470.json";
@@ -21,25 +23,6 @@ import tokyo from "./__fixtures__/boundary-1543125.json";
  */
 function serveTilesStatus(status: Record<string, unknown>) {
   return serveRoute("/tiles-status", () => status);
-}
-
-/** Answers one app route and leaves every other request (the basemap) alone. */
-function serveRoute(route: string, answer: (url: string) => unknown) {
-  return () => {
-    const realFetch = window.fetch;
-    window.fetch = async (...request: Parameters<typeof fetch>) => {
-      const url = String(
-        request[0] instanceof Request ? request[0].url : request[0]
-      );
-      if (!url.includes(route)) return realFetch(...request);
-      return new Response(JSON.stringify(answer(url)), {
-        headers: { "Content-Type": "application/json" },
-      });
-    };
-    return () => {
-      window.fetch = realFetch;
-    };
-  };
 }
 
 /** The areas' real OSM boundaries, simplified hard to stay small. */
@@ -91,11 +74,7 @@ type Story = StoryObj<typeof meta>;
 
 const notify = <NotifyWhenReadyButton />;
 
-/**
- * The count with the tiles-only lane off: it runs inside the request, before
- * any row exists, and the map follows it directly. Nothing to poll, nothing to
- * save yet, so no offer.
- */
+/** Signed out on a featured page: nobody to save for, so no offer. */
 export const CountingWarm: Story = {
   args: {
     templateName: "Buildings",
@@ -394,6 +373,15 @@ export const BakeDoneMapLoading: Story = {
   },
 };
 
+/** The cron deleted the row mid-bake: the refresh recreates it. */
+export const RowDeletedWhileBaking: Story = {
+  args: { ...BakingConverting.args },
+  beforeEach: serveRoute("/tiles-status", () => null, 404),
+  play: async () => {
+    await waitFor(() => expect(getRouter().refresh).toHaveBeenCalled());
+  },
+};
+
 /** The button was already pressed, on this visit or an earlier one. The
  * confirmation never shows the address. */
 export const NotifyConfirmed: Story = {
@@ -442,12 +430,7 @@ export const FailedNotReady: Story = {
   },
 };
 
-/**
- * With the tiles-only lane off, Overpass gave up before any row existed, on
- * the count probe or on the feature fetch after it. Load is usually the
- * cause, and the timed-out verdict is remembered for a short while, so the
- * person retries later. No row, so no offer.
- */
+/** Overpass gave up on the count probe, usually under load. Signed out, so no offer. */
 export const FailedTimedOut: Story = {
   args: {
     templateName: "Buildings",
@@ -473,10 +456,7 @@ export const FailedTimedOut: Story = {
   },
 };
 
-/**
- * On the tiles-only lane the row outlives a timed-out probe, so saving keeps
- * it on the retry schedule.
- */
+/** The row outlives a timed-out probe, so saving keeps it on the retry schedule. */
 export const FailedTimedOutWithRow: Story = {
   args: {
     datasetId: "ds-sao-paulo-buildings",
@@ -534,11 +514,8 @@ export const FailedTooLarge: Story = {
   },
 };
 
-/**
- * The count probe refused the area with the tiles-only lane off. Same screen
- * as the tiler refusal, but no row exists yet, so no offer.
- */
-export const FailedTooLargeAtCount: Story = {
+/** The tiler's refusal as a signed-out visitor sees it: no offer. */
+export const FailedTooLargeSignedOut: Story = {
   args: {
     templateName: "Buildings",
     areaName: "Tokyo",

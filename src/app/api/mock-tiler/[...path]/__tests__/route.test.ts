@@ -23,6 +23,10 @@ const overpassQuery = (query: string) =>
     })
   );
 const countProbe = () => overpassQuery("node(1);out count;");
+const TEMPLATE_QUERY =
+  "rel(1);map_to_area->.searchArea;node[amenity=clock](area.searchArea);out geom meta;";
+const featureFetches = async () =>
+  (await (await GET(...req(["control"]))).json()).featureFetches;
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -109,19 +113,26 @@ describe("/api/mock-tiler", () => {
     await POST(...req(["control"], { countTimesOut: true }));
     expect((await countProbe()).status).toBe(504);
     expect((await countProbe()).status).toBe(504);
-    await overpassQuery("node(1);out geom;");
-    expect(await (await GET(...req(["control"]))).json()).toEqual({
-      countProbes: 2,
-      featureFetches: 1,
-    });
+    expect((await (await GET(...req(["control"]))).json()).countProbes).toBe(2);
 
     await POST(...req(["control"], { reset: true }));
     expect((await countProbe()).status).toBe(200);
   });
 
+  it("counts template queries for features, across resets, and no area lookup", async () => {
+    vi.stubEnv("ENABLE_TEST_AUTH", "true");
+    const before = await featureFetches();
+
+    await overpassQuery("[out:json][timeout:60];rel(1);out geom;");
+    expect(await featureFetches()).toBe(before);
+
+    await overpassQuery(TEMPLATE_QUERY);
+    await POST(...req(["control"], { reset: true }));
+    expect(await featureFetches()).toBe(before + 1);
+  });
+
   it("answers full queries from the real data file when one is set", async () => {
-    const fullQuery = async () =>
-      (await overpassQuery("way[leisure=park];out geom;")).json();
+    const fullQuery = async () => (await overpassQuery(TEMPLATE_QUERY)).json();
 
     expect((await fullQuery()).elements).toHaveLength(1);
     // Any JSON file stands in for a real Overpass result

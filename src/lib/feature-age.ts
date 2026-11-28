@@ -2,10 +2,9 @@
  * Feature edit-age buckets shared by the map paint expressions, the legend
  * counts, and the age visibility filter.
  *
- * Features carry a numeric `_ts` (epoch seconds, stamped by
- * osm-data-processor.ts); the 7/30/90-day buckets are computed at render time
- * against `now`, so colours stay live even when `_ts` is baked into vector
- * tiles (#489).
+ * Tile features carry a numeric `_ts` (epoch seconds, baked by the tiler); the
+ * 7/30/90-day buckets are computed at render time against `now`, so colours
+ * stay live.
  *
  * These are the map's buckets — deliberately distinct from the stats panel's
  * recency bands (dataset-recency.ts); do not unify them.
@@ -23,10 +22,7 @@ export const AGE_CATEGORY_ORDER = [
   "very-old",
 ] as const;
 
-/**
- * Day cutoffs between the buckets above, the one source for the legend
- * counts, the paint stops and the tiler's baked counts.
- */
+/** One source for the paint stops and the legend counts the tiler bakes */
 export const AGE_BUCKET_DAYS = [7, 30, 90] as const;
 
 export type AgeCategory = (typeof AGE_CATEGORY_ORDER)[number];
@@ -34,13 +30,7 @@ export type AgeCategoryValues<T> = Record<AgeCategory, T>;
 
 const DAY_S = 86_400;
 
-/**
- * Resolve a feature's edit timestamp to epoch seconds. Prefers the stamped
- * numeric `_ts`, falling back to the raw OSM meta timestamp, so the same
- * bucketing works on snapshot features (flat `timestamp` from osmtogeojson,
- * server side) and on the slim geojson payload (`@timestamp`). Absent or
- * unparsable timestamps return undefined, which buckets as "very-old".
- */
+/** Epoch seconds from the stamped `_ts`, else from the OSM meta timestamp of a tile hit (`@timestamp`) or of stored geojson (`timestamp`) */
 export function featureTs(feature: Feature): number | undefined {
   const stamped = feature.properties?.[AGE_TS_KEY];
   if (typeof stamped === "number" && Number.isFinite(stamped)) return stamped;
@@ -50,18 +40,6 @@ export function featureTs(feature: Feature): number | undefined {
   if (!raw) return undefined;
   const ms = new Date(raw).getTime();
   return isNaN(ms) ? undefined : Math.floor(ms / 1000);
-}
-
-/**
- * Bucket a `_ts` value in JS, for legend counts. Missing or non-numeric values
- * fall back to "very-old", mirroring the step expression's coercion of missing
- * `_ts` to 0. Boundaries are inclusive (exactly 7 days old is still recent),
- * matching the step expression's `input >= stop` semantics.
- */
-export function ageCategoryOfTs(ts: unknown, nowMs = Date.now()): AgeCategory {
-  if (typeof ts !== "number" || !Number.isFinite(ts)) return "very-old";
-  const ageDays = (nowMs / 1000 - ts) / DAY_S;
-  return AGE_CATEGORY_ORDER[AGE_BUCKET_DAYS.filter((d) => ageDays > d).length];
 }
 
 /**

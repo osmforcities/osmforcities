@@ -13,7 +13,6 @@ import {
   Star,
 } from "lucide-react";
 import type { Dataset } from "@/schemas/dataset";
-import { hasDownloadableGeojson, refreshOutcome } from "@/lib/dataset-tiles";
 import { useDatasetDownload } from "@/hooks/useDatasetDownload";
 import { useDatasetActions } from "@/hooks/useDatasetActions";
 import { useEffect, useRef, useState } from "react";
@@ -143,12 +142,12 @@ export function DatasetActionsSection({
     try {
       const result = await refreshDataset(dataset.id);
       if (result.success) {
-        const outcome = refreshOutcome(result);
-        if (outcome.queued) {
+        if (result.tilesState === "pending") {
           setIsRebuildQueued(true);
           setStatusMessage(t("rebuildQueued"));
         } else {
-          onRefreshed?.(outcome.lastChecked);
+          // An empty dataset has no bake to queue and is synced as it stands
+          onRefreshed?.(new Date());
           setStatusMessage(t("datasetSynced"));
         }
       } else {
@@ -209,7 +208,7 @@ export function DatasetActionsSection({
       <div className="flex gap-2">
         <Button
           onClick={() => downloadDataset(dataset)}
-          disabled={!hasDownloadableGeojson(dataset)}
+          disabled={!dataset.hasGeojson}
           className="h-8 flex-1 text-sm"
           variant="outline"
           title={t("downloadData")}

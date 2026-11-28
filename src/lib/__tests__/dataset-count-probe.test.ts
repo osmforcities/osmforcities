@@ -1,10 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { after } from "next/server";
 import { prisma } from "@/lib/db";
-import {
-  DatasetSizeCheckTimeoutError,
-  fetchDatasetSnapshot,
-} from "@/lib/dataset-snapshot";
+import { probeElementCount } from "@/lib/overpass/count-probe";
 import { recordFailedSubmit, submitTilesForDataset } from "@/lib/tiler/submit";
 import { UNCATALOGED_FILTER } from "@/lib/dataset-catalog-filter";
 import { resumeCountProbeIfDue, runCountProbe } from "@/lib/dataset-count-probe";
@@ -20,9 +17,8 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 
-vi.mock("@/lib/dataset-snapshot", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/lib/dataset-snapshot")>()),
-  fetchDatasetSnapshot: vi.fn(),
+vi.mock("@/lib/overpass/count-probe", () => ({
+  probeElementCount: vi.fn(),
 }));
 
 vi.mock("@/lib/tiler/submit", () => ({
@@ -33,13 +29,6 @@ vi.mock("@/lib/tiler/submit", () => ({
 const MINUTE_MS = 60 * 1000;
 const claimedAt = new Date("2026-11-05T12:00:00Z");
 const stillClaimed = { id: "ds-1", tilesState: "counting", lastAttempted: claimedAt };
-const countedSnapshot = (dataCount: number) => ({
-  tilesOnly: true as const,
-  geojson: null,
-  stats: null,
-  bbox: null,
-  dataCount,
-});
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -53,7 +42,7 @@ beforeEach(() => {
 
 describe("runCountProbe", () => {
   it("stores the count, then submits the first bake", async () => {
-    vi.mocked(fetchDatasetSnapshot).mockResolvedValue(countedSnapshot(1_200_000));
+    vi.mocked(probeElementCount).mockResolvedValue(1_200_000);
     vi.mocked(submitTilesForDataset).mockResolvedValue({
       tilesJobId: "ds-1-1",
       tilesState: "pending",
@@ -62,17 +51,34 @@ describe("runCountProbe", () => {
 
     await runCountProbe("ds-1", claimedAt);
 
-    expect(fetchDatasetSnapshot).toHaveBeenCalledWith(298285, "[out:json];", "buildings");
+    expect(probeElementCount).toHaveBeenCalledWith(298285, "[out:json];", "buildings");
     expect(prisma.dataset.updateMany).toHaveBeenCalledWith({
       where: stillClaimed,
       data: { dataCount: 1_200_000, lastChecked: expect.any(Date) },
     });
-    expect(submitTilesForDataset).toHaveBeenCalledWith("ds-1");
+    expect(submitTilesForDataset).toHaveBeenCalledWith("ds-1", 1_200_000);
     expect(recordFailedSubmit).not.toHaveBeenCalled();
   });
 
+  it("submits on over-cap budgets when the probe gave no count", async () => {
+    vi.mocked(probeElementCount).mockResolvedValue("unknown");
+    vi.mocked(submitTilesForDataset).mockResolvedValue({
+      tilesJobId: "ds-1-1",
+      tilesState: "pending",
+      tilesError: null,
+    });
+
+    await runCountProbe("ds-1", claimedAt);
+
+    expect(prisma.dataset.updateMany).toHaveBeenCalledWith({
+      where: stillClaimed,
+      data: { lastChecked: expect.any(Date) },
+    });
+    expect(submitTilesForDataset).toHaveBeenCalledWith("ds-1", "unknown");
+  });
+
   it("submits nothing once a newer probe holds the claim", async () => {
-    vi.mocked(fetchDatasetSnapshot).mockResolvedValue(countedSnapshot(10));
+    vi.mocked(probeElementCount).mockResolvedValue(10);
     vi.mocked(prisma.dataset.updateMany).mockResolvedValue({ count: 0 });
 
     await runCountProbe("ds-1", claimedAt);
@@ -81,7 +87,7 @@ describe("runCountProbe", () => {
   });
 
   it("starts the retry wait on a failed submit", async () => {
-    vi.mocked(fetchDatasetSnapshot).mockResolvedValue(countedSnapshot(10));
+    vi.mocked(probeElementCount).mockResolvedValue(10);
     vi.mocked(submitTilesForDataset).mockResolvedValue({
       tilesState: "failed",
       tilesError: "Tiler submit failed: 500",
@@ -92,9 +98,9 @@ describe("runCountProbe", () => {
     expect(recordFailedSubmit).toHaveBeenCalledWith("ds-1", "Tiler submit failed: 500");
   });
 
-  it("records a timed-out probe on the row, restarting its retry wait at the failure", async () => {
-    vi.mocked(fetchDatasetSnapshot).mockRejectedValue(
-      new DatasetSizeCheckTimeoutError()
+  it("records a failed probe on the row, restarting its retry wait at the failure", async () => {
+    vi.mocked(probeElementCount).mockRejectedValue(
+      new Error("Overpass API error: 500")
     );
 
     await expect(runCountProbe("ds-1", claimedAt)).resolves.toBeUndefined();
@@ -103,7 +109,7 @@ describe("runCountProbe", () => {
       where: stillClaimed,
       data: {
         consecutiveFailures: { increment: 1 },
-        lastError: new DatasetSizeCheckTimeoutError().message,
+        lastError: "Overpass API error: 500",
         lastAttempted: expect.any(Date),
       },
     });

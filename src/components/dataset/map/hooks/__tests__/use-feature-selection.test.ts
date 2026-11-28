@@ -24,7 +24,7 @@ describe("toSelectedFeature", () => {
       highway: "bus_stop",
     }) as unknown as MapGeoJSONFeature;
 
-    const feature = toSelectedFeature(hit, []);
+    const feature = toSelectedFeature(hit);
 
     expect(feature.geometry).toEqual(stop);
     expect(feature.properties).toEqual({
@@ -34,18 +34,15 @@ describe("toSelectedFeature", () => {
     });
   });
 
-  it("returns a geojson hit unchanged", () => {
-    const source: Feature = {
+  it("returns a hit that already has an id unchanged", () => {
+    const hit = {
       type: "Feature",
       geometry: stop,
       properties: { id: "node/1", highway: "bus_stop" },
-    };
-    const hit = {
-      ...source,
       layer: { id: POINT_LAYER_ID },
     } as unknown as MapGeoJSONFeature;
 
-    expect(toSelectedFeature(hit, [source])).toBe(hit);
+    expect(toSelectedFeature(hit)).toBe(hit);
   });
 });
 

@@ -1,7 +1,6 @@
 import type { Feature, FeatureCollection } from "geojson";
 
-// The tiler's @-prefixed meta keys, onto the flat keys osmtogeojson's
-// flatProperties gives the app's snapshot
+// The tiler's @-prefixed meta keys, onto the flat keys stored geojson has always had (osmtogeojson's flatProperties)
 const META_KEYS: Record<string, string> = {
   "@id": "id",
   "@user": "user",
@@ -20,7 +19,7 @@ export function ndjsonToFeatureCollection(ndjson: string): FeatureCollection {
       const feature = JSON.parse(line) as Feature;
       const properties: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(feature.properties ?? {})) {
-        // The map stamps its own _ts at render time
+        // _ts is a tile paint key, not OSM data
         if (key !== "_ts") properties[META_KEYS[key] ?? key] = value;
       }
       // App features carry the id at both levels

@@ -28,7 +28,8 @@ interface ReportDataset {
   templateId: string;
   areaName: string;
   templateName: string;
-  lastChanged: Date;
+  lastChanged?: Date;
+  changedInPeriod: boolean;
   features: number;
   mappers?: number;
   /** Set once the template left the catalog; the dataset is deleted after it. */
@@ -39,14 +40,22 @@ interface ReportDataset {
 const MAX_REPORT_ROWS = 5;
 
 async function generateEmailContent(
-  changedDatasets: ReportDataset[],
+  datasets: ReportDataset[],
   frequency: "DAILY" | "WEEKLY",
   locale: Locale
 ): Promise<EmailContent> {
   const t = await getEmailT(locale);
   const baseUrl = getEmailBaseUrl();
 
-  const subject = t("reportSubjectChanged", { count: changedDatasets.length, frequency });
+  const retiring = datasets.filter((ds) => ds.retiresAt !== undefined);
+  const changed = datasets
+    .filter((ds) => ds.retiresAt === undefined)
+    .toSorted((a, b) => (b.lastChanged?.getTime() ?? 0) - (a.lastChanged?.getTime() ?? 0));
+  const changedCount = datasets.filter((ds) => ds.changedInPeriod).length;
+  const subject =
+    changedCount > 0
+      ? t("reportSubjectChanged", { count: changedCount, frequency })
+      : t("reportSubjectRetiring", { count: datasets.length });
 
   const now = new Date();
   const thisYear = new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", timeZone: "UTC" });
@@ -71,18 +80,15 @@ async function generateEmailContent(
     return { iconUrl: emailIconUrl("glyph-alert"), title: t("reportRetiredTitle"), body };
   };
 
-  const rows = changedDatasets
-    // Retiring datasets first, so the cap never hides a deletion warning.
-    .toSorted(
-      (a, b) =>
-        Number(b.retiresAt !== undefined) - Number(a.retiresAt !== undefined) ||
-        b.lastChanged.getTime() - a.lastChanged.getTime()
-    )
-    .slice(0, MAX_REPORT_ROWS)
+  // A deletion warning is never capped away
+  const shown = [...retiring, ...changed.slice(0, Math.max(0, MAX_REPORT_ROWS - retiring.length))];
+  const rows = shown
     .map((ds) => {
       const title = escapeHtml(ds.templateName);
       const stats = [
-        { iconUrl: emailIconUrl("glyph-calendar"), text: t("reportLastEdit", { date: formatShortDate(ds.lastChanged) }) },
+        ...(ds.lastChanged
+          ? [{ iconUrl: emailIconUrl("glyph-calendar"), text: t("reportLastEdit", { date: formatShortDate(ds.lastChanged) }) }]
+          : []),
         ...(ds.features > 0
           ? [{ iconUrl: emailIconUrl("glyph-features"), text: t("reportFeatures", { count: ds.features }) }]
           : []),
@@ -104,7 +110,7 @@ async function generateEmailContent(
       });
     });
 
-  const hidden = changedDatasets.length - rows.length;
+  const hidden = datasets.length - shown.length;
   const body = [
     emailList(rows),
     hidden > 0 ? emailParagraph(t("reportMore", { count: hidden }), { muted: true }) : "",
@@ -230,8 +236,12 @@ export async function generateNextUserReport(): Promise<{
 
   const reportDatasets = recentDatasets.flatMap((dataset): ReportDataset[] => {
     const stats = readStats(dataset);
-    const lastChanged = new Date(stats?.mostRecentElement ?? NaN);
-    if (Number.isNaN(lastChanged.getTime()) || lastChanged < since) return [];
+    const parsed = new Date(stats?.mostRecentElement ?? NaN);
+    const lastChanged = Number.isNaN(parsed.getTime()) ? undefined : parsed;
+    const changedInPeriod = lastChanged !== undefined && lastChanged >= since;
+    // The refresh skips retired templates, so a retiring dataset never changes again.
+    const isRetiring = dataset.template.deprecatesAt !== null;
+    if (!changedInPeriod && !isRetiring) return [];
     return [
       {
         areaId: dataset.areaId,
@@ -239,6 +249,7 @@ export async function generateNextUserReport(): Promise<{
         areaName: resolveDatasetAreaName(dataset, userLocale),
         templateName: resolveTemplateForLocale(dataset.template, userLocale).name,
         lastChanged,
+        changedInPeriod,
         features: dataset.dataCount,
         mappers: stats?.editorsCount,
         retiresAt: dataset.template.deprecatesAt ?? undefined,
@@ -267,8 +278,11 @@ export async function generateNextUserReport(): Promise<{
     user.reportsFrequency,
     userLocale
   );
-  const latestChange = Math.max(...reportDatasets.map((ds) => ds.lastChanged.getTime()));
-  const latestChangeDate = new Date(latestChange).toLocaleDateString();
+  const changedTimes = reportDatasets.flatMap((ds) =>
+    ds.changedInPeriod && ds.lastChanged ? [ds.lastChanged.getTime()] : []
+  );
+  const latestChangeDate =
+    changedTimes.length > 0 ? new Date(Math.max(...changedTimes)).toLocaleDateString() : null;
 
   return {
     userId: user.id,

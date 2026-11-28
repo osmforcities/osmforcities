@@ -9,7 +9,7 @@ import { DatasetNoMapPage } from "@/components/ui/dataset-no-map-page";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import {
   COUNT_REQUEST_TIMEOUT_MS,
-  SIZE_CHECK_TIMEOUT_TTL_MINUTES,
+  TIMEOUT_VERDICT_TTL_MINUTES,
 } from "@/lib/constants";
 
 type TilesStatus = {
@@ -39,10 +39,7 @@ function isStage(value: unknown): value is Stage {
 }
 
 type DatasetWaitPageProps = {
-  /**
-   * Absent only while counting with the tiles-only lane off, where the row
-   * does not exist until the count passes.
-   */
+  /** Absent on the fallback shown while the row is created: nothing to poll yet. */
   datasetId?: string;
   templateName: string;
   areaName: string;
@@ -52,8 +49,7 @@ type DatasetWaitPageProps = {
   /**
    * Counting is the probe before any bake; baking polls the tiler.
    * Failed is retried by a later visit (or tick, once saved); timedOut is
-   * Overpass giving up on the count (or, with the lane off, the feature
-   * fetch).
+   * Overpass giving up on the count.
    */
   mood: "counting" | "baking" | "failed" | "timedOut";
   /** Overrides when counting switches to the large-area label. */
@@ -98,6 +94,8 @@ export function DatasetWaitPage({
     queryKey: ["tiles-status", datasetId],
     queryFn: async () => {
       const response = await fetch(`/api/datasets/${datasetId}/tiles-status`);
+      // The cron deleted the row: the refresh recreates it
+      if (response.status === 404) return { state: "failed" };
       if (!response.ok) throw new Error(String(response.status));
       return response.json();
     },
@@ -156,7 +154,7 @@ export function DatasetWaitPage({
       ? {
           lead: t("stateCountTimedOut"),
           description: t("countTimedOutDescription", {
-            minutes: SIZE_CHECK_TIMEOUT_TTL_MINUTES,
+            minutes: TIMEOUT_VERDICT_TTL_MINUTES,
           }),
         }
       : mood === "failed"

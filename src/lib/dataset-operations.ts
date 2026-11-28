@@ -5,18 +5,8 @@ import { resolveTemplateForLocale } from "@/lib/template-locale";
 import { fetchOsmRelationData } from "@/lib/area-boundary";
 import { refreshAreaInfoIfStale, resolveAreaCenter } from "@/lib/area-refresh";
 import { mergeAreaNames, toStoredNames } from "@/lib/area-name";
-import {
-  fetchDatasetSnapshot,
-  snapshotDatasetColumns,
-  DatasetTooLargeError,
-  DatasetSizeCheckTimeoutError,
-} from "@/lib/dataset-snapshot";
 import { Prisma } from "@prisma/client";
-import {
-  recordFailedSubmit,
-  submitTilesForDataset,
-  tilesOnlyLaneEnabled,
-} from "@/lib/tiler/submit";
+import { tilerEnabled } from "@/lib/tiler/client";
 import { startCountProbe } from "@/lib/dataset-count-probe";
 import { trackEvent } from "@/lib/umami";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
@@ -62,11 +52,15 @@ export async function getOrCreateDataset(
     throw new Error(`Dataset not found: ${templateIdentifier}`);
   }
 
-  dataset = await createDatasetOnDemand(areaId, template, locale);
+  if (!tilerEnabled()) {
+    throw new Error("New datasets need a tiler, and none is configured.");
+  }
+
+  dataset = await createDatasetWithArea(areaId, template, locale);
   return { dataset, wasCreated: true };
 }
 
-// The detail-page shape (geojson payload included), used by both the read and
+// The detail-page shape, used by both the read and
 // the on-demand create below. Distinct from the card-select in
 // dataset-section-select and consumed only in this module.
 const DATASET_DETAIL_SELECT = {
@@ -74,7 +68,6 @@ const DATASET_DETAIL_SELECT = {
   templateId: true,
   areaId: true,
   cityName: true,
-  geojson: true,
   bbox: true,
   dataCount: true,
   lastChecked: true,
@@ -164,11 +157,20 @@ export async function getDatasetWithDetails(areaId: number, templateId: string, 
 
   return {
     ...dataset,
+    hasGeojson: await hasStoredGeojson(dataset.id),
     template: resolvedTemplate,
   };
 }
 
-async function createDatasetOnDemand(
+// A null check, so the stored FeatureCollection is never read
+async function hasStoredGeojson(id: string): Promise<boolean> {
+  const count = await prisma.dataset.count({
+    where: { id, geojson: { not: Prisma.AnyNull } },
+  });
+  return count > 0;
+}
+
+async function createDatasetWithArea(
   areaId: number,
   template: NonNullable<Awaited<ReturnType<typeof resolveTemplate>>>,
   locale: string
@@ -231,75 +233,7 @@ async function createDatasetOnDemand(
     }
   }
 
-  if (tilesOnlyLaneEnabled()) {
-    return createCountingDataset(area, template, locale);
-  }
-
-  try {
-    const snapshot = await fetchDatasetSnapshot(
-      area.id,
-      template.overpassQuery,
-      template.id
-    );
-    const dataset = await prisma.dataset.create({
-      data: {
-        templateId: template.id,
-        areaId: area.id,
-        cityName: area.name,
-        isActive: true,
-        ...snapshotDatasetColumns(snapshot),
-      },
-      select: DATASET_DETAIL_SELECT,
-    });
-
-    // A failed submit must render the failed screen on this very request
-    const { tilesState, tilesJobId, tilesError } = await submitTilesForDataset(
-      dataset.id
-    );
-    // Starts the retry wait, so a reload does not resubmit at once
-    if (tilesState === "failed") await recordFailedSubmit(dataset.id, tilesError);
-
-    await trackEvent(ANALYTICS_EVENTS.DATASET_CREATE, `/datasets/${dataset.id}/create`);
-
-    // Resolve template translations for the given locale
-    const resolvedTemplate = resolveTemplateForLocale(dataset.template, locale);
-
-    return {
-      ...dataset,
-      tilesState: tilesState ?? dataset.tilesState,
-      tilesJobId: tilesJobId ?? dataset.tilesJobId,
-      tilesError: tilesError ?? dataset.tilesError,
-      template: resolvedTemplate,
-    };
-  } catch (error) {
-    logger.error("Failed to fetch Overpass data", { areaId, templateId: template.id, error });
-
-    // Typed size-check errors already carry sanitized user-facing messages
-    if (
-      error instanceof DatasetTooLargeError ||
-      error instanceof DatasetSizeCheckTimeoutError
-    ) {
-      throw error;
-    }
-
-    if (error instanceof Error) {
-      if (error.message.includes("timeout")) {
-        throw new Error(
-          "Request timed out - the area may be too large or the query too complex"
-        );
-      }
-      if (
-        error.message.includes("too large") ||
-        error.message.includes("memory")
-      ) {
-        throw new Error(
-          "Dataset too large - try a smaller area or more specific template"
-        );
-      }
-    }
-
-    throw new Error("Failed to load dataset data. Please try again later.");
-  }
+  return createCountingDataset(area, template, locale);
 }
 
 async function createCountingDataset(
@@ -337,6 +271,7 @@ async function createCountingDataset(
 
   return {
     ...dataset,
+    hasGeojson: false,
     template: resolveTemplateForLocale(dataset.template, locale),
   };
 }

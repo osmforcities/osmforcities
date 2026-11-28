@@ -1,6 +1,7 @@
 import { test, expect } from "./test-setup";
 import { createTestUser, setupAuthenticationWithLogin } from "./utils/auth";
 import { PrismaClient } from "@prisma/client";
+import { AMSTERDAM, openMappedDataset } from "./utils/tiler";
 
 test.describe("Dataset Page", () => {
   test.beforeEach(async ({ page }) => {
@@ -49,8 +50,7 @@ test.describe.serial("Feature detail panel", () => {
   });
 
   test("sidebar shows dataset info by default", async ({ page }) => {
-    await page.goto("/en/area/271110/dataset/bicycle-parking");
-    await page.waitForLoadState("domcontentloaded");
+    await openMappedDataset(page, AMSTERDAM, "bicycle-parking");
 
     await expect(
       page.locator("[data-testid='dataset-sidebar-default']")
@@ -61,8 +61,7 @@ test.describe.serial("Feature detail panel", () => {
   });
 
   test("selecting a feature swaps sidebar to detail panel", async ({ page }) => {
-    await page.goto("/en/area/271110/dataset/bicycle-parking");
-    await page.waitForLoadState("domcontentloaded");
+    await openMappedDataset(page, AMSTERDAM, "bicycle-parking");
     await page
       .locator("[data-testid='dataset-sidebar-default']")
       .waitFor({ state: "visible" });

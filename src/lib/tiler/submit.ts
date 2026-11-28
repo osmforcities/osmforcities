@@ -7,26 +7,16 @@ import {
   type TilesColumns,
 } from "./client";
 import {
-  MAX_DATASET_BYTES,
+  DATASET_CAP_BYTES,
   OVERPASS_BYTES_PER_ELEMENT_ESTIMATE,
 } from "@/lib/constants";
-import { TILES_ENABLED } from "@/lib/dataset-tiles";
 import { fillAreaQuery } from "@/lib/overpass/area-query";
+import type { ElementCount } from "@/lib/overpass/count-probe";
 import { isRetryDue } from "@/lib/dataset-retry";
 import { UNCATALOGED_FILTER } from "@/lib/dataset-catalog-filter";
 import { createLogger } from "@/lib/logger";
 
 const log = createLogger("tiler");
-
-/**
- * The tiles-only lane: the tiler is the data source. Creation stores only the
- * count probe and every refresh submits a bake; the reconcile writes the
- * data. Both flags, since a row without geojson is only viewable when the map
- * renders tiles.
- */
-export function tilesOnlyLaneEnabled(): boolean {
-  return tilerEnabled() && TILES_ENABLED;
-}
 
 /**
  * Submit a bake for a dataset and record the outcome on the row
@@ -42,13 +32,12 @@ export function tilesOnlyLaneEnabled(): boolean {
  * panel for rows with no map yet), not the stale null it was created with,
  * which needs a reload to clear.
  *
- * elementCount is a fresh count probe's answer. A refresh on the tiles-only
- * lane passes it rather than storing it, so the row keeps the served bake's
- * count.
+ * A refresh passes the count probe's answer here rather than storing it, so
+ * the row keeps the served bake's count.
  */
 export async function submitTilesForDataset(
   datasetId: string,
-  elementCount?: number
+  elementCount: ElementCount
 ): Promise<TilesColumns> {
   if (!tilerEnabled()) return {};
   try {
@@ -56,23 +45,20 @@ export async function submitTilesForDataset(
       where: { id: datasetId },
       select: {
         areaId: true,
-        dataCount: true,
         tilesServedJobId: true,
         template: { select: { overpassQuery: true, filterableTags: true } },
       },
     });
     if (!dataset) return {};
-    // Without a fresh count probe the stored count stands in
-    const count = elementCount ?? dataset.dataCount;
 
     // Nothing to bake: the tiler refuses a query that matches nothing. The
     // row is a plain empty dataset, and one stuck failing on that refusal
     // clears here. lastChecked too, since no reconcile will write it. A row
-    // with no map stores the zero (the lane's refresh does not), or it would
-    // try to render a map it never had.
+    // with no map stores the zero (a refresh does not), or it would try to
+    // render a map it never had.
     // ponytail: a served row whose features all vanish keeps its last archive
     // and count, clear tilesServedJobId and stats here if that shows up.
-    if (count === 0) {
+    if (elementCount === 0) {
       const columns = { tilesJobId: null, tilesState: null, tilesError: null };
       await prisma.dataset.update({
         where: { id: datasetId },
@@ -95,7 +81,8 @@ export async function submitTilesForDataset(
     // count probe's element count is the signal, the same number creation
     // caps on.
     const isOverCap =
-      count * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE > MAX_DATASET_BYTES;
+      elementCount === "unknown" ||
+      elementCount * OVERPASS_BYTES_PER_ELEMENT_ESTIMATE > DATASET_CAP_BYTES;
     const columns = await submitTilesColumns(
       datasetId,
       query,
@@ -162,6 +149,7 @@ export async function retryFailedBake(row: {
   lastAttempted: Date | null;
   consecutiveFailures: number;
   tilesError: string | null;
+  dataCount: number;
 }): Promise<TilesColumns> {
   if (row.tilesState !== "failed" || !isRetryDue(row, new Date())) return {};
   // Any error leaves the failed screen as it was
@@ -177,7 +165,11 @@ export async function retryFailedBake(row: {
     });
     if (count === 0) return {};
 
-    const columns = await submitTilesForDataset(row.id);
+    // An empty dataset never reaches a bake, so a stored 0 here never got a count
+    const columns = await submitTilesForDataset(
+      row.id,
+      row.dataCount || "unknown"
+    );
     if (columns.tilesState === "failed") {
       await recordFailedSubmit(row.id, columns.tilesError);
     }

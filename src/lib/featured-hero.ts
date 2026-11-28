@@ -1,22 +1,15 @@
 import type { Prisma } from "@prisma/client";
-import {
-  TILES_ENABLED,
-  datasetTilesPath,
-  tilesPointCount,
-} from "@/lib/dataset-tiles";
+import { datasetTilesPath, tilesPointCount } from "@/lib/dataset-tiles";
 import { readStats } from "@/lib/dataset-stats";
 import type { FilterDimension } from "@/lib/filter-dimensions";
 import { BboxSchema, type Bbox } from "@/types/geojson";
 
-/**
- * With tiles on, a featured row whose first bake is pending or failed has
- * nothing to draw, so it never reaches the hero.
- */
+/** A featured row whose first bake is pending or failed has nothing to draw. */
 export function featuredHeroWhere(): Prisma.DatasetWhereInput {
   return {
     isFeatured: true,
     dataCount: { gt: 0 },
-    ...(TILES_ENABLED && { tilesServedJobId: { not: null } }),
+    tilesServedJobId: { not: null },
   };
 }
 
@@ -27,7 +20,6 @@ export type HeroTiles = {
   filterDimensions: FilterDimension[];
 };
 
-/** Null means the hero draws the stored geojson instead. */
 export function heroTiles(dataset: {
   tilesServedJobId: string | null;
   dataCount: number;

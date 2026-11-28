@@ -1,6 +1,6 @@
 "use client";
 
-import React, {
+import {
   useRef,
   useCallback,
   useEffect,
@@ -14,7 +14,6 @@ import type { MapRef, ViewState } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useTranslations, useLocale } from "next-intl";
 import type { Dataset } from "@/schemas/dataset";
-import { MapLayers } from "./map/layers";
 import { TilesLayerGroup } from "./map/layers/tiles-layer-group";
 import { tilesPointCount } from "@/lib/dataset-tiles";
 import { ensurePmtilesProtocol } from "@/lib/pmtiles-protocol";
@@ -31,8 +30,8 @@ import {
   type FeatureSelectHandler,
 } from "./map/hooks";
 import { INTERACTIVE_LAYER_IDS } from "./map/layers/layer-ids";
-import type { Feature, FeatureCollection } from "geojson";
-import { MapErrorState, MapNoDataState } from "./map/map-states";
+import type { FeatureCollection } from "geojson";
+import { MapNoDataState } from "./map/map-states";
 import { MapZoomControl } from "@/components/ui/map-zoom-control";
 import { mapStyle, BASEMAP_LABELS_ANCHOR } from "@/lib/map-tiles";
 import { ageLegendRow } from "./map/layers/map-style";
@@ -63,12 +62,6 @@ type DatasetFullMapProps = {
 
 const AGE_VIEW_ID = "age";
 
-// Stable reference: a fresh [] each render would churn the click handler
-const NO_FEATURES: Feature[] = [];
-
-// Only memoize heavy components that actually benefit from it
-const MemoizedMapLayers = React.memo(MapLayers);
-
 // Idempotent, browser-only; a no-op during SSR of this client module.
 ensurePmtilesProtocol();
 
@@ -84,10 +77,8 @@ export const DatasetFullMap = forwardRef<
   const locale = useLocale();
   const mapRef = useRef<MapRef | null>(null);
 
-  const { processedData, tilesPath, initialViewState, hasFilteredData } =
-    useMapData({ dataset });
-
-  const features = processedData?.features;
+  const { tilesPath, initialViewState, hasData } = useMapData({ dataset });
+  const pointCount = tilesPointCount(dataset);
 
   const {
     selectedFeature,
@@ -96,7 +87,7 @@ export const DatasetFullMap = forwardRef<
     handleMouseLeave,
     handleDeselect,
     cursor,
-  } = useFeatureSelection(onFeatureSelect, features ?? NO_FEATURES);
+  } = useFeatureSelection(onFeatureSelect);
 
   // Expose deselect function to parent
   useImperativeHandle(
@@ -107,9 +98,6 @@ export const DatasetFullMap = forwardRef<
     [handleDeselect]
   );
 
-  // Feeds both the curated tag themes and the age bucket counts for the legend
-  // rows. Stored stats carry the dimensions when the snapshot has them (#499);
-  // only the age counts are recomputed, and only while features are held.
   // Schema types this optional (input/output asymmetry at the API boundary), so
   // memoize the []-fallback to a stable reference the filterDimensions dep can use.
   const filterableTags = useMemo(
@@ -118,13 +106,8 @@ export const DatasetFullMap = forwardRef<
   );
   const storedDimensions = dataset.stats?.filterDimensions;
   const filterDimensions = useMemo(
-    () =>
-      resolveFilterDimensions(
-        features ?? NO_FEATURES,
-        filterableTags,
-        storedDimensions
-      ),
-    [features, filterableTags, storedDimensions]
+    () => resolveFilterDimensions(filterableTags, storedDimensions),
+    [filterableTags, storedDimensions]
   );
 
   // Curated tag themes from the allow-list — no auto-detection
@@ -208,22 +191,11 @@ export const DatasetFullMap = forwardRef<
     });
   }, []);
 
-  // Early return for no data — tiles mode needs no geojson. A first bake
-  // never gets here: the route shows the wait page instead.
-  if (!dataset.geojson && !tilesPath) {
-    return <MapNoDataState hasData={false} />;
-  }
-
-  // Error state (geojson mode only: tiles mode holds no client features)
-  if (!tilesPath && !processedData) {
-    return <MapErrorState />;
-  }
-
   return (
     <div className="flex flex-col h-full">
       {/* Map */}
       <div className="flex-1 relative">
-        {hasFilteredData && (
+        {tilesPath && (
           /* Legend: the map's primary control (zoom sits top-left) */
           <div className="absolute z-10 top-4 end-4">
             <InteractiveLegend
@@ -237,7 +209,7 @@ export const DatasetFullMap = forwardRef<
           </div>
         )}
 
-        {hasFilteredData ? (
+        {hasData ? (
           <Map
             ref={mapRef}
             mapStyle={mapStyle}
@@ -249,7 +221,7 @@ export const DatasetFullMap = forwardRef<
             onClick={handleFeatureClick}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            interactiveLayerIds={INTERACTIVE_LAYER_IDS}
+            interactiveLayerIds={tilesPath ? INTERACTIVE_LAYER_IDS : undefined}
             scrollZoom={true}
             dragPan={true}
             dragRotate={false}
@@ -259,28 +231,18 @@ export const DatasetFullMap = forwardRef<
           >
             {boundary && <AoiBoundaryLayer boundary={boundary} />}
             <MapZoomControl />
-            {tilesPath ? (
+            {/* No archive yet (not baked, or no tiler): an empty map */}
+            {tilesPath && (
               <TilesLayerGroup
                 tilesUrl={`pmtiles://${tilesPath}`}
-                pointCount={tilesPointCount(dataset)}
+                pointCount={pointCount}
                 curatedTheme={activeTheme}
                 visibilityFilter={visibilityFilter}
               />
-            ) : (
-              processedData && (
-                <MemoizedMapLayers
-                  geoJSONData={processedData}
-                  curatedTheme={activeTheme}
-                  visibilityFilter={visibilityFilter}
-                />
-              )
             )}
             {/* Panel writes age paint to the shared layers; keep it out of
-                curated-theme views so it cannot stomp their colors.
-                Dev tool over client-held features — geojson mode only. */}
-            {!activeTheme && processedData && (
-              <StyleTuningPanel features={processedData.features} />
-            )}
+                curated-theme views so it cannot stomp their colors */}
+            {!activeTheme && <StyleTuningPanel pointCount={pointCount} />}
             {selectedFeature && (
               <Source
                 id="highlight-feature"
@@ -330,7 +292,7 @@ export const DatasetFullMap = forwardRef<
             )}
           </Map>
         ) : (
-          <MapNoDataState hasData={hasFilteredData} />
+          <MapNoDataState />
         )}
       </div>
     </div>

@@ -1,5 +1,14 @@
 import { z } from "zod";
 
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    readonly status: number
+  ) {
+    super(message);
+  }
+}
+
 class ApiClient {
   private baseUrl: string;
 
@@ -28,7 +37,10 @@ class ApiClient {
       const error = await response
         .json()
         .catch(() => ({ error: "Unknown error" }));
-      throw new Error(error.error || `HTTP error! status: ${response.status}`);
+      throw new ApiError(
+        error.error || `HTTP error! status: ${response.status}`,
+        response.status
+      );
     }
 
     const data = await response.json();
@@ -50,11 +62,6 @@ class ApiClient {
     }
   }
 
-  // Generic HTTP methods with validation
-  async get<T>(endpoint: string, schema: z.ZodSchema<T>): Promise<T> {
-    return this.request<T>(endpoint, schema, { method: "GET" });
-  }
-
   async post<T>(
     endpoint: string,
     schema: z.ZodSchema<T>,
@@ -62,28 +69,6 @@ class ApiClient {
   ): Promise<T> {
     return this.request<T>(endpoint, schema, {
       method: "POST",
-      body: data ? JSON.stringify(data) : undefined,
-    });
-  }
-
-  async put<T>(
-    endpoint: string,
-    schema: z.ZodSchema<T>,
-    data?: unknown
-  ): Promise<T> {
-    return this.request<T>(endpoint, schema, {
-      method: "PUT",
-      body: data ? JSON.stringify(data) : undefined,
-    });
-  }
-
-  async patch<T>(
-    endpoint: string,
-    schema: z.ZodSchema<T>,
-    data?: unknown
-  ): Promise<T> {
-    return this.request<T>(endpoint, schema, {
-      method: "PATCH",
       body: data ? JSON.stringify(data) : undefined,
     });
   }

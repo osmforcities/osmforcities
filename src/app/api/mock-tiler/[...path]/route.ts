@@ -2,7 +2,11 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { NextRequest, NextResponse } from "next/server";
 import { isTestAuthEnabled } from "@/lib/test-auth";
-import { mockTilerState, resetMockTiler } from "@/lib/mocks/tiler";
+import {
+  featureFetchTally,
+  mockTilerState,
+  resetMockTiler,
+} from "@/lib/mocks/tiler";
 import type { TileJob } from "@/lib/tiler/client";
 
 /**
@@ -38,7 +42,7 @@ export async function GET(_request: NextRequest, { params }: Context) {
   if (head === "control" && !id) {
     return NextResponse.json({
       countProbes: state.countProbes,
-      featureFetches: state.featureFetches,
+      featureFetches: featureFetchTally.total(),
     });
   }
   const job = head === "jobs" && id ? state.jobs.get(id) : undefined;

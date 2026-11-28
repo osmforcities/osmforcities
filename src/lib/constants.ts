@@ -11,22 +11,14 @@ export const DEPRECATION_DAYS = 30;
 /** Simplification tolerance for area boundaries (reduces coordinate count while preserving detail) */
 export const BOUNDARY_SIMPLIFICATION_TOLERANCE = 0.00001;
 
-/** Maximum Overpass response size for a dataset, in bytes */
-export const MAX_DATASET_BYTES = 25 * 1024 * 1024;
+/** Estimated size above which the app stores none of a dataset's features, in bytes (glossary: Cap) */
+export const DATASET_CAP_BYTES = 25 * 1024 * 1024;
 
 /** Empirical average JSON bytes per Overpass element, used to pre-estimate payload size from an element count */
 export const OVERPASS_BYTES_PER_ELEMENT_ESTIMATE = 500;
 
-/** Hours a "too_large" AreaSizeCheck verdict stays fresh before re-checking against Overpass */
-export const SIZE_CHECK_TTL_HOURS = 24;
-
-/**
- * Minutes a "timeout" AreaSizeCheck verdict stays fresh. Much shorter than
- * SIZE_CHECK_TTL_HOURS: a dataset that is too large stays too large, but a
- * timeout is usually transient Overpass load, and caching it for a day
- * blackholes the area+template long after the blip has passed.
- */
-export const SIZE_CHECK_TIMEOUT_TTL_MINUTES = 30;
+/** Short, because a count probe timeout is usually transient Overpass load */
+export const TIMEOUT_VERDICT_TTL_MINUTES = 30;
 
 /**
  * Milliseconds the first count probe waits for Overpass. The wait page

@@ -7,7 +7,12 @@ import {
   setupAuthenticationWithLogin,
   TestUser,
 } from "../utils/auth";
-import { AMSTERDAM, mockTilerControl, OVER_CAP_COUNT } from "../utils/tiler";
+import {
+  AMSTERDAM,
+  countingWaitPage,
+  mockTilerControl,
+  OVER_CAP_COUNT,
+} from "../utils/tiler";
 
 // Not used by any other spec
 const TEMPLATE_ID = "post-boxes";
@@ -39,7 +44,7 @@ test.describe("First visit to a dataset on the tiles-only lane", () => {
     await setupAuthenticationWithLogin(page, user);
     await page.goto(PAGE);
 
-    const counting = page.getByTestId("dataset-counting-page");
+    const counting = countingWaitPage(page);
     await expect(counting).toContainText("Checking the data size");
     await counting
       .getByRole("button", { name: /Save it and get an email when it's ready/ })
@@ -111,7 +116,7 @@ test.describe("First visit to a dataset on the tiles-only lane", () => {
     expect(await readSave(datasetId)).toEqual({ notifyWhenReady: true });
   });
 
-  test("a timed-out count reaches the timed-out screen, which still offers saving", async ({
+  test("a count that times out even on raised budgets still bakes, and the tiler's size refusal shows", async ({
     page,
   }) => {
     expect((await mockTilerControl(page, { reset: true })).ok()).toBe(true);
@@ -121,11 +126,16 @@ test.describe("First visit to a dataset on the tiles-only lane", () => {
     await setupAuthenticationWithLogin(page, user);
     await page.goto(PAGE);
 
-    const timedOut = page.getByTestId("dataset-timedOut-page");
-    await expect(timedOut).toContainText("The data took too long to load.");
-    await expect(
-      timedOut.getByRole("button", { name: /Save it and get an email when it's ready/ })
-    ).toBeVisible();
-    expect(await readDataset()).toMatchObject({ tilesState: "counting" });
+    await expect(page.getByTestId("dataset-baking-page")).toBeVisible();
+    const { tilesJobId } = await readDataset();
+    await mockTilerControl(page, {
+      jobId: tilesJobId,
+      state: "failed",
+      errorKind: "too_large",
+      error: "query exceeds maxsize",
+    });
+
+    await expect(page.getByText("Too large to bake.")).toBeVisible();
+    await expect(page.getByText("The data took too long to load.")).toBeHidden();
   });
 });

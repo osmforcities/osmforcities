@@ -13,11 +13,14 @@ export const GeometryMixSchema = z.object({
   lineKm: z.number().nonnegative(),
   areaKm2: z.number().nonnegative(),
 });
+export type GeometryMix = z.infer<typeof GeometryMixSchema>;
 
+// Presence per tag key, whatever the template: the panel applies the template's keys, so a retuned template keeps its stored counts
 export const TagCountSchema = z.object({
   key: z.string(),
   count: z.number().int().nonnegative(),
 });
+export type TagCount = z.infer<typeof TagCountSchema>;
 
 export const FilterDimensionSchema = z.object({
   key: z.string(),
@@ -69,9 +72,7 @@ export const DatasetStatsSchema = z.object({
   // (re)snapshotted — the panel reads these stored counts only, no client fallback.
   tagCounts: z.array(TagCountSchema).optional(),
 
-  // Legend dimensions computed at snapshot time. Optional: absent until a
-  // dataset is (re)snapshotted — the map falls back to computing them from the
-  // features it holds.
+  // Absent until a dataset is (re)snapshotted: the legend then shows no rows
   filterDimensions: z.array(FilterDimensionSchema).optional(),
 });
 
@@ -97,14 +98,12 @@ export const DatasetSchema = z.object({
   // The archive the map renders: /api/tiles/{tilesServedJobId}.pmtiles. Moves
   // only when a bake lands (blue/green)
   tilesServedJobId: z.string().nullable().optional(),
-  // True when the DB row holds geojson even if it was stripped from this
-  // payload (tiles render instead) — gates the export/download affordance.
-  hasGeojson: z.boolean().optional(),
+  // The geojson itself never reaches the page; this gates the export button
+  hasGeojson: z.boolean(),
   dataCount: z.number(),
   stats: DatasetStatsSchema.nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
-  geojson: GeoJSONFeatureCollectionSchema.nullable(),
   bbox: z.array(z.number()).length(4).nullable(),
   template: z.object({
     id: z.string(),

@@ -13,7 +13,7 @@ const dataset: Dataset = {
   stats: null,
   createdAt: new Date("2026-09-01T10:00:00Z"),
   updatedAt: new Date("2026-10-05T10:00:00Z"),
-  geojson: null,
+  hasGeojson: false,
   bbox: null,
   template: {
     id: "tpl-1",
@@ -55,11 +55,7 @@ export const SyncQueuesRebuild: Story = {
   beforeEach: () => {
     const realFetch = globalThis.fetch;
     globalThis.fetch = async () =>
-      Response.json({
-        success: true,
-        lastChecked: "2026-10-05T12:00:00Z",
-        tilesState: "pending",
-      });
+      Response.json({ success: true, tilesState: "pending" });
     return () => {
       globalThis.fetch = realFetch;
     };
@@ -73,6 +69,25 @@ export const SyncQueuesRebuild: Story = {
       canvas.getByRole("button", { name: /Updating/ })
     ).toBeDisabled();
     await expect(args.onRefreshed).not.toHaveBeenCalled();
+  },
+};
+
+export const SyncEmptyDataset: Story = {
+  args: { dataset, onRefreshed: fn() },
+  beforeEach: () => {
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = async () =>
+      Response.json({ success: true, tilesState: null });
+    return () => {
+      globalThis.fetch = realFetch;
+    };
+  },
+  play: async ({ canvas, args, userEvent }) => {
+    await userEvent.click(canvas.getByRole("button", { name: /Sync/ }));
+    await waitFor(() => expect(args.onRefreshed).toHaveBeenCalledOnce());
+    await expect(args.onRefreshed).toHaveBeenCalledWith(expect.any(Date));
+    await expect(canvas.getByRole("button", { name: /Sync/ })).toBeEnabled();
+    await expect(canvas.queryByText("Update queued")).not.toBeInTheDocument();
   },
 };
 

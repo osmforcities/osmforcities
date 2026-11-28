@@ -7,6 +7,7 @@ import {
   cleanupTestUser,
   TestUser,
 } from "./utils/auth";
+import { countingWaitPage, openMappedDataset } from "./utils/tiler";
 
 /**
  * Featured dataset flow: featured datasets are public, everything else
@@ -34,7 +35,7 @@ test.describe.serial("Featured datasets", () => {
     // Being the only featured dataset makes the hero's random pick deterministic.
     const page = await browser.newPage();
     await setupAuthenticationWithLogin(page, admin);
-    await page.goto(FEATURED_PATH);
+    await openMappedDataset(page, AREA_ID, FEATURED_TEMPLATE_ID);
     await expect(page.locator(DATASET_VIEW)).toBeVisible();
 
     const { id } = await prisma.dataset.findFirstOrThrow({
@@ -57,12 +58,11 @@ test.describe.serial("Featured datasets", () => {
   });
 
   test("homepage hero links to the featured dataset (logged out)", async ({ page }) => {
-    // Tiles lane off: the hero draws the stored geojson
-    const slimGeojson = page.waitForResponse((response) =>
-      response.url().includes("/geojson?slim")
+    const archive = page.waitForResponse((response) =>
+      response.url().includes("/api/tiles/")
     );
     await page.goto("/en");
-    expect((await slimGeojson).ok()).toBe(true);
+    expect((await archive).ok()).toBe(true);
     await page.getByRole("link", { name: /— View dataset$/ }).click();
 
     await expect(page).toHaveURL(new RegExp(`${FEATURED_PATH}$`));
@@ -101,7 +101,10 @@ test.describe.serial("Featured datasets", () => {
       await page.goto(`/api/auth/verify?${link}`);
 
       await expect(page).toHaveURL(new RegExp(`${NON_FEATURED_PATH}$`));
-      await expect(page.locator(DATASET_VIEW)).toBeVisible();
+      // The visit creates the dataset, so its first bake is still on its way
+      await expect(
+        countingWaitPage(page).or(page.getByTestId("dataset-baking-page"))
+      ).toBeVisible();
     } finally {
       await prisma.$disconnect();
       await cleanupTestUser(user.id);
@@ -115,7 +118,7 @@ test.describe.serial("Featured datasets", () => {
 
     try {
       await setupAuthenticationWithLogin(page, user);
-      await page.goto(NON_FEATURED_PATH);
+      await openMappedDataset(page, AREA_ID, "drinking-water");
 
       await expect(page.locator(DATASET_VIEW)).toBeVisible();
       await expect(page.getByRole("heading", UPSELL_HEADING)).toBeHidden();
