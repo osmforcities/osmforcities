@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Design Atlas Colors - TODO: Import directly from @design-atlas/tokens when published */
+/* Palette copied from Design Atlas tokens (MIT): https://github.com/OSMBrasil/design-atlas/blob/develop/packages/tokens/tokens.json */
 :root {
   --core-global-colors-olive-100: #edf6eb;
   --core-global-colors-olive-200: #cce4c6;
@@ -67,7 +67,6 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  /* Design Atlas token mapping for Tailwind */
   --color-olive-50: #f6faf5;
   --color-olive-100: var(--core-global-colors-olive-100);
   --color-olive-200: var(--core-global-colors-olive-200);
@@ -126,7 +125,6 @@
   --color-pink-600: var(--core-global-colors-pink-600);
   --color-pink-700: var(--core-global-colors-pink-700);
 
-  /* Design Atlas Link Colors */
   --color-link: var(--core-global-colors-blue-500);
   --color-link-active: var(--core-global-colors-blue-600);
   --color-link-visited: #7c3aed;
@@ -323,7 +321,6 @@
   .animate-progress-sweep {
     animation: progress-sweep 1.6s ease-in-out infinite alternate;
   }
-  /* Line clamp utilities for Design Atlas card patterns */
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
