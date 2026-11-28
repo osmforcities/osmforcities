@@ -1,5 +1,37 @@
 # osmforcities
 
+## 2.0.0
+
+### Changed
+
+- Every dataset map draws from vector tiles, so datasets of any size open in the browser, including whole-city buildings, roads and trees. The size cap that deactivated large datasets is gone [#810], [#811], [#823], [#824], [#825], [#829]
+- Self-hosted instances need the [overpass-pmtiler](https://github.com/osmforcities/overpass-pmtiler) service, set with `TILER_URL`. `NEXT_PUBLIC_TILES_ENABLED` is no longer read [#810], [#823]
+- Datasets deactivated for being too large are active again and get a map [#828]
+- An area too large to count shows the size-limit message instead of "took too long" [#806]
+- Unsaved datasets whose map failed to build are removed at the next scheduled update. Opening the page again starts a new build [#812]
+
+### Removed
+
+- The editor's name in the feature panel. The edit date stays [#813]
+- The unused public routes `GET /api/datasets/[id]` and `/api/datasets/[id]/geojson`. Export still serves the data [#816]
+
+### Fixed
+
+- Datasets on retired templates are no longer refreshed, and report emails keep the deletion warning for the whole 30-day grace period [#807]
+
+[#806]: https://github.com/osmforcities/osmforcities/pull/806
+[#807]: https://github.com/osmforcities/osmforcities/pull/807
+[#810]: https://github.com/osmforcities/osmforcities/pull/810
+[#811]: https://github.com/osmforcities/osmforcities/pull/811
+[#812]: https://github.com/osmforcities/osmforcities/pull/812
+[#813]: https://github.com/osmforcities/osmforcities/pull/813
+[#816]: https://github.com/osmforcities/osmforcities/pull/816
+[#823]: https://github.com/osmforcities/osmforcities/pull/823
+[#824]: https://github.com/osmforcities/osmforcities/pull/824
+[#825]: https://github.com/osmforcities/osmforcities/pull/825
+[#828]: https://github.com/osmforcities/osmforcities/pull/828
+[#829]: https://github.com/osmforcities/osmforcities/pull/829
+
 ## 1.24.0
 
 ### Added
