@@ -55,7 +55,8 @@ test.describe("Tiles-only dataset creation", () => {
       state: "baking",
       progress: { stage: "baking", pct: 40 },
     });
-    await expect(waitPage).toContainText(/Building the map\s*40\s?%/);
+    await expect(waitPage).toContainText("Building the map");
+    await expect(waitPage).not.toContainText("40%");
 
     // The wait page's tiles-status request reconciles the finished bake, then
     // the page swaps to the map in place: a reload would fire "load" again

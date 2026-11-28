@@ -303,7 +303,11 @@ export const BakingConverting: Story = {
   },
 };
 
-/** Last stage. The in-scope worst case for size. */
+/**
+ * Last stage. The in-scope worst case for size. Baking runs several passes
+ * that each restart from 0%, so the bar sweeps and the time since submit
+ * stands in for the percentage.
+ */
 export const BakingTiles: Story = {
   args: {
     ...BakingConverting.args,
@@ -312,37 +316,36 @@ export const BakingTiles: Story = {
     state: "pending",
     stage: "baking",
     progress: { pct: 62 },
+    startedAt: new Date(Date.now() - 12.5 * 60_000).toISOString(),
   }),
   play: async ({ canvas }) => {
     await expect(
       await canvas.findByText("Building the map")
     ).toBeInTheDocument();
-    await expect(canvas.getByText("62%")).toBeInTheDocument();
+    await expect(await canvas.findByText("12 min")).toBeInTheDocument();
+    await expect(canvas.queryByText("62%")).not.toBeInTheDocument();
     // No step count: an interrupted bake starts over, so "N of 5" would go backwards
     await expect(canvas.queryByText(/Step \d of/)).not.toBeInTheDocument();
-    // The bar starts indeterminate and gains its value on the first poll, so
-    // the assertion has to retry rather than the query.
-    await waitFor(() =>
-      expect(canvas.getByRole("progressbar")).toHaveAttribute(
-        "aria-valuenow",
-        "62"
-      )
+    await expect(canvas.getByRole("progressbar")).not.toHaveAttribute(
+      "aria-valuenow"
     );
   },
 };
 
-/** Baking before its first percentage: the bar fills from zero, it does not sweep. */
-export const BakingBeforeFirstPercentage: Story = {
+/** The first minute shows no time: "0 min" reads as stuck. */
+export const BakingFirstMinute: Story = {
   args: { ...BakingConverting.args },
-  beforeEach: serveTilesStatus({ state: "pending", stage: "baking" }),
+  beforeEach: serveTilesStatus({
+    state: "pending",
+    stage: "baking",
+    startedAt: new Date().toISOString(),
+  }),
   play: async ({ canvas }) => {
     await expect(
       await canvas.findByText("Building the map")
     ).toBeInTheDocument();
-    await expect(canvas.getByText("0%")).toBeInTheDocument();
-    await waitFor(() =>
-      expect(canvas.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "0")
-    );
+    await expect(canvas.queryByText(/min/)).not.toBeInTheDocument();
+    await expect(canvas.queryByText(/%/)).not.toBeInTheDocument();
   },
 };
 
