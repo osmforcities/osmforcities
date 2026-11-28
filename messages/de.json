@@ -126,7 +126,7 @@
     "tilesStageConverting": "Daten werden aufbereitet",
     "tilesNoteConverting": "Der Download wird in Formen umgewandelt, die die Karte zeichnen kann.",
     "tilesStageBaking": "Karte wird erstellt",
-    "tilesNoteBaking": "Fast fertig. Die Karte öffnet sich von selbst, sobald dies abgeschlossen ist.",
+    "tilesNoteBaking": "Die Karte öffnet sich von selbst, sobald dies abgeschlossen ist. Große Gebiete können eine Weile dauern.",
     "tilesStageCounting": "Datenmenge wird geprüft",
     "tilesStageCountingCold": "Prüfung läuft noch, großes Gebiet",
     "tilesNoteCounting": "Es wird gezählt, wie viele Objekte es in diesem Gebiet gibt.",
