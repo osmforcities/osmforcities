@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Design Atlas Colors - TODO: Import directly from @design-atlas/tokens when published */
+/* Palette copied from Design Atlas tokens (MIT): https://github.com/OSMBrasil/design-atlas/blob/develop/packages/tokens/tokens.json */
 :root {
   --core-global-colors-olive-100: #edf6eb;
   --core-global-colors-olive-200: #cce4c6;
@@ -323,7 +323,6 @@
   .animate-progress-sweep {
     animation: progress-sweep 1.6s ease-in-out infinite alternate;
   }
-  /* Line clamp utilities for Design Atlas card patterns */
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
