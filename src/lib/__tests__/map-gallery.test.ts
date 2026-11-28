@@ -44,6 +44,10 @@ describe("review marks", () => {
     expect(nextDueStopIndex(stops, 0, { "a z12": ok, "b z11": ok })).toBe(-1);
   });
 
+  it("finds the last stop when opening with no current stop", () => {
+    expect(nextDueStopIndex(stops, -1, { "a z11": ok, "a z12": ok })).toBe(2);
+  });
+
   it("tallies only the current stops", () => {
     const marks = { "a z11": ok, "a z12": notOk, "b z11": { ...ok, stale: true }, gone: ok };
     expect(reviewTally(stops, marks)).toEqual({ ok: 1, notOk: 1, left: 1 });

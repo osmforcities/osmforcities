@@ -144,16 +144,19 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
         position: { longitude, latitude, zoom: cell.zoom },
       });
       setMapVersion((v) => v + 1);
-      setStopIndex(reviewStops.indexOf(cell));
+      setStopIndex(cell.captureOrder);
       setNoteDraft(null);
     },
-    [rows, reviewStops]
+    [rows]
   );
 
   useEffect(() => {
-    const stored: ReviewMarks = JSON.parse(
-      localStorage.getItem(REVIEW_STORAGE_KEY) ?? "{}"
-    );
+    let stored: ReviewMarks = {};
+    try {
+      stored = JSON.parse(localStorage.getItem(REVIEW_STORAGE_KEY) ?? "{}");
+    } catch {
+      // a hand-edited value that no longer parses starts the review over
+    }
     setMarks(stored);
     const stop = reviewStops[Math.max(nextDueStopIndex(stopLabels, -1, stored), 0)];
     if (stop) openCell(stop);
@@ -334,7 +337,7 @@ export function MapGallery({ rows }: { rows: GalleryRow[] }) {
                         type="button"
                         aria-label={TEXT.cellLabel(cell)}
                         onClick={() => openCell(cell)}
-                        className={`block hover:ring-2 hover:ring-gray-900 ${markRing(marks[stopLabels[reviewStops.indexOf(cell)]])} ${cell === stop ? CURRENT_STOP_OUTLINE : ""}`}
+                        className={`block hover:ring-2 hover:ring-gray-900 ${markRing(marks[stopLabels[cell.captureOrder]])} ${cell === stop ? CURRENT_STOP_OUTLINE : ""}`}
                       >
                         <GalleryCellView
                           cell={cell}
