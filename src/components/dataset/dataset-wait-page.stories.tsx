@@ -312,12 +312,13 @@ export const BakingTiles: Story = {
   args: {
     ...BakingConverting.args,
   },
-  beforeEach: serveTilesStatus({
+  // Built per poll, so the job is always 12.5 min old however slow the run
+  beforeEach: serveRoute("/tiles-status", () => ({
     state: "pending",
     stage: "baking",
     progress: { pct: 62 },
     startedAt: new Date(Date.now() - 12.5 * 60_000).toISOString(),
-  }),
+  })),
   play: async ({ canvas }) => {
     await expect(
       await canvas.findByText("Building the map")
@@ -335,11 +336,11 @@ export const BakingTiles: Story = {
 /** The first minute shows no time: "0 min" reads as stuck. */
 export const BakingFirstMinute: Story = {
   args: { ...BakingConverting.args },
-  beforeEach: serveTilesStatus({
+  beforeEach: serveRoute("/tiles-status", () => ({
     state: "pending",
     stage: "baking",
     startedAt: new Date().toISOString(),
-  }),
+  })),
   play: async ({ canvas }) => {
     await expect(
       await canvas.findByText("Building the map")
